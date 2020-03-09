@@ -1,12 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export default styles = StyleSheet.create({
-  mainContainer:{
-    flex: 1,
-    minHeight: '100%',
-    paddingRight: 15,
-    paddingLeft: 15,
-  },
   buttonWrap: {
     marginBottom: 50,
   },

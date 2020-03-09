@@ -4,6 +4,7 @@ import AppStyles from '../../AppStyles'
 import { View, Text, Button, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from 'react-redux';
+import LandingButtonTile from '../../components/LandingButtonTile'
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -21,28 +22,14 @@ class Landing extends React.Component {
 			<SafeAreaView style={AppStyles.container}>
 
 				<View >
-
 					{/* Main Wrap of Landing Page Buttons (Diary Button) */}
-					<View style={styles.buttonWrap}>
-						<TouchableOpacity style={styles.mainbutton} onPress={() => this.navigateFunction('Diary')}>
-							<Text style={styles.buttonText}>DIARY</Text>
-						</TouchableOpacity>
-					</View>
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Diary'} pageName={'Diary'} />
 
 					{/* Main Wrap of Landing Page Buttons (Leads Button) */}
-					<View style={styles.buttonWrap}>
-						<TouchableOpacity style={styles.mainbutton} onPress={() => this.navigateFunction('Inventory')}>
-							<Text style={styles.buttonText}>LEADS</Text>
-						</TouchableOpacity>
-					</View>
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Leads'} pageName={'Leads'} />
 
 					{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
-					<View style={styles.buttonWrap}>
-						<TouchableOpacity style={styles.mainbutton} onPress={() => this.navigateFunction('Inventory')}>
-							<Text style={styles.buttonText}>INVENTORY</Text>
-						</TouchableOpacity>
-					</View>
-
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Inventory'} pageName={'Inventory'} />
 				</View>
 
 			</SafeAreaView>

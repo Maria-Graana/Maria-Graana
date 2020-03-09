@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 class Landing extends React.Component {
   constructor(props) {
 	super(props)
-	console.log(this.props)
   }
   render() {
     return (

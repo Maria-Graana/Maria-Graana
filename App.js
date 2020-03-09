@@ -1,12 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import Landing from './app/screens/landing/index';
+import { createStackNavigator } from '@react-navigation/stack';
+import RootStack from './app/navigation/AppNavigation'
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
-  );
+  return <RootStack />
 }
 
 const styles = StyleSheet.create({

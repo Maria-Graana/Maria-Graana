@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { connect } from 'react-redux';
 
-export default class Landing extends React.Component {
+class Landing extends React.Component {
   constructor(props) {
-    super(props)
+	super(props)
+	console.log(this.props)
   }
   render() {
     return (
@@ -21,3 +23,11 @@ export default class Landing extends React.Component {
     )
   }
 }
+
+mapStateToProps = (store) => {
+    return {
+        user: store.user.user
+    }
+}
+
+export default connect(mapStateToProps)(Landing)

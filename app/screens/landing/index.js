@@ -23,13 +23,13 @@ class Landing extends React.Component {
 
 				<View >
 					{/* Main Wrap of Landing Page Buttons (Diary Button) */}
-					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Diary'} pageName={'Diary'} />
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Diary'} pagePath={'Diary'} />
 
 					{/* Main Wrap of Landing Page Buttons (Leads Button) */}
-					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Leads'} pageName={'Leads'} />
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Leads'} pagePath={'Leads'} />
 
 					{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
-					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Inventory'} pageName={'Inventory'} />
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Inventory'} pagePath={'Inventory'} />
 				</View>
 
 			</SafeAreaView>

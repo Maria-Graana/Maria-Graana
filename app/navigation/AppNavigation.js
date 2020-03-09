@@ -1,30 +1,27 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import Landing from '../screens/landing/index';
-import Diary from '../screens/Diary/index';
 import { createStackNavigator } from '@react-navigation/stack';
+import MyDrawer from './DrawerNavigator';
+import Diary from '../screens/Diary/index';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import MainStack from './StackNavigator';
+import CustomDrawerContent from '../components/Drawer/index';
 
-const Stack = createStackNavigator()
+const Drawer = createDrawerNavigator();
 
 function RootStack() {
   return (
-    <NavigationContainer>
-        <Stack.Navigator>
-            <Stack.Screen name='Landing' component={Landing} />
-            <Stack.Screen name='Diary' component={Diary} />
-        </Stack.Navigator>
-    </NavigationContainer>
-  );
+        <SafeAreaProvider>
+            <NavigationContainer>
+                <Drawer.Navigator drawerContent={navigation => CustomDrawerContent(navigation)}>
+                    <Drawer.Screen name="MainStack" component={MainStack} />
+                </Drawer.Navigator>
+            </NavigationContainer>
+        </SafeAreaProvider>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default RootStack;

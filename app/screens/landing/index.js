@@ -1,32 +1,46 @@
 import React from 'react';
-import { View, Text, Button } from 'react-native';
+import styles from './style'
+import AppStyles from '../../AppStyles'
+import { View, Text, Button, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from 'react-redux';
+import LandingButtonTile from '../../components/LandingButtonTile'
 
 class Landing extends React.Component {
-  constructor(props) {
-	super(props)
-  }
-  render() {
-    return (
-		<SafeAreaView >
-			<Text >
-				I am here
-			</Text>
-			<Button
-			title="Go to Details"
-			onPress={() => this.props.navigation.navigate('Diary')}
-			>
-			</Button>
-      	</SafeAreaView>
-    )
-  }
+	constructor(props) {
+		super(props)
+	}
+
+	// ****** Navigate Function
+	navigateFunction = (name) => {
+		const { navigation } = this.props
+		navigation.navigate(name)
+	}
+
+	render() {
+		return (
+			<SafeAreaView style={AppStyles.container}>
+
+				<View >
+					{/* Main Wrap of Landing Page Buttons (Diary Button) */}
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Diary'} pagePath={'Diary'} />
+
+					{/* Main Wrap of Landing Page Buttons (Leads Button) */}
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Leads'} pagePath={'Leads'} />
+
+					{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Inventory'} pagePath={'Inventory'} />
+				</View>
+
+			</SafeAreaView>
+		)
+	}
 }
 
 mapStateToProps = (store) => {
-    return {
-        user: store.user.user
-    }
+	return {
+		user: store.user.user
+	}
 }
 
 export default connect(mapStateToProps)(Landing)

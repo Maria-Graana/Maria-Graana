@@ -1,27 +1,69 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Landing from '../screens/landing/index';
-import { createStackNavigator } from '@react-navigation/stack';
-import MyDrawer from './DrawerNavigator';
-import Diary from '../screens/Diary/index';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MainStack from './StackNavigator';
 import CustomDrawerContent from '../components/Drawer/index';
+import Login from '../screens/Login/index';
+import { connect } from 'react-redux';
+import { createStackNavigator } from '@react-navigation/stack';
+import { checkToken } from '../actions/user';
+import { navigationRef } from './RootNavigation';
 
 const Drawer = createDrawerNavigator();
 
-function RootStack() {
-  return (
-        <SafeAreaProvider>
-            <NavigationContainer>
-                <Drawer.Navigator drawerContent={navigation => CustomDrawerContent(navigation)}>
-                    <Drawer.Screen name="MainStack" component={MainStack} />
-                </Drawer.Navigator>
-            </NavigationContainer>
-        </SafeAreaProvider>
+const Stack = createStackNavigator();
+
+function Authstack() {
+    return (
+        <Stack.Navigator
+            screenOptions={{
+                gestureEnabled: false,
+                headerShown: false
+            }}
+        >
+            <Stack.Screen name="Login" component={Login} />
+        </Stack.Navigator>
     );
 }
 
-export default RootStack;
+class RootStack extends React.Component {
+    render () {
+        const {user, token, store, loading}= this.props
+        console.log('APP RENDERED')
+        console.log('loading: ', loading)
+        return (
+            <SafeAreaProvider>
+                <NavigationContainer ref={navigationRef}>
+                    {
+                        user && loading ?
+                            <Drawer.Navigator drawerContent={navigation => CustomDrawerContent(navigation)}>
+                                <Drawer.Screen name="MainStack" component={MainStack} />
+                            </Drawer.Navigator>
+                        :
+                        <Stack.Navigator
+                        screenOptions={{
+                            gestureEnabled: false,
+                            headerShown: false
+                        }}
+                        >
+                            <Stack.Screen name={"Authstack"} component={Authstack} />
+                        </Stack.Navigator>
+                    }
+                </NavigationContainer>
+            </SafeAreaProvider>
+        )
+    }
+}
+
+
+mapStateToProps = (store) => {
+    return {
+        user: store.user.user,
+        token: store.user.token,
+        store: store,
+        loading: store.user.loading
+    }
+}
+
+export default connect(mapStateToProps)(RootStack)

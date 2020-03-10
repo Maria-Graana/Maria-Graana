@@ -1,13 +1,11 @@
 import * as types from '../types';
 import {AsyncStorage} from 'react-native';
-import devConstants, {apiUrl} from '../constants';
-import axios from 'axios';
-import { StackActions, NavigationActions } from 'react-navigation';
 import config from '../config';
+import axios from 'axios';
 
 storeItem = async (key, item) =>  {
     try {
-        var jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item));
+        let jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item));
         return jsonOfItem;
     } catch (error) {
     }
@@ -45,7 +43,7 @@ setBaseUrl = () => {
     axios.defaults.baseURL = config.apiPath;
 }
 
-export function setuser(data, navigation){
+export function setuser(data){
     return (dispatch, getsState) => {
         dispatch({
             type: types.USER_LOADING
@@ -55,7 +53,7 @@ export function setuser(data, navigation){
             storeItem('token', response.data.token)
             setAuthorizationToken(response.data.token)
             setBaseUrl()
-             dispatch({
+            dispatch({
                 type: types.SET_USER,
                 payload: {...response.data},
             })
@@ -65,9 +63,10 @@ export function setuser(data, navigation){
             dispatch({
                 type: types.REMOVE_USER_ERROR
             })
-            navigation.navigate('App')
+            return response.data
         })
         .catch((error) => {
+            console.log(error)
             console.log('crashing', error.response.data)
             dispatch({
                 type: types.USER_LOADED
@@ -90,16 +89,14 @@ export function logoutUser(navigation){
     }
 }
 
-export function checkToken(props){
+export function checkToken(){
     return (dispatch, getsState) => {
-        if(props.user) {
-            if(props.user.token != undefined || props.user.token != null){
-                dispatch({
-                    type: types.USER_LOADING
-                })
-                axios.get(`${config.apiPath}/api/user/me?id=${props.user.id}`, { headers: { "Authorization": `Bearer ${props.user.token}` } })
+        getItem('token').then((token) => {
+            console.log(token)
+            if (token) {
+                axios.get(`${config.apiPath}/api/user/me`, { headers: { "Authorization": `Bearer ${token}` } })
                 .then((response) => {
-                    setAuthorizationToken(props.user.token)
+                    setAuthorizationToken(token)
                     setBaseUrl()
                     // dispatch({
                     //     type: types.SET_USER,
@@ -111,7 +108,6 @@ export function checkToken(props){
                     dispatch({
                         type: types.USER_LOADED
                     })
-                    props.navigation.navigate('App')
                 })
                 .catch((error) => {
                     console.log(error.message)
@@ -119,27 +115,20 @@ export function checkToken(props){
                         type: types.SET_USER_ERROR,
                         payload: error.response ? error.response.data : error.message,
                     })
-                    props.dispatch(logoutUser(props.navigation))
                 })
-            }else{
+            } else {
                 console.log('SET_TOKEN_ERROR')
                 dispatch({
                     type: types.SET_TOKEN_ERROR,
                 })
-                props.dispatch(logoutUser(props.navigation))  
             }
-        } else {
-            dispatch({
-                type: types.SET_TOKEN_ERROR,
-            })
-            props.dispatch(logoutUser(props.navigation))
-        }
+        })
     }   
 }
 
 export function getCurrentUser() {
     return (dispatch, getsState) => {
-        axios.post(`${apiUrl}/api/user/me`, {headers: {Authorization: `Bearer ${token}`}}).then((response) => {
+        axios.post(`${config.apiPath}/api/user/me`, {headers: {Authorization: `Bearer ${token}`}}).then((response) => {
             // store in async storage
              dispatch({
                 type: types.SET_USER,

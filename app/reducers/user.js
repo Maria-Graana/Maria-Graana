@@ -13,8 +13,7 @@ const userPayload = {
 const user = (state = '', action) => {
     switch(action.type) {
         case types.SET_USER: 
-        return userPayload
-        // return action.payload
+        return action.payload
         case types.LOGOUT_USER:
         return null; 
         case types.SET_TOKEN_ERROR:
@@ -38,7 +37,7 @@ const loading = (state = false, action) => {
         case types.USER_LOADING: 
         return true;
         case types.USER_LOADED: 
-        return false;
+        return true;
         default: return state
     }
 }
@@ -49,7 +48,7 @@ const token= (state= false, action) => {
         return true
         case types.SET_TOKEN_ERROR:
         return false
-        default: return state
+        default: return false
 
     }
 }

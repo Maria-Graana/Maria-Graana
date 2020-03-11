@@ -26,7 +26,7 @@ class Landing extends React.Component {
 					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Diary'} pagePath={'Diary'} />
 
 					{/* Main Wrap of Landing Page Buttons (Leads Button) */}
-					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Leads'} pagePath={'Leads'} />
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Lead'} pagePath={'Lead'} />
 
 					{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
 					<LandingButtonTile navigateFunction={this.navigateFunction} label={'Inventory'} pagePath={'Inventory'} />

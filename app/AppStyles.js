@@ -10,6 +10,7 @@ export default AppStyles = {
         background: '#f4f9fd',
         font: '#434e5a',
         primary: '#484848',
+        iconColor:'#fff',
         gradientColor: ['#2f2f2f','#444']
     },
     mb1: {
@@ -19,6 +20,9 @@ export default AppStyles = {
         small: 10,
         medium: 15,
         large: 20
+    },
+    standardPadding: {
+        padding: 16
     },
     // ****** Margins Classes
     mrTen: {

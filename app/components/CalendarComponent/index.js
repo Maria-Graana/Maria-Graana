@@ -3,7 +3,6 @@ import { Calendar } from 'react-native-calendars'
 
 const CalendarComponent = (props) => {
     return (
-        props.showCalendar ?
             <Calendar
                 theme={{
                     calendarBackground: '#444',
@@ -19,8 +18,6 @@ const CalendarComponent = (props) => {
                 markedDates={{
                     [props.startDate]: { selected: true, }
                 }} />
-            :
-            null
     )
 }
 

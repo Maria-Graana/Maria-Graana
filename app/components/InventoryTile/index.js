@@ -1,8 +1,10 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-
+import fire from '../../../assets/images/fire.png'
+import phone from '../../../assets/images/phone.png'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 class InventoryTile extends React.Component {
   constructor(props) {
     super(props)
@@ -12,15 +14,33 @@ class InventoryTile extends React.Component {
     return (
       <View style={styles.tileMainWrap}>
         <View style={styles.topIcons}>
-          <Text style={[styles.tokenLabel, AppStyles.mrFive, AppStyles.whiteColor]}>
-            Deal Done
+          <View>
+            <Text style={[styles.tokenLabel, AppStyles.mrFive, AppStyles.whiteColor]}>
+              Deal Done
           </Text>
+          </View>
+          <View>
+            <Image
+              style={[styles.fireIcon, AppStyles.mlFive]}
+              source={fire}
+            />
+          </View>
+          <View>
+            <MaterialCommunityIcons name="dots-vertical" size={32} color="#333" style={styles.verticalIcon} />
+          </View>
+
         </View>
         <View style={[styles.contentMainWrap]}>
+          <View style={styles.phoneWrap}>
+            <Image 
+            style={styles.phoneIcon}
+            source={phone}
+            />
+          </View>
           {/* ****** Name Wrap */}
           <View style={[styles.contentMain, AppStyles.mbTen]}>
             <Text style={[styles.largeText, AppStyles.darkColor]}>
-              Property Name
+            20 marla house for sale 
             </Text>
           </View>
 

@@ -33,6 +33,12 @@ export default AppStyles = {
     mbFive: {
         marginBottom: 5,
     },
+    mlFive: {
+        marginLeft: 5,
+    },
+    mlTen: {
+        marginLeft: 10,
+    },
     darkColor: {
         color: '#000',
     },

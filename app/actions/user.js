@@ -2,6 +2,7 @@ import * as types from '../types';
 import {AsyncStorage} from 'react-native';
 import config from '../config';
 import axios from 'axios';
+import { SplashScreen } from 'expo';
 
 storeItem = async (key, item) =>  {
     try {
@@ -43,6 +44,10 @@ setBaseUrl = () => {
     axios.defaults.baseURL = config.apiPath;
 }
 
+removeBaseUrl = () => {
+    axios.defaults.baseURL = '';
+}
+
 export function setuser(data){
     return (dispatch, getsState) => {
         dispatch({
@@ -63,6 +68,9 @@ export function setuser(data){
             dispatch({
                 type: types.REMOVE_USER_ERROR
             })
+            dispatch({
+                type: types.SET_TOKEN_SUCCESS
+            })
             return response.data
         })
         .catch((error) => {
@@ -75,27 +83,27 @@ export function setuser(data){
                 type: types.SET_USER_ERROR,
                 payload: error.response ? error.response.data : error.message,
             })
+            return null
         })
     }
 }
 
-export function logoutUser(navigation){
+export function logoutUser(){
     return (dispatch, getsState) => {
         deleteAuthorizationToken();
+        removeBaseUrl();
         dispatch({
             type: types.LOGOUT_USER,
         })
-        navigation.navigate('Login')
     }
 }
 
 export function checkToken(){
     return (dispatch, getsState) => {
         getItem('token').then((token) => {
-            console.log(token)
             if (token) {
-                axios.get(`${config.apiPath}/api/user/me`, { headers: { "Authorization": `Bearer ${token}` } })
-                .then((response) => {
+            //     axios.get(`${config.apiPath}/api/user/me`, { headers: { "Authorization": `Bearer ${token}` } })
+            //     .then((response) => {
                     setAuthorizationToken(token)
                     setBaseUrl()
                     // dispatch({
@@ -103,19 +111,20 @@ export function checkToken(){
                     //     payload: {...response.data},
                     // })
                     dispatch({
-                        type: types.SET_TOKEN_SUCCESS
-                    })
-                    dispatch({
                         type: types.USER_LOADED
                     })
-                })
-                .catch((error) => {
-                    console.log(error.message)
                     dispatch({
-                        type: types.SET_USER_ERROR,
-                        payload: error.response ? error.response.data : error.message,
+                        type: types.SET_TOKEN_SUCCESS
                     })
-                })
+                    SplashScreen.hide();
+                // })
+                // .catch((error) => {
+                //     console.log(error.message)
+                //     dispatch({
+                //         type: types.SET_USER_ERROR,
+                //         payload: error.response ? error.response.data : error.message,
+                //     })
+                // })                
             } else {
                 console.log('SET_TOKEN_ERROR')
                 dispatch({

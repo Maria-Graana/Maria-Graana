@@ -1,8 +1,9 @@
 import React from 'react';
 import styles from './style'
-import { View, Text, Button, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { connect } from 'react-redux';
+import InventoryTile from '../../components/InventoryTile'
+import AppStyles from '../../AppStyles'
 
 class Inventory extends React.Component {
 	constructor(props) {
@@ -10,9 +11,17 @@ class Inventory extends React.Component {
 	}
 	render() {
 		return (
-			<SafeAreaView style={styles.container}>
-				<Text>Hello</Text>
-			</SafeAreaView>
+			<View style={AppStyles.container}>
+
+        {/* ***** Main Filter Wrap */}
+				<View style={styles.filterMainWrap}></View>
+
+        {/* ***** Main Tile Wrap */}
+        <View style={styles.mainInventoryTile}>
+            <InventoryTile/>
+        </View>
+ 
+			</View>
 		)
 	}
 }

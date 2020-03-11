@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './style'
 import { View, ScrollView, TextInput } from 'react-native';
+import { Picker } from 'native-base';
 import { connect } from 'react-redux';
 import InventoryTile from '../../components/InventoryTile'
 import AppStyles from '../../AppStyles'
@@ -9,7 +10,19 @@ import { Feather } from '@expo/vector-icons';
 class Inventory extends React.Component {
 	constructor(props) {
 		super(props)
+
+		this.state = {
+			language: '',
+			dotsDropDown: false,
+		}
 	}
+
+  showDropdown = () => {
+    this.setState({
+      dotsDropDown: !this.state.dotsDropDown
+    })
+  }
+
 	render() {
 		return (
 			<View style={AppStyles.container}>
@@ -17,21 +30,26 @@ class Inventory extends React.Component {
 				{/* ***** Main Filter Wrap */}
 				<View style={styles.filterMainWrap}>
 					<View style={[styles.searchInputWrap, styles.borderRightFilter]}>
-						<TextInput placeholder={'Search By'} style={styles.inputFilterStyle}/>
+						<Picker
+							placeholder={'Search By'}
+							selectedValue={this.state.language}
+							onValueChange={(itemValue, itemIndex) =>
+								this.setState({ language: itemValue })
+							}>
+							<Picker.Item label="Java" value="java" />
+							<Picker.Item label="JavaScript" value="js" />
+						</Picker>
 					</View>
 					<View style={[styles.searchInputWrap, styles.InputWrapSearch]}>
-						<TextInput placeholder={'Yo'} style={styles.inputFilterStyle}/>
-						<Feather name="search" size={20} color="#D0D0D0" style={styles.searchIcon}/>
+						<TextInput style={styles.inputFilterStyle} />
+						<Feather name="search" size={20} color="#D0D0D0" style={styles.searchIcon} />
 					</View>
 				</View>
 
 				{/* ***** Main Tile Wrap */}
 				<View style={styles.mainInventoryTile}>
 					<ScrollView>
-						<InventoryTile />
-						<InventoryTile />
-						<InventoryTile />
-						<InventoryTile />
+						<InventoryTile showDropdown={this.showDropdown} dotsDropDown={this.state.dotsDropDown}/>
 					</ScrollView>
 				</View>
 

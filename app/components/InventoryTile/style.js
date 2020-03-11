@@ -23,6 +23,7 @@ export default styles = StyleSheet.create({
     position: 'absolute',
     top: 15,
     right: 0,
+    zIndex: 2,
   },
   contentMainWrap: {
     position: 'relative',
@@ -46,6 +47,7 @@ export default styles = StyleSheet.create({
   phoneIcon: {
     width: 20,
     height: 20,
+    zIndex: 1,
   },
   fireIcon: {
     width: 15,
@@ -54,5 +56,25 @@ export default styles = StyleSheet.create({
   verticalIcon: {
     position: 'relative',
     top: -5,
+  },
+  dropDownParent: {
+    position: 'relative',
+  },
+  dropDownWrap: {
+    position: 'absolute',
+    right: 10,
+    top: '110%',
+    width: 150,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    zIndex: 10,
+  },
+  dropButtons:{
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
 });

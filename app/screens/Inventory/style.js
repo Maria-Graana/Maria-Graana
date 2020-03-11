@@ -14,19 +14,21 @@ export default styles = StyleSheet.create({
   borderRightFilter: {
     borderRightWidth: 1,
     borderColor: '#ddd',
-    width: '30%'
+    width: '35%'
   },
   InputWrapSearch: {
-    width: '70%'
+    width: '65%'
   },
   inputFilterStyle: {
     minHeight: 40,
     paddingLeft: 10,
+    fontSize: 16,
+  },
+  inputFilterselect: {
   },
   searchIcon:{
     position: 'absolute',
     right: 10,
     top: 9,
-
   },
 });

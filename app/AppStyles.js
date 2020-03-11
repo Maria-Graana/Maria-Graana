@@ -10,11 +10,14 @@ export default AppStyles = {
         background: '#f4f9fd',
         font: '#434e5a',
         primary: '#484848',
-        iconColor:'#fff',
-        gradientColor: ['#2f2f2f','#444']
+        iconColor: '#fff',
+        gradientColor: ['#2f2f2f', '#444']
     },
     mb1: {
         flex: 1
+    },
+    noramlSize:{
+        fontSize:12,
     },
     fontSize: {
         small: 10,
@@ -23,6 +26,10 @@ export default AppStyles = {
     },
     standardPadding: {
         padding: 16
+    },
+    noBorder: {
+        borderWidth: 0,
+        borderBottomWidth: 0,
     },
     // ****** Margins Classes
     mrTen: {
@@ -49,7 +56,7 @@ export default AppStyles = {
     lightColor: {
         color: '#333',
     },
-    whiteColor:{
+    whiteColor: {
         color: '#fff',
     },
 }

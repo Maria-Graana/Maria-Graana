@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import fire from '../../../assets/images/fire.png'
@@ -10,7 +10,10 @@ class InventoryTile extends React.Component {
     super(props)
   }
 
+
+
   render() {
+    const { showDropdown, dotsDropDown } = this.props
     return (
       <View style={styles.tileMainWrap}>
         <View style={styles.topIcons}>
@@ -25,22 +28,35 @@ class InventoryTile extends React.Component {
               source={fire}
             />
           </View>
-          <View>
-            <MaterialCommunityIcons name="dots-vertical" size={32} color="#333" style={styles.verticalIcon} />
+          <View style={styles.dropDownParent}>
+            <TouchableOpacity onPress={() => { showDropdown() }}>
+              <MaterialCommunityIcons name="dots-vertical" size={32} color="#333" style={styles.verticalIcon} />
+            </TouchableOpacity>
+            {
+              dotsDropDown === true &&
+              <View style={styles.dropDownWrap}>
+                <TouchableOpacity style={styles.dropButtons}>
+                  <Text style={[AppStyles.lightColor, AppStyles.noramlSize]}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.dropButtons, AppStyles.noBorder]}>
+                  <Text style={[AppStyles.lightColor, AppStyles.noramlSize]}>Deactivate</Text>
+                </TouchableOpacity>
+              </View>
+            }
           </View>
 
         </View>
         <View style={[styles.contentMainWrap]}>
           <View style={styles.phoneWrap}>
-            <Image 
-            style={styles.phoneIcon}
-            source={phone}
+            <Image
+              style={styles.phoneIcon}
+              source={phone}
             />
           </View>
           {/* ****** Name Wrap */}
           <View style={[styles.contentMain, AppStyles.mbTen]}>
             <Text style={[styles.largeText, AppStyles.darkColor]}>
-            20 marla house for sale 
+              20 marla house for sale
             </Text>
           </View>
 

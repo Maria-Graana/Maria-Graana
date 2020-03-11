@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
-import Loader from '../../components/Loader'
+import Loader from '../../components/loader'
 import CalendarComponent from '../../components/CalendarComponent'
 import data from '../../StaticData'
 import _ from 'underscore';

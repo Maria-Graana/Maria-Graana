@@ -19,5 +19,27 @@ export default AppStyles = {
         small: 10,
         medium: 15,
         large: 20
-    }
+    },
+    // ****** Margins Classes
+    mrTen: {
+        marginRight: 10,
+    },
+    mrFive: {
+        marginRight: 5,
+    },
+    mbTen: {
+        marginBottom: 10,
+    },
+    mbFive: {
+        marginBottom: 5,
+    },
+    darkColor: {
+        color: '#000',
+    },
+    lightColor: {
+        color: '#333',
+    },
+    whiteColor:{
+        color: '#fff',
+    },
 }

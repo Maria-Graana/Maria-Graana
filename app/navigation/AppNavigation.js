@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { createStackNavigator } from '@react-navigation/stack';
 import { checkToken } from '../actions/user';
 import { navigationRef } from './RootNavigation';
+import { SplashScreen } from 'expo';
 
 const Drawer = createDrawerNavigator();
 
@@ -28,16 +29,23 @@ function Authstack() {
 }
 
 class RootStack extends React.Component {
+    constructor (props) {
+        super(props)
+    }
+    
+    componentDidMount() {
+        SplashScreen.preventAutoHide();
+        this.props.dispatch(checkToken())
+    }
+    
     render () {
         const {user, token, store, loading}= this.props
-        console.log('APP RENDERED')
-        console.log('loading: ', loading)
         return (
             <SafeAreaProvider>
                 <NavigationContainer ref={navigationRef}>
                     {
-                        user && loading ?
-                            <Drawer.Navigator drawerContent={navigation => CustomDrawerContent(navigation)}>
+                        user && loading === false && token?
+                            <Drawer.Navigator drawerContent={navigation => <CustomDrawerContent />}>
                                 <Drawer.Screen name="MainStack" component={MainStack} />
                             </Drawer.Navigator>
                         :

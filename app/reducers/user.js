@@ -16,8 +16,6 @@ const user = (state = '', action) => {
         return action.payload
         case types.LOGOUT_USER:
         return null; 
-        case types.SET_TOKEN_ERROR:
-        return null; 
         default: return state
     }
 }
@@ -37,7 +35,7 @@ const loading = (state = false, action) => {
         case types.USER_LOADING: 
         return true;
         case types.USER_LOADED: 
-        return true;
+        return false;
         default: return state
     }
 }

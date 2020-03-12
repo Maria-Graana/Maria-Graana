@@ -4,11 +4,11 @@ import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
 import CalendarComponent from '../../components/CalendarComponent'
-import data from '../../StaticData'
+import { Fab } from 'native-base';
+import data from '../../StaticData';
 import _ from 'underscore';
 import moment from 'moment';
 import styles from './styles'
-import { TabHeading } from 'native-base';
 
 const _format = 'YYYY-MM-DD';
 const _today = moment(new Date().dateString).format(_format);
@@ -224,6 +224,15 @@ class Diary extends React.Component {
     const { showCalendar, startDate, newDiaryData, loading } = this.state;
     return (
       <View style={styles.container}>
+        <Fab
+          active='true'
+          containerStyle={{ zIndex: 20 }}
+          style={{ backgroundColor: '#484848' }}
+          position="bottomRight"
+          //onPress={this.goToDiaryForm}
+          >
+          <Ionicons name="md-add" color="#ffffff" />
+        </Fab>
         <Text style={styles.heading}> Diary </Text>
         <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
           <View style={styles.calenderIconContainer}>

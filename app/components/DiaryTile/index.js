@@ -9,6 +9,7 @@ import { AntDesign, Entypo } from '@expo/vector-icons';
 import ListItem from "../ListItem/index";
 import styles from './style';
 import AppStyles from '../../AppStyles'
+import moment from 'moment';
 
 
 class DiaryTile extends React.Component {
@@ -65,10 +66,9 @@ class DiaryTile extends React.Component {
                                                                     <View style={[styles.midView, { backgroundColor: val.statusColor }]}></View>
                                                                 </View>
                                                                 <View style={styles.innerView}>
-                                                                    <AntDesign name="clockcircleo" size={20} color="gray" />
-                                                                    <Text style={styles.showTime}>{val.time}</Text>
+                                                                    <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - </Text>
+                                                                    <Text style={[styles.showTime, { paddingLeft: 0 }]}>{moment.utc(val.end).format("hh:mm a")} </Text>
                                                                     <View style={styles.spaceView}></View>
-                                                                    <Entypo name="location-pin" size={20} color="gray" />
                                                                     <Text style={styles.meetingText}>{val.subject}</Text>
                                                                 </View>
                                                             </View>

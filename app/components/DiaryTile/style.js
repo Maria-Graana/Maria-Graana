@@ -44,14 +44,14 @@ export default styles = StyleSheet.create({
         alignItems : 'center'
     },
     showTime: {
-        paddingLeft : 10, 
+        paddingLeft : 5, 
         color : '#6E6E6E'
     },
     spaceView: {
         width : 12
     },
     meetingText: {
-        paddingLeft : 10, 
+        paddingLeft : 5, 
         color : '#6E6E6E',
         // flexWrap: 'wrap',
         // flex: 1

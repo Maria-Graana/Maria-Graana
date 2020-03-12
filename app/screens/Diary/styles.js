@@ -9,7 +9,7 @@ export default StyleSheet.create({
        
     },
     heading: {
-        color: AppStyles.colors.primary,
+        color: AppStyles.colors.primaryColor,
         fontWeight: '600',
         fontSize: AppStyles.fontSize.large,
         padding: AppStyles.standardPadding.padding
@@ -18,7 +18,7 @@ export default StyleSheet.create({
         alignSelf: 'center',
         height: 70,
         width: 70,
-        backgroundColor: AppStyles.colors.primary,
+        backgroundColor: AppStyles.colors.primaryColor,
         padding: AppStyles.standardPadding.padding,
         borderRadius: 35,
         marginVertical: 10,

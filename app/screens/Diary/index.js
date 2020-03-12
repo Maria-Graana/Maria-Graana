@@ -1,14 +1,16 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { StackActions } from '@react-navigation/native';
 import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
 import CalendarComponent from '../../components/CalendarComponent'
-import data from '../../StaticData'
+import { Fab } from 'native-base';
+import data from '../../StaticData';
 import _ from 'underscore';
 import moment from 'moment';
+import AppStyles from '../../AppStyles'
 import styles from './styles'
-import { TabHeading } from 'native-base';
 import { connect } from 'react-redux';
 
 const _format = 'YYYY-MM-DD';
@@ -165,7 +167,13 @@ class Diary extends React.Component {
   }
 
   goToDiaryForm = () => {
-    this.props.navigation.navigate('AddDiary', { 'agentId': this.state.agentId, 'update': false })
+    const { navigation } = this.props;
+    navigation.dispatch(
+      StackActions.replace('AddDiary', {
+        agentId: this.state.agentId,
+        update: false
+      })
+    );
   }
 
   updateDiary = (data) => {
@@ -225,6 +233,15 @@ class Diary extends React.Component {
     const { showCalendar, startDate, newDiaryData, loading } = this.state;
     return (
       <View style={styles.container}>
+        <Fab
+          active='true'
+          containerStyle={{ zIndex: 20 }}
+          style={{ backgroundColor: AppStyles.colors.primaryColor }}
+          position="bottomRight"
+          onPress={this.goToDiaryForm}
+        >
+          <Ionicons name="md-add" color="#ffffff" />
+        </Fab>
         <Text style={styles.heading}> Diary </Text>
         <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
           <View style={styles.calenderIconContainer}>

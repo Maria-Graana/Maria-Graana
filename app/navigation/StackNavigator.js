@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Diary from '../screens/Diary/index';
 import Login from '../screens/Login/index';
 import Inventory from '../screens/Inventory/index';
+import AddDiary from '../screens/AddDiary';
 import Lead from '../screens/Lead/index';
 import HeaderRight from '../components/HeaderRight/index';
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index';
@@ -36,6 +37,13 @@ function MainStack() {
                 })}
             />
             <Stack.Screen name='Lead' component={Lead} 
+                options={({ navigation, route }) => ({
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
+                    headerRight: props => <HeaderRight navigation={navigation}/>,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='AddDiary' component={AddDiary} 
                 options={({ navigation, route }) => ({
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
                     headerRight: props => <HeaderRight navigation={navigation}/>,

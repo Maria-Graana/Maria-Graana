@@ -19,7 +19,6 @@ function Authstack() {
     return (
         <Stack.Navigator
             screenOptions={{
-                gestureEnabled: false,
                 headerShown: false
             }}
         >
@@ -51,7 +50,6 @@ class RootStack extends React.Component {
                         :
                         <Stack.Navigator
                         screenOptions={{
-                            gestureEnabled: false,
                             headerShown: false
                         }}
                         >

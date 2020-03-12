@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './style'
 import AppStyles from '../../AppStyles'
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from 'react-redux';
 import LandingButtonTile from '../../components/LandingButtonTile'

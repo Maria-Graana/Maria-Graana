@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, ScrollView, TextInput } from 'react-native';
+import { View, ScrollView, TextInput, FlatList } from 'react-native';
 import { Picker } from 'native-base';
 import { connect } from 'react-redux';
 import InventoryTile from '../../components/InventoryTile'
@@ -15,7 +15,7 @@ class Inventory extends React.Component {
 			language: '',
 			dotsDropDown: false,
 			dropDownId: '',
-			selectInventory: '',
+			selectInventory: [],
 
 		}
 
@@ -63,9 +63,23 @@ class Inventory extends React.Component {
 	}
 
 	selectInventory = (id) => {
+		const { selectInventory } = this.state
 		this.setState({
-			selectInventory: id
+			selectInventory: [...selectInventory,id]
 		})
+		console.log('select',this.state.selectInventory)
+	}
+
+	unSelectInventory = (id) => {
+		console.log('id',id)
+		const { selectInventory } = this.state
+		let index = selectInventory.indexOf(id)
+		// let unSelectInventory = selectInventory.filter((item) => { item != id && item})
+		selectInventory.splice(index, 1)
+		this.setState({
+			selectInventory: selectInventory,
+		})
+		console.log('un', selectInventory)
 	}
 
 	render() {
@@ -94,22 +108,20 @@ class Inventory extends React.Component {
 
 				{/* ***** Main Tile Wrap */}
 				<View style={styles.mainInventoryTile}>
-					<ScrollView>
-						{
-							this.staticData.map((item, index) => {
-								return (
-									<InventoryTile
-										showDropdown={this.showDropdown}
-										dotsDropDown={this.state.dotsDropDown}
-										selectInventory={this.selectInventory}
-										selectedInventory={selectInventory}
-										data={item}
-										dropDownId={dropDownId}
-									/>
-								)
-							})
-						}
-					</ScrollView>
+					<FlatList
+						data={this.staticData}
+						renderItem={({ item }) => (
+							<InventoryTile
+								showDropdown={this.showDropdown}
+								dotsDropDown={this.state.dotsDropDown}
+								selectInventory={this.selectInventory}
+								selectedInventory={selectInventory}
+								data={item}
+								dropDownId={dropDownId}
+								unSelectInventory={this.unSelectInventory}
+							/>
+						)}
+					/>
 				</View>
 
 			</View>

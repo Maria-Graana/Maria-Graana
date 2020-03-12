@@ -11,7 +11,11 @@ export default AppStyles = {
         font: '#434e5a',
         primary: '#484848',
         iconColor:'#fff',
-        gradientColor: ['#2f2f2f','#444']
+        gradientColor: ['#2f2f2f','#444'],
+        primaryColor: '0f73ee',
+        textColor: '#1d1d26',
+        subTextColor: '#a8a8aa',
+        backgroundColor: '#e7ecf0'
     },
     mb1: {
         flex: 1

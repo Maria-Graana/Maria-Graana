@@ -67,19 +67,15 @@ class Inventory extends React.Component {
 		this.setState({
 			selectInventory: [...selectInventory,id]
 		})
-		console.log('select',this.state.selectInventory)
 	}
 
 	unSelectInventory = (id) => {
-		console.log('id',id)
 		const { selectInventory } = this.state
 		let index = selectInventory.indexOf(id)
-		// let unSelectInventory = selectInventory.filter((item) => { item != id && item})
 		selectInventory.splice(index, 1)
 		this.setState({
 			selectInventory: selectInventory,
 		})
-		console.log('un', selectInventory)
 	}
 
 	render() {

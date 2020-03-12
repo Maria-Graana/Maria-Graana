@@ -30,14 +30,14 @@ function MainStack() {
             />
             <Stack.Screen name='Inventory' component={Inventory} 
                 options={({ navigation, route }) => ({
-                    headerLeft: props => <HeaderLeftLogo navigation={navigation}/>,
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
                     headerRight: props => <HeaderRight navigation={navigation}/>,
                     headerTitleAlign: 'center',
                 })}
             />
             <Stack.Screen name='Lead' component={Lead} 
                 options={({ navigation, route }) => ({
-                    headerLeft: props => <HeaderLeftLogo navigation={navigation}/>,
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
                     headerRight: props => <HeaderRight navigation={navigation}/>,
                     headerTitleAlign: 'center',
                 })}

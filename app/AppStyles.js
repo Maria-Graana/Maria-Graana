@@ -4,7 +4,6 @@ export default AppStyles = {
         minHeight: '100%',
         paddingRight: 15,
         paddingLeft: 15,
-        backgroundColor: '#fff'
     },
     colors: {
         background: '#f4f9fd',
@@ -20,6 +19,9 @@ export default AppStyles = {
     mb1: {
         flex: 1
     },
+    noramlSize:{
+        fontSize:12,
+    },
     fontSize: {
         small: 10,
         medium: 15,
@@ -27,6 +29,10 @@ export default AppStyles = {
     },
     standardPadding: {
         padding: 16
+    },
+    noBorder: {
+        borderWidth: 0,
+        borderBottomWidth: 0,
     },
     // ****** Margins Classes
     mrTen: {
@@ -40,6 +46,12 @@ export default AppStyles = {
     },
     mbFive: {
         marginBottom: 5,
+    },
+    mlFive: {
+        marginLeft: 5,
+    },
+    mlTen: {
+        marginLeft: 10,
     },
     darkColor: {
         color: '#000',

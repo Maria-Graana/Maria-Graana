@@ -9,7 +9,6 @@ export default styles = StyleSheet.create({
     padding: 15,
     borderRadius: 5,
     position: 'relative',
-    paddingTop: 40,
     marginBottom: 15,
   },
   largeText: {

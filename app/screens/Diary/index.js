@@ -11,6 +11,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import AppStyles from '../../AppStyles'
 import styles from './styles'
+import { connect } from 'react-redux';
 
 const _format = 'YYYY-MM-DD';
 const _today = moment(new Date().dateString).format(_format);
@@ -262,4 +263,11 @@ class Diary extends React.Component {
   }
 }
 
-export default Diary;
+
+mapStateToProps = (store) => {
+	return {
+		user: store.user.user
+	}
+}
+
+export default connect(mapStateToProps)(Diary)

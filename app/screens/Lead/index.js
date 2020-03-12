@@ -3,11 +3,11 @@ import styles from './style'
 import { View, ScrollView, TextInput, FlatList } from 'react-native';
 import { Picker } from 'native-base';
 import { connect } from 'react-redux';
-import InventoryTile from '../../components/InventoryTile'
+import LeadTile from '../../components/LeadTile'
 import AppStyles from '../../AppStyles'
 import { Feather } from '@expo/vector-icons';
 
-class Inventory extends React.Component {
+class Lead extends React.Component {
 	constructor(props) {
 		super(props)
 
@@ -22,19 +22,19 @@ class Inventory extends React.Component {
 		this.staticData = [
 			{
 				id: '1',
-				propertyName: '10 marla house for sale',
-				action: 'Token',
-				price: '10 Crore',
-				address: 'G/11, Islamabad',
-				location: 'G/11, Islamabad',
+				propertyName: '3 marla house for sale',
+				action: 'Deal Done',
+				price: '55 Lac',
+				address: 'Gulraiz, street #3, Rawapindi',
+				location: 'Gulraiz, Rawapindi',
 			},
 			{
 				id: '2',
-				propertyName: '40 marla house for sale',
+				propertyName: '10 marla plot for sale',
 				action: 'Deal Done',
-				price: '20 Crore',
-				address: 'i8/4, Islamabad',
-				location: 'i8/4, Islamabad',
+				price: '1.5 Crore',
+				address: 'G9/4, street #93, Islamabad',
+				location: 'G9/4, Islamabad',
 			},
 			{
 				id: '3',
@@ -53,29 +53,6 @@ class Inventory extends React.Component {
 				location: 'H1/11, Islamabad',
 			}
 		]
-	}
-
-	showDropdown = (id) => {
-		this.setState({
-			dropDownId: id,
-			dotsDropDown: !this.state.dotsDropDown
-		})
-	}
-
-	selectInventory = (id) => {
-		const { selectInventory } = this.state
-		this.setState({
-			selectInventory: [...selectInventory,id]
-		})
-	}
-
-	unSelectInventory = (id) => {
-		const { selectInventory } = this.state
-		let index = selectInventory.indexOf(id)
-		selectInventory.splice(index, 1)
-		this.setState({
-			selectInventory: selectInventory,
-		})
 	}
 
 	render() {
@@ -107,14 +84,8 @@ class Inventory extends React.Component {
 					<FlatList
 						data={this.staticData}
 						renderItem={({ item }) => (
-							<InventoryTile
-								showDropdown={this.showDropdown}
-								dotsDropDown={this.state.dotsDropDown}
-								selectInventory={this.selectInventory}
-								selectedInventory={selectInventory}
+							<LeadTile
 								data={item}
-								dropDownId={dropDownId}
-								unSelectInventory={this.unSelectInventory}
 							/>
 						)}
 					/>
@@ -131,4 +102,4 @@ mapStateToProps = (store) => {
 	}
 }
 
-export default connect(mapStateToProps)(Inventory)
+export default connect(mapStateToProps)(Lead)

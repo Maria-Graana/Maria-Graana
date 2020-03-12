@@ -1,14 +1,11 @@
 import React, {Component} from 'react';
-import { Text, View, Form, AsyncStorage, ScrollView, KeyboardAvoidingView, Button, Alert, TextInput , Image} from 'react-native';
+import { Text, View, KeyboardAvoidingView, Image} from 'react-native';
 import styles from './style';
 import { LinearGradient } from 'expo-linear-gradient';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import TouchableButton  from '../../components/TouchableButton/index';
 import {connect} from 'react-redux';
 import { setuser } from '../../actions/user';
-import store from '../../store';
-import { Item, Input, Icon } from 'native-base';
-import * as RootNavigation from '../..//navigation/RootNavigation.js';
+import { Item, Input } from 'native-base';
 
 class Login extends Component {
 
@@ -61,12 +58,7 @@ class Login extends Component {
             email: 'sharjeel@agency21.com.pk',
             password: '1234'
         }
-        let res= this.props.dispatch(setuser(creds))
-        if (res) {
-            this.props.navigation.navigate('Landing');
-        } else {
-            console.log('Error signing in user')
-        }
+        this.props.dispatch(setuser(creds))
     }
     
     render() {

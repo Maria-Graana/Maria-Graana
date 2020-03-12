@@ -5,6 +5,7 @@ export default styles = StyleSheet.create({
   tileMainWrap: {
     borderWidth: 1,
     borderColor: '#ddd',
+    backgroundColor: '#fff',
     padding: 15,
     borderRadius: 5,
     position: 'relative',
@@ -76,5 +77,8 @@ export default styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+  },
+  selectedInventory: {
+    borderColor: '#333',
   },
 });

@@ -4,14 +4,17 @@ export default AppStyles = {
         minHeight: '100%',
         paddingRight: 15,
         paddingLeft: 15,
-        backgroundColor: '#fff'
     },
     colors: {
         background: '#f4f9fd',
         font: '#434e5a',
         primary: '#484848',
-        iconColor: '#fff',
-        gradientColor: ['#2f2f2f', '#444']
+        iconColor:'#fff',
+        gradientColor: ['#2f2f2f','#444'],
+        primaryColor: '0f73ee',
+        textColor: '#1d1d26',
+        subTextColor: '#a8a8aa',
+        backgroundColor: '#e7ecf0'
     },
     mb1: {
         flex: 1

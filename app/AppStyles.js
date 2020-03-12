@@ -10,9 +10,9 @@ export default AppStyles = {
         background: '#f4f9fd',
         font: '#434e5a',
         primary: '#484848',
-        iconColor:'#fff',
-        gradientColor: ['#2f2f2f','#444'],
-        primaryColor: '0f73ee',
+        iconColor: '#fff',
+        gradientColor: ['#2f2f2f', '#444'],
+        primaryColor: '#0f73ee',
         textColor: '#1d1d26',
         subTextColor: '#a8a8aa',
         backgroundColor: '#e7ecf0'
@@ -47,7 +47,7 @@ export default AppStyles = {
     lightColor: {
         color: '#333',
     },
-    whiteColor:{
+    whiteColor: {
         color: '#fff',
     },
 }

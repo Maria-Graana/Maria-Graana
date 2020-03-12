@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { StackActions } from '@react-navigation/native';
 import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
@@ -8,6 +9,7 @@ import { Fab } from 'native-base';
 import data from '../../StaticData';
 import _ from 'underscore';
 import moment from 'moment';
+import AppStyles from '../../AppStyles'
 import styles from './styles'
 
 const _format = 'YYYY-MM-DD';
@@ -164,7 +166,13 @@ class Diary extends React.Component {
   }
 
   goToDiaryForm = () => {
-    this.props.navigation.navigate('AddDiary', { 'agentId': this.state.agentId, 'update': false })
+    const { navigation } = this.props;
+    navigation.dispatch(
+      StackActions.replace('AddDiary', {
+        agentId: this.state.agentId,
+        update: false
+      })
+    );
   }
 
   updateDiary = (data) => {
@@ -227,10 +235,10 @@ class Diary extends React.Component {
         <Fab
           active='true'
           containerStyle={{ zIndex: 20 }}
-          style={{ backgroundColor: '#484848' }}
+          style={{ backgroundColor: AppStyles.colors.primaryColor }}
           position="bottomRight"
-          //onPress={this.goToDiaryForm}
-          >
+          onPress={this.goToDiaryForm}
+        >
           <Ionicons name="md-add" color="#ffffff" />
         </Fab>
         <Text style={styles.heading}> Diary </Text>

@@ -7,14 +7,25 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { connect } from 'react-redux';
 import { checkToken } from './app/actions/user';
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
 
 
 export default class App extends React.Component {
-	constructor (props) {
-        super(props)
+	constructor(props) {
+		super(props)
 	}
 
-	render () {
+	async componentDidMount() {
+		await Font.loadAsync({
+			Roboto: require('native-base/Fonts/Roboto.ttf'),
+			Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+			...Ionicons.font,
+		});
+		this.setState({ isReady: true });
+	}
+
+	render() {
 		return (
 			<Provider store={store}>
 				<PersistGate loading={null} persistor={persistor}>

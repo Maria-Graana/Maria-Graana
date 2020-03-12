@@ -10,6 +10,7 @@ export default styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 15,
     minHeight: 20,
+    backgroundColor: '#fff',
   },
   borderRightFilter: {
     borderRightWidth: 1,

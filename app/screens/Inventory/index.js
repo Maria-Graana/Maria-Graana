@@ -14,16 +14,62 @@ class Inventory extends React.Component {
 		this.state = {
 			language: '',
 			dotsDropDown: false,
+			dropDownId: '',
+			selectInventory: '',
+
 		}
+
+		this.staticData = [
+			{
+				id: '1',
+				propertyName: '10 marla house for sale',
+				action: 'Token',
+				price: '10 Crore',
+				address: 'G/11, Islamabad',
+				location: 'G/11, Islamabad',
+			},
+			{
+				id: '2',
+				propertyName: '40 marla house for sale',
+				action: 'Deal Done',
+				price: '20 Crore',
+				address: 'i8/4, Islamabad',
+				location: 'i8/4, Islamabad',
+			},
+			{
+				id: '3',
+				propertyName: '16 marla house for sale',
+				action: 'Deal Done',
+				price: '13 Crore',
+				address: 'G2/11, Islamabad',
+				location: 'G2/11, Islamabad',
+			},
+			{
+				id: '4',
+				propertyName: '5 marla house for sale',
+				action: 'Token',
+				price: '2 Crore',
+				address: 'H1/11, Islamabad',
+				location: 'H1/11, Islamabad',
+			}
+		]
 	}
 
-  showDropdown = () => {
-    this.setState({
-      dotsDropDown: !this.state.dotsDropDown
-    })
-  }
+	showDropdown = (id) => {
+		this.setState({
+			dropDownId: id,
+			dotsDropDown: !this.state.dotsDropDown
+		})
+	}
+
+	selectInventory = (id) => {
+		this.setState({
+			selectInventory: id
+		})
+	}
 
 	render() {
+		const { selectInventory, dropDownId } = this.state
 		return (
 			<View style={AppStyles.container}>
 
@@ -49,7 +95,20 @@ class Inventory extends React.Component {
 				{/* ***** Main Tile Wrap */}
 				<View style={styles.mainInventoryTile}>
 					<ScrollView>
-						<InventoryTile showDropdown={this.showDropdown} dotsDropDown={this.state.dotsDropDown}/>
+						{
+							this.staticData.map((item, index) => {
+								return (
+									<InventoryTile
+										showDropdown={this.showDropdown}
+										dotsDropDown={this.state.dotsDropDown}
+										selectInventory={this.selectInventory}
+										selectedInventory={selectInventory}
+										data={item}
+										dropDownId={dropDownId}
+									/>
+								)
+							})
+						}
 					</ScrollView>
 				</View>
 

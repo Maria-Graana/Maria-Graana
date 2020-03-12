@@ -3,7 +3,7 @@ import styles from './style'
 import { View, ScrollView, TextInput, FlatList } from 'react-native';
 import { Picker } from 'native-base';
 import { connect } from 'react-redux';
-import InventoryTile from '../../components/InventoryTile'
+import LeadTile from '../../components/LeadTile'
 import AppStyles from '../../AppStyles'
 import { Feather } from '@expo/vector-icons';
 
@@ -55,29 +55,6 @@ class Lead extends React.Component {
 		]
 	}
 
-	showDropdown = (id) => {
-		this.setState({
-			dropDownId: id,
-			dotsDropDown: !this.state.dotsDropDown
-		})
-	}
-
-	selectInventory = (id) => {
-		const { selectInventory } = this.state
-		this.setState({
-			selectInventory: [...selectInventory,id]
-		})
-	}
-
-	unSelectInventory = (id) => {
-		const { selectInventory } = this.state
-		let index = selectInventory.indexOf(id)
-		selectInventory.splice(index, 1)
-		this.setState({
-			selectInventory: selectInventory,
-		})
-	}
-
 	render() {
 		const { selectInventory, dropDownId } = this.state
 		return (
@@ -107,14 +84,8 @@ class Lead extends React.Component {
 					<FlatList
 						data={this.staticData}
 						renderItem={({ item }) => (
-							<InventoryTile
-								showDropdown={this.showDropdown}
-								dotsDropDown={this.state.dotsDropDown}
-								selectInventory={this.selectInventory}
-								selectedInventory={selectInventory}
+							<LeadTile
 								data={item}
-								dropDownId={dropDownId}
-								unSelectInventory={this.unSelectInventory}
 							/>
 						)}
 					/>

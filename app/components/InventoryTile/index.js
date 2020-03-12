@@ -13,6 +13,7 @@ class InventoryTile extends React.Component {
 
 
   render() {
+
     const { showDropdown, dotsDropDown, selectInventory, data, selectedInventory, dropDownId, unSelectInventory } = this.props
     return (
       <TouchableOpacity onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>

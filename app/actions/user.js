@@ -3,6 +3,7 @@ import {AsyncStorage} from 'react-native';
 import config from '../config';
 import axios from 'axios';
 import { SplashScreen } from 'expo';
+import { CommonActions } from '@react-navigation/native';
 
 storeItem = async (key, item) =>  {
     try {
@@ -71,6 +72,7 @@ export function setuser(data){
             dispatch({
                 type: types.SET_TOKEN_SUCCESS
             })
+
             return response.data
         })
         .catch((error) => {

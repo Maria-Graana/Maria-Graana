@@ -1,5 +1,5 @@
 export default StaticData = {
-    rows: [
+    diaryRows: [
         {
             createdAt: "2020-03-10T09:31:01.000Z",
             taskType: "Meeting",

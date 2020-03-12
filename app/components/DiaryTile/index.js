@@ -8,6 +8,7 @@ import {
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import ListItem from "../ListItem/index";
 import styles from './style';
+import AppStyles from '../../AppStyles'
 
 
 class DiaryTile extends React.Component {
@@ -39,7 +40,7 @@ class DiaryTile extends React.Component {
             data
         } = this.props;
         return (
-            <View>
+            <View style={AppStyles.mb1}>
                 <FlatList
                     data={data}
                     renderItem={(item, index) => (
@@ -54,7 +55,7 @@ class DiaryTile extends React.Component {
                                         {
                                             item.item.diary.map((val, index) => {
                                                 return (
-                                                    <View styles={{ flex: 1 }} key={index}>
+                                                    <View styles={AppStyles.mb1} key={index}>
                                                         <TouchableWithoutFeedback onPress={() => { this.showPopup(val) }}>
                                                             <View style={[styles.tileWrap, { borderLeftColor: val.statusColor }]} key={index}>
                                                                 <View style={styles.innerTile}>

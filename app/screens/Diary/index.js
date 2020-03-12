@@ -9,6 +9,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import styles from './styles'
 import { TabHeading } from 'native-base';
+import { connect } from 'react-redux';
 
 const _format = 'YYYY-MM-DD';
 const _today = moment(new Date().dateString).format(_format);
@@ -22,13 +23,21 @@ class Diary extends React.Component {
       startDate: moment(_today).format(_format),
       todayDate: moment(new Date()).format('L'),
       newDiaryData: [],
+      diaryData: [],
       loading: false,
     }
   }
 
   componentDidMount() {
-    this.diaryMain();
+    const { navigation } = this.props;
+    this._unsubscribe = navigation.addListener('focus', () => {
+      this.diaryMain();
+    });
     this.listData();
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
   }
 
   _toggleShow = () => {
@@ -68,7 +77,7 @@ class Diary extends React.Component {
     //  .then((res) => {
     this.setState({
       loading: true,
-      newDiaryData: data.rows,
+      diaryData: data.diaryRows,
     }, () => {
       this.showTime()
     })
@@ -101,11 +110,10 @@ class Diary extends React.Component {
     }
   }
 
+
   showTime = () => {
-    let groupedData = null;
-    let calendarData = null;
-    if (this.state.newDiaryData.length) {
-      groupedData = this.state.newDiaryData.map((item, index) => {
+    if (this.state.diaryData.length) {
+      groupedData = this.state.diaryData.map((item, index) => {
         item.statusColor = this.checkStatus(item)
         if (item.hour) {
           item.hour = item.hour.replace(/(\d{2})/g, '$1 ').replace(/(^\s+|\s+$)/, '')
@@ -114,7 +122,7 @@ class Diary extends React.Component {
           return item
         }
       })
-      groupedData = _.groupBy(this.state.newDiaryData, 'hour')
+      groupedData = _.groupBy(this.state.diaryData, 'hour')
       calendarData = this.state.calendarList.map((item, index) => {
         if (groupedData[item]) {
           return {
@@ -152,7 +160,7 @@ class Diary extends React.Component {
     this.setState({
       startDate: newDate
     }, () => {
-      // this.diaryMain()
+      //this.diaryMain()
     })
   }
 
@@ -223,17 +231,26 @@ class Diary extends React.Component {
             <EvilIcons name='calendar' size={styles.calenderIcon.fontSize} color={styles.calenderIcon.color} />
           </View>
         </TouchableOpacity>
-        <CalendarComponent startDate={startDate} showCalendar={showCalendar} updateDay={this.updateDay} />
-        <ScrollView>
-          {
-            newDiaryData && newDiaryData.length ?
-              <DiaryTile data={newDiaryData} showPopup={this.showPopup} />
-              : <Loader loading={loading} />
-          }
-        </ScrollView>
+        {
+          showCalendar ?
+            <CalendarComponent startDate={startDate} updateDay={this.updateDay} />
+            : null
+        }
+        {
+          newDiaryData && newDiaryData.length ?
+            <DiaryTile data={newDiaryData} showPopup={this.showPopup} />
+            : <Loader loading={loading} />
+        }
       </View>
     )
   }
 }
 
-export default Diary;
+
+mapStateToProps = (store) => {
+	return {
+		user: store.user.user
+	}
+}
+
+export default connect(mapStateToProps)(Diary)

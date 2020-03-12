@@ -13,10 +13,10 @@ class InventoryTile extends React.Component {
 
 
   render() {
-    const { showDropdown, dotsDropDown, selectInventory, data, selectedInventory, dropDownId } = this.props
+    const { showDropdown, dotsDropDown, selectInventory, data, selectedInventory, dropDownId, unSelectInventory } = this.props
     return (
-      <TouchableOpacity onLongPress={() => selectInventory(data.id)}>
-        <View style={[styles.tileMainWrap, selectedInventory == data.id && styles.selectedInventory]}>
+      <TouchableOpacity onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
+        <View style={[styles.tileMainWrap, selectedInventory.includes(data.id) && styles.selectedInventory]}>
           <View style={styles.topIcons}>
             <View>
               <Text style={[styles.tokenLabel, AppStyles.mrFive, AppStyles.whiteColor]}>

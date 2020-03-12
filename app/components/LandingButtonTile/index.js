@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './style'
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { connect } from 'react-redux';
+import Badge from '../../components/badge'
 
 class LandingButtonTile extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ class LandingButtonTile extends React.Component {
         <TouchableOpacity style={styles.mainbutton} onPress={() => navigateFunction(pagePath)}>
           <Image source={buttonImg} style={styles.buttonImg} />
           <Text style={styles.buttonText}>{label}</Text>
-          <Text style={styles.badegesWrap}>{badges}</Text>
+          <Badge badges={badges}/>
         </TouchableOpacity>
       </View>
     )

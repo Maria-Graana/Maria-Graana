@@ -1,5 +1,5 @@
 import React from 'react';
-import Landing from '../screens/landing/index';
+import Landing from '../screens/Landing/index';
 import { createStackNavigator } from '@react-navigation/stack';
 import Diary from '../screens/Diary/index';
 import Login from '../screens/Login/index';

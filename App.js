@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { checkToken } from './app/actions/user';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
+import { SplashScreen } from 'expo';
 
 
 export default class App extends React.Component {
@@ -17,9 +18,12 @@ export default class App extends React.Component {
 	}
 
 	async componentDidMount() {
+		SplashScreen.preventAutoHide();
 		await Font.loadAsync({
 			Roboto: require('native-base/Fonts/Roboto.ttf'),
 			Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+			OpenSans_regular: require('./assets/fonts/OpenSans-Regular.ttf'),
+			OpenSans_bold: require('./assets/fonts/OpenSans-Bold.ttf'),
 			...Ionicons.font,
 		});
 		this.setState({ isReady: true });

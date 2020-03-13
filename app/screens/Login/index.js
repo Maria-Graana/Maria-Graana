@@ -6,6 +6,7 @@ import TouchableButton  from '../../components/TouchableButton/index';
 import {connect} from 'react-redux';
 import { setuser } from '../../actions/user';
 import { Item, Input } from 'native-base';
+import AppStyles from '../../AppStyles';
 
 class Login extends Component {
 
@@ -54,9 +55,10 @@ class Login extends Component {
     }
 
     submitForm= () => {
-        creds= {
-            email: 'sharjeel@agency21.com.pk',
-            password: '1234'
+        const {email, password}= this.state
+        let creds= {
+            email: email,
+            password: password,
         }
         this.props.dispatch(setuser(creds))
     }
@@ -78,60 +80,62 @@ class Login extends Component {
             checkLoginText = <Text style= {styles.checkLogin}> Incorrect Info Please Check! </Text>
         
         return (
-            <LinearGradient style={{ flex: 1}} colors={['#2f2f2f','#444']}>
+            <View style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: 20}}>
                 <KeyboardAvoidingView style={{ flex: 1}} behavior="padding"  enabled>
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
                         <Image
                             style= {styles.logo}
-                            source={require('../../../assets/images/loginCheck.png')}
+                            source={require('../../../assets/img/login.png')}
                         />
                     </View>
                     {checkLoginText}
-                    <View style={{ flex: 1}}>
-                        <View style={{flexDirection: "row", justifyContent: 'center', alignItems: "center",marginVertical : 20, marginHorizontal : 35}}>
-                                <Image
-                                    style={styles.profileImage}
-                                    source={require('../../../assets/images/profile.png')}
-                                />
+                    <View style={{ flex: 1, marginBottom: 10}}>
+                        <View style={{paddingLeft: 2}}>
+                            <Text style= {{color: AppStyles.colors.subTextColor, fontSize: 12}}>
+                                USERNAME
+                            </Text>
+                        </View>
+                        <View style={{flexDirection: "row", justifyContent: 'center', alignItems: "center", marginBottom: 15}}>
                                 <Item>
                                     <Input 
-                                        placeholder='Email'
+                                        // placeholder='USERNAME'
                                         keyboardType= 'email-address'
                                         textContentType= 'emailAddress'
                                         autoCompleteType= 'email'
-                                        style={{ color: 'white' }}
-                                        placeholderTextColor= 'white'
+                                        style={{ color: 'black', fontSize: 14, minHeight: 40 }}
+                                        placeholderTextColor= {AppStyles.colors.subTextColor}
                                         onChangeText = {this.onEmailChangeText}
                                     />
                                 </Item>
                         </View>
                         {emailText}
-                        <View style= {{flexDirection: "row", justifyContent: "center", alignItems: "center",marginVertical : 20, marginHorizontal : 35}}>
-                            <Image
-                                style={styles.lockImage}
-                                source={require('../../../assets/images/lock.png')}
-                            />
+                        <View style={{marginTop: 5, paddingLeft: 2}}>
+                            <Text style= {{color: AppStyles.colors.subTextColor, fontSize: 12}}>
+                                PASSWORD
+                            </Text>
+                        </View>
+                        <View style= {{flexDirection: "row", justifyContent: "center", alignItems: "center", marginBottom: 15}}>
                             <Item>
                                 <Input 
                                 secureTextEntry={true}
-                                placeholder='Password'
-                                style={{ color: 'white', borderBottomEndRadius: 50 }}
-                                placeholderTextColor= 'white'
+                                // placeholder='Password'
+                                style={{ color: 'black', borderBottomEndRadius: 50, fontSize: 14, }}
+                                placeholderTextColor= {AppStyles.colors.subTextColor}
                                 onChangeText={this.onPasswordChangeText}
-                                />
-                                <Image
-                                    style={styles.infoImage}
-                                    source={require('../../../assets/images/info.png')}
-                                />                            
+                                />                         
                             </Item>
                         </View>
                         {passwordText}
-                        <View style= {{flex: 1}}>
-                            <TouchableButton style={{marginTop : 30}} label= 'Login' onPress={this.submitForm} loading= {this.props.loading}/>
+                        <View style= {{flex: 1, marginVertical: 10}}>
+                            <TouchableButton 
+                            style={{marginTop : 30}} 
+                            label= 'Sign In' 
+                            onPress={this.submitForm} loading= {this.props.loading}
+                            />
                         </View>
                     </View>
                 </KeyboardAvoidingView>
-            </LinearGradient>
+            </View>
         );
     }
     static getDerivedStateFromProps(nextProps, prevState){

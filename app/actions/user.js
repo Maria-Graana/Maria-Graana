@@ -55,6 +55,7 @@ export function setuser(data){
             type: types.USER_LOADING
         })
         axios.post(`${config.apiPath}/api/user/login`, data).then((response) => {
+            console.log('<<<<<<<<<< User >>>>>>>>>>>>>>')
             console.log(response.data)
             storeItem('token', response.data.token)
             setAuthorizationToken(response.data.token)
@@ -67,13 +68,8 @@ export function setuser(data){
                 type: types.USER_LOADED
             })
             dispatch({
-                type: types.REMOVE_USER_ERROR
-            })
-            dispatch({
                 type: types.SET_TOKEN_SUCCESS
             })
-
-            return response.data
         })
         .catch((error) => {
             console.log(error)
@@ -104,14 +100,14 @@ export function checkToken(){
     return (dispatch, getsState) => {
         getItem('token').then((token) => {
             if (token) {
-            //     axios.get(`${config.apiPath}/api/user/me`, { headers: { "Authorization": `Bearer ${token}` } })
-            //     .then((response) => {
+                axios.get(`${config.apiPath}/api/user/me`, { headers: { "Authorization": `Bearer ${token}` } })
+                .then((response) => {
                     setAuthorizationToken(token)
                     setBaseUrl()
-                    // dispatch({
-                    //     type: types.SET_USER,
-                    //     payload: {...response.data},
-                    // })
+                    dispatch({
+                        type: types.SET_USER,
+                        payload: {...response.data},
+                    })
                     dispatch({
                         type: types.USER_LOADED
                     })
@@ -119,19 +115,21 @@ export function checkToken(){
                         type: types.SET_TOKEN_SUCCESS
                     })
                     SplashScreen.hide();
-                // })
-                // .catch((error) => {
-                //     console.log(error.message)
-                //     dispatch({
-                //         type: types.SET_USER_ERROR,
-                //         payload: error.response ? error.response.data : error.message,
-                //     })
-                // })                
+                })
+                .catch((error) => {
+                    SplashScreen.hide();
+                    console.log(error.message)
+                    dispatch({
+                        type: types.SET_TOKEN_ERROR,
+                        payload: error.response ? error.response.data : error.message,
+                    })
+                })                
             } else {
                 console.log('SET_TOKEN_ERROR')
                 dispatch({
                     type: types.SET_TOKEN_ERROR,
                 })
+                SplashScreen.hide();
             }
         })
     }   

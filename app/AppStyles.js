@@ -4,6 +4,7 @@ export default AppStyles = {
         minHeight: '100%',
         paddingRight: 15,
         paddingLeft: 15,
+        backgroundColor: '#e7ecf0'
     },
     colors: {
         background: '#f4f9fd',
@@ -16,11 +17,20 @@ export default AppStyles = {
         subTextColor: '#a8a8aa',
         backgroundColor: '#e7ecf0'
     },
+    flexDirectionRow: {
+        flexDirection: 'row'
+    },
+
+    fonts: {
+        defaultFont: 'OpenSans_regular', 
+        boldFont:'OpenSans_bold'
+    },
+
     mb1: {
         flex: 1
     },
-    noramlSize:{
-        fontSize:12,
+    noramlSize: {
+        fontSize: 12,
     },
     fontSize: {
         small: 10,

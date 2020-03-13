@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { StackActions } from '@react-navigation/native';
 import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
@@ -86,17 +86,17 @@ class Diary extends React.Component {
   }
 
   checkStatus = (val) => {
-    let statusColor = 'yellow'
     let taskDate = moment(val.date).format('L')
     let checkForCDate = taskDate == this.state.todayDate
-    if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
+    
+    if (val.status == 'In Progress' ) {
       return '#edb73f'
     }
-    else if (checkForCDate && val.status != 'completed') {
+    else if(val.status==='Open'){
+       return AppStyles.colors.primaryColor
+    }
+    else if ( val.status != 'completed') {
       return '#3d78f6'
-    }
-    else if (taskDate > this.state.todayDate) {
-      return '#edb73f'
     }
     else if (taskDate != this.state.todayDate && val.status != 'completed') {
       return 'red'
@@ -114,22 +114,23 @@ class Diary extends React.Component {
 
 
   showTime = () => {
-    if (this.state.diaryData.length) {
-      groupedData = this.state.diaryData.map((item, index) => {
+    const { diaryData, calendarList } = this.state;
+    if (diaryData.length) {
+      let groupedData = diaryData.map((item, index) => {
         item.statusColor = this.checkStatus(item)
         if (item.hour) {
-          item.hour = item.hour.replace(/(\d{2})/g, '$1 ').replace(/(^\s+|\s+$)/, '')
+          //item.hour = item.hour.replace(/(\d{2})/g, '$1 ').replace(/(^\s+|\s+$)/, '')
           return item;
         } else {
           return item
         }
       })
-      groupedData = _.groupBy(this.state.diaryData, 'hour')
-      calendarData = this.state.calendarList.map((item, index) => {
-        if (groupedData[item]) {
+      groupedData = _.groupBy(diaryData, 'hour')
+      let calendarData = calendarList.map((item, index) => {
+        if (groupedData[item.replace(/\s/g,'')]) {
           return {
             time: item,
-            diary: _.sortBy(groupedData[item], 'time')
+            diary: _.sortBy(groupedData[item.replace(/\s/g,'')], 'time')
           }
         } else {
           return {
@@ -142,8 +143,9 @@ class Diary extends React.Component {
         newDiaryData: calendarData,
         loading: false
       })
-    } else {
-      calendarData = this.state.calendarList.map((item, index) => {
+    }
+    else {
+      calendarData = calendarList.map((item, index) => {
         return {
           time: item,
           diary: []
@@ -160,7 +162,8 @@ class Diary extends React.Component {
     const { dateString } = day
     let newDate = moment(dateString).format(_format)
     this.setState({
-      startDate: newDate
+      startDate: newDate,
+      //showCalendar:false
     }, () => {
       //this.diaryMain()
     })
@@ -242,15 +245,25 @@ class Diary extends React.Component {
         >
           <Ionicons name="md-add" color="#ffffff" />
         </Fab>
-        <Text style={styles.heading}> Diary </Text>
-        <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
-          <View style={styles.calenderIconContainer}>
-            <EvilIcons name='calendar' size={styles.calenderIcon.fontSize} color={styles.calenderIcon.color} />
-          </View>
-        </TouchableOpacity>
+        {
+          !showCalendar ?
+            <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
+              <Ionicons style={{ position: 'absolute', right: 15, top: 15 }}
+                name="md-add" size={26}
+                color={AppStyles.colors.primaryColor} />
+              <View style={styles.calenderIconContainer}>
+                <Ionicons name='md-calendar' size={26} color={AppStyles.colors.primaryColor} />
+                <Text style={styles.calendarText}>Calendar</Text>
+              </View>
+              <View style={styles.underLine}
+              />
+            </TouchableOpacity>
+            : null
+        }
+
         {
           showCalendar ?
-            <CalendarComponent startDate={startDate} updateDay={this.updateDay} />
+            <CalendarComponent startDate={startDate} updateDay={this.updateDay} onPress={this._toggleShow} />
             : null
         }
         {
@@ -265,9 +278,9 @@ class Diary extends React.Component {
 
 
 mapStateToProps = (store) => {
-	return {
-		user: store.user.user
-	}
+  return {
+    user: store.user.user
+  }
 }
 
 export default connect(mapStateToProps)(Diary)

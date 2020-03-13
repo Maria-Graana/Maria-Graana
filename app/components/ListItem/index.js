@@ -23,7 +23,8 @@ const styles = StyleSheet.create({
     listItem: {
         width: "100%",
         marginVertical: 10,
-        padding: 10,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
         flexDirection: "row",
         alignItems: "center"
     },

@@ -248,7 +248,7 @@ class Diary extends React.Component {
         {
           !showCalendar ?
             <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
-              <Ionicons style={{ position: 'absolute', right: 15, top: 15 }}
+              <Ionicons style={{ position: 'absolute', right: 20, top: 15 }}
                 name="md-add" size={26}
                 color={AppStyles.colors.primaryColor} />
               <View style={styles.calenderIconContainer}>

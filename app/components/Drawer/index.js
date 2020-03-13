@@ -36,11 +36,11 @@ class CustomDrawerContent extends React.Component {
                 <ScrollView  style={[styles.scrollContainer, {width: '100%'}]}>
                     <View style={AppStyles.flexDirectionRow}>
                         <View>
-                            <UserAvatar  size="50" name={`${user.agent}`} textColor= 'black' color="#ffffff"/>
+                            <UserAvatar  size="50" name={`${user.firstName}`} textColor= 'black' color="#ffffff"/>
                         </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.nameText}>
-                               {user.agent}
+                               {user.firstName} {user.lastName} 
                             </Text>
                             <Text style={styles.emailText}>
                                 agent@arms.com

@@ -4,7 +4,8 @@ import AppStyles from '../../AppStyles'
 export default styles = StyleSheet.create({
     container: {
         backgroundColor: AppStyles.colors.backgroundColor,
-        padding: 10,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
         // flexDirection : 'row', 
         marginBottom: 10,
         // flex: 1
@@ -49,22 +50,22 @@ export default styles = StyleSheet.create({
         color: AppStyles.colors.textColor
     },
 
-    lead:{
-        marginTop:6,
-        marginLeft:3,
-        width:'25%',
+    lead: {
+        marginTop: 6,
+        marginLeft: 3,
+        width: '25%',
         padding: 6,
-        backgroundColor:AppStyles.colors.backgroundColor,
-        borderRadius:12,
+        backgroundColor: AppStyles.colors.backgroundColor,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: AppStyles.colors.textColor
-      },
-      leadText:{
+    },
+    leadText: {
         fontSize: 12,
         fontFamily: AppStyles.fonts.boldFont,
-          color: AppStyles.colors.textColor,
-          textAlign:'center',
-      },
+        color: AppStyles.colors.textColor,
+        textAlign: 'center',
+    },
     statusText: {
         fontFamily: AppStyles.fonts.boldFont,
         width: '25%',

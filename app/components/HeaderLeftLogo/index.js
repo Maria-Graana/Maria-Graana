@@ -14,7 +14,7 @@ export default class HeaderLeftLogo extends React.Component {
                 {
                     leftBool ?
                     <View style={styles.viewWrap}>
-                        <TouchableOpacity onPress={() => navigation.pop()}>
+                        <TouchableOpacity onPress={() => navigation.goBack()}>
                             <Ionicons name="ios-arrow-round-back"  color="#484848" size={40} style = {styles.iconWrap} />
                         </TouchableOpacity>
                     </View>

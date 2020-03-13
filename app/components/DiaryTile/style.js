@@ -1,59 +1,88 @@
 import { StyleSheet } from 'react-native';
+import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
     container: {
-        backgroundColor : '#F8F8F8', 
-        padding : 10, 
+        backgroundColor: AppStyles.colors.backgroundColor,
+        padding: 10,
         // flexDirection : 'row', 
-        marginBottom : 10, 
-        marginRight :10,
+        marginBottom: 10,
         // flex: 1
     },
     timeWrap: {
-        padding: 10,
+        padding: 5,
         paddingLeft: 0,
-        // flex: 1
     },
     timeText: {
-        color : '#49BE58'
+        fontFamily: AppStyles.fonts.boldFont,
     },
     tileWrap: {
-        flex : 2, 
+        flex: 2,
         marginVertical: 5,
-        backgroundColor: '#ffffff', 
-        padding: 10, 
-        borderLeftWidth : 3,
-        borderLeftColor: '#ECB73F'
+        elevation: 10,
+        backgroundColor: '#ffffff',
+        padding: 10,
+        borderRadius: 4,
+        borderLeftWidth: 3,
+        borderLeftColor: AppStyles.colors.primaryColor
     },
     innerTile: {
-        flexDirection : 'row', 
-        marginBottom : 10, 
-        alignItems : 'center'
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     meetingWrap: {
-        flex : 1
+        flex: 1
     },
     midView: {
-        backgroundColor:'#ECB73F', 
-        height : 10,
-        width : 10, 
+        backgroundColor: '#ECB73F',
+        height: 10,
+        width: 10,
         borderRadius: 5
     },
     innerView: {
-        flexDirection:'row', 
-        alignItems : 'center'
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     showTime: {
-        paddingLeft : 5, 
-        color : '#6E6E6E'
+        fontFamily: AppStyles.fonts.defaultFont,
+        paddingLeft: 5,
+        color: AppStyles.colors.textColor
+    },
+
+    lead:{
+        marginTop:6,
+        marginLeft:3,
+        width:'25%',
+        padding: 6,
+        backgroundColor:AppStyles.colors.backgroundColor,
+        borderRadius:12,
+        borderWidth: 1,
+        borderColor: AppStyles.colors.textColor
+      },
+      leadText:{
+        fontSize: 12,
+        fontFamily: AppStyles.fonts.boldFont,
+          color: AppStyles.colors.textColor,
+          textAlign:'center',
+      },
+    statusText: {
+        fontFamily: AppStyles.fonts.boldFont,
+        width: '25%',
+        textAlign: 'center',
+        fontSize: 12,
+        padding: 3,
+        color: AppStyles.colors.primaryColor,
+        borderRadius: 12,
+        borderColor: AppStyles.colors.primaryColor,
+        borderWidth: 0.5
     },
     spaceView: {
-        width : 12
+        width: 12
     },
     meetingText: {
-        paddingLeft : 5, 
-        color : '#6E6E6E',
-        // flexWrap: 'wrap',
-        // flex: 1
+        fontFamily: AppStyles.fonts.defaultFont,
+        paddingHorizontal: 5,
+        paddingVertical: 3,
+        color: AppStyles.colors.textColor,
     }
 });

@@ -10,6 +10,7 @@ import ListItem from "../ListItem/index";
 import styles from './style';
 import AppStyles from '../../AppStyles'
 import moment from 'moment';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 class DiaryTile extends React.Component {
@@ -60,17 +61,21 @@ class DiaryTile extends React.Component {
                                                         <TouchableWithoutFeedback onPress={() => { this.showPopup(val) }}>
                                                             <View style={[styles.tileWrap, { borderLeftColor: val.statusColor }]} key={index}>
                                                                 <View style={styles.innerTile}>
-                                                                    <View style={styles.meetingWrap}>
-                                                                        <Text style={styles.meetingText}>{val.taskType}</Text>
-                                                                    </View>
-                                                                    <View style={[styles.midView, { backgroundColor: val.statusColor }]}></View>
+                                                                    <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - {moment.utc(val.end).format("hh:mm a")} </Text>
+                                                                    <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{val.status}</Text>
                                                                 </View>
-                                                                <View style={styles.innerView}>
-                                                                    <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - </Text>
-                                                                    <Text style={[styles.showTime, { paddingLeft: 0 }]}>{moment.utc(val.end).format("hh:mm a")} </Text>
-                                                                    <View style={styles.spaceView}></View>
-                                                                    <Text style={styles.meetingText}>{val.subject}</Text>
-                                                                </View>
+                                                                <Text style={styles.meetingText}>{val.subject}</Text>
+                                                                <Text style={styles.meetingText}>{val.taskType}</Text>
+                                                                {
+                                                                    val.leadLink === true ?
+                                                                        <TouchableOpacity   style={styles.lead}  >
+                                                                            <Text style={styles.leadText} >
+                                                                                Lead Link
+                                                                             </Text>
+                                                                        </TouchableOpacity>
+                                                                        :
+                                                                        null
+                                                                }
                                                             </View>
                                                         </TouchableWithoutFeedback>
                                                     </View>

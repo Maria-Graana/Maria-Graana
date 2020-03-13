@@ -1,15 +1,16 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import AppStyles from '../../AppStyles';
 
 class listItem extends React.Component {
-    constructor (props) {
+    constructor(props) {
         super(props)
     }
     render() {
         return (
             <TouchableOpacity activeOpacity={.7}>
                 <View style={styles.listItem}>
-                    <Text>{this.props.placeName}</Text>
+                    <Text style={styles.textFont}>{this.props.placeName}</Text>
                 </View>
                 <View style={styles.underLine}
                 />
@@ -26,8 +27,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center"
     },
+    textFont: {
+        fontFamily: AppStyles.fonts.defaultFont
+    },
     underLine: {
-        height: 1, 
+        height: 1,
         width: "100%",
         backgroundColor: "#f5f5f6",
     }

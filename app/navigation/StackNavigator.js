@@ -5,6 +5,7 @@ import Diary from '../screens/Diary/index';
 import Login from '../screens/Login/index';
 import Inventory from '../screens/Inventory/index';
 import AddDiary from '../screens/AddDiary';
+import moment from 'moment'
 import Lead from '../screens/Lead/index';
 import HeaderRight from '../components/HeaderRight/index';
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index';
@@ -12,6 +13,9 @@ import AddInventory from '../screens/AddInventory/index'
 import AppStyles from '../AppStyles';
 
 const Stack = createStackNavigator();
+
+const _format = 'MMMM YYYY';
+const _today = moment(new Date().dateString).format(_format);
 
 const headerStyle = {
     headerStyle: {
@@ -37,6 +41,7 @@ function MainStack() {
             />
             <Stack.Screen name='Diary' component={Diary}
                 options={({ navigation, route }) => ({
+                    title: _today,
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

@@ -9,7 +9,6 @@ import { connect } from 'react-redux';
 import { createStackNavigator } from '@react-navigation/stack';
 import { checkToken } from '../actions/user';
 import { navigationRef } from './RootNavigation';
-import { SplashScreen } from 'expo';
 
 const Drawer = createDrawerNavigator();
 
@@ -33,12 +32,11 @@ class RootStack extends React.Component {
     }
     
     componentDidMount() {
-        SplashScreen.preventAutoHide();
         this.props.dispatch(checkToken())
     }
     
     render () {
-        const {user, token, store, loading}= this.props
+        const {user, token, loading}= this.props
         return (
             <SafeAreaProvider>
                 <NavigationContainer ref={navigationRef}>
@@ -67,7 +65,6 @@ mapStateToProps = (store) => {
     return {
         user: store.user.user,
         token: store.user.token,
-        store: store,
         loading: store.user.loading
     }
 }

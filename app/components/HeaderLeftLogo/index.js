@@ -30,14 +30,14 @@ export default class HeaderLeftLogo extends React.Component {
 
 const styles = StyleSheet.create({
     viewWrap: {
-        paddingLeft: 5, 
+        paddingLeft: 15, 
         width: 40
     },
     iconWrap: {
         paddingLeft: 5
     },
     imageViewWrap: {
-        paddingLeft: 10, 
+        paddingLeft: 15, 
         width: 10, 
         flexDirection: 'row'
     },

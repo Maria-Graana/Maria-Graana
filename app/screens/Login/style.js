@@ -37,7 +37,7 @@ export default styles = StyleSheet.create({
     },
     logo: {
         // flex: 1,
-        width: "40%",
+        width: "100%",
         resizeMode: "contain",
         // alignSelf: "center"
     },
@@ -48,7 +48,7 @@ export default styles = StyleSheet.create({
     },
     checkLogin: {
         textAlign: "center",
-        color: "white",
+        color: "black",
         fontSize: 17,
         opacity: 1
     },
@@ -92,6 +92,7 @@ export default styles = StyleSheet.create({
     },
     requiredTextColor: {
         color: "red",
-        paddingLeft : 50
+        marginBottom: 5
+        // paddingLeft : 
     }
 });

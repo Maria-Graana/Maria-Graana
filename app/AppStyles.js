@@ -20,11 +20,17 @@ export default AppStyles = {
     flexDirectionRow: {
         flexDirection: 'row'
     },
+
+    fonts: {
+        defaultFont: 'OpenSans_regular', 
+        boldFont:'OpenSans_bold'
+    },
+
     mb1: {
         flex: 1
     },
-    noramlSize:{
-        fontSize:12,
+    noramlSize: {
+        fontSize: 12,
     },
     fontSize: {
         small: 10,

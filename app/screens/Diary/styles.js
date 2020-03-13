@@ -15,12 +15,10 @@ export default StyleSheet.create({
         padding: AppStyles.standardPadding.padding
     },
     calenderIconContainer: {
+        flexDirection:'row',
+        paddingVertical:5,
         alignSelf: 'center',
-        height: 70,
-        width: 70,
-        backgroundColor: AppStyles.colors.primaryColor,
-        padding: AppStyles.standardPadding.padding,
-        borderRadius: 35,
+        width: '100%',
         marginVertical: 10,
         justifyContent: 'center',
         alignItems: 'center'
@@ -28,5 +26,15 @@ export default StyleSheet.create({
     calenderIcon: {
         fontSize: 40,
         color: AppStyles.colors.iconColor
+    },
+    calendarText:{
+        paddingLeft: 10, 
+        fontFamily: AppStyles.fonts.defaultFont,
+        color: AppStyles.colors.textColor
+    },
+    underLine: {
+        height: 1, 
+        width: "100%",
+        backgroundColor: "#f5f5f6",
     }
 })

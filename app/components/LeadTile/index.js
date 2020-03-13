@@ -1,24 +1,65 @@
 import React from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-class LeadTile extends React.Component {
+import fire from '../../../assets/images/fire.png'
+import phone from '../../../assets/images/phone.png'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+class InventoryTile extends React.Component {
   constructor(props) {
     super(props)
   }
 
-  render() {
-    const { data } = this.props
-    return (
-      <TouchableOpacity>
-        <View style={styles.tileMainWrap}>
-          <View style={[styles.contentMainWrap]}>
 
+
+  render() {
+
+    const { showDropdown, dotsDropDown, selectInventory, data, selectedInventory, dropDownId, unSelectInventory } = this.props
+    return (
+      <TouchableOpacity onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
+        <View style={[styles.tileMainWrap, selectedInventory.includes(data.id) && styles.selectedInventory]}>
+          <View style={styles.topIcons}>
+            <View>
+              <Text style={[styles.tokenLabel, AppStyles.mrFive, AppStyles.whiteColor]}>
+                {data.action}
+          </Text>
+            </View>
+            <View>
+              <Image
+                style={[styles.fireIcon, AppStyles.mlFive]}
+                source={fire}
+              />
+            </View>
+            <View style={styles.dropDownParent}>
+              <TouchableOpacity onPress={() => { showDropdown(data.id) }}>
+                <MaterialCommunityIcons name="dots-vertical" size={32} color="#333" style={styles.verticalIcon} />
+              </TouchableOpacity>
+              {
+                dotsDropDown === true && dropDownId === data.id &&
+                <View style={styles.dropDownWrap}>
+                  <TouchableOpacity style={styles.dropButtons}>
+                    <Text style={[AppStyles.lightColor, AppStyles.noramlSize]}>Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.dropButtons, AppStyles.noBorder]}>
+                    <Text style={[AppStyles.lightColor, AppStyles.noramlSize]}>Deactivate</Text>
+                  </TouchableOpacity>
+                </View>
+              }
+            </View>
+
+          </View>
+          <View style={[styles.contentMainWrap]}>
+            <View style={styles.phoneWrap}>
+              <Image
+                style={styles.phoneIcon}
+                source={phone}
+              />
+            </View>
             {/* ****** Name Wrap */}
             <View style={[styles.contentMain, AppStyles.mbTen]}>
               <Text style={[styles.largeText, AppStyles.darkColor]}>
                 {data.propertyName}
-              </Text>
+            </Text>
             </View>
 
             {/* ****** Price Wrap */}
@@ -28,7 +69,7 @@ class LeadTile extends React.Component {
             </Text>
               <Text style={[AppStyles.lightColor, styles.multiColumn, styles.normalText]}>
                 {data.price}
-              </Text>
+            </Text>
             </View>
 
             {/* ****** Address Wrap */}
@@ -38,7 +79,7 @@ class LeadTile extends React.Component {
             </Text>
               <Text style={[AppStyles.lightColor, styles.normalText]}>
                 {data.address}
-              </Text>
+            </Text>
             </View>
 
             {/* ****** Location Wrap */}
@@ -48,7 +89,7 @@ class LeadTile extends React.Component {
             </Text>
               <Text style={[AppStyles.lightColor, styles.normalText]}>
                 {data.location}
-              </Text>
+            </Text>
             </View>
           </View>
         </View>
@@ -57,4 +98,4 @@ class LeadTile extends React.Component {
   }
 }
 
-export default LeadTile;
+export default InventoryTile;

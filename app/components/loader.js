@@ -11,7 +11,7 @@ class Loader extends React.Component {
       <View style={{flexDirection: 'row', justifyContent: 'center'}}>
         {
           loading == true ?
-          <ActivityIndicator size="large" color="#484848" />
+          <ActivityIndicator size="large" color="white" />
           // <Image source={require('../../assets/loader.gif')} style={{ width: 60, height: 60 }} />
           : <Image source={require('../../assets/images/no-result2.png')} style={{ width: 200, height: 200 }} />
         }

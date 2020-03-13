@@ -8,8 +8,19 @@ import AddDiary from '../screens/AddDiary';
 import Lead from '../screens/Lead/index';
 import HeaderRight from '../components/HeaderRight/index';
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index';
+import AddInventory from '../screens/AddInventory/index'
+import AppStyles from '../AppStyles';
 
 const Stack = createStackNavigator();
+
+const headerStyle = {
+    headerStyle: {
+        borderBottomWidth: 0,
+        elevation: 0,
+        shadowOpacity: 0,
+        backgroundColor: AppStyles.colors.backgroundColor
+    }
+}
 
 function MainStack() {
     return (
@@ -17,6 +28,8 @@ function MainStack() {
         >
             <Stack.Screen name="Landing" component={Landing}
                 options={({ navigation, route }) => ({
+                    ...headerStyle,
+                    title: '',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation}/>,
                     headerRight: props => <HeaderRight navigation={navigation}/>,
                     headerTitleAlign: 'center',
@@ -24,29 +37,40 @@ function MainStack() {
             />
             <Stack.Screen name='Diary' component={Diary}
                 options={({ navigation, route }) => ({
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='Inventory' component={Inventory}
+                options={({ navigation, route }) => ({
+                    ...headerStyle,
+                    title: '',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
                     headerRight: props => <HeaderRight navigation={navigation}/>,
                     headerTitleAlign: 'center',
                 })}
             />
-            <Stack.Screen name='Inventory' component={Inventory} 
+            <Stack.Screen name='Lead' component={Lead}
                 options={({ navigation, route }) => ({
+                    ...headerStyle,
+                    title: '',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
                     headerRight: props => <HeaderRight navigation={navigation}/>,
                     headerTitleAlign: 'center',
                 })}
             />
-            <Stack.Screen name='Lead' component={Lead} 
+            <Stack.Screen name='AddDiary' component={AddDiary}
                 options={({ navigation, route }) => ({
-                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
-                    headerRight: props => <HeaderRight navigation={navigation}/>,
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
                 })}
             />
-            <Stack.Screen name='AddDiary' component={AddDiary} 
+            <Stack.Screen name='AddInventory' component={AddInventory}
                 options={({ navigation, route }) => ({
-                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
-                    headerRight: props => <HeaderRight navigation={navigation}/>,
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
                 })}
             />

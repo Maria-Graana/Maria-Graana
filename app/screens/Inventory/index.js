@@ -5,6 +5,9 @@ import { Picker } from 'native-base';
 import { connect } from 'react-redux';
 import InventoryTile from '../../components/InventoryTile'
 import AppStyles from '../../AppStyles'
+import { Fab } from 'native-base';
+import { StackActions } from '@react-navigation/native';
+import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 
 class Inventory extends React.Component {
@@ -65,7 +68,7 @@ class Inventory extends React.Component {
 	selectInventory = (id) => {
 		const { selectInventory } = this.state
 		this.setState({
-			selectInventory: [...selectInventory,id]
+			selectInventory: [...selectInventory, id]
 		})
 	}
 
@@ -78,10 +81,28 @@ class Inventory extends React.Component {
 		})
 	}
 
+
+	goToInventoryForm = () => {
+			const { navigation } = this.props;
+			navigation.dispatch(
+				StackActions.replace('AddInventory')
+			);
+	}
+
 	render() {
 		const { selectInventory, dropDownId } = this.state
 		return (
 			<View style={AppStyles.container}>
+
+				<Fab
+					active='true'
+					containerStyle={{ zIndex: 20 }}
+					style={{ backgroundColor: '#333' }}
+					position="bottomRight"
+					onPress={this.goToInventoryForm}
+				>
+					<Ionicons name="md-add" color="#ffffff" />
+				</Fab>
 
 				{/* ***** Main Filter Wrap */}
 				<View style={styles.filterMainWrap}>

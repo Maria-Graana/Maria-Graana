@@ -18,6 +18,6 @@ export default class HeaderRight extends React.Component {
 
 const styles = StyleSheet.create({
     icon: {
-        paddingRight: 10
+        paddingRight: 15
     }
 });

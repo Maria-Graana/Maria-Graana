@@ -163,7 +163,7 @@ class Diary extends React.Component {
     let newDate = moment(dateString).format(_format)
     this.setState({
       startDate: newDate,
-      //showCalendar:false
+      showCalendar:false
     }, () => {
       //this.diaryMain()
     })

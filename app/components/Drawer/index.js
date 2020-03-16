@@ -51,9 +51,9 @@ class CustomDrawerContent extends React.Component {
                     <DrawerIconItem screen={'Diary'} badges={15} navigateTo={ () => {this.navigateTo('Diary')}}/>
                     <DrawerIconItem screen={'Leads'} badges={10} navigateTo={ () => {this.navigateTo('Lead')}} />
                     <DrawerIconItem screen={'Inventory'} badges={25} navigateTo={ () => {this.navigateTo('Inventory')}} />
-                    <DrawerItem screen={'Clients'}/>
-                    <DrawerItem screen={'Targets'}/>
-                    <DrawerItem screen={'Users'}/>
+                    <DrawerItem screen={'Clients'} navigateTo={ () => {}}/>
+                    <DrawerItem screen={'Targets'} navigateTo={ () => {}}/>
+                    <DrawerItem screen={'Users'} navigateTo={ () => {}}/>
                     <View style={styles.underLine} />
                     <DrawerItem screen={'Logout'} navigateTo={this.signOut}/>
                 </ScrollView>

@@ -60,6 +60,7 @@ export function setuser(data){
             storeItem('token', response.data.token)
             setAuthorizationToken(response.data.token)
             setBaseUrl()
+            dispatch(checkToken())
             dispatch({
                 type: types.SET_USER,
                 payload: {...response.data},

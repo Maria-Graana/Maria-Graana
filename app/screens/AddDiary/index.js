@@ -25,12 +25,13 @@ class AddDiary extends Component {
             time: '',
             selectedTask: 'Task Type',
             btnText: 'ADD DIARY',
+            defaultStatus: 'pending',
             description: '',
             subject: '',
             is24Hour: true,
             subjectEmpty: false,
             descriptionEmpty: false,
-            agentId: '123',
+            agentId: props.user.id,
             dateEmpty: false,
             startEmpty: false,
             endEmpty: false,
@@ -177,13 +178,14 @@ class AddDiary extends Component {
     }
 
     generatePayload = () => {
-        start = moment(this.state.date + this.state.startTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
-        end = moment(this.state.date + this.state.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
-        payload = {
+        let start = moment(this.state.date + this.state.startTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+        let end = moment(this.state.date + this.state.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+        let payload = {
             subject: this.state.subject,
             date: start,
             notes: this.state.description,
             taskType: this.state.selectedTask,
+            status: this.state.defaultStatus,
             time: this.state.startTime,
             userId: this.state.agentId,
             diaryTime: start,
@@ -194,11 +196,11 @@ class AddDiary extends Component {
     }
 
     createDiary = () => {
-        if (this.props.navigation.state.params.update) {
-            this.updateDiary()
-        } else {
-            this.addDiary()
-        }
+        // if (this.props.navigation.state.params.update) {
+        //     this.updateDiary()
+        // } else {
+        this.addDiary()
+        //  }
     }
 
     updateDiary = (diary) => {
@@ -216,7 +218,7 @@ class AddDiary extends Component {
     }
 
     addDiary = () => {
-        diary = this.generatePayload()
+        let diary = this.generatePayload()
         axios.post(`/api/diary/create`, diary)
             .then((res) => {
                 helper.successToast('DIARY ADDED SUCCESSFULLY!')
@@ -282,7 +284,7 @@ class AddDiary extends Component {
                     </Form>
                     {descriptionText}
                     <View>
-                        <Button 
+                        <Button onPress={this.submitForm}
                             style={{ marginVertical: 10, marginHorizontal: 15, backgroundColor: '#ffffff', height: 60, justifyContent: 'center', borderRadius: 5 }} bordered dark>
                             <Text style={{ color: '#484848' }}>{this.state.btnText}</Text>
                         </Button>

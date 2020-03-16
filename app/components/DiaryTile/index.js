@@ -62,13 +62,13 @@ class DiaryTile extends React.Component {
                                                             <View style={[styles.tileWrap, { borderLeftColor: val.statusColor }]} key={index}>
                                                                 <View style={styles.innerTile}>
                                                                     <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - {moment.utc(val.end).format("hh:mm a")} </Text>
-                                                                    <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{val.status}</Text>
+                                                                    <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{val.status === 'pending' ? 'Open' : val.status}</Text>
                                                                 </View>
                                                                 <Text style={styles.meetingText}>{val.subject}</Text>
                                                                 <Text style={styles.meetingText}>{val.taskType}</Text>
                                                                 {
                                                                     val.leadLink === true ?
-                                                                        <TouchableOpacity   style={styles.lead}  >
+                                                                        <TouchableOpacity style={styles.lead}  >
                                                                             <Text style={styles.leadText} >
                                                                                 Lead Link
                                                                              </Text>

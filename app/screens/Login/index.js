@@ -57,7 +57,7 @@ class Login extends Component {
     submitForm= () => {
         const {email, password}= this.state
         let creds= {
-            email: email,
+            email: email.toLowerCase(),
             password: password,
         }
         this.props.dispatch(setuser(creds))

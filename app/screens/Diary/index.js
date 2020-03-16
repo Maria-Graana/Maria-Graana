@@ -5,6 +5,7 @@ import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
 import CalendarComponent from '../../components/CalendarComponent'
+import axios from 'axios';
 import { Fab } from 'native-base';
 import data from '../../StaticData';
 import _ from 'underscore';
@@ -73,30 +74,38 @@ class Diary extends React.Component {
 
   diaryMain = () => {
     let endPoint = ``
-    // let date = moment(this.state.startDate).format('YYYY-MM-DD')
-    //endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}&agentId=${this.state.agentId}`
-    // axios.get(`${endPoint}`)
-    //  .then((res) => {
-    this.setState({
-      loading: true,
-      diaryData: data.diaryRows,
-    }, () => {
-      this.showTime()
-    })
+    let date = moment(this.state.startDate).format('YYYY-MM-DD')
+    endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}`
+    axios.get(`${endPoint}`)
+      .then((res) => {
+        this.setState({
+          loading: true,
+          diaryData: res.data.rows,
+        }, () => {
+          this.showTime()
+        })
+      }).catch((error) => {
+        console.log(error)
+        this.setState({
+          loading: false
+        })
+      })
   }
 
   checkStatus = (val) => {
     let taskDate = moment(val.date).format('L')
     let checkForCDate = taskDate == this.state.todayDate
-    
-    if (val.status == 'In Progress' ) {
+    if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
       return '#edb73f'
     }
-    else if(val.status==='Open'){
-       return AppStyles.colors.primaryColor
+    else if (val.status === 'pending') {
+      return AppStyles.colors.primaryColor;
     }
-    else if ( val.status != 'completed') {
+    else if (checkForCDate && val.status != 'completed') {
       return '#3d78f6'
+    }
+    else if (taskDate > this.state.todayDate) {
+      return '#edb73f'
     }
     else if (taskDate != this.state.todayDate && val.status != 'completed') {
       return 'red'
@@ -113,13 +122,14 @@ class Diary extends React.Component {
   }
 
 
+
   showTime = () => {
     const { diaryData, calendarList } = this.state;
     if (diaryData.length) {
       let groupedData = diaryData.map((item, index) => {
         item.statusColor = this.checkStatus(item)
         if (item.hour) {
-          //item.hour = item.hour.replace(/(\d{2})/g, '$1 ').replace(/(^\s+|\s+$)/, '')
+          // item.hour = item.hour.replace(/(\d{2})/g, '$1 ').replace(/(^\s+|\s+$)/, '')
           return item;
         } else {
           return item
@@ -127,10 +137,10 @@ class Diary extends React.Component {
       })
       groupedData = _.groupBy(diaryData, 'hour')
       let calendarData = calendarList.map((item, index) => {
-        if (groupedData[item.replace(/\s/g,'')]) {
+        if (groupedData[item]) {
           return {
             time: item,
-            diary: _.sortBy(groupedData[item.replace(/\s/g,'')], 'time')
+            diary: _.sortBy(groupedData[item], 'time')
           }
         } else {
           return {
@@ -163,9 +173,9 @@ class Diary extends React.Component {
     let newDate = moment(dateString).format(_format)
     this.setState({
       startDate: newDate,
-      showCalendar:false
+      showCalendar: false
     }, () => {
-      //this.diaryMain()
+      this.diaryMain()
     })
   }
 
@@ -173,7 +183,6 @@ class Diary extends React.Component {
     const { navigation } = this.props;
     navigation.dispatch(
       StackActions.replace('AddDiary', {
-        agentId: this.state.agentId,
         update: false
       })
     );

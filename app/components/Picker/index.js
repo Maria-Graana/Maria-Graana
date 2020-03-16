@@ -5,6 +5,7 @@ import {
 import {Item, Picker } from 'native-base';
 import { StyleSheet } from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
+import AppStyles from '../../AppStyles'
 
 
 class PickerComponent extends React.Component {
@@ -51,7 +52,7 @@ class PickerComponent extends React.Component {
     return (
         <View style={ItemWrap}>
             <Picker
-                headerStyle={{ backgroundColor: "#484848", borderColor: "#484848", }}
+                headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor:  AppStyles.colors.primaryColor, }}
                 headerTitleStyle={{ color: "#fff" }}
                 mode="dropdown"
                 iosIcon={<EvilIcons name="arrow-down" />}

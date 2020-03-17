@@ -26,7 +26,7 @@ export default class App extends React.Component {
 			OpenSans_bold: require('./assets/fonts/OpenSans-Bold.ttf'),
 			...Ionicons.font,
 		});
-		this.setState({ isReady: true });
+		// this.setState({ isReady: true });
 	}
 
 	render() {

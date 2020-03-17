@@ -1,82 +1,10 @@
-export default role = {
-    'admin 1': [
-        {
-            screen: "diary",
-            access: {
-                e: true,
-                d: true,
-                v: true,
-                a: true
-            }
-        },
-        {
-            screen: "Leads",
-            access: {
-                e: true,
-                d: true,
-                v: true,
-                a: true
-            }
-        },
-    ],
-    'admin 2': [
-        {
-            screen: "diary",
-            access: {
-                e: false,
-                d: false,
-                v: true,
-                a: false
-            }
-        },
-        {
-            screen: "Leads",
-            access: {
-                e: false,
-                d: false,
-                v: true,
-                a: true
-            }
-        },
-    ],
-    'admin 3': [
-        {
-            screen: "diary",
-            access: {
-                e: false,
-                d: false,
-                v: true,
-                a: false
-            }
-        },
-        {
-            screen: "Leads",
-            access: {
-                e: false,
-                d: false,
-                v: true,
-                a: true
-            }
-        },
-    ],
-    'sub_admin 1': [
-        {
-            screen: "diary",
-            access: {
-                e: false,
-                d: false,
-                v: true,
-                a: false
-            }
-        },
-        {
-            screen: "Leads",
-            access: {
-                e: false,
-                d: false,
-                v: true,
-                a: true
-            }
-        },
-    ]
+const role = {
+    diary: {
+        roles: [
+            { role: 'sub admin 1', access: { v: true, a: true, e: true, d: false} },
+            { role: 'sub admin 2', access: {v: true, a: false, e: false, d: false} },
+        ],
+    },
 }
+
+module.exports = role;

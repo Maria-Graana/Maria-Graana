@@ -4,7 +4,6 @@ const Ability = {
     canView (user, screen) {
 		for(let item of role[screen].roles) {
 			if (item.role === user) {
-				console.log(item.access.v)
 				return item.access.v
 			} else {
 				return false
@@ -14,7 +13,6 @@ const Ability = {
 	canAdd (user, screen) {
 		for(let item of role[screen].roles) {
 			if (item.role === user) {
-				console.log(item.access.v)
 				return item.access.a
 			} else {
 				return false
@@ -24,7 +22,6 @@ const Ability = {
 	canEdit (user, screen) {
 		for(let item of role[screen].roles) {
 			if (item.role === user) {
-				console.log(item.access.v)
 				return item.access.e
 			} else {
 				return false
@@ -34,7 +31,6 @@ const Ability = {
 	canDelete (user, screen) {
 		for(let item of role[screen].roles) {
 			if (item.role === user) {
-				console.log(item.access.v)
 				return item.access.d
 			} else {
 				return false

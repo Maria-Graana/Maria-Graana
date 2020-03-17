@@ -2,11 +2,11 @@ import { StyleSheet } from 'react-native';
 
 export default styles = StyleSheet.create({
   buttonWrap: {
-    marginBottom: 25,
+    marginBottom: 35,
     overflow: 'hidden',
   },
   mainbutton: {
-    borderWidth: 1,
+    borderWidth: 0,
     padding: 15,
     borderColor: '#ddd',
     backgroundColor: '#fff',
@@ -17,7 +17,7 @@ export default styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 28,
-    fontWeight: '300',
+    fontFamily: 'OpenSans_bold'
   },
   buttonImg: {
     width: 400,

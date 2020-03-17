@@ -2,6 +2,7 @@ import { StyleSheet } from 'react-native'
 export default styles = StyleSheet.create({
   mainInventoryTile: {
     paddingTop: 15,
+    paddingBottom: 100,
   },
   filterMainWrap: {
     flexDirection: 'row',

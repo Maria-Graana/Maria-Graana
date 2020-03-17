@@ -33,7 +33,7 @@ class InputField extends Component {
                     textContentType={textContentTypeLabel}
                     autoCompleteType={autoCompleteTypeLabel}
                     secureTextEntry={secureTextEntryLabel}
-                    onChangeText={(text) => this.returnData(text)}
+                    // onChangeText={(text) => this.returnData(text)}
                     style={styles.textWrap}
                     editable={editable}
                 />

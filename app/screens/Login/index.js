@@ -57,7 +57,7 @@ class Login extends Component {
     submitForm= () => {
         const {email, password}= this.state
         let creds= {
-            email: email,
+            email: email.toLocaleLowerCase(),
             password: password,
         }
         this.props.dispatch(setuser(creds))
@@ -88,7 +88,7 @@ class Login extends Component {
                             source={require('../../../assets/img/login.png')}
                         />
                     </View>
-                    {checkLoginText}
+                    {/* {checkLoginText} */}
                     <View style={{ flex: 1, marginBottom: 10}}>
                         <View style={{paddingLeft: 2}}>
                             <Text style= {{color: AppStyles.colors.subTextColor, fontSize: 12}}>

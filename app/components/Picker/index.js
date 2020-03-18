@@ -50,14 +50,14 @@ class PickerComponent extends React.Component {
             serviceItems.push(item)
         }
         return (
-            <View style={ItemWrap}>
+            <View style={[styles.pickerMain]}>
+                <Ionicons style={styles.arrowIcon} name="ios-arrow-down" color={AppStyles.colors.textColor} />
                 <Picker
                     headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff', }}
                     headerBackButtonTextStyle={{ color: '#fff' }}
                     headerTitleStyle={{ color: "#fff" }}
                     mode="dropdown"
-                    iosIcon={<Ionicons name="ios-arrow-down" color={AppStyles.colors.textColor}  />}
-                    style={PickerWrap}
+                    style={AppStyles.formControl}
                     placeholder={placeholderLabel}
                     selectedValue={selectedValue.toString()}
                     onValueChange={(itemValue, itemIndex) =>
@@ -67,28 +67,24 @@ class PickerComponent extends React.Component {
                     {serviceItems}
                 </Picker>
             </View>
+
         )
     }
 }
 
 const styles = StyleSheet.create({
-    itemWrap: {
-        backgroundColor: '#ffffff',
+    pickerMain: {
+        position: 'relative',
+        overflow: 'hidden',
         borderRadius: 4,
-        marginVertical: 8,
-        borderBottomWidth: 1,
-        minHeight: 60,
-        borderColor: '#f0f0f0',
-        // flex:1
     },
-    pickerWrap: {
-        width: undefined,
-        minHeight: 60,
-        paddingRight:12,
-        
-        // paddingTop: Platform.OS ? 10 : 3,
-        // paddingBottom: Platform.OS ? 14 : 10
-    }
+    arrowIcon:{
+        position: 'absolute',
+        right: 15,
+        top: 17,
+        fontSize: 16,
+        zIndex: 2,
+    },
 })
 
 export default PickerComponent;

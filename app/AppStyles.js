@@ -20,8 +20,8 @@ export default AppStyles = {
         flexDirection: 'row'
     },
     fonts: {
-        defaultFont: 'OpenSans_regular', 
-        boldFont:'OpenSans_bold'
+        defaultFont: 'OpenSans_regular',
+        boldFont: 'OpenSans_bold'
     },
     mb1: {
         flex: 1
@@ -69,4 +69,10 @@ export default AppStyles = {
     whiteColor: {
         color: '#fff',
     },
+    standardPaddingVertical: {
+        paddingVertical: 16
+    },
+    standardMarginVertical: {
+        marginVertical: 16
+    }
 }

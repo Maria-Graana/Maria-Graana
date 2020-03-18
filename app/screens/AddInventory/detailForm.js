@@ -44,9 +44,9 @@ class DetailForm extends Component {
                 <View style={styles.viewWrap}>
                     <PickerComponent selectedItem={''} itemStyle={styles.itemWrap} data={''} value={''} placeholder='Size Unit' />
                     <View style={{ width: 15 }}></View>
-                    <InputField selectedValue={''} style={{ flex: 1 }} placeholder='Size' keyboardType='numeric' />
+                    <InputField  style={{ flex: 1 }} placeholder='Size' keyboardType='numeric' />
                 </View>
-                <PricePicker selectedPrice={''} placeholder='Demand Price' />
+                <PricePicker  placeholder='Demand Price' />
                 <View>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Button
@@ -100,19 +100,19 @@ class DetailForm extends Component {
                     </View>
                 </View>
                 <View style={styles.inputWrap}>
-                    <InputField selectedValue={''} placeholder='Beds' keyboardType='numeric'  />
+                    <InputField  placeholder='Beds' keyboardType='numeric'  />
                     <View style={{ width: 15 }}></View>
-                    <InputField selectedValue={''} placeholder='Baths' keyboardType='numeric'/>
+                    <InputField  placeholder='Baths' keyboardType='numeric'/>
                 </View>
                 <View style={styles.inputWrap}>
-                    <InputField selectedValue={''}  placeholder='Lattitude' keyboardType='numeric' />
+                    <InputField   placeholder='Lattitude' keyboardType='numeric' />
                     <View style={{ width: 15 }}></View>
-                    <InputField selectedValue={''}  placeholder='Longitude' keyboardType='numeric'/>
+                    <InputField   placeholder='Longitude' keyboardType='numeric'/>
                 </View>
                 <View style={{}}>
-                    <InputField selectedValue={''} placeholder='OwnerName' textContentType='name'/>
-                    <InputField selectedValue={''} placeholder='OwnerNumber' keyboardType='numeric'/>
-                    <InputField selectedValue={''} placeholder='OwnerAddress' textContentType='addressState' />
+                    <InputField  placeholder='OwnerName' textContentType='name'/>
+                    <InputField  placeholder='OwnerNumber' keyboardType='numeric'/>
+                    <InputField  placeholder='OwnerAddress' textContentType='addressState' />
                 </View>
                 <View style={{ marginVertical: 10 }}>
                     <Button 

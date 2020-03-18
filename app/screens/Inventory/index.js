@@ -54,6 +54,14 @@ class Inventory extends React.Component {
 				price: '2 Crore',
 				address: 'H1/11, Islamabad',
 				location: 'H1/11, Islamabad',
+			},
+			{
+				id: '5',
+				propertyName: '5 marla house for sale',
+				action: 'Token',
+				price: '2 Crore',
+				address: 'H1/11, Islamabad',
+				location: 'H1/11, Islamabad',
 			}
 		]
 	}

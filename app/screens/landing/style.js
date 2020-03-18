@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   buttonWrap: {
@@ -14,6 +15,5 @@ export default styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 28,
-    fontWeight: '300'
-  }
+  },
 });

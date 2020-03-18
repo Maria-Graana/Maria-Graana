@@ -42,7 +42,7 @@ class PricePicker extends React.Component {
                   name='Price'
                   keyboardType='number-pad'
                   style={styles.formControl}
-                  onChangeText={(value) => { this.onChange(value) }}
+                  // onChangeText={(value) => { this.onChange(value) }}
               />
               <Text style={styles.countPrice}>{formatPrice(tokenValue)}</Text>
             </View>

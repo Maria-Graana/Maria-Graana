@@ -1,7 +1,6 @@
 export default AppStyles = {
     container: {
         flex: 1,
-        minHeight: '100%',
         paddingRight: 15,
         paddingLeft: 15,
         backgroundColor: '#e7ecf0'

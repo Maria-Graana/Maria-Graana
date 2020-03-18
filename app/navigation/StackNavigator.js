@@ -34,8 +34,8 @@ function MainStack() {
                 options={({ navigation, route }) => ({
                     ...headerStyle,
                     title: '',
-                    headerLeft: props => <HeaderLeftLogo navigation={navigation}/>,
-                    headerRight: props => <HeaderRight navigation={navigation}/>,
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
                 })}
             />
@@ -51,8 +51,8 @@ function MainStack() {
                 options={({ navigation, route }) => ({
                     ...headerStyle,
                     title: '',
-                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
-                    headerRight: props => <HeaderRight navigation={navigation}/>,
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
                 })}
             />
@@ -60,13 +60,14 @@ function MainStack() {
                 options={({ navigation, route }) => ({
                     ...headerStyle,
                     title: '',
-                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool= {true}/>,
-                    headerRight: props => <HeaderRight navigation={navigation}/>,
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
                 })}
             />
             <Stack.Screen name='AddDiary' component={AddDiary}
                 options={({ navigation, route }) => ({
+                    title: 'New Task',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

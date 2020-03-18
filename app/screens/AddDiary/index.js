@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Platform, TouchableWithoutFeedback, SafeAreaView, Keyboard } from 'react-native';
-import { Container, Header, Content, Input, Item, Picker, Form, Textarea, Button, StyleProvider } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
-import getTheme from '../../../native-base-theme/components';
-import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import styles from './style'
 import helper from '../../helper';
 import StaticData from '../../StaticData'
-import FloatingTextInput from '../../components/FloatingTextInput';
 
 const _format = 'YYYY-MM-DD';
 const _today = moment(new Date().dateString).format(_format);
@@ -248,11 +244,7 @@ class AddDiary extends Component {
                     <KeyboardAwareScrollView
                         keyboardShouldPersistTaps="always" enableOnAndroid
                     >
-                        <Form>
-                            <FloatingTextInput>
-                                {'Subject or Title'}
-                            </FloatingTextInput>
-                        </Form>
+                        
                     </KeyboardAwareScrollView>
                 </SafeAreaView>
             </TouchableWithoutFeedback>

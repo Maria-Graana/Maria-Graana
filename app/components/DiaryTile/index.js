@@ -18,6 +18,7 @@ class DiaryTile extends React.Component {
         super(props)
         this.state = {
             openPopup: false,
+            todayDate: moment(new Date()).format('L'),
         }
     }
 
@@ -34,6 +35,16 @@ class DiaryTile extends React.Component {
     showPopup = (val) => {
         //console.log('val=>',val)
         this.props.showPopup(val)
+    }
+
+    setStatusText = (val) => {
+        let taskDate = moment(val.date).format('L')
+        if (taskDate != this.state.todayDate && val.status != 'completed') {
+            return 'Overdue';
+        }
+       else if (val.status === 'pending') {
+            return 'To-do';
+        }
     }
 
 
@@ -62,7 +73,7 @@ class DiaryTile extends React.Component {
                                                             <View style={[styles.tileWrap, { borderLeftColor: val.statusColor }]} key={index}>
                                                                 <View style={styles.innerTile}>
                                                                     <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - {moment.utc(val.end).format("hh:mm a")} </Text>
-                                                                    <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{val.status === 'pending' ? 'Open' : val.status}</Text>
+                                                                    <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{this.setStatusText(val)}</Text>
                                                                 </View>
                                                                 <Text style={styles.meetingText}>{val.subject}</Text>
                                                                 <Text style={styles.meetingText}>{val.taskType}</Text>

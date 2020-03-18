@@ -96,28 +96,19 @@ class Diary extends React.Component {
     let taskDate = moment(val.date).format('L')
     let checkForCDate = taskDate == this.state.todayDate
     if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
-      return '#edb73f'
-    }
-    else if (val.status === 'pending') {
-      return AppStyles.colors.primaryColor;
+      return 'yellow'
     }
     else if (checkForCDate && val.status != 'completed') {
-      return '#3d78f6'
-    }
-    else if (taskDate > this.state.todayDate) {
-      return '#edb73f'
-    }
-    else if (taskDate != this.state.todayDate && val.status != 'completed') {
       return 'red'
     }
-    else if (val.status == 'completed') {
-      return '#15c559'
+    else if (taskDate != this.state.todayDate && val.status != 'completed') {
+      return AppStyles.colors.subTextColor;
     }
-    else if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
-      return '#edb73f'
+    else if (val.status == 'completed') {
+      return 'green'
     }
     else {
-      return '#000'
+      return AppStyles.colors.subTextColor;
     }
   }
 
@@ -258,7 +249,7 @@ class Diary extends React.Component {
           !showCalendar ?
             <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
               <Ionicons style={{ position: 'absolute', right: 20, top: 15 }}
-                name="md-add" size={26}
+                name="ios-arrow-down" size={26}
                 color={AppStyles.colors.primaryColor} />
               <View style={styles.calenderIconContainer}>
                 <Ionicons name='md-calendar' size={26} color={AppStyles.colors.primaryColor} />

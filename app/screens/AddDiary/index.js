@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableWithoutFeedback, SafeAreaView, Keyboard } from 'react-native';
 import { Container, Header, Content, Input, Item, Picker, Form, Textarea, Button, StyleProvider } from 'native-base';
 import { AntDesign, Entypo, Ionicons, EvilIcons } from '@expo/vector-icons';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
@@ -11,6 +12,7 @@ import helper from '../../helper';
 import PickerComponent from '../../components/Picker/index';
 import DateComponent from '../../components/DatePicker/index';
 import styles from './style';
+import AppStyles from '../../AppStyles';
 
 const _format = 'YYYY-MM-DD';
 const _today = moment(new Date().dateString).format(_format);
@@ -21,23 +23,22 @@ class AddDiary extends Component {
         this.state = {
             mode: "date",
             show: false,
-            date: '',
+            date: _today,
             time: '',
-            selectedTask: 'Task Type',
-            btnText: 'ADD DIARY',
+            selectedTask: 'Meeting',
+            btnText: 'Add',
             defaultStatus: 'pending',
             description: '',
             subject: '',
             is24Hour: true,
             subjectEmpty: false,
-            descriptionEmpty: false,
             agentId: props.user.id,
             dateEmpty: false,
             startEmpty: false,
             endEmpty: false,
             startTime: '',
             endTime: '',
-            taskValues: ['Meeting', 'Follow Up', 'Viewing', 'Reminder', 'Other']
+            taskValues: ['Meeting', 'Follow Up', 'Day Structure', 'Other']
         }
     }
 
@@ -92,15 +93,9 @@ class AddDiary extends Component {
     }
 
     descriptionData = (description) => {
-        if (description == '') {
-            this.setState({ descriptionEmpty: true })
-        }
-        else {
-            this.setState({
-                description: false,
-                description: description
-            })
-        }
+        this.setState({
+            description: description
+        })
     }
 
     onDateChange = (onDateChange) => {
@@ -137,8 +132,8 @@ class AddDiary extends Component {
     }
 
     submitForm = () => {
-        if (this.state.subject == '' && this.state.description == '' && this.state.start == '' && this.state.startTime == '' && this.state.endTime == '') {
-            this.setState({ subjectEmpty: true, descriptionEmpty: true, dateEmpty: true, startEmpty: true, endEmpty: true })
+        if (this.state.subject == '' && this.state.start == '' && this.state.startTime == '' && this.state.endTime == '') {
+            this.setState({ subjectEmpty: true, dateEmpty: true, startEmpty: true, endEmpty: true })
         }
         else if (this.state.subject == '') {
             this.setState({ subjectEmpty: true })
@@ -152,10 +147,8 @@ class AddDiary extends Component {
         else if (this.state.endTime == '') {
             this.setState({ endEmpty: true })
         }
-        else if (this.state.description == '') {
-            this.setState({ descriptionEmpty: true })
-        } else {
-            this.setState({ subjectEmpty: false, descriptionEmpty: false, dateEmpty: false, startEmpty: false, endEmpty: false })
+        else {
+            this.setState({ subjectEmpty: false, dateEmpty: false, startEmpty: false, endEmpty: false })
             this.createDiary()
         }
     }
@@ -242,9 +235,6 @@ class AddDiary extends Component {
         if (this.state.subjectEmpty)
             subjectText = <Text style={{ color: "red", paddingLeft: 18 }}>This Field is Required</Text>
 
-        if (this.state.descriptionEmpty)
-            descriptionText = <Text style={{ color: "red", paddingLeft: 18 }}>This Field is Required</Text>
-
         if (this.state.dateEmpty)
             dateText = <Text style={{ color: "red", paddingLeft: 18 }}>This Field is Required</Text>
 
@@ -255,42 +245,45 @@ class AddDiary extends Component {
             endText = <Text style={{ color: "red", paddingLeft: 18 }}>This Field is Required</Text>
 
         return (
-            <StyleProvider style={getTheme(formTheme)}>
-                <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#f5f5f5' }} behavior="padding" enabled>
-                    <View style={{ marginVertical: 10, marginHorizontal: 10 }}>
-                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}> Enter Diary </Text>
-                    </View>
-                    <View style={{ marginVertical: 10, marginHorizontal: 15 }}>
-                        <Item style={{ borderRadius: 5, backgroundColor: '#ffffff' }} regular >
-                            <Input defaultValue={this.state.subject} placeholder='Subject' onChangeText={this.subjectData} />
-                        </Item>
-                    </View>
-                    {subjectText}
-                    <PickerComponent selectedItem={this.state.selectedTask} itemStyle={styles.itemWrap} data={this.state.taskValues} value={this.state.taskValues} placeholder='Task Type' onValueChange={this.taskType} />
-                    <DateComponent date={this.state.date} mode='date' placeholder='Select Date' onDateChange={this.onDateChange} />
-                    {dateText}
-                    <DateComponent date={this.state.startTime} mode='time' placeholder='Select Start Time' is24Hour={this.state.is24Hour} onTimeChange={this.onStartTimeChange} />
-                    {startText}
-                    <DateComponent date={this.state.endTime} disabled={this.state.startTime === '' ? true : false} mode='time' placeholder='Select End Time' is24Hour={this.state.is24Hour} onTimeChange={this.onEndTimeChange} />
-                    {endText}
-                    <Form style={{ marginVertical: 10, marginHorizontal: 15 }}>
-                        <Textarea
-                            placeholderTextColor="#bfbbbb"
-                            style={{ backgroundColor: '#ffffff', height: 80, borderRadius: 5 }} rowSpan={5} defaultValue={this.state.description}
-                            bordered
-                            placeholder="Description"
-                            onChangeText={this.descriptionData}
-                        />
-                    </Form>
-                    {descriptionText}
-                    <View>
-                        <Button onPress={this.submitForm}
-                            style={{ marginVertical: 10, marginHorizontal: 15, backgroundColor: '#ffffff', height: 60, justifyContent: 'center', borderRadius: 5 }} bordered dark>
-                            <Text style={{ color: '#484848' }}>{this.state.btnText}</Text>
-                        </Button>
-                    </View>
-                </KeyboardAvoidingView>
-            </StyleProvider>
+            <SafeAreaView style={styles.safeAreaViewcontainer}>
+                <KeyboardAwareScrollView
+                    keyboardShouldPersistTaps="always" enableOnAndroid
+                >
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                        <View style={styles.innerViewStyle}>
+                            <View style={{ marginHorizontal: 15 }}>
+                                <Item style={{ borderRadius: 4, backgroundColor: '#ffffff', paddingHorizontal: 12, paddingVertical: 4 }}  >
+                                    <Input style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16, color: AppStyles.colors.textColor }} defaultValue={this.state.subject} placeholder='Subject/Title' onChangeText={this.subjectData} />
+                                </Item>
+                            </View>
+                            {subjectText}
+                            <PickerComponent selectedItem={this.state.selectedTask} itemStyle={styles.itemWrap} data={this.state.taskValues} value={this.state.taskValues} placeholder='Task Type' onValueChange={this.taskType} />
+                            <DateComponent date={this.state.date} mode='date' placeholder='Select Date' onDateChange={this.onDateChange} />
+                            {dateText}
+                            <DateComponent date={this.state.startTime} mode='time' placeholder='Select Start Time' is24Hour={this.state.is24Hour} onTimeChange={this.onStartTimeChange} />
+                            {startText}
+                            <DateComponent date={this.state.endTime} disabled={this.state.startTime === '' ? true : false} mode='time' placeholder='Select End Time' is24Hour={this.state.is24Hour} onTimeChange={this.onEndTimeChange} />
+                            {endText}
+                            <Form style={{ marginVertical: 10, marginHorizontal: 15 }}>
+                                <Textarea
+                                    placeholderTextColor="#bfbbbb"
+                                    style={{ backgroundColor: '#ffffff', height: 80, borderRadius: 5 }} rowSpan={5} defaultValue={this.state.description}
+                                    bordered
+                                    placeholder="Description"
+                                    onChangeText={this.descriptionData}
+                                />
+                            </Form>
+                            {descriptionText}
+                            <View>
+                                <Button onPress={this.submitForm}
+                                    style={{ marginVertical: 10, marginHorizontal: 15, backgroundColor: '#ffffff', height: 60, justifyContent: 'center', borderRadius: 5 }} bordered dark>
+                                    <Text style={{ color: '#484848' }}>{this.state.btnText}</Text>
+                                </Button>
+                            </View>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </KeyboardAwareScrollView>
+            </SafeAreaView>
         )
     }
 }

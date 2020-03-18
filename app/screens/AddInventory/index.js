@@ -9,6 +9,7 @@ import axios from 'axios';
 import PickerComponent from '../../components/Picker/index';
 import DetailForm from './detailForm';
 import styles from './style';
+import AppStyles from '../../AppStyles';
 
 class AddInventory extends Component {
     constructor(props) {
@@ -21,7 +22,7 @@ class AddInventory extends Component {
 
         return (
             <StyleProvider style={getTheme(formTheme)}>
-                <KeyboardAvoidingView style={styles.container} behavior="padding"  enabled>
+                <KeyboardAvoidingView style={AppStyles.container} behavior="padding"  enabled>
                     <ScrollView>
                         <View style= {styles.viewMargin}>
                             <Text style= {styles.TextProp}> Enter Client and Property Information </Text>

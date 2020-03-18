@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Platform, TouchableWithoutFeedback, SafeAreaView, Keyboard } from 'react-native';
 import { Container, Header, Content, Input, Item, Picker, Form, Textarea, Button, StyleProvider } from 'native-base';
-import { AntDesign, Entypo, Ionicons, EvilIcons } from '@expo/vector-icons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment';
 import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import styles from './style'
 import helper from '../../helper';
-import PickerComponent from '../../components/Picker/index';
-import DateComponent from '../../components/DatePicker/index';
-import styles from './style';
-import AppStyles from '../../AppStyles';
+import StaticData from '../../StaticData'
+import FloatingTextInput from '../../components/FloatingTextInput';
 
 const _format = 'YYYY-MM-DD';
 const _today = moment(new Date().dateString).format(_format);
@@ -38,7 +36,7 @@ class AddDiary extends Component {
             endEmpty: false,
             startTime: '',
             endTime: '',
-            taskValues: ['Meeting', 'Follow Up', 'Day Structure', 'Other']
+            taskValues: StaticData.taskValues,
         }
     }
 
@@ -245,45 +243,22 @@ class AddDiary extends Component {
             endText = <Text style={{ color: "red", paddingLeft: 18 }}>This Field is Required</Text>
 
         return (
-            <SafeAreaView style={styles.safeAreaViewcontainer}>
-                <KeyboardAwareScrollView
-                    keyboardShouldPersistTaps="always" enableOnAndroid
-                >
-                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                        <View style={styles.innerViewStyle}>
-                            <View style={{ marginHorizontal: 15 }}>
-                                <Item style={{ borderRadius: 4, backgroundColor: '#ffffff', paddingHorizontal: 12, paddingVertical: 4 }}  >
-                                    <Input style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16, color: AppStyles.colors.textColor }} defaultValue={this.state.subject} placeholder='Subject/Title' onChangeText={this.subjectData} />
-                                </Item>
-                            </View>
-                            {subjectText}
-                            <PickerComponent selectedItem={this.state.selectedTask} itemStyle={styles.itemWrap} data={this.state.taskValues} value={this.state.taskValues} placeholder='Task Type' onValueChange={this.taskType} />
-                            <DateComponent date={this.state.date} mode='date' placeholder='Select Date' onDateChange={this.onDateChange} />
-                            {dateText}
-                            <DateComponent date={this.state.startTime} mode='time' placeholder='Select Start Time' is24Hour={this.state.is24Hour} onTimeChange={this.onStartTimeChange} />
-                            {startText}
-                            <DateComponent date={this.state.endTime} disabled={this.state.startTime === '' ? true : false} mode='time' placeholder='Select End Time' is24Hour={this.state.is24Hour} onTimeChange={this.onEndTimeChange} />
-                            {endText}
-                            <Form style={{ marginVertical: 10, marginHorizontal: 15 }}>
-                                <Textarea
-                                    placeholderTextColor="#bfbbbb"
-                                    style={{ backgroundColor: '#ffffff', height: 80, borderRadius: 5 }} rowSpan={5} defaultValue={this.state.description}
-                                    bordered
-                                    placeholder="Description"
-                                    onChangeText={this.descriptionData}
-                                />
-                            </Form>
-                            {descriptionText}
-                            <View>
-                                <Button onPress={this.submitForm}
-                                    style={{ marginVertical: 10, marginHorizontal: 15, backgroundColor: '#ffffff', height: 60, justifyContent: 'center', borderRadius: 5 }} bordered dark>
-                                    <Text style={{ color: '#484848' }}>{this.state.btnText}</Text>
-                                </Button>
-                            </View>
-                        </View>
-                    </TouchableWithoutFeedback>
-                </KeyboardAwareScrollView>
-            </SafeAreaView>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <SafeAreaView style={styles.safeAreaViewcontainer}>
+                    <KeyboardAwareScrollView
+                        keyboardShouldPersistTaps="always" enableOnAndroid
+                    >
+                        <Form>
+                            <FloatingTextInput>
+                                {'Subject or Title'}
+                            </FloatingTextInput>
+                        </Form>
+                    </KeyboardAwareScrollView>
+                </SafeAreaView>
+            </TouchableWithoutFeedback>
+
+
+
         )
     }
 }

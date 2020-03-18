@@ -5,6 +5,7 @@ export default styles = StyleSheet.create({
     safeAreaViewcontainer: {
         flex: 1,
         backgroundColor: AppStyles.colors.backgroundColor,
+        
     },
     innerViewStyle: {
         paddingVertical: AppStyles.standardPaddingVertical.paddingVertical,

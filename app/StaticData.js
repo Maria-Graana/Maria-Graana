@@ -27,5 +27,11 @@ export default StaticData = {
             id: 896,
             hour: "03PM",
         }
+    ],
+    taskValues: [
+        'Meeting',
+        'Follow Up',
+        'Day Structure',
+        'Other'
     ]
 }

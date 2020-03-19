@@ -16,7 +16,24 @@ export default styles = StyleSheet.create({
         borderWidth: 0,
         height: 45,
     },
-    inputPadLeft:{
+    inputPadLeft: {
         paddingLeft: 10,
+    },
+    uploadImg: {
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: '#5297F4',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+        paddingTop: 50,
+        paddingBottom: 50,
+        borderRadius: 4,
+    },
+    uploadImageText: {
+        color: '#5297F4'
+    },
+    addInvenBtn: {
+        marginBottom: 40,
     },
 })

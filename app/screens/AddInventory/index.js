@@ -1,7 +1,7 @@
-import React, {Component}  from 'react';
-import {View, Text, StyleSheet, KeyboardAvoidingView, ScrollView}  from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { Container, Header, Content, Input, Item, Picker, Form, Button, StyleProvider } from 'native-base';
-import { AntDesign,Entypo,Ionicons,EvilIcons } from '@expo/vector-icons';
+import { AntDesign, Entypo, Ionicons, EvilIcons } from '@expo/vector-icons';
 import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios';
@@ -14,20 +14,19 @@ import AppStyles from '../../AppStyles';
 class AddInventory extends Component {
     constructor(props) {
         super(props)
-     
+
     }
 
     render() {
-        
+
 
         return (
             <StyleProvider style={getTheme(formTheme)}>
-                <KeyboardAvoidingView style={AppStyles.container} behavior="padding"  enabled>
+                <KeyboardAvoidingView behavior="padding" enabled>
                     <ScrollView>
-                        <View style= {styles.viewMargin}>
-                            <Text style= {styles.TextProp}> Enter Client and Property Information </Text>
+                        <View style={AppStyles.container}>
+                            <DetailForm />
                         </View>
-                        <DetailForm />
                     </ScrollView>
                 </KeyboardAvoidingView>
             </StyleProvider>

@@ -42,6 +42,10 @@ export default AppStyles = {
         borderBottomWidth: 0,
     },
     // ****** Margins Classes
+    noMargin: {
+        marginTop: 0,
+        marginBottom: 0,
+    },
     mrTen: {
         marginRight: 10,
     },
@@ -50,6 +54,9 @@ export default AppStyles = {
     },
     mbTen: {
         marginBottom: 10,
+    },
+    mtTen: {
+        marginTop: 10,
     },
     mbFive: {
         marginBottom: 5,
@@ -77,8 +84,8 @@ export default AppStyles = {
     },
     mainInputWrap: {
         position: 'relative',
-        marginBottom: 10,
-        marginTop: 10,
+        marginBottom: 15,
+        marginTop: 15,
     },
     inputWrap: {
         position: 'relative',
@@ -93,6 +100,52 @@ export default AppStyles = {
     },
     inputPadLeft: {
         paddingLeft: 10,
+    },
+    multiFormInput: {
+        flexDirection: 'row',
+    },
+    flexOne: {
+        width: '48%',
+        marginRight: '2%'
+    },
+    flexMarginRight: {
+        marginRight: 0,
+        marginLeft: '2%',
+    },
+    latLngMain: {
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        marginTop: 15,
+        marginBottom: 15,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    locationBtn: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        backgroundColor: '#fff',
+        height: '100%',
+        width: '14%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderLeftWidth: 1,
+        borderColor: '#EAEEF1',
+    },
+    locationIcon: {
+        width: 28,
+        height: 28,
+    },
+    borderrightLat: {
+        borderRightWidth: 1,
+        borderColor: '#EAEEF1',
+    },
+    bgcWhite: {
+        backgroundColor: '#fff',
+    },
+    latLngInputWrap: {
+        width: '43%',
     },
     formBtn: {
         backgroundColor: '#ffffff',

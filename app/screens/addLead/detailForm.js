@@ -9,9 +9,28 @@ import { connect } from 'react-redux';
 class DetailForm extends Component {
   constructor(props) {
     super(props)
+
+    this.state = {
+      formData: {
+        client: '',
+        city: '',
+        project: '',
+        productType: '',
+        minInvestment: '',
+        maxInvestment: '',
+      }
+    }
+
+    this.city = ["Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 6"]
   }
 
   componentDidMount() { }
+
+  handleForm = (value, name) => {
+    const { formData } = this.state
+    formData[name] = value
+    this.setState({ formData })
+  }
 
   render() {
     return (
@@ -20,28 +39,28 @@ class DetailForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent selectedItem={''} data={''} value={''} placeholder='Client' />
+            <PickerComponent onValueChange={this.handleForm} data={this.city} value={''} name={'client'} placeholder='Client' />
           </View>
         </View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent selectedItem={''} data={''} value={''} placeholder='Select City' />
+            <PickerComponent onValueChange={this.handleForm} data={this.city} value={''} name={'city'} placeholder='Select City' />
           </View>
         </View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent selectedItem={''} data={''} value={''} placeholder='Project' />
+            <PickerComponent onValueChange={this.handleForm} data={this.city} value={''} name={'project'} value={''} placeholder='Project' />
           </View>
         </View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent selectedItem={''} data={''} value={''} placeholder='Product Type' />
+            <PickerComponent onValueChange={this.handleForm} data={this.city} value={''} name={'productType'} value={''} placeholder='Product Type' />
           </View>
         </View>
 
@@ -50,14 +69,14 @@ class DetailForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent selectedItem={''} data={''} value={''} placeholder='Min Investment' />
+              <PickerComponent  onValueChange={this.handleForm} data={this.city} value={''} name={'minInvestment'} value={''} placeholder='Min Investment' />
             </View>
           </View>
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent selectedItem={''} data={''} value={''} placeholder='Max Investment' />
+              <PickerComponent  onValueChange={this.handleForm} data={this.city} value={''} name={'maxInvestment'} value={''} placeholder='Max Investment' />
             </View>
           </View>
 

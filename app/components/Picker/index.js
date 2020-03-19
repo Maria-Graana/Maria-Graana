@@ -16,9 +16,9 @@ class PickerComponent extends React.Component {
         }
     }
 
-    onChange = (itemValue, itemIndex) => {
+    onChange = (itemValue, itemIndex, name) => {
         if (itemValue !== this.props.placeholder) {
-            this.props.onValueChange(itemValue)
+            this.props.onValueChange(itemValue,name)
         }
         this.setState({
             selectedTask: itemValue
@@ -33,7 +33,8 @@ class PickerComponent extends React.Component {
             container,
             itemStyle,
             pickerStyle,
-            selectedItem
+            selectedItem,
+            name,
         } = this.props;
         const items = data || [];
         let serviceItems = []
@@ -63,7 +64,7 @@ class PickerComponent extends React.Component {
                     placeholder={placeholderLabel}
                     selectedValue={selectedValue.toString()}
                     onValueChange={(itemValue, itemIndex) =>
-                        this.onChange(itemValue, itemIndex)
+                        this.onChange(itemValue, itemIndex, name)
                     }
                 >
                     {serviceItems}

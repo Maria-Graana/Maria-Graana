@@ -172,5 +172,10 @@ export default AppStyles = {
     pickerTextStyle:{
         fontSize: 14,
         fontFamily: 'OpenSans_regular',
-    }
+    },
+    require:{
+        color: 'red',
+        fontSize: 10,
+        marginTop: 5,
+    },
 }

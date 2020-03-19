@@ -91,6 +91,7 @@ export function logoutUser(){
     return (dispatch, getsState) => {
         deleteAuthorizationToken();
         removeBaseUrl();
+        removeItem('token');
         dispatch({
             type: types.LOGOUT_USER,
         })

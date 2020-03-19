@@ -3,6 +3,8 @@ import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { StyleProvider } from 'native-base';
 import DetailForm from './detailForm';
 import AppStyles from '../../AppStyles';
+import getTheme from '../../../native-base-theme/components';
+import formTheme from '../../../native-base-theme/variables/formTheme';
 
 class AddLead extends Component {
     constructor(props) {
@@ -12,13 +14,15 @@ class AddLead extends Component {
     render() {
         return (
             <View style={[AppStyles.container]}>
-                <StyleProvider>
-                    <KeyboardAvoidingView>
-                        <ScrollView>
+                <StyleProvider style={getTheme(formTheme)}>
+                <KeyboardAvoidingView behavior="padding" enabled>
+                    <ScrollView>
+                        <View>
                             <DetailForm />
-                        </ScrollView>
-                    </KeyboardAvoidingView>
-                </StyleProvider>
+                        </View>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            </StyleProvider>
             </View>
         )
     }

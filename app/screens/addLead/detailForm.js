@@ -57,7 +57,7 @@ class DetailForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent selectedItem={''} data={''} value={''} placeholder='Min Investment' />
+              <PickerComponent selectedItem={''} data={''} value={''} placeholder='Max Investment' />
             </View>
           </View>
 

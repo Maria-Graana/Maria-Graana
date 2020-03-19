@@ -27,5 +27,19 @@ export default StaticData = {
             id: 896,
             hour: "03PM",
         }
+    ],
+    teamDiaryRows: [
+        {
+            id: 1,
+            image: '../assets/img/avatar/jpeg',
+            name: 'Irfan Lashari',
+            subRole: 'Zonal Manager'
+        },
+        {
+            id: 2,
+            image: '../assets/img/avatar/jpeg',
+            name: 'Zaigham Abbas',
+            subRole: 'Zonal Manager'
+        }
     ]
 }

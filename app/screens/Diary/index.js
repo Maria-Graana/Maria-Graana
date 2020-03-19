@@ -173,11 +173,7 @@ class Diary extends React.Component {
 
   goToDiaryForm = () => {
     const { navigation } = this.props;
-    navigation.dispatch(
-      StackActions.replace('AddDiary', {
-        update: false
-      })
-    );
+    navigation.navigate('AddDiary');
   }
 
 

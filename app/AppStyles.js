@@ -74,5 +74,38 @@ export default AppStyles = {
     },
     standardMarginVertical: {
         marginVertical: 16
-    }
+    },
+    mainInputWrap: {
+        position: 'relative',
+        marginBottom: 10,
+        marginTop: 10,
+    },
+    inputWrap: {
+        position: 'relative',
+    },
+    formControl: {
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        fontSize: 14,
+        borderWidth: 0,
+        height: 50,
+        fontFamily: 'OpenSans_regular',
+    },
+    inputPadLeft: {
+        paddingLeft: 10,
+    },
+    formBtn: {
+        backgroundColor: '#ffffff',
+        justifyContent: 'center',
+        minHeight: 55,
+        borderRadius: 5,
+        backgroundColor: '#0f73ee',
+        padding: 15,
+    },
+    btnText: {
+        color: '#fff',
+        fontSize: 18,
+        fontFamily: 'OpenSans_bold',
+        letterSpacing: 0.6,
+    },
 }

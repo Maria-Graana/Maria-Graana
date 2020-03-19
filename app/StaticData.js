@@ -41,5 +41,11 @@ export default StaticData = {
             name: 'Zaigham Abbas',
             subRole: 'Zonal Manager'
         }
+    ],
+    taskValues: [
+        'Meeting',
+        'Follow Up',
+        'Day Structure',
+        'Other'
     ]
 }

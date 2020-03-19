@@ -11,6 +11,7 @@ import Lead from '../screens/Lead/index';
 import HeaderRight from '../components/HeaderRight/index';
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index';
 import AddInventory from '../screens/AddInventory/index'
+import AddLead from '../screens/addLead'
 import AppStyles from '../AppStyles';
 
 const Stack = createStackNavigator();
@@ -84,6 +85,14 @@ function MainStack() {
             />
             <Stack.Screen name='AddInventory' component={AddInventory}
                 options={({ navigation, route }) => ({
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='AddLead' component={AddLead}
+                options={({ navigation, route }) => ({
+                    title: 'CREATE CM LEAD',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

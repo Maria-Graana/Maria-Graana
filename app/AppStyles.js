@@ -98,6 +98,12 @@ export default AppStyles = {
         height: 50,
         fontFamily: 'OpenSans_regular',
     },
+    formControlForPicker: {
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        borderWidth: 0,
+        fontFamily: 'OpenSans_regular',
+    },
     inputPadLeft: {
         paddingLeft: 10,
     },

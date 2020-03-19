@@ -27,7 +27,7 @@ class Diary extends React.Component {
       todayDate: moment(new Date()).format('L'),
       newDiaryData: [],
       diaryData: [],
-      loading: false,
+      loading: true,
     }
   }
 
@@ -40,7 +40,7 @@ class Diary extends React.Component {
   }
 
   componentWillUnmount() {
-    this._unsubscribe();
+    // this._unsubscribe();
   }
 
   _toggleShow = () => {
@@ -116,6 +116,7 @@ class Diary extends React.Component {
 
   showTime = () => {
     const { diaryData, calendarList } = this.state;
+    let calendarData = null;
     if (diaryData.length) {
       let groupedData = diaryData.map((item, index) => {
         item.statusColor = this.checkStatus(item)
@@ -127,7 +128,7 @@ class Diary extends React.Component {
         }
       })
       groupedData = _.groupBy(diaryData, 'hour')
-      let calendarData = calendarList.map((item, index) => {
+      calendarData = calendarList.map((item, index) => {
         if (groupedData[item]) {
           return {
             time: item,
@@ -179,58 +180,6 @@ class Diary extends React.Component {
     );
   }
 
-  updateDiary = (data) => {
-    this.props.navigation.navigate('AddDiary', { 'agentId': this.state.agentId, 'update': true, data: data })
-    this.setState({
-      openPopup: false,
-    })
-  }
-
-  showPopup = (val) => {
-    this.setState({
-      openPopup: true,
-      oneDiary: val
-    })
-  }
-
-  closePopup = (val) => {
-    this.setState({
-      openPopup: false,
-      loading: true,
-    }, () => {
-      this.diaryMain()
-    })
-  }
-
-  popupAction = (val, type) => {
-    let endPoint = ``
-    endPoint = `/api/diary/update?id=${val.id}`
-    let that = this;
-    switch (type) {
-      case 'completed':
-        axios.patch(endPoint, {
-          status: type
-        }).then(function (response) {
-          if (response.status == 200)
-            console.log('responseSuccessCompleted');
-          that.diaryMain();
-        })
-        break;
-      case 'inProgress':
-        axios.patch(endPoint, {
-          status: type
-        }).then(function (response) {
-          if (response.status == 200)
-            console.log('responseSuccessInProgress');
-          that.diaryMain();
-        })
-
-        break;
-      default:
-        break;
-
-    }
-  }
 
   render() {
     const { showCalendar, startDate, newDiaryData, loading } = this.state;

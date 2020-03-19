@@ -23,6 +23,7 @@
     "react-native-calendars": "^1.264.0",
     "react-native-datepicker": "^1.7.2",
     "react-native-gesture-handler": "~1.5.0",
+    "react-native-modal": "^11.5.4",
     "react-native-reanimated": "~1.4.0",
     "react-native-safe-area-context": "0.6.0",
     "react-native-screens": "2.0.0-alpha.12",
@@ -34,7 +35,8 @@
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
-    "underscore": "^1.9.2"
+    "underscore": "^1.9.2",
+    "@react-native-community/datetimepicker": "2.1.0"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.0.0",

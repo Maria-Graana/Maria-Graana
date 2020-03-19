@@ -77,8 +77,8 @@ export default AppStyles = {
     },
     mainInputWrap: {
         position: 'relative',
-        marginBottom: 10,
-        marginTop: 10,
+        marginBottom: 15,
+        marginTop: 15,
     },
     inputWrap: {
         position: 'relative',
@@ -86,19 +86,21 @@ export default AppStyles = {
     formControl: {
         backgroundColor: '#fff',
         borderRadius: 4,
-        fontSize: 14,
         borderWidth: 0,
         height: 50,
+    },
+    formFontSettings:{
+        fontSize: 14,
         fontFamily: 'OpenSans_regular',
     },
     inputPadLeft: {
-        paddingLeft: 10,
+        paddingLeft: 15,
     },
     formBtn: {
         backgroundColor: '#ffffff',
         justifyContent: 'center',
         minHeight: 55,
-        borderRadius: 5,
+        borderRadius: 4,
         backgroundColor: '#0f73ee',
         padding: 15,
     },
@@ -108,4 +110,8 @@ export default AppStyles = {
         fontFamily: 'OpenSans_bold',
         letterSpacing: 0.6,
     },
+    pickerTextStyle:{
+        fontSize: 14,
+        fontFamily: 'OpenSans_regular',
+    }
 }

@@ -8,6 +8,8 @@ import {
 } from 'react-native'
 import moment from 'moment';
 import DatePicker from 'react-native-datepicker'
+import { Ionicons } from '@expo/vector-icons'
+import AppStyles from '../../AppStyles';
 
 console.disableYellowBox = true;
 
@@ -35,7 +37,6 @@ class DateComponent extends React.Component {
     const {
       mode,
       placeholder,
-      is24Hour,
       date,
       disabled,
     } = this.props;
@@ -43,11 +44,10 @@ class DateComponent extends React.Component {
 
     const placeholderlabel = placeholder || 'Select Date';
     const addMode = mode || 'date';
-    const addis24Hour = is24Hour || false;
     const dateTime = date || this.state.date;
     return (
       <DatePicker
-        style={{ marginVertical: 16, marginHorizontal: 16, width: "89%",backgroundColor:'white' }}
+        style={[AppStyles.formControl, { backgroundColor: `${disabled ? '#ddd' : '#fff'}`, width: '100%', justifyContent: 'center', paddingRight: 15 }]}
         mode={addMode}
         date={dateTime}
         placeholder={placeholderlabel}
@@ -55,7 +55,30 @@ class DateComponent extends React.Component {
         disabled={mode == 'time' ? disabled : false}
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"
-        is24Hour={addis24Hour}
+        iconComponent={<Ionicons style={styles.arrowIcon} name={addMode === 'date' ? 'md-calendar' : 'md-time'} size={26} color={AppStyles.colors.primaryColor} />}
+        is24Hour={false}
+        customStyles={{
+          placeholderText: {
+            alignSelf: 'flex-start',
+            fontFamily: AppStyles.fonts.defaultFont,
+            padding: 12,
+          },
+          dateInput: {
+            borderWidth: 0
+          },
+          disabled:{
+            backgroundColor:`${disabled ? '#ddd' : '#fff'}`,
+          },
+          dateText: {
+         
+            alignSelf: 'flex-start',
+            fontFamily: AppStyles.fonts.defaultFont,
+            padding: 12,
+          },
+          btnTextConfirm: {
+            color: AppStyles.colors.primaryColor
+          }
+        }}
         onDateChange={(date) => { this.onChange(date, addMode) }}
       />
     )

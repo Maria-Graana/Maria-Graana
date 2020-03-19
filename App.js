@@ -1,5 +1,6 @@
 import React from 'react';
 import RootStack from './app/navigation/AppNavigation'
+import { AppLoading } from 'expo';
 import { Root } from "native-base";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { store, persistor } from './app/store';
@@ -15,6 +16,9 @@ import { SplashScreen } from 'expo';
 export default class App extends React.Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			isReady: false,
+		};
 	}
 
 	async componentDidMount() {
@@ -26,10 +30,13 @@ export default class App extends React.Component {
 			OpenSans_bold: require('./assets/fonts/OpenSans-Bold.ttf'),
 			...Ionicons.font,
 		});
-		// this.setState({ isReady: true });
+		this.setState({ isReady: true });
 	}
 
 	render() {
+		if (!this.state.isReady) {
+			return <AppLoading />;
+		  }
 		return (
 			<Provider store={store}>
 				<PersistGate loading={null} persistor={persistor}>

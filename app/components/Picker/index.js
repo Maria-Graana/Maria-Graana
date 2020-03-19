@@ -51,11 +51,12 @@ class PickerComponent extends React.Component {
         }
         return (
             <View style={[styles.pickerMain]}>
-                <Ionicons style={styles.arrowIcon} name="ios-arrow-down" color={AppStyles.colors.textColor} />
+                <Ionicons style={styles.arrowIcon} name="ios-arrow-down"  size={26} color={AppStyles.colors.subTextColor} />
                 <Picker
                     headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff', }}
                     headerBackButtonTextStyle={{ color: '#fff' }}
                     headerTitleStyle={{ color: "#fff" }}
+                    textStyle={[AppStyles.pickerTextStyle, AppStyles.formFontSettings]}
                     mode="dropdown"
                     style={AppStyles.formControl}
                     placeholder={placeholderLabel}
@@ -81,8 +82,7 @@ const styles = StyleSheet.create({
     arrowIcon:{
         position: 'absolute',
         right: 15,
-        top: 17,
-        fontSize: 16,
+        top: 12,
         zIndex: 2,
     },
 })

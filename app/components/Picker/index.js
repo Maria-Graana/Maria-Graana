@@ -57,7 +57,7 @@ class PickerComponent extends React.Component {
                     headerBackButtonTextStyle={{ color: '#fff' }}
                     headerTitleStyle={{ color: "#fff" }}
                     mode="dropdown"
-                    style={AppStyles.formControl}
+                    style={AppStyles.formControlForPicker}
                     placeholder={placeholderLabel}
                     selectedValue={selectedValue.toString()}
                     onValueChange={(itemValue, itemIndex) =>

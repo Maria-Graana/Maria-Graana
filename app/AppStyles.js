@@ -102,7 +102,7 @@ export default AppStyles = {
         backgroundColor: '#fff',
         borderRadius: 4,
         borderWidth: 0,
-        fontFamily: 'OpenSans_regular',
+        height: 50,
     },
     inputPadLeft: {
         paddingLeft: 10,

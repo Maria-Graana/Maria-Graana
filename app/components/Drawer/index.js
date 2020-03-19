@@ -43,12 +43,13 @@ class CustomDrawerContent extends React.Component {
                                {user.firstName} {user.lastName} 
                             </Text>
                             <Text style={styles.emailText}>
-                                agent@arms.com
+                                {user.email}
                             </Text>
                         </View>
                     </View>
                     <View style={styles.underLine} />
                     <DrawerIconItem screen={'Diary'} badges={15} navigateTo={ () => {this.navigateTo('Diary')}}/>
+                    <DrawerItem screen={'Team Diary'} navigateTo={ () => {this.navigateTo('TeamDiary')}}/>
                     <DrawerIconItem screen={'Leads'} badges={10} navigateTo={ () => {this.navigateTo('Lead')}} />
                     <DrawerIconItem screen={'Inventory'} badges={25} navigateTo={ () => {this.navigateTo('Inventory')}} />
                     <DrawerItem screen={'Clients'} navigateTo={ () => {}}/>

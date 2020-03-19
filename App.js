@@ -5,8 +5,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { store, persistor } from './app/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { connect } from 'react-redux';
-import { checkToken } from './app/actions/user';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { SplashScreen } from 'expo';

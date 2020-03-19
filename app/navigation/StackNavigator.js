@@ -5,6 +5,7 @@ import Diary from '../screens/Diary/index';
 import Login from '../screens/Login/index';
 import Inventory from '../screens/Inventory/index';
 import AddDiary from '../screens/AddDiary';
+import TeamDiary from '../screens/TeamDiary';
 import moment from 'moment'
 import Lead from '../screens/Lead/index';
 import HeaderRight from '../components/HeaderRight/index';
@@ -42,6 +43,14 @@ function MainStack() {
             <Stack.Screen name='Diary' component={Diary}
                 options={({ navigation, route }) => ({
                     title: _today,
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='TeamDiary' component={TeamDiary}
+                options={({ navigation, route }) => ({
+                    title: 'TEAM DIARY LIST',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

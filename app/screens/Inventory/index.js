@@ -144,6 +144,7 @@ class Inventory extends React.Component {
 								data={item}
 								dropDownId={dropDownId}
 								unSelectInventory={this.unSelectInventory}
+								goToInventoryForm={this.goToInventoryForm}
 							/>
 						)}
 					/>

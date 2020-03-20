@@ -27,6 +27,7 @@ class AddDiary extends Component {
     }
 
     generatePayload = (data) => {
+        const { route } = this.props;
         let start = moment(data.date + data.startTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
         let end = moment(data.date + data.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
         let payload = {
@@ -36,7 +37,7 @@ class AddDiary extends Component {
             taskType: data.taskSelected,
             time: data.startTime,
             status: data.status,
-            userId: this.props.user.id,
+            userId: route.params.agentId,
             diaryTime: start,
             start: start,
             end: end
@@ -50,7 +51,10 @@ class AddDiary extends Component {
             .then((res) => {
                 console.log('response=>', res);
                 helper.successToast('DIARY ADDED SUCCESSFULLY!')
-                this.props.navigation.navigate('Diary', { 'agent': false, 'agentId': this.state.agentId })
+                this.props.navigation.navigate('Diary',
+                    {
+                        'agentId': this.props.route.params.agentId
+                    });
             })
             .catch((error) => {
                 helper.errorToast('ERROR: ADDING DIARY')

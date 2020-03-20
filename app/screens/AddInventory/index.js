@@ -9,15 +9,72 @@ import AppStyles from '../../AppStyles';
 class AddInventory extends Component {
     constructor(props) {
         super(props)
+        this.state = {
+            checkValidation: false,
+            formData: {
+                propertyType: '',
+                subType: '',
+                city: '',
+                area: '',
+                sizeUnit: '',
+                size: '',
+                price: '',
+                grade: '',
+                beds: '',
+                baths: '',
+                lat: '',
+                lng: '',
+                ownerName: '',
+                ownerNumber: '',
+                ownerAddress: '',
+            }
+        }
+        this.dummyData = ["Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 6"]
+    }
+
+    // ********* Form Handle Function
+    handleForm = (value, name) => {
+        const { formData } = this.state
+        formData[name] = value
+        this.setState({ formData })
+        console.log(formData)
+    }
+
+    // ********* On form Submit Function
+    formSubmit = () => {
+        const { formData } = this.state
+
+        // ********* Form Validation Check
+        if (!formData.propertyType ||
+            !formData.subType ||
+            !formData.city ||
+            !formData.area ||
+            !formData.sizeUnit ||
+            !formData.size ||
+            !formData.price ||
+            !formData.beds ||
+            !formData.baths ||
+            !formData.ownerName ||
+            !formData.ownerNumber) {
+            this.setState({
+                checkValidation: true
+            })
+        } else {
+
+            // ********* Call Add Inventory API here :)
+            console.log(formData)
+        }
     }
 
     render() {
+        const { formData } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
                 <KeyboardAvoidingView behavior="padding" enabled>
                     <ScrollView>
+                        {/* ********* Form Component */}
                         <View style={AppStyles.container}>
-                            <DetailForm />
+                            <DetailForm formSubmit={this.formSubmit} checkValidation={this.state.checkValidation} handleForm={this.handleForm} dummyData={this.dummyData} formData={formData} />
                         </View>
                     </ScrollView>
                 </KeyboardAvoidingView>

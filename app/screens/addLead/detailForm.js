@@ -27,14 +27,9 @@ class DetailForm extends Component {
 
   componentDidMount() { }
 
- 
-
-
   render() {
 
     const { formSubmit, checkValidation, handleForm, formData } = this.props
-
-    console.log(checkValidation)
     
     return (
       <View>

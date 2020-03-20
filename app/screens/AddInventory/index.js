@@ -29,7 +29,7 @@ class AddInventory extends Component {
                 ownerAddress: '',
             }
         }
-        this.dummyData = ["Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 6"]
+        this.dummyData = ["", "Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 6"]
     }
 
     // ********* Form Handle Function

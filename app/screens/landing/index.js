@@ -14,9 +14,9 @@ class Landing extends React.Component {
 	}
 
 	// ****** Navigate Function
-	navigateFunction = (name) => {
+	navigateFunction = (name, screenName) => {
 		const { navigation } = this.props
-		navigation.navigate(name)
+		navigation.navigate(name,{screen: screenName})
 	}
 
 	render() {
@@ -25,13 +25,13 @@ class Landing extends React.Component {
 				<ScrollView>
 					<View >
 						{/* Main Wrap of Landing Page Buttons (Diary Button) */}
-						<LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} buttonImg={DiaryImg} badges={'12'}/>
+						<LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} screenName={'Diary'} buttonImg={DiaryImg} badges={'12'}/>
 
 						{/* Main Wrap of Landing Page Buttons (Leads Button) */}
-						<LandingButtonTile navigateFunction={this.navigateFunction} label={'LEADS'} pagePath={'Lead'} buttonImg={LeadImg} badges={'42'}/>
+						<LandingButtonTile navigateFunction={this.navigateFunction} label={'LEADS'} pagePath={'Lead'} screenName={'Lead'} buttonImg={LeadImg} badges={'42'}/>
 
 						{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
-						<LandingButtonTile navigateFunction={this.navigateFunction} label={'INVENTORY'} pagePath={'Inventory'} buttonImg={InventoryImg} badges={'32'}/>
+						<LandingButtonTile navigateFunction={this.navigateFunction} label={'INVENTORY'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={'32'}/>
 					</View>
 				</ScrollView>
 			</SafeAreaView>

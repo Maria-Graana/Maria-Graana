@@ -28,7 +28,8 @@ class Diary extends React.Component {
       newDiaryData: [],
       diaryData: [],
       loading: true,
-      agentId: ''
+      agentId: '',
+     // screen: this.props.route.params.screen
     }
   }
 
@@ -189,12 +190,12 @@ class Diary extends React.Component {
 
 
   render() {
-    const { showCalendar, startDate, newDiaryData, loading } = this.state;
+    const { showCalendar, startDate, newDiaryData, loading, screen } = this.state;
     const { user,route } = this.props;
     return (
       <View style={styles.container}>
         {
-          Ability.canAdd(user.id, route.params.screen) ?
+          Ability.canAdd(user.role, route.params.screen) ?
             <Fab
               active='true'
               containerStyle={{ zIndex: 20 }}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { StackActions } from '@react-navigation/native';
 import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
@@ -12,6 +11,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import AppStyles from '../../AppStyles'
 import styles from './styles'
+import Ability from '../../hoc/Ability'
 import { connect } from 'react-redux';
 
 const _format = 'YYYY-MM-DD';
@@ -179,17 +179,24 @@ class Diary extends React.Component {
 
   render() {
     const { showCalendar, startDate, newDiaryData, loading } = this.state;
+    const { user } = this.props;
     return (
       <View style={styles.container}>
-        <Fab
-          active='true'
-          containerStyle={{ zIndex: 20 }}
-          style={{ backgroundColor: AppStyles.colors.primaryColor }}
-          position="bottomRight"
-          onPress={this.goToDiaryForm}
-        >
-          <Ionicons name="md-add" color="#ffffff" />
-        </Fab>
+        {
+          user.role === 'sub_admin 1' || user.role === 'sub_admin 2' ?
+            <Fab
+              active='true'
+              containerStyle={{ zIndex: 20 }}
+              style={{ backgroundColor: AppStyles.colors.primaryColor }}
+              position="bottomRight"
+              onPress={this.goToDiaryForm}
+            >
+              <Ionicons name="md-add" color="#ffffff" />
+            </Fab> :
+            null
+
+        }
+
         {
           !showCalendar ?
             <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>

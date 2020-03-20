@@ -28,19 +28,23 @@ class Diary extends React.Component {
       newDiaryData: [],
       diaryData: [],
       loading: true,
+      agentId: ''
     }
   }
 
   componentDidMount() {
-    const { navigation } = this.props;
+    const { navigation, route, user } = this.props;
+    if (route.params !== undefined && route.params.contains('agentId') && route.params.agentId) {
+      this.setState({ agentId: route.params.agentId })
+    }
+    else {
+      this.setState({ agentId: user.id })
+    }
+
     this._unsubscribe = navigation.addListener('focus', () => {
       this.diaryMain();
     });
     this.listData();
-  }
-
-  componentWillUnmount() {
-    // this._unsubscribe();
   }
 
   _toggleShow = () => {
@@ -75,7 +79,7 @@ class Diary extends React.Component {
   diaryMain = () => {
     let endPoint = ``
     let date = moment(this.state.startDate).format('YYYY-MM-DD')
-    endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}`
+    endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}&agentId=${this.state.agentId}`
     axios.get(`${endPoint}`)
       .then((res) => {
         this.setState({
@@ -173,7 +177,10 @@ class Diary extends React.Component {
 
   goToDiaryForm = () => {
     const { navigation } = this.props;
-    navigation.navigate('AddDiary');
+    const { agentId } = this.state;
+    navigation.navigate('AddDiary', {
+      agentId: agentId
+    });
   }
 
 

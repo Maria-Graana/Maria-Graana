@@ -13,6 +13,7 @@ import DrawerItem from '../DrawerItem';
 import UserAvatar from 'react-native-user-avatar';
 import AppStyles from '../../AppStyles';
 import styles from './style';
+import Ability from '../../hoc/Ability';
 
 class CustomDrawerContent extends React.Component {
 
@@ -31,12 +32,13 @@ class CustomDrawerContent extends React.Component {
 
     render () {
         const {user}= this.props
+        const {role}= user
         return (
             <SafeAreaView style={[AppStyles.mb1, {width: '100%'}]}>
                 <ScrollView  style={[styles.scrollContainer, {width: '100%'}]}>
                     <View style={AppStyles.flexDirectionRow}>
                         <View>
-                            <UserAvatar  size="50" name={`${user.firstName}`} textColor= 'black' color="#ffffff"/>
+                            <UserAvatar  size="50" src='https://pickaface.net/gallery/avatar/unr_ironman_170308_2112_9ldw5b.png' name={`${user.firstName}`}/>
                         </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.nameText}>
@@ -48,10 +50,10 @@ class CustomDrawerContent extends React.Component {
                         </View>
                     </View>
                     <View style={styles.underLine} />
-                    <DrawerIconItem screen={'Diary'} badges={15} navigateTo={ () => {this.navigateTo('Diary')}}/>
-                    <DrawerItem screen={'Team Diary'} navigateTo={ () => {this.navigateTo('TeamDiary')}}/>
-                    <DrawerIconItem screen={'Leads'} badges={10} navigateTo={ () => {this.navigateTo('Lead')}} />
-                    <DrawerIconItem screen={'Inventory'} badges={25} navigateTo={ () => {this.navigateTo('Inventory')}} />
+                    { Ability.canView(role, 'Diary') && <DrawerIconItem screen={'Diary'} badges={15} navigateTo={ () => {this.navigateTo('Diary')}}/> }
+                    { Ability.canView(role, 'TeamDiary') && <DrawerItem screen={'Team Diary'} navigateTo={ () => {this.navigateTo('TeamDiary')}}/> }
+                    <DrawerIconItem screen={'Leads'} badges={20} navigateTo={ () => {this.navigateTo('Lead')}} />
+                    <DrawerIconItem screen={'Inventory'} badges={30} navigateTo={ () => {this.navigateTo('Inventory')}} />
                     <DrawerItem screen={'Clients'} navigateTo={ () => {}}/>
                     <DrawerItem screen={'Targets'} navigateTo={ () => {}}/>
                     <DrawerItem screen={'Users'} navigateTo={ () => {}}/>

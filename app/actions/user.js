@@ -106,7 +106,7 @@ export function checkToken(){
                 .then((response) => {
                     setAuthorizationToken(token)
                     setBaseUrl()
-                    console.log(response.data)
+                    // console.log(response.data)
                     dispatch({
                         type: types.SET_USER,
                         payload: {...response.data},

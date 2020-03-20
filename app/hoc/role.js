@@ -1,12 +1,15 @@
 const role = {
     Diary: {
         roles: [
+            { role: 'super_admin', access: { v: true, a: true, e: true, d: true} },
+            { role: 'admin 1', access: { v: true, a: true, e: false, d: false} },
             { role: 'sub_admin 1', access: { v: true, a: true, e: false, d: false} },
             { role: 'sub_admin 2', access: { v: true, a: true, e: false, d: false} },
         ],
     },
     Inventory: {
         roles: [
+            { role: 'super_admin', access: { v: true, a: true, e: true, d: true} },
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true} },
             { role: 'sub_admin 2', access: { v: true, a: true, e: true, d: true} },
             { role: 'sub_admin 4', access: { v: true, a: true, e: true, d: true} },

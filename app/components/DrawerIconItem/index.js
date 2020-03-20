@@ -7,7 +7,8 @@ import {
     FlatList,
     TouchableWithoutFeedback,
     Image,
-    StyleSheet
+    StyleSheet,
+    Platform
 } from 'react-native'
 import {Button, ListItem, Text, Icon, Left, Body, Right, Switch } from 'native-base';
 
@@ -28,7 +29,7 @@ export default class DrawerIconItem extends React.Component {
                         <Text style={{color : 'black', fontSize : 15}}>{screen}</Text>
                     </Body>
                     <Right style={{borderBottomColor: 'white', marginBottom: 25}}>
-                        <Badges badges={badges} customStyling={{borderColor: 'black', color: 'black'}}/>
+                        <Badges badges={badges} customStyling={{borderColor: 'black', color: 'black', borderRadius: Platform.OS ? 10 : 15, height: Platform.OS ? 20: 16 }}/>
                     </Right>
                 </ListItem>
             </TouchableWithoutFeedback>

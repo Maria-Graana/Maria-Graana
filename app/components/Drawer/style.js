@@ -21,7 +21,7 @@ export default styles = StyleSheet.create({
         marginBottom: Platform.OS == 'android'? 2: 6
     },
     emailText: {
-        fontSize: 15, 
+        fontSize: 11, 
         color: AppStyles.colors.subTextColor
     }
 })

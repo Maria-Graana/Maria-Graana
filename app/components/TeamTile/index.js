@@ -9,7 +9,6 @@ class TeamTile extends React.Component {
     }
     render() {
         const {item}= this.props.data
-        console.log(item)
         return (
             <TouchableOpacity 
             activeOpacity={.7}
@@ -17,16 +16,16 @@ class TeamTile extends React.Component {
             >
                 <View style= {{flexDirection: 'row', marginVertical: 15}}>
                     <View style={{paddingRight: 10}}>
-                        <UserAvatar  size="50" name={`${item.name}`} textColor= 'black' color="#ffffff"/>
+                        <UserAvatar  size="50" src='https://pickaface.net/gallery/avatar/unr_ironman_170308_2112_9ldw5b.png' name={`${item.name}`}/>
                     </View>
                     <View style= {{flexDirection: 'column'}}>
                         <View>
-                            <Text style={[styles.textFont, {fontSize: 16}]}>
-                                {item.name}
+                            <Text style={[styles.textFont, {fontSize: 15}]}>
+                                {item.firstName} {item.lastName}
                             </Text>
                         </View>
                         <View style={{paddingTop: 5}}>
-                            <Text style={[styles.textFont, {fontSize: 14, color: AppStyles.colors.subTextColor}]}>
+                            <Text style={[styles.textFont, {fontSize: 12, color: AppStyles.colors.subTextColor}]}>
                                 {item.subRole}
                             </Text>
                         </View>

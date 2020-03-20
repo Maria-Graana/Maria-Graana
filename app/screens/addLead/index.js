@@ -11,27 +11,43 @@ class AddLead extends Component {
         super(props)
         this.state = {
             checkValidation: false,
+            formData: {
+                client: '',
+                city: '',
+                project: '',
+                productType: '',
+                minInvestment: '',
+                maxInvestment: '',
+            }
         }
     }
 
-    formSubmit = (data) => {
-        if (!data.client || !data.city || !data.project || !data.productType || !data.minInvestment || !data.maxInvestment) {
+    handleForm = (value, name) => {
+        const { formData } = this.state
+        formData[name] = value
+        this.setState({ formData })
+    }
+
+    formSubmit = () => {
+        const { formData } = this.state
+        if (!formData.client || !formData.city || !formData.project || !formData.productType || !formData.minInvestment || !formData.maxInvestment) {
             this.setState({
                 checkValidation: true
             })
         } else {
-            console.log(data)
+            console.log(formData)
         }
     }
 
     render() {
+        const { formData } = this.state
         return (
             <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
                     <KeyboardAvoidingView behavior="padding" enabled>
                         <ScrollView>
                             <View>
-                                <DetailForm formSubmit={this.formSubmit} checkValidation={this.state.checkValidation}/>
+                                <DetailForm formSubmit={this.formSubmit} checkValidation={this.state.checkValidation} handleForm={this.handleForm} formData={formData}/>
                             </View>
                         </ScrollView>
                     </KeyboardAvoidingView>

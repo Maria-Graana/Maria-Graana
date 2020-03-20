@@ -34,17 +34,20 @@ class Diary extends React.Component {
 
   componentDidMount() {
     const { navigation, route, user } = this.props;
-    if (route.params !== undefined && route.params.contains('agentId') && route.params.agentId) {
-      this.setState({ agentId: route.params.agentId })
-    }
-    else {
-      this.setState({ agentId: user.id })
-    }
-
     this._unsubscribe = navigation.addListener('focus', () => {
-      this.diaryMain();
+      if (route.params !== undefined && 'agentId' in route.params && route.params.agentId) {
+        this.setState({ agentId: route.params.agentId }, () => {
+          this.diaryMain();
+          this.listData();
+        });
+      }
+      else {
+        this.setState({ agentId: user.id }, () => {
+          this.diaryMain();
+          this.listData();
+        })
+      }
     });
-    this.listData();
   }
 
   _toggleShow = () => {
@@ -77,9 +80,10 @@ class Diary extends React.Component {
   }
 
   diaryMain = () => {
+    const { agentId } = this.state;
     let endPoint = ``
     let date = moment(this.state.startDate).format('YYYY-MM-DD')
-    endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}&agentId=${this.state.agentId}`
+    endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}&agentId=${agentId}`
     axios.get(`${endPoint}`)
       .then((res) => {
         this.setState({
@@ -179,18 +183,18 @@ class Diary extends React.Component {
     const { navigation } = this.props;
     const { agentId } = this.state;
     navigation.navigate('AddDiary', {
-      agentId: agentId
+      'agentId': agentId
     });
   }
 
 
   render() {
     const { showCalendar, startDate, newDiaryData, loading } = this.state;
-    const { user } = this.props;
+    const { user,route } = this.props;
     return (
       <View style={styles.container}>
         {
-          user.role === 'sub_admin 1' || user.role === 'sub_admin 2' ?
+          Ability.canAdd(user.id, route.params.screen) ?
             <Fab
               active='true'
               containerStyle={{ zIndex: 20 }}

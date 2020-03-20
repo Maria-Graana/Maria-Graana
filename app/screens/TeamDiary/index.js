@@ -18,7 +18,7 @@ class TeamDiary extends React.Component {
     fetchTeam = () => {
         axios.get('/api/user/agents')
         .then((res) =>{
-            console.log(res.data)
+           // console.log(res.data)
             this.setState({
                 teamDiary: res.data
             })

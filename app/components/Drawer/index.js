@@ -23,7 +23,7 @@ class CustomDrawerContent extends React.Component {
 
     navigateTo = (screen) => {
         console.log(' i am inside navigateTo')
-        RootNavigation.navigate(screen)
+        RootNavigation.navigate(screen, {screen: screen})
     }
 
     signOut = () => {

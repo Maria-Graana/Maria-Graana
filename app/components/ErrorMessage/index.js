@@ -4,9 +4,9 @@ import styles from './styles'
 
 const ErrorMessage = (props) => {
     return (
-            props.errorMessage ?
-                <Text style={[styles.errorMessage]} >{props.errorMessage}</Text> :
-                 null
+        props.errorMessage?
+            <Text style={[styles.errorMessage]} >{props.errorMessage}</Text> :
+            null
     )
 }
 

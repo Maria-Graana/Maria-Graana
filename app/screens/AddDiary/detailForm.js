@@ -24,14 +24,11 @@ class DetailForm extends Component {
                 endTime: '',
                 date: '',
                 description: '',
-            }
+                status: 'pending',
+            },
         }
         this.taskValues = StaticData.taskValues;
     }
-
-    toggleModal = () => {
-        this.setState({ isModalVisible: !this.state.isModalVisible });
-    };
 
     handleForm = (value, name) => {
         const { formData } = this.state
@@ -40,37 +37,52 @@ class DetailForm extends Component {
     }
 
     render() {
-        const { taskValues, selectedTask, date, startTime, endTime } = this.state;
+        const { taskValues, taskSelected, date, startTime, endTime, subject, description } = this.state.formData;
+        const { formData } = this.state;
+        const { formSubmit, checkValidation } = this.props
 
         return (
-
             <View>
+
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} placeholder={'Subject/Title'} onChangeText={(text) => this.handleForm(text, 'subject')} />
+                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} placeholder={'Subject/Title'} value={subject} onChangeText={(text) => this.handleForm(text, 'subject')} />
                     </View>
-                    <ErrorMessage errorMessage={'*Required Field'} />
+                    {
+                        checkValidation === true && subject === '' && <ErrorMessage errorMessage={'Required'} />
+                    }
                 </View>
 
-
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={this.handleForm} name={'taskSelected'} selectedItem={selectedTask} data={this.taskValues} value={taskValues} placeholder='Task Type' />
+                        <PickerComponent onValueChange={this.handleForm} name={'taskSelected'} selectedItem={taskSelected} data={this.taskValues} value={taskValues} placeholder='Task Type' />
                     </View>
+                    {
+                        checkValidation === true && taskSelected === '' && <ErrorMessage errorMessage={'Required'} />
+                    }
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <DateComponent
                         date={date} mode='date' placeholder='Select Date' onDateChange={(date) => this.handleForm(date, 'date')}
                     />
+                    {
+                        checkValidation === true && date === '' && <ErrorMessage errorMessage={'Required'} />
+                    }
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <DateComponent date={startTime} mode='time' placeholder='Select Start Time' onTimeChange={(value) => this.handleForm(moment(value, 'h:mm ').format('hh:mm a'), 'startTime')} />
+                    {
+                        checkValidation === true && startTime === '' && <ErrorMessage errorMessage={'Required'} />
+                    }
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <DateComponent date={endTime} mode='time' placeholder='Select End Time' disabled={startTime === '' ? true : false} onTimeChange={(value) => this.handleForm(moment(value, 'h:mm ').format('hh:mm a'), 'endTime')} />
+                    {
+                        checkValidation === true && endTime === '' && <ErrorMessage errorMessage={'Required'} />
+                    }
                 </View>
 
 
@@ -80,13 +92,13 @@ class DetailForm extends Component {
                         style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, { height: 100 }]} rowSpan={5}
                         placeholder="Description"
                         onChangeText={(text) => this.handleForm(text, 'description')}
+                        value={description}
                     />
                 </View>
 
 
-
                 <View style={{ marginVertical: 10 }}>
-                    <Button
+                    <Button onPress={() => { formSubmit(formData) }}
                         style={[AppStyles.formBtn]}>
                         <Text style={AppStyles.btnText}>ADD DIARY</Text>
                     </Button>

@@ -49,7 +49,6 @@ class AddDiary extends Component {
         let diary = this.generatePayload(data)
         axios.post(`/api/diary/create`, diary)
             .then((res) => {
-                console.log('response=>', res);
                 helper.successToast('DIARY ADDED SUCCESSFULLY!')
                 this.props.navigation.navigate('Diary',
                     {

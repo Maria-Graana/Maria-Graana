@@ -13,6 +13,9 @@ import AppStyles from '../../AppStyles';
 
 console.disableYellowBox = true;
 
+const _format = 'YYYY-MM-DD';
+const _today = moment(new Date().dateString).format(_format);
+
 
 class DateComponent extends React.Component {
   constructor(props) {
@@ -51,7 +54,7 @@ class DateComponent extends React.Component {
         mode={addMode}
         date={dateTime}
         placeholder={placeholderlabel}
-        minDate={mode == 'time' ? moment().format("HH:mm") : moment().format("YYYY-MM-DD")}
+        minDate={mode == 'date' &&  moment().format("YYYY-MM-DD")}
         disabled={mode == 'time' ? disabled : false}
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"

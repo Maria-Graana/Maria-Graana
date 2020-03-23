@@ -156,7 +156,6 @@ export default AppStyles = {
         width: '43%',
     },
     formBtn: {
-        backgroundColor: '#ffffff',
         justifyContent: 'center',
         minHeight: 55,
         borderRadius: 4,

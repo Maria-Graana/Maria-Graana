@@ -94,6 +94,7 @@ class Diary extends React.Component {
           loading: true,
           diaryData: res.data.rows,
         }, () => {
+          console.log(this.state.diaryData)
           this.showTime()
         })
       }).catch((error) => {
@@ -106,11 +107,11 @@ class Diary extends React.Component {
 
   checkStatus = (val) => {
     let taskDate = moment(val.date).format('L')
-    //let checkForCDate = taskDate == this.state.todayDate
-    if (val.status == 'inProgress') {
+    let checkForCDate = taskDate == this.state.todayDate
+    if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
       return '#FDD835'
     }
-    else if (val.status === 'pending') {
+    else if (checkForCDate && val.status === 'pending') {
       return 'red'
     }
     else if (val.status == 'completed') {
@@ -217,10 +218,12 @@ class Diary extends React.Component {
 
   deleteDiary = (data) => {
     let endPoint = ``
+    let that = this;
     endPoint = `/api/diary/delete?id=${data.id}`
     axios.delete(endPoint).then(function (response) {
       if (response.status === 200) {
         helper.successToast('DIARY DELETED SUCCESSFULLY!')
+        that.diaryMain();
       }
 
     }).catch(function (error) {

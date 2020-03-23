@@ -54,13 +54,14 @@ class DateComponent extends React.Component {
         mode={addMode}
         date={dateTime}
         placeholder={placeholderlabel}
-        minDate={mode == 'date' &&  moment().format("YYYY-MM-DD")}
+        minDate={mode == 'time' ? moment().format("HH:mm") : moment().format("YYYY-MM-DD")}
         disabled={mode == 'time' ? disabled : false}
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"
         iconComponent={<Ionicons style={styles.arrowIcon} name={addMode === 'date' ? 'md-calendar' : 'md-time'} size={26} color={AppStyles.colors.primaryColor} />}
         is24Hour={false}
         customStyles={{
+           datePickerCon: { backgroundColor: AppStyles.colors.primaryColor, },
           placeholderText: {
             alignSelf: 'flex-start',
             fontFamily: AppStyles.fonts.defaultFont,
@@ -73,14 +74,18 @@ class DateComponent extends React.Component {
             backgroundColor:`${disabled ? '#ddd' : '#fff'}`,
           },
           dateText: {
-         
             alignSelf: 'flex-start',
             fontFamily: AppStyles.fonts.defaultFont,
             padding: 12,
           },
           btnTextConfirm: {
-            color: AppStyles.colors.primaryColor
-          }
+            color: '#fff'
+          },
+          btnTextCancel:{
+            color:'#333'
+          },
+          
+          
         }}
         onDateChange={(date) => { this.onChange(date, addMode) }}
       />

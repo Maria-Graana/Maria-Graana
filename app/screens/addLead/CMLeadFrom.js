@@ -7,7 +7,7 @@ import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
 
-class DetailForm extends Component {
+class CMLeadFrom extends Component {
   constructor(props) {
     super(props)
 
@@ -115,5 +115,5 @@ mapStateToProps = (store) => {
   }
 }
 
-export default connect(mapStateToProps)(DetailForm)
+export default connect(mapStateToProps)(CMLeadFrom)
 

@@ -6,13 +6,14 @@ import Loader from '../../components/loader'
 import CalendarComponent from '../../components/CalendarComponent'
 import axios from 'axios';
 import { Fab } from 'native-base';
-import data from '../../StaticData';
 import _ from 'underscore';
 import moment from 'moment';
+import DairyPopup from '../../components/DairyPopup'
 import AppStyles from '../../AppStyles'
 import styles from './styles'
 import Ability from '../../hoc/Ability'
 import { connect } from 'react-redux';
+import helper from '../../helper';
 
 const _format = 'YYYY-MM-DD';
 const _today = moment(new Date().dateString).format(_format);
@@ -29,7 +30,9 @@ class Diary extends React.Component {
       diaryData: [],
       loading: true,
       agentId: '',
-     // screen: this.props.route.params.screen
+      openPopup: false,
+      isDeletePopupVisible: false,
+      selectedDiary: {}
     }
   }
 
@@ -91,6 +94,7 @@ class Diary extends React.Component {
           loading: true,
           diaryData: res.data.rows,
         }, () => {
+          console.log(this.state.diaryData)
           this.showTime()
         })
       }).catch((error) => {
@@ -105,13 +109,10 @@ class Diary extends React.Component {
     let taskDate = moment(val.date).format('L')
     let checkForCDate = taskDate == this.state.todayDate
     if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
-      return 'yellow'
+      return '#FDD835'
     }
-    else if (checkForCDate && val.status != 'completed') {
+    else if (checkForCDate && val.status === 'pending') {
       return 'red'
-    }
-    else if (taskDate != this.state.todayDate && val.status != 'completed') {
-      return AppStyles.colors.subTextColor;
     }
     else if (val.status == 'completed') {
       return 'green'
@@ -130,7 +131,6 @@ class Diary extends React.Component {
       let groupedData = diaryData.map((item, index) => {
         item.statusColor = this.checkStatus(item)
         if (item.hour) {
-          // item.hour = item.hour.replace(/(\d{2})/g, '$1 ').replace(/(^\s+|\s+$)/, '')
           return item;
         } else {
           return item
@@ -188,12 +188,93 @@ class Diary extends React.Component {
     });
   }
 
+  showPopup = (val) => {
+    this.setState({
+      openPopup: true,
+      selectedDiary: val
+    });
+  }
+
+  closePopup = (val) => {
+    this.setState({
+      openPopup: false,
+      loading: true,
+    }, () => {
+      this.diaryMain()
+    })
+  }
+
+  updateDiary = (data) => {
+    this.props.navigation.navigate('AddDiary',
+      {
+        'agentId': this.state.agentId,
+        'update': true,
+        'data': data
+      })
+    this.setState({
+      openPopup: false,
+    })
+  }
+
+  deleteDiary = (data) => {
+    let endPoint = ``
+    let that = this;
+    endPoint = `/api/diary/delete?id=${data.id}`
+    axios.delete(endPoint).then(function (response) {
+      if (response.status === 200) {
+        helper.successToast('DIARY DELETED SUCCESSFULLY!')
+        that.diaryMain();
+      }
+
+    }).catch(function (error) {
+      helper.successToast(error.message)
+    })
+
+  }
+  popupAction = (val, type) => {
+    let endPoint = ``
+    endPoint = `/api/diary/update?id=${val.id}`
+    let that = this;
+    switch (type) {
+      case 'completed':
+        axios.patch(endPoint, {
+          status: type
+        }).then(function (response) {
+          if (response.status == 200)
+            console.log('responseSuccessCompleted');
+          that.diaryMain();
+        })
+        break;
+      case 'inProgress':
+        axios.patch(endPoint, {
+          status: type
+        }).then(function (response) {
+          if (response.status == 200)
+            console.log('responseSuccessInProgress');
+          that.diaryMain();
+        })
+
+        break;
+      default:
+        break;
+
+    }
+  }
 
   render() {
-    const { showCalendar, startDate, newDiaryData, loading, screen } = this.state;
-    const { user,route } = this.props;
+    const { showCalendar, startDate, newDiaryData, loading, selectedDiary } = this.state;
+    const { user, route } = this.props;
     return (
       <View style={styles.container}>
+        <DairyPopup
+          data={selectedDiary}
+          updateDiary={this.updateDiary}
+          deleteDiary={this.deleteDiary}
+          openPopup={this.state.openPopup}
+          closePopup={this.closePopup}
+          popupAction={(val, type) => this.popupAction(val, type)}
+        />
+
         {
           Ability.canAdd(user.role, route.params.screen) ?
             <Fab
@@ -212,9 +293,6 @@ class Diary extends React.Component {
         {
           !showCalendar ?
             <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
-              <Ionicons style={{ position: 'absolute', right: 20, top: 15 }}
-                name="ios-arrow-down" size={26}
-                color={AppStyles.colors.primaryColor} />
               <View style={styles.calenderIconContainer}>
                 <Ionicons name='md-calendar' size={26} color={AppStyles.colors.primaryColor} />
                 <Text style={styles.calendarText}>Calendar</Text>

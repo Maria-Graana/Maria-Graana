@@ -9,9 +9,6 @@ import StaticData from '../../StaticData'
 import DateComponent from '../../components/DatePicker'
 import ErrorMessage from '../../components/ErrorMessage'
 
-const _format = 'YYYY-MM-DD';
-const _today = (new Date());
-
 class DetailForm extends Component {
 
     constructor(props) {
@@ -19,16 +16,58 @@ class DetailForm extends Component {
         this.state = {
             formData: {
                 subject: '',
-                taskSelected: '',
+                taskType: 'Meeting',
                 startTime: '',
                 endTime: '',
                 date: '',
-                description: '',
+                notes: '',
                 status: 'pending',
             },
+            buttonText: 'ADD'
         }
         this.taskValues = StaticData.taskValues;
     }
+
+    componentDidMount() {
+        const { editableData } = this.props;
+        if (editableData != null) {
+            this.setFormValues(editableData)
+        }
+    }
+
+
+
+    setFormValues = (data) => {
+        const { formData } = this.state;
+        let startReplace
+        let endReplace
+        if (data.start) {
+            startReplace = data.start.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
+        }
+        else {
+            startReplace = data.time.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
+        }
+        if (data.end) {
+            endReplace = data.end.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
+        }
+        else {
+            endReplace = data.time.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
+        }
+
+        const newObject = Object.assign({}, formData, data)
+        newObject.subject = data.subject;
+        newObject.notes = data.notes;
+        newObject.date = moment(data.date).format("YYYY-MM-DD");
+        newObject.status = data.status;
+        newObject.startTime = startReplace;
+        newObject.endTime = endReplace;
+        newObject.taskType = data.taskType;
+        newObject.status = data.status;
+
+        this.setState({ formData: newObject, buttonText: 'UPDATE' })
+
+    }
+
 
     handleForm = (value, name) => {
         const { formData } = this.state
@@ -37,8 +76,8 @@ class DetailForm extends Component {
     }
 
     render() {
-        const { taskValues, taskSelected, date, startTime, endTime, subject, description } = this.state.formData;
-        const { formData } = this.state;
+        const { taskValues, taskType, date, startTime, endTime, subject, notes } = this.state.formData;
+        const { formData, buttonText } = this.state;
         const { formSubmit, checkValidation } = this.props
 
         return (
@@ -55,10 +94,10 @@ class DetailForm extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={this.handleForm} name={'taskSelected'} selectedItem={taskSelected} data={this.taskValues} value={taskValues} placeholder='Task Type' />
+                        <PickerComponent onValueChange={this.handleForm} name={'taskType'} selectedItem={taskType} data={this.taskValues} value={taskValues} placeholder='Task Type' />
                     </View>
                     {
-                        checkValidation === true && taskSelected === '' && <ErrorMessage errorMessage={'Required'} />
+                        checkValidation === true && taskType === '' && <ErrorMessage errorMessage={'Required'} />
                     }
                 </View>
 
@@ -91,8 +130,8 @@ class DetailForm extends Component {
                         placeholderTextColor="#bfbbbb"
                         style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, { height: 100 }]} rowSpan={5}
                         placeholder="Description"
-                        onChangeText={(text) => this.handleForm(text, 'description')}
-                        value={description}
+                        onChangeText={(text) => this.handleForm(text, 'notes')}
+                        value={notes}
                     />
                 </View>
 
@@ -100,7 +139,7 @@ class DetailForm extends Component {
                 <View style={{ marginVertical: 10 }}>
                     <Button onPress={() => { formSubmit(formData) }}
                         style={[AppStyles.formBtn]}>
-                        <Text style={AppStyles.btnText}>ADD DIARY</Text>
+                        <Text style={AppStyles.btnText}>{buttonText}</Text>
                     </Button>
                 </View>
             </View>

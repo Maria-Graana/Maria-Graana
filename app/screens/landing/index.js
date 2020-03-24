@@ -23,7 +23,7 @@ class Landing extends React.Component {
 	render() {
 		const {user}= this.props
 		return (
-			<SafeAreaView style={AppStyles.container}>
+			<SafeAreaView style={[AppStyles.container,{paddingLeft:25,paddingRight:25}]}>
 				<ScrollView>
 					<View >
 						{/* Main Wrap of Landing Page Buttons (Diary Button) */}
@@ -33,7 +33,7 @@ class Landing extends React.Component {
 						<LandingButtonTile navigateFunction={this.navigateFunction} label={'LEADS'} pagePath={'Lead'} screenName={'Lead'} buttonImg={LeadImg} badges={'42'}/>
 
 						{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
-						<LandingButtonTile navigateFunction={this.navigateFunction} label={'INVENTORY'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={'32'}/>
+						<LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={'32'}/>
 					</View>
 				</ScrollView>
 			</SafeAreaView>

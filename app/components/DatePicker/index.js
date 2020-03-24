@@ -13,6 +13,9 @@ import AppStyles from '../../AppStyles';
 
 console.disableYellowBox = true;
 
+const _format = 'YYYY-MM-DD';
+const _today = moment(new Date().dateString).format(_format);
+
 
 class DateComponent extends React.Component {
   constructor(props) {
@@ -58,6 +61,7 @@ class DateComponent extends React.Component {
         iconComponent={<Ionicons style={styles.arrowIcon} name={addMode === 'date' ? 'md-calendar' : 'md-time'} size={26} color={AppStyles.colors.primaryColor} />}
         is24Hour={false}
         customStyles={{
+           datePickerCon: { backgroundColor: AppStyles.colors.primaryColor, },
           placeholderText: {
             alignSelf: 'flex-start',
             fontFamily: AppStyles.fonts.defaultFont,
@@ -70,14 +74,18 @@ class DateComponent extends React.Component {
             backgroundColor:`${disabled ? '#ddd' : '#fff'}`,
           },
           dateText: {
-         
             alignSelf: 'flex-start',
             fontFamily: AppStyles.fonts.defaultFont,
             padding: 12,
           },
           btnTextConfirm: {
-            color: AppStyles.colors.primaryColor
-          }
+            color: '#fff'
+          },
+          btnTextCancel:{
+            color:'#333'
+          },
+          
+          
         }}
         onDateChange={(date) => { this.onChange(date, addMode) }}
       />

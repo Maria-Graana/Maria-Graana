@@ -94,7 +94,6 @@ class Diary extends React.Component {
           loading: true,
           diaryData: res.data.rows,
         }, () => {
-          console.log(this.state.diaryData)
           this.showTime()
         })
       }).catch((error) => {
@@ -267,6 +266,7 @@ class Diary extends React.Component {
     return (
       <View style={styles.container}>
         <DairyPopup
+          screenName={route.params.screen}
           data={selectedDiary}
           updateDiary={this.updateDiary}
           deleteDiary={this.deleteDiary}

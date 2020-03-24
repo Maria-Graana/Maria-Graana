@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 import { Button } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import styles from './style';
@@ -22,7 +22,14 @@ class DetailForm extends Component {
       }
     }
 
-    this.city = ["Object 1", "Object 2", "Object 3", "Object 4", "Object 5", "Object 6"]
+    this.city = [
+      { id: 1, name: 'object 1' },
+      { id: 2, name: 'object 2' },
+      { id: 3, name: 'object 3' },
+      { id: 4, name: 'object 4' },
+      { id: 5, name: 'object 5' },
+      { id: 6, name: 'object 6' },
+    ]
   }
 
   componentDidMount() { }
@@ -35,6 +42,7 @@ class DetailForm extends Component {
       handleForm,
       formData,
       cities,
+      getClients,
     } = this.props
 
     return (
@@ -43,7 +51,7 @@ class DetailForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={this.city} value={''} name={'client'} placeholder='Client' />
+            <PickerComponent onValueChange={handleForm} data={getClients} name={'client'} placeholder='Client' />
             {
               checkValidation === true && formData.client === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -53,7 +61,7 @@ class DetailForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={cities} value={''} name={'city'} placeholder='Select City' />
+            <PickerComponent onValueChange={handleForm} data={cities} name={'city'} placeholder='Select City' />
             {
               checkValidation === true && formData.city === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -85,7 +93,7 @@ class DetailForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={this.city} value={''} name={'minInvestment'} value={''} placeholder='Min Investment' />
+              <TextInput onChangeText={(text) => { handleForm(text, 'minInvestment') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Owner Number'} />
               {
                 checkValidation === true && formData.minInvestment === '' && <ErrorMessage errorMessage={'Required'} />
               }
@@ -95,7 +103,7 @@ class DetailForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={this.city} value={''} name={'maxInvestment'} value={''} placeholder='Max Investment' />
+              <TextInput onChangeText={(text) => { handleForm(text, 'maxInvestment') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Owner Number'} />
               {
                 checkValidation === true && formData.maxInvestment === '' && <ErrorMessage errorMessage={'Required'} />
               }

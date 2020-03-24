@@ -18,7 +18,7 @@ class PickerComponent extends React.Component {
 
     onChange = (itemValue, itemIndex, name) => {
         if (itemValue !== this.props.placeholder) {
-            this.props.onValueChange(itemValue,name)
+            this.props.onValueChange(itemValue, name)
         }
         this.setState({
             selectedTask: itemValue
@@ -42,7 +42,6 @@ class PickerComponent extends React.Component {
         const ItemWrap = itemStyle || styles.itemWrap
         const PickerWrap = pickerStyle || styles.pickerWrap
         const selectedValue = selectedItem || this.state.selectedTask
-
         if (Platform.OS == 'android') {
             serviceItems.push(<Picker.Item key={0} value={placeholderLabel} label={placeholderLabel} />)
         }
@@ -54,9 +53,9 @@ class PickerComponent extends React.Component {
         // }
         return (
             <View style={[styles.pickerMain]}>
-                <Ionicons style={styles.arrowIcon} name="ios-arrow-down"  size={26} color={AppStyles.colors.subTextColor} />
+                <Ionicons style={styles.arrowIcon} name="ios-arrow-down" size={26} color={AppStyles.colors.subTextColor} />
                 <Picker
-                     headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff', }}
+                    headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff', }}
                     headerBackButtonTextStyle={{ color: '#fff' }}
                     headerTitleStyle={{ color: "#fff" }}
                     textStyle={[AppStyles.pickerTextStyle, AppStyles.formFontSettings]}
@@ -64,14 +63,12 @@ class PickerComponent extends React.Component {
                     mode="dropdown"
                     style={AppStyles.formControlForPicker}
                     placeholder={placeholderLabel}
-                    selectedValue={selectedValue.toString()}
-                    onValueChange={(itemValue, itemIndex) =>
-                        this.onChange(itemValue, itemIndex, name)
-                    }
+                    selectedValue={selectedValue}
+                    onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}
                 >
                     {data && data.map((item, key) => {
-                        return(
-                            <Picker.Item key={key} value={item.id} label={item.name} />
+                        return (
+                            <Picker.Item key={key} value={item.id} label={item.name} key={key}/>
                         )
                     })}
                 </Picker>
@@ -87,7 +84,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         borderRadius: 4,
     },
-    arrowIcon:{
+    arrowIcon: {
         position: 'absolute',
         right: 15,
         top: 12,

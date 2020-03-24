@@ -6,6 +6,7 @@ import AppStyles from '../../AppStyles';
 import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
+import { connect } from 'react-redux';
 import config from '../../config'
 
 class AddLead extends Component {
@@ -14,6 +15,7 @@ class AddLead extends Component {
         this.state = {
             checkValidation: false,
             cities: [],
+            getClients: [],
             formData: {
                 client: '',
                 city: '',
@@ -21,10 +23,26 @@ class AddLead extends Component {
                 productType: '',
                 minInvestment: '',
                 maxInvestment: '',
-            }
+            },
         }
     }
     componentDidMount() {
+        const { user } = this.props
+        this.getCities();
+        this.getClients(user.id);
+    }
+
+    getClients = (id) => {
+        axios.get(`/api/customer/find?userId=${id}`)
+            .then((res) => {
+                this.setState({
+                    getClients: res.data.rows
+                })
+            })
+    }
+
+
+    getCities = () => {
         axios.get(`/api/cities`)
             .then((res) => {
                 this.setState({
@@ -52,9 +70,11 @@ class AddLead extends Component {
     }
 
     render() {
-        const { formData, cities } = this.state
+        const { formData, cities, getClients } = this.state
         let citiesArray = [];
-         cities.map((item, index) => {return(citiesArray.push({id:item.id, name: item.name}))})
+        let clientsArray = [];
+        cities && cities.map((item, index) => { return (citiesArray.push({ id: item.id, name: item.name })) })
+        getClients && getClients.map((item, index) => { return (clientsArray.push({ id: item.id, name: item.firstName })) })
         return (
             <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
@@ -67,6 +87,7 @@ class AddLead extends Component {
                                     handleForm={this.handleForm}
                                     formData={formData}
                                     cities={citiesArray}
+                                    getClients={clientsArray}
                                 />
                             </View>
                         </ScrollView>
@@ -77,6 +98,13 @@ class AddLead extends Component {
     }
 }
 
-export default AddLead;
+
+mapStateToProps = (store) => {
+    return {
+      user: store.user.user,
+    }
+  }
+  
+  export default connect(mapStateToProps)(AddLead)
 
 

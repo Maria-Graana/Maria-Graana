@@ -42,7 +42,6 @@ class AddLead extends Component {
                 this.setState({
                     getClients: clientsArray
                 })
-                console.log('clientsArray', res.data)
             })
     }
 

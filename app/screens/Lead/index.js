@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, TextInput, FlatList } from 'react-native';
+import { View, TextInput, Text, FlatList, TouchableOpacity } from 'react-native';
 import { Picker } from 'native-base';
 import { connect } from 'react-redux';
 import InventoryTile from '../../components/InventoryTile'
@@ -20,7 +20,7 @@ class Inventory extends React.Component {
 			dotsDropDown: false,
 			dropDownId: '',
 			selectInventory: [],
-
+			febDrawer: false,
 		}
 
 		this.staticData = [
@@ -82,24 +82,43 @@ class Inventory extends React.Component {
 		})
 	}
 
-	goToInventoryForm = () => {
+	goToFormPage = () => {
 		const { navigation } = this.props;
 		navigation.dispatch(
 			StackActions.replace('AddLead')
 		);
-}
+	}
+
+	openFebDraw = () => {
+		const { febDrawer } = this.state
+
+		this.setState({
+			febDrawer: !febDrawer
+		})
+	}
 
 	render() {
-		const { selectInventory, dropDownId } = this.state
+		const { selectInventory, dropDownId, febDrawer } = this.state
 		return (
 			<View style={AppStyles.container}>
 				<Fab
 					active='true'
 					containerStyle={{ zIndex: 20 }}
-					style={{ backgroundColor: '#333' }}
+					style={{ backgroundColor: '#333', position: 'relative' }}
 					position="bottomRight"
-					onPress={this.goToInventoryForm}
+					onPress={this.openFebDraw}
 				>
+					{
+						febDrawer === true &&
+						<View style={styles.mainDropFeb}>
+							<TouchableOpacity style={[AppStyles.mbTen]} onPress={() => {this.goToFormPage('addLead')}}>
+								<Text>RCM Lead</Text>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={() => {this.goToFormPage('addLead')}}>
+								<Text>CM Lead</Text>
+							</TouchableOpacity>
+						</View>
+					}
 					<Ionicons name="md-add" color="#ffffff" />
 				</Fab>
 

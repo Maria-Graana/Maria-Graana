@@ -46,10 +46,12 @@ class PickerComponent extends React.Component {
         if (Platform.OS == 'android') {
             serviceItems.push(<Picker.Item key={0} value={placeholderLabel} label={placeholderLabel} />)
         }
-        for (let i = 0; i < items.length; i++) {
-            let item = <Picker.Item key={i + 1} value={items[i]} label={items[i]} />
-            serviceItems.push(item)
-        }
+
+        // for (let i = 0; i < items.length; i++) {
+        //     let item = <Picker.Item key={i + 1} value={items[i]} label={items[i]} />
+        //     serviceItems.push(item)
+        //     console.log('item********',item)
+        // }
         return (
             <View style={[styles.pickerMain]}>
                 <Ionicons style={styles.arrowIcon} name="ios-arrow-down"  size={26} color={AppStyles.colors.subTextColor} />
@@ -67,7 +69,11 @@ class PickerComponent extends React.Component {
                         this.onChange(itemValue, itemIndex, name)
                     }
                 >
-                    {serviceItems}
+                    {data && data.map((item, key) => {
+                        return(
+                            <Picker.Item key={key} value={item.id} label={item.name} />
+                        )
+                    })}
                 </Picker>
             </View>
 

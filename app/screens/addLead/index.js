@@ -21,14 +21,15 @@ class AddLead extends Component {
                 customerId: '',
                 cityId: '',
                 projectId: '',
-                projectType: '',
+                projectType: 'office',
                 minPrice: '',
                 maxPrice: '',
             },
         }
     }
     componentDidMount() {
-        const { user } = this.props
+        const { user, route } = this.props
+        console.log('*******************',route)
         this.getCities();
         this.getClients(user.id);
         this.getAllProjects();
@@ -38,7 +39,7 @@ class AddLead extends Component {
         axios.get(`/api/customer/find?userId=${id}`)
             .then((res) => {
                 let clientsArray = [];
-                res && res.data.rows.map((item, index) => { return (clientsArray.push({ id: item.id, name: item.firstName })) })
+                res && res.data.rows.map((item, index) => { return (clientsArray.push({ value: item.id, name: item.firstName })) })
                 this.setState({
                     getClients: clientsArray
                 })
@@ -50,7 +51,7 @@ class AddLead extends Component {
         axios.get(`/api/cities`)
             .then((res) => {
                 let citiesArray = [];
-                res && res.data.map((item, index) => { return (citiesArray.push({ id: item.id, name: item.name })) })
+                res && res.data.map((item, index) => { return (citiesArray.push({ value: item.id, name: item.name })) })
                 this.setState({
                     cities: citiesArray
                 })
@@ -63,7 +64,7 @@ class AddLead extends Component {
         axios.get(`/api/project/all`)
             .then((res) => {
                 let projectArray = [];
-                res && res.data.items.map((item, index) => { return (projectArray.push({ id: item.id, name: item.name })) })
+                res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name })) })
                 this.setState({
                     getProject: projectArray
                 })

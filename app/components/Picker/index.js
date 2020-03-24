@@ -41,7 +41,7 @@ class PickerComponent extends React.Component {
         const placeholderLabel = placeholder || 'Select'
         const ItemWrap = itemStyle || styles.itemWrap
         const PickerWrap = pickerStyle || styles.pickerWrap
-        const selectedValue = selectedItem || this.state.selectedTask
+        let selectedValue = selectedItem  || this.state.selectedTask
         if (Platform.OS == 'android') {
             serviceItems.push(<Picker.Item key={0} value={placeholderLabel} label={placeholderLabel} />)
         }
@@ -63,12 +63,12 @@ class PickerComponent extends React.Component {
                     mode="dropdown"
                     style={AppStyles.formControlForPicker}
                     placeholder={placeholderLabel}
-                    selectedValue={selectedValue}
+                    selectedValue={this.state.selectedTask != '' && selectedValue}
                     onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}
                 >
                     {data && data.map((item, key) => {
                         return (
-                            <Picker.Item key={key} value={item.id} label={item.name} key={key}/>
+                            <Picker.Item key={key} value={item.value} label={item.name} key={key}/>
                         )
                     })}
                 </Picker>

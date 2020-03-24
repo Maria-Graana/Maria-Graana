@@ -82,11 +82,9 @@ class Inventory extends React.Component {
 		})
 	}
 
-	goToFormPage = () => {
+	goToFormPage = (status) => {
 		const { navigation } = this.props;
-		navigation.dispatch(
-			StackActions.replace('AddLead')
-		);
+		navigation.navigate(status, {'pageName': status});
 	}
 
 	openFebDraw = () => {
@@ -111,10 +109,10 @@ class Inventory extends React.Component {
 					{
 						febDrawer === true &&
 						<View style={styles.mainDropFeb}>
-							<TouchableOpacity style={[AppStyles.mbTen]} onPress={() => {this.goToFormPage('addLead')}}>
+							<TouchableOpacity style={[AppStyles.mbTen]} onPress={() => { this.goToFormPage('AddLead') }}>
 								<Text>RCM Lead</Text>
 							</TouchableOpacity>
-							<TouchableOpacity onPress={() => {this.goToFormPage('addLead')}}>
+							<TouchableOpacity onPress={() => { this.goToFormPage('AddLead') }}>
 								<Text>CM Lead</Text>
 							</TouchableOpacity>
 						</View>

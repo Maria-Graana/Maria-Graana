@@ -11,21 +11,10 @@ class DetailForm extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      formData: {
-        client: '',
-        city: '',
-        project: '',
-        productType: '',
-        minInvestment: '',
-        maxInvestment: '',
-      }
-    }
-
     this.city = [
-      { id: 'shop', name: 'shop' },
-      { id: 'office', name: 'Office' },
-      { id: 'other', name: 'other' },
+      { value: 'shop', name: 'shop' },
+      { value: 'office', name: 'Office' },
+      { value: 'other', name: 'other' },
     ]
   }
 
@@ -76,7 +65,7 @@ class DetailForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={this.city} value={''} name={'projectType'} value={''} placeholder='Project Type' />
+            <PickerComponent onValueChange={handleForm} data={this.city} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Project Type' />
             {
               checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
             }

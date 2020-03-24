@@ -7,7 +7,7 @@ import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
-import config from '../../config'
+import * as RootNavigation from '../../navigation/RootNavigation';
 
 class AddLead extends Component {
     constructor(props) {
@@ -16,13 +16,14 @@ class AddLead extends Component {
             checkValidation: false,
             cities: [],
             getClients: [],
+            getProject: [],
             formData: {
-                client: '',
-                city: '',
-                project: '',
-                productType: '',
-                minInvestment: '',
-                maxInvestment: '',
+                customerId: '',
+                cityId: '',
+                projectId: '',
+                projectType: '',
+                minPrice: '',
+                maxPrice: '',
             },
         }
     }
@@ -30,14 +31,18 @@ class AddLead extends Component {
         const { user } = this.props
         this.getCities();
         this.getClients(user.id);
+        this.getAllProjects();
     }
 
     getClients = (id) => {
         axios.get(`/api/customer/find?userId=${id}`)
             .then((res) => {
+                let clientsArray = [];
+                res && res.data.rows.map((item, index) => { return (clientsArray.push({ id: item.id, name: item.firstName })) })
                 this.setState({
-                    getClients: res.data.rows
+                    getClients: clientsArray
                 })
+                console.log('clientsArray', res.data)
             })
     }
 
@@ -45,8 +50,23 @@ class AddLead extends Component {
     getCities = () => {
         axios.get(`/api/cities`)
             .then((res) => {
+                let citiesArray = [];
+                res && res.data.map((item, index) => { return (citiesArray.push({ id: item.id, name: item.name })) })
                 this.setState({
-                    cities: res.data
+                    cities: citiesArray
+                })
+            })
+    }
+
+
+
+    getAllProjects = () => {
+        axios.get(`/api/project/all`)
+            .then((res) => {
+                let projectArray = [];
+                res && res.data.items.map((item, index) => { return (projectArray.push({ id: item.id, name: item.name })) })
+                this.setState({
+                    getProject: projectArray
                 })
             })
     }
@@ -55,26 +75,29 @@ class AddLead extends Component {
         const { formData } = this.state
         formData[name] = value
         this.setState({ formData })
-        console.log(formData)
     }
 
     formSubmit = () => {
         const { formData } = this.state
-        if (!formData.client || !formData.city || !formData.project || !formData.productType || !formData.minInvestment || !formData.maxInvestment) {
+        if (!formData.customerId || !formData.projectId || !formData.projectType || !formData.minPrice || !formData.maxPrice) {
             this.setState({
                 checkValidation: true
             })
         } else {
-            console.log(formData)
+            const { user } = this.props
+            let body = {
+                ...formData,
+            }
+            axios.post(`/api/leads/project`, body)
+                .then((res) => {
+                    RootNavigation.navigate('Lead')
+                })
         }
     }
 
     render() {
-        const { formData, cities, getClients } = this.state
-        let citiesArray = [];
-        let clientsArray = [];
-        cities && cities.map((item, index) => { return (citiesArray.push({ id: item.id, name: item.name })) })
-        getClients && getClients.map((item, index) => { return (clientsArray.push({ id: item.id, name: item.firstName })) })
+        const { formData, cities, getClients, getProject } = this.state
+
         return (
             <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
@@ -86,8 +109,9 @@ class AddLead extends Component {
                                     checkValidation={this.state.checkValidation}
                                     handleForm={this.handleForm}
                                     formData={formData}
-                                    cities={citiesArray}
-                                    getClients={clientsArray}
+                                    cities={cities}
+                                    getClients={getClients}
+                                    getProject={getProject}
                                 />
                             </View>
                         </ScrollView>
@@ -101,10 +125,10 @@ class AddLead extends Component {
 
 mapStateToProps = (store) => {
     return {
-      user: store.user.user,
+        user: store.user.user,
     }
-  }
-  
-  export default connect(mapStateToProps)(AddLead)
+}
+
+export default connect(mapStateToProps)(AddLead)
 
 

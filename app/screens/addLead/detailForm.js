@@ -23,12 +23,9 @@ class DetailForm extends Component {
     }
 
     this.city = [
-      { id: 1, name: 'object 1' },
-      { id: 2, name: 'object 2' },
-      { id: 3, name: 'object 3' },
-      { id: 4, name: 'object 4' },
-      { id: 5, name: 'object 5' },
-      { id: 6, name: 'object 6' },
+      { id: 'shop', name: 'shop' },
+      { id: 'office', name: 'Office' },
+      { id: 'other', name: 'other' },
     ]
   }
 
@@ -43,6 +40,7 @@ class DetailForm extends Component {
       formData,
       cities,
       getClients,
+      getProject,
     } = this.props
 
     return (
@@ -51,9 +49,9 @@ class DetailForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={getClients} name={'client'} placeholder='Client' />
+            <PickerComponent onValueChange={handleForm} data={getClients} name={'customerId'} placeholder='Client' />
             {
-              checkValidation === true && formData.client === '' && <ErrorMessage errorMessage={'Required'} />
+              checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
             }
           </View>
         </View>
@@ -61,9 +59,16 @@ class DetailForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={cities} name={'city'} placeholder='Select City' />
+            <PickerComponent onValueChange={handleForm} data={cities} name={'cityId'} placeholder='Select City' />
+          </View>
+        </View>
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap]}>
+          <View style={[AppStyles.inputWrap]}>
+            <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} value={''} placeholder='Project' />
             {
-              checkValidation === true && formData.city === '' && <ErrorMessage errorMessage={'Required'} />
+              checkValidation === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />
             }
           </View>
         </View>
@@ -71,19 +76,9 @@ class DetailForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={this.city} value={''} name={'project'} value={''} placeholder='Project' />
+            <PickerComponent onValueChange={handleForm} data={this.city} value={''} name={'projectType'} value={''} placeholder='Project Type' />
             {
-              checkValidation === true && formData.project === '' && <ErrorMessage errorMessage={'Required'} />
-            }
-          </View>
-        </View>
-
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={this.city} value={''} name={'productType'} value={''} placeholder='Product Type' />
-            {
-              checkValidation === true && formData.productType === '' && <ErrorMessage errorMessage={'Required'} />
+              checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
             }
           </View>
         </View>
@@ -93,9 +88,9 @@ class DetailForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'minInvestment') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Owner Number'} />
+              <TextInput onChangeText={(text) => { handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Owner Number'} />
               {
-                checkValidation === true && formData.minInvestment === '' && <ErrorMessage errorMessage={'Required'} />
+                checkValidation === true && formData.minPrice === '' && <ErrorMessage errorMessage={'Required'} />
               }
             </View>
           </View>
@@ -103,9 +98,9 @@ class DetailForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'maxInvestment') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Owner Number'} />
+              <TextInput onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Owner Number'} />
               {
-                checkValidation === true && formData.maxInvestment === '' && <ErrorMessage errorMessage={'Required'} />
+                checkValidation === true && formData.maxPrice === '' && <ErrorMessage errorMessage={'Required'} />
               }
             </View>
           </View>

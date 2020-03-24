@@ -7,6 +7,7 @@ import LandingButtonTile from '../../components/LandingButtonTile'
 import DiaryImg from '../../../assets/img/diary.png'
 import LeadImg from '../../../assets/img/leads.png'
 import InventoryImg from '../../../assets/img/inventory.png'
+import Ability from '../../hoc/Ability'
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -20,12 +21,13 @@ class Landing extends React.Component {
 	}
 
 	render() {
+		const {user}= this.props
 		return (
 			<SafeAreaView style={AppStyles.container}>
 				<ScrollView>
 					<View >
 						{/* Main Wrap of Landing Page Buttons (Diary Button) */}
-						<LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} screenName={'Diary'} buttonImg={DiaryImg} badges={'12'}/>
+						{ Ability.canView(user.role, 'Diary') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} screenName={'Diary'} buttonImg={DiaryImg} badges={'12'}/> }
 
 						{/* Main Wrap of Landing Page Buttons (Leads Button) */}
 						<LandingButtonTile navigateFunction={this.navigateFunction} label={'LEADS'} pagePath={'Lead'} screenName={'Lead'} buttonImg={LeadImg} badges={'42'}/>

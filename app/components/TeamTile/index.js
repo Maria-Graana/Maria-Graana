@@ -26,7 +26,7 @@ class TeamTile extends React.Component {
                         </View>
                         <View style={{paddingTop: 5}}>
                             <Text style={[styles.textFont, {fontSize: 12, color: AppStyles.colors.subTextColor}]}>
-                                {item.subRole}
+                                {item.armsUserRole.subRole}
                             </Text>
                         </View>
                     </View> 

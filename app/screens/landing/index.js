@@ -24,7 +24,6 @@ class Landing extends React.Component {
 		const {user}= this.props
 		return (
 			<SafeAreaView style={[AppStyles.container,{paddingLeft:25,paddingRight:25}]}>
-				<ScrollView>
 					<View >
 						{/* Main Wrap of Landing Page Buttons (Diary Button) */}
 						{ Ability.canView(user.role, 'Diary') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} screenName={'Diary'} buttonImg={DiaryImg} badges={'12'}/> }
@@ -35,7 +34,6 @@ class Landing extends React.Component {
 						{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
 						<LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={'32'}/>
 					</View>
-				</ScrollView>
 			</SafeAreaView>
 		)
 	}

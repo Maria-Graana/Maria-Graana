@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
@@ -294,7 +294,7 @@ class Diary extends React.Component {
           !showCalendar ?
             <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
               <View style={styles.calenderIconContainer}>
-                <Ionicons name='md-calendar' size={26} color={AppStyles.colors.primaryColor} />
+                <Image style={{width:26,height:26}} source={require('../../../assets/img/calendar.png')} />
                 <Text style={styles.calendarText}>Calendar</Text>
               </View>
               <View style={styles.underLine}

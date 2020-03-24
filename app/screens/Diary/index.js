@@ -294,7 +294,7 @@ class Diary extends React.Component {
           !showCalendar ?
             <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
               <View style={styles.calenderIconContainer}>
-                <Image style={{width:26,height:26}} source={require('../../../assets/img/calendar.png')} />
+                <Image style={{width:30,height:26}} source={require('../../../assets/img/calendar2.png')} />
                 <Text style={styles.calendarText}>Calendar</Text>
               </View>
               <View style={styles.underLine}

@@ -10,6 +10,7 @@ import Modal from "react-native-modal";
 import moment from 'moment';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles';
+import Ability from '../../hoc/Ability';
 
 
 class DairyPopup extends React.Component {
@@ -46,7 +47,9 @@ class DairyPopup extends React.Component {
     render() {
         const {
             data,
-            openPopup
+            openPopup,
+            screenName,
+            user
         } = this.props;
         return (
             <Modal isVisible={openPopup}>
@@ -58,7 +61,7 @@ class DairyPopup extends React.Component {
                         </Text>
 
                         {
-                            data.status === 'pending' || data.status === 'inProgress' ?
+                            Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
                                 <View style={[styles.updateBtn]}>
                                     <AntDesign onPress={() => { this.updateDiary(data) }} name="edit" size={24} color={AppStyles.colors.primaryColor} />
                                 </View>
@@ -66,9 +69,14 @@ class DairyPopup extends React.Component {
                                 null
                         }
 
-                        <View style={[styles.updateBtn, { right: 50 }]}>
-                            <AntDesign onPress={() => { this.deleteDiary(data) }} name="delete" size={24} color={AppStyles.colors.primaryColor} />
-                        </View>
+                        {
+                            Ability.canDelete(user.role, screenName) &&
+                            <View style={[styles.updateBtn, { right: 50 }]}>
+                                <AntDesign onPress={() => { this.deleteDiary(data) }} name="delete" size={24} color={AppStyles.colors.primaryColor} />
+                            </View>
+                        }
+
+
 
                     </View>
                     <View style={styles.viewWrap}>
@@ -88,7 +96,7 @@ class DairyPopup extends React.Component {
                     </View>
                     <View style={styles.btnWrap}>
                         {
-                            data.status === 'pending' || data.status === 'inProgress' ?
+                            Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
                                 <Button
                                     onPress={() => { this.inProgress(data, 'inProgress') }}
                                     style={data.status == 'inProgress' ? styles.disabledBtnStyle : [AppStyles.formBtn, { width: 120, minHeight: 45 }]}
@@ -102,7 +110,7 @@ class DairyPopup extends React.Component {
 
 
                         {
-                            data.status !== 'completed' ?
+                            Ability.canEdit(user.role, screenName) && data.status !== 'completed' ?
                                 <Button onPress={() => { this.markDone(data, 'completed') }}
                                     style={[AppStyles.formBtn, { width: 100, minHeight: 45 }]}>
                                     <Text style={[AppStyles.btnText, { fontSize: 14 }]}>Done</Text>

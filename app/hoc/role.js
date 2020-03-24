@@ -3,8 +3,8 @@ const role = {
         roles: [
             { role: 'super_admin', access: { v: true, a: true, e: true, d: true} },
             { role: 'admin 1', access: { v: true, a: true, e: false, d: false} },
-            { role: 'sub_admin 1', access: { v: true, a: true, e: false, d: false} },
-            { role: 'sub_admin 2', access: { v: true, a: true, e: false, d: false} },
+            { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true} },
+            { role: 'sub_admin 2', access: { v: true, a: true, e: true, d: true} },
         ],
     },
     Inventory: {
@@ -20,7 +20,7 @@ const role = {
             { role: 'admin 1', access: { v: true, a: false, e: false, d: false} },
             { role: 'admin 2', access: { v: true, a: false, e: false, d: false} },
             { role: 'admin 3', access: { v: true, a: false, e: false, d: false} },
-            { role: 'sub_admin 1', access: { v: true, a: true, e: false, d: false} },
+            { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true} },
         ],
     }
 }

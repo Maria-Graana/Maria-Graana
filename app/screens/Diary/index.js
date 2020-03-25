@@ -338,11 +338,6 @@ class Diary extends React.Component {
           }
 
           {
-            showCalendar ?
-              <CalendarComponent startDate={startDate} updateDay={this.updateDay} onPress={this._toggleShow} />
-              : null
-          }
-          {
             newDiaryData && newDiaryData.length ?
               <DiaryTile data={newDiaryData} showPopup={this.showPopup} onLongPress={(val) => this.handleLongPress(val)} /> : null
           }

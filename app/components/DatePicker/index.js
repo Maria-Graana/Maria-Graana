@@ -22,6 +22,7 @@ class DateComponent extends React.Component {
   }
 
   onChange = (date, mode) => {
+    console.log(date);
     if (mode == 'time') {
       this.props.onTimeChange(date)
     } else {
@@ -51,15 +52,16 @@ class DateComponent extends React.Component {
     else {
       iconSource = require('../../../assets/img/clock.png');
     }
-    
+
     return (
       <DatePicker
         style={[AppStyles.formControl, { backgroundColor: `${disabled ? '#ddd' : '#fff'}`, width: '100%', justifyContent: 'center', paddingRight: 15 }]}
         mode={addMode}
         date={dateTime}
+        format={addMode == 'time' ? 'hh:mm a' : 'YYYY-MM-DD'}
         placeholder={placeholderlabel}
-        minDate={mode == 'time' ? moment().format("HH:mm") : moment().format("YYYY-MM-DD")}
-        disabled={mode == 'time' ? disabled : false}
+        minDate={addMode == 'date' && moment().format("YYYY-MM-DD")}
+        disabled={addMode == 'time' ? disabled : false}
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"
         iconComponent={< Image style={{ width: 26, height: 26 }} source={iconSource} />}

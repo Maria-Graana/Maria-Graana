@@ -31,8 +31,8 @@ export default AppStyles = {
     },
     fontSize: {
         small: 10,
-        medium: 15,
-        large: 20
+        medium: 16,
+        large: 18
     },
     standardPadding: {
         padding: 16

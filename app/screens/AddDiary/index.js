@@ -17,6 +17,13 @@ class AddDiary extends Component {
         }
     }
 
+    componentDidMount() {
+        const { route,navigation } = this.props;
+        if (route.params.update) {
+            navigation.setOptions({ title: 'EDIT TASK' })
+        }
+    }
+
 
 
     formSubmit = (data) => {
@@ -54,7 +61,7 @@ class AddDiary extends Component {
         }
         else {
             // add payload contain these keys below                         
-                               
+
             payload = Object.assign({}, data);
             payload.date = start;
             payload.userId = route.params.agentId;

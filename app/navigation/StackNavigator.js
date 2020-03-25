@@ -77,7 +77,7 @@ function MainStack() {
             />
             <Stack.Screen name='AddDiary' component={AddDiary}
                 options={({ navigation, route }) => ({
-                    title: 'New Task',
+                    title: 'NEW TASK',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

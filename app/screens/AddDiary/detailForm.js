@@ -76,7 +76,7 @@ class DetailForm extends Component {
     }
 
     render() {
-        const { taskValues, taskType, date, startTime, endTime, subject, notes } = this.state.formData;
+        const { taskType, date, startTime, endTime, subject, notes } = this.state.formData;
         const { formData, buttonText } = this.state;
         const { formSubmit, checkValidation } = this.props
 
@@ -94,7 +94,7 @@ class DetailForm extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={this.handleForm} name={'taskType'} selectedItem={taskType} data={this.taskValues} value={taskValues} placeholder='Task Type' />
+                        <PickerComponent   onValueChange={this.handleForm} selectedItem={taskType} data={this.taskValues} name={'taskType'} placeholder='Task Type' />
                     </View>
                     {
                         checkValidation === true && taskType === '' && <ErrorMessage errorMessage={'Required'} />
@@ -111,14 +111,14 @@ class DetailForm extends Component {
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
-                    <DateComponent date={startTime} mode='time' placeholder='Select Start Time' onTimeChange={(value) => this.handleForm(moment(value, 'h:mm ').format('hh:mm a'), 'startTime')} />
+                    <DateComponent date={startTime} mode='time' placeholder='Select Start Time' onTimeChange={(value) => this.handleForm(value, 'startTime')} />
                     {
                         checkValidation === true && startTime === '' && <ErrorMessage errorMessage={'Required'} />
                     }
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
-                    <DateComponent date={endTime} mode='time' placeholder='Select End Time' disabled={startTime === '' ? true : false} onTimeChange={(value) => this.handleForm(moment(value, 'h:mm ').format('hh:mm a'), 'endTime')} />
+                    <DateComponent date={endTime} mode='time' placeholder='Select End Time' disabled={startTime === '' ? true : false} onTimeChange={(value) => this.handleForm(value ,'endTime')} />
                     {
                         checkValidation === true && endTime === '' && <ErrorMessage errorMessage={'Required'} />
                     }

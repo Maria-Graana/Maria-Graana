@@ -43,9 +43,21 @@ export default StaticData = {
         }
     ],
     taskValues: [
-        'Meeting',
-        'Follow Up',
-        'Day Structure',
-        'Other'
+        {
+            name:'Meeting',
+            value: 'Meeting'
+        },
+        {
+            name:'Follow Up',
+            value: 'Follow Up'
+        },
+        {
+            name:'Day Structure',
+            value: 'Day Structure'
+        },
+        {
+            name:'Other',
+            value: 'Other'
+        }
     ]
 }

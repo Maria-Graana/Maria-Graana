@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { StyleProvider } from 'native-base';
-import DetailForm from './detailForm';
+import CMLeadFrom from './CMLeadFrom';
+import RCMLeadFrom from './RCMLeadFrom';
 import AppStyles from '../../AppStyles';
 import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
@@ -38,11 +39,10 @@ class AddLead extends Component {
         axios.get(`/api/customer/find?userId=${id}`)
             .then((res) => {
                 let clientsArray = [];
-                res && res.data.rows.map((item, index) => { return (clientsArray.push({ id: item.id, name: item.firstName })) })
+                res && res.data.rows.map((item, index) => { return (clientsArray.push({ value: item.id, name: item.firstName })) })
                 this.setState({
                     getClients: clientsArray
                 })
-                console.log('clientsArray', res.data)
             })
     }
 
@@ -51,7 +51,7 @@ class AddLead extends Component {
         axios.get(`/api/cities`)
             .then((res) => {
                 let citiesArray = [];
-                res && res.data.map((item, index) => { return (citiesArray.push({ id: item.id, name: item.name })) })
+                res && res.data.map((item, index) => { return (citiesArray.push({ value: item.id, name: item.name })) })
                 this.setState({
                     cities: citiesArray
                 })
@@ -64,7 +64,7 @@ class AddLead extends Component {
         axios.get(`/api/project/all`)
             .then((res) => {
                 let projectArray = [];
-                res && res.data.items.map((item, index) => { return (projectArray.push({ id: item.id, name: item.name })) })
+                res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name })) })
                 this.setState({
                     getProject: projectArray
                 })
@@ -97,6 +97,7 @@ class AddLead extends Component {
 
     render() {
         const { formData, cities, getClients, getProject } = this.state
+        const { route } = this.props
 
         return (
             <View style={[AppStyles.container]}>
@@ -104,15 +105,31 @@ class AddLead extends Component {
                     <KeyboardAvoidingView behavior="padding" enabled>
                         <ScrollView>
                             <View>
-                                <DetailForm
-                                    formSubmit={this.formSubmit}
-                                    checkValidation={this.state.checkValidation}
-                                    handleForm={this.handleForm}
-                                    formData={formData}
-                                    cities={cities}
-                                    getClients={getClients}
-                                    getProject={getProject}
-                                />
+                                {
+                                    route.params.pageName === 'CM' &&
+                                    <CMLeadFrom
+                                        formSubmit={this.formSubmit}
+                                        checkValidation={this.state.checkValidation}
+                                        handleForm={this.handleForm}
+                                        formData={formData}
+                                        cities={cities}
+                                        getClients={getClients}
+                                        getProject={getProject}
+                                    />
+                                }
+
+                                {
+                                    route.params.pageName === 'RCM' &&
+                                    <RCMLeadFrom
+                                        formSubmit={this.formSubmit}
+                                        checkValidation={this.state.checkValidation}
+                                        handleForm={this.handleForm}
+                                        formData={formData}
+                                        cities={cities}
+                                        getClients={getClients}
+                                        getProject={getProject}
+                                    />
+                                }
                             </View>
                         </ScrollView>
                     </KeyboardAvoidingView>

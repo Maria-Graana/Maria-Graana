@@ -18,7 +18,7 @@ export default styles = StyleSheet.create({
         fontFamily: AppStyles.fonts.boldFont,
     },
     tileWrap: {
-        flex: 2,
+        flex: 1,
         marginVertical: 5,
         elevation: 10,
         shadowOffset: { width: 5, height: 5 },

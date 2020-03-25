@@ -26,6 +26,8 @@ export default class App extends React.Component {
 			Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
 			OpenSans_regular: require('./assets/fonts/OpenSans-Regular.ttf'),
 			OpenSans_bold: require('./assets/fonts/OpenSans-Bold.ttf'),
+			OpenSans_light: require('./assets/fonts/OpenSans-Light.ttf'),
+			OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
 			...Ionicons.font,
 		});
 		this.setState({ isReady: true });

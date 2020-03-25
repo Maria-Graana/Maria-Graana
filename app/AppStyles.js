@@ -21,7 +21,9 @@ export default AppStyles = {
     },
     fonts: {
         defaultFont: 'OpenSans_regular',
-        boldFont: 'OpenSans_bold'
+        boldFont: 'OpenSans_bold',
+        lightFont: 'OpenSans_light',
+        semiBoldFont: 'OpenSans_semi_bold'
     },
     mb1: {
         flex: 1

@@ -9,6 +9,7 @@ import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
+import StaticData from '../../StaticData'
 
 class AddLead extends Component {
     constructor(props) {
@@ -18,6 +19,9 @@ class AddLead extends Component {
             cities: [],
             getClients: [],
             getProject: [],
+            formType: 'sale',
+            selectSubType: [],
+            getAreas: [],
             formData: {
                 customerId: '',
                 cityId: '',
@@ -26,13 +30,27 @@ class AddLead extends Component {
                 minPrice: '',
                 maxPrice: '',
             },
+            RCMFormData: {
+                type: "",
+                subtype: "",
+                bed: null,
+                bath: null,
+                size: null,
+                leadAreas: [],
+                customerId: '',
+                city_id: '',
+                size_unit: null,
+                max_price: null,
+                min_price: null,
+            }
         }
     }
+
     componentDidMount() {
         const { user } = this.props
         this.getCities();
-        this.getClients(user.id);
         this.getAllProjects();
+        this.getClients(user.id);
     }
 
     getClients = (id) => {
@@ -46,7 +64,6 @@ class AddLead extends Component {
             })
     }
 
-
     getCities = () => {
         axios.get(`/api/cities`)
             .then((res) => {
@@ -57,8 +74,6 @@ class AddLead extends Component {
                 })
             })
     }
-
-
 
     getAllProjects = () => {
         axios.get(`/api/project/all`)
@@ -75,6 +90,29 @@ class AddLead extends Component {
         const { formData } = this.state
         formData[name] = value
         this.setState({ formData })
+    }
+
+    handleRCMForm = (value, name) => {
+        const { RCMFormData } = this.state
+        RCMFormData[name] = value
+        this.setState({ RCMFormData })
+        if (RCMFormData.type != '') { this.selectSubtype(RCMFormData.type) }
+        if (RCMFormData.city_id != '') { this.getAreas(RCMFormData.city_id) }
+    }
+
+    getAreas = (cityId) => {
+        axios.get(`/api/areas?city_id=${cityId}`)
+            .then((res) => {
+                let getArea = [];
+                res && res.data.items.map((item, index) => { return (getArea.push({ value: item.id, name: item.name })) })
+                this.setState({
+                    getAreas: getArea
+                })
+            })
+    }
+
+    selectSubtype = (type) => {
+        this.setState({ selectSubType: StaticData.subType[type] })
     }
 
     formSubmit = () => {
@@ -95,12 +133,62 @@ class AddLead extends Component {
         }
     }
 
-    render() {
-        const { formData, cities, getClients, getProject } = this.state
-        const { route } = this.props
+    RCMFormSubmit = () => {
+        const { formType, RCMFormData } = this.state
+        if (
+            !RCMFormData.customerId ||
+            !RCMFormData.city_id ||
+            !RCMFormData.leadAreas ||
+            !RCMFormData.type ||
+            !RCMFormData.subtype
+        ) {
+            this.setState({
+                checkValidation: true
+            })
+        } else {
+            let payLoad = {
+                purpose: formType,
+                type: RCMFormData.type,
+                subtype: RCMFormData.subtype,
+                bed: RCMFormData.bed,
+                bath: RCMFormData.bath,
+                size: RCMFormData.size,
+                leadAreas: RCMFormData.leadAreas,
+                customerId: RCMFormData.customerId,
+                city_id: RCMFormData.city_id,
+                size_unit: RCMFormData.size_unit,
+                price: RCMFormData.max_price,
+                min_price: RCMFormData.min_price,
+            }
+            axios.post(`/api/leads`, payLoad)
+                .then((res) => {
+                    console.log(res.data)
+                })
+        }
+    }
 
+    changeStatus = (status) => {
+        this.setState({
+            formType: status,
+        })
+    }
+
+    render() {
+        const {
+            formData,
+            cities,
+            getClients,
+            getProject,
+            formType,
+            RCMFormData,
+            selectSubType,
+            getAreas,
+            checkValidation,
+        } = this.state
+        const { route } = this.props
+        console.log(StaticData.oneToTen)
         return (
-            <View style={[AppStyles.container]}>
+            <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
                     <KeyboardAvoidingView behavior="padding" enabled>
                         <ScrollView>
@@ -109,7 +197,7 @@ class AddLead extends Component {
                                     route.params.pageName === 'CM' &&
                                     <CMLeadFrom
                                         formSubmit={this.formSubmit}
-                                        checkValidation={this.state.checkValidation}
+                                        checkValidation={checkValidation}
                                         handleForm={this.handleForm}
                                         formData={formData}
                                         cities={cities}
@@ -121,13 +209,19 @@ class AddLead extends Component {
                                 {
                                     route.params.pageName === 'RCM' &&
                                     <RCMLeadFrom
-                                        formSubmit={this.formSubmit}
-                                        checkValidation={this.state.checkValidation}
-                                        handleForm={this.handleForm}
-                                        formData={formData}
+                                        formSubmit={this.RCMFormSubmit}
+                                        checkValidation={checkValidation}
+                                        handleForm={this.handleRCMForm}
+                                        changeStatus={this.changeStatus}
+                                        size={StaticData.oneToTen}
+                                        sizeUnit={StaticData.sizeUnit}
+                                        propertyType={StaticData.type}
+                                        formData={RCMFormData}
                                         cities={cities}
+                                        getAreas={getAreas}
                                         getClients={getClients}
-                                        getProject={getProject}
+                                        formType={formType}
+                                        selectSubType={selectSubType}
                                     />
                                 }
                             </View>

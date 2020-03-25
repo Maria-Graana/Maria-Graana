@@ -59,5 +59,56 @@ export default StaticData = {
             name:'Other',
             value: 'Other'
         }
-    ]
+    ],
+    oneToTen: [
+        { value: '1', name: '1' },
+        { value: '2', name: '2' },
+        { value: '3', name: '3' },
+        { value: '4', name: '4' },
+        { value: '5', name: '5' },
+        { value: '6', name: '6' },
+        { value: '7', name: '7' },
+        { value: '8', name: '8' },
+        { value: '9', name: '9' },
+        { value: '10+', name: '10+' },
+    ],
+    sizeUnit: [
+        { value: 'sqm', name: 'sqm' },
+        { value: 'sqft', name: 'sqft' },
+        { value: 'sqyd', name: 'sqyd' },
+        { value: 'kanal', name: 'kanal' },
+        { value: 'marla', name: 'marla' },
+    ],
+    type: [
+        { value: 'residential', name: 'Residential' },
+        { value: 'plot', name: 'Plot' },
+        { value: 'commercial', name: 'Commercial' },
+    ],
+    subType: {
+        residential: [
+            { value: 'house', name: 'house' }, { value: 'guest house', name: 'guest house' },
+            { value: 'apartment', name: 'apartment' }, { value: 'upper portion', name: 'upper portion' },
+            { value: 'lower portion', name: 'lower portion' }, { value: 'farm house', name: 'farm house' },
+            { value: 'room', name: 'room' }, { value: 'penthouse', name: 'penthouse' },
+            { value: 'hotel suites', name: 'hotel suites' }, { value: 'basement', name: 'basement' },
+            { value: 'annexe', name: 'annexe' }, { value: 'hostel', name: 'hostel' },
+            { value: 'other', name: 'other' },
+        ],
+        plot: [
+            { value: 'residential plot', name: 'residential plot' }, { value: 'commercial plot', name: 'commercial plot' },
+            { value: 'agricultural land', name: 'agricultural land' }, { value: 'industrial land', name: 'industrial land' },
+            { value: 'plot file', name: 'plot file' }, { value: 'farmhouse plot', name: 'farmhouse plot' },
+        ],
+        commercial: [
+            { value: 'office', name: 'office' },
+            { value: 'shop', name: 'shop' },
+            { value: 'warehouse', name: 'warehouse' },
+            { value: 'factory', name: 'factory' },
+            { value: 'building', name: 'building' },
+            { value: 'theatre', name: 'theatre' },
+            { value: 'Gym', name: 'Gym' },
+            { value: 'Food Court', name: 'Food Court' },
+            { value: 'other', name: 'other' },
+        ]
+    }
 }

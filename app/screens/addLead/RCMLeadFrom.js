@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput } from 'react-native';
-import { Button } from 'native-base';
-import PickerComponent from '../../components/Picker/index';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import styles from './style';
 import AppStyles from '../../AppStyles';
+import InnerRCMForm from './innerRCMForm'
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
 
 class CMLeadFrom extends Component {
   constructor(props) {
     super(props)
+
+    this.state = {
+      formType: 'buy'
+    }
 
     this.city = [
       { value: 'shop', name: 'shop' },
@@ -20,21 +23,53 @@ class CMLeadFrom extends Component {
 
   componentDidMount() { }
 
-  render() {
 
+
+  render() {
     const {
+      formType,
+      changeStatus,
+      formData,
+      handleForm,
+      getClients,
+      cities,
+      propertyType,
+      selectSubType,
+      sizeUnit,
+      size,
+      getAreas,
       formSubmit,
       checkValidation,
-      handleForm,
-      formData,
-      cities,
-      getClients,
-      getProject,
     } = this.props
-
+    const checkBuy = formType === 'sale'
+    const checkRent = formType === 'rent'
     return (
       <View>
+        <View style={[styles.multiButton]}>
+          <TouchableOpacity style={[AppStyles.flexOne, styles.buttonDesign, checkBuy && styles.activeBtn]} onPress={() => { changeStatus('sale') }}>
+            <Text style={[styles.textCenter, checkBuy && styles.textBold]}>Buy</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[AppStyles.flexOne, styles.buttonDesign, checkRent && styles.activeBtn]} onPress={() => { changeStatus('rent') }}>
+            <Text style={[styles.textCenter, checkRent && styles.textBold]}>Rent</Text>
+          </TouchableOpacity>
+        </View>
 
+        {/* *********** Main Container *********** */}
+        <View style={[AppStyles.container]}>
+          <InnerRCMForm
+            formData={formData}
+            handleForm={handleForm}
+            getClients={getClients}
+            cities={cities}
+            getAreas={getAreas}
+            propertyType={propertyType}
+            subType={selectSubType}
+            sizeUnit={sizeUnit}
+            size={size}
+            formSubmit={formSubmit}
+            checkValidation={checkValidation}
+          />
+        </View>
       </View>
     )
   }

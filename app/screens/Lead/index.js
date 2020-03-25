@@ -1,12 +1,12 @@
 import React from 'react';
 import styles from './style'
-import { View, TextInput, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, FlatList, TouchableOpacity, } from 'react-native';
 import { Picker } from 'native-base';
 import { connect } from 'react-redux';
 import InventoryTile from '../../components/InventoryTile'
 import AppStyles from '../../AppStyles'
 import { Feather } from '@expo/vector-icons';
-import { Fab } from 'native-base';
+import { Fab, Button, Icon } from 'native-base';
 import { StackActions } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,6 +17,7 @@ class Inventory extends React.Component {
 
 		this.state = {
 			language: '',
+			active: false,
 			dotsDropDown: false,
 			dropDownId: '',
 			selectInventory: [],
@@ -84,7 +85,8 @@ class Inventory extends React.Component {
 
 	goToFormPage = (status) => {
 		const { navigation } = this.props;
-		navigation.navigate('AddLead', {'pageName': status});
+		this.setState({ active: false })
+		navigation.navigate('AddLead', { 'pageName': status });
 	}
 
 	openFebDraw = () => {
@@ -99,25 +101,22 @@ class Inventory extends React.Component {
 		const { selectInventory, dropDownId, febDrawer } = this.state
 		return (
 			<View style={AppStyles.container}>
+
+
 				<Fab
-					active='true'
+					active={this.state.active}
+					direction="up"
 					containerStyle={{ zIndex: 20 }}
-					style={{ backgroundColor: '#333', position: 'relative' }}
+					style={{ backgroundColor: '#333' }}
 					position="bottomRight"
-					onPress={this.openFebDraw}
-				>
-					{
-						febDrawer === true &&
-						<View style={styles.mainDropFeb}>
-							<TouchableOpacity style={[AppStyles.mbTen]} onPress={() => { this.goToFormPage('RCM') }}>
-								<Text>RCM Lead</Text>
-							</TouchableOpacity>
-							<TouchableOpacity onPress={() => { this.goToFormPage('CM') }}>
-								<Text>CM Lead</Text>
-							</TouchableOpacity>
-						</View>
-					}
+					onPress={() => this.setState({ active: !this.state.active })}>
 					<Ionicons name="md-add" color="#ffffff" />
+					<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('RCM') }}>
+						<Icon name="logo-whatsapp" />
+					</Button>
+					<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('CM') }}>
+						<Icon name="logo-facebook" />
+					</Button>
 				</Fab>
 
 				{/* ***** Main Filter Wrap */}

@@ -333,8 +333,10 @@ class Diary extends React.Component {
                 <View style={styles.underLine}
                 />
               </TouchableOpacity>
-              : null
+              :
+              <CalendarComponent startDate={startDate} updateDay={this.updateDay} onPress={this._toggleShow} />
           }
+
 
           {
             newDiaryData && newDiaryData.length ?

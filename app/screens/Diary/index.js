@@ -321,7 +321,6 @@ class Diary extends React.Component {
                 <Ionicons name="md-add" color="#ffffff" />
               </Fab> :
               null
-
           }
 
           {

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { StyleProvider } from 'native-base';
-import DetailForm from './detailForm';
+import CMLeadFrom from './CMLeadFrom';
+import RCMLeadFrom from './RCMLeadFrom';
 import AppStyles from '../../AppStyles';
 import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
@@ -21,15 +22,14 @@ class AddLead extends Component {
                 customerId: '',
                 cityId: '',
                 projectId: '',
-                projectType: 'office',
+                projectType: '',
                 minPrice: '',
                 maxPrice: '',
             },
         }
     }
     componentDidMount() {
-        const { user, route } = this.props
-        console.log('*******************',route)
+        const { user } = this.props
         this.getCities();
         this.getClients(user.id);
         this.getAllProjects();
@@ -97,6 +97,7 @@ class AddLead extends Component {
 
     render() {
         const { formData, cities, getClients, getProject } = this.state
+        const { route } = this.props
 
         return (
             <View style={[AppStyles.container]}>
@@ -104,15 +105,31 @@ class AddLead extends Component {
                     <KeyboardAvoidingView behavior="padding" enabled>
                         <ScrollView>
                             <View>
-                                <DetailForm
-                                    formSubmit={this.formSubmit}
-                                    checkValidation={this.state.checkValidation}
-                                    handleForm={this.handleForm}
-                                    formData={formData}
-                                    cities={cities}
-                                    getClients={getClients}
-                                    getProject={getProject}
-                                />
+                                {
+                                    route.params.pageName === 'CM' &&
+                                    <CMLeadFrom
+                                        formSubmit={this.formSubmit}
+                                        checkValidation={this.state.checkValidation}
+                                        handleForm={this.handleForm}
+                                        formData={formData}
+                                        cities={cities}
+                                        getClients={getClients}
+                                        getProject={getProject}
+                                    />
+                                }
+
+                                {
+                                    route.params.pageName === 'RCM' &&
+                                    <RCMLeadFrom
+                                        formSubmit={this.formSubmit}
+                                        checkValidation={this.state.checkValidation}
+                                        handleForm={this.handleForm}
+                                        formData={formData}
+                                        cities={cities}
+                                        getClients={getClients}
+                                        getProject={getProject}
+                                    />
+                                }
                             </View>
                         </ScrollView>
                     </KeyboardAvoidingView>

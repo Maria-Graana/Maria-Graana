@@ -10,7 +10,6 @@ import ListItem from "../ListItem/index";
 import styles from './style';
 import AppStyles from '../../AppStyles'
 import moment from 'moment';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 class DiaryTile extends React.Component {
@@ -77,10 +76,10 @@ class DiaryTile extends React.Component {
                                         {
                                             item.item.diary.map((val, index) => {
                                                 return (
-                                                    <TouchableOpacity onPress={() =>  this.showPopup(val) }
-                                                        onLongPress={() =>  this.handleLongPress(val) }>
-                                                        <View styles={AppStyles.mb1} key={index}>
-
+                                                    <TouchableWithoutFeedback onPress={() =>  this.showPopup(val) }
+                                                        onLongPress={() =>  this.handleLongPress(val) }
+                                                        key={index}
+                                                        >
                                                             <View style={[styles.tileWrap, { borderLeftColor: val.statusColor }]} key={index}>
                                                                 <View style={styles.innerTile}>
                                                                     <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - {moment.utc(val.end).format("hh:mm a")} </Text>
@@ -99,8 +98,7 @@ class DiaryTile extends React.Component {
                                                                         null
                                                                 }
                                                             </View>
-                                                        </View>
-                                                    </TouchableOpacity>
+                                                    </TouchableWithoutFeedback>
                                                 )
                                             })
                                         }

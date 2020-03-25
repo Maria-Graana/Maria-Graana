@@ -60,7 +60,7 @@ class DateComponent extends React.Component {
         date={dateTime}
         format={addMode == 'time' ? 'hh:mm a' : 'YYYY-MM-DD'}
         placeholder={placeholderlabel}
-        minDate={addMode == 'date' && moment().format("YYYY-MM-DD")}
+        minDate={addMode == 'date' ? moment().format("YYYY-MM-DD") : ''}
         disabled={addMode == 'time' ? disabled : false}
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"

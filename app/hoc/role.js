@@ -1,7 +1,6 @@
 const role = {
     Diary: {
         roles: [
-            { role: 'super_admin', access: { v: true, a: true, e: true, d: true} },
             { role: 'admin 1', access: { v: true, a: true, e: false, d: false} },
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true} },
             { role: 'sub_admin 2', access: { v: true, a: true, e: true, d: true} },
@@ -9,7 +8,6 @@ const role = {
     },
     Inventory: {
         roles: [
-            { role: 'super_admin', access: { v: true, a: true, e: true, d: true} },
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true} },
             { role: 'sub_admin 2', access: { v: true, a: true, e: true, d: true} },
             { role: 'sub_admin 4', access: { v: true, a: true, e: true, d: true} },
@@ -22,7 +20,15 @@ const role = {
             { role: 'admin 3', access: { v: true, a: false, e: false, d: false} },
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true} },
         ],
-    }
+    },
+    Client: {
+        roles: [
+            { role: 'admin 3', access: { v: true, a: true, e: true, d: true} },
+            { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true} },
+            { role: 'sub_admin 2', access: { v: true, a: true, e: true, d: true} },
+        ],
+    },
+
 }
 
 module.exports = role;

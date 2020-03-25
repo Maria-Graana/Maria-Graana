@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import AppStyles from '../../AppStyles';
 import UserAvatar from 'react-native-user-avatar';
+import Ability from '../../hoc/Ability';
+import { connect } from 'react-redux';
 
 class CustomerTile extends React.Component {
     constructor(props) {
@@ -9,10 +11,14 @@ class CustomerTile extends React.Component {
     }
     render() {
         const {item}= this.props.data
+        const {user}= this.props
         return (
             <TouchableOpacity 
             activeOpacity={.7}
-            onPress = { () => {  }}
+            onPress = { () => {this.props.onPress(item)}}
+            onLongPress={(val) => {
+                if (Ability.canDelete(user.role, 'Client')) this.props.handleLongPress(item)
+            }}
             >
                 <View style= {{flexDirection: 'row', marginVertical: 15}}>
                     <View style={{paddingRight: 10}}>
@@ -57,4 +63,10 @@ const styles = StyleSheet.create({
     }
 });
 
-export default CustomerTile;
+mapStateToProps = (store) => {
+    return {
+        user: store.user.user
+    }
+}
+
+export default connect(mapStateToProps)(CustomerTile)

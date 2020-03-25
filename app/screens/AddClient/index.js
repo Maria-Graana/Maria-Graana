@@ -8,6 +8,7 @@ import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
+import helper from '../../helper';
 
 class AddClient extends Component {
     constructor(props) {
@@ -29,37 +30,80 @@ class AddClient extends Component {
         }
     }
     componentDidMount() {
+        const { route } = this.props
+        if ('update' in route.params && route.params.update) {
+            this.updateFields()
+        }
+    }
+
+    updateFields = () => {
+        const { route } = this.props
+        const { client } = route.params
+        this.setState({
+            formData: {
+                firstName: client.firstName,
+                lastName: client.lastName,
+                email: client.email,
+                cnic: client.cnic,
+                contactNumber: client.contact1,
+                address: client.address,
+            }
+        })
     }
 
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
-        console.log(value, name)
         this.setState({ formData })
     }
 
     formSubmit = () => {
         const { formData } = this.state
-        console.log(formData)
-        if (!formData.firstName || !formData.lastName || !formData.email || !formData.cnic || !formData.contactNumber || !formData.address || !formData.secondaryAddress) {
+        const { route } = this.props
+        const { update, client } = route.params
+        if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
             this.setState({
                 checkValidation: true
             })
         } else {
             const { user } = this.props
             let body = {
-                ...formData,
+                first_name: formData.firstName,
+                last_name: formData.lastName,
+                email: formData.email,
+                phone: formData.cnic,
+                cnic: formData.contactNumber,
+                address: formData.address,
             }
-            axios.post(`/api/leads/project`, body)
-                .then((res) => {
-                    RootNavigation.navigate('Lead')
-                })
+            if (!update) {
+                axios.post(`/api/customer/create`, body)
+                    .then((res) => {
+                        RootNavigation.navigate('Client')
+                        helper.successToast('CLIENT CREATED')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        helper.errorToast('ERROR CREATING CLIENT')
+                    })
+            } else {
+                body.id= client.id
+                axios.patch(`/api/customer/update?id?${client.id}`, body)
+                    .then((res) => {
+                        helper.successToast('CLIENT UPDATED')
+                        RootNavigation.navigate('Client')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        helper.errorToast('ERROR UPDATING CLIENT')
+                    })
+            }
         }
     }
 
     render() {
         const { formData, cities, getClients, getProject } = this.state
-
+        const { route } = this.props
+        const { update } = route.params
         return (
             <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
@@ -74,6 +118,7 @@ class AddClient extends Component {
                                     cities={cities}
                                     getClients={getClients}
                                     getProject={getProject}
+                                    update={update}
                                 />
                             </View>
                         </ScrollView>

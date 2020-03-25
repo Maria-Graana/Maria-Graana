@@ -12,21 +12,7 @@ class DetailForm extends Component {
 		super(props)
 
 		this.state = {
-			formData: {
-				client: '',
-				city: '',
-				project: '',
-				productType: '',
-				minInvestment: '',
-				maxInvestment: '',
-			}
 		}
-
-		this.city = [
-			{ id: 'shop', name: 'shop' },
-			{ id: 'office', name: 'Office' },
-			{ id: 'other', name: 'other' },
-		]
 	}
 
 	componentDidMount() { }
@@ -38,17 +24,15 @@ class DetailForm extends Component {
 			checkValidation,
 			handleForm,
 			formData,
-			cities,
-			getClients,
-			getProject,
+			update
 		} = this.props
-
+		let btnText= update? 'UPDATE': 'ADD'
 		return (
 			<View>
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput onChangeText={(text) => { handleForm(text, 'firstName') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'firstName'} placeholder={'First Name*'} />
+						<TextInput value={formData.firstName} onChangeText={(text) => { handleForm(text, 'firstName') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'firstName'} placeholder={'First Name*'} />
 						{
 							checkValidation === true && formData.firstName === '' && <ErrorMessage errorMessage={'Required'} />
 						}
@@ -57,7 +41,7 @@ class DetailForm extends Component {
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput onChangeText={(text) => { handleForm(text, 'lastName') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'lastName'} placeholder={'Last Name*'} />
+						<TextInput value={formData.lastName} onChangeText={(text) => { handleForm(text, 'lastName') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'lastName'} placeholder={'Last Name*'} />
 						{
 							checkValidation === true && formData.lastName === '' && <ErrorMessage errorMessage={'Required'} />
 						}
@@ -66,7 +50,7 @@ class DetailForm extends Component {
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number*'} />
+						<TextInput value={formData.contactNumber} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number*'} />
 						{
 							checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
 						}
@@ -75,19 +59,13 @@ class DetailForm extends Component {
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'email'} placeholder={'Email'} />
-						{
-							checkValidation === true && formData.email === '' && <ErrorMessage errorMessage={'Required'} />
-						}
+						<TextInput value={formData.email} keyboardType='email-address' autoCompleteType='email' onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'email'} placeholder={'Email'} />
 					</View>
 				</View>
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput onChangeText={(text) => { handleForm(text, 'cnic') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'cnic'} placeholder={'CNIC'} />
-						{
-							checkValidation === true && formData.cnic === '' && <ErrorMessage errorMessage={'Required'} />
-						}
+						<TextInput value={formData.cnic} onChangeText={(text) => { handleForm(text, 'cnic') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'cnic'} placeholder={'CNIC'} />
 					</View>
 				</View>
 
@@ -97,11 +75,8 @@ class DetailForm extends Component {
                         style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, styles.textArea]} rowSpan={5}
                         placeholder="Address"
                         onChangeText={(text) => handleForm(text, 'address')}
-                        // value={notes}
+                        value={formData.Address}
                     />
-					{
-						checkValidation === true && formData.address === '' && <ErrorMessage errorMessage={'Required'} />
-					}
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
@@ -110,7 +85,7 @@ class DetailForm extends Component {
                         style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, styles.textArea]} rowSpan={5}
                         placeholder="Secondary Address"
                         onChangeText={(text) => handleForm(text, 'secondaryAddress')}
-                        // value={notes}
+                        value={formData.secondaryAddress}
                     />
                 </View>
 
@@ -120,7 +95,7 @@ class DetailForm extends Component {
 					<Button
 						onPress={() => { formSubmit(formData) }}
 						style={[AppStyles.formBtn, styles.addInvenBtn]}>
-						<Text style={AppStyles.btnText}>ADD</Text>
+						<Text style={AppStyles.btnText}>{btnText}</Text>
 					</Button>
 				</View>
 			</View>

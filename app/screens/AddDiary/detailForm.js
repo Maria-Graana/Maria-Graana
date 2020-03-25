@@ -111,14 +111,14 @@ class DetailForm extends Component {
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
-                    <DateComponent date={startTime} mode='time' placeholder='Select Start Time' onTimeChange={(value) => this.handleForm(moment(value, 'h:mm ').format('hh:mm a'), 'startTime')} />
+                    <DateComponent date={startTime} mode='time' placeholder='Select Start Time' onTimeChange={(value) => this.handleForm(value, 'startTime')} />
                     {
                         checkValidation === true && startTime === '' && <ErrorMessage errorMessage={'Required'} />
                     }
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
-                    <DateComponent date={endTime} mode='time' placeholder='Select End Time' disabled={startTime === '' ? true : false} onTimeChange={(value) => this.handleForm(moment(value, 'h:mm ').format('hh:mm a'), 'endTime')} />
+                    <DateComponent date={endTime} mode='time' placeholder='Select End Time' disabled={startTime === '' ? true : false} onTimeChange={(value) => this.handleForm(value ,'endTime')} />
                     {
                         checkValidation === true && endTime === '' && <ErrorMessage errorMessage={'Required'} />
                     }

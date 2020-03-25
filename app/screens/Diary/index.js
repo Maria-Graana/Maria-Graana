@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
+import { ActionSheet } from 'native-base';
 import { Ionicons, EvilIcons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
@@ -17,6 +18,8 @@ import helper from '../../helper';
 
 const _format = 'YYYY-MM-DD';
 const _today = moment(new Date().dateString).format(_format);
+var BUTTONS = ['Delete', 'Cancel'];
+var CANCEL_INDEX = 1;
 
 class Diary extends React.Component {
   constructor(props) {
@@ -31,7 +34,6 @@ class Diary extends React.Component {
       loading: true,
       agentId: '',
       openPopup: false,
-      isDeletePopupVisible: false,
       selectedDiary: {}
     }
   }
@@ -86,22 +88,24 @@ class Diary extends React.Component {
   diaryMain = () => {
     const { agentId } = this.state;
     let endPoint = ``
-    let date = moment(this.state.startDate).format('YYYY-MM-DD')
-    endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}&agentId=${agentId}`
-    axios.get(`${endPoint}`)
-      .then((res) => {
-        this.setState({
-          loading: true,
-          diaryData: res.data.rows,
-        }, () => {
-          this.showTime()
+    this.setState({ loading: true }, () => {
+      let date = moment(this.state.startDate).format('YYYY-MM-DD')
+      endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}&agentId=${agentId}`
+      axios.get(`${endPoint}`)
+        .then((res) => {
+          this.setState({
+            diaryData: res.data.rows,
+          }, () => {
+            this.showTime()
+          })
+        }).catch((error) => {
+          console.log(error)
+          this.setState({
+            loading: false
+          })
         })
-      }).catch((error) => {
-        console.log(error)
-        this.setState({
-          loading: false
-        })
-      })
+    })
+
   }
 
   checkStatus = (val) => {
@@ -109,6 +113,9 @@ class Diary extends React.Component {
     let checkForCDate = taskDate == this.state.todayDate
     if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
       return '#FDD835'
+    }
+    else if (taskDate > this.state.todayDate) {
+      return 'red'
     }
     else if (checkForCDate && val.status === 'pending') {
       return 'red'
@@ -230,6 +237,7 @@ class Diary extends React.Component {
     })
 
   }
+
   popupAction = (val, type) => {
     let endPoint = ``
     endPoint = `/api/diary/update?id=${val.id}`
@@ -260,64 +268,90 @@ class Diary extends React.Component {
     }
   }
 
+  handleLongPress = (val) => {
+    ActionSheet.show(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Select an Option',
+      },
+      buttonIndex => {
+        if (buttonIndex === 0) {
+          //Delete
+          this.showDeleteDialog(val);
+        }
+      }
+    );
+
+  }
+
+  showDeleteDialog(val) {
+    Alert.alert('Delete Diary', 'Are you sure you want to delete this diary ?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', onPress: () => this.deleteDiary(val) },
+    ],
+      { cancelable: false })
+  }
+
   render() {
     const { showCalendar, startDate, newDiaryData, loading, selectedDiary } = this.state;
     const { user, route } = this.props;
     return (
-      <View style={styles.container}>
-        <DairyPopup
-          screenName={route.params.screen}
-          data={selectedDiary}
-          updateDiary={this.updateDiary}
-          deleteDiary={this.deleteDiary}
-          openPopup={this.state.openPopup}
-          closePopup={this.closePopup}
-          popupAction={(val, type) => this.popupAction(val, type)}
-        />
+      !loading ?
+        <View style={styles.container}>
+          <DairyPopup
+            screenName={route.params.screen}
+            data={selectedDiary}
+            updateDiary={this.updateDiary}
+            deleteDiary={this.deleteDiary}
+            openPopup={this.state.openPopup}
+            closePopup={this.closePopup}
+            popupAction={(val, type) => this.popupAction(val, type)}
+          />
 
-        {
-          Ability.canAdd(user.role, route.params.screen) ?
-            <Fab
-              active='true'
-              containerStyle={{ zIndex: 20 }}
-              style={{ backgroundColor: AppStyles.colors.primaryColor }}
-              position="bottomRight"
-              onPress={this.goToDiaryForm}
-            >
-              <Ionicons name="md-add" color="#ffffff" />
-            </Fab> :
-            null
+          {
+            Ability.canAdd(user.role, route.params.screen) ?
+              <Fab
+                active='true'
+                containerStyle={{ zIndex: 20 }}
+                style={{ backgroundColor: AppStyles.colors.primaryColor }}
+                position="bottomRight"
+                onPress={this.goToDiaryForm}
+              >
+                <Ionicons name="md-add" color="#ffffff" />
+              </Fab> :
+              null
 
-        }
+          }
 
-        {
-          !showCalendar ?
-            <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
-              <View style={styles.calenderIconContainer}>
-                <Image style={{width:26,height:26}} source={require('../../../assets/img/calendar.png')} />
-                <Text style={styles.calendarText}>Calendar</Text>
-              </View>
-              <View style={styles.underLine}
-              />
-            </TouchableOpacity>
-            : null
-        }
+          {
+            !showCalendar ?
+              <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
+                <View style={styles.calenderIconContainer}>
+                  <Image style={{ width: 26, height: 26 }} source={require('../../../assets/img/calendar.png')} />
+                  <Text style={styles.calendarText}>Calendar</Text>
+                </View>
+                <View style={styles.underLine}
+                />
+              </TouchableOpacity>
+              : null
+          }
 
-        {
-          showCalendar ?
-            <CalendarComponent startDate={startDate} updateDay={this.updateDay} onPress={this._toggleShow} />
-            : null
-        }
-        {
-          newDiaryData && newDiaryData.length ?
-            <DiaryTile data={newDiaryData} showPopup={this.showPopup} />
-            : <Loader loading={loading} />
-        }
-      </View>
+          {
+            showCalendar ?
+              <CalendarComponent startDate={startDate} updateDay={this.updateDay} onPress={this._toggleShow} />
+              : null
+          }
+          {
+            newDiaryData && newDiaryData.length ?
+              <DiaryTile data={newDiaryData} showPopup={this.showPopup} onLongPress={(val) => this.handleLongPress(val)} /> : null
+          }
+        </View>
+        :
+        <Loader loading={loading} />
     )
   }
 }
-
 
 mapStateToProps = (store) => {
   return {

@@ -1,102 +1,80 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
-    container: {
-        minHeight: 130,
-        borderRadius: 10,
+    viewContainer: {
         backgroundColor: 'white',
-    },
-    topBar: {
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        borderRadius: 15,
-        backgroundColor: '#fafafa',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    timeWrap: {
-        color: '#8c8c8c',
-        fontWeight: 'bold',
+        marginLeft: 15, 
+        marginRight: 15,
+        paddingHorizontal: 15, 
+        paddingTop: 10,
+        zIndex:5,
+        elevation:5,
+        shadowOffset: { width: 5, height: 5 },
+        shadowColor: 'lightgrey',
+        shadowOpacity: 1,
+        borderRadius: 20,
+        
     },
     closeStyle: {
         position: 'absolute',
-        left:10,
+        right: 15,
+        top: Platform.OS == 'android' ? 10 : 40,
         paddingVertical: 5
-
-    },
-    updateBtn: {
-        position: 'absolute',
-        right:10,
-        paddingVertical: 5
-    },
-    viewWrap: {
-        marginVertical: 5,
-        marginHorizontal: 5,
-        borderBottomWidth: 1,
-        borderColor: '#ebebeb',
-        // padding: 10
-    },
-    taskTypeText: {
-        padding: 10,
-        fontSize: 18,
-        color: '#484848',
-        paddingBottom: 5,
-    },
-    subjectWrap: {
-        marginVertical: 5,
-        marginHorizontal: 5,
-        borderColor: '#ebebeb',
-        // padding: 10
-    },
-    subjectText: {
-        padding: 10,
-        paddingBottom: 5,
-        fontSize: 16,
-        fontWeight: '300',
-    },
-    notesText: {
-        padding: 10,
-        paddingBottom: 5,
-        fontSize: 16,
-        fontWeight: '200',
     },
     btnWrap: {
-        marginVertical: 5,
-        marginHorizontal: 5,
         flexDirection: 'row',
-        padding: 10,
-        alignItems: 'flex-end',
-        justifyContent: 'space-around'
-    },
-    closeBtn: {
-        backgroundColor: '#ffffff',
-        height: 50,
-        justifyContent: 'center',
-        borderRadius: 5,
-        width: 100,
-        marginHorizontal: 5,
+        paddingVertical: 15,
+        alignSelf:'flex-end',
     },
     markBtn: {
         backgroundColor: '#ffffff',
-        height: 45,
-        justifyContent: 'center',
-        borderRadius: 5,
-        width: 100,
-        marginHorizontal: 5
-    },
-    disabledBtnStyle: {
-        opacity:0.3,
         height: 50,
         justifyContent: 'center',
         borderRadius: 5,
         width: 100,
-        marginHorizontal: 5
+        marginHorizontal: 10
     },
-  
-    disabledBtnText: {
-        color:'#333',
-        fontSize: 14 ,
-    }
+    disabledBtnStyle: {
+        opacity: 0.3,
+        height: 50,
+        justifyContent: 'center',
+        borderRadius: 5,
+        width: 100,
+        marginHorizontal: 10
+    },
 
+    disabledBtnText: {
+        color: '#333',
+        fontSize: 14,
+    },
+
+    textStyle:{
+        fontFamily: AppStyles.fonts.defaultFont,
+        fontSize:AppStyles.fontSize.large,
+        marginVertical:5
+    },
+    horizontalWrapStyle:{
+        flexDirection: 'row', 
+        justifyContent: 'space-between'
+    },
+    statusText: {
+        fontFamily: AppStyles.fonts.boldFont,
+        width: '25%',
+        textAlign: 'center',
+        alignSelf:'center',
+        fontSize: AppStyles.noramlSize.fontSize,
+        padding: 3,
+        color: AppStyles.colors.primaryColor,
+        borderRadius: 12,
+        borderColor: AppStyles.colors.primaryColor,
+        borderWidth: 0.5
+    },
+    underLine: {
+        height: 1,
+        width: "100%",
+        marginVertical:15,
+        backgroundColor: "lightgrey",
+    }
+     
 });

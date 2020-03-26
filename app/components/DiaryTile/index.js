@@ -37,7 +37,10 @@ class DiaryTile extends React.Component {
 
     setStatusText = (val) => {
         let taskDate = moment(val.date).format('L')
-        if (taskDate != this.state.todayDate && val.status !== 'completed') {
+        if (taskDate > this.state.todayDate) {
+            return 'To-do'
+        }
+        else if (taskDate != this.state.todayDate && val.status !== 'completed') {
             return 'Overdue';
         }
         else if (val.status === 'inProgress') {

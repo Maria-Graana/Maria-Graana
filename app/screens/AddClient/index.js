@@ -87,7 +87,7 @@ class AddClient extends Component {
                     })
             } else {
                 body.id= client.id
-                axios.patch(`/api/customer/update?id?${client.id}`, body)
+                axios.patch(`/api/customer/update?id=${client.id}`, body)
                     .then((res) => {
                         helper.successToast('CLIENT UPDATED')
                         RootNavigation.navigate('Client')

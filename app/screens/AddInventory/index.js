@@ -10,6 +10,7 @@ import axios from 'axios'
 import DetailForm from './detailForm';
 import StaticData from '../../StaticData'
 import AppStyles from '../../AppStyles';
+import helper from '../../helper';
 
 
 class AddInventory extends Component {
@@ -23,7 +24,7 @@ class AddInventory extends Component {
             selectedGrade: '',
             formData: {
                 type: '',
-                subType: '',
+                subtype: '',
                 purpose: '',
                 bed: null,
                 bath: null,
@@ -39,6 +40,13 @@ class AddInventory extends Component {
                 name: '',
                 phone: '',
                 address: '',
+                description: '',
+                generale_size: '',
+                lisitng_type: 'mm',
+                features: JSON.stringify({}),
+                custom_title: '',
+                show_address: true,
+                video: '',
 
             }
         }
@@ -81,7 +89,7 @@ class AddInventory extends Component {
         const { formData } = this.state
         formData[name] = value
         this.setState({ formData }, () => {
-           // console.log('formData', formData);
+
         })
         if (formData.type != '') { this.selectSubtype(formData.type) }
         if (formData.city_id != '') { this.getAreas(formData.city_id) }
@@ -92,25 +100,43 @@ class AddInventory extends Component {
         const { formData } = this.state
 
         // ********* Form Validation Check
-        if (!formData.propertyType ||
-            !formData.subType ||
-            !formData.city ||
-            !formData.area ||
-            !formData.sizeUnit ||
-            !formData.size ||
-            !formData.price ||
-            !formData.beds ||
-            !formData.baths ||
-            !formData.ownerName ||
-            !formData.ownerNumber) {
+        if (!formData.type ||
+            !formData.subtype ||
+            !formData.city_id ||
+            !formData.purpose ||
+            !formData.area_id ||
+            !formData.size_unit ||
+            !formData.size
+        ) {
             this.setState({
                 checkValidation: true
             })
         } else {
+        // ********* Call Add Inventory API here :)
+        this.addProperty(formData);
+         }
+    }
 
-            // ********* Call Add Inventory API here :)
-         //   console.log(formData)
-        }
+    addProperty = (formData) => {
+        const { navigation } = this.props;
+        formData.lat = this.convertLatitude(formData.lat);
+        formData.lng = this.convertLongitude(formData.lng);
+        axios.post(`/api/inventory/create`, formData)
+            .then((res) => {
+                console.log('res', res.status);
+                if (res.status === 200) {
+                    helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
+                    navigation.goBack();
+                }
+                else {
+                    helper.errorToast('ERROR: SOMETHING WENT WRONG')
+                }
+
+            })
+            .catch((error) => {
+                helper.errorToast('ERROR: ADDING PROPERTY')
+                console.log('error', error.message)
+            })
     }
 
     _getLocationAsync = async () => {
@@ -126,6 +152,30 @@ class AddInventory extends Component {
 
     };
 
+    convertLongitude = (val) => {
+        if (val === '') {
+            return null
+        }
+        else if (typeof (val) === 'string' && val != '') {
+            return parseFloat(val);
+        }
+        else {
+            return val;
+        }
+
+    }
+
+    convertLatitude = (val) => {
+        if (val === '') {
+            return null
+        }
+        else if (typeof (val) === 'string' && val != '') {
+            return parseFloat(val);
+        }
+        else {
+            return val;
+        }
+    }
 
     render() {
         const {

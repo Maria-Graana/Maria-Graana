@@ -17,24 +17,25 @@ class Landing extends React.Component {
 	// ****** Navigate Function
 	navigateFunction = (name, screenName) => {
 		const { navigation } = this.props
-		navigation.navigate(name,{screen: screenName})
+		navigation.navigate(name, { screen: screenName })
 	}
 
 	render() {
-		const {user}= this.props
+		const { user } = this.props
 		return (
-			<SafeAreaView style={[AppStyles.container,{paddingLeft:25,paddingRight:25}]}>
-					<View >
-						{/* Main Wrap of Landing Page Buttons (Diary Button) */}
-						{ Ability.canView(user.role, 'Diary') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} screenName={'Diary'} buttonImg={DiaryImg} badges={'12'}/> }
+			<ScrollView style={[AppStyles.container, { paddingLeft: 25, paddingRight: 25 }]} >
+				<SafeAreaView >
+					{/* Main Wrap of Landing Page Buttons (Diary Button) */}
+					{Ability.canView(user.role, 'Diary') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} screenName={'Diary'} buttonImg={DiaryImg} badges={'12'} />}
 
-						{/* Main Wrap of Landing Page Buttons (Leads Button) */}
-						<LandingButtonTile navigateFunction={this.navigateFunction} label={'LEADS'} pagePath={'Lead'} screenName={'Lead'} buttonImg={LeadImg} badges={'42'}/>
+					{/* Main Wrap of Landing Page Buttons (Leads Button) */}
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'LEADS'} pagePath={'Lead'} screenName={'Lead'} buttonImg={LeadImg} badges={'42'} />
 
-						{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
-						<LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={'32'}/>
-					</View>
-			</SafeAreaView>
+					{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
+					<LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={'32'} />
+				</SafeAreaView>
+
+			</ScrollView>
 		)
 	}
 }

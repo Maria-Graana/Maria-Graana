@@ -1,156 +1,139 @@
 import React from 'react';
 import styles from './style'
-import { View, ScrollView, TextInput, FlatList } from 'react-native';
-import { Picker } from 'native-base';
+import { View, FlatList, Alert } from 'react-native';
+import { ActionSheet } from 'native-base';
 import { connect } from 'react-redux';
-import InventoryTile from '../../components/InventoryTile'
+import PropertyTile from '../../components/PropertyTile'
 import AppStyles from '../../AppStyles'
+import axios from 'axios';
 import { Fab } from 'native-base';
-import { StackActions } from '@react-navigation/native';
-import { Ionicons, EvilIcons } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import * as RootNavigation from '../../navigation/RootNavigation';
+import Loader from '../../components/loader';
+import helper from '../../helper';
+
+var BUTTONS = ['Delete', 'Cancel'];
+var CANCEL_INDEX = 1;
 
 class Inventory extends React.Component {
 	constructor(props) {
 		super(props)
-
 		this.state = {
-			language: '',
-			dotsDropDown: false,
-			dropDownId: '',
-			selectInventory: [],
-
+			propertiesList: [],
+			loading: true,
+			resultsFound: true
 		}
 
-		this.staticData = [
-			{
-				id: '1',
-				propertyName: '10 marla house for sale',
-				action: 'Token',
-				price: '10 Crore',
-				address: 'G/11, Islamabad',
-				location: 'G/11, Islamabad',
-			},
-			{
-				id: '2',
-				propertyName: '40 marla house for sale',
-				action: 'Deal Done',
-				price: '20 Crore',
-				address: 'i8/4, Islamabad',
-				location: 'i8/4, Islamabad',
-			},
-			{
-				id: '3',
-				propertyName: '16 marla house for sale',
-				action: 'Deal Done',
-				price: '13 Crore',
-				address: 'G2/11, Islamabad',
-				location: 'G2/11, Islamabad',
-			},
-			{
-				id: '4',
-				propertyName: '5 marla house for sale',
-				action: 'Token',
-				price: '2 Crore',
-				address: 'H1/11, Islamabad',
-				location: 'H1/11, Islamabad',
-			},
-			{
-				id: '5',
-				propertyName: '5 marla house for sale',
-				action: 'Token',
-				price: '2 Crore',
-				address: 'H1/11, Islamabad',
-				location: 'H1/11, Islamabad',
+
+	}
+
+	componentDidMount() {
+		const { navigation } = this.props;
+		this._unsubscribe = navigation.addListener('focus', () => {
+			this.getPropertyListing();
+		});
+	}
+
+
+	componentWillUnmount() {
+		this._unsubscribe();
+	}
+
+	getPropertyListing = () => {
+		this.setState({ loading: true })
+		axios.get(`api/inventory/all`).then((response) => {
+			if (response.status == 200) {
+				this.setState({
+					propertiesList: response.data.rows,
+					loading: false,
+				});
 			}
-		]
-	}
-
-	showDropdown = (id) => {
-		this.setState({
-			dropDownId: id,
-			dotsDropDown: !this.state.dotsDropDown
+		}).catch((error) => {
+			console.log('error', error);
 		})
 	}
-
-	selectInventory = (id) => {
-		const { selectInventory } = this.state
-		this.setState({
-			selectInventory: [...selectInventory, id]
-		})
-	}
-
-	unSelectInventory = (id) => {
-		const { selectInventory } = this.state
-		let index = selectInventory.indexOf(id)
-		selectInventory.splice(index, 1)
-		this.setState({
-			selectInventory: selectInventory,
-		})
-	}
-
 
 	goToInventoryForm = () => {
-			const { navigation } = this.props;
-			navigation.dispatch(
-				StackActions.replace('AddInventory')
-			);
+		RootNavigation.navigate('AddInventory');
 	}
 
+	deleteProperty = (id) => {
+		let endPoint = ``
+		let that = this;
+		endPoint = `api/inventory/delete?id=${id}`
+		axios.delete(endPoint).then(function (response) {
+			if (response.status === 200) {
+				helper.successToast('PROPERTY DELETED SUCCESSFULLY!')
+				that.getPropertyListing();
+			}
+
+		}).catch(function (error) {
+			helper.successToast(error.message)
+		})
+
+	}
+
+	onHandlePress = (data) => {
+		//console.log('onPress', data)
+	}
+
+	onHandleLongPress = (val) => {
+		ActionSheet.show(
+			{
+				options: BUTTONS,
+				cancelButtonIndex: CANCEL_INDEX,
+				title: 'Select an Option',
+			},
+			buttonIndex => {
+				if (buttonIndex === 0) {
+					//Delete
+					this.showDeleteDialog(val);
+				}
+			}
+		);
+
+	}
+
+	showDeleteDialog(id) {
+		Alert.alert('Delete Property', 'Are you sure you want to delete this property ?', [
+			{ text: 'Cancel', style: 'cancel' },
+			{ text: 'Delete', onPress: () => this.deleteProperty(id) },
+		],
+			{ cancelable: false })
+	}
+
+
 	render() {
-		const { selectInventory, dropDownId } = this.state
+		const { propertiesList, loading } = this.state;
 		return (
-			<View style={AppStyles.container}>
+			!loading ?
+				<View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0, marginBottom: 25 }]}>
 
-				<Fab
-					active='true'
-					containerStyle={{ zIndex: 20 }}
-					style={{ backgroundColor: '#333' }}
-					position="bottomRight"
-					onPress={this.goToInventoryForm}
-				>
-					<Ionicons name="md-add" color="#ffffff" />
-				</Fab>
+					<Fab
+						active='true'
+						containerStyle={{ zIndex: 20 }}
+						style={{ backgroundColor: AppStyles.colors.primaryColor }}
+						position="bottomRight"
+						onPress={this.goToInventoryForm}
+					>
+						<Ionicons name="md-add" color="#ffffff" />
+					</Fab>
 
-				{/* ***** Main Filter Wrap */}
-				<View style={styles.filterMainWrap}>
-					<View style={[styles.searchInputWrap, styles.borderRightFilter]}>
-						<Picker
-							placeholder={'Search By'}
-							selectedValue={this.state.language}
-							onValueChange={(itemValue, itemIndex) =>
-								this.setState({ language: itemValue })
-							}>
-							<Picker.Item label="Java" value="java" />
-							<Picker.Item label="JavaScript" value="js" />
-						</Picker>
-					</View>
-					<View style={[styles.searchInputWrap, styles.InputWrapSearch]}>
-						<TextInput style={styles.inputFilterStyle} />
-						<Feather name="search" size={20} color="#D0D0D0" style={styles.searchIcon} />
-					</View>
-				</View>
-
-				{/* ***** Main Tile Wrap */}
-				<View style={styles.mainInventoryTile}>
+					{/* ***** Main Tile Wrap */}
 					<FlatList
-						data={this.staticData}
+						data={propertiesList}
 						renderItem={({ item }) => (
-							<InventoryTile
-								showDropdown={this.showDropdown}
-								dotsDropDown={this.state.dotsDropDown}
-								selectInventory={this.selectInventory}
-								selectedInventory={selectInventory}
+							<PropertyTile
 								data={item}
-								dropDownId={dropDownId}
-								unSelectInventory={this.unSelectInventory}
-								goToInventoryForm={this.goToInventoryForm}
+								onPress={(data) => this.onHandlePress(data)}
+								onLongPress={(id) => this.onHandleLongPress(id)}
 							/>
 						)}
-					/>
-				</View>
 
-			</View>
+						keyExtractor={item => String(item.id)}
+					/>
+				</View> :
+				<Loader loading={loading} />
 		)
 	}
 }

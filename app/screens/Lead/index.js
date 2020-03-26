@@ -1,14 +1,16 @@
 import React from 'react';
 import styles from './style'
-import { View, TextInput, Text, FlatList, TouchableOpacity, } from 'react-native';
-import { Picker } from 'native-base';
+import { View, TextInput, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import { connect } from 'react-redux';
-import InventoryTile from '../../components/InventoryTile'
 import AppStyles from '../../AppStyles'
-import { Feather } from '@expo/vector-icons';
+import PickerComponent from '../../components/Picker/index';
 import { Fab, Button, Icon } from 'native-base';
-import { StackActions } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import SortImg from '../../../assets/img/sort.png'
+import fire from '../../../assets/images/fire.png'
+import LeadTile from '../../components/LeadTile'
+import PropertyImg from '../../../assets/img/property.jpg'
+import phone from '../../../assets/img/phone.png'
 
 
 class Inventory extends React.Component {
@@ -22,6 +24,7 @@ class Inventory extends React.Component {
 			dropDownId: '',
 			selectInventory: [],
 			febDrawer: false,
+			activeTab: 'all',
 		}
 
 		this.staticData = [
@@ -85,75 +88,90 @@ class Inventory extends React.Component {
 
 	goToFormPage = (status) => {
 		const { navigation } = this.props;
-		this.setState({ active: false })
 		navigation.navigate('AddLead', { 'pageName': status });
 	}
 
-	openFebDraw = () => {
-		const { febDrawer } = this.state
-
-		this.setState({
-			febDrawer: !febDrawer
-		})
+	changeTab = (status) => {
+		this.setState({ activeTab: status })
 	}
 
 	render() {
-		const { selectInventory, dropDownId, febDrawer } = this.state
+		const { selectInventory, dropDownId, activeTab } = this.state
 		return (
-			<View style={AppStyles.container}>
+			<View>
 
-
-				<Fab
-					active={this.state.active}
-					direction="up"
-					containerStyle={{ zIndex: 20 }}
-					style={{ backgroundColor: '#333' }}
-					position="bottomRight"
-					onPress={() => this.setState({ active: !this.state.active })}>
-					<Ionicons name="md-add" color="#ffffff" />
-					<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('RCM') }}>
-						<Icon name="logo-whatsapp" />
-					</Button>
-					<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('CM') }}>
-						<Icon name="logo-facebook" />
-					</Button>
-				</Fab>
-
-				{/* ***** Main Filter Wrap */}
-				<View style={styles.filterMainWrap}>
-					<View style={[styles.searchInputWrap, styles.borderRightFilter]}>
-						<Picker
-							placeholder={'Search By'}
-							selectedValue={this.state.language}
-							onValueChange={(itemValue, itemIndex) =>
-								this.setState({ language: itemValue })
-							}>
-							<Picker.Item label="Java" value="java" />
-							<Picker.Item label="JavaScript" value="js" />
-						</Picker>
+				{/* ******************* TAb BUTTON VIEW ******* */}
+				<View style={styles.mainTopTabs}>
+					<View style={styles.mainTabs}>
+						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'all' && styles.activeTab]} onPress={() => { this.changeTab('all') }}>
+							<Text style={AppStyles.textCenter}>ALL</Text>
+						</TouchableOpacity>
 					</View>
-					<View style={[styles.searchInputWrap, styles.InputWrapSearch]}>
-						<TextInput style={styles.inputFilterStyle} />
-						<Feather name="search" size={20} color="#D0D0D0" style={styles.searchIcon} />
+					<View style={styles.mainTabs}>
+						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'buy' && styles.activeTab]} onPress={() => { this.changeTab('buy') }}>
+							<Text style={AppStyles.textCenter}>BUY</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.mainTabs}>
+						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'rent' && styles.activeTab]} onPress={() => { this.changeTab('rent') }}>
+							<Text style={AppStyles.textCenter}>RENT</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.mainTabs}>
+						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'invest' && styles.activeTab]} onPress={() => { this.changeTab('invest') }}>
+							<Text style={AppStyles.textCenter}>INVEST</Text>
+						</TouchableOpacity>
 					</View>
 				</View>
 
-				{/* ***** Main Tile Wrap */}
-				<View style={styles.mainInventoryTile}>
-					<FlatList
-						data={this.staticData}
-						renderItem={({ item }) => (
-							<InventoryTile
-								showDropdown={this.showDropdown}
-								dotsDropDown={this.state.dotsDropDown}
-								selectInventory={this.selectInventory}
-								selectedInventory={selectInventory}
-								data={item}
-								dropDownId={dropDownId}
-								unSelectInventory={this.unSelectInventory}
-							/>
-						)}
-					/>
+				{/* ******************* TOP FILTER MAIN VIEW ********** */}
+				<View style={[styles.mainFilter]}>
+					<View style={styles.pickerMain}>
+						<PickerComponent placeholder={'Lead Status'} customStyle={styles.pickerStyle} customIconStyle={styles.customIconStyle} />
+					</View>
+					<View style={styles.stylesMainSort}>
+						<TouchableOpacity style={styles.sortBtn}>
+							<Image source={SortImg} style={[styles.sortImg]} />
+							<Text style={styles.sortText}>Sort</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+
+				<View style={[styles.CustomContainer]}>
+					<Fab
+						active={this.state.active}
+						direction="up"
+						containerStyle={{ zIndex: 20 }}
+						style={{ backgroundColor: '#333' }}
+						position="bottomRight"
+						onPress={() => this.setState({ active: !this.state.active })}>
+						<Ionicons name="md-add" color="#ffffff" />
+						<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('RCM') }}>
+							<Icon name="logo-whatsapp" />
+						</Button>
+						<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('CM') }}>
+							<Icon name="logo-facebook" />
+						</Button>
+					</Fab>
+					<View style={styles.mainInventoryTile}>
+
+						<FlatList
+							data={this.staticData}
+							renderItem={({ item }) => (
+								
+								<LeadTile
+									showDropdown={this.showDropdown}
+									dotsDropDown={this.state.dotsDropDown}
+									selectInventory={this.selectInventory}
+									selectedInventory={selectInventory}
+									data={item}
+									dropDownId={dropDownId}
+									unSelectInventory={this.unSelectInventory}
+									goToInventoryForm={this.goToInventoryForm}
+								/>
+							)}
+						/>
+					</View>
 				</View>
 
 			</View>

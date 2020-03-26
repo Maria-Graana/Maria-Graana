@@ -22,7 +22,7 @@ class InventoryTile extends React.Component {
             <View>
               <Text style={[styles.tokenLabel, AppStyles.mrFive, AppStyles.whiteColor]}>
                 {data.action}
-          </Text>
+              </Text>
             </View>
             <View>
               <Image
@@ -37,7 +37,7 @@ class InventoryTile extends React.Component {
               {
                 dotsDropDown === true && dropDownId === data.id &&
                 <View style={styles.dropDownWrap}>
-                  <TouchableOpacity style={styles.dropButtons} onPress={() => {goToInventoryForm()}}>
+                  <TouchableOpacity style={styles.dropButtons} onPress={() => { goToInventoryForm() }}>
                     <Text style={[AppStyles.lightColor, AppStyles.noramlSize]}>Edit</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={[styles.dropButtons, AppStyles.noBorder]}>
@@ -59,7 +59,7 @@ class InventoryTile extends React.Component {
             <View style={[styles.contentMain, AppStyles.mbTen]}>
               <Text style={[styles.largeText, AppStyles.darkColor]}>
                 {data.propertyName}
-            </Text>
+              </Text>
             </View>
 
             {/* ****** Price Wrap */}
@@ -69,7 +69,7 @@ class InventoryTile extends React.Component {
             </Text>
               <Text style={[AppStyles.lightColor, styles.multiColumn, styles.normalText]}>
                 {data.price}
-            </Text>
+              </Text>
             </View>
 
             {/* ****** Address Wrap */}
@@ -79,7 +79,7 @@ class InventoryTile extends React.Component {
             </Text>
               <Text style={[AppStyles.lightColor, styles.normalText]}>
                 {data.address}
-            </Text>
+              </Text>
             </View>
 
             {/* ****** Location Wrap */}
@@ -89,7 +89,7 @@ class InventoryTile extends React.Component {
             </Text>
               <Text style={[AppStyles.lightColor, styles.normalText]}>
                 {data.location}
-            </Text>
+              </Text>
             </View>
           </View>
         </View>

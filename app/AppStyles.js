@@ -95,6 +95,7 @@ export default AppStyles = {
         borderRadius: 4,
         borderWidth: 0,
         height: 50,
+        fontFamily: 'OpenSans_regular',
     },
     formFontSettings:{
         fontSize: 14,

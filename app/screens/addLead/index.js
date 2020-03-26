@@ -186,7 +186,7 @@ class AddLead extends Component {
             checkValidation,
         } = this.state
         const { route } = this.props
-        console.log(StaticData.oneToTen)
+        //console.log(StaticData.oneToTen)
         return (
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
@@ -221,7 +221,7 @@ class AddLead extends Component {
                                         getAreas={getAreas}
                                         getClients={getClients}
                                         formType={formType}
-                                        selectSubType={selectSubType}
+                                        subType={selectSubType}
                                     />
                                 }
                             </View>

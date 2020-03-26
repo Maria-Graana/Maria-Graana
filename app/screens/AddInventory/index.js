@@ -81,7 +81,7 @@ class AddInventory extends Component {
         const { formData } = this.state
         formData[name] = value
         this.setState({ formData }, () => {
-            console.log('formData', formData);
+           // console.log('formData', formData);
         })
         if (formData.type != '') { this.selectSubtype(formData.type) }
         if (formData.city_id != '') { this.getAreas(formData.city_id) }
@@ -109,7 +109,7 @@ class AddInventory extends Component {
         } else {
 
             // ********* Call Add Inventory API here :)
-            console.log(formData)
+         //   console.log(formData)
         }
     }
 

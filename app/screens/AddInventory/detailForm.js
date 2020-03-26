@@ -43,7 +43,7 @@ class DetailForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={propertyType} selectedItem={'residential'} name={'type'} placeholder='Property Type' />
+                        <PickerComponent onValueChange={handleForm} data={propertyType}  name={'type'} placeholder='Property Type' />
                         {
                             checkValidation === true && formData.type === '' && <ErrorMessage errorMessage={'Required'} />
                         }

@@ -75,7 +75,7 @@ class DetailForm extends Component {
                         style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, styles.textArea]} rowSpan={5}
                         placeholder="Address"
                         onChangeText={(text) => handleForm(text, 'address')}
-                        value={formData.Address}
+                        value={formData.address}
                     />
                 </View>
 

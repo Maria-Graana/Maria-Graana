@@ -32,7 +32,7 @@ class CustomerTile extends React.Component {
                         </View>
                         <View style={{paddingTop: 5}}>
                             <Text style={[styles.textFont, {fontSize: 12, color: AppStyles.colors.subTextColor}]}>
-                                {/* {item.armsUserRole.subRole}  */}  s
+                                {item.address}
                             </Text>
                         </View>
                     </View> 

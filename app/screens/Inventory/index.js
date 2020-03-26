@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, FlatList, Alert } from 'react-native';
+import { View,Image, FlatList, Alert } from 'react-native';
 import { ActionSheet } from 'native-base';
 import { connect } from 'react-redux';
 import PropertyTile from '../../components/PropertyTile'
@@ -21,7 +21,6 @@ class Inventory extends React.Component {
 		this.state = {
 			propertiesList: [],
 			loading: true,
-			resultsFound: true
 		}
 
 
@@ -120,19 +119,26 @@ class Inventory extends React.Component {
 					</Fab>
 
 					{/* ***** Main Tile Wrap */}
-					<FlatList
-						data={propertiesList}
-						renderItem={({ item }) => (
-							<PropertyTile
-								data={item}
-								onPress={(data) => this.onHandlePress(data)}
-								onLongPress={(id) => this.onHandleLongPress(id)}
-							/>
-						)}
+					{
+						propertiesList.length ?
+							< FlatList
+								data={propertiesList}
+								renderItem={({ item }) => (
+									<PropertyTile
+										data={item}
+										onPress={(data) => this.onHandlePress(data)}
+										onLongPress={(id) => this.onHandleLongPress(id)}
+									/>
+								)}
 
-						keyExtractor={item => String(item.id)}
-					/>
-				</View> :
+								keyExtractor={item => String(item.id)}
+							/>
+							:
+							<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{flex:1, alignSelf: 'center', width: 300, height: 300 }} />
+					}
+
+				</View>
+				:
 				<Loader loading={loading} />
 		)
 	}

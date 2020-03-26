@@ -37,13 +37,14 @@ class DetailForm extends Component {
             latitude
         } = this.props
 
+
         return (
             <View>
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={propertyType}  name={'type'} placeholder='Property Type' />
+                        <PickerComponent onValueChange={handleForm} data={propertyType} name={'type'} placeholder='Property Type' />
                         {
                             checkValidation === true && formData.type === '' && <ErrorMessage errorMessage={'Required'} />
                         }
@@ -53,7 +54,7 @@ class DetailForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={selectSubType} name={'subType'} placeholder='Property Sub Type' />
+                        <PickerComponent onValueChange={handleForm} data={selectSubType} name={'subtype'} placeholder='Property Sub Type' />
                         {
                             checkValidation === true && formData.subType === '' && <ErrorMessage errorMessage={'Required'} />
                         }
@@ -90,6 +91,9 @@ class DetailForm extends Component {
                     <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                         <View style={[AppStyles.inputWrap]}>
                             <PickerComponent onValueChange={handleForm} name={'size_unit'} data={sizeUnit} value={''} placeholder='Size Unit' />
+                            {
+                                checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
+                            }
                         </View>
                     </View>
 
@@ -97,6 +101,9 @@ class DetailForm extends Component {
                     <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
                         <View style={[AppStyles.inputWrap]}>
                             <TextInput onChangeText={(text) => { handleForm(text, 'size') }} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
+                            {
+                                checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
+                            }
                         </View>
                     </View>
 
@@ -115,26 +122,27 @@ class DetailForm extends Component {
 
                 {/* **************************************** */}
 
-                <View style={AppStyles.latLngMain}>
+
+                <View style={[AppStyles.latLngMain]}>
 
                     {/* **************************************** */}
-                    <View style={[{ width: '75%' }, AppStyles.noMargin]}>
+                    <View style={[{ width: '75%' }, AppStyles.mainInputWrap, AppStyles.noMargin]}>
                         <View style={[AppStyles.inputWrap]}>
                             <TextInput onChangeText={(text) => { handleForm(text, 'price') }}
                                 value={price}
                                 keyboardType='number-pad'
                                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                                 placeholder={'Demand Price'} />
-                            {
-                                checkValidation === true && formData.price === '' && <ErrorMessage errorMessage={'Required'} />
-                            }
                         </View>
                     </View>
-
                     {/* **************************************** */}
+
                     <Text style={styles.countPrice}>{formatPrice(price)}</Text>
 
+
                 </View>
+
+
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
@@ -171,16 +179,13 @@ class DetailForm extends Component {
                 {/* **************************************** */}
 
                 {
-                    formData.propertyType === 'residential' ?
+                    formData.type === 'residential' ?
                         <View style={AppStyles.multiFormInput}>
 
                             {/* **************************************** */}
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                                 <View style={[AppStyles.inputWrap]}>
                                     <PickerComponent onValueChange={handleForm} data={size} name={'bed'} placeholder='Bed' />
-                                    {
-                                        checkValidation === true && formData.beds === '' && <ErrorMessage errorMessage={'Required'} />
-                                    }
                                 </View>
                             </View>
 
@@ -188,9 +193,6 @@ class DetailForm extends Component {
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
                                 <View style={[AppStyles.inputWrap]}>
                                     <PickerComponent onValueChange={handleForm} data={size} name={'bath'} placeholder='Bath' />
-                                    {
-                                        checkValidation === true && formData.baths === '' && <ErrorMessage errorMessage={'Required'} />
-                                    }
                                 </View>
                             </View>
 
@@ -204,14 +206,14 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin, AppStyles.borderrightLat]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm(text, 'lat') }} value={String(latitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Latitude'} />
+                            <TextInput onChangeText={(text) => { handleForm((text), 'lat') }} value={latitude === null ? '' : String(latitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Latitude'} />
                         </View>
                     </View>
 
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm(text, 'lng') }} value={String(longitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Longitude'} />
+                            <TextInput onChangeText={(text) => { handleForm((text), 'lng') }} value={longitude === null ? '' : String(longitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Longitude'} />
                         </View>
                     </View>
 

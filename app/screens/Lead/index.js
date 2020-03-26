@@ -3,7 +3,6 @@ import styles from './style'
 import { View, TextInput, Text, FlatList, TouchableOpacity, } from 'react-native';
 import { Picker } from 'native-base';
 import { connect } from 'react-redux';
-import InventoryTile from '../../components/InventoryTile'
 import AppStyles from '../../AppStyles'
 import { Feather } from '@expo/vector-icons';
 import { Fab, Button, Icon } from 'native-base';
@@ -140,7 +139,7 @@ class Inventory extends React.Component {
 
 				{/* ***** Main Tile Wrap */}
 				<View style={styles.mainInventoryTile}>
-					<FlatList
+					{/* <FlatList
 						data={this.staticData}
 						renderItem={({ item }) => (
 							<InventoryTile
@@ -153,7 +152,7 @@ class Inventory extends React.Component {
 								unSelectInventory={this.unSelectInventory}
 							/>
 						)}
-					/>
+					/> */}
 				</View>
 
 			</View>

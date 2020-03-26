@@ -61,8 +61,7 @@ function MainStack() {
             />
             <Stack.Screen name='Inventory' component={Inventory}
                 options={({ navigation, route }) => ({
-                    ...headerStyle,
-                    title: '',
+                    title: 'PROPERTY LISTING',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

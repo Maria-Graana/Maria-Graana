@@ -12,8 +12,8 @@ class InventoryTile extends React.Component {
     super(props)
   }
 
-  onPress = () => {
-
+  onPress = (data) => {
+    this.props.onPress(data)
   }
 
   onLongPress = (id) => {
@@ -22,9 +22,9 @@ class InventoryTile extends React.Component {
 
 
   render() {
-    const { onPress, onLongPress, data } = this.props;
+    const {data } = this.props;
     return (
-      <TouchableOpacity onPress={this.onPress} onLongPress={() => this.onLongPress(data.id)} activeOpacity={0.7}>
+      <TouchableOpacity onPress={() => this.onPress(data)} onLongPress={() => this.onLongPress(data.id)} activeOpacity={0.7}>
         <View style={styles.mainContainer}>
 
           <Image style={styles.imageStyle} source={PlaceHolderImage} />

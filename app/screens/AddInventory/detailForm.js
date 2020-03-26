@@ -249,7 +249,7 @@ class DetailForm extends Component {
                 <View style={[AppStyles.mainInputWrap]}>
                     <Button
                         style={[AppStyles.formBtn, styles.addInvenBtn]} onPress={() => { formSubmit() }}>
-                        <Text style={AppStyles.btnText}>ADD INVENTORY</Text>
+                        <Text style={AppStyles.btnText}>ADD PROPERTY</Text>
                     </Button>
                 </View>
 

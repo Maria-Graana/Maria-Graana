@@ -73,8 +73,8 @@ class Inventory extends React.Component {
 
 	}
 
-	onHandlePress = () => {
-		console.log('onPress')
+	onHandlePress = (data) => {
+		//console.log('onPress', data)
 	}
 
 	onHandleLongPress = (val) => {
@@ -94,7 +94,7 @@ class Inventory extends React.Component {
 
 	}
 
-	showDeleteDialog(val) {
+	showDeleteDialog(id) {
 		Alert.alert('Delete Property', 'Are you sure you want to delete this property ?', [
 			{ text: 'Cancel', style: 'cancel' },
 			{ text: 'Delete', onPress: () => this.deleteProperty(id) },
@@ -125,7 +125,7 @@ class Inventory extends React.Component {
 						renderItem={({ item }) => (
 							<PropertyTile
 								data={item}
-								onPress={this.onHandlePress}
+								onPress={(data) => this.onHandlePress(data)}
 								onLongPress={(id) => this.onHandleLongPress(id)}
 							/>
 						)}

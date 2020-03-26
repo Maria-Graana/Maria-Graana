@@ -75,6 +75,9 @@ export default AppStyles = {
     lightColor: {
         color: '#333',
     },
+    textCenter:{
+        textAlign: 'center',
+    },
     whiteColor: {
         color: '#fff',
     },

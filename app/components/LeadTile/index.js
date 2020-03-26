@@ -2,10 +2,9 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-import fire from '../../../assets/images/fire.png'
-import phone from '../../../assets/images/phone.png'
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-class InventoryTile extends React.Component {
+import phone from '../../../assets/img/phone.png'
+import PropertyImg from '../../../assets/img/property.jpg'
+class LeadTile extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -14,82 +13,61 @@ class InventoryTile extends React.Component {
 
   render() {
 
-    const { showDropdown, dotsDropDown, selectInventory, data, selectedInventory, dropDownId, unSelectInventory } = this.props
+    const { showDropdown, dotsDropDown, selectInventory, data, selectedInventory, dropDownId, unSelectInventory, goToInventoryForm } = this.props
     return (
       <TouchableOpacity onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
+
         <View style={[styles.tileMainWrap, selectedInventory.includes(data.id) && styles.selectedInventory]}>
-          <View style={styles.topIcons}>
-            <View>
-              <Text style={[styles.tokenLabel, AppStyles.mrFive, AppStyles.whiteColor]}>
-                {data.action}
-          </Text>
-            </View>
-            <View>
-              <Image
-                style={[styles.fireIcon, AppStyles.mlFive]}
-                source={fire}
-              />
-            </View>
-            <View style={styles.dropDownParent}>
-              <TouchableOpacity onPress={() => { showDropdown(data.id) }}>
-                <MaterialCommunityIcons name="dots-vertical" size={32} color="#333" style={styles.verticalIcon} />
-              </TouchableOpacity>
-              {
-                dotsDropDown === true && dropDownId === data.id &&
-                <View style={styles.dropDownWrap}>
-                  <TouchableOpacity style={styles.dropButtons}>
-                    <Text style={[AppStyles.lightColor, AppStyles.noramlSize]}>Edit</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.dropButtons, AppStyles.noBorder]}>
-                    <Text style={[AppStyles.lightColor, AppStyles.noramlSize]}>Deactivate</Text>
-                  </TouchableOpacity>
-                </View>
-              }
-            </View>
 
+          <View style={[styles.leftimgView]}>
+            <Image source={PropertyImg} style={[styles.propertyImg]} />
           </View>
-          <View style={[styles.contentMainWrap]}>
-            <View style={styles.phoneWrap}>
-              <Image
-                style={styles.phoneIcon}
-                source={phone}
-              />
-            </View>
-            {/* ****** Name Wrap */}
-            <View style={[styles.contentMain, AppStyles.mbTen]}>
-              <Text style={[styles.largeText, AppStyles.darkColor]}>
-                {data.propertyName}
-            </Text>
-            </View>
-
-            {/* ****** Price Wrap */}
-            <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-              <Text style={[styles.normalText, styles.multiColumn, AppStyles.darkColor, AppStyles.mrTen]}>
-                Price
-            </Text>
-              <Text style={[AppStyles.lightColor, styles.multiColumn, styles.normalText]}>
-                {data.price}
-            </Text>
+          <View style={[styles.rightContentView]}>
+            <View style={styles.topIcons}>
+              <View>
+                <Text style={[styles.tokenLabel, AppStyles.mrFive]}>
+                  To-Do
+												</Text>
+              </View>
+              <View>
+                <Image
+                  style={[styles.fireIcon, AppStyles.mlFive]}
+                  source={phone}
+                />
+              </View>
             </View>
 
-            {/* ****** Address Wrap */}
-            <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-              <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                Address
-            </Text>
-              <Text style={[AppStyles.lightColor, styles.normalText]}>
-                {data.address}
-            </Text>
-            </View>
+            <View style={[styles.contentMainWrap]}>
+              {/* ****** Name Wrap */}
+              <View style={[styles.contentMain, AppStyles.mbTen]}>
+                <Text style={[styles.largeText, AppStyles.darkColor]}>
+                  Ahsan khan
+												</Text>
+              </View>
 
-            {/* ****** Location Wrap */}
-            <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-              <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                Location
-            </Text>
-              <Text style={[AppStyles.lightColor, styles.normalText]}>
-                {data.location}
-            </Text>
+              {/* ****** Price Wrap */}
+              <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                <Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor, AppStyles.mrTen]}>
+                  PKR
+            						</Text>
+                <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
+                  2 Crore - 5 Crore
+            						</Text>
+              </View>
+
+              {/* ****** Address Wrap */}
+              <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                  12 Marla hous for sale
+            						</Text>
+              </View>
+
+              {/* ****** Location Wrap */}
+              <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                  F-10 Markaz, Islamabad
+            						</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -98,4 +76,4 @@ class InventoryTile extends React.Component {
   }
 }
 
-export default InventoryTile;
+export default LeadTile;

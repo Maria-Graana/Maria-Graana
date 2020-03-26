@@ -31,6 +31,8 @@ class PickerComponent extends React.Component {
             placeholder,
             selectedItem,
             name,
+            customStyle,
+            customIconStyle
         } = this.props;
         const items = data || [];
         let pickerItems = []
@@ -50,7 +52,7 @@ class PickerComponent extends React.Component {
 
         return (
             <View style={[styles.pickerMain]}>
-                <Ionicons style={styles.arrowIcon} name="ios-arrow-down" size={26} color={AppStyles.colors.subTextColor} />
+                <Ionicons style={[styles.arrowIcon, customIconStyle]} name="ios-arrow-down" size={26} color={AppStyles.colors.subTextColor} />
                 <Picker
                     headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff', }}
                     headerBackButtonTextStyle={{ color: '#fff' }}
@@ -58,7 +60,7 @@ class PickerComponent extends React.Component {
                     textStyle={[AppStyles.pickerTextStyle, AppStyles.formFontSettings]}
                     headerTitleStyle={{ color: "#fff" }}
                     mode="dropdown"
-                    style={AppStyles.formControlForPicker}
+                    style={[AppStyles.formControlForPicker, customStyle]}
                     placeholder={placeholderLabel}
                     selectedValue={this.state.selectedTask != '' && selectedValue}
                     onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}

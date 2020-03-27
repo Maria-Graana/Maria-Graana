@@ -14,6 +14,7 @@ import AddLead from '../screens/addLead';
 import Client from '../screens/Client';
 import AddClient from '../screens/AddClient';
 import ClientDetail from '../screens/ClientDetail';
+import PropertyDetail from '../screens/PropertyDetail'
 import AppStyles from '../AppStyles';
 
 const Stack = createStackNavigator();
@@ -119,6 +120,14 @@ function MainStack() {
             <Stack.Screen name='ClientDetail' component={ClientDetail}
                 options={({ navigation, route }) => ({
                     title: 'CLIENT DETAILS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+              <Stack.Screen name='PropertyDetail' component={PropertyDetail}
+                options={({ navigation, route }) => ({
+                    title: 'PROPERTY DETAILS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

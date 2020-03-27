@@ -87,10 +87,6 @@ class Inventory extends React.Component {
 		this.props.navigation.navigate('LeadDetail', { lead: data })
 	}
 
-	filterStatus = (data)=>{
-		console.log('data***********', data)
-	}
-
 	render() {
 		const { selectInventory, dropDownId, activeTab, leadsData } = this.state
 		return (

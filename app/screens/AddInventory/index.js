@@ -37,7 +37,7 @@ class AddInventory extends Component {
                 status: 'pending',
                 lat: '',
                 lng: '',
-                name: '',
+                ownerName: '',
                 phone: '',
                 address: '',
                 description: '',

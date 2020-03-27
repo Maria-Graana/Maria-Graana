@@ -35,7 +35,7 @@ class PropertyDetail extends React.Component {
         const bath = property.bath;
         const lattitude = property.lat === null ? ' ' : property.lat + '/';
         const longitude = property.lng === null ? ' ' : property.lng;
-        const ownerName = property.customer.name;
+        const ownerName = property.customer.first_name;
         const ownerPhoneNumber = property.phone.trim();
         const address = property.address;
         const status = property.status === 'pending' ? 'Open' : property.status;
@@ -66,11 +66,19 @@ class PropertyDetail extends React.Component {
                         <Image source={PlaceHolderImage} style={[styles.imageStyle]} />
                         <Text style={styles.headingText}> Grade </Text>
                         <Text style={styles.labelText}> {grade} </Text>
-                        <Text style={styles.headingText}> Beds </Text>
-                        <Text style={styles.labelText}> {bed + ' Bed(s)'} </Text>
-                        <Text style={styles.headingText}> Baths </Text>
-                        <Text style={styles.labelText}> {bath + ' Bath(s)'} </Text>
-                        <Text style={styles.headingText}> Longitude/Lattitude </Text>
+
+                        {type === 'residential' ?
+                            <View>
+                                <Text style={styles.headingText}> Beds </Text>
+                                <Text style={styles.labelText}> {bed + ' Bed(s)'} </Text>
+                                <Text style={styles.headingText}> Baths </Text>
+                                <Text style={styles.labelText}> {bath + ' Bath(s)'} </Text>
+                            </View>
+                            : null
+                        }
+
+
+                        <Text style={styles.headingText}> Lattitude/Longitude </Text>
                         <Text style={styles.labelText}> {lattitude + longitude} </Text>
                         <Text style={styles.headingText}> Owner Name </Text>
                         <Text style={styles.labelText}> {ownerName} </Text>

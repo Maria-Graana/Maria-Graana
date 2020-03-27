@@ -1,42 +1,42 @@
 import React from 'react'
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
+    View,
+    Text,
+    TouchableOpacity,
+    TextInput,
 } from 'react-native'
 import { StyleSheet } from 'react-native';
+import AppStyles from '../../AppStyles';
 
 
 
 class RadioComponent extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state= {
-        value: this.props.value
+    constructor(props) {
+        super(props)
+        this.state = {
+            value: this.props.value
+        }
     }
-  }
 
-  onChange = () => {
-    this.props.selectedButton(this.state.value)
-  }
+    onChange = () => {
+        this.props.onGradeSelected(this.state.value)
+    }
 
     render() {
         const {
-            placeholder,
             selected
         } = this.props;
 
-        const placeholderLabel = placeholder || 'Select';
         return (
-            <TouchableOpacity onPress= {(value)=> {this.onChange(value)}}>
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={(value) => { this.onChange(value) }}>
                 <View style={[styles.outerCircle]}>
-                {
-                    selected ?
-                    <View style={styles.innerCircle}/>
-                    : null
-                }
+                    {
+                        selected ?
+                            <View style={styles.innerCircle} />
+                            : null
+                    }
                 </View>
+                <Text style={{ paddingLeft: 10 }}>{this.props.children}</Text>
             </TouchableOpacity>
         )
     }
@@ -48,16 +48,17 @@ const styles = StyleSheet.create({
         height: 24,
         width: 24,
         borderRadius: 12,
-        borderWidth: 2,
+        borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        borderColor: '#484848'
+        backgroundColor: AppStyles.whiteColor.color,
+        borderColor: AppStyles.colors.textColor
     },
     innerCircle: {
-        height: 12,
-        width: 12,
+        height: 13,
+        width: 13,
         borderRadius: 6,
-        backgroundColor: '#484848'
+        backgroundColor: AppStyles.colors.primaryColor
     }
 })
 

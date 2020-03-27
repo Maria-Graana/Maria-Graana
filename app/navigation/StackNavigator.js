@@ -63,8 +63,7 @@ function MainStack() {
             />
             <Stack.Screen name='Inventory' component={Inventory}
                 options={({ navigation, route }) => ({
-                    ...headerStyle,
-                    title: '',
+                    title: 'PROPERTY LISTING',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -89,6 +88,7 @@ function MainStack() {
             />
             <Stack.Screen name='AddInventory' component={AddInventory}
                 options={({ navigation, route }) => ({
+                    title:'ADD PROPERTIES',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

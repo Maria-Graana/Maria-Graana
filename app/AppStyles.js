@@ -75,6 +75,9 @@ export default AppStyles = {
     lightColor: {
         color: '#333',
     },
+    textCenter:{
+        textAlign: 'center',
+    },
     whiteColor: {
         color: '#fff',
     },
@@ -97,6 +100,7 @@ export default AppStyles = {
         borderRadius: 4,
         borderWidth: 0,
         height: 50,
+        fontFamily: 'OpenSans_regular',
     },
     formFontSettings:{
         fontSize: 14,

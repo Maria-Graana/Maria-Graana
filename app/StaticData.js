@@ -44,19 +44,19 @@ export default StaticData = {
     ],
     taskValues: [
         {
-            name:'Meeting',
+            name: 'Meeting',
             value: 'Meeting'
         },
         {
-            name:'Follow Up',
+            name: 'Follow Up',
             value: 'Follow Up'
         },
         {
-            name:'Day Structure',
+            name: 'Day Structure',
             value: 'Day Structure'
         },
         {
-            name:'Other',
+            name: 'Other',
             value: 'Other'
         }
     ],
@@ -73,11 +73,15 @@ export default StaticData = {
         { value: '10+', name: '10+' },
     ],
     sizeUnit: [
-        { value: 'sqm', name: 'sqm' },
-        { value: 'sqft', name: 'sqft' },
-        { value: 'sqyd', name: 'sqyd' },
-        { value: 'kanal', name: 'kanal' },
-        { value: 'marla', name: 'marla' },
+        { value: 'sqm', name: 'M²' },
+        { value: 'sqft', name: 'Ft²' },
+        { value: 'sqyd', name: 'Yd²' },
+        { value: 'kanal', name: 'Kanal' },
+        { value: 'marla', name: 'Marla' },
+    ],
+    purpose: [
+        { value: 'sale', name: 'Sale' },
+        { value: 'rent', name: 'Rent' }
     ],
     type: [
         { value: 'residential', name: 'Residential' },
@@ -86,29 +90,29 @@ export default StaticData = {
     ],
     subType: {
         residential: [
-            { value: 'house', name: 'house' }, { value: 'guest house', name: 'guest house' },
-            { value: 'apartment', name: 'apartment' }, { value: 'upper portion', name: 'upper portion' },
-            { value: 'lower portion', name: 'lower portion' }, { value: 'farm house', name: 'farm house' },
-            { value: 'room', name: 'room' }, { value: 'penthouse', name: 'penthouse' },
-            { value: 'hotel suites', name: 'hotel suites' }, { value: 'basement', name: 'basement' },
-            { value: 'annexe', name: 'annexe' }, { value: 'hostel', name: 'hostel' },
-            { value: 'other', name: 'other' },
+            { value: 'house', name: 'House' }, { value: 'guest house', name: 'Guest house' },
+            { value: 'apartment', name: 'Apartment' }, { value: 'upper portion', name: 'Upper portion' },
+            { value: 'lower portion', name: 'Lower portion' }, { value: 'farm house', name: 'Farm house' },
+            { value: 'room', name: 'Room' }, { value: 'penthouse', name: 'Penthouse' },
+            { value: 'hotel suites', name: 'Hotel suites' }, { value: 'basement', name: 'Basement' },
+            { value: 'annexe', name: 'Annexe' }, { value: 'hostel', name: 'Hostel' },
+            { value: 'other', name: 'Other' },
         ],
         plot: [
-            { value: 'residential plot', name: 'residential plot' }, { value: 'commercial plot', name: 'commercial plot' },
-            { value: 'agricultural land', name: 'agricultural land' }, { value: 'industrial land', name: 'industrial land' },
-            { value: 'plot file', name: 'plot file' }, { value: 'farmhouse plot', name: 'farmhouse plot' },
+            { value: 'residential plot', name: 'Residential Plot' }, { value: 'commercial plot', name: 'Commercial Plot' },
+            { value: 'agricultural land', name: 'Agricultural Land' }, { value: 'industrial land', name: 'Industrial Land' },
+            { value: 'plot file', name: 'Plot File' }, { value: 'farmhouse plot', name: 'Farmhouse Plot' },
         ],
         commercial: [
-            { value: 'office', name: 'office' },
-            { value: 'shop', name: 'shop' },
-            { value: 'warehouse', name: 'warehouse' },
-            { value: 'factory', name: 'factory' },
-            { value: 'building', name: 'building' },
-            { value: 'theatre', name: 'theatre' },
+            { value: 'office', name: 'Office' },
+            { value: 'shop', name: 'Shop' },
+            { value: 'warehouse', name: 'Warehouse' },
+            { value: 'factory', name: 'Factory' },
+            { value: 'building', name: 'Building' },
+            { value: 'theatre', name: 'Theatre' },
             { value: 'Gym', name: 'Gym' },
             { value: 'Food Court', name: 'Food Court' },
-            { value: 'other', name: 'other' },
+            { value: 'other', name: 'Other' },
         ]
     }
 }

@@ -1,49 +1,71 @@
 import { StyleSheet } from 'react-native'
 export default styles = StyleSheet.create({
-  mainInventoryTile: {
-    paddingTop: 15,
-  },
-  filterMainWrap: {
+  mainTopTabs: {
     flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
+    backgroundColor: '#fff',
+    borderBottomColor: '#EFEFEF',
+    borderBottomWidth: 1,
+  },
+  CustomContainer: {
+    paddingRight: 15,
+    paddingLeft: 15,
+    backgroundColor: '#e7ecf0'
+  },
+  mainTabs: {
+    width: '25%',
+  },
+  mainInventoryTile: {
     marginTop: 15,
-    minHeight: 20,
+  },
+  tabBtnStyle: {
+    paddingTop: 15,
+    paddingBottom: 15,
+    borderBottomWidth: 2,
+    borderBottomColor: '#fff',
+  },
+  activeTab: {
+    borderBottomColor: '#5497F3'
+  },
+  minHeight: {
+    minHeight: '80%'
+  },
+  mainFilter: {
     backgroundColor: '#fff',
+    paddingTop: 10,
+    paddingBottom: 10,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    justifyContent: 'flex-end',
+    paddingRight: 15,
   },
-  borderRightFilter: {
-    borderRightWidth: 1,
-    borderColor: '#ddd',
-    width: '35%'
+  pickerMain: {
+    width: 130,
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: '#ebebeb',
+    overflow: 'hidden'
   },
-  InputWrapSearch: {
-    width: '65%'
+  pickerStyle: {
+    height: 40,
   },
-  inputFilterStyle: {
-    minHeight: 40,
-    paddingLeft: 10,
+  customIconStyle: {
+    top: 14,
+    fontSize: 15,
+  },
+  sortBtn: {
+    flexDirection: 'row',
+  },
+  sortImg: {
+    resizeMode: 'contain',
+    width: 20,
+  },
+  sortText: {
+    paddingTop: 10,
+    marginLeft: 5,
     fontSize: 16,
+    color: '#393939'
   },
-  inputFilterselect: {
+  stylesMainSort: {
+    marginLeft: 15,
   },
-  searchIcon:{
-    position: 'absolute',
-    right: 10,
-    top: 9,
-  },
-  mainDropFeb: {
-    position: 'absolute',
-    bottom: '110%',
-    backgroundColor: '#fff',
-    padding: 25,
-    width: 150,
-    right:0,
-    borderRadius: 5,
-    zIndex:5,
-    elevation:5,
-    shadowOffset: { width: 2, height: 2 },
-    shadowColor: '#3333333b',
-    shadowOpacity: 1,
-  }
 });

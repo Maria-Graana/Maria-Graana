@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import AppStyles from '../../AppStyles';
 
 export default styles = StyleSheet.create({
     mainInputWrap: {
@@ -36,4 +37,26 @@ export default styles = StyleSheet.create({
     addInvenBtn: {
         marginBottom: 40,
     },
+    radioComponentStyle: {
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+        marginHorizontal: 15
+    },
+    countPrice: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        backgroundColor: '#fff',
+        fontSize: AppStyles.noramlSize.fontSize,
+        fontFamily: AppStyles.fonts.defaultFont,
+        height: '100%',
+        width: '14%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderLeftWidth: 1,
+        backgroundColor: '#fafafa',
+        borderColor: '#EAEEF1',
+    }
 })

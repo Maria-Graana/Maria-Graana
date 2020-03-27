@@ -28,32 +28,31 @@ class PickerComponent extends React.Component {
     render() {
         const {
             data,
-            value,
             placeholder,
-            container,
-            itemStyle,
-            pickerStyle,
             selectedItem,
             name,
+            customStyle,
+            customIconStyle
         } = this.props;
         const items = data || [];
-        let serviceItems = []
+        let pickerItems = []
         const placeholderLabel = placeholder || 'Select'
-        const ItemWrap = itemStyle || styles.itemWrap
-        const PickerWrap = pickerStyle || styles.pickerWrap
-        let selectedValue = selectedItem  || this.state.selectedTask
+        let selectedValue = selectedItem || this.state.selectedTask
+
         if (Platform.OS == 'android') {
-            serviceItems.push(<Picker.Item key={0} value={placeholderLabel} label={placeholderLabel} />)
+            pickerItems.push(<Picker.Item key={0} value={placeholderLabel} label={placeholderLabel} color={AppStyles.colors.subTextColor} />)
         }
 
-        // for (let i = 0; i < items.length; i++) {
-        //     let item = <Picker.Item key={i + 1} value={items[i]} label={items[i]} />
-        //     serviceItems.push(item)
-        //     console.log('item********',item)
-        // }
+        if (items.length) {
+            data.map((item, key) => {
+                let pickerItem = <Picker.Item key={key} value={item.value} label={item.name} />
+                pickerItems.push(pickerItem)
+            })
+        }
+
         return (
             <View style={[styles.pickerMain]}>
-                <Ionicons style={styles.arrowIcon} name="ios-arrow-down" size={26} color={AppStyles.colors.subTextColor} />
+                <Ionicons style={[styles.arrowIcon, customIconStyle]} name="ios-arrow-down" size={26} color={AppStyles.colors.subTextColor} />
                 <Picker
                     headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff', }}
                     headerBackButtonTextStyle={{ color: '#fff' }}
@@ -61,16 +60,12 @@ class PickerComponent extends React.Component {
                     textStyle={[AppStyles.pickerTextStyle, AppStyles.formFontSettings]}
                     headerTitleStyle={{ color: "#fff" }}
                     mode="dropdown"
-                    style={AppStyles.formControlForPicker}
+                    style={[AppStyles.formControlForPicker, customStyle]}
                     placeholder={placeholderLabel}
                     selectedValue={this.state.selectedTask != '' && selectedValue}
                     onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}
                 >
-                    {data && data.map((item, key) => {
-                        return (
-                            <Picker.Item key={key} value={item.value} label={item.name} key={key}/>
-                        )
-                    })}
+                    {pickerItems}
                 </Picker>
             </View>
 

@@ -2,11 +2,7 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity, } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-import fire from '../../../assets/images/fire.png'
-import phone from '../../../assets/images/phone.png'
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import Carousel from 'react-native-snap-carousel';
-import avatar from '../../../assets/img/avatar.jpeg'
 
 class InventoryTile extends React.Component {
 	constructor(props) {

@@ -70,7 +70,7 @@ class LeadTile extends React.Component {
               {/* ****** Location Wrap */}
               <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                 <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                  {data.armsLeadAreas && data.armsLeadAreas[0].area.name}, {data.city && data.city.name}
+                  f/12 Markaz, {data.city && data.city.name}
                 </Text>
               </View>
             </View>

@@ -37,11 +37,11 @@ class AddInventory extends Component {
                 status: 'pending',
                 lat: '',
                 lng: '',
-                name: '',
+                ownerName: '',
                 phone: '',
                 address: '',
                 description: '',
-                generale_size: '',
+                generale_size: null,
                 lisitng_type: 'mm',
                 features: JSON.stringify({}),
                 custom_title: '',
@@ -70,7 +70,7 @@ class AddInventory extends Component {
     }
 
     getAreas = (cityId) => {
-        axios.get(`/api/areas?city_id=${cityId}`)
+        axios.get(`/api/areas?city_id=${cityId}&&all=${true}`)
             .then((res) => {
                 let areas = [];
                 res && res.data.items.map((item, index) => { return (areas.push({ value: item.id, name: item.name })) })
@@ -112,18 +112,21 @@ class AddInventory extends Component {
                 checkValidation: true
             })
         } else {
-        // ********* Call Add Inventory API here :)
-        this.addProperty(formData);
-         }
+            // ********* Call Add Inventory API here :)
+            this.addProperty(formData);
+        }
     }
 
     addProperty = (formData) => {
         const { navigation } = this.props;
         formData.lat = this.convertLatitude(formData.lat);
         formData.lng = this.convertLongitude(formData.lng);
+        formData.size = this.convertToInteger(formData.size)
+        formData.bed = this.convertToInteger(formData.bed)
+        formData.bath = this.convertToInteger(formData.bath)
+        formData.price = this.convertToInteger(formData.price)
         axios.post(`/api/inventory/create`, formData)
             .then((res) => {
-                console.log('res', res.status);
                 if (res.status === 200) {
                     helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
                     navigation.goBack();
@@ -174,6 +177,15 @@ class AddInventory extends Component {
         }
         else {
             return val;
+        }
+    }
+
+    convertToInteger = (val) => {
+        if (val === '') {
+            return null;
+        }
+        else if (typeof (val) === 'string' && val != '') {
+            return parseInt(val);
         }
     }
 

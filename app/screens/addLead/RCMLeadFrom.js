@@ -34,7 +34,7 @@ class CMLeadFrom extends Component {
       getClients,
       cities,
       propertyType,
-      selectSubType,
+      subType,
       sizeUnit,
       size,
       getAreas,
@@ -63,7 +63,7 @@ class CMLeadFrom extends Component {
             cities={cities}
             getAreas={getAreas}
             propertyType={propertyType}
-            subType={selectSubType}
+            subType={subType}
             sizeUnit={sizeUnit}
             size={size}
             formSubmit={formSubmit}

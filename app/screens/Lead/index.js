@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, TextInput, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, TextInput, Text, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import PickerComponent from '../../components/Picker/index';
@@ -11,6 +11,7 @@ import fire from '../../../assets/images/fire.png'
 import LeadTile from '../../components/LeadTile'
 import PropertyImg from '../../../assets/img/property.jpg'
 import phone from '../../../assets/img/phone.png'
+import axios from 'axios';
 
 
 class Inventory extends React.Component {
@@ -19,6 +20,7 @@ class Inventory extends React.Component {
 
 		this.state = {
 			language: '',
+			leadsData: [],
 			active: false,
 			dotsDropDown: false,
 			dropDownId: '',
@@ -27,40 +29,26 @@ class Inventory extends React.Component {
 			activeTab: 'all',
 		}
 
-		this.staticData = [
-			{
-				id: '1',
-				propertyName: '10 marla house for sale',
-				action: 'Token',
-				price: '10 Crore',
-				address: 'G/11, Islamabad',
-				location: 'G/11, Islamabad',
-			},
-			{
-				id: '2',
-				propertyName: '40 marla house for sale',
-				action: 'Deal Done',
-				price: '20 Crore',
-				address: 'i8/4, Islamabad',
-				location: 'i8/4, Islamabad',
-			},
-			{
-				id: '3',
-				propertyName: '16 marla house for sale',
-				action: 'Deal Done',
-				price: '13 Crore',
-				address: 'G2/11, Islamabad',
-				location: 'G2/11, Islamabad',
-			},
-			{
-				id: '4',
-				propertyName: '5 marla house for sale',
-				action: 'Token',
-				price: '2 Crore',
-				address: 'H1/11, Islamabad',
-				location: 'H1/11, Islamabad',
-			}
+		this.filterData = [
+			{ value: 'all', name: 'ALL' },
+			{ value: 'sale', name: 'BUY' },
+			{ value: 'rent', name: 'RENT' },
+			{ value: 'invest', name: 'Invest' },
 		]
+
+	}
+
+	componentDidMount() {
+		this.fetchLeads();
+	}
+
+	fetchLeads = () => {
+		axios.get(`/api/leads`)
+			.then((res) => {
+				this.setState({
+					leadsData: res.data
+				})
+			})
 	}
 
 	showDropdown = (id) => {
@@ -96,12 +84,11 @@ class Inventory extends React.Component {
 	}
 
 	navigateTo = (data) => {
-		console.log('i am here')
-		this.props.navigation.navigate('LeadDetail', {lead: data})
+		this.props.navigation.navigate('LeadDetail', { lead: data })
 	}
 
 	render() {
-		const { selectInventory, dropDownId, activeTab } = this.state
+		const { selectInventory, dropDownId, activeTab, leadsData } = this.state
 		return (
 			<View>
 
@@ -113,7 +100,7 @@ class Inventory extends React.Component {
 						</TouchableOpacity>
 					</View>
 					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'buy' && styles.activeTab]} onPress={() => { this.changeTab('buy') }}>
+						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('sale') }}>
 							<Text style={AppStyles.textCenter}>BUY</Text>
 						</TouchableOpacity>
 					</View>
@@ -132,7 +119,13 @@ class Inventory extends React.Component {
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>
 					<View style={styles.pickerMain}>
-						<PickerComponent placeholder={'Lead Status'} customStyle={styles.pickerStyle} customIconStyle={styles.customIconStyle} />
+						<PickerComponent
+							placeholder={'Lead Status'}
+							data={this.filterData}
+							customStyle={styles.pickerStyle}
+							customIconStyle={styles.customIconStyle}
+							onValueChange={this.changeTab}
+						/>
 					</View>
 					<View style={styles.stylesMainSort}>
 						<TouchableOpacity style={styles.sortBtn}>
@@ -142,7 +135,8 @@ class Inventory extends React.Component {
 					</View>
 				</View>
 
-				<View style={[styles.CustomContainer]}>
+				<View style={[AppStyles.container, styles.minHeight]}>
+
 					<Fab
 						active={this.state.active}
 						direction="up"
@@ -158,10 +152,32 @@ class Inventory extends React.Component {
 							<Icon name="logo-facebook" />
 						</Button>
 					</Fab>
-					<View style={styles.mainInventoryTile}>
 
-						<FlatList
-							data={this.staticData}
+					<View style={[styles.mainInventoryTile,]}>
+
+						<ScrollView>
+							{
+								leadsData && leadsData.rows && leadsData.rows.map((item, key) => {
+									return (
+										<LeadTile
+											key={key}
+											showDropdown={this.showDropdown}
+											dotsDropDown={this.state.dotsDropDown}
+											selectInventory={this.selectInventory}
+											selectedInventory={selectInventory}
+											data={item}
+											dropDownId={dropDownId}
+											unSelectInventory={this.unSelectInventory}
+											goToInventoryForm={this.goToInventoryForm}
+											navigateTo={this.navigateTo}
+										/>
+									)
+								})
+							}
+						</ScrollView>
+
+						{/* <FlatList
+							data={leadsData.rows}
 							renderItem={({ item }) => (
 								
 								<LeadTile
@@ -176,7 +192,7 @@ class Inventory extends React.Component {
 									navigateTo={this.navigateTo}
 								/>
 							)}
-						/>
+						/> */}
 					</View>
 				</View>
 

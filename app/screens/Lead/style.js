@@ -27,8 +27,11 @@ export default styles = StyleSheet.create({
     borderBottomColor: '#5497F3'
   },
   minHeight: {
-    minHeight: '80%'
+    minHeight: '85%',
   },
+  // padBottom:{
+  //   paddingBottom: 200,
+  // },
   mainFilter: {
     backgroundColor: '#fff',
     paddingTop: 10,

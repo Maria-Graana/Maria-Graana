@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View,Image, FlatList, Alert } from 'react-native';
+import { View, Image, FlatList, Alert } from 'react-native';
 import { ActionSheet } from 'native-base';
 import { connect } from 'react-redux';
 import PropertyTile from '../../components/PropertyTile'
@@ -40,7 +40,7 @@ class Inventory extends React.Component {
 
 	getPropertyListing = () => {
 		this.setState({ loading: true })
-		axios.get(`api/inventory/all`).then((response) => {
+		axios.get(`/api/inventory/all`).then((response) => {
 			if (response.status == 200) {
 				this.setState({
 					propertiesList: response.data.rows,
@@ -49,6 +49,7 @@ class Inventory extends React.Component {
 			}
 		}).catch((error) => {
 			console.log('error', error);
+			this.setState({loading:false})
 		})
 	}
 
@@ -59,7 +60,7 @@ class Inventory extends React.Component {
 	deleteProperty = (id) => {
 		let endPoint = ``
 		let that = this;
-		endPoint = `api/inventory/delete?id=${id}`
+		endPoint = `api/inventory/${id}`
 		axios.delete(endPoint).then(function (response) {
 			if (response.status === 200) {
 				helper.successToast('PROPERTY DELETED SUCCESSFULLY!')
@@ -67,13 +68,15 @@ class Inventory extends React.Component {
 			}
 
 		}).catch(function (error) {
+			this.setState({loading:false})
 			helper.successToast(error.message)
 		})
 
 	}
 
 	onHandlePress = (data) => {
-		//console.log('onPress', data)
+		const { navigation } = this.props;
+		navigation.navigate('PropertyDetail', { property: data, update: true })
 	}
 
 	onHandleLongPress = (val) => {
@@ -134,7 +137,7 @@ class Inventory extends React.Component {
 								keyExtractor={item => String(item.id)}
 							/>
 							:
-							<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{flex:1, alignSelf: 'center', width: 300, height: 300 }} />
+							<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
 					}
 
 				</View>

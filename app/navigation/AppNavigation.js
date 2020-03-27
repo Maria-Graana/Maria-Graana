@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { createStackNavigator } from '@react-navigation/stack';
 import { checkToken } from '../actions/user';
 import { navigationRef } from './RootNavigation';
+import LeadTabs from './LeadTabNavigator';
 
 const Drawer = createDrawerNavigator();
 

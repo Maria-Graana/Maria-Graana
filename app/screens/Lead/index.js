@@ -95,6 +95,10 @@ class Inventory extends React.Component {
 		this.setState({ activeTab: status })
 	}
 
+	navigateTo = (data) => {
+		this.props.navigation.navigate('LeadDetail', {lead: data})
+	}
+
 	render() {
 		const { selectInventory, dropDownId, activeTab } = this.state
 		return (

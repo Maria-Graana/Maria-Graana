@@ -22,32 +22,33 @@ class InventoryTile extends React.Component {
 
 
   render() {
-    const {data } = this.props;
+    const { data } = this.props;
     return (
       <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => this.onLongPress(data.id)} activeOpacity={0.7}>
 
-          <Image style={styles.imageStyle} source={PlaceHolderImage} />
-          <View style={styles.imageCountViewStyle}>
-            <Feather name={'camera'} color={'#fff'} size={16} />
-            <Text style={styles.imageCount}>{data.armsPropertyImages.length}</Text>
-          </View>
+        <Image style={styles.imageStyle} source={PlaceHolderImage} />
+        <View style={styles.imageCountViewStyle}>
+          <Feather name={'camera'} color={'#fff'} size={16} />
+          <Text style={styles.imageCount}>{data.armsPropertyImages.length}</Text>
+        </View>
 
-          <View style={{ flex: 1, flexDirection: 'column', paddingLeft: 15 }}>
+        <View style={{ flex: 1, flexDirection: 'column', paddingLeft: 15 }}>
 
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.currencyTextStyle}>PKR</Text>
-              <Text style={styles.priceTextStyle} numberOfLines={1}>{formatPrice(data.price)}</Text>
-            </View >
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.currencyTextStyle}>PKR</Text>
+            <Text style={styles.priceTextStyle} numberOfLines={1}>{formatPrice(data.price)}</Text>
+          </View >
 
-            <Text style={styles.textControlStyle} numberOfLines={1}>
-              {`${data.size} ${data.size_unit.charAt(0).toUpperCase() + data.size_unit.slice(1)} ${data.subtype.charAt(0).toUpperCase() + data.subtype.slice(1)} for ${data.purpose.charAt(0).toUpperCase() + data.purpose.slice(1)}`}
-            </Text>
+          <Text style={styles.textControlStyle} numberOfLines={1}>
+            {`${data.size} ${data.size_unit.charAt(0).toUpperCase() + data.size_unit.slice(1)} ${data.subtype.charAt(0).toUpperCase() + data.subtype.slice(1)} for ${data.purpose.charAt(0).toUpperCase() + data.purpose.slice(1)}`}
+          </Text>
 
-            <Text style={[styles.textControlStyle, { fontFamily: AppStyles.fonts.lightFont }]} numberOfLines={1}>
-              {`${data.area.name}, ${data.city.name}`}
-            </Text>
+          <Text style={[styles.textControlStyle, { fontFamily: AppStyles.fonts.lightFont }]} numberOfLines={1}>
+            {`${data.area.name}, ${data.city.name}`}
+          </Text>
 
-
+          {
+            data.type==='residential' &&
             <View style={styles.bedBathViewStyle}>
               <Ionicons name={'ios-bed'} color={AppStyles.colors.subTextColor} size={18} />
               <Text style={styles.bedTextStyle}>
@@ -59,10 +60,13 @@ class InventoryTile extends React.Component {
                 {data.bath}
               </Text>
             </View>
+          }
 
-          </View>
 
-          <Foundation name={'telephone'} color={AppStyles.colors.subTextColor} size={32} style={styles.phoneButton} />
+
+        </View>
+
+        <Foundation name={'telephone'} color={AppStyles.colors.subTextColor} size={32} style={styles.phoneButton} />
 
       </TouchableOpacity>
 

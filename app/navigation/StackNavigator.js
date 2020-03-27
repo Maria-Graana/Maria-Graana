@@ -14,7 +14,9 @@ import AddLead from '../screens/addLead';
 import Client from '../screens/Client';
 import AddClient from '../screens/AddClient';
 import ClientDetail from '../screens/ClientDetail';
+import LeadDetail from '../screens/LeadDetail';
 import AppStyles from '../AppStyles';
+import LeadTabs from './LeadTabNavigator';
 
 const Stack = createStackNavigator();
 
@@ -119,6 +121,22 @@ function MainStack() {
             <Stack.Screen name='ClientDetail' component={ClientDetail}
                 options={({ navigation, route }) => ({
                     title: 'CLIENT DETAILS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='LeadDetail' component={LeadDetail}
+                options={({ navigation, route }) => ({
+                    title: 'LEAD DETAILS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='LeadTabs' component={LeadTabs}
+                options={({ navigation, route }) => ({
+                    title: 'LEAD WORKFLOW',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

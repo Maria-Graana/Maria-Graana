@@ -97,6 +97,10 @@ class Inventory extends React.Component {
 		})
 	}
 
+	navigateTo = (data) => {
+		this.props.navigation.navigate('LeadDetail', {lead: data})
+	}
+
 	render() {
 		const { selectInventory, dropDownId, febDrawer } = this.state
 		return (
@@ -151,6 +155,7 @@ class Inventory extends React.Component {
 								data={item}
 								dropDownId={dropDownId}
 								unSelectInventory={this.unSelectInventory}
+								navigateTo={this.navigateTo}
 							/>
 						)}
 					/>

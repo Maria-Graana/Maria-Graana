@@ -6,17 +6,24 @@ export default styles = StyleSheet.create({
         backgroundColor: '#FFFFFF'
     },
     headingText: {
-        fontSize: 12, 
+        fontSize: 16, 
         paddingLeft: 5,
         paddingTop: 5,
         paddingBottom: 0,
-        fontFamily: AppStyles.fonts.lightFont
+        fontFamily: AppStyles.fonts.defaultFont
+    },
+    padLeft: {
+        marginRight: 15,
+        paddingBottom: 2
     },
     labelText: {
-        fontSize: 18, 
+        fontSize: 20, 
         paddingBottom: 5,
         paddingLeft: 5,
-        fontFamily: AppStyles.fonts.defaultFont
+        fontFamily: AppStyles.fonts.semiBoldFont
+    },
+    btn1: {
+        marginBottom: 40,
     },
     outerContainer: { 
         flex: 1, 
@@ -31,5 +38,12 @@ export default styles = StyleSheet.create({
     },
     pad: {
         padding: 10
-    }
+    },
+    underLine: {
+        height: 1, 
+        width: "100%",
+        backgroundColor: "#f5f5f6",
+        marginHorizontal: 10,
+        marginVertical: 20
+    },
 });

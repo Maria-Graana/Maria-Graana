@@ -1,7 +1,6 @@
 const role = {
     Diary: {
         roles: [
-            { role: 'admin 1', access: { v: true, a: true, e: false, d: false} },
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true} },
             { role: 'sub_admin 2', access: { v: true, a: true, e: true, d: true} },
         ],

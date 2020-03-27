@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, TextInput, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, TextInput, Text, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import PickerComponent from '../../components/Picker/index';
@@ -11,6 +11,7 @@ import fire from '../../../assets/images/fire.png'
 import LeadTile from '../../components/LeadTile'
 import PropertyImg from '../../../assets/img/property.jpg'
 import phone from '../../../assets/img/phone.png'
+import axios from 'axios';
 
 
 class Inventory extends React.Component {
@@ -19,6 +20,7 @@ class Inventory extends React.Component {
 
 		this.state = {
 			language: '',
+			leadsData: [],
 			active: false,
 			dotsDropDown: false,
 			dropDownId: '',
@@ -63,6 +65,19 @@ class Inventory extends React.Component {
 		]
 	}
 
+	componentDidMount() {
+		this.fetchLeads();
+	}
+
+	fetchLeads = () => {
+		axios.get(`/api/leads`)
+			.then((res) => {
+				this.setState({
+					leadsData: res.data
+				})
+			})
+	}
+
 	showDropdown = (id) => {
 		this.setState({
 			dropDownId: id,
@@ -95,8 +110,12 @@ class Inventory extends React.Component {
 		this.setState({ activeTab: status })
 	}
 
+	navigateTo = (data) => {
+		this.props.navigation.navigate('LeadDetail', { lead: data })
+	}
+
 	render() {
-		const { selectInventory, dropDownId, activeTab } = this.state
+		const { selectInventory, dropDownId, activeTab, leadsData } = this.state
 		return (
 			<View>
 
@@ -137,7 +156,8 @@ class Inventory extends React.Component {
 					</View>
 				</View>
 
-				<View style={[styles.CustomContainer]}>
+				<View style={[AppStyles.container, styles.minHeight]}>
+
 					<Fab
 						active={this.state.active}
 						direction="up"
@@ -153,10 +173,32 @@ class Inventory extends React.Component {
 							<Icon name="logo-facebook" />
 						</Button>
 					</Fab>
-					<View style={styles.mainInventoryTile}>
 
-						<FlatList
-							data={this.staticData}
+					<View style={[styles.mainInventoryTile, ]}>
+
+						<ScrollView>
+							{
+								leadsData && leadsData.rows && leadsData.rows.map((item, key) => {
+									return (
+										<LeadTile
+											key={key}
+											showDropdown={this.showDropdown}
+											dotsDropDown={this.state.dotsDropDown}
+											selectInventory={this.selectInventory}
+											selectedInventory={selectInventory}
+											data={item}
+											dropDownId={dropDownId}
+											unSelectInventory={this.unSelectInventory}
+											goToInventoryForm={this.goToInventoryForm}
+											navigateTo={this.navigateTo}
+										/>
+									)
+								})
+							}
+						</ScrollView>
+
+						{/* <FlatList
+							data={leadsData.rows}
 							renderItem={({ item }) => (
 								
 								<LeadTile
@@ -170,7 +212,7 @@ class Inventory extends React.Component {
 									goToInventoryForm={this.goToInventoryForm}
 								/>
 							)}
-						/>
+						/> */}
 					</View>
 				</View>
 

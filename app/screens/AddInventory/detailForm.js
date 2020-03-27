@@ -227,7 +227,7 @@ class DetailForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput onChangeText={(text) => { handleForm(text, 'name') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Name'} />
+                        <TextInput onChangeText={(text) => { handleForm(text, 'ownerName') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Name'} />
                     </View>
                 </View>
 

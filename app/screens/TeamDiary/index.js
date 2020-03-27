@@ -8,52 +8,57 @@ import StaticData from '../../StaticData';
 import axios from 'axios';
 
 class TeamDiary extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {
+    constructor(props) {
+        super(props)
+        this.state = {
         }
         this.fetchTeam()
     }
 
     fetchTeam = () => {
         axios.get('/api/user/agents')
-        .then((res) =>{
-           // console.log(res.data)
-            this.setState({
-                teamDiary: res.data
+            .then((res) => {
+                // console.log(res.data)
+                this.setState({
+                    teamDiary: res.data
+                })
             })
-        })
-        .catch ((error) => {
-            console.log(error)
-            return null
-        })
+            .catch((error) => {
+                console.log(error)
+                return null
+            })
     }
 
     navigateTo = (data) => {
         console.log(data)
-        this.props.navigation.navigate('Diary', {agentId: data.id, screen: 'TeamDiary'})
+        this.props.navigation.navigate('Diary', { agentId: data.id, screen: 'TeamDiary' })
     }
 
-	render() {
-        const {teamDiary}= this.state
-		return (
+    render() {
+        const { teamDiary } = this.state
+        return (
             <View style={[AppStyles.container, styles.container]}>
-                <FlatList
-                    data={teamDiary}
-                    renderItem={(item, index) => (
-                        <TeamTile data={item} onPressItem= {this.navigateTo}/>
-                    )}
-                    keyExtractor={(item, index) => item.id.toString()}
-                />
+                {
+                    teamDiary.length ?
+                        <FlatList
+                            data={teamDiary}
+                            renderItem={(item, index) => (
+                                <TeamTile data={item} onPressItem={this.navigateTo} />
+                            )}
+                            keyExtractor={(item, index) => item.id.toString()}
+                        />
+                        :
+                        <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
+                }
             </View>
-		)
-	}
+        )
+    }
 }
 
 mapStateToProps = (store) => {
-	return {
-		user: store.user.user
-	}
+    return {
+        user: store.user.user
+    }
 }
 
 export default connect(mapStateToProps)(TeamDiary)

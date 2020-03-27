@@ -11,6 +11,7 @@ import fire from '../../../assets/images/fire.png'
 import LeadTile from '../../components/LeadTile'
 import PropertyImg from '../../../assets/img/property.jpg'
 import phone from '../../../assets/img/phone.png'
+import Axios from 'axios';
 
 
 class Inventory extends React.Component {
@@ -61,6 +62,17 @@ class Inventory extends React.Component {
 				location: 'H1/11, Islamabad',
 			}
 		]
+	}
+
+	componentDidMount(){
+		this.fetchLeads();
+	}
+
+	fetchLeads = () => {
+		Axios.get(`/api/leads`)
+		.then((res) => {
+				console.log("****************",res.data)
+		})
 	}
 
 	showDropdown = (id) => {

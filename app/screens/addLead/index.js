@@ -162,7 +162,7 @@ class AddLead extends Component {
             }
             axios.post(`/api/leads`, payLoad)
                 .then((res) => {
-                    console.log(res.data)
+                    RootNavigation.navigate('Lead')
                 })
         }
     }

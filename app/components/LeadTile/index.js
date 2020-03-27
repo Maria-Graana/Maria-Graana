@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-import phone from '../../../assets/img/phone.png'
+import phone from '../../../assets/img/phone2.png'
 import PropertyImg from '../../../assets/img/property.jpg'
 class LeadTile extends React.Component {
   constructor(props) {
@@ -13,9 +13,9 @@ class LeadTile extends React.Component {
 
   render() {
 
-    const { showDropdown, dotsDropDown, selectInventory, data, selectedInventory, dropDownId, unSelectInventory, goToInventoryForm } = this.props
+    const { showDropdown, dotsDropDown, selectInventory, data, selectedInventory, dropDownId, unSelectInventory, goToInventoryForm, navigateTo } = this.props
     return (
-      <TouchableOpacity onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
+      <TouchableOpacity onPress={navigateTo} onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
 
         <View style={[styles.tileMainWrap, selectedInventory.includes(data.id) && styles.selectedInventory]}>
 
@@ -26,8 +26,8 @@ class LeadTile extends React.Component {
             <View style={styles.topIcons}>
               <View>
                 <Text style={[styles.tokenLabel, AppStyles.mrFive]}>
-                  To-Do
-												</Text>
+                  {data.status}
+                </Text>
               </View>
               <View>
                 <Image
@@ -41,8 +41,8 @@ class LeadTile extends React.Component {
               {/* ****** Name Wrap */}
               <View style={[styles.contentMain, AppStyles.mbTen]}>
                 <Text style={[styles.largeText, AppStyles.darkColor]}>
-                  Ahsan khan
-												</Text>
+                  {data.customer && data.customer.customerName}
+                </Text>
               </View>
 
               {/* ****** Price Wrap */}
@@ -51,15 +51,20 @@ class LeadTile extends React.Component {
                   PKR
             						</Text>
                 <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
-                  2 Crore - 5 Crore
-            						</Text>
+                  {
+                    data.price != null ? data.price : '---'
+                  }
+                </Text>
               </View>
 
               {/* ****** Address Wrap */}
               <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                  12 Marla hous for sale
-            						</Text>
+                {
+                  data.size != null &&
+                  <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                    {data.size} {data.size_unit} {data.type} {data.purpose != null && 'for'} {data.purpose}
+                  </Text>
+                }
               </View>
 
               {/* ****** Location Wrap */}

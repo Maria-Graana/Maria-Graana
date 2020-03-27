@@ -55,7 +55,6 @@ class CMLeadFrom extends Component {
         </View>
 
         {/* *********** Main Container *********** */}
-        {console.log(subType)}
         <View style={[AppStyles.container]}>
           <InnerRCMForm
             formData={formData}

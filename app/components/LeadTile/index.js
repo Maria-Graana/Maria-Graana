@@ -14,6 +14,7 @@ class LeadTile extends React.Component {
   render() {
 
     const { showDropdown, dotsDropDown, selectInventory, data, selectedInventory, dropDownId, unSelectInventory, goToInventoryForm, navigateTo } = this.props
+    console.log(data)
     return (
       <TouchableOpacity onPress={navigateTo(data)} onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
 
@@ -70,7 +71,7 @@ class LeadTile extends React.Component {
               {/* ****** Location Wrap */}
               <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                 <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                  F-10 Markaz, Islamabad
+                  F-10 Markaz, {data.city && data.city.name}
             						</Text>
               </View>
             </View>

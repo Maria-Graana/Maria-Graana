@@ -48,8 +48,8 @@ export default styles = StyleSheet.create({
     fontSize: 12,
   },
   fireIcon: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
   },
   verticalIcon: {
     position: 'relative',

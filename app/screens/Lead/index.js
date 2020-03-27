@@ -29,40 +29,13 @@ class Inventory extends React.Component {
 			activeTab: 'all',
 		}
 
-		this.staticData = [
-			{
-				id: '1',
-				propertyName: '10 marla house for sale',
-				action: 'Token',
-				price: '10 Crore',
-				address: 'G/11, Islamabad',
-				location: 'G/11, Islamabad',
-			},
-			{
-				id: '2',
-				propertyName: '40 marla house for sale',
-				action: 'Deal Done',
-				price: '20 Crore',
-				address: 'i8/4, Islamabad',
-				location: 'i8/4, Islamabad',
-			},
-			{
-				id: '3',
-				propertyName: '16 marla house for sale',
-				action: 'Deal Done',
-				price: '13 Crore',
-				address: 'G2/11, Islamabad',
-				location: 'G2/11, Islamabad',
-			},
-			{
-				id: '4',
-				propertyName: '5 marla house for sale',
-				action: 'Token',
-				price: '2 Crore',
-				address: 'H1/11, Islamabad',
-				location: 'H1/11, Islamabad',
-			}
+		this.filterData = [
+			{ value: 'all', name: 'ALL' },
+			{ value: 'sale', name: 'BUY' },
+			{ value: 'rent', name: 'RENT' },
+			{ value: 'invest', name: 'Invest' },
 		]
+
 	}
 
 	componentDidMount() {
@@ -114,6 +87,10 @@ class Inventory extends React.Component {
 		this.props.navigation.navigate('LeadDetail', { lead: data })
 	}
 
+	filterStatus = (data)=>{
+		console.log('data***********', data)
+	}
+
 	render() {
 		const { selectInventory, dropDownId, activeTab, leadsData } = this.state
 		return (
@@ -127,7 +104,7 @@ class Inventory extends React.Component {
 						</TouchableOpacity>
 					</View>
 					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'buy' && styles.activeTab]} onPress={() => { this.changeTab('buy') }}>
+						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('buy') }}>
 							<Text style={AppStyles.textCenter}>BUY</Text>
 						</TouchableOpacity>
 					</View>
@@ -146,7 +123,13 @@ class Inventory extends React.Component {
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>
 					<View style={styles.pickerMain}>
-						<PickerComponent placeholder={'Lead Status'} customStyle={styles.pickerStyle} customIconStyle={styles.customIconStyle} />
+						<PickerComponent
+							placeholder={'Lead Status'}
+							data={this.filterData}
+							customStyle={styles.pickerStyle}
+							customIconStyle={styles.customIconStyle}
+							onValueChange={this.changeTab}
+						/>
 					</View>
 					<View style={styles.stylesMainSort}>
 						<TouchableOpacity style={styles.sortBtn}>
@@ -174,7 +157,7 @@ class Inventory extends React.Component {
 						</Button>
 					</Fab>
 
-					<View style={[styles.mainInventoryTile, ]}>
+					<View style={[styles.mainInventoryTile,]}>
 
 						<ScrollView>
 							{

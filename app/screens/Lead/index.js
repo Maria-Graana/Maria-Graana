@@ -100,7 +100,7 @@ class Inventory extends React.Component {
 						</TouchableOpacity>
 					</View>
 					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('buy') }}>
+						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('sale') }}>
 							<Text style={AppStyles.textCenter}>BUY</Text>
 						</TouchableOpacity>
 					</View>

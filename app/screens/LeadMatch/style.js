@@ -5,6 +5,32 @@ export default styles = StyleSheet.create({
     container: {
         backgroundColor: '#FFFFFF'
     },
+    tokenLabel: {
+        borderWidth: 1,
+        borderColor: 'white',
+        overflow: 'hidden',
+        borderRadius: 12,
+        color: '#2A7EF0',
+        paddingTop: 3,
+        backgroundColor: 'white',
+        paddingBottom: 3,
+        paddingLeft: 20,
+        paddingRight: 20,
+        fontSize: 12,
+    },
+    tokenLabelBlue: {
+        borderWidth: 1,
+        borderColor: AppStyles.colors.primaryColor,
+        overflow: 'hidden',
+        borderRadius: 12,
+        color: 'white',
+        paddingTop: 3,
+        backgroundColor: AppStyles.colors.primaryColor,
+        paddingBottom: 3,
+        paddingLeft: 20,
+        paddingRight: 20,
+        fontSize: 12,
+    },
     headingText: {
         fontSize: 16, 
         paddingLeft: 5,

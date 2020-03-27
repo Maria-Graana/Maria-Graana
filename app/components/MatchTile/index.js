@@ -19,7 +19,7 @@ class InventoryTile extends React.Component {
 
 	render() {
 		const { } = this.props
-		const imagesList = ['https://pickaface.net/gallery/avatar/unr_ironman_170308_2112_9ldw5b.png']
+		const imagesList = ['https://i.ytimg.com/vi/JvkrkSpVYg0/maxresdefault.jpg', 'https://4.bp.blogspot.com/--aHpPUF-b9Y/WFzfPaRg7EI/AAAAAAAAAE0/t050gnUwxfIOxyGnpBWupvXXpXCapScfACLcB/s1600/unique-beautiful-houses-on-home-garden-with-beautiful-beautiful-home-designs-in-kerala-beautiful-home-design-in-india-1024x680.jpg', 'https://beautyharmonylife.com/wp-content/uploads/2013/08/558084_455703801173433_581948460_n.jpg']
 		return (
 			<TouchableOpacity
 				onLongPress={() => { }}

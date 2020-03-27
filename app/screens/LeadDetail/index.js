@@ -24,7 +24,7 @@ class LeadDetail extends React.Component {
         const { route, user } = this.props;
         // const {client}= route.params
         return (
-            <View style={[AppStyles.container, styles.container, {backgroundColor: AppStyles.colors.backgroundColor}]}>
+            <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
                     <View style={styles.innerContainer}>
                         <Text style={styles.headingText}> Lead Type</Text>
@@ -49,18 +49,18 @@ class LeadDetail extends React.Component {
                     </View>
                     <View style={styles.pad}>
                         <Text style={[styles.headingText, styles.padLeft]}> Status </Text>
-                        {
-                            Ability.canEdit(user.role, 'Client') && <MaterialCommunityIcons onPress={() => {this.navigateTo()}} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
-                        }
+                        <View style={{marginRight: 20}}>
+                            <Text style={[styles.tokenLabel, AppStyles.mrFive]}> Open </Text>
+                        </View>
                     </View>
                 </View>
                 <View style={[AppStyles.mainInputWrap]}>
-					<Button
-						onPress={() => { this.navigateTo() }}
-						style={[AppStyles.formBtn, styles.btn1]}>
-						<Text style={AppStyles.btnText}>MATCH PROPERTIES</Text>
-					</Button>
-				</View>
+                    <Button
+                        onPress={() => { this.navigateTo() }}
+                        style={[AppStyles.formBtn, styles.btn1]}>
+                        <Text style={AppStyles.btnText}>MATCH PROPERTIES</Text>
+                    </Button>
+                </View>
             </View>
         )
     }

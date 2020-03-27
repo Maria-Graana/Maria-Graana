@@ -14,6 +14,7 @@ import AddLead from '../screens/addLead';
 import Client from '../screens/Client';
 import AddClient from '../screens/AddClient';
 import ClientDetail from '../screens/ClientDetail';
+import PropertyDetail from '../screens/PropertyDetail'
 import LeadDetail from '../screens/LeadDetail';
 import AppStyles from '../AppStyles';
 import LeadTabs from './LeadTabNavigator';
@@ -126,6 +127,15 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
+              <Stack.Screen name='PropertyDetail' component={PropertyDetail}
+                options={({ navigation, route }) => ({
+                    title: 'PROPERTY DETAILS',
+                   headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+
             <Stack.Screen name='LeadDetail' component={LeadDetail}
                 options={({ navigation, route }) => ({
                     title: 'LEAD DETAILS',
@@ -136,7 +146,7 @@ function MainStack() {
             />
             <Stack.Screen name='LeadTabs' component={LeadTabs}
                 options={({ navigation, route }) => ({
-                    title: 'LEAD WORKFLOW',
+                    title: 'LEAD WORKFLOW',    
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

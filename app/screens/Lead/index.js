@@ -187,27 +187,8 @@ class Inventory extends React.Component {
 								})
 							}
 						</ScrollView>
-
-						{/* <FlatList
-							data={leadsData.rows}
-							renderItem={({ item }) => (
-								
-								<LeadTile
-									showDropdown={this.showDropdown}
-									dotsDropDown={this.state.dotsDropDown}
-									selectInventory={this.selectInventory}
-									selectedInventory={selectInventory}
-									data={item}
-									dropDownId={dropDownId}
-									unSelectInventory={this.unSelectInventory}
-									goToInventoryForm={this.goToInventoryForm}
-									navigateTo={this.navigateTo}
-								/>
-							)}
-						/> */}
 					</View>
 				</View>
-
 			</View>
 		)
 	}

@@ -39,16 +39,24 @@ class Inventory extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads();
+		const { activeTab } = this.state
+		this.fetchLeads('all');
 	}
 
-	fetchLeads = () => {
-		axios.get(`/api/leads`)
+	fetchLeads = (status) => {
+		const { activeTab } = this.state
+		let params = ``
+		if(status != 'all'){
+			params = `?purpose=${status}`
+		}
+		axios.get(`/api/leads${params}`)
 			.then((res) => {
+				console.log(res.data)
 				this.setState({
 					leadsData: res.data
 				})
 			})
+
 	}
 
 	showDropdown = (id) => {
@@ -80,6 +88,7 @@ class Inventory extends React.Component {
 	}
 
 	changeTab = (status) => {
+		this.fetchLeads(status);
 		this.setState({ activeTab: status })
 	}
 

@@ -42,15 +42,12 @@ class Inventory extends React.Component {
 	}
 
 	componentDidMount() {
-		const { activeTab } = this.state
 		this.fetchLeads('sale','all');
 	}
 
 	fetchLeads = (purposeTab,statusFilter) => {
-		console.log('res', purposeTab,statusFilter)
 		axios.get(`/api/leads?purpose=${purposeTab}&status=${statusFilter}`)
 			.then((res) => {
-				// console.log('res', res.data)
 				this.setState({
 					leadsData: res.data
 				})

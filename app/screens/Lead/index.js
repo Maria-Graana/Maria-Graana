@@ -36,7 +36,6 @@ class Inventory extends React.Component {
 			{ value: 'meetings', name: 'Meetings' },
 			{ value: 'token', name: 'Token' },
 			{ value: 'payments', name: 'Payments' },
-			{ value: 'pending', name: 'Pending' },
 			{ value: 'closed', name: 'Closed' },
 		]
 

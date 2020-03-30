@@ -12,7 +12,7 @@ export default styles = StyleSheet.create({
     backgroundColor: '#e7ecf0'
   },
   mainTabs: {
-    width: '25%',
+    width: '33.3%',
   },
   mainInventoryTile: {
     marginTop: 15,

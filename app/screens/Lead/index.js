@@ -26,7 +26,8 @@ class Inventory extends React.Component {
 			dropDownId: '',
 			selectInventory: [],
 			febDrawer: false,
-			activeTab: 'all',
+			purposeTab: 'all',
+			statusFilter: 'all',
 		}
 
 		this.filterData = [
@@ -42,17 +43,14 @@ class Inventory extends React.Component {
 
 	componentDidMount() {
 		const { activeTab } = this.state
-		this.fetchLeads('all');
+		this.fetchLeads('sale','all');
 	}
 
-	fetchLeads = (status) => {
-		const { activeTab } = this.state
-		let params = ``
-		if (status != 'all') {
-			params = `?purpose=${status}`
-		}
-		axios.get(`/api/leads${params}`)
+	fetchLeads = (purposeTab,statusFilter) => {
+		console.log('res', purposeTab,statusFilter)
+		axios.get(`/api/leads?purpose=${purposeTab}&status=${statusFilter}`)
 			.then((res) => {
+				// console.log('res', res.data)
 				this.setState({
 					leadsData: res.data
 				})
@@ -89,13 +87,13 @@ class Inventory extends React.Component {
 	}
 
 	changeTab = (status) => {
-		this.fetchLeads(status);
-		this.setState({ activeTab: status })
+		this.setState({ purposeTab: status })
+		this.fetchLeads(status, this.state.statusFilter);
 	}
 
 	changeStatus = (status) => {
-		this.fetchLeads(status);
-		this.setState({ activeTab: status })
+		this.setState({ statusFilter: status })
+		this.fetchLeads(this.state.purposeTab, status);
 	}
 
 	navigateTo = (data) => {
@@ -103,29 +101,25 @@ class Inventory extends React.Component {
 	}
 
 	render() {
-		const { selectInventory, dropDownId, activeTab, leadsData } = this.state
+		const { selectInventory, dropDownId, purposeTab, leadsData } = this.state
 		return (
 			<View>
 
 				{/* ******************* TAb BUTTON VIEW ******* */}
 				<View style={styles.mainTopTabs}>
+					
 					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'all' && styles.activeTab]} onPress={() => { this.changeTab('all') }}>
-							<Text style={AppStyles.textCenter}>ALL</Text>
-						</TouchableOpacity>
-					</View>
-					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('sale') }}>
+						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('sale') }}>
 							<Text style={AppStyles.textCenter}>BUY</Text>
 						</TouchableOpacity>
 					</View>
 					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'rent' && styles.activeTab]} onPress={() => { this.changeTab('rent') }}>
+						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'rent' && styles.activeTab]} onPress={() => { this.changeTab('rent') }}>
 							<Text style={AppStyles.textCenter}>RENT</Text>
 						</TouchableOpacity>
 					</View>
 					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, activeTab === 'invest' && styles.activeTab]} onPress={() => { this.changeTab('invest') }}>
+						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'invest' && styles.activeTab]} onPress={() => { this.changeTab('invest') }}>
 							<Text style={AppStyles.textCenter}>INVEST</Text>
 						</TouchableOpacity>
 					</View>

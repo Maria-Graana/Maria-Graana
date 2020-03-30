@@ -48,7 +48,7 @@ class Inventory extends React.Component {
 	fetchLeads = (status) => {
 		const { activeTab } = this.state
 		let params = ``
-		if(status != 'all'){
+		if (status != 'all') {
 			params = `?purpose=${status}`
 		}
 		axios.get(`/api/leads${params}`)
@@ -152,22 +152,6 @@ class Inventory extends React.Component {
 
 				<View style={[AppStyles.container, styles.minHeight]}>
 
-					<Fab
-						active={this.state.active}
-						direction="up"
-						containerStyle={{ zIndex: 20 }}
-						style={{ backgroundColor: '#333' }}
-						position="bottomRight"
-						onPress={() => this.setState({ active: !this.state.active })}>
-						<Ionicons name="md-add" color="#ffffff" />
-						<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('RCM') }}>
-							<Icon name="logo-whatsapp" />
-						</Button>
-						<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('CM') }}>
-							<Icon name="logo-facebook" />
-						</Button>
-					</Fab>
-
 					<View style={[styles.mainInventoryTile,]}>
 
 						<ScrollView>
@@ -209,6 +193,22 @@ class Inventory extends React.Component {
 							)}
 						/> */}
 					</View>
+
+					<Fab
+						active={this.state.active}
+						direction="up"
+						containerStyle={{ zIndex: 20 }}
+						style={{ backgroundColor: '#333' }}
+						position="bottomRight"
+						onPress={() => this.setState({ active: !this.state.active })}>
+						<Ionicons name="md-add" color="#ffffff" />
+						<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('RCM') }}>
+							<Icon name="logo-whatsapp" />
+						</Button>
+						<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('CM') }}>
+							<Icon name="logo-facebook" />
+						</Button>
+					</Fab>
 				</View>
 
 			</View>

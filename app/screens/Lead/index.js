@@ -30,10 +30,12 @@ class Inventory extends React.Component {
 		}
 
 		this.filterData = [
-			{ value: 'all', name: 'ALL' },
-			{ value: 'sale', name: 'BUY' },
-			{ value: 'rent', name: 'RENT' },
-			{ value: 'invest', name: 'Invest' },
+			{ value: 'all', name: 'All' },
+			{ value: 'open', name: 'Open' },
+			{ value: 'meetings', name: 'Meetings' },
+			{ value: 'token', name: 'Token' },
+			{ value: 'payments', name: 'Payments' },
+			{ value: 'closed', name: 'Closed' },
 		]
 
 	}
@@ -91,6 +93,11 @@ class Inventory extends React.Component {
 		this.setState({ activeTab: status })
 	}
 
+	changeStatus = (status) => {
+		this.fetchLeads(status);
+		this.setState({ activeTab: status })
+	}
+
 	navigateTo = (data) => {
 		this.props.navigation.navigate('LeadDetail', { lead: data })
 	}
@@ -132,7 +139,7 @@ class Inventory extends React.Component {
 							data={this.filterData}
 							customStyle={styles.pickerStyle}
 							customIconStyle={styles.customIconStyle}
-							onValueChange={this.changeTab}
+							onValueChange={this.changeStatus}
 						/>
 					</View>
 					<View style={styles.stylesMainSort}>

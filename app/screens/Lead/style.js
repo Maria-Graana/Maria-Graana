@@ -16,8 +16,6 @@ export default styles = StyleSheet.create({
   },
   mainInventoryTile: {
     marginTop: 15,
-    position: 'relative',
-    zIndex: 15,
   },
   tabBtnStyle: {
     paddingTop: 15,

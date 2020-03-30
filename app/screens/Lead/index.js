@@ -175,7 +175,6 @@ class Inventory extends React.Component {
 					<Fab
 						active={this.state.active}
 						direction="up"
-						containerStyle={{ zIndex: 20 }}
 						style={{ backgroundColor: '#333' }}
 						position="bottomRight"
 						onPress={() => this.setState({ active: !this.state.active })}>

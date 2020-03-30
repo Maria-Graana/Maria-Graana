@@ -45,19 +45,19 @@ export default StaticData = {
     taskValues: [
         {
             name: 'Meeting',
-            value: 'Meeting'
+            value: 'meeting'
         },
         {
             name: 'Follow Up',
-            value: 'Follow Up'
+            value: 'follow up'
         },
         {
             name: 'Day Structure',
-            value: 'Day Structure'
+            value: 'day structure'
         },
         {
             name: 'Other',
-            value: 'Other'
+            value: 'other'
         }
     ],
     oneToTen: [

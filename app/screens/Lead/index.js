@@ -51,7 +51,6 @@ class Inventory extends React.Component {
 		}
 		axios.get(`/api/leads${params}`)
 			.then((res) => {
-				console.log(res.data)
 				this.setState({
 					leadsData: res.data
 				})

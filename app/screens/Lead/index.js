@@ -42,14 +42,14 @@ class Inventory extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads('sale','all');
+		this.fetchLeads('sale', 'all');
 	}
 
-	fetchLeads = (purposeTab,statusFilter) => {
+	fetchLeads = (purposeTab, statusFilter) => {
 		let query = ``
-		if(purposeTab === 'invest'){
+		if (purposeTab === 'invest') {
 			query = `/api/leads/projects?all=${true}&status=${statusFilter}`
-		}else{
+		} else {
 			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}`
 		}
 		axios.get(`${query}`)
@@ -110,7 +110,7 @@ class Inventory extends React.Component {
 
 				{/* ******************* TAb BUTTON VIEW ******* */}
 				<View style={styles.mainTopTabs}>
-					
+
 					<View style={styles.mainTabs}>
 						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('sale') }}>
 							<Text style={AppStyles.textCenter}>BUY</Text>
@@ -199,10 +199,10 @@ class Inventory extends React.Component {
 						position="bottomRight"
 						onPress={() => this.setState({ active: !this.state.active })}>
 						<Ionicons name="md-add" color="#ffffff" />
-						<Button style={{ backgroundColor: '#333', zIndex: 20 }} onPress={() => { this.goToFormPage('RCM') }}>
+						<Button style={{ backgroundColor: '#333', zIndex: 20, position: 'absolute' }} onPress={() => { this.goToFormPage('RCM') }}>
 							<Icon name="logo-whatsapp" />
 						</Button>
-						<Button style={{ backgroundColor: '#333', zIndex: 20 }} onPress={() => { this.goToFormPage('CM') }}>
+						<Button style={{ backgroundColor: '#333', zIndex: 20, position: 'absolute' }} onPress={() => { this.goToFormPage('CM') }}>
 							<Icon name="logo-facebook" />
 						</Button>
 					</Fab>

@@ -9,12 +9,12 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 10,
   },
-  leftimgView: {
-    width: '40%',
-    padding: 5,
-  },
+  // leftimgView: {
+  //   width: '40%',
+  //   padding: 5,
+  // },
   rightContentView: {
-    width: '60%',
+    width: '100%',
     padding: 5,
   },
   propertyImg: {

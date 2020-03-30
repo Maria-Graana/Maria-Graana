@@ -19,9 +19,9 @@ class LeadTile extends React.Component {
 
         <View style={[styles.tileMainWrap, selectedInventory.includes(data.id) && styles.selectedInventory]}>
 
-          <View style={[styles.leftimgView]}>
+          {/* <View style={[styles.leftimgView]}>
             <Image source={PropertyImg} style={[styles.propertyImg]} />
-          </View>
+          </View> */}
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
               <View>

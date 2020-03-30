@@ -26,7 +26,7 @@ class Inventory extends React.Component {
 			dropDownId: '',
 			selectInventory: [],
 			febDrawer: false,
-			purposeTab: 'all',
+			purposeTab: 'sale',
 			statusFilter: 'all',
 		}
 
@@ -36,6 +36,7 @@ class Inventory extends React.Component {
 			{ value: 'meetings', name: 'Meetings' },
 			{ value: 'token', name: 'Token' },
 			{ value: 'payments', name: 'Payments' },
+			{ value: 'pending', name: 'Pending' },
 			{ value: 'closed', name: 'Closed' },
 		]
 
@@ -46,7 +47,13 @@ class Inventory extends React.Component {
 	}
 
 	fetchLeads = (purposeTab,statusFilter) => {
-		axios.get(`/api/leads?purpose=${purposeTab}&status=${statusFilter}`)
+		let query = ``
+		if(purposeTab === 'invest'){
+			query = `/api/leads/projects?all=${true}&status=${statusFilter}`
+		}else{
+			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}`
+		}
+		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({
 					leadsData: res.data

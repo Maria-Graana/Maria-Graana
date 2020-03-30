@@ -148,25 +148,7 @@ class Inventory extends React.Component {
 				</View>
 
 				<View style={[AppStyles.container, styles.minHeight]}>
-
-				<Fab
-						active={this.state.active}
-						direction="up"
-						containerStyle={{ zIndex: 20 }}
-						style={{ backgroundColor: '#333' }}
-						position="bottomRight"
-						onPress={() => this.setState({ active: !this.state.active })}>
-						<Ionicons name="md-add" color="#ffffff" />
-						<Button style={{ backgroundColor: '#333', zIndex: 20, position: 'absolute' }} onPress={() => { this.goToFormPage('RCM') }}>
-							<Icon name="logo-whatsapp" />
-						</Button>
-						<Button style={{ backgroundColor: '#333', zIndex: 20, position: 'absolute' }} onPress={() => { this.goToFormPage('CM') }}>
-							<Icon name="logo-facebook" />
-						</Button>
-					</Fab>
-
 					<View style={[styles.mainInventoryTile,]}>
-
 						<ScrollView>
 							{
 								leadsData && leadsData.rows && leadsData.rows.map((item, key) => {
@@ -187,8 +169,26 @@ class Inventory extends React.Component {
 								})
 							}
 						</ScrollView>
+
 					</View>
+
+					<Fab
+						active={this.state.active}
+						direction="up"
+						containerStyle={{ zIndex: 20 }}
+						style={{ backgroundColor: '#333' }}
+						position="bottomRight"
+						onPress={() => this.setState({ active: !this.state.active })}>
+						<Ionicons name="md-add" color="#ffffff" />
+						<Button style={{ backgroundColor: '#333', zIndex: 20, position: 'absolute' }} onPress={() => { this.goToFormPage('RCM') }}>
+							<Icon name="logo-whatsapp" />
+						</Button>
+						<Button style={{ backgroundColor: '#333', zIndex: 20, position: 'absolute' }} onPress={() => { this.goToFormPage('CM') }}>
+							<Icon name="logo-facebook" />
+						</Button>
+					</Fab>
 				</View>
+
 			</View>
 		)
 	}

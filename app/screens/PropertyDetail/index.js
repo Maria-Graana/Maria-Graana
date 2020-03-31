@@ -39,6 +39,7 @@ class PropertyDetail extends React.Component {
         const ownerPhoneNumber = property.phone.trim();
         const address = property.address;
         const status = property.status === 'pending' ? 'Open' : property.status;
+        const images = property.armsPropertyImages;
 
 
         return (
@@ -47,9 +48,6 @@ class PropertyDetail extends React.Component {
                     <View style={styles.innerContainer}>
                         <Text style={styles.headingText}> Property Type </Text>
                         <Text style={styles.labelText}> {type} </Text>
-
-                        <Text style={[styles.statusText]}>{status}</Text>
-
                         <Text style={styles.headingText}> Property Sub Type </Text>
                         <Text style={styles.labelText}> {subtype + ', ' + type} </Text>
                         <Text style={styles.headingText}> Area </Text>
@@ -62,8 +60,20 @@ class PropertyDetail extends React.Component {
                         <Text style={styles.labelText}> {purpose} </Text>
                         <Text style={styles.headingText}> Demand Price </Text>
                         <Text style={styles.labelText}> {'PKR ' + demandPrice} </Text>
-                        <Text style={styles.headingText}> Images </Text>
-                        <Image source={PlaceHolderImage} style={[styles.imageStyle]} />
+                        {images.length ? <Text style={styles.headingText}> Images </Text> : null}
+                        <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
+                            {
+                                images.length ?
+                                    images.map((item, index) => {
+                                        return (
+                                            <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
+                                        )
+                                    })
+                                    : null
+                            }
+
+                        </View>
+
                         <Text style={styles.headingText}> Grade </Text>
                         <Text style={styles.labelText}> {grade} </Text>
 

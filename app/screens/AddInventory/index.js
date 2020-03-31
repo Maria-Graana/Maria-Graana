@@ -12,9 +12,13 @@ import StaticData from '../../StaticData'
 import AppStyles from '../../AppStyles';
 import helper from '../../helper';
 import _ from 'underscore';
+import { getAppLoadingLifecycleEmitter } from 'expo/build/launch/AppLoading';
 
 
 class AddInventory extends Component {
+
+    img = [];
+
     constructor(props) {
         super(props)
         this.state = {
@@ -25,6 +29,8 @@ class AddInventory extends Component {
             images: [],
             showImages: false,
             selectedGrade: '',
+            buttonText: 'ADD PROPERTY',
+            buttonDisabled: false,
             formData: {
                 type: '',
                 subtype: '',
@@ -38,7 +44,7 @@ class AddInventory extends Component {
                 price: '',
                 grade: '',
                 status: 'pending',
-                //imageIds: [],
+                imageIds: [],
                 lat: '',
                 lng: '',
                 ownerName: '',
@@ -51,7 +57,6 @@ class AddInventory extends Component {
                 custom_title: '',
                 show_address: true,
                 video: '',
-
             }
         }
     }
@@ -81,9 +86,12 @@ class AddInventory extends Component {
                 city_id: property.city_id,
                 area_id: property.area_id,
                 price: String(property.price),
+                imageIds: property.armsPropertyImages.length === 0 || property.armsPropertyImages === undefined
+                    ?
+                    []
+                    : property.armsPropertyImages,
                 grade: property.grade,
                 status: property.status,
-                //imageIds: [],
                 lat: property.lat,
                 lng: property.lng,
                 ownerName: property.customer.first_name,
@@ -100,8 +108,25 @@ class AddInventory extends Component {
             buttonText: 'EDIT PROPERTY'
         }, () => {
             this.selectSubtype(property.type);
-            this.getAreas(property.city_id)
+            this.getAreas(property.city_id);
+            this.setImagesForEditMode();
         })
+    }
+
+    setImagesForEditMode = () => {
+        const { formData } = this.state;
+        const { imageIds } = formData;
+        imageIds.map(image => {
+            this.img.push({
+                id: image.id,
+                uri: image.url,
+                filename: '',
+                filepath: '',
+                filetype: image.type,
+            })
+        })
+        // console.log(this.img);
+        this.setState({ images: this.img, showImages: true });
     }
 
 
@@ -167,13 +192,14 @@ class AddInventory extends Component {
     createOrEditProperty = (formData) => {
         const { navigation, route } = this.props;
         const { property } = route.params;
-        console.log(property.id);
+        const { images } = this.state;
         formData.lat = this.convertLatitude(formData.lat);
         formData.lng = this.convertLongitude(formData.lng);
         formData.size = this.convertToInteger(formData.size)
         formData.bed = this.convertToInteger(formData.bed)
         formData.bath = this.convertToInteger(formData.bath)
         formData.price = this.convertToInteger(formData.price)
+        formData.imageIds = _.pluck(images, 'id');
 
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)
@@ -211,6 +237,136 @@ class AddInventory extends Component {
                 })
         }
 
+    }
+
+
+
+    getPermissionAsync = async () => {
+        let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+        if (camStatus !== 'granted') {
+            const status = await Permissions.askAsync(Permissions.CAMERA_ROLL).status;
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+                return false;
+            }
+        }
+        // If permission is granted multiple selection dialog opens and image browser callback is called after user presses 'done'
+        return true;
+    };
+
+    getImages = () => {
+        const { buttonDisabled } = this.state;
+        this.getPermissionAsync().then(result => {
+            if (result === true) {
+                if (buttonDisabled) {
+                    alert('Please wait while images are processing')
+                }
+                else {
+                    this._pickImage()
+                }
+
+            }
+            else {
+                // Perimission denied, perform action or display alert
+                Alert.alert('Permission Required !', 'Please provide permission to access gallery!');
+            }
+        });
+    }
+
+    _pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            quality: 0,
+            allowsMultipleSelection: true,
+            base64: true
+        });
+        if (!result.cancelled) {
+
+            let filename = result.uri.split('/').pop();
+            let match = /\.(\w+)$/.exec(filename);
+            let type = match ? `image/${match[1]}` : `image`;
+            let ext = result.uri.split('.').pop()
+
+            let image = {
+                name: filename,
+                type: type,
+                uri: result.uri
+            }
+
+
+            this.img.push({
+                uri: `data:image/${ext};base64,` + result.base64,
+                filename,
+                filepath: filename,
+                filetype: type,
+            });
+
+            this.setState({
+                images: this.img,
+                showImages: true,
+                buttonDisabled: true
+            }, () => {
+                this.uploadImage(image);
+            })
+
+        }
+    };
+
+    uploadImage(image) {
+        const { images } = this.state;
+        let fd = new FormData()
+        fd.append('image', image);
+
+        axios.post(`/api/inventory/image`, fd)
+            .then((res) => {
+                let newImages = images.map(value => {
+                    if ('id' in value) {
+                        return value;
+                    }
+                    else {
+                        value.id = res.data.id;
+                        return value;
+                    }
+                })
+
+                this.setState({ images: newImages, buttonDisabled: false });
+
+            })
+            .catch((error) => {
+                console.log('error', error.message)
+            })
+    }
+
+    deleteImage = (image) => {
+        const { images, buttonDisabled } = this.state;
+        if (buttonDisabled) {
+            alert('Please wait while images are processing')
+        }
+        else {
+            this.img = _.without(images, image);
+           // console.log(this.img);
+            this.setState({
+                images: this.img,
+            }, () => {
+                // show images false if no images exists
+                if (this.state.images.length === 0) {
+                    this.setState({ showImages: false })
+                }
+            })
+            this.deleteImageFromServer(image.id);
+        }
+
+    }
+
+    deleteImageFromServer(id) {
+       // console.log(id);
+        axios.delete(`/api/inventory/image/${id}`)
+            .then((res) => {
+               // console.log('response', res.status);
+            })
+            .catch((error) => {
+                console.log('error', error.message)
+            })
     }
 
     _getLocationAsync = async () => {
@@ -260,81 +416,7 @@ class AddInventory extends Component {
         }
     }
 
-    getPermissionAsync = async () => {
-        let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-        //  console.log('status of Camera permission: ', camStatus);
-        if (camStatus !== 'granted') {
-            const status = await Permissions.askAsync(Permissions.CAMERA_ROLL).status;
-            if (status !== 'granted') {
-                alert('Sorry, we need camera roll permissions to make this work!');
-                // console.log('Asked for permission, but not granted!');
-                return false;
-            }
-        }
-        // If permission is granted multiple selection dialog opens and image browser callback is called after user presses 'done'
-        return true;
-    };
 
-    getImages = () => {
-        this.getPermissionAsync().then(result => {
-            if (result === true) {
-                this._pickImage()
-            }
-            else {
-                // Perimission denied, perform action or display alert
-                Alert.alert('Permission Required !', 'Please provide permission to access gallery!');
-            }
-        });
-    }
-
-    _pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 1,
-            allowsMultipleSelection: true,
-            base64: true
-        });
-        if (!result.cancelled) {
-
-            // let filename = result.uri.split('/').pop();
-            // // let match = /\.(\w+)$/.exec(filename);
-            // // let type = match ? `image/${match[1]}` : `image`;
-           let ext = result.uri.split('.').pop()
-
-
-            // axios.post(`api/inventory/image`, fd)
-            //     .then((res) => {
-            //         if (res.status === 200) {
-            //             console.log('response', res)
-            //         }
-            //         else {
-            //         }
-
-            //     })
-            //     .catch((error) => {
-            //         console.log('error', error.message)
-            //     })
-
-            this.setState(prevState => ({
-                images: [...prevState.images, `data:image/${ext};base64,` + result.base64],
-                showImages: true
-            })
-            )
-        }
-    };
-
-    deleteImage = (image) => {
-        const { images } = this.state;
-        let deletedImage = _.without(images, image)
-        this.setState({
-            images: deletedImage,
-        }, () => {
-            // show images false if no images exists
-            if (this.state.images.length === 0) {
-                this.setState({ showImages: false })
-            }
-        })
-    }
 
     render() {
         const {
@@ -345,7 +427,8 @@ class AddInventory extends Component {
             checkValidation,
             showImages,
             images,
-            buttonText
+            buttonText,
+            buttonDisabled
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
@@ -375,6 +458,7 @@ class AddInventory extends Component {
                                 showImages={showImages}
                                 imagesData={images}
                                 deleteImage={(image) => this.deleteImage(image)}
+                                buttonDisabled={buttonDisabled}
                             />
                         </View>
                     </ScrollView>

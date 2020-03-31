@@ -4,8 +4,10 @@ import { Feather, Ionicons, FontAwesome, Foundation } from '@expo/vector-icons'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import { formatPrice } from '../../PriceFormate'
+import Carousel from 'react-native-snap-carousel';
+import _ from 'underscore';
 
-const PlaceHolderImage = require('../../../assets/img/img-3.png')
+
 
 class InventoryTile extends React.Component {
   constructor(props) {
@@ -21,12 +23,42 @@ class InventoryTile extends React.Component {
   }
 
 
+  _renderItem = (item) => {
+    return (
+      <Image style={styles.imageStyle} source={{ uri: item.item.url }} />
+    )
+  }
+
   render() {
     const { data } = this.props;
+    const imagesList = data.armsPropertyImages;
     return (
       <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => this.onLongPress(data.id)} activeOpacity={0.7}>
+        <View>
+          {
+            imagesList.length ?
+              <Carousel
+                // ref={(c) => { this._carousel = c; }}
+                data={imagesList}
+                renderItem={this._renderItem}
+                sliderWidth={140}
+                itemWidth={140}
+                enableSnap={true}
+                enableMomentum={false}
+                autoplay={true}
+                lockScrollWhileSnapping={true}
+                autoplayDelay={3000}
+                loop={true}
+                containerCustomStyle={{ position: 'relative' }}
+              />
+              :
+              <Image
+                source={require('../../../assets/images/no-image-found.png')}
+                style={styles.imageStyle}
+              />
+          }
+        </View>
 
-        <Image style={styles.imageStyle} source={PlaceHolderImage} />
         <View style={styles.imageCountViewStyle}>
           <Feather name={'camera'} color={'#fff'} size={16} />
           <Text style={styles.imageCount}>{data.armsPropertyImages.length}</Text>
@@ -48,7 +80,7 @@ class InventoryTile extends React.Component {
           </Text>
 
           {
-            data.type==='residential' &&
+            data.type === 'residential' &&
             <View style={styles.bedBathViewStyle}>
               <Ionicons name={'ios-bed'} color={AppStyles.colors.subTextColor} size={18} />
               <Text style={styles.bedTextStyle}>

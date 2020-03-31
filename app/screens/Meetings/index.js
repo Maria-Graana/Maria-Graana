@@ -17,6 +17,7 @@ class Meetings extends Component {
       formData: {
         time: '',
         date: '',
+        leadId: this.props.route.params.lead.id,
       },
       checkValidation: false,
     }
@@ -61,10 +62,6 @@ class Meetings extends Component {
     ]
   }
 
-  componentDidMount(){
-    console.log(this.props.navigation)
-  }
-
   //  ************ Function for open modal ************ 
   openModal = () => {
     this.setState({
@@ -72,25 +69,27 @@ class Meetings extends Component {
     })
   }
 
+  //  ************ Form Handle Function  ************ 
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
     this.setState({ formData })
   }
 
+  //  ************ Form submit Function  ************ 
   formSubmit = () => {
     const { formData } = this.state
     if (!formData.time || !formData.date) {
       this.setState({ checkValidation: true })
     } else {
-      let body = {
-        time: data.time,
-        date: data.date,
-      }
-      axios.post(`api/leads/project/meeting`)
+      axios.post(`api/leads/project/meeting`, formData)
+        .then((res) => {
+          this.setState({
+            active: false,
+          })
+        })
     }
   }
-
 
   render() {
     const { active, formData, checkValidation } = this.state

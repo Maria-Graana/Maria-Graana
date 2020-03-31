@@ -57,7 +57,6 @@ class LeadDetail extends React.Component {
         const { type } = this.state
         const { route, user } = this.props;
         const { lead } = route.params
-
         return (
             <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>

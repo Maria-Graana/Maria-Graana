@@ -19,7 +19,7 @@ class LeadDetail extends React.Component {
         const { navigation, route } = this.props
         const {lead}= route.params
         console.log(lead)
-        navigation.navigate('LeadTabs', {
+        navigation.navigate('CMLeadTabs', {
             screen: 'Match',
             params: { lead: lead },
           })

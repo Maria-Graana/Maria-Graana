@@ -1,16 +1,13 @@
 import React from 'react';
 import styles from './style'
-import { View, TextInput, Text, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import PickerComponent from '../../components/Picker/index';
 import { Fab, Button, Icon } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import SortImg from '../../../assets/img/sort.png'
-import fire from '../../../assets/images/fire.png'
 import LeadTile from '../../components/LeadTile'
-import PropertyImg from '../../../assets/img/property.jpg'
-import phone from '../../../assets/img/phone.png'
 import axios from 'axios';
 
 
@@ -100,7 +97,8 @@ class Inventory extends React.Component {
 	}
 
 	navigateTo = (data) => {
-		this.props.navigation.navigate('LeadDetail', { lead: data })
+		const {purposeTab}= this.state
+		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: purposeTab })
 	}
 
 	render() {

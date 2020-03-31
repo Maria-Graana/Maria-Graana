@@ -1,6 +1,6 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import LeadMatch from '../screens/LeadMatch/index';
-import Viewing from '../screens/Viewing/index';
+import Meetings from '../screens/Meetings/index';
+import Payments from '../screens/Payments/index';
 import React from 'react';
 
 const Tab = createMaterialTopTabNavigator();
@@ -10,12 +10,12 @@ export default function CMLeadTabs() {
         <Tab.Navigator
             tabBarOptions={{
                 scrollEnabled: true,
-                labelStyle: { fontSize: 10 },
-                tabStyle: { width: 85},
+                labelStyle: { fontSize: 12 },
+                tabStyle: { width: 206},
                 // style: { shadowColor: 'transparent', elevation: 0, borderTopColor: "transparent", borderTopWidth: 0 },
             }}>
-            <Tab.Screen name="Match" component={LeadMatch}/>
-            <Tab.Screen name="Viewing" component={Viewing} />
+            <Tab.Screen name="Meetings" component={Meetings}/>
+            <Tab.Screen name="Payments" component={Payments} />
         </Tab.Navigator>
     );
 }

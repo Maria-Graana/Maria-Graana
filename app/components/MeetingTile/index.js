@@ -9,15 +9,20 @@ class MeetingTile extends React.Component {
   }
 
   render() {
-    const {  } = this.props
+    const { data } = this.props
     return (
       <View style={[styles.mainTileView]}>
         <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
           <Text style={[AppStyles.mrTen, styles.meetingCon]}>Meeting @</Text>
-          <Text style={[styles.fontBold]}>9:30am, </Text>
-          <Text style={[styles.fontBold]}>Mar 28</Text>
+          <Text style={[styles.fontBold]}>{data.time} </Text>
+          <Text style={[styles.fontBold]}>{data.date}</Text>
           <View style={[styles.dotsWrap]}>
-            <Image source={dots} style={[styles.dotsImg]}/>
+            {
+              data.status != '' ?
+                <Text style={[styles.doneText]}>{data.status}</Text>
+                :
+                <Image source={dots} style={[styles.dotsImg]} />
+            }
           </View>
         </View>
       </View>

@@ -34,5 +34,17 @@ export default styles = StyleSheet.create({
     width: 10,
     height: 20,
     resizeMode: 'contain'
+  },
+  doneText: {
+    borderWidth: 1,
+    borderColor: '#2A7EF0',
+    overflow: 'hidden',
+    borderRadius: 12,
+    color: '#2A7EF0',
+    paddingTop: 3,
+    paddingBottom: 3,
+    paddingLeft: 20,
+    paddingRight: 20,
+    fontSize: 12,
   }
 });

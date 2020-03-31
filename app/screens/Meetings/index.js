@@ -14,6 +14,45 @@ class Meetings extends Component {
     this.state = {
       active: false,
     }
+    this.staticData = [
+      {
+        id: '1',
+        time: '09:30am',
+        date: 'Mar 29',
+        status: 'Done'
+      },
+      {
+        id: '2',
+        time: '11:05am',
+        date: 'Mar 25',
+        status: ''
+      },
+      {
+        id: '3',
+        time: '04:15pm',
+        date: 'Mar 23',
+        status: 'Done'
+      },
+      {
+        id: '4',
+        time: '05:40pm',
+        date: 'Mar 20',
+        status: ''
+      },
+      {
+        id: '5',
+        time: '06:15pm',
+        date: 'Feb 16',
+        status: ''
+      },
+      {
+        id: '6',
+        time: '07:00pm',
+        date: 'Feb 13',
+        status: 'Done'
+      },
+
+    ]
   }
   render() {
     return (
@@ -28,13 +67,13 @@ class Meetings extends Component {
         </Fab>
         <View style={[styles.meetingConteiner]}>
           <ScrollView>
-          <MeetingTile />
-            <MeetingTile />
-            <MeetingTile />
-            <MeetingTile />
-            <MeetingTile />
-            <MeetingTile />
-            <MeetingTile />
+            {
+              this.staticData.map((item, key) => {
+                return (
+                  <MeetingTile data={item} key={key}/>
+                )
+              })
+            }
           </ScrollView>
         </View>
       </View>

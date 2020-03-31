@@ -27,10 +27,15 @@ class Meetings extends Component {
           <Ionicons name="md-add" color="#ffffff" />
         </Fab>
         <View style={[styles.meetingConteiner]}>
+          <ScrollView>
           <MeetingTile />
-          <MeetingTile />
-          <MeetingTile />
-          <MeetingTile />
+            <MeetingTile />
+            <MeetingTile />
+            <MeetingTile />
+            <MeetingTile />
+            <MeetingTile />
+            <MeetingTile />
+          </ScrollView>
         </View>
       </View>
     )

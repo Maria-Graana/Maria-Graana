@@ -4,7 +4,9 @@ import { Text, Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
 import { connect } from 'react-redux';
+import styles from './style'
 import * as RootNavigation from '../../navigation/RootNavigation';
+import MeetingTile from '../../components/MeetingTile'
 
 class Meetings extends Component {
   constructor(props) {
@@ -16,15 +18,20 @@ class Meetings extends Component {
   render() {
     return (
       <View>
-        <Text>Meetings</Text>
         <Fab
-						active={this.state.active}
-						direction="up"
-						style={{ backgroundColor: '#0D73EE' }}
-						position="topRight"
-						onPress={() => this.setState({ active: !this.state.active })}>
-						<Ionicons name="md-add" color="#ffffff" />
-					</Fab>
+          active={this.state.active}
+          direction="up"
+          style={{ backgroundColor: '#0D73EE' }}
+          position="topRight"
+          onPress={() => this.setState({ active: !this.state.active })}>
+          <Ionicons name="md-add" color="#ffffff" />
+        </Fab>
+        <View style={[styles.meetingConteiner]}>
+          <MeetingTile />
+          <MeetingTile />
+          <MeetingTile />
+          <MeetingTile />
+        </View>
       </View>
     )
   }

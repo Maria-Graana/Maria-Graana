@@ -1,11 +1,11 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import LeadMatch from '../../app/screens/LeadMatch/index';
-import Viewing from '../../app/screens/Viewing/index';
+import LeadMatch from '../screens/LeadMatch/index';
+import Viewing from '../screens/Viewing/index';
 import React from 'react';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function LeadTabs() {
+export default function RCMLeadTabs() {
     return (
         <Tab.Navigator
             tabBarOptions={{

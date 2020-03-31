@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, ImageBackground, FlatList, Dimensions } from 'react-native';
 import { Button } from 'native-base';
+import { AntDesign } from '@expo/vector-icons';
 import PickerComponent from '../../components/Picker/index';
 import axios from 'axios'
 import styles from './style';
@@ -9,12 +10,33 @@ import LocationImg from '../../../assets/img/location.png'
 import ErrorMessage from '../../components/ErrorMessage'
 import RadioComponent from '../../components/RadioButton/index';
 import { formatPrice } from '../../PriceFormate'
-import StaticData from '../../StaticData'
 import { connect } from 'react-redux';
+import { YellowBox } from 'react-native';
+const { width } = Dimensions.get('window')
+
+YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
 
 class DetailForm extends Component {
     constructor(props) {
         super(props)
+    }
+
+
+    renderImageTile = ({ item }) => {
+        const { deleteImage } = this.props;
+        return (
+            <ImageBackground
+                style={styles.backGroundImg}
+                source={{ uri: item }}
+                borderRadius={5}>
+                <AntDesign style={styles.close} name="closecircle" size={20} onPress={(e) => deleteImage(item)} />
+            </ImageBackground>
+        )
+    }
+
+    getItemLayout = (data, index) => {
+        let length = width / 2;
+        return { length, offset: length * index, index }
     }
 
     render() {
@@ -33,18 +55,23 @@ class DetailForm extends Component {
             purpose,
             size,
             getCurrentLocation,
+            getImages,
+            showImages,
+            imagesData,
             longitude,
-            latitude
+            latitude,
+            buttonText
         } = this.props
 
 
         return (
+
             <View>
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={propertyType} name={'type'} placeholder='Property Type' />
+                        <PickerComponent onValueChange={handleForm} data={propertyType} selectedItem={formData.type} name={'type'} placeholder='Property Type' />
                         {
                             checkValidation === true && formData.type === '' && <ErrorMessage errorMessage={'Required'} />
                         }
@@ -54,7 +81,7 @@ class DetailForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={selectSubType} name={'subtype'} placeholder='Property Sub Type' />
+                        <PickerComponent onValueChange={handleForm} data={selectSubType} selectedItem={formData.subtype} name={'subtype'} placeholder='Property Sub Type' />
                         {
                             checkValidation === true && formData.subType === '' && <ErrorMessage errorMessage={'Required'} />
                         }
@@ -65,7 +92,7 @@ class DetailForm extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={cities} name={'city_id'} placeholder='Select City' />
+                        <PickerComponent onValueChange={handleForm} data={cities} selectedItem={formData.city_id} name={'city_id'} placeholder='Select City' />
                         {
                             checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
                         }
@@ -76,7 +103,7 @@ class DetailForm extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} name={'area_id'} data={areas} value={''} placeholder='Select Area' />
+                        <PickerComponent onValueChange={handleForm} name={'area_id'} data={areas} selectedItem={formData.area_id} placeholder='Select Area' />
                         {
                             checkValidation === true && formData.area_id === '' && <ErrorMessage errorMessage={'Required'} />
                         }
@@ -90,7 +117,7 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <PickerComponent onValueChange={handleForm} name={'size_unit'} data={sizeUnit} value={''} placeholder='Size Unit' />
+                            <PickerComponent onValueChange={handleForm} name={'size_unit'} selectedItem={formData.size_unit} data={sizeUnit} value={''} placeholder='Size Unit' />
                             {
                                 checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
                             }
@@ -100,9 +127,9 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm(text, 'size') }} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
+                            <TextInput onChangeText={(text) => { handleForm(text, 'size') }} value={formData.size} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
                             {
-                                checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
+                                checkValidation === true && formData.size === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                     </View>
@@ -113,7 +140,7 @@ class DetailForm extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={purpose} name={'purpose'} placeholder='Available for' />
+                        <PickerComponent onValueChange={handleForm} data={purpose} selectedItem={formData.purpose} name={'purpose'} placeholder='Available for' />
                         {
                             checkValidation === true && formData.purpose === '' && <ErrorMessage errorMessage={'Required'} />
                         }
@@ -146,11 +173,28 @@ class DetailForm extends Component {
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
-                    <View style={[AppStyles.inputWrap]}>
-                        <TouchableOpacity style={styles.uploadImg}>
-                            <Text style={styles.uploadImageText}>Upload Images</Text>
-                        </TouchableOpacity>
-                    </View>
+
+                    {
+                        showImages === true ?
+                            <View style={styles.imageContainerStyle}>
+                                <FlatList
+                                    data={imagesData}
+                                    numColumns={2}
+                                    renderItem={this.renderImageTile}
+                                    keyExtractor={(index) => index}
+                                    getItemLayout={this.getItemLayout}
+                                />
+                                <TouchableOpacity style={styles.addMoreImg} onPress={getImages}>
+                                    <Text style={styles.uploadImageText}>Add More</Text>
+                                </TouchableOpacity>
+
+                            </View>
+                            :
+                            <TouchableOpacity style={styles.uploadImg} onPress={getImages}>
+                                <Text style={styles.uploadImageText}>Upload Images</Text>
+                            </TouchableOpacity>
+                    }
+
                 </View>
 
                 {/* **************************************** */}
@@ -185,14 +229,14 @@ class DetailForm extends Component {
                             {/* **************************************** */}
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                                 <View style={[AppStyles.inputWrap]}>
-                                    <PickerComponent onValueChange={handleForm} data={size} name={'bed'} placeholder='Bed' />
+                                    <PickerComponent onValueChange={handleForm} data={size} selectedItem={formData.bed} name={'bed'} placeholder='Bed' />
                                 </View>
                             </View>
 
                             {/* **************************************** */}
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
                                 <View style={[AppStyles.inputWrap]}>
-                                    <PickerComponent onValueChange={handleForm} data={size} name={'bath'} placeholder='Bath' />
+                                    <PickerComponent onValueChange={handleForm} data={size} selectedItem={formData.bath} name={'bath'} placeholder='Bath' />
                                 </View>
                             </View>
 
@@ -227,21 +271,21 @@ class DetailForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput onChangeText={(text) => { handleForm(text, 'ownerName') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Name'} />
+                        <TextInput onChangeText={(text) => { handleForm(text, 'ownerName') }} value={formData.ownerName} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Name'} />
                     </View>
                 </View>
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput onChangeText={(text) => { handleForm(text, 'phone') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Number'} />
+                        <TextInput onChangeText={(text) => { handleForm(text, 'phone') }} value={formData.phone} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Number'} />
                     </View>
                 </View>
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput onChangeText={(text) => { handleForm(text, 'address') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Address'} />
+                        <TextInput onChangeText={(text) => { handleForm(text, 'address') }} value={formData.address} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Address'} />
                     </View>
                 </View>
 
@@ -249,7 +293,7 @@ class DetailForm extends Component {
                 <View style={[AppStyles.mainInputWrap]}>
                     <Button
                         style={[AppStyles.formBtn, styles.addInvenBtn]} onPress={() => { formSubmit() }}>
-                        <Text style={AppStyles.btnText}>ADD PROPERTY</Text>
+                        <Text style={AppStyles.btnText}>{buttonText}</Text>
                     </Button>
                 </View>
 

@@ -17,7 +17,8 @@ import ClientDetail from '../screens/ClientDetail';
 import PropertyDetail from '../screens/PropertyDetail'
 import LeadDetail from '../screens/LeadDetail';
 import AppStyles from '../AppStyles';
-import LeadTabs from './LeadTabNavigator';
+import RCMLeadTabs from './RCMTabNavigator';
+import CMLeadTabs from './CMTabNavigator';
 
 const Stack = createStackNavigator();
 
@@ -89,7 +90,7 @@ function MainStack() {
             />
             <Stack.Screen name='AddInventory' component={AddInventory}
                 options={({ navigation, route }) => ({
-                    title:'ADD PROPERTIES',
+                    title: 'ADD PROPERTIES',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -127,10 +128,10 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-              <Stack.Screen name='PropertyDetail' component={PropertyDetail}
+            <Stack.Screen name='PropertyDetail' component={PropertyDetail}
                 options={({ navigation, route }) => ({
                     title: 'PROPERTY DETAILS',
-                   headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
                 })}
@@ -144,9 +145,17 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-            <Stack.Screen name='LeadTabs' component={LeadTabs}
+            <Stack.Screen name='RCMLeadTabs' component={RCMLeadTabs}
                 options={({ navigation, route }) => ({
-                    title: 'LEAD WORKFLOW',    
+                    title: 'LEAD WORKFLOW',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='CMLeadTabs' component={CMLeadTabs}
+                options={({ navigation, route }) => ({
+                    title: 'LEAD WORKFLOW',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

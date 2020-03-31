@@ -31,8 +31,47 @@ export default styles = StyleSheet.create({
         paddingBottom: 50,
         borderRadius: 4,
     },
+    addMoreImg: {
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: '#5297F4',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'stretch',
+        backgroundColor: '#fff',
+        marginTop: 10,
+        paddingTop: 5,
+        paddingBottom: 5,
+        borderRadius: 4,
+        margin: 5
+    },
+
+    imageContainerStyle: {
+        alignItems: 'center',
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: '#5297F4',
+        backgroundColor: '#fff',
+        borderRadius: 4,
+    },
     uploadImageText: {
         color: '#5297F4'
+    },
+    close: {
+        // margin: 5,
+        position: "absolute",
+        top: -15,
+        right: -10,
+        color: "grey"
+    },
+    backGroundImg: {
+        resizeMode: "contain",
+        width: 130,
+        height: 130,
+        marginHorizontal: 10,
+        marginTop: 25,
+        marginBottom:20,
+        // marginBottom: 5
     },
     addInvenBtn: {
         marginBottom: 40,

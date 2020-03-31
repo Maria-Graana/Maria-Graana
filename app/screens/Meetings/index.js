@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { Text, Fab } from 'native-base';
+import { Text, Fab, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import styles from './style'
 import * as RootNavigation from '../../navigation/RootNavigation';
 import MeetingTile from '../../components/MeetingTile'
+import MeetingModal from '../../components/MeetingModal'
 
 class Meetings extends Component {
   constructor(props) {
@@ -54,15 +55,26 @@ class Meetings extends Component {
 
     ]
   }
+
+  //  ************ Function for open modal ************ 
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
+
   render() {
+    const { active } = this.state
     return (
       <View>
+
+        {/* ************Fab For Open Modal************ */}
         <Fab
-          active={this.state.active}
-          direction="up"
+          active={active}
           style={{ backgroundColor: '#0D73EE' }}
           position="topRight"
-          onPress={() => this.setState({ active: !this.state.active })}>
+          onPress={() => { this.openModal() }}>
           <Ionicons name="md-add" color="#ffffff" />
         </Fab>
         <View style={[styles.meetingConteiner]}>
@@ -70,12 +82,19 @@ class Meetings extends Component {
             {
               this.staticData.map((item, key) => {
                 return (
-                  <MeetingTile data={item} key={key}/>
+                  <MeetingTile data={item} key={key} />
                 )
               })
             }
           </ScrollView>
         </View>
+
+        {/* ************Modal Component************ */}
+        <MeetingModal
+          active={active}
+          openModal={this.openModal}
+        />
+
       </View>
     )
   }

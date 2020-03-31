@@ -18,9 +18,9 @@ class LeadDetail extends React.Component {
     navigateTo = () => {
         const { navigation, route } = this.props
         const {lead}= route.params
-        console.log(lead)
+        // console.log(lead)
         navigation.navigate('CMLeadTabs', {
-            screen: 'Match',
+            screen: 'Meetings',
             params: { lead: lead },
           })
     }
@@ -28,7 +28,7 @@ class LeadDetail extends React.Component {
     render() {
         const { route, user } = this.props;
         const {lead}= route.params
-        console.log(lead)
+       
 
         // const {client}= route.params
         return (

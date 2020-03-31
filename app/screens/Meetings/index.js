@@ -62,7 +62,9 @@ class Meetings extends Component {
   }
 
   componentDidMount(){
-    console.log(this.props.navigation)
+    const { navigation, route } = this.props
+    // const {lead}= route.params
+    console.log('***********',this.props)
   }
 
   //  ************ Function for open modal ************ 

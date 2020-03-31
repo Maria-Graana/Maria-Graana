@@ -12,6 +12,7 @@ import RadioComponent from '../../components/RadioButton/index';
 import { formatPrice } from '../../PriceFormate'
 import { connect } from 'react-redux';
 import { YellowBox } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 const { width } = Dimensions.get('window')
 
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
@@ -27,9 +28,9 @@ class DetailForm extends Component {
         return (
             <ImageBackground
                 style={styles.backGroundImg}
-                source={{ uri: item }}
+                source={{ uri: item.uri }}
                 borderRadius={5}>
-                <AntDesign style={styles.close} name="closecircle" size={20} onPress={(e) => deleteImage(item)} />
+                    <AntDesign style={styles.close} name="closecircle" size={20} onPress={(e) => deleteImage(item)}  />
             </ImageBackground>
         )
     }
@@ -60,10 +61,11 @@ class DetailForm extends Component {
             imagesData,
             longitude,
             latitude,
-            buttonText
+            buttonText,
+            buttonDisabled
         } = this.props
 
-
+     //console.log(imagesData);
         return (
 
             <View>
@@ -292,6 +294,7 @@ class DetailForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <Button
+                        disabled={buttonDisabled}
                         style={[AppStyles.formBtn, styles.addInvenBtn]} onPress={() => { formSubmit() }}>
                         <Text style={AppStyles.btnText}>{buttonText}</Text>
                     </Button>

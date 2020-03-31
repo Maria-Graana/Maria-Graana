@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Image } from 'react-native';
 import { connect } from 'react-redux';
 import TeamTile from '../../components/TeamTile'
 import AppStyles from '../../AppStyles'
@@ -11,6 +11,7 @@ class TeamDiary extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            teamDiary: []
         }
         this.fetchTeam()
     }

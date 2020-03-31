@@ -41,6 +41,8 @@ export default styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 12,
     color: '#2A7EF0',
+    position: 'relative',
+    top: -4,
     paddingTop: 3,
     paddingBottom: 3,
     paddingLeft: 20,

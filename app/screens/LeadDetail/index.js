@@ -16,12 +16,20 @@ class LeadDetail extends React.Component {
     }
 
     navigateTo = () => {
-        const { navigation } = this.props
-        navigation.navigate('LeadTabs')
+        const { navigation, route } = this.props
+        const {lead}= route.params
+        console.log(lead)
+        navigation.navigate('LeadTabs', {
+            screen: 'Match',
+            params: { lead: lead },
+          })
     }
 
     render() {
         const { route, user } = this.props;
+        const {lead}= route.params
+        console.log(lead)
+
         // const {client}= route.params
         return (
             <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>

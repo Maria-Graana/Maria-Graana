@@ -17,7 +17,7 @@ class LeadDetail extends React.Component {
 
     navigateTo = () => {
         const { navigation } = this.props
-        navigation.navigate('LeadTabs')
+        navigation.navigate('RCMLeadTabs')
     }
 
     render() {

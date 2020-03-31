@@ -6,6 +6,7 @@ import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal';
 import DateComponent from '../../components/DatePicker'
 import times from '../../../assets/img/times.png'
+import ErrorMessage from '../../components/ErrorMessage'
 
 class MeetingModal extends React.Component {
   constructor(props) {
@@ -13,11 +14,11 @@ class MeetingModal extends React.Component {
   }
 
   render() {
-    const { openModal, active, handleForm, formSubmit } = this.props
+    const { openModal, active, handleForm, formSubmit, formData, checkValidation } = this.props
     return (
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
-          <TouchableOpacity  style={styles.timesBtn}  onPress={() => { openModal() }}>
+          <TouchableOpacity style={styles.timesBtn} onPress={() => { openModal() }}>
             <Image source={times} style={styles.timesImg} />
           </TouchableOpacity>
 
@@ -26,21 +27,27 @@ class MeetingModal extends React.Component {
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
-                <DateComponent date={''} mode='date' placeholder='Select Start Time' onTimeChange={(value) => this.handleForm(value, 'startTime')} />
+                <DateComponent date={formData.date} mode='date' placeholder='Select Date' onDateChange={(value) => {handleForm(value, 'date')}} />
+                {
+                  checkValidation === true && formData.date === '' && <ErrorMessage errorMessage={'Required'} />
+                }
               </View>
             </View>
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
-                <DateComponent date={''} mode='time' placeholder='Select Start Time' onTimeChange={(value) => this.handleForm(value, 'startTime')} />
+                <DateComponent date={formData.time} mode='time' placeholder='Select Start Time' onTimeChange={(value) => {handleForm(value, 'time')}} />
+                {
+                  checkValidation === true && formData.time === '' && <ErrorMessage errorMessage={'Required'} />
+                }
               </View>
             </View>
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
               <Button
-                onPress={() => { openModal() }}
+                onPress={() => { formSubmit() }}
                 style={[AppStyles.formBtn, styles.addInvenBtn]}>
                 <Text style={AppStyles.btnText}>ADD Meeting</Text>
               </Button>

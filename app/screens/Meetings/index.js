@@ -14,6 +14,11 @@ class Meetings extends Component {
     super(props)
     this.state = {
       active: false,
+      formData: {
+        time: '',
+        date: '',
+      },
+      checkValidation: false,
     }
     this.staticData = [
       {
@@ -56,6 +61,10 @@ class Meetings extends Component {
     ]
   }
 
+  componentDidMount(){
+    console.log(this.props.navigation)
+  }
+
   //  ************ Function for open modal ************ 
   openModal = () => {
     this.setState({
@@ -63,9 +72,28 @@ class Meetings extends Component {
     })
   }
 
+  handleForm = (value, name) => {
+    const { formData } = this.state
+    formData[name] = value
+    this.setState({ formData })
+  }
+
+  formSubmit = () => {
+    const { formData } = this.state
+    if (!formData.time || !formData.date) {
+      this.setState({ checkValidation: true })
+    } else {
+      let body = {
+        time: data.time,
+        date: data.date,
+      }
+      axios.post(`api/leads/project/meeting`)
+    }
+  }
+
 
   render() {
-    const { active } = this.state
+    const { active, formData, checkValidation } = this.state
     return (
       <View>
 
@@ -92,7 +120,11 @@ class Meetings extends Component {
         {/* ************Modal Component************ */}
         <MeetingModal
           active={active}
+          formData={formData}
+          checkValidation={checkValidation}
           openModal={this.openModal}
+          handleForm={this.handleForm}
+          formSubmit={this.formSubmit}
         />
 
       </View>

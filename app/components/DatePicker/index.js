@@ -4,7 +4,6 @@ import {
 } from 'react-native'
 import moment from 'moment';
 import DatePicker from 'react-native-datepicker'
-import { Ionicons } from '@expo/vector-icons'
 import AppStyles from '../../AppStyles';
 
 console.disableYellowBox = true;

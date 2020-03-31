@@ -9,11 +9,12 @@ import { CheckBox } from 'native-base';
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
 import StaticData from '../../StaticData';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 import axios from 'axios';
-import Loader from '../../components/loader'
-import FilterModal from '../../components/FilterModal/index'
- 
+import Loader from '../../components/loader';
+import FilterModal from '../../components/FilterModal/index';
+import _ from 'underscore';
+
 class LeadMatch extends React.Component {
     constructor(props) {
         super(props)
@@ -21,11 +22,26 @@ class LeadMatch extends React.Component {
             organization: 'arms',
             loading: true,
             matchData: [],
-            checkBoolean: true,
+            checkBoolean: false,
             showFilter: false,
+            user: null,
+            matchesBol: true,
+            showCheckBoxes: false,
             formData: {
                 city: '',
-                area: ''
+                area: '',
+                minPrice: '',
+                maxPrice: '',
+                bed: '',
+                bath: '',
+                size: '',
+                sizeUnit: '',
+                properySubType: '',
+                propertyType: '',
+            },
+            checkCount: {
+                'true': 0,
+                'false': 0
             }
         }
     }
@@ -44,30 +60,43 @@ class LeadMatch extends React.Component {
     }
 
     filterModal = () => {
-        const {showFilter}= this.state
+        const { showFilter } = this.state
         this.setState({
-            showFilter: !showFilter
+            showFilter: !showFilter,
+            matchesBol: false
+        }, () => {
+            this.fetchMatches()
         })
     }
 
     handleForm = (value, name) => {
-        console.log(value, name)
-        // const { formData } = this.state
-        // formData[name] = value
-        // this.setState({ formData })
-        // if (formData.type != '') { this.selectSubtype(formData.type) }
-        // if (formData.city_id != '') { this.getAreas(formData.city_id) }
+        const { formData } = this.state
+        formData[name] = value
+        this.setState({ formData })
     }
 
     fetchMatches = () => {
-        const { organization } = this.state
+        const { organization, matchesBol, formData } = this.state
         const { route } = this.props
         const { lead } = route.params
-        axios.get(`/api/leads/matches?leadId=${lead.id}&organization=${organization}`)
+        let matches = []
+
+        axios.get(`/api/leads/matches?leadId=${lead.id}&organization=${organization}&matches=${matchesBol}&type=${formData.propertyType}&subtype=${formData.properySubType}&area_id=${formData.area}`)
             .then((res) => {
+                res.data.rows.map((item, index) => {
+                    if ('armsuser' in item) {
+                        item.user = item.armsuser
+                        item.checkBox = false
+                        return (matches.push(item))
+                    } else {
+                        item.checkBox = false
+                        return (matches.push(item))
+                    }
+                })
                 this.setState({
-                    matchData: res.data.rows,
-                    loading: false
+                    matchData: matches,
+                    loading: false,
+                    // matchesBol: true
                 })
             })
             .catch((error) => {
@@ -85,68 +114,135 @@ class LeadMatch extends React.Component {
         const { user } = this.props
         const { organization } = this.state
 
-        if (organization === 'arms') return user.id === property.armsuser.id
-        if (organization === 'graana') return user.id === property.user.id
-        if (organization === 'aragency21ms') return user.id === property.armsuser.id
+        if (organization === 'arms' && 'armsuser' in property && property.armsuser) {
+            return user.id === property.armsuser.id
+        }
+        else if (organization === 'graana' && 'user' in property && property.user) {
+            return user.id === property.user.id
+        }
+        else if (organization === 'aragency21' && 'user' in property && property.user) {
+            return user.id === property.user.id
+        }
+        else {
+            return false
+        }
+    }
+
+    displayChecks = () => {
+        const {showCheckBoxes}= this.state
+        if (showCheckBoxes) {
+
+        }
+        this.setState({ showCheckBoxes: !showCheckBoxes })
+    }
+
+    addProperty = (property) => {
+        const { showCheckBoxes, matchData } = this.state
+        if (showCheckBoxes) {
+            let properties = matchData.map((item) => {
+                if (item.id === property.id) {
+                    item.checkBox = !item.checkBox
+                    return item
+                }
+                else {
+                    return item
+                }
+            })
+            let checkCount = _.countBy(properties, function (num) { return num.checkBox ? true : false })
+            this.setState({
+                matchData: properties,
+                checkCount: checkCount
+            })
+        }
+    }
+
+    selectAll = () => {
+        const { matchData, checkBoolean, showCheckBoxes } = this.state
+        let properties = matchData.map((item) => {
+            if (checkBoolean) {
+                item.checkBox = false
+                return item
+            } else {
+                item.checkBox = true
+                return item
+            }
+        })
+        let checkCount = _.countBy(properties, function (num) { return num.checkBox ? true : false })
+        this.setState({
+            matchData: properties,
+            checkCount: checkCount,
+            showCheckBoxes: !showCheckBoxes,
+            checkBoolean: !checkBoolean
+        })
     }
 
     render() {
-        const { route, user } = this.props
-        const { organization, loading, matchData, checkBoolean, showFilter } = this.state
-        const teamDiary = StaticData.teamDiaryRows
+        // const { user } = this.props
+        const { organization, loading, matchData, checkBoolean, showFilter, user, showCheckBoxes, checkCount, formData } = this.state
 
         return (
             !loading ?
                 <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-                    {
-                        matchData.length ?
-                            <View>
-                                <View style={{ flexDirection: "row" }}>
-                                    <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
-                                        <Text style={[(organization === 'arms') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> ARMS </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('graana') }}>
-                                        <Text style={[(organization === 'graana') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Graana.com </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('agency21') }}>
-                                        <Text style={[(organization === 'agency21') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Agency21 </Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <FilterModal handleForm= {this.handleForm} openPopup={showFilter} filterModal={this.filterModal}/>
-                                <View style={{ flexDirection: "row", paddingTop: 5 }}>
-                                    <View style={{ marginRight: 15 }}>
-                                        <CheckBox color={AppStyles.colors.primaryColor} checked={checkBoolean} />
-                                    </View>
-                                    <View style={{ marginRight: 5 }}>
-                                        <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}>3 <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Selected</Text></Text>
-                                    </View>
-                                    <View style={{ borderLeftWidth: 1, height: 15, marginTop: 5 }} />
-                                    <View style={{ marginRight: 5 }}>
-                                        <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}> {matchData.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Matched</Text></Text>
-                                    </View>
-                                    <View style={{ marginLeft: 175 }}>
-                                        <AntDesign onPress={() => {this.filterModal()}} name="filter" size={25} color={AppStyles.colors.primaryColor} />
-                                    </View>
-                                </View>
-
+                    <View>
+                        <View style={{ flexDirection: "row", marginLeft: 25 }}>
+                            <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
+                                <Text style={[(organization === 'arms') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> ARMS </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{ padding: 10, paddingLeft: 0, justifyContent: "center", alignSelf: "center", alignItems: "center" }} onPress={() => { this.selectedOrganization('graana') }}>
+                                <Text style={[(organization === 'graana') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Graana.com </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('agency21') }}>
+                                <Text style={[(organization === 'agency21') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Agency21 </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <FilterModal formData={formData} handleForm={this.handleForm} openPopup={showFilter} filterModal={this.filterModal} />
+                        <View style={{ flexDirection: "row", paddingTop: 5 }}>
+                            <View style={{ marginRight: 15 }}>
+                                <CheckBox onPress={() => { this.selectAll() }} color={AppStyles.colors.primaryColor} checked={checkBoolean} />
+                            </View>
+                            <View style={{ marginRight: 5 }}>
+                                <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}>{checkCount.true ? checkCount.true : 0} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Selected</Text></Text>
+                            </View>
+                            <View style={{ borderLeftWidth: 1, height: 15, marginTop: 5 }} />
+                            <View style={{ marginRight: 5 }}>
+                                <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}> {matchData.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Matched</Text></Text>
+                            </View>
+                            <View style={{ marginLeft: 155 }}>
+                                <AntDesign onPress={() => { this.filterModal() }} name="filter" size={25} color={AppStyles.colors.subTextColor} />
+                            </View>
+                        </View>
+                        {
+                            matchData.length ?
                                 <FlatList
                                     data={matchData}
                                     renderItem={(item, index) => (
                                         <View>
                                             {
                                                 this.ownProperty(item.item) ?
-                                                    <MatchTile />
+                                                    <MatchTile
+                                                        data={item.item}
+                                                        user={user}
+                                                        displayChecks={this.displayChecks}
+                                                        showCheckBoxes={showCheckBoxes}
+                                                        addProperty={this.addProperty}
+                                                    />
                                                     :
-                                                    <AgentTile data={item.item} />
+                                                    <AgentTile
+                                                        data={item.item}
+                                                        user={user}
+                                                        displayChecks={this.displayChecks}
+                                                        showCheckBoxes={showCheckBoxes}
+                                                        addProperty={this.addProperty}
+                                                    />
                                             }
                                         </View>
                                     )}
                                     keyExtractor={(item, index) => item.id.toString()}
                                 />
-                            </View>
-                            :
-                            <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
-                    }
+                                :
+                                <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
+                        }
+                    </View>
                 </View>
                 :
                 <Loader loading={loading} />

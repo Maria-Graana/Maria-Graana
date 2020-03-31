@@ -3,53 +3,80 @@ import styles from './style'
 import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Ability from '../../hoc/Ability';
 import { Button } from 'native-base';
+import moment from 'moment';
+
+const _format = 'YYYY-MM-DD';
 
 class LeadDetail extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            type: ''
+        }
     }
 
     componentDidMount() {
+        const { route } = this.props
+        const { purposeTab } = route.params
+        if (purposeTab === 'invest') {
+            this.setState({
+                type: 'Invest'
+            })
+        }
+        else if (purposeTab === 'sale') {
+            this.setState({
+                type: 'Buy'
+            })
+        } else {
+            this.setState({
+                type: 'Rent'
+            })
+        }
     }
 
     navigateTo = () => {
         const { navigation, route } = this.props
-        const {lead}= route.params
-        console.log(lead)
-        navigation.navigate('LeadTabs', {
-            screen: 'Match',
-            params: { lead: lead },
-          })
+        const { lead } = route.params
+        const { type } = this.state
+
+        if (type === 'Invest') {
+            navigation.navigate('CMLeadTabs', {
+                screen: 'Meetings',
+                params: { lead: lead },
+            })
+        } else {
+            navigation.navigate('RCMLeadTabs', {
+                screen: 'Match',
+                params: { lead: lead },
+            })
+        }
     }
 
     render() {
+        const { type } = this.state
         const { route, user } = this.props;
-        const {lead}= route.params
-        console.log(lead)
+        const { lead } = route.params
 
-        // const {client}= route.params
         return (
             <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
                     <View style={styles.innerContainer}>
                         <Text style={styles.headingText}> Lead Type</Text>
-                        <Text style={styles.labelText}> Buy </Text>
+                        <Text style={styles.labelText}> {type} </Text>
                         <Text style={styles.headingText}> Client Name </Text>
-                        <Text style={styles.labelText}> Jamil Malik </Text>
+                        <Text style={styles.labelText}> {lead.customer.customerName}</Text>
                         <Text style={styles.headingText}> Requirement </Text>
-                        <Text style={styles.labelText}> 12 Marla House </Text>
-                        <Text style={styles.headingText}> Area </Text>
-                        <Text style={styles.labelText}> F-10 Markaz, Islamabad </Text>
+                        <Text style={styles.labelText}>{!lead.projectId && lead.size} {!lead.projectId && lead.size_unit} {!lead.projectId && lead.type}{lead.projectId && lead.project.type}</Text>
+                        <Text style={styles.headingText}> {type === 'Invest' ? 'Project' : 'Area'} </Text>
+                        <Text style={styles.labelText}>{!lead.projectId && 'F-10 Markaz, '}{!lead.projectId && lead.city && lead.city.name} {lead.projectId && lead.project.name}</Text>
                         <Text style={styles.headingText}> Price Range </Text>
-                        <Text style={styles.labelText}> PKR 2 Core - 2.5 Corer </Text>
+                        <Text style={styles.labelText}> PKR {!lead.projectId && lead.price} {lead.projectId && lead.minPrice} - {lead.projectId && lead.maxPrice}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}> Created Date </Text>
-                        <Text style={styles.labelText}> 25 March, 2020 </Text>
+                        <Text style={styles.labelText}> {moment(lead.createdAt).format(_format)} </Text>
                         <Text style={styles.headingText}> Modified Date </Text>
-                        <Text style={styles.labelText}> 26 March, 2020 </Text>
+                        <Text style={styles.labelText}> {moment(lead.updatedAt).format(_format)} </Text>
                         <Text style={styles.headingText}> Lead Source </Text>
                         <Text style={styles.labelText}> Online Marketing </Text>
                         <Text style={styles.headingText}> Additional Information </Text>
@@ -57,8 +84,8 @@ class LeadDetail extends React.Component {
                     </View>
                     <View style={styles.pad}>
                         <Text style={[styles.headingText, styles.padLeft]}> Status </Text>
-                        <View style={{marginRight: 20}}>
-                            <Text style={[styles.tokenLabel, AppStyles.mrFive]}> Open </Text>
+                        <View style={{ marginRight: 20 }}>
+                            <Text style={[styles.tokenLabel, AppStyles.mrFive]}> {lead.status} </Text>
                         </View>
                     </View>
                 </View>
@@ -66,7 +93,7 @@ class LeadDetail extends React.Component {
                     <Button
                         onPress={() => { this.navigateTo() }}
                         style={[AppStyles.formBtn, styles.btn1]}>
-                        <Text style={AppStyles.btnText}>MATCH PROPERTIES</Text>
+                        <Text style={AppStyles.btnText}>{type === 'Invest' ? 'OPEN LEAD WORKFLOW' : 'MATCH PROPERTIES'}</Text>
                     </Button>
                 </View>
             </View>

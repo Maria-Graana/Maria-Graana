@@ -20,10 +20,10 @@ export default styles = StyleSheet.create({
   },
 
   imageStyle: {
-    width: wp('30%'),
+    width: 140,
     height: 140,
-    borderWidth: 0.1,
     borderRadius: 4,
+    borderWidth: 0.1,
     borderColor: AppStyles.colors.backgroundColor,
   },
   imageCountViewStyle: {

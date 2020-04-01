@@ -17,7 +17,7 @@ import Ability from '../../hoc/Ability';
 
 class CustomDrawerContent extends React.Component {
 
-    constructor (props) {
+    constructor(props) {
         super(props)
     }
 
@@ -29,19 +29,19 @@ class CustomDrawerContent extends React.Component {
         this.props.dispatch(logoutUser())
     }
 
-    render () {
-        const {user}= this.props
-        const {role}= user
+    render() {
+        const { user } = this.props
+        const { role } = user
         return (
-            <SafeAreaView style={[AppStyles.mb1, {width: '100%'}]}>
-                <ScrollView  style={[styles.scrollContainer, {width: '100%'}]}>
+            <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
+                <ScrollView style={[styles.scrollContainer, { width: '100%' }]}>
                     <View style={AppStyles.flexDirectionRow}>
                         <View>
-                            <UserAvatar  size="50" src='https://pickaface.net/gallery/avatar/unr_ironman_170308_2112_9ldw5b.png' name={`${user.firstName}`}/>
+                            <UserAvatar size="50" src='https://pickaface.net/gallery/avatar/unr_ironman_170308_2112_9ldw5b.png' name={`${user.firstName}`} />
                         </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.nameText}>
-                               {user.firstName} {user.lastName} 
+                                {user.firstName} {user.lastName}
                             </Text>
                             <Text style={styles.emailText}>
                                 {user.email}
@@ -49,15 +49,15 @@ class CustomDrawerContent extends React.Component {
                         </View>
                     </View>
                     <View style={styles.underLine} />
-                    { Ability.canView(role, 'Diary') && <DrawerIconItem screen={'Diary'} badges={15} navigateTo={ () => {this.navigateTo('Diary')}}/> }
-                    { Ability.canView(role, 'TeamDiary') && <DrawerItem screen={'Team Diary'} navigateTo={ () => {this.navigateTo('TeamDiary')}}/> }
-                    <DrawerIconItem screen={'Leads'} badges={20} navigateTo={ () => {this.navigateTo('Lead')}} />
-                    <DrawerIconItem screen={'Inventory'} badges={30} navigateTo={ () => {this.navigateTo('Inventory')}} />
-                    { Ability.canView(role, 'Client') && <DrawerItem screen={'Clients'} navigateTo={ () => {this.navigateTo('Client')}}/> }
-                    <DrawerItem screen={'Targets'} navigateTo={ () => {}}/>
-                    <DrawerItem screen={'Users'} navigateTo={ () => {}}/>
+                    {Ability.canView(role, 'Diary') && <DrawerIconItem screen={'Diary'} badges={15} navigateTo={() => { this.navigateTo('Diary') }} />}
+                    {Ability.canView(role, 'TeamDiary') && <DrawerItem screen={'Team Diary'} navigateTo={() => { this.navigateTo('TeamDiary') }} />}
+                    <DrawerIconItem screen={'Leads'} badges={20} navigateTo={() => { this.navigateTo('Lead') }} />
+                    {Ability.canView(role, 'Inventory') && <DrawerIconItem screen={'Inventory'} badges={30} navigateTo={() => { this.navigateTo('Inventory') }} />}
+                    {Ability.canView(role, 'Client') && <DrawerItem screen={'Clients'} navigateTo={() => { this.navigateTo('Client') }} />}
+                    <DrawerItem screen={'Targets'} navigateTo={() => { }} />
+                    <DrawerItem screen={'Users'} navigateTo={() => { }} />
                     <View style={styles.underLine} />
-                    <DrawerItem screen={'Logout'} navigateTo={this.signOut}/>
+                    <DrawerItem screen={'Logout'} navigateTo={this.signOut} />
                 </ScrollView>
             </SafeAreaView>
         )
@@ -71,6 +71,6 @@ mapStateToProps = (store) => {
         store: store,
         loading: store.user.loading
     }
-  }
-  
-  export default connect(mapStateToProps)(CustomDrawerContent)
+}
+
+export default connect(mapStateToProps)(CustomDrawerContent)

@@ -5,6 +5,7 @@ import { ActionSheet } from 'native-base';
 import { connect } from 'react-redux';
 import PropertyTile from '../../components/PropertyTile'
 import AppStyles from '../../AppStyles'
+import Ability from '../../hoc/Ability'
 import axios from 'axios';
 import { Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
@@ -49,7 +50,7 @@ class Inventory extends React.Component {
 			}
 		}).catch((error) => {
 			console.log('error', error);
-			this.setState({loading:false})
+			this.setState({ loading: false })
 		})
 	}
 
@@ -68,7 +69,7 @@ class Inventory extends React.Component {
 			}
 
 		}).catch(function (error) {
-			this.setState({loading:false})
+			this.setState({ loading: false })
 			helper.successToast(error.message)
 		})
 
@@ -107,19 +108,26 @@ class Inventory extends React.Component {
 
 	render() {
 		const { propertiesList, loading } = this.state;
+		const { user, route } = this.props;
 		return (
 			!loading ?
 				<View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0, marginBottom: 25 }]}>
 
-					<Fab
-						active='true'
-						containerStyle={{ zIndex: 20 }}
-						style={{ backgroundColor: AppStyles.colors.primaryColor }}
-						position="bottomRight"
-						onPress={this.goToInventoryForm}
-					>
-						<Ionicons name="md-add" color="#ffffff" />
-					</Fab>
+
+					{
+						Ability.canAdd(user.role, route.params.screen) ?
+							<Fab
+								active='true'
+								containerStyle={{ zIndex: 20 }}
+								style={{ backgroundColor: AppStyles.colors.primaryColor }}
+								position="bottomRight"
+								onPress={this.goToInventoryForm}
+							>
+								<Ionicons name="md-add" color="#ffffff" />
+							</Fab> :
+							null
+					}
+
 
 					{/* ***** Main Tile Wrap */}
 					{

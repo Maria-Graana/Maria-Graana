@@ -32,7 +32,7 @@ class Landing extends React.Component {
 					<LandingButtonTile navigateFunction={this.navigateFunction} label={'LEADS'} pagePath={'Lead'} screenName={'Lead'} buttonImg={LeadImg} badges={'42'} />
 
 					{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
-					<LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={'32'} />
+					{Ability.canView(user.role, 'Inventory') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={'32'} />}
 				</SafeAreaView>
 
 			</ScrollView>

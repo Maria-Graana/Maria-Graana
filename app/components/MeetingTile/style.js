@@ -6,7 +6,7 @@ export default styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 15,
     position: 'relative',
-    marginBottom: 10,
+    marginBottom: 15,
     zIndex: 5,
     elevation: 5,
     shadowOffset: { width: 5, height: 5 },
@@ -16,6 +16,7 @@ export default styles = StyleSheet.create({
   contentView: {
     position: 'relative',
     paddingRight: 20,
+    zIndex: 20,
   },
   fontBold: {
     fontWeight: 'bold',
@@ -26,9 +27,9 @@ export default styles = StyleSheet.create({
   },
   dotsWrap: {
     position: 'absolute',
-    zIndex: 20,
+    zIndex: 22,
     right: 0,
-    top: 0,
+    top: 1,
   },
   dotsImg: {
     width: 10,
@@ -55,17 +56,14 @@ export default styles = StyleSheet.create({
     top: -4,
     width: 80,
     backgroundColor: '#fff',
-    zIndex: 15,
+    zIndex: 20,
     borderWidth: 1,
     borderColor: '#0D73EE',
     borderRadius: 12,
   },
   doneBtn: {
-    // padding: 5,
-    paddingTop: 3,
-    paddingBottom: 3,
-    paddingLeft: 20,
-    // paddingLeft: 10,
+    paddingTop: 0,
+    paddingLeft: 10,
   },
   blueColor:{
     color: '#0D73EE',

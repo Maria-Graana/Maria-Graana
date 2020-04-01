@@ -70,9 +70,13 @@ class Meetings extends Component {
   }
 
   openStatus = (id) => {
-    this.setState({
-      doneStatus: !this.state.doneStatus,
-      doneStatusId: id,
+    let body = {
+      status: 'completed',
+    }
+    axios.patch(`/api/diary/update?id=${id}`, body)
+    .then((res) => {
+      this.getMeetingLead();
+      console.log(res.data)
     })
   }
 

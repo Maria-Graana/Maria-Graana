@@ -20,21 +20,21 @@ class MeetingTile extends React.Component {
           <Text style={[styles.fontBold]}>{moment(data.date).format("MMM DD")}</Text>
           <View style={[styles.dotsWrap]}>
             {
-              data.status === 'done' ?
+              data.status === 'completed' ?
                 <Text style={[styles.doneText]}>{data.status}</Text>
                 :
-                <TouchableOpacity onPress={() => { openStatus(data.id) }}>
-                  <Image source={dots} style={[styles.dotsImg]} />
+                <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data.id) }}>
+                  <Text style={styles.blueColor}>Mark As Done</Text>
                 </TouchableOpacity>
             }
-            {
+            {/* {
               doneStatus === true && doneStatusId == data.id &&
               <View style={[styles.dropDownMain]}>
                 <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data.id) }}>
                   <Text style={styles.blueColor}>Done</Text>
                 </TouchableOpacity>
               </View>
-            }
+            } */}
           </View>
         </View>
       </View>

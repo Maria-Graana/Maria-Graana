@@ -202,8 +202,8 @@ class LeadMatch extends React.Component {
 
         return (
             !loading ?
-                <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor,paddingLeft:0,paddingRight:0}]}>
-                    <View style={{ opacity: active ? 0.3 : 1, flex:1}}>
+                <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
+                    <View style={{ opacity: active ? 0.3 : 1, flex: 1 }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
                                 <Text style={[(organization === 'arms') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> ARMS </Text>
@@ -236,7 +236,7 @@ class LeadMatch extends React.Component {
                                 <FlatList
                                     data={matchData}
                                     renderItem={(item, index) => (
-                                        <View style={{paddingLeft:15,paddingRight:15}}>
+                                        <View style={{ paddingLeft: 15, paddingRight: 15 }}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile
@@ -268,7 +268,6 @@ class LeadMatch extends React.Component {
                     </View>
                     <Fab
                         active={active}
-
                         direction="up"
                         style={{ backgroundColor: AppStyles.colors.primaryColor, elevation: active ? 10 : 0 }}
                         position="bottomRight"

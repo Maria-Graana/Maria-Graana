@@ -114,5 +114,19 @@ export default StaticData = {
             { value: 'Food Court', name: 'Food Court' },
             { value: 'other', name: 'Other' },
         ]
-    }
+    },
+    attachmentsRows: [
+        {
+            id: 1,
+            title: 'Contract',
+            fileName: 'Contract_20thMarch.PDF',
+            dateCreated: '9:30 am, Mar 29'
+        },
+        {
+            id: 2,
+            title: 'Receipt',
+            fileName: 'Payment_Receipt2.JPG',
+            dateCreated: '1:30 pm, Mar 30'
+        }
+    ]
 }

@@ -54,7 +54,11 @@ class DateComponent extends React.Component {
 
     return (
       <DatePicker
-        style={[AppStyles.formControl, { backgroundColor: `${disabled ? '#ddd' : '#fff'}`, width: '100%', justifyContent: 'center', paddingRight: 15 }]}
+        style={[{
+          borderRadius: 4,
+          borderWidth: 0,
+          height: 50, backgroundColor: `${disabled ? '#ddd' : '#fff'}`, width: '100%', justifyContent: 'center', paddingRight: 15
+        }]}
         mode={addMode}
         date={dateTime}
         format={addMode == 'time' ? 'hh:mm a' : 'YYYY-MM-DD'}

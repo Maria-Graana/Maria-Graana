@@ -19,6 +19,8 @@ import LeadDetail from '../screens/LeadDetail';
 import AppStyles from '../AppStyles';
 import RCMLeadTabs from './RCMTabNavigator';
 import CMLeadTabs from './CMTabNavigator';
+import Attachments from '../screens/Attachments';
+import Comments from '../screens/Comments';
 
 const Stack = createStackNavigator();
 
@@ -33,6 +35,8 @@ const headerStyle = {
         backgroundColor: AppStyles.colors.backgroundColor
     }
 }
+
+
 
 function MainStack() {
     return (
@@ -161,6 +165,23 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
+
+            <Stack.Screen name='Attachments' component={Attachments}
+                options={({ navigation, route }) => ({
+                    title: 'ATTACHMENTS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+
+            <Stack.Screen name='Comments' component={Comments}
+                options={({ navigation, route }) => ({
+                    title: 'COMMENTS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+
         </Stack.Navigator>
     );
 }

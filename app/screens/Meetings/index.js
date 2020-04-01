@@ -21,49 +21,12 @@ class Meetings extends Component {
       },
       meetings: [],
       checkValidation: false,
+      doneStatus: false,
+      doneStatusId: '',
     }
-    this.staticData = [
-      {
-        id: '1',
-        time: '09:30am',
-        date: 'Mar 29',
-        status: 'Done'
-      },
-      {
-        id: '2',
-        time: '11:05am',
-        date: 'Mar 25',
-        status: ''
-      },
-      {
-        id: '3',
-        time: '04:15pm',
-        date: 'Mar 23',
-        status: 'Done'
-      },
-      {
-        id: '4',
-        time: '05:40pm',
-        date: 'Mar 20',
-        status: ''
-      },
-      {
-        id: '5',
-        time: '06:15pm',
-        date: 'Feb 16',
-        status: ''
-      },
-      {
-        id: '6',
-        time: '07:00pm',
-        date: 'Feb 13',
-        status: 'Done'
-      },
-
-    ]
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.getMeetingLead()
   }
 
@@ -92,6 +55,7 @@ class Meetings extends Component {
           this.getMeetingLead();
           this.setState({
             active: false,
+            formData: { time: '', data: '' }
           })
         })
     }
@@ -100,13 +64,20 @@ class Meetings extends Component {
   getMeetingLead = () => {
     const { formData } = this.state
     axios.get(`/api/diary/all?leadId=${formData.leadId}`)
-    .then((res) => {
-      this.setState({meetings: res.data})
+      .then((res) => {
+        this.setState({ meetings: res.data })
+      })
+  }
+
+  openStatus = (id) => {
+    this.setState({
+      doneStatus: !this.state.doneStatus,
+      doneStatusId: id,
     })
   }
 
   render() {
-    const { active, formData, checkValidation, meetings } = this.state
+    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId } = this.state
     return (
       <View>
 
@@ -123,7 +94,13 @@ class Meetings extends Component {
             {
               meetings && meetings != '' && meetings.rows.map((item, key) => {
                 return (
-                  <MeetingTile data={item} key={key} />
+                  <MeetingTile
+                    data={item}
+                    key={key}
+                    openStatus={this.openStatus}
+                    doneStatus={doneStatus}
+                    doneStatusId={doneStatusId}
+                  />
                 )
               })
             }

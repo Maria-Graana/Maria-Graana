@@ -6,7 +6,7 @@ export default styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 15,
     position: 'relative',
-    marginBottom: 15,
+    marginBottom: 10,
     zIndex: 5,
     elevation: 5,
     shadowOffset: { width: 5, height: 5 },
@@ -26,7 +26,7 @@ export default styles = StyleSheet.create({
   },
   dotsWrap: {
     position: 'absolute',
-    zIndex: 12,
+    zIndex: 20,
     right: 0,
     top: 0,
   },
@@ -48,5 +48,26 @@ export default styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     fontSize: 12,
-  }
+  },
+  dropDownMain: {
+    position: 'absolute',
+    right: 15,
+    top: -4,
+    width: 80,
+    backgroundColor: '#fff',
+    zIndex: 15,
+    borderWidth: 1,
+    borderColor: '#0D73EE',
+    borderRadius: 12,
+  },
+  doneBtn: {
+    // padding: 5,
+    paddingTop: 3,
+    paddingBottom: 3,
+    paddingLeft: 20,
+    // paddingLeft: 10,
+  },
+  blueColor:{
+    color: '#0D73EE',
+  },
 });

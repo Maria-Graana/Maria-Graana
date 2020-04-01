@@ -76,7 +76,6 @@ class Meetings extends Component {
     axios.patch(`/api/diary/update?id=${id}`, body)
     .then((res) => {
       this.getMeetingLead();
-      console.log(res.data)
     })
   }
 

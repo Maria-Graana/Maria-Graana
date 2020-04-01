@@ -3,6 +3,8 @@ import { View, Text, Image, TouchableOpacity } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import dots from '../../../assets/img/dots.png'
+import moment from 'moment'
+
 class MeetingTile extends React.Component {
   constructor(props) {
     super(props)
@@ -15,10 +17,10 @@ class MeetingTile extends React.Component {
         <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
           <Text style={[AppStyles.mrTen, styles.meetingCon]}>Meeting @</Text>
           <Text style={[styles.fontBold]}>{data.time} </Text>
-          <Text style={[styles.fontBold]}>{data.date}</Text>
+          <Text style={[styles.fontBold]}>{moment(data.date).format("MMM DD")}</Text>
           <View style={[styles.dotsWrap]}>
             {
-              data.status != '' ?
+              data.status === 'done' ?
                 <Text style={[styles.doneText]}>{data.status}</Text>
                 :
                 <Image source={dots} style={[styles.dotsImg]} />

@@ -19,6 +19,7 @@ class Meetings extends Component {
         date: '',
         leadId: this.props.route.params.lead.id,
       },
+      meetings: [],
       checkValidation: false,
     }
     this.staticData = [
@@ -62,6 +63,10 @@ class Meetings extends Component {
     ]
   }
 
+  componentDidMount(){
+    this.getMeetingLead()
+  }
+
   //  ************ Function for open modal ************ 
   openModal = () => {
     this.setState({
@@ -84,6 +89,7 @@ class Meetings extends Component {
     } else {
       axios.post(`api/leads/project/meeting`, formData)
         .then((res) => {
+          this.getMeetingLead();
           this.setState({
             active: false,
           })
@@ -91,8 +97,16 @@ class Meetings extends Component {
     }
   }
 
+  getMeetingLead = () => {
+    const { formData } = this.state
+    axios.get(`/api/diary/all?leadId=${formData.leadId}`)
+    .then((res) => {
+      this.setState({meetings: res.data})
+    })
+  }
+
   render() {
-    const { active, formData, checkValidation } = this.state
+    const { active, formData, checkValidation, meetings } = this.state
     return (
       <View>
 
@@ -107,7 +121,7 @@ class Meetings extends Component {
         <View style={[styles.meetingConteiner]}>
           <ScrollView>
             {
-              this.staticData.map((item, key) => {
+              meetings && meetings != '' && meetings.rows.map((item, key) => {
                 return (
                   <MeetingTile data={item} key={key} />
                 )

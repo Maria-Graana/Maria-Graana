@@ -74,7 +74,7 @@ class Comments extends Component {
     }
 
     render() {
-        const { commentsList, loading } = this.state;
+        const { commentsList, loading, comment } = this.state;
         return (
             !loading ?
                 <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
@@ -87,7 +87,7 @@ class Comments extends Component {
                                 addComment={this.addComment}
                                 deleteComment={this.deleteComment} />
                         )}
-                        ListFooterComponent={<AddComment onPress={this.addComment} setComment={this.setComment} />}
+                        ListFooterComponent={<AddComment onPress={this.addComment} comment={comment} setComment={this.setComment} />}
                         keyExtractor={(item, index) => index.toString()}
                     />
 

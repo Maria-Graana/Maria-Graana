@@ -5,7 +5,7 @@ import AppStyles from '../../AppStyles';
 import styles from './styles'
 
 const AddComment = (props) => {
-    const { setComment, onPress } = props;
+    const { comment,setComment, onPress } = props;
     return (
 
         <View style={styles.container}>
@@ -14,6 +14,7 @@ const AddComment = (props) => {
                 style={[AppStyles.formControl, AppStyles.formFontSettings, { height: 150, paddingRight: 20 }]} rowSpan={10}
                 placeholder="Add Comment"
                 onChangeText={(text) => setComment(text)}
+                value={comment}
             />
 
             <View style={styles.buttonStyle}>

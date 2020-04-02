@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, Image, FlatList, Alert } from 'react-native';
+import { View, Image, FlatList, Alert,Text } from 'react-native';
 import { ActionSheet } from 'native-base';
 import { connect } from 'react-redux';
 import PropertyTile from '../../components/PropertyTile'

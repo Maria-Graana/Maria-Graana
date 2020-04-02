@@ -87,7 +87,10 @@ class Comments extends Component {
                                 addComment={this.addComment}
                                 deleteComment={this.deleteComment} />
                         )}
-                        ListFooterComponent={<AddComment onPress={this.addComment} comment={comment} setComment={this.setComment} />}
+                        ListFooterComponent={
+                        <AddComment onPress={this.addComment} 
+                        comment={comment} 
+                        setComment={this.setComment} />}
                         keyExtractor={(item, index) => index.toString()}
                     />
 

@@ -180,6 +180,7 @@ class LeadMatch extends React.Component {
     goToDiaryForm = () => {
         const { navigation, route } = this.props;
         const { lead } = route.params;
+        this.setState({ active: false })
         navigation.navigate('AddDiary', {
             update: false,
             leadId: lead.id
@@ -187,12 +188,15 @@ class LeadMatch extends React.Component {
     }
 
     goToAttachments() {
-        const { navigation } = this.props;
-        navigation.navigate('Attachments');
+        const { navigation,route } = this.props;
+        const { lead } = route.params;
+        this.setState({ active: false })
+        navigation.navigate('Attachments', { leadId: lead.id });
     }
 
     goToComments() {
         const { navigation } = this.props;
+        this.setState({ active: false })
         navigation.navigate('Comments');
     }
 
@@ -203,6 +207,7 @@ class LeadMatch extends React.Component {
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
+
                     <View style={{ opacity: active ? 0.3 : 1, flex: 1 }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
@@ -262,14 +267,11 @@ class LeadMatch extends React.Component {
                                 :
                                 <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                         }
-
-
-
                     </View>
                     <Fab
                         active={active}
                         direction="up"
-                        style={{ backgroundColor: AppStyles.colors.primaryColor, elevation: active ? 10 : 0 }}
+                        style={{ backgroundColor: AppStyles.colors.primaryColor }}
                         position="bottomRight"
                         onPress={() => this.setState({ active: !active })}>
                         <Ionicons name="md-add" color="#ffffff" />
@@ -286,6 +288,7 @@ class LeadMatch extends React.Component {
                 </View>
                 :
                 <Loader loading={loading} />
+
         )
     }
 }

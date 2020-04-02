@@ -13,7 +13,7 @@ const AttachmentTile = (props) => {
             {/*   First Row    */}
 
             <View style={styles.horizontalContainer}>
-                <Text style={styles.headingStyle}>{data.title}</Text>
+                <Text style={styles.headingStyle}>{data.title.toUpperCase()}</Text>
                 <TouchableOpacity onPress={() => deleteAttachment(data)} activeOpacity={0.7} >
                     <AntDesign name="close" size={18} color={AppStyles.colors.subTextColor} />
                 </TouchableOpacity>

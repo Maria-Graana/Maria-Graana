@@ -54,18 +54,19 @@ export default styles = StyleSheet.create({
     },
 
     lead: {
-        marginTop: 6,
-        marginLeft: 3,
+        fontFamily: AppStyles.fonts.boldFont,
         width: '25%',
-        padding: 6,
-        backgroundColor: AppStyles.colors.backgroundColor,
+        textAlign: 'center',
+        fontSize: 12,
+        padding: 3,
+        color: AppStyles.colors.textColor,
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: AppStyles.colors.textColor
+        borderColor: AppStyles.colors.textColor,
+        borderWidth: 0.5
     },
     leadText: {
         fontSize: 12,
-        fontFamily: AppStyles.fonts.boldFont,
+        fontFamily: AppStyles.fonts.semiBoldFont,
         color: AppStyles.colors.textColor,
         textAlign: 'center',
     },

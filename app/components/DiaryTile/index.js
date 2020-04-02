@@ -61,7 +61,8 @@ class DiaryTile extends React.Component {
 
     render() {
         const {
-            data
+            data,
+            onLeadLinkPressed
         } = this.props;
         return (
             <View style={AppStyles.mb1}>
@@ -91,17 +92,21 @@ class DiaryTile extends React.Component {
                                                             <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{this.setStatusText(val)}</Text>
                                                         </View>
                                                         <Text style={styles.meetingText}>{val.subject}</Text>
-                                                        <Text style={styles.meetingText}>{val.taskType}</Text>
-                                                        {
-                                                            val.leadLink === true ?
-                                                                <TouchableOpacity style={styles.lead}  >
-                                                                    <Text style={styles.leadText} >
-                                                                        Lead Link
+                                                        <View style={styles.innerTile}>
+                                                            <Text style={styles.meetingText}>{val.taskType.charAt(0).toUpperCase() + val.taskType.slice(1)}</Text>
+                                                            {
+                                                                val.armsLeadId !== null ?
+                                                                    <TouchableOpacity style={styles.lead} onPress={() => onLeadLinkPressed(val.armsLeadId)}  >
+                                                                        <Text style={styles.leadText} >
+                                                                            Lead Link
                                                                              </Text>
-                                                                </TouchableOpacity>
-                                                                :
-                                                                null
-                                                        }
+                                                                    </TouchableOpacity>
+                                                                    :
+                                                                    null
+                                                            }
+                                                        </View>
+
+
                                                     </TouchableOpacity>
                                                 )
                                             })

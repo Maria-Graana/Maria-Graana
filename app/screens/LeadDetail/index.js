@@ -47,8 +47,8 @@ class LeadDetail extends React.Component {
                 params: { lead: lead },
             })
         } else {
-            navigation.navigate('CMLeadTabs', {
-                screen: 'Meetings',
+            navigation.navigate('RCMLeadTabs', {
+                screen: 'Match',
                 params: { lead: lead },
             })
         }

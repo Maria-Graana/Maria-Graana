@@ -333,9 +333,10 @@ class LeadMatch extends React.Component {
     }
 
     goToComments() {
-        const { navigation } = this.props;
+        const { navigation,route } = this.props;
+        const { lead } = route.params;
         this.setState({ active: false })
-        navigation.navigate('Comments');
+        navigation.navigate('Comments', { leadId: lead.id });
     }
 
     render() {

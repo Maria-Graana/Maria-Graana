@@ -336,7 +336,7 @@ class LeadMatch extends React.Component {
 
     render() {
         // const { user } = this.props
-        const { organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, checkCount, formData, displayButton } = this.state
+        const { organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, checkCount, formData, displayButton, active } = this.state
 
         return (
             !loading ?
@@ -374,7 +374,7 @@ class LeadMatch extends React.Component {
                                 <FlatList
                                     data={matchData.data}
                                     renderItem={(item, index) => (
-                                        <View style={{marginVertical: 10}}>
+                                        <View style={{marginVertical: 10, marginHorizontal: 15}}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile
@@ -406,10 +406,10 @@ class LeadMatch extends React.Component {
                     </View>
                     {
                         displayButton ?
-                            <View style={{ position: "absolute", left: 0, marginLeft: 15, bottom: 0, zIndex: 20, height: 50, width: '100%' }}>
+                            <View style={{ position: "absolute", left: 0, bottom: 0, zIndex: 20, height: 50, width: '100%' }}>
                                 <TouchableOpacity 
                                 onPress={() => this.sendProperties()}
-                                style={{ opacity: 0.9, backgroundColor: AppStyles.colors.primaryColor, justifyContent: "center", alignItems: "center", padding: 10, borderRadius: 5 }}>
+                                style={{ marginHorizontal: 15, marginRight: 80, opacity: 0.9, backgroundColor: AppStyles.colors.primaryColor, justifyContent: "center", alignItems: "center", padding: 10, borderRadius: 5 }}>
                                     <Text style={{ color: 'white' }}> Continue With Selected Properties </Text>
                                 </TouchableOpacity>
                             </View>

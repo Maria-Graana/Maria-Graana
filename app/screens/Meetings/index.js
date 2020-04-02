@@ -74,9 +74,9 @@ class Meetings extends Component {
       status: 'completed',
     }
     axios.patch(`/api/diary/update?id=${id}`, body)
-    .then((res) => {
-      this.getMeetingLead();
-    })
+      .then((res) => {
+        this.getMeetingLead();
+      })
   }
 
   render() {
@@ -85,13 +85,6 @@ class Meetings extends Component {
       <View>
 
         {/* ************Fab For Open Modal************ */}
-        <Fab
-          active={active}
-          style={{ backgroundColor: '#0D73EE' }}
-          position="topRight"
-          onPress={() => { this.openModal() }}>
-          <Ionicons name="md-add" color="#ffffff" />
-        </Fab>
         <View style={[styles.meetingConteiner]}>
           <ScrollView>
             {
@@ -109,6 +102,14 @@ class Meetings extends Component {
             }
           </ScrollView>
         </View>
+
+        <Fab
+            active={active}
+            style={{ backgroundColor: '#0D73EE' }}
+            position="bottomRight"
+            onPress={() => { this.openModal() }}>
+            <Ionicons name="md-add" color="#ffffff" />
+          </Fab>
 
         {/* ************Modal Component************ */}
         <MeetingModal

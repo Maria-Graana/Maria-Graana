@@ -24,6 +24,7 @@ export default styles = StyleSheet.create({
   },
   meetingCon: {
     fontSize: 14,
+    color: '#0D73EE'
   },
   dotsWrap: {
     position: 'absolute',

@@ -76,7 +76,7 @@ class Attachments extends Component {
         const { route } = this.props;
         const { leadId } = route.params;
         axios.get(`/api/leads/comments?rcmLeadId=${leadId}`).then(response => {
-            console.log(response.data);
+           // console.log(response.data);
             this.setState({ attachmentRows: response.data, loading: false });
         }).catch(error => {
             console.log(error);

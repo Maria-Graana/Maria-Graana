@@ -1,9 +1,10 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text,TouchableOpacity } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
 import AppStyles from '../../AppStyles';
 import styles from './styles';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import moment from 'moment';
+
 
 const AttachmentTile = (props) => {
     const { data, deleteAttachment } = props
@@ -23,7 +24,7 @@ const AttachmentTile = (props) => {
 
             <View style={styles.horizontalContainer}>
                 <Text style={styles.subHeadingStyle}>{data.fileName}</Text>
-                <Text style={styles.dateTimeStyle}>{data.dateCreated}</Text>
+                <Text style={styles.dateTimeStyle}>{moment(data.createdAt).format('hh:mm A, MMMM DD')}</Text>
             </View>
         </View>
     )

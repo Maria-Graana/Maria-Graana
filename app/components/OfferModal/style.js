@@ -159,6 +159,10 @@ export default styles = StyleSheet.create({
     width: '80%',
     color: '#0D73EE',
     paddingLeft: 10,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    textAlign: 'center',
+    fontSize: 18,
   },
   sideBtnInputLast: {
     width: '20%',

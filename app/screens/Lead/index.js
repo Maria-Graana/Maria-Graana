@@ -173,14 +173,14 @@ class Inventory extends React.Component {
 					<Fab
 						active={this.state.active}
 						direction="up"
-						style={{ backgroundColor: '#333' }}
+						style={{ backgroundColor: AppStyles.colors.primaryColor }}
 						position="bottomRight"
 						onPress={() => this.setState({ active: !this.state.active })}>
 						<Ionicons name="md-add" color="#ffffff" />
-						<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('RCM') }}>
+						<Button style={{ backgroundColor:  AppStyles.colors.primary }} onPress={() => { this.goToFormPage('RCM') }}>
 							<Icon name="logo-whatsapp" />
 						</Button>
-						<Button style={{ backgroundColor: '#333' }} onPress={() => { this.goToFormPage('CM') }}>
+						<Button style={{ backgroundColor:  AppStyles.colors.primary }} onPress={() => { this.goToFormPage('CM') }}>
 							<Icon name="logo-facebook" />
 						</Button>
 					</Fab>

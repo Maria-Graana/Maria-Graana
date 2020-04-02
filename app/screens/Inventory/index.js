@@ -11,6 +11,7 @@ import { Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import Loader from '../../components/loader';
+import NoResultsComponent from '../../components/NoResultsComponent';
 import helper from '../../helper';
 
 var BUTTONS = ['Delete', 'Cancel'];
@@ -130,24 +131,19 @@ class Inventory extends React.Component {
 
 
 					{/* ***** Main Tile Wrap */}
-					{
-						propertiesList.length ?
-							< FlatList
-								data={propertiesList}
-								renderItem={({ item }) => (
-									<PropertyTile
-										data={item}
-										onPress={(data) => this.onHandlePress(data)}
-										onLongPress={(id) => this.onHandleLongPress(id)}
-									/>
-								)}
-
-								keyExtractor={item => String(item.id)}
+					< FlatList
+						contentContainerStyle={{ flexGrow: 1 }}
+						data={propertiesList}
+						renderItem={({ item }) => (
+							<PropertyTile
+								data={item}
+								onPress={(data) => this.onHandlePress(data)}
+								onLongPress={(id) => this.onHandleLongPress(id)}
 							/>
-							:
-							<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
-					}
-
+						)}
+						ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
+						keyExtractor={item => String(item.id)}
+					/>
 				</View>
 				:
 				<Loader loading={loading} />

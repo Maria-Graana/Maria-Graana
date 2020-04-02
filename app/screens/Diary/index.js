@@ -293,6 +293,17 @@ class Diary extends React.Component {
       { cancelable: false })
   }
 
+  handleLeadLinkPress = (armsLeadId) => {
+    axios.get(`/api/leads/byId?id=${armsLeadId}`).then(response => {
+      console.log(response.data);
+      this.setState({ openPopup: false})
+      this.props.navigation.navigate('LeadDetail', { lead: response.data, purposeTab: response.data.purpose })
+    }).catch(error => {
+         console.log('error',error)
+    })
+
+  }
+
   render() {
     const { showCalendar, startDate, newDiaryData, loading, selectedDiary } = this.state;
     const { user, route } = this.props;
@@ -306,6 +317,7 @@ class Diary extends React.Component {
             deleteDiary={this.deleteDiary}
             openPopup={this.state.openPopup}
             closePopup={this.closePopup}
+            onLeadLinkClicked={this.handleLeadLinkPress}
             popupAction={(val, type) => this.popupAction(val, type)}
           />
 
@@ -340,7 +352,7 @@ class Diary extends React.Component {
 
           {
             newDiaryData && newDiaryData.length ?
-              <DiaryTile data={newDiaryData} showPopup={this.showPopup} onLongPress={(val) => this.handleLongPress(val)} /> : null
+              <DiaryTile data={newDiaryData} showPopup={this.showPopup} onLeadLinkPressed={this.handleLeadLinkPress} onLongPress={(val) => this.handleLongPress(val)} /> : null
           }
         </View>
         :

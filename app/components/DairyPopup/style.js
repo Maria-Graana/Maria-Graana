@@ -22,6 +22,24 @@ export default styles = StyleSheet.create({
         top: Platform.OS == 'android' ? 10 : 40,
         paddingVertical: 5
     },
+    lead: {
+        fontFamily: AppStyles.fonts.boldFont,
+        width: '25%',
+        textAlign: 'center',
+        alignSelf:'center',
+        fontSize: AppStyles.noramlSize.fontSize,
+        padding: 3,
+        color: AppStyles.colors.textColor,
+        borderRadius: 12,
+        borderColor: AppStyles.colors.textColor,
+        borderWidth: 0.5
+    },
+    leadText: {
+        fontSize: 12,
+        fontFamily: AppStyles.fonts.semiBoldFont,
+        color: AppStyles.colors.textColor,
+        textAlign: 'center',
+    },
     btnWrap: {
         flexDirection: 'row',
         paddingVertical: 15,
@@ -51,7 +69,7 @@ export default styles = StyleSheet.create({
 
     textStyle:{
         fontFamily: AppStyles.fonts.defaultFont,
-        fontSize:AppStyles.fontSize.large,
+        fontSize:AppStyles.fontSize.medium,
         marginVertical:5
     },
     horizontalWrapStyle:{
@@ -60,7 +78,7 @@ export default styles = StyleSheet.create({
     },
     statusText: {
         fontFamily: AppStyles.fonts.boldFont,
-        width: '25%',
+        width: '22%',
         textAlign: 'center',
         alignSelf:'center',
         fontSize: AppStyles.noramlSize.fontSize,

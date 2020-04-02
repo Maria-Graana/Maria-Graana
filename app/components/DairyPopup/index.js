@@ -3,7 +3,8 @@ import {
     View,
     Text,
     Modal,
-    SafeAreaView
+    SafeAreaView,
+    TouchableOpacity
 } from 'react-native'
 import { Button, } from 'native-base';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -72,7 +73,8 @@ class DairyPopup extends React.Component {
             data,
             openPopup,
             screenName,
-            user
+            user,
+            onLeadLinkClicked
         } = this.props;
         return (
             <Modal visible={openPopup}
@@ -92,11 +94,22 @@ class DairyPopup extends React.Component {
 
 
                         </View>
-                        <Text style={styles.textStyle}>{data.taskType}</Text>
+                        <Text style={styles.textStyle}>{data.taskType !==undefined && data.taskType.charAt(0).toUpperCase() + data.taskType.slice(1)}</Text>
 
                         <View style={styles.horizontalWrapStyle}>
                             <Text style={styles.textStyle}>{moment.utc(data.start).format('hh:mm a')} - {moment.utc(data.end).format("hh:mm a")} </Text>
+                            {
+                                data.armsLeadId !== null ?
+                                    <TouchableOpacity style={styles.lead} onPress={()=>onLeadLinkClicked(data.armsLeadId)} >
+                                        <Text style={styles.leadText} >
+                                            Lead Link
+                                 </Text>
+                                    </TouchableOpacity>
+                                    :
+                                    null
+                            }
                             <Text style={[styles.statusText, { color: data.statusColor, borderColor: data.statusColor }]}>{this.setStatusText(data)}</Text>
+                          
                         </View>
 
                         <View style={styles.underLine}

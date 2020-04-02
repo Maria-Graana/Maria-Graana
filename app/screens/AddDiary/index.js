@@ -18,7 +18,7 @@ class AddDiary extends Component {
     }
 
     componentDidMount() {
-        const { route,navigation } = this.props;
+        const { route, navigation } = this.props;
         if (route.params.update) {
             navigation.setOptions({ title: 'EDIT TASK' })
         }
@@ -40,6 +40,7 @@ class AddDiary extends Component {
 
     generatePayload = (data) => {
         const { route } = this.props;
+        const { leadId } = route.params;
         let payload = null;
         let start = moment(data.date + data.startTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
         let end = moment(data.date + data.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
@@ -69,6 +70,9 @@ class AddDiary extends Component {
             payload.diaryTime = start
             payload.start = start
             payload.end = end
+            if (leadId) {
+                payload.rcmLeadId = leadId
+            }
 
             delete payload.startTime
             delete payload.endTime
@@ -90,25 +94,51 @@ class AddDiary extends Component {
     }
 
     addDiary = (data) => {
+        const { route, navigation } = this.props;
+        const { leadId } = route.params;
         let diary = this.generatePayload(data)
-        axios.post(`/api/diary/create`, diary)
-            .then((res) => {
-                if (res.status === 200) {
-                    helper.successToast('DIARY ADDED SUCCESSFULLY!')
-                    this.props.navigation.navigate('Diary',
-                        {
-                            'agentId': this.props.route.params.agentId
-                        });
-                }
-                else {
-                    helper.errorToast('ERROR: SOMETHING WENT WRONG')
-                }
 
-            })
-            .catch((error) => {
-                helper.errorToast('ERROR: ADDING DIARY')
-                console.log('error', error.message)
-            })
+        if (leadId) {
+            // create task for lead
+            axios.post(`/api/leads/task`, diary)
+                .then((res) => {
+                    if (res.status === 200) {
+                        console.log(res.data);
+                        helper.successToast('DIARY ADDED SUCCESSFULLY!')
+                        navigation.goBack();
+                    }
+                    else {
+                        helper.errorToast('ERROR: SOMETHING WENT WRONG')
+                    }
+
+                })
+                .catch((error) => {
+                    helper.errorToast('ERROR: ADDING DIARY')
+                    console.log('error', error.message)
+                })
+
+        }
+        else {
+            axios.post(`/api/diary/create`, diary)
+                .then((res) => {
+                    if (res.status === 200) {
+                        helper.successToast('DIARY ADDED SUCCESSFULLY!')
+                        navigation.navigate('Diary',
+                            {
+                                'agentId': this.props.route.params.agentId
+                            });
+                    }
+                    else {
+                        helper.errorToast('ERROR: SOMETHING WENT WRONG')
+                    }
+
+                })
+                .catch((error) => {
+                    helper.errorToast('ERROR: ADDING DIARY')
+                    console.log('error', error.message)
+                })
+        }
+
     }
 
     updateDiary = (data) => {

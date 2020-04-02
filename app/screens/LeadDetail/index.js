@@ -65,7 +65,7 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}> Lead Type</Text>
                         <Text style={styles.labelText}> {type} </Text>
                         <Text style={styles.headingText}> Client Name </Text>
-                        <Text style={styles.labelText}> {lead.customer.customerName}</Text>
+                        <Text style={styles.labelText}> {lead.customer && lead.customer.customerName}</Text>
                         <Text style={styles.headingText}> Requirement </Text>
                         <Text style={styles.labelText}>{!lead.projectId && lead.size} {!lead.projectId && lead.size_unit} {!lead.projectId && lead.type}{lead.projectId && lead.project.type}</Text>
                         <Text style={styles.headingText}> {type === 'Invest' ? 'Project' : 'Area'} </Text>

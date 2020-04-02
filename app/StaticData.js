@@ -148,4 +148,18 @@ export default StaticData = {
         { id: 'commisionPayment', name: 'Commision Payment' },
         { id: 'downPayment', name: 'Down Payment' },
     ],
+    attachmentsRows: [
+        {
+            id: 1,
+            title: 'Contract',
+            fileName: 'Contract_20thMarch.PDF',
+            dateCreated: '9:30 am, Mar 29'
+        },
+        {
+            id: 2,
+            title: 'Receipt',
+            fileName: 'Payment_Receipt2.JPG',
+            dateCreated: '1:30 pm, Mar 30'
+        }
+    ]
 }

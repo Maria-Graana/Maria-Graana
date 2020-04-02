@@ -3,7 +3,6 @@ import {AsyncStorage} from 'react-native';
 import config from '../config';
 import axios from 'axios';
 import { SplashScreen } from 'expo';
-import { CommonActions } from '@react-navigation/native';
 
 storeItem = async (key, item) =>  {
     try {

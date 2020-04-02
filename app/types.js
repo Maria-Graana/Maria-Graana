@@ -1,4 +1,6 @@
+export const SET_LEAD= 'SET_LEAD';
 export const SET_SALE= 'SET_SALE';
+export const REMOVE_LEAD= 'REMOVE_LEAD';
 export const USER_LOGIN = 'USER_LOGIN';
 export const USER_LOADING = 'USER_LOADING';
 export const USER_LOADED = 'USER_LOADED';

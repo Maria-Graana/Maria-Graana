@@ -46,8 +46,7 @@ const token= (state= false, action) => {
         return true
         case types.SET_TOKEN_ERROR:
         return false
-        default: return false
-
+        default: return state
     }
 }
 

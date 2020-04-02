@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import { Button } from 'native-base';
 import moment from 'moment';
+import { setlead } from '../../actions/lead';
 
 const _format = 'YYYY-MM-DD';
 
@@ -18,7 +19,8 @@ class LeadDetail extends React.Component {
 
     componentDidMount() {
         const { route } = this.props
-        const { purposeTab } = route.params
+        const { purposeTab, lead } = route.params
+        this.props.dispatch(setlead(lead))
         if (purposeTab === 'invest') {
             this.setState({
                 type: 'Invest'
@@ -39,7 +41,6 @@ class LeadDetail extends React.Component {
         const { navigation, route } = this.props
         const { lead } = route.params
         const { type } = this.state
-        console.log(type)
         if (type === 'Invest') {
             navigation.navigate('CMLeadTabs', {
                 screen: 'Meetings',

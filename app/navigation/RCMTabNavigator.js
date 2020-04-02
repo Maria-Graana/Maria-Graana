@@ -1,6 +1,6 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import LeadMatch from '../screens/LeadMatch/index';
-import Viewing from '../screens/Viewing/index';
+import LeadViewing from '../screens/LeadViewing/index';
 import React from 'react';
 
 const Tab = createMaterialTopTabNavigator();
@@ -15,10 +15,10 @@ export default function RCMLeadTabs() {
                 // style: { shadowColor: 'transparent', elevation: 0, borderTopColor: "transparent", borderTopWidth: 0 },
             }}>
             <Tab.Screen name="Match" component={LeadMatch}/>
-            <Tab.Screen name="Viewing" component={Viewing} />
-            <Tab.Screen name="Offer" component={Viewing} />
-            <Tab.Screen name="Propsure" component={Viewing} />
-            <Tab.Screen name="Payment" component={Viewing} />
+            <Tab.Screen name="Viewing" component={LeadViewing} />
+            <Tab.Screen name="Offer" component={LeadViewing} />
+            <Tab.Screen name="Propsure" component={LeadViewing} />
+            <Tab.Screen name="Payment" component={LeadViewing} />
         </Tab.Navigator>
     );
 }

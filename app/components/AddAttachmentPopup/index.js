@@ -27,7 +27,7 @@ const AddAttachmentPopup = (props) => {
 
                     <View style={[AppStyles.mainInputWrap]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} placeholder={'Title'} onChangeText={(text) => setTitle(text)} />
+                            <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} placeholder={'Subject/Title'} onChangeText={(text) => setTitle(text)} />
                         </View>
                         {
                             checkValidation === true && formData.title === '' && <ErrorMessage errorMessage={'Required'} />
@@ -37,7 +37,7 @@ const AddAttachmentPopup = (props) => {
                     <View style={[AppStyles.mainInputWrap]}>
                         <View style={[AppStyles.inputWrap]}>
                             <TouchableOpacity onPress={getAttachmentFromStorage} activeOpacity={0.7} >
-                                <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, { textAlign: 'center', letterSpacing: 5, fontFamily: AppStyles.fonts.semiBoldFont }]}
+                                <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, { textAlign: 'center', letterSpacing: 3, fontFamily: AppStyles.fonts.semiBoldFont }]}
                                     editable={false}
                                     placeholderTextColor={AppStyles.colors.textColor}
                                     value={formData.fileName}
@@ -60,7 +60,7 @@ const AddAttachmentPopup = (props) => {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap]}>
                         <Button
-                            style={[AppStyles.formBtn, { marginTop: 50 }]} onPress={formSubmit}>
+                            style={[AppStyles.formBtn, { marginTop: 10 }]} onPress={formSubmit}>
                             <Text style={AppStyles.btnText}>DONE</Text>
                         </Button>
                     </View>

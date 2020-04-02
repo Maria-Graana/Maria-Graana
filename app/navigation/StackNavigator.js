@@ -168,7 +168,7 @@ function MainStack() {
 
             <Stack.Screen name='Attachments' component={Attachments}
                 options={({ navigation, route }) => ({
-                    title: 'ATTACHMENTS',
+                    title: 'ADD ATTACHMENT',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

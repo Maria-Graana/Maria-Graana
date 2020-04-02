@@ -101,7 +101,7 @@ class AddLead extends Component {
     }
 
     getAreas = (cityId) => {
-        axios.get(`/api/areas?city_id=${cityId}`)
+        axios.get(`/api/areas?city_id=${cityId}&all=true`)
             .then((res) => {
                 let getArea = [];
                 res && res.data.items.map((item, index) => { return (getArea.push({ value: item.id, name: item.name })) })

@@ -153,12 +153,16 @@ export default StaticData = {
             id: 1,
             title: 'Contract',
             fileName: 'Contract_20thMarch.PDF',
+            size: '',
+            uri: '',
             dateCreated: '9:30 am, Mar 29'
         },
         {
             id: 2,
             title: 'Receipt',
             fileName: 'Payment_Receipt2.JPG',
+            size: '',
+            uri: '',
             dateCreated: '1:30 pm, Mar 30'
         }
     ]

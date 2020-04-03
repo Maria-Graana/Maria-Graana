@@ -70,7 +70,7 @@ class Payments extends Component {
   instalmentsField = (value) => {
     let array = []
     for (var i = 1; i <= value; i++) {
-      array.push({ instalments: '' })
+      array.push({ installmentAmount: '' })
     }
     this.setState({
       totalInstalments: array
@@ -95,7 +95,7 @@ class Payments extends Component {
 
   handleInstalments = (value, index) => {
     const { totalInstalments } = this.state
-    totalInstalments[index].instalments = value
+    totalInstalments[index].installmentAmount = value
     this.setState(totalInstalments)
   }
 
@@ -112,9 +112,12 @@ class Payments extends Component {
         floorId: formData.floorId,
         token: formData.token,
         unitId: formData.unitId,
-        installments: totalInstalments
+        installments: totalInstalments,
+        no_of_installments: totalInstalments.length,
       }
-      axios.post(`/api/leads/project?id=${formData.projectId}`)
+      console.log('++++',body)
+
+      axios.post(`/api/leads/project?id=${formData.projectId}`, body)
         .then((res) => {
           console.log(res.data)
         })

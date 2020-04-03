@@ -106,7 +106,6 @@ class Payments extends Component {
         checkValidation: true
       })
     }else{
-      console.log(formData)
     }
   }
 

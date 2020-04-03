@@ -2,6 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import LeadMatch from '../screens/LeadMatch/index';
 import LeadViewing from '../screens/LeadViewing/index';
 import LeadOffer from '../screens/LeadOffer/index';
+import LeadPropsure from '../screens/LeadPropsure/index'
 import React from 'react';
 
 const Tab = createMaterialTopTabNavigator();
@@ -18,7 +19,7 @@ export default function RCMLeadTabs() {
             <Tab.Screen name="Match" component={LeadMatch}/>
             <Tab.Screen name="Viewing" component={LeadViewing} />
             <Tab.Screen name="Offer" component={LeadOffer} />
-            <Tab.Screen name="Propsure" component={LeadViewing} />
+            <Tab.Screen name="Propsure" component={LeadPropsure} />
             <Tab.Screen name="Payment" component={LeadViewing} />
         </Tab.Navigator>
     );

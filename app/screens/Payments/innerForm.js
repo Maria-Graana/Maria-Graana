@@ -15,13 +15,13 @@ class InnerForm extends Component {
   }
 
   render() {
-    const { checkValidation, handleForm, getProject, getFloor, getUnit } = this.props
+    const { checkValidation, handleForm, getProject, getFloor, getUnit, getInstallments } = this.props
     return (
-      <View style={[styles.modalMain]}>
-        <View style={[styles.formMain]}>
+      <View style={[AppStyles.modalMain]}>
+        <View style={[AppStyles.formMain]}>
 
           {/* **************************************** */}
-          <View style={[styles.mainInputWrap]}>
+          <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent onValueChange={handleForm} data={getProject} name={'customerId'} placeholder='Project' />
               {
@@ -31,7 +31,7 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          <View style={[styles.mainInputWrap]}>
+          <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent onValueChange={handleForm} data={getFloor} name={'customerId'} placeholder='Floors' />
               {
@@ -41,7 +41,7 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          <View style={[styles.mainInputWrap]}>
+          <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent onValueChange={handleForm} data={getUnit} name={'customerId'} placeholder='Unit' />
               {
@@ -51,92 +51,69 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          <View style={[styles.mainBlackWrap]}>
-            <View style={[styles.blackInputWrap, styles.blackBorder]}>
-              <Text style={[styles.blackInputText]}>Token</Text>
-              <View style={[styles.blackInput]}>
-                <TextInput style={[styles.blackInput]} />
+          <View style={[AppStyles.mainBlackWrap]}>
+            <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+              <Text style={[AppStyles.blackInputText]}>TOKEN</Text>
+              <View style={[AppStyles.blackInput]}>
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} />
               </View>
             </View>
 
-            <View style={[styles.blackInputdate]}>
-              <Text style={styles.dateText}>10:30am Mar 29</Text>
-            </View>
-          </View>
-
-
-          {/* **************************************** */}
-          <View style={[styles.mainBlackWrap]}>
-            <View style={[styles.blackInputWrap, styles.blackBorder]}>
-              <Text style={[styles.blackInputText]}>Down Payment</Text>
-              <View style={[styles.blackInput]}>
-                <TextInput style={[styles.blackInput]} />
-              </View>
-            </View>
-
-            <View style={[styles.blackInputdate]}>
+            <View style={[AppStyles.blackInputdate]}>
               <Text style={styles.dateText}>10:30am Mar 29</Text>
             </View>
           </View>
 
           {/* **************************************** */}
-          <View style={[styles.mainBlackWrap]}>
-            <View style={[styles.blackInputWrap, styles.blackBorder]}>
-              <Text style={[styles.blackInputTextTwo]}>Installments</Text>
-              <View style={[styles.blackInput]}>
-                <TextInput style={[styles.blackInput]} />
-              </View>
-            </View>
-          </View>
-
-
-          {/* **************************************** */}
-          <View style={[styles.mainBlackWrap, styles.lessMargin]}>
-            <View style={[styles.blackInputWrap, styles.blackBorder]}>
-              <Text style={[styles.blackInputTextTwo]}>Installments 1</Text>
-              <View style={[styles.blackInput]}>
-                <TextInput style={[styles.blackInput]} />
+          <View style={[AppStyles.mainBlackWrap]}>
+            <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+              <Text style={[AppStyles.blackInputText]}>DOWN PAYMENT</Text>
+              <View style={[AppStyles.blackInput]}>
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} />
               </View>
             </View>
 
-            <View style={[styles.blackInputdateTwo]}>
+            <View style={[AppStyles.blackInputdate]}>
               <Text style={styles.dateText}>10:30am Mar 29</Text>
             </View>
           </View>
 
           {/* **************************************** */}
-          <View style={[styles.mainBlackWrap, styles.lessMargin]}>
-            <View style={[styles.blackInputWrap, styles.blackBorder]}>
-              <Text style={[styles.blackInputTextTwo]}>Installments 2</Text>
-              <View style={[styles.blackInput]}>
-                <TextInput style={[styles.blackInput]} />
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <PickerComponent onValueChange={handleForm} data={getInstallments} name={'customerId'} placeholder='Instalments' />
+              {
+                checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
+              }
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <View style={[AppStyles.mainBlackWrap]}>
+            <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+              <Text style={[AppStyles.blackInputText]}>INSTALMENTS 01</Text>
+              <View style={[AppStyles.blackInput]}>
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} />
+              </View>
+            </View>
+
+            <View style={[AppStyles.blackInputdate]}>
+              <Text style={styles.dateText}>10:30am Mar 29</Text>
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <View style={[AppStyles.mainBlackWrap]}>
+            <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
+              <Text style={[AppStyles.blackInputText]}>COMMISSION PAYMENT</Text>
+              <View style={[AppStyles.blackInput]}>
+                <TextInput style={[AppStyles.blackInput]}/>
               </View>
             </View>
           </View>
 
           {/* **************************************** */}
-          <View style={[styles.mainBlackWrap, styles.lessMargin]}>
-            <View style={[styles.blackInputWrap, styles.blackBorder]}>
-              <Text style={[styles.blackInputTextTwo]}>Installments 3</Text>
-              <View style={[styles.blackInput]}>
-                <TextInput style={[styles.blackInput]} />
-              </View>
-            </View>
-          </View>
-
-
-          {/* **************************************** */}
-          <View style={[styles.mainBlackWrap, styles.topMargin]}>
-            <View style={[styles.blackInputWrap, styles.blackBorder]}>
-              <Text style={[styles.blackInputText]}>Commission Payment</Text>
-              <View style={[styles.blackInput]}>
-                <TextInput style={[styles.blackInput]} />
-              </View>
-            </View>
-          </View>
-
-          {/* **************************************** */}
-          <View style={[styles.mainInputWrap]}>
+          <View style={[AppStyles.mainInputWrap]}>
             <Button
               onPress={() => { formSubmit() }}
               style={[AppStyles.formBtn, styles.addInvenBtn]}>

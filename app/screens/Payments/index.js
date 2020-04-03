@@ -42,6 +42,7 @@ class Payments extends Component {
           getFloor={StaticData.floors}
           getUnit={StaticData.units}
           getProject={getProject}
+          getInstallments={StaticData.getInstallments}
           />
         </View>
       </ScrollView>

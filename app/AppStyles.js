@@ -183,4 +183,49 @@ export default AppStyles = {
         fontSize: 10,
         marginTop: 5,
     },
+    mainInputWrap: {
+        marginBottom: 10,
+        marginTop: 10,
+      },
+      modalMain:{
+        paddingBottom: 50,
+        paddingTop: 15,
+      },
+      mainBlackWrap: {
+        flexDirection: 'row',
+        marginBottom: 10,
+        marginTop: 10,
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        overflow: 'hidden'
+      },
+      blackInputWrap: {
+        width: '60%',
+        padding: 5,
+      },
+      fullWidth:{
+        width: '100%',
+      },
+      blackInputText: {
+        color: '#000',
+        marginBottom: 2,
+        fontSize: 10,
+        fontWeight: 'bold',
+        letterSpacing: 2,
+      },
+      blackInput: {
+        minHeight: 30,
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#0F74EE',
+      },
+      blackInputdate: {
+        position: 'relative',
+        top: 20,
+        marginLeft: 15,
+      },
+      dateText:{
+        letterSpacing: 2,
+        fontSize: 10,
+      },
 }

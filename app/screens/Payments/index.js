@@ -114,10 +114,10 @@ class Payments extends Component {
         unitId: formData.unitId,
         installments: totalInstalments
       }
-      // axios.post(`/api/leads/project?id=${formData.projectId}`)
-      // .then(() => {
-      // console.log(body)
-      // })
+      axios.post(`/api/leads/project?id=${formData.projectId}`)
+        .then((res) => {
+          console.log(res.data)
+        })
     }
   }
 

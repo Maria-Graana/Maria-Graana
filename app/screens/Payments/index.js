@@ -69,8 +69,8 @@ class Payments extends Component {
   }
   instalmentsField = (value) => {
     let array = []
-    for(var i=1;i<= value;i++){
-      array.push({instalments: ''})
+    for (var i = 1; i <= value; i++) {
+      array.push({ instalments: '' })
     }
     this.setState({
       totalInstalments: array
@@ -101,11 +101,23 @@ class Payments extends Component {
 
   formSubmit = () => {
     const { formData, totalInstalments } = this.state
-    if(!formData.projectId || !formData.floorId || !formData.unitId || !formData.token || !formData.downPayment || !formData.commisionPayment){
+    if (!formData.projectId || !formData.floorId || !formData.unitId || !formData.token || !formData.downPayment || !formData.commisionPayment) {
       this.setState({
         checkValidation: true
       })
-    }else{
+    } else {
+      let body = {
+        commisionPayment: formData.commisionPayment,
+        downPayment: formData.downPayment,
+        floorId: formData.floorId,
+        token: formData.token,
+        unitId: formData.unitId,
+        installments: totalInstalments
+      }
+      // axios.post(`/api/leads/project?id=${formData.projectId}`)
+      // .then(() => {
+      // console.log(body)
+      // })
     }
   }
 

@@ -88,8 +88,8 @@ class LeadPropsure extends React.Component {
         this.setState({ isVisible: false })
     }
 
-    setSelectedProperty = (propertyId) => {
-        this.setState({ isVisible: true, selectedPropertyId: propertyId });
+    showPackageModal = (propertyId) => {
+        this.setState({ isVisible: true, selectedPropertyId: propertyId,checkPackageValidation:false });
     }
 
 
@@ -125,7 +125,7 @@ class LeadPropsure extends React.Component {
     }
 
     showDocumentModal = (propsureId) => {
-        this.setState({ documentModalVisible: true, selectedPropsureId: propsureId });
+        this.setState({ documentModalVisible: true, selectedPropsureId: propsureId,checkValidation:false });
     }
 
     closeDocumentModal = () => {
@@ -186,7 +186,7 @@ class LeadPropsure extends React.Component {
 
     renderPropsureVerificationView = (item) => {
         return (
-            <TouchableOpacity key={item.id.toString()} onPress={() => this.setSelectedProperty(item.id)}
+            <TouchableOpacity key={item.id.toString()} onPress={() => this.showPackageModal(item.id)}
                 style={styles.viewButtonStyle} activeOpacity={0.7}>
                 <Text style={styles.propsureVerificationTextStyle}>
                     PROPSURE VERIFICATION

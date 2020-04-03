@@ -295,7 +295,6 @@ class Diary extends React.Component {
 
   handleLeadLinkPress = (armsLeadId) => {
     axios.get(`/api/leads/byId?id=${armsLeadId}`).then(response => {
-      console.log(response.data);
       this.setState({ openPopup: false})
       this.props.navigation.navigate('LeadDetail', { lead: response.data, purposeTab: response.data.purpose })
     }).catch(error => {

@@ -95,7 +95,7 @@ class Payments extends Component {
 
   handleInstalments = (value, index) => {
     const { totalInstalments } = this.state
-    totalInstalments[index].installmentAmount = value
+    totalInstalments[index].installmentAmount = parseInt(value)
     this.setState(totalInstalments)
   }
 
@@ -107,17 +107,17 @@ class Payments extends Component {
       })
     } else {
       let body = {
-        commisionPayment: formData.commisionPayment,
-        downPayment: formData.downPayment,
+        commisionPayment: parseInt(formData.commisionPayment),
+        downPayment: parseInt(formData.downPayment),
         floorId: formData.floorId,
-        token: formData.token,
+        token: parseInt(formData.token),
         unitId: formData.unitId,
         installments: totalInstalments,
         no_of_installments: totalInstalments.length,
       }
       console.log('++++',body)
 
-      axios.post(`/api/leads/project?id=${formData.projectId}`, body)
+      axios.patch(`/api/leads/project?id=${formData.projectId}`, body)
         .then((res) => {
           console.log(res.data)
         })

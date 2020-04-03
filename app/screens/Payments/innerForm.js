@@ -60,7 +60,7 @@ class InnerForm extends Component {
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
-              <Text style={styles.dateText}>10:30am Mar 29</Text>
+              <Text style={AppStyles.dateText}>10:30am Mar 29</Text>
             </View>
           </View>
 
@@ -74,7 +74,7 @@ class InnerForm extends Component {
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
-              <Text style={styles.dateText}>10:30am Mar 29</Text>
+              <Text style={AppStyles.dateText}>10:30am Mar 29</Text>
             </View>
           </View>
 
@@ -98,7 +98,7 @@ class InnerForm extends Component {
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
-              <Text style={styles.dateText}>10:30am Mar 29</Text>
+              <Text style={AppStyles.dateText}>10:30am Mar 29</Text>
             </View>
           </View>
 

@@ -177,5 +177,15 @@ export default StaticData = {
         { value: '8', name: '08' },
         { value: '9', name: '09' },
         { value: '10', name: '10' },
+    ],
+    propsurePackages: [
+        {
+            name: 'SILVER PACKAGE',
+            value: 'silver'
+        },
+        {
+            name: 'GOLD PACKAGE',
+            value: 'gold'
+        }
     ]
 }

@@ -3,11 +3,11 @@ import * as types from '../types';
 
 
 const lead = (state = {}, action) => {
-    switch(action.type) {
-        case types.SET_LEAD: 
-            console.log('action.payload: ', action.payload); return action.payload
+    switch (action.type) {
+        case types.SET_LEAD:
+            return action.payload
         case types.REMOVE_LEAD:
-            return {}; 
+            return {};
         default: return state
     }
 }

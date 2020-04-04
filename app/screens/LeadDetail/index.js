@@ -58,6 +58,7 @@ class LeadDetail extends React.Component {
         const { type } = this.state
         const { route, user } = this.props;
         const { lead } = route.params
+
         return (
             <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
@@ -69,7 +70,7 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}> Requirement </Text>
                         <Text style={styles.labelText}>{!lead.projectId && lead.size} {!lead.projectId && lead.size_unit} {!lead.projectId && lead.type}{lead.projectId && lead.project.type}</Text>
                         <Text style={styles.headingText}> {type === 'Invest' ? 'Project' : 'Area'} </Text>
-                        <Text style={styles.labelText}>{!lead.projectId && 'F-10 Markaz, '}{!lead.projectId && lead.city && lead.city.name} {lead.projectId && lead.project.name}</Text>
+                        <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas.length && lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name} {!lead.projectId && lead.city && lead.city.name} {lead.projectId && lead.project.name}</Text>
                         <Text style={styles.headingText}> Price Range </Text>
                         <Text style={styles.labelText}> PKR {!lead.projectId && lead.price} {lead.projectId && lead.minPrice} - {lead.projectId && lead.maxPrice}</Text>
                         <View style={styles.underLine} />
@@ -78,9 +79,9 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}> Modified Date </Text>
                         <Text style={styles.labelText}> {moment(lead.updatedAt).format(_format)} </Text>
                         <Text style={styles.headingText}> Lead Source </Text>
-                        <Text style={styles.labelText}> Online Marketing </Text>
+                        <Text style={styles.labelText}> {lead.origin ? lead.origin.split('_').join(' '):null} </Text>
                         <Text style={styles.headingText}> Additional Information </Text>
-                        <Text style={styles.labelText}> Walk-in lead </Text>
+                        <Text style={styles.labelText}> {lead.category ? lead.category: null} </Text>
                     </View>
                     <View style={styles.pad}>
                         <Text style={[styles.headingText, styles.padLeft]}> Status </Text>

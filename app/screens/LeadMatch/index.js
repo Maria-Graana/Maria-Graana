@@ -16,6 +16,7 @@ import FilterModal from '../../components/FilterModal/index';
 import _ from 'underscore';
 import helper from '../../helper';
 import { setlead } from '../../actions/lead';
+import StaticData from '../../StaticData';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -37,30 +38,34 @@ class LeadMatch extends React.Component {
             graanaData: [],
             agency21Data: [],
             formData: {
-                city: '',
-                area: '',
+                cityId: '',
+                areaId: '',
                 minPrice: '',
                 maxPrice: '',
                 bed: '',
                 bath: '',
                 size: '',
                 sizeUnit: '',
-                properySubType: '',
+                propertySubType: '',
                 propertyType: '',
+                purpose: '',
             },
             checkCount: {
                 'true': 0,
                 'false': 0
             },
             selectedProperties: [],
-            displayButton: false
+            displayButton: false,
+            cities: [],
+            areas: [],
+            subTypVal: []
         }
     }
 
     componentDidMount() {
-        const{lead}= this.props.route.params
+        const { lead } = this.props.route.params
         this.props.dispatch(setlead(lead))
-        this.fetchMatches()
+        this.resetFilter()
     }
 
     selectedOrganization = (value) => {
@@ -72,20 +77,24 @@ class LeadMatch extends React.Component {
         })
     }
 
+    
+
     filterModal = () => {
         const { showFilter } = this.state
         this.setState({
             showFilter: !showFilter,
-            matchesBol: false
-        }, () => {
-            this.fetchMatches()
+            matchesBol: false,
         })
     }
 
-    handleForm = (value, name) => {
-        const { formData } = this.state
-        formData[name] = value
-        this.setState({ formData })
+    submitFilter = (formData) => {
+        this.setState({
+            formData: formData,
+            showFilter: false,
+            loading: true,
+        }, () => {
+            this.fetchMatches()
+        })
     }
 
     canCallApi = () => {
@@ -105,15 +114,48 @@ class LeadMatch extends React.Component {
         }
     }
 
+    resetFilter = () => {
+        const { lead } = this.props
+        let cityId = ''
+        let areaId = ''
+
+        if ('city' in lead && lead.city) {
+            cityId = lead.city.id
+        }
+        if ('armsLeadAreas' in lead) {
+            if (lead.armsLeadAreas.length) {
+                if ('area' in lead.armsLeadAreas[0]) {
+                    areaId = lead.armsLeadAreas[0].area.id
+                }
+            }
+        }
+        this.setState({
+            formData: {
+                cityId: cityId,
+                areaId: areaId,
+                minPrice: lead.min_price || '',
+                maxPrice: lead.price || '',
+                bed: lead.bed || '',
+                bath: lead.bath || '',
+                size: lead.size || '',
+                sizeUnit: lead.size_unit || '',
+                propertySubType: lead.subtype || '',
+                propertyType: lead.type || '',
+                purpose: lead.purpose || '',
+            }
+        }, () => {
+            this.fetchMatches()
+        })
+    }
+
     fetchMatches = () => {
         const { organization, matchesBol, formData, showCheckBoxes } = this.state
         const { route } = this.props
         const { lead } = route.params
         let callApi = this.canCallApi()
         let matches = []
-        
         if (callApi || !showCheckBoxes) {
-            axios.get(`/api/leads/matches?leadId=${lead.id}&organization=${organization}&matches=${matchesBol}&type=${formData.propertyType}&subtype=${formData.properySubType}&area_id=${formData.area}`)
+            axios.get(`/api/leads/matches?leadId=${lead.id}&organization=${organization}&type=${formData.propertyType}&subtype=${formData.propertySubType}&area_id=${formData.areaId}&purpose=${formData.purpose}&price_min=${formData.minPrice}&price_max=${formData.maxPrice}&city_id=${formData.cityId}&bed=${formData.bed}&bath=${formData.bath}&size=${formData.size}&unit=${formData.sizeUnit}`)
                 .then((res) => {
                     res.data.rows.map((item, index) => {
                         if ('armsuser' in item) {
@@ -235,14 +277,14 @@ class LeadMatch extends React.Component {
                     if (item.checkBox) {
                         this.setState(prevState => ({ selectedProperties: [...prevState.selectedProperties, item] }))
                     } else {
-                        let propValues= selectedProperties.filter((value)=> {
+                        let propValues = selectedProperties.filter((value) => {
                             if (value.id === item.id) {
                                 return false
                             } else {
                                 return true
                             }
                         })
-                        this.setState(({ selectedProperties: [...propValues]}))
+                        this.setState(({ selectedProperties: [...propValues] }))
                     }
                     return item
                 }
@@ -301,18 +343,18 @@ class LeadMatch extends React.Component {
     }
 
     sendProperties = () => {
-        const {selectedProperties}= this.state
-        const {lead}= this.props.route.params
+        const { selectedProperties } = this.state
+        const { lead } = this.props.route.params
         axios.post(`/api/leads/${lead.id}/shortlist`, selectedProperties)
-        .then ((res) => {
-            helper.successToast('PROPERTIES SAVED!')
-            this.unSelectAll()
-            this.props.navigation.navigate('Viewing',{ lead: lead })
-        })
-        .catch((error) => {
-            console.log(error)
-            helper.errorToast('ERROR: SAVING PROPERTIES!')
-        })
+            .then((res) => {
+                helper.successToast('PROPERTIES SAVED!')
+                this.unSelectAll()
+                this.props.navigation.navigate('Viewing', { lead: lead })
+            })
+            .catch((error) => {
+                console.log(error)
+                helper.errorToast('ERROR: SAVING PROPERTIES!')
+            })
     }
 
     goToDiaryForm = () => {
@@ -326,14 +368,14 @@ class LeadMatch extends React.Component {
     }
 
     goToAttachments() {
-        const { navigation,route } = this.props;
+        const { navigation, route } = this.props;
         const { lead } = route.params;
         this.setState({ active: false })
         navigation.navigate('Attachments', { leadId: lead.id });
     }
 
     goToComments() {
-        const { navigation,route } = this.props;
+        const { navigation, route } = this.props;
         const { lead } = route.params;
         this.setState({ active: false })
         navigation.navigate('Comments', { leadId: lead.id });
@@ -341,7 +383,7 @@ class LeadMatch extends React.Component {
 
     render() {
         // const { user } = this.props
-        const { organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, checkCount, formData, displayButton, active } = this.state
+        const { cities, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, active } = this.state
 
         return (
             !loading ?
@@ -359,7 +401,7 @@ class LeadMatch extends React.Component {
                                 <Text style={[(organization === 'agency21') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Agency21 </Text>
                             </TouchableOpacity>
                         </View>
-                        <FilterModal formData={formData} handleForm={this.handleForm} openPopup={showFilter} filterModal={this.filterModal} />
+                        <FilterModal openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter}/>
                         <View style={{ flexDirection: "row", paddingTop: 5, paddingLeft: 15 }}>
                             <View style={{ marginRight: 15 }}>
                                 <CheckBox onPress={() => { this.unSelectAll() }} color={AppStyles.colors.primaryColor} checked={checkAllBoolean} />
@@ -380,7 +422,7 @@ class LeadMatch extends React.Component {
                                 <FlatList
                                     data={matchData.data}
                                     renderItem={(item, index) => (
-                                        <View style={{marginVertical: 10, marginHorizontal: 15}}>
+                                        <View style={{ marginVertical: 10, marginHorizontal: 15 }}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile
@@ -410,9 +452,9 @@ class LeadMatch extends React.Component {
                     {
                         displayButton ?
                             <View style={{ position: "absolute", left: 0, bottom: 0, zIndex: 20, height: 50, width: '100%' }}>
-                                <TouchableOpacity 
-                                onPress={() => this.sendProperties()}
-                                style={{ marginHorizontal: 15, marginRight: 80, opacity: 0.9, backgroundColor: AppStyles.colors.primaryColor, justifyContent: "center", alignItems: "center", padding: 10, borderRadius: 5 }}>
+                                <TouchableOpacity
+                                    onPress={() => this.sendProperties()}
+                                    style={{ marginHorizontal: 15, marginRight: 80, opacity: 0.9, backgroundColor: AppStyles.colors.primaryColor, justifyContent: "center", alignItems: "center", padding: 10, borderRadius: 5 }}>
                                     <Text style={{ color: 'white' }}> Continue With Selected Properties </Text>
                                 </TouchableOpacity>
                             </View>

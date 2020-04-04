@@ -19,12 +19,66 @@ class FilterModal extends React.Component {
         this.state = {
             cities: [],
             areas: [],
-            subTypVal: []
+            subTypVal: [],
+            formData: {
+                cityId: '',
+                areaId: '',
+                minPrice: '',
+                maxPrice: '',
+                bed: '',
+                bath: '',
+                size: '',
+                sizeUnit: '',
+                propertySubType: '',
+                propertyType: '',
+                purpose: '',
+            },
         }
     }
 
     componentDidMount() {
         this.getCities()
+        this.resetFilter()
+    }
+
+    handleForm = (value, name) => {
+        const { formData } = this.state
+        formData[name] = value
+        this.setState({ formData })
+    }
+
+    resetFilter = () => {
+        const { lead } = this.props
+        let cityId = ''
+        let areaId = ''
+
+        if ('city' in lead && lead.city) {
+            cityId = lead.city.id
+            this.getAreas(cityId)
+        }
+        if (lead.armsLeadAreas.length) {
+            if ('area' in armsLeadAreas[0]) {
+                areaId = lead.armsLeadAreas[0].area.id
+            }
+        }
+        if (lead.type) {
+            this.getSubType(lead.type)
+        }
+        this.setState({
+            formData: {
+                cityId: cityId,
+                areaId: areaId,
+                minPrice: lead.min_price || '',
+                maxPrice: lead.price || '',
+                bed: lead.bed || '',
+                bath: lead.bath || '',
+                size: lead.size || '',
+                sizeUnit: lead.size_unit || '',
+                propertySubType: lead.subtype || '',
+                propertyType: lead.type || '',
+                purpose: lead.purpose || '',
+            }
+        })
     }
 
     getCities = () => {
@@ -39,7 +93,6 @@ class FilterModal extends React.Component {
     }
 
     getAreas = (cityId) => {
-        console.log(cityId)
         axios.get(`/api/areas?city_id=${cityId}&&all=${true}`)
             .then((res) => {
                 let areas = [];
@@ -51,80 +104,76 @@ class FilterModal extends React.Component {
     }
 
     getSubType = (text) => {
-        console.log(text)
-        const {subType}= StaticData
+        const { subType } = StaticData
         this.setState({
             subTypVal: subType[text]
         })
     }
 
-    formData = () => {
-
+    submitFilter = () => {
+        const {formData}= this.state
+        this.props.submitFilter(formData)
     }
 
     render() {
         const {
-            data,
             openPopup,
-            screenName,
-            user,
-            formData,
-            handleForm,
-            filterModal
         } = this.props;
-        const { cities, areas, subTypVal } = this.state
-        const { sizeUnit, type, oneToTen } = StaticData
+
+        const { cities, areas, subTypVal, formData } = this.state
+        const { sizeUnit, type, oneToTen, } = StaticData
+
         return (
             <Modal visible={openPopup}
                 animationType="slide"
                 onRequestClose={this.closePopup}
-            >
+            > 
                 <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
                     <View style={[{ padding: 15 }]}>
-                        <PickerComponent selectedItem={formData.city} onValueChange={(text) => {
-                            handleForm(text, 'city')
+                        <PickerComponent selectedItem={formData.cityId} onValueChange={(text) => {
+                            this.handleForm(text, 'city')
                             this.getAreas(text)
-                        }} data={cities} name={'type'} placeholder='Select City' />
+                        }} data={cities.length ? cities : []} name={'city'} placeholder='Select City' />
                     </View>
                     <View style={[{ padding: 15 }]}>
-                        <PickerComponent selectedItem={formData.area} onValueChange={(text) => { handleForm(text, 'area') }} data={areas} name={'type'} placeholder='Select Area' />
+                        <PickerComponent selectedItem={formData.areaId} onValueChange={(text) => { this.handleForm(text, 'area') }} data={areas.length ? areas : []} name={'area'} placeholder='Select Area' />
                     </View>
                     <View style={[{ padding: 15 }]}>
                         <PickerComponent selectedItem={formData.propertyType} onValueChange={(text) => {
-                            handleForm(text, 'propertyType')
+                            this.handleForm(text, 'propertyType')
                             this.getSubType(text)
                         }} data={type} name={'type'} placeholder='Property Type' />
                     </View>
                     <View style={[{ padding: 15 }]}>
-                        <PickerComponent selectedItem={formData.propertySubType} onValueChange={(text) => { handleForm(text, 'properySubType') }} data={subTypVal} name={'type'} placeholder='Property Sub Type' />
+                        <PickerComponent selectedItem={formData.propertySubType} onValueChange={(text) => { this.handleForm(text, 'propertySubType') }} data={subTypVal.length ? subTypVal : null} name={'type'} placeholder='Property Sub Type' />
                     </View>
                     <View style={{ flexDirection: "row", padding: 15 }}>
                         <View style={[{ paddingRight: 10, flex: 1, }]}>
-                            <PickerComponent selectedItem={formData.size} onValueChange={(text) => { handleForm(text, 'size') }} data={oneToTen} name={'type'} placeholder='Size' />
+                            <PickerComponent selectedItem={formData.size} onValueChange={(text) => { this.handleForm(text, 'size') }} data={oneToTen} name={'type'} placeholder='Size' />
                         </View>
                         <View style={[{ flex: 1, }]}>
-                            <PickerComponent selectedItem={formData.sizeUnit} onValueChange={(text) => { handleForm(text, 'sizeUnit') }} data={sizeUnit} name={'type'} placeholder='Size Unit' />
-                        </View>
-                    </View>
-                    <View style={{ flexDirection: "row", padding: 15 }}>
-                        <View style={[{ paddingRight: 10, flex: 1, }]}>
-                            <TextInput value={formData.minPrice} onChangeText={(text) => { handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'minPrince'} placeholder={'Min Price'} />
-                        </View>
-                        <View style={[{ flex: 1, }]}>
-                            <TextInput value={formData.maxPrice} onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'maxPrince'} placeholder={'Max Price'} />
+                            <PickerComponent selectedItem={formData.sizeUnit} onValueChange={(text) => { this.handleForm(text, 'sizeUnit') }} data={sizeUnit} name={'type'} placeholder='Size Unit' />
                         </View>
                     </View>
                     <View style={{ flexDirection: "row", padding: 15 }}>
                         <View style={[{ paddingRight: 10, flex: 1, }]}>
-                            <TextInput value={formData.bed} onChangeText={(text) => { handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
+                            <TextInput value={formData.minPrice} onChangeText={(text) => { this.handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'minPrince'} placeholder={'Min Price'} />
                         </View>
                         <View style={[{ flex: 1, }]}>
-                            <TextInput value={formData.bath} onChangeText={(text) => { handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
+                            <TextInput value={formData.maxPrice} onChangeText={(text) => { this.handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'maxPrince'} placeholder={'Max Price'} />
+                        </View>
+                    </View>
+                    <View style={{ flexDirection: "row", padding: 15 }}>
+                        <View style={[{ paddingRight: 10, flex: 1, }]}>
+                            <TextInput value={formData.bed} onChangeText={(text) => { this.handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
+                        </View>
+                        <View style={[{ flex: 1, }]}>
+                            <TextInput value={formData.bath} onChangeText={(text) => { this.handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
                         </View>
                     </View>
                     <View style={[AppStyles.mainInputWrap, { padding: 15 }]}>
                         <Button
-                            onPress={() => { this.props.filterModal() }}
+                            onPress={() => { this.submitFilter() }}
                             style={[AppStyles.formBtn, styles.btn1]}>
                             <Text style={AppStyles.btnText}>MATCH</Text>
                         </Button>
@@ -137,7 +186,8 @@ class FilterModal extends React.Component {
 
 mapStateToProps = (store) => {
     return {
-        user: store.user.user
+        user: store.user.user,
+        lead: store.lead.lead
     }
 }
 

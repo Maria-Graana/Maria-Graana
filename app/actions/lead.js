@@ -1,7 +1,6 @@
 import * as types from '../types';
 
 export function setlead(lead){
-    console.log('inside lead dispatch')
     return {
         type: types.SET_LEAD,
         payload: lead

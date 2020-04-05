@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity, } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, FontAwesome, Entypo } from '@expo/vector-icons';
 import { CheckBox } from 'native-base';
 
 class InventoryTile extends React.Component {
@@ -18,7 +18,9 @@ class InventoryTile extends React.Component {
 	}
 
 	render() {
-		const { data, showCheckBoxes } = this.props
+		const { data, showCheckBoxes, menuShow } = this.props
+		let showLable = menuShow || false
+		console.log(data)
 		return (
 			<TouchableOpacity
 				style={{ flexDirection: "row" }}
@@ -26,13 +28,13 @@ class InventoryTile extends React.Component {
 					this.props.displayChecks()
 					this.props.addProperty(data)
 				}}
-				onPress={ () => {this.props.addProperty(data)}}
+				onPress={() => { this.props.addProperty(data) }}
 			>
 				<View style={styles.tileContainer}>
 					<View style={[AppStyles.mb1, styles.pad5]}>
 						<Text style={styles.currencyText}> PKR  <Text style={styles.priceText}>{data.price}</Text> </Text>
 						<Text style={styles.marlaText}> {data.size} {data.size_unit} House For Sale </Text>
-						<Text style={styles.addressText}> F-10 Markaz, Islamabad </Text>
+						<Text style={styles.addressText}> {data.area ? data.area.name + ', ': null} {data.city ? data.city.name: null} </Text>
 						<View style={styles.iconContainer}>
 							<View style={styles.iconInner}>
 								<Ionicons name="ios-bed" size={20} color={AppStyles.colors.subTextColor} />
@@ -45,11 +47,24 @@ class InventoryTile extends React.Component {
 						</View>
 					</View>
 					<View style={styles.underLine} />
-					<View style={[styles.pad5, { marginTop: 10 }]}>
-						<Text style={styles.agentText}> Agent Name </Text>
-						<Text style={styles.labelText}> {data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
-						<Text style={styles.agentText}> Contact No </Text>
-						<Text style={styles.labelText}> {data.user ? data.user.phoneNumber : '- - -'} </Text>
+					<View style={[styles.pad5, { marginRight: 5 }]}>
+						<View style={{ flexDirection: 'row', height: 20 }}>
+							<View style={{ flex: 1 }}></View>
+							{
+								showLable ?
+									<Entypo onPress={() => {this.props.doneViewing(data)}} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
+									:
+									null
+							}
+						</View>
+						<View style={{ marginTop: 10 }}>
+							<Text style={styles.agentText}> Agent Name </Text>
+							<Text style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
+							<View style={{ flexDirection: 'row', height: 26 }}>
+								<View style={{ flex: 1 }}></View>
+								<FontAwesome name="phone" size={25} color={AppStyles.colors.subTextColor} />
+							</View>
+						</View>
 					</View>
 				</View>
 				{

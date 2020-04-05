@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './style'
-import { View, Text, FlatList, Image, RefreshControlBase } from 'react-native';
+import { View, Text, FlatList, Image } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
@@ -16,7 +16,6 @@ import FilterModal from '../../components/FilterModal/index';
 import _ from 'underscore';
 import helper from '../../helper';
 import { setlead } from '../../actions/lead';
-import StaticData from '../../StaticData';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -155,6 +154,7 @@ class LeadMatch extends React.Component {
         let callApi = this.canCallApi()
         let matches = []
         if (callApi || !showCheckBoxes) {
+            console.log(`/api/leads/matches?leadId=${lead.id}&organization=${organization}&type=${formData.propertyType}&subtype=${formData.propertySubType}&area_id=${formData.areaId}&purpose=${formData.purpose}&price_min=${formData.minPrice}&price_max=${formData.maxPrice}&city_id=${formData.cityId}&bed=${formData.bed}&bath=${formData.bath}&size=${formData.size}&unit=${formData.sizeUnit}`)
             axios.get(`/api/leads/matches?leadId=${lead.id}&organization=${organization}&type=${formData.propertyType}&subtype=${formData.propertySubType}&area_id=${formData.areaId}&purpose=${formData.purpose}&price_min=${formData.minPrice}&price_max=${formData.maxPrice}&city_id=${formData.cityId}&bed=${formData.bed}&bath=${formData.bath}&size=${formData.size}&unit=${formData.sizeUnit}`)
                 .then((res) => {
                     res.data.rows.map((item, index) => {
@@ -167,6 +167,7 @@ class LeadMatch extends React.Component {
                             return (matches.push(item))
                         }
                     })
+                    // console.log(matches[0])
                     this.setState({
                         matchData: {
                             type: organization,

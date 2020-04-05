@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
-import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import Loader from '../../components/loader';
 import _ from 'underscore';
@@ -16,6 +16,13 @@ class LeadOffer extends React.Component {
 		this.state = {
 			loading: true,
 			modalActive: false,
+			offersData: [],
+			leadData: {
+				my: '',
+				their: '',
+				agreed: ''
+			},
+			currentProperty: {}
 		}
 	}
 
@@ -58,14 +65,147 @@ class LeadOffer extends React.Component {
 	}
 
 	openChatModal = () => {
-		console.log('**************')
+		const { modalActive } = this.state
 		this.setState({
-			modalActive: !this.state.modalActive
+			modalActive: !modalActive,
+		}, () => {
+			if(!this.state.modalActive) {
+				this.fetchProperties()
+			}
 		})
 	}
 
+	setProperty = (property) => {
+		this.setState({ currentProperty: property }, () => {
+			this.fetchOffers()
+		})
+	}
+
+	handleForm = (value, name) => {
+		const { leadData } = this.state
+		leadData[name] = value
+		this.setState({ leadData });
+	}
+
+	fetchOffers = () => {
+		const { currentProperty } = this.state
+		const { lead } = this.props
+		axios.get(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`)
+			.then((res) => {
+				this.setState({ offerChat: res.data.rows })
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}
+
+	placeMyOffer = () => {
+		const { leadData, currentProperty } = this.state
+		const { lead } = this.props
+		if (leadData.my && leadData.my !== '') {
+			let body = {
+				offer: leadData.my,
+				type: 'my'
+			}
+			axios.post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
+				.then((res) => {
+					this.fetchOffers()
+				})
+				.catch((error) => {
+					console.log(error)
+				})
+		}
+	}
+
+	placeTheirOffer = () => {
+		const { leadData, currentProperty } = this.state
+		const { lead } = this.props
+		if (leadData.their && leadData.their !== '') {
+			let body = {
+				offer: leadData.their,
+				type: 'their'
+			}
+			axios.post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
+				.then((res) => {
+					this.fetchOffers()
+				})
+				.catch((error) => {
+					console.log(error)
+				})
+		}
+	}
+
+	placeAgreedOffer = () => {
+		const { leadData, currentProperty } = this.state
+		const { lead } = this.props
+		if (leadData.agreed && leadData.agreed !== '') {
+			let body = {
+				offer: leadData.agreed,
+				type: 'agreed'
+			}
+			axios.post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
+				.then((res) => {
+					this.fetchOffers()
+				})
+				.catch((error) => {
+					console.log(error)
+				})
+		}
+	}
+
+	checkStatus = (property) => {
+		if (property.agreedOffer.length) {
+			return (
+				<TouchableOpacity
+					style={{
+						backgroundColor: AppStyles.colors.primaryColor,
+						height: 30,
+						borderBottomEndRadius: 10,
+						borderBottomLeftRadius: 10,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
+				>
+					<Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>Agreed Amount: <Text style={{ fontFamily: AppStyles.fonts.defaultFont }}>{property.agreedOffer[0].offer}</Text></Text>
+				</TouchableOpacity >
+			)
+		} else if (property.leadOffers.length) {
+			return (
+				<TouchableOpacity
+					style={{
+						backgroundColor: 'white',
+						height: 30,
+						borderBottomEndRadius: 10,
+						borderBottomLeftRadius: 10,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
+					onPress={() => { this.openChatModal(); this.setProperty(property) }}
+				>
+					<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>View <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>Offers</Text></Text>
+				</TouchableOpacity >
+			)
+		} else {
+			return (
+				<TouchableOpacity
+					style={{
+						backgroundColor: 'white',
+						height: 30,
+						borderBottomEndRadius: 10,
+						borderBottomLeftRadius: 10,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
+					onPress={() => { this.openChatModal(); this.setProperty(property) }}
+				>
+					<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}> PLACE OFFER</Text>
+				</TouchableOpacity >
+			)
+		}
+	}
+
 	render() {
-		const { loading, matchData, user, modalActive } = this.state
+		const { loading, matchData, user, modalActive, offersData, offerChat } = this.state
 		return (
 			!loading ?
 				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
@@ -96,27 +236,20 @@ class LeadOffer extends React.Component {
 														/>
 												}
 												<View>
-													<TouchableOpacity
-														style={{
-															backgroundColor: 'white',
-															height: 30,
-															borderBottomEndRadius: 10,
-															borderBottomLeftRadius: 10,
-															justifyContent: "center",
-															alignItems: "center"
-														}}
-														onPress={() => { this.openChatModal() }}
-													>
-														<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}> BOOK VIEWING</Text>
-													</TouchableOpacity>
+													{this.checkStatus(item.item)}
 												</View>
 											</View>
 										)}
 										keyExtractor={(item, index) => item.id.toString()}
 									/>
-									{console.log(modalActive)}
 									<OfferModal
+										offersData={offersData}
 										active={modalActive}
+										offerChat={offerChat}
+										placeMyOffer={this.placeMyOffer}
+										placeTheirOffer={this.placeTheirOffer}
+										placeAgreedOffer={this.placeAgreedOffer}
+										handleForm={this.handleForm}
 										openModal={this.openChatModal}
 									/>
 								</View>

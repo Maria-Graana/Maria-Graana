@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 export default styles = StyleSheet.create({
-  widthModal:{
+  widthModal: {
     width: '100%',
     marginLeft: 0,
-  //   minHeight: '100%'
+    //   minHeight: '100%'
   },
   modalMain: {
     backgroundColor: '#E8EDF0',
@@ -22,7 +22,7 @@ export default styles = StyleSheet.create({
     marginTop: 50,
   },
   timesBtn: {
-    position: 'absolute',
+    position: 'relative',
     right: 15,
     top: 35,
   },
@@ -31,12 +31,20 @@ export default styles = StyleSheet.create({
     height: 20,
     resizeMode: 'contain',
   },
+  closeStyle: {
+    position: 'absolute',
+    right: 15,
+    top: Platform.OS == 'android' ? 10 : 40,
+    paddingVertical: 5
+  },
   mainInputWrap: {
+    marginVertical: 20,
     width: '50%',
     paddingLeft: 5,
     paddingRight: 5,
   },
   mainTopHeader: {
+    marginHorizontal: 10,
     flexDirection: 'row'
   },
   offerColor: {
@@ -76,6 +84,7 @@ export default styles = StyleSheet.create({
   },
 
   chatContainer: {
+    marginHorizontal: 10,
     paddingTop: 10,
     paddingBottom: 10,
     minHeight: '75%',

@@ -3,23 +3,28 @@ import styles from './style'
 import { View, Text, FlatList, Image } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
-import { AntDesign } from '@expo/vector-icons';
 import Ability from '../../hoc/Ability';
-import { CheckBox } from 'native-base';
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
 import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 import axios from 'axios';
 import Loader from '../../components/loader';
-import FilterModal from '../../components/FilterModal/index';
+import AddViewing from '../../components/AddViewing/index';
 import _ from 'underscore';
-import helper from '../../helper';
+import moment from 'moment';
 
 class LeadViewing extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			loading: true
+			isVisible: false,
+			loading: true,
+			viewing: {
+				date: '',
+				time: ''
+			},
+			checkValidation: false,
+			currentProperty: {}
 		}
 	}
 
@@ -46,6 +51,13 @@ class LeadViewing extends React.Component {
 			})
 	}
 
+	openModal = () => {
+		const { isVisible } = this.state
+		this.setState({
+			isVisible: !isVisible
+		})
+	}
+
 	displayChecks = () => { }
 
 	addProperty = () => { }
@@ -61,18 +73,139 @@ class LeadViewing extends React.Component {
 		}
 	}
 
+	setProperty = (property) => {
+		this.setState({ currentProperty: property })
+	}
+
+	handleForm = (value, name) => {
+		const { viewing } = this.state
+		viewing[name] = value
+		this.setState({ viewing })
+	}
+
+	submitViewing = () => {
+		const { viewing } = this.state
+		if (!viewing.time || !viewing.date) {
+			this.setState({
+				checkValidation: true
+			})
+		} else {
+			this.createViewing()
+		}
+	}
+
+	createViewing = () => {
+		const { viewing, currentProperty } = this.state
+		const { lead } = this.props
+		let body = {
+			date: viewing.date,
+			time: viewing.time,
+			propertyId: currentProperty.id,
+			leadId: lead.id
+		}
+		axios.post(`/api/leads/viewing`, body)
+			.then((res) => {
+				this.setState({
+					isVisible: false,
+					loading: true
+				})
+				this.fetchProperties()
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}
+
+	checkStatus = (property) => {
+		if (property.diaries.length) {
+			if (property.diaries[0].status === 'completed') {
+				return (
+					<TouchableOpacity
+						style={{
+							backgroundColor: AppStyles.colors.primaryColor,
+							height: 30,
+							borderBottomEndRadius: 10,
+							borderBottomLeftRadius: 10,
+							justifyContent: "center",
+							alignItems: "center"
+						}}
+					>
+						<Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>VIEWING DONE</Text>
+					</TouchableOpacity >
+				)
+			} else if (property.diaries[0].status === 'pending') {
+				return (
+					<TouchableOpacity
+						style={{
+							backgroundColor: 'white',
+							height: 30,
+							borderBottomEndRadius: 10,
+							borderBottomLeftRadius: 10,
+							justifyContent: "center",
+							alignItems: "center"
+						}}
+					>
+						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Viewing at <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>{moment(property.diaries[0].start).format("YYYY-MM-DD hh:mm a")}</Text></Text>
+					</TouchableOpacity >
+				)
+			}
+		} else {
+			return (
+				<TouchableOpacity
+					style={{
+						backgroundColor: 'white',
+						height: 30,
+						borderBottomEndRadius: 10,
+						borderBottomLeftRadius: 10,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
+					onPress={() => { this.openModal(); this.setProperty(property) }}
+				>
+					<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>BOOK VIEWING</Text>
+				</TouchableOpacity >
+			)
+		}
+	}
+
+	doneViewing = (property) => {
+		if (property.diaries.length) {
+			if (property.diaries[0].status === 'pending') {
+				let body= {
+					status: 'completed'
+				}
+
+				axios.patch(`/api/diary/update?id=${property.diaries[0].id}`, body)
+					.then((res) => {
+						this.setState({ loading: true })
+						this.fetchProperties()
+					})
+					.catch((error) => {
+						console.log(error)
+					})
+			}
+		}
+	}
+
 	render() {
-		const { loading, matchData, user } = this.state
+		const { loading, matchData, user, isVisible, checkValidation, viewing } = this.state
 		return (
 			!loading ?
 				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
 					<View>
+						<AddViewing
+							onPress={this.submitViewing}
+							handleForm={this.handleForm}
+							openModal={this.openModal}
+							viewing={viewing}
+							checkValidation={checkValidation}
+							isVisible={isVisible} />
 						{
 							matchData.length ?
 								<FlatList
 									data={matchData}
 									renderItem={(item, index) => (
-										<View style={{marginVertical: 10}}>
+										<View style={{ marginVertical: 10 }}>
 											{
 												this.ownProperty(item.item) ?
 													<MatchTile
@@ -84,6 +217,8 @@ class LeadViewing extends React.Component {
 													/>
 													:
 													<AgentTile
+														doneViewing={this.doneViewing}
+														menuShow={true}
 														data={item.item}
 														user={user}
 														displayChecks={this.displayChecks}
@@ -92,9 +227,9 @@ class LeadViewing extends React.Component {
 													/>
 											}
 											<View>
-												<TouchableOpacity style={{ backgroundColor: 'white', height: 30, borderBottomEndRadius: 10, borderBottomLeftRadius: 10, justifyContent: "center", alignItems: "center" }}>
-													<Text style={{color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont}}> BOOK VIEWING</Text>
-												</TouchableOpacity>
+												{
+													this.checkStatus(item.item)
+												}
 											</View>
 										</View>
 									)}

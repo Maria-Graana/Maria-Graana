@@ -6,7 +6,6 @@ export default styles = StyleSheet.create({
     viewContainer: {
         marginLeft: 25,
         marginRight: 25,
-        justifyContent: 'center',
     },
     closeStyle: {
         position: 'absolute',

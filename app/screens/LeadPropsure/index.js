@@ -3,6 +3,8 @@ import styles from './styles'
 import { View, Text, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import * as DocumentPicker from 'expo-document-picker';
+import { Fab, Button, Icon } from 'native-base';
+import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import AppStyles from '../../AppStyles'
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
@@ -21,6 +23,7 @@ class LeadPropsure extends React.Component {
             loading: true,
             isVisible: false,
             documentModalVisible: false,
+            active:false,
             checkValidation: false,
             checkPackageValidation: false,
             selectedPackage: '',
@@ -212,11 +215,32 @@ class LeadPropsure extends React.Component {
         });
     }
 
+    goToDiaryForm = () => {
+        const { lead ,navigation} = this.props
+        this.setState({ active: false })
+        navigation.navigate('AddDiary', {
+            update: false,
+            leadId: lead.id
+        });
+    }
+
+    goToAttachments() {
+        const { lead,navigation } = this.props
+        this.setState({ active: false })
+        navigation.navigate('Attachments', { leadId: lead.id });
+    }
+
+    goToComments() {
+        const { lead,navigation } = this.props
+        this.setState({ active: false })
+        navigation.navigate('Comments', { leadId: lead.id });
+    }
+
     render() {
-        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation } = this.state;
+        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation,active } = this.state;
         return (
             !loading ?
-                <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
+                <View style={[AppStyles.container,{ backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
                     <PropsurePackagePopup
                         packages={packages}
                         selectedPackage={selectedPackage}
@@ -234,7 +258,7 @@ class LeadPropsure extends React.Component {
                         selectedFile={file}
                         checkValidation={checkValidation}
                     />
-                    <View>
+                    <View style={{ opacity: active ? 0.3 : 1, flex: 1 }}>
                         {
                             matchData.length ?
                                 <FlatList
@@ -275,6 +299,23 @@ class LeadPropsure extends React.Component {
                                 <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                         }
                     </View>
+                    <Fab
+                            active={active}
+                            direction="up"
+                            style={{ backgroundColor: AppStyles.colors.primaryColor }}
+                            position="bottomRight"
+                            onPress={() => this.setState({ active: !active })}>
+                            <Ionicons name="md-add" color="#ffffff" />
+                            <Button style={{ backgroundColor: AppStyles.colors.primary }} activeOpacity={1} onPress={() => { this.goToDiaryForm() }}>
+                                <Icon name="md-calendar" size={20} color={'#fff'} />
+                            </Button>
+                            <Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToAttachments() }}>
+                                <Icon name="md-attach" />
+                            </Button>
+                            <Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToComments() }}>
+                                <FontAwesome name="comment" size={20} color={'#fff'} />
+                            </Button>
+                        </Fab>
                 </View>
                 :
                 <Loader loading={loading} />

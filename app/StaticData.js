@@ -187,5 +187,26 @@ export default StaticData = {
             name: 'GOLD PACKAGE',
             value: 'gold'
         }
+    ],
+    leadCloseReasons: [
+        {
+            name: 'Client not responding',
+            value: 'client_not_responding'
+        },
+        {
+            name: 'Client withdrew requirements',
+            value: 'client_withdrew_requirements'
+        },
+        {
+            name: 'No property found',
+            value: 'no_property_found'
+        },
+        {
+            name: 'Client got property from some other source',
+            value: 'property_other_source'
+        }, {
+            name: 'Client not satisfied with options',
+            value: 'client_not_satisfied'
+        }
     ]
 }

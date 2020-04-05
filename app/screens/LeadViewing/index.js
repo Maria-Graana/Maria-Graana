@@ -130,7 +130,7 @@ class LeadViewing extends React.Component {
 							alignItems: "center"
 						}}
 					>
-						<Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>VIEWING DONE</Text>
+						<Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>VIEWING DONE</Text>
 					</TouchableOpacity >
 				)
 			} else if (property.diaries[0].status === 'pending') {

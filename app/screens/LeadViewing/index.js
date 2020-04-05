@@ -1,12 +1,13 @@
 import * as React from 'react';
 import styles from './style'
-import { View, Text, FlatList, Image } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import Ability from '../../hoc/Ability';
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
-import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
+import { Fab, Button, Icon } from 'native-base';
+import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import Loader from '../../components/loader';
 import AddViewing from '../../components/AddViewing/index';
@@ -18,6 +19,7 @@ class LeadViewing extends React.Component {
 		super(props)
 		this.state = {
 			isVisible: false,
+			active: false,
 			loading: true,
 			viewing: {
 				date: '',
@@ -71,6 +73,27 @@ class LeadViewing extends React.Component {
 		} else {
 			return false
 		}
+	}
+
+	goToDiaryForm = () => {
+		const { lead, navigation } = this.props
+		this.setState({ active: false })
+		navigation.navigate('AddDiary', {
+			update: false,
+			leadId: lead.id
+		});
+	}
+
+	goToAttachments() {
+		const { lead, navigation } = this.props
+		this.setState({ active: false })
+		navigation.navigate('Attachments', { leadId: lead.id });
+	}
+
+	goToComments() {
+		const { lead, navigation } = this.props
+		this.setState({ active: false })
+		navigation.navigate('Comments', { leadId: lead.id });
 	}
 
 	setProperty = (property) => {
@@ -171,7 +194,7 @@ class LeadViewing extends React.Component {
 	doneViewing = (property) => {
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'pending') {
-				let body= {
+				let body = {
 					status: 'completed'
 				}
 
@@ -188,11 +211,11 @@ class LeadViewing extends React.Component {
 	}
 
 	render() {
-		const { loading, matchData, user, isVisible, checkValidation, viewing } = this.state
+		const { loading, matchData, user, isVisible, checkValidation, viewing, active } = this.state
 		return (
 			!loading ?
 				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-					<View>
+					<View style={{ opacity: active ? 0.3 : 1, flex: 1 }}>
 						<AddViewing
 							onPress={this.submitViewing}
 							handleForm={this.handleForm}
@@ -239,6 +262,23 @@ class LeadViewing extends React.Component {
 								<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
 						}
 					</View>
+					<Fab
+						active={active}
+						direction="up"
+						style={{ backgroundColor: AppStyles.colors.primaryColor }}
+						position="bottomRight"
+						onPress={() => this.setState({ active: !active })}>
+						<Ionicons name="md-add" color="#ffffff" />
+						<Button style={{ backgroundColor: AppStyles.colors.primary }} activeOpacity={1} onPress={() => { this.goToDiaryForm() }}>
+							<Icon name="md-calendar" size={20} color={'#fff'} />
+						</Button>
+						<Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToAttachments() }}>
+							<Icon name="md-attach" />
+						</Button>
+						<Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToComments() }}>
+							<FontAwesome name="comment" size={20} color={'#fff'} />
+						</Button>
+					</Fab>
 				</View>
 				:
 				<Loader loading={loading} />

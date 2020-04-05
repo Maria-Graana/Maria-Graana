@@ -56,9 +56,11 @@ class FilterModal extends React.Component {
             cityId = lead.city.id
             this.getAreas(cityId)
         }
-        if (lead.armsLeadAreas.length) {
-            if ('area' in armsLeadAreas[0]) {
-                areaId = lead.armsLeadAreas[0].area.id
+        if ('armsLeadAreas' in lead) {
+            if (lead.armsLeadAreas.length) {
+                if ('area' in lead.armsLeadAreas[0]) {
+                    areaId = lead.armsLeadAreas[0].area.id
+                }
             }
         }
         if (lead.type) {
@@ -111,7 +113,7 @@ class FilterModal extends React.Component {
     }
 
     submitFilter = () => {
-        const {formData}= this.state
+        const { formData } = this.state
         this.props.submitFilter(formData)
     }
 
@@ -127,7 +129,7 @@ class FilterModal extends React.Component {
             <Modal visible={openPopup}
                 animationType="slide"
                 onRequestClose={this.closePopup}
-            > 
+            >
                 <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
                     <View style={[{ padding: 15 }]}>
                         <PickerComponent selectedItem={formData.cityId} onValueChange={(text) => {

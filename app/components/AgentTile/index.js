@@ -20,7 +20,7 @@ class InventoryTile extends React.Component {
 	render() {
 		const { data, showCheckBoxes, menuShow } = this.props
 		let showLable = menuShow || false
-		console.log(data)
+		
 		return (
 			<TouchableOpacity
 				style={{ flexDirection: "row" }}

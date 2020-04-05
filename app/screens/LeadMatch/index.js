@@ -121,6 +121,7 @@ class LeadMatch extends React.Component {
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
         }
+        
         if ('armsLeadAreas' in lead) {
             if (lead.armsLeadAreas.length) {
                 if ('area' in lead.armsLeadAreas[0]) {

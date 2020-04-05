@@ -64,7 +64,7 @@ export default styles = StyleSheet.create({
     backgroundColor: '#0D73EE'
   },
   addBtnColorRight: {
-    backgroundColor: '#1D1C25'
+    backgroundColor: AppStyles.colors.primaryColor
   },
   addImg: {
     width: 30,

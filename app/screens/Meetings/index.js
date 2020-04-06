@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
-import { Text, Fab, Button } from 'native-base';
+import { View, ScrollView } from 'react-native';
+import { Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import styles from './style'
-import * as RootNavigation from '../../navigation/RootNavigation';
 import MeetingTile from '../../components/MeetingTile'
 import MeetingModal from '../../components/MeetingModal'
 import helper from '../../helper';

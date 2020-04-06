@@ -85,11 +85,6 @@ class AddRCMLead extends Component {
             })
     }
 
-    handleForm = (value, name) => {
-        const { formData } = this.state
-        formData[name] = value
-        this.setState({ formData })
-    }
 
     handleRCMForm = (value, name) => {
         const { RCMFormData } = this.state
@@ -112,24 +107,6 @@ class AddRCMLead extends Component {
 
     selectSubtype = (type) => {
         this.setState({ selectSubType: StaticData.subType[type] })
-    }
-
-    formSubmit = () => {
-        const { formData } = this.state
-        if (!formData.customerId || !formData.projectId || !formData.projectType || !formData.minPrice || !formData.maxPrice) {
-            this.setState({
-                checkValidation: true
-            })
-        } else {
-            const { user } = this.props
-            let body = {
-                ...formData,
-            }
-            axios.post(`/api/leads/project`, body)
-                .then((res) => {
-                    RootNavigation.navigate('Lead')
-                })
-        }
     }
 
     RCMFormSubmit = () => {
@@ -175,10 +152,8 @@ class AddRCMLead extends Component {
 
     render() {
         const {
-            formData,
             cities,
             getClients,
-            getProject,
             formType,
             RCMFormData,
             selectSubType,
@@ -186,7 +161,6 @@ class AddRCMLead extends Component {
             checkValidation,
         } = this.state
         const { route } = this.props
-        //console.log(StaticData.oneToTen)
         return (
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>

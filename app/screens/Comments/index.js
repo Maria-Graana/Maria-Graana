@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Alert } from 'react-native';
 import axios from 'axios';
 import _ from 'underscore';
 import AppStyles from '../../AppStyles';
@@ -38,6 +38,14 @@ class Comments extends Component {
 
     setComment = (value) => {
         this.setState({ comment: value })
+    }
+
+    showDeleteDialog(item) {
+        Alert.alert('Delete attachment', 'Are you sure you want to delete this attachment ?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', onPress: () => this.deleteComment(item) },
+        ],
+            { cancelable: false })
     }
 
     deleteComment = (commentId) => {
@@ -85,12 +93,12 @@ class Comments extends Component {
                             <CommentTile
                                 data={item}
                                 addComment={this.addComment}
-                                deleteComment={this.deleteComment} />
+                                deleteComment={(item) => this.showDeleteDialog(item)} />
                         )}
                         ListFooterComponent={
-                        <AddComment onPress={this.addComment} 
-                        comment={comment} 
-                        setComment={this.setComment} />}
+                            <AddComment onPress={this.addComment}
+                                comment={comment}
+                                setComment={this.setComment} />}
                         keyExtractor={(item, index) => index.toString()}
                     />
 

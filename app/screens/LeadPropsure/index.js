@@ -207,7 +207,7 @@ class LeadPropsure extends React.Component {
                         {
                             propsure.status === 'pending' ?
                                 'PENDING VERIFICATION' :
-                                'VERFIED'
+                                'VERIFIED'
                         }
                     </Text>
                 </TouchableOpacity>

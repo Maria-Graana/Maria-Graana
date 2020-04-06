@@ -122,11 +122,9 @@ class AddCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            const { user } = this.props
             let body = {
                 ...formData,
             }
-            console.log(body)
             axios.post(`/api/leads/project`, body)
                 .then((res) => {
                     helper.errorToast(res.data)
@@ -135,39 +133,6 @@ class AddCMLead extends Component {
         }
     }
 
-    RCMFormSubmit = () => {
-        const { formType, RCMFormData } = this.state
-        if (
-            !RCMFormData.customerId ||
-            !RCMFormData.city_id ||
-            !RCMFormData.leadAreas ||
-            !RCMFormData.type ||
-            !RCMFormData.subtype
-        ) {
-            this.setState({
-                checkValidation: true
-            })
-        } else {
-            let payLoad = {
-                purpose: formType,
-                type: RCMFormData.type,
-                subtype: RCMFormData.subtype,
-                bed: RCMFormData.bed,
-                bath: RCMFormData.bath,
-                size: RCMFormData.size,
-                leadAreas: RCMFormData.leadAreas,
-                customerId: RCMFormData.customerId,
-                city_id: RCMFormData.city_id,
-                size_unit: RCMFormData.size_unit,
-                price: RCMFormData.max_price,
-                min_price: RCMFormData.min_price,
-            }
-            axios.post(`/api/leads`, payLoad)
-                .then((res) => {
-                    RootNavigation.navigate('Lead')
-                })
-        }
-    }
 
     changeStatus = (status) => {
         this.setState({
@@ -181,14 +146,9 @@ class AddCMLead extends Component {
             cities,
             getClients,
             getProject,
-            formType,
-            RCMFormData,
-            selectSubType,
-            getAreas,
             checkValidation,
         } = this.state
         const { route } = this.props
-        //console.log(StaticData.oneToTen)
         return (
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>

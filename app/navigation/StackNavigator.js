@@ -111,7 +111,7 @@ function MainStack() {
             />
             <Stack.Screen name='AddRCMLead' component={AddRCMLead}
                 options={({ navigation, route }) => ({
-                    title: 'CREATE CM LEAD',
+                    title: 'CREATE RCM LEAD',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

@@ -9,6 +9,7 @@ import axios from 'axios'
 import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
+import helper from '../../helper';
 
 class AddCMLead extends Component {
     constructor(props) {
@@ -125,8 +126,10 @@ class AddCMLead extends Component {
             let body = {
                 ...formData,
             }
+            console.log(body)
             axios.post(`/api/leads/project`, body)
                 .then((res) => {
+                    helper.errorToast(res.data)
                     RootNavigation.navigate('Lead')
                 })
         }

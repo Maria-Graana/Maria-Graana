@@ -76,7 +76,7 @@ class Attachments extends Component {
         const { route } = this.props;
         const { leadId } = route.params;
         axios.get(`/api/leads/comments?rcmLeadId=${leadId}&type=attachment`).then(response => {
-           // console.log(response.data);
+            // console.log(response.data);
             this.setState({ attachmentRows: response.data, loading: false });
         }).catch(error => {
             console.log(error);
@@ -120,10 +120,19 @@ class Attachments extends Component {
         this.deleteAttachmentFromServer(item.id);
     }
 
+    showDeleteDialog(item) {
+        Alert.alert('Delete attachment', 'Are you sure you want to delete this attachment ?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', onPress: () => this.deleteAttachment(item) },
+        ],
+            { cancelable: false })
+    }
+
+
     deleteAttachmentFromServer(attachmentId) {
         axios.delete(`/api/leads/comments/remove?id=${attachmentId}`)
             .then((res) => {
-               // console.log(res.status);
+                this.getAttachmentsFromServer();
             })
             .catch((error) => {
                 console.log('error', error.message)
@@ -169,7 +178,7 @@ class Attachments extends Component {
                         renderItem={({ item }) => (
                             <AttachmentTile
                                 data={item}
-                                deleteAttachment={this.deleteAttachment} />
+                                deleteAttachment={(item) => this.showDeleteDialog(item)} />
                         )}
                         ListFooterComponent={<AddAttachment onPress={this.showModal} />}
                         keyExtractor={(item, index) => index.toString()}

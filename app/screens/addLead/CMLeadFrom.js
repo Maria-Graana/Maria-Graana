@@ -6,20 +6,11 @@ import styles from './style';
 import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
+import StaticData from '../../StaticData'
 
 class CMLeadFrom extends Component {
   constructor(props) {
     super(props)
-
-    this.city = [
-      { value: 'shop', name: 'shop' },
-      { value: 'office', name: 'Office' },
-      { value: 'other', name: 'other' },
-      { value: 'food Court', name: 'Food Court' },
-      { value: 'hotel Suite', name: 'Hotel Suite' },
-      { value: 'harley Center', name: 'Harley Center' },
-      { value: 'other', name: 'other' },
-    ]
   }
 
   componentDidMount() { }
@@ -69,7 +60,7 @@ class CMLeadFrom extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={this.city} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Project Type' />
+            <PickerComponent onValueChange={handleForm} data={StaticData.projectType} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Project Type' />
             {
               checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
             }

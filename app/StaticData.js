@@ -208,5 +208,14 @@ export default StaticData = {
             name: 'Client not satisfied with options',
             value: 'client_not_satisfied'
         }
-    ]
+    ],
+    projectType : [
+        { value: 'shop', name: 'shop' },
+        { value: 'office', name: 'Office' },
+        { value: 'other', name: 'other' },
+        { value: 'food Court', name: 'Food Court' },
+        { value: 'hotel Suite', name: 'Hotel Suite' },
+        { value: 'harley Center', name: 'Harley Center' },
+        { value: 'other', name: 'other' },
+      ]
 }

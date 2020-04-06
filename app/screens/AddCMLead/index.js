@@ -29,19 +29,6 @@ class AddCMLead extends Component {
                 projectType: '',
                 minPrice: '',
                 maxPrice: '',
-            },
-            RCMFormData: {
-                type: "",
-                subtype: "",
-                bed: null,
-                bath: null,
-                size: null,
-                leadAreas: [],
-                customerId: '',
-                city_id: '',
-                size_unit: null,
-                max_price: null,
-                min_price: null,
             }
         }
     }
@@ -90,25 +77,6 @@ class AddCMLead extends Component {
         const { formData } = this.state
         formData[name] = value
         this.setState({ formData })
-    }
-
-    handleRCMForm = (value, name) => {
-        const { RCMFormData } = this.state
-        RCMFormData[name] = value
-        this.setState({ RCMFormData })
-        if (RCMFormData.type != '') { this.selectSubtype(RCMFormData.type) }
-        if (RCMFormData.city_id != '') { this.getAreas(RCMFormData.city_id) }
-    }
-
-    getAreas = (cityId) => {
-        axios.get(`/api/areas?city_id=${cityId}&all=true`)
-            .then((res) => {
-                let getArea = [];
-                res && res.data.items.map((item, index) => { return (getArea.push({ value: item.id, name: item.name })) })
-                this.setState({
-                    getAreas: getArea
-                })
-            })
     }
 
     selectSubtype = (type) => {

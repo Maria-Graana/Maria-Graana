@@ -21,14 +21,6 @@ class AddRCMLead extends Component {
             formType: 'sale',
             selectSubType: [],
             getAreas: [],
-            formData: {
-                customerId: '',
-                cityId: '',
-                projectId: '',
-                projectType: '',
-                minPrice: '',
-                maxPrice: '',
-            },
             RCMFormData: {
                 type: "",
                 subtype: "",

@@ -9,6 +9,8 @@ import axios from 'axios'
 import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
+import helper from '../../helper';
+
 
 class AddRCMLead extends Component {
     constructor(props) {
@@ -128,9 +130,9 @@ class AddRCMLead extends Component {
                 price: RCMFormData.max_price,
                 min_price: RCMFormData.min_price,
             }
-            console.log(payLoad)
             axios.post(`/api/leads`, payLoad)
                 .then((res) => {
+                    helper.errorToast(res.data)
                     RootNavigation.navigate('Lead')
                 })
         }

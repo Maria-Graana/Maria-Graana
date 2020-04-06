@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { StyleProvider } from 'native-base';
-import CMLeadFrom from './CMLeadFrom';
 import RCMLeadFrom from './RCMLeadFrom';
 import AppStyles from '../../AppStyles';
 import getTheme from '../../../native-base-theme/components';
@@ -11,7 +10,7 @@ import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
 
-class AddLead extends Component {
+class AddRCMLead extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -160,6 +159,7 @@ class AddLead extends Component {
                 price: RCMFormData.max_price,
                 min_price: RCMFormData.min_price,
             }
+            console.log(payLoad)
             axios.post(`/api/leads`, payLoad)
                 .then((res) => {
                     RootNavigation.navigate('Lead')
@@ -193,37 +193,21 @@ class AddLead extends Component {
                     <KeyboardAvoidingView behavior="padding" enabled>
                         <ScrollView>
                             <View>
-                                {
-                                    route.params.pageName === 'CM' &&
-                                    <CMLeadFrom
-                                        formSubmit={this.formSubmit}
-                                        checkValidation={checkValidation}
-                                        handleForm={this.handleForm}
-                                        formData={formData}
-                                        cities={cities}
-                                        getClients={getClients}
-                                        getProject={getProject}
-                                    />
-                                }
-
-                                {
-                                    route.params.pageName === 'RCM' &&
-                                    <RCMLeadFrom
-                                        formSubmit={this.RCMFormSubmit}
-                                        checkValidation={checkValidation}
-                                        handleForm={this.handleRCMForm}
-                                        changeStatus={this.changeStatus}
-                                        size={StaticData.oneToTen}
-                                        sizeUnit={StaticData.sizeUnit}
-                                        propertyType={StaticData.type}
-                                        formData={RCMFormData}
-                                        cities={cities}
-                                        getAreas={getAreas}
-                                        getClients={getClients}
-                                        formType={formType}
-                                        subType={selectSubType}
-                                    />
-                                }
+                                <RCMLeadFrom
+                                    formSubmit={this.RCMFormSubmit}
+                                    checkValidation={checkValidation}
+                                    handleForm={this.handleRCMForm}
+                                    changeStatus={this.changeStatus}
+                                    size={StaticData.oneToTen}
+                                    sizeUnit={StaticData.sizeUnit}
+                                    propertyType={StaticData.type}
+                                    formData={RCMFormData}
+                                    cities={cities}
+                                    getAreas={getAreas}
+                                    getClients={getClients}
+                                    formType={formType}
+                                    subType={selectSubType}
+                                />
                             </View>
                         </ScrollView>
                     </KeyboardAvoidingView>
@@ -240,6 +224,6 @@ mapStateToProps = (store) => {
     }
 }
 
-export default connect(mapStateToProps)(AddLead)
+export default connect(mapStateToProps)(AddRCMLead)
 
 

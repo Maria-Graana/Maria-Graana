@@ -81,9 +81,9 @@ class Inventory extends React.Component {
 		})
 	}
 
-	goToFormPage = (status) => {
+	goToFormPage = (page,status) => {
 		const { navigation } = this.props;
-		navigation.navigate('AddLead', { 'pageName': status });
+		navigation.navigate(page, { 'pageName': status });
 	}
 
 	changeTab = (status) => {
@@ -177,10 +177,10 @@ class Inventory extends React.Component {
 						position="bottomRight"
 						onPress={() => this.setState({ active: !this.state.active })}>
 						<Ionicons name="md-add" color="#ffffff" />
-						<Button style={{ backgroundColor:  AppStyles.colors.primary }} onPress={() => { this.goToFormPage('RCM') }}>
+						<Button style={{ backgroundColor:  AppStyles.colors.primary }} onPress={() => { this.goToFormPage('AddRCMLead','RCM') }}>
 							<Icon name="logo-whatsapp" />
 						</Button>
-						<Button style={{ backgroundColor:  AppStyles.colors.primary }} onPress={() => { this.goToFormPage('CM') }}>
+						<Button style={{ backgroundColor:  AppStyles.colors.primary }} onPress={() => { this.goToFormPage('AddCMLead','CM') }}>
 							<Icon name="logo-facebook" />
 						</Button>
 					</Fab>

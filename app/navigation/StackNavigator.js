@@ -10,7 +10,8 @@ import Lead from '../screens/Lead/index';
 import HeaderRight from '../components/HeaderRight/index';
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index';
 import AddInventory from '../screens/AddInventory/index'
-import AddLead from '../screens/addLead';
+import AddCMLead from '../screens/AddCMLead';
+import AddRCMLead from '../screens/AddRCMLead';
 import Client from '../screens/Client';
 import AddClient from '../screens/AddClient';
 import ClientDetail from '../screens/ClientDetail';
@@ -100,7 +101,15 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-            <Stack.Screen name='AddLead' component={AddLead}
+            <Stack.Screen name='AddCMLead' component={AddCMLead}
+                options={({ navigation, route }) => ({
+                    title: 'CREATE CM LEAD',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='AddRCMLead' component={AddRCMLead}
                 options={({ navigation, route }) => ({
                     title: 'CREATE CM LEAD',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
 import { Text, Fab, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
@@ -50,8 +50,10 @@ class Meetings extends Component {
     if (!formData.time || !formData.date) {
       this.setState({ checkValidation: true })
     } else {
+      console.log(formData)
       axios.post(`api/leads/project/meeting`, formData)
         .then((res) => {
+          console.log(res.data)
           this.getMeetingLead();
           this.setState({
             active: false,

@@ -8,6 +8,7 @@ import styles from './style'
 import * as RootNavigation from '../../navigation/RootNavigation';
 import MeetingTile from '../../components/MeetingTile'
 import MeetingModal from '../../components/MeetingModal'
+import helper from '../../helper';
 
 class Meetings extends Component {
   constructor(props) {
@@ -50,10 +51,9 @@ class Meetings extends Component {
     if (!formData.time || !formData.date) {
       this.setState({ checkValidation: true })
     } else {
-      console.log(formData)
       axios.post(`api/leads/project/meeting`, formData)
         .then((res) => {
-          console.log(res.data)
+          helper.errorToast(res.data)
           this.getMeetingLead();
           this.setState({
             active: false,

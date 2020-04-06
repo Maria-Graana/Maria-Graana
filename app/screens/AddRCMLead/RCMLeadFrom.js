@@ -13,12 +13,6 @@ class CMLeadFrom extends Component {
     this.state = {
       formType: 'buy'
     }
-
-    this.city = [
-      { value: 'shop', name: 'shop' },
-      { value: 'office', name: 'Office' },
-      { value: 'other', name: 'other' },
-    ]
   }
 
   componentDidMount() { }

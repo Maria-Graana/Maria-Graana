@@ -101,7 +101,6 @@ class AddCMLead extends Component {
         }
     }
 
-
     changeStatus = (status) => {
         this.setState({
             formType: status,

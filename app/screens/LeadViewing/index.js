@@ -168,7 +168,7 @@ class LeadViewing extends React.Component {
 							alignItems: "center"
 						}}
 					>
-						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Viewing at <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>{moment(property.diaries[0].start).format("YYYY-MM-DD hh:mm a")}</Text></Text>
+						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Viewing at <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>{property.diaries[0].time}</Text></Text>
 					</TouchableOpacity >
 				)
 			}

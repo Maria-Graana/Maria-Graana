@@ -22,6 +22,7 @@ import RCMLeadTabs from './RCMTabNavigator';
 import CMLeadTabs from './CMTabNavigator';
 import Attachments from '../screens/Attachments';
 import Comments from '../screens/Comments';
+import AddTargets from '../screens/AddTargets';
 
 const Stack = createStackNavigator();
 
@@ -186,6 +187,14 @@ function MainStack() {
             <Stack.Screen name='Comments' component={Comments}
                 options={({ navigation, route }) => ({
                     title: 'COMMENTS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+
+            <Stack.Screen name='AddTargets' component={AddTargets}
+                options={({ navigation, route }) => ({
+                    title: 'TARGETS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

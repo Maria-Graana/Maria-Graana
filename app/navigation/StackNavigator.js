@@ -22,7 +22,8 @@ import RCMLeadTabs from './RCMTabNavigator';
 import CMLeadTabs from './CMTabNavigator';
 import Attachments from '../screens/Attachments';
 import Comments from '../screens/Comments';
-import AddTargets from '../screens/AddTargets';
+import AddTargets from '../screens/ViewTargets';
+import Targets from '../screens/Targets';
 
 const Stack = createStackNavigator();
 
@@ -193,6 +194,14 @@ function MainStack() {
             />
 
             <Stack.Screen name='AddTargets' component={AddTargets}
+                options={({ navigation, route }) => ({
+                    title: 'TARGETS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+
+            <Stack.Screen name='Targets' component={Targets}
                 options={({ navigation, route }) => ({
                     title: 'TARGETS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,

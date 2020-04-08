@@ -36,8 +36,8 @@ class CustomDrawerContent extends React.Component {
             <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
                 <ScrollView style={[styles.scrollContainer, { width: '100%' }]}>
                     <View style={AppStyles.flexDirectionRow}>
-                        <View>
-                            <UserAvatar size="50" src='https://pickaface.net/gallery/avatar/unr_ironman_170308_2112_9ldw5b.png' name={`${user.firstName}`} />
+                        <View >
+                            <UserAvatar size="50" name={`${user.firstName}`} />
                         </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.nameText}>
@@ -54,8 +54,8 @@ class CustomDrawerContent extends React.Component {
                     <DrawerIconItem screen={'Leads'} badges={20} navigateTo={() => { this.navigateTo('Lead') }} />
                     {Ability.canView(role, 'Inventory') && <DrawerIconItem screen={'Inventory'} badges={30} navigateTo={() => { this.navigateTo('Inventory') }} />}
                     {Ability.canView(role, 'Client') && <DrawerItem screen={'Clients'} navigateTo={() => { this.navigateTo('Client') }} />}
-                    <DrawerItem screen={'Targets'} navigateTo={() => { this.navigateTo('AddTargets')}} />
-                    <DrawerItem screen={'Create User'} navigateTo={() => { this.navigateTo('CreateUser')}} />
+                    {Ability.canView(role, 'Targets') && <DrawerItem screen={'Targets'} navigateTo={() => { this.navigateTo('Targets', { screen: 'Targets' }) }} />}
+                    <DrawerItem screen={'Create User'} navigateTo={() => { this.navigateTo('CreateUser') }} />
                     <View style={styles.underLine} />
                     <DrawerItem screen={'Logout'} navigateTo={this.signOut} />
                 </ScrollView>

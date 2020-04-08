@@ -15,7 +15,7 @@ export default styles = StyleSheet.create({
   },
   contentView: {
     position: 'relative',
-    paddingRight: 20,
+    paddingRight: 15,
     zIndex: 20,
   },
   fontBold: {

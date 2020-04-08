@@ -87,20 +87,21 @@ class DairyPopup extends React.Component {
                         <View style={styles.horizontalWrapStyle}>
                             <Text style={styles.textStyle}>{data.subject} </Text>
                             {
-                                Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
-                                    <MaterialCommunityIcons onPress={() => this.updateDiary(data)} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
+                                 data.taskType !== 'dayTask' && data.taskType !== 'weekly' &&
+                                Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress'  ?
+                                < MaterialCommunityIcons onPress={() => this.updateDiary(data)} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                                     : null
                             }
 
 
                         </View>
-                        <Text style={styles.textStyle}>{data.taskType !==undefined && data.taskType.charAt(0).toUpperCase() + data.taskType.slice(1)}</Text>
+                        <Text style={styles.textStyle}>{data.taskType !== undefined && data.taskType.charAt(0).toUpperCase() + data.taskType.slice(1)}</Text>
 
                         <View style={styles.horizontalWrapStyle}>
                             <Text style={styles.textStyle}>{moment.utc(data.start).format('hh:mm a')} - {moment.utc(data.end).format("hh:mm a")} </Text>
                             {
                                 data.armsLeadId !== null ?
-                                    <TouchableOpacity style={styles.lead} onPress={()=>onLeadLinkClicked(data.armsLeadId)} >
+                                    <TouchableOpacity style={styles.lead} onPress={() => onLeadLinkClicked(data.armsLeadId)} >
                                         <Text style={styles.leadText} >
                                             Lead Link
                                  </Text>
@@ -109,7 +110,7 @@ class DairyPopup extends React.Component {
                                     null
                             }
                             <Text style={[styles.statusText, { color: data.statusColor, borderColor: data.statusColor }]}>{this.setStatusText(data)}</Text>
-                          
+
                         </View>
 
                         <View style={styles.underLine}

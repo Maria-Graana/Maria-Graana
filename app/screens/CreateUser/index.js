@@ -14,42 +14,38 @@ import helper from '../../helper';
 class CreateUser extends Component {
     constructor(props) {
         super(props)
+        const { user } = this.props
         this.state = {
             checkValidation: false,
+            confirmPassword: false,
             cities: [],
-            getClients: [],
-            getProject: [],
-            formType: 'sale',
-            selectSubType: [],
-            getAreas: [],
+            getRoles: [],
+            organization: [{ value: user.organizationId, name: user.organizationName }],
             formData: {
-                customerId: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                phoneNumber: '',
+                cnic: '',
+                organizationId: user.organizationId,
+                armsUserRoleId: '',
+                firstName: '',
+                lastName: '',
+                zoneId: user.zoneId,
                 cityId: '',
-                projectId: '',
-                projectType: '',
-                minPrice: '',
-                maxPrice: '',
+                managerId: user.id,
             }
         }
     }
 
     componentDidMount() {
         const { user } = this.props
+        // console.log(user)
         this.getCities();
-        this.getAllProjects();
-        this.getClients(user.id);
+        this.getRoles(user.organizationId)
     }
 
-    getClients = (id) => {
-        axios.get(`/api/customer/find?userId=${id}`)
-            .then((res) => {
-                let clientsArray = [];
-                res && res.data.rows.map((item, index) => { return (clientsArray.push({ value: item.id, name: item.firstName })) })
-                this.setState({
-                    getClients: clientsArray
-                })
-            })
-    }
+
 
     getCities = () => {
         axios.get(`/api/cities`)
@@ -62,60 +58,65 @@ class CreateUser extends Component {
             })
     }
 
-    getAllProjects = () => {
-        axios.get(`/api/project/all`)
+    getRoles = (id) => {
+        axios.get(`/api/user/roles/${id}`)
             .then((res) => {
-                let projectArray = [];
-                res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name })) })
+                let array = [];
+                res && res.data['sub_admin 2'].map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
                 this.setState({
-                    getProject: projectArray
+                    getRoles: array
                 })
             })
     }
+
 
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
         this.setState({ formData })
-    }
 
-    selectSubtype = (type) => {
-        this.setState({ selectSubType: StaticData.subType[type] })
     }
 
     formSubmit = () => {
         const { formData } = this.state
-        if (!formData.customerId || !formData.projectId || !formData.projectType || !formData.minPrice || !formData.maxPrice) {
+        if (
+            !formData.firstName &&
+            !formData.lastName &&
+            !formData.phoneNumber &&
+            !formData.password &&
+            !formData.phoneNumber &&
+            !formData.cityId &&
+            !formData.armsUserRoleId &&
+            !formData.confirmPassword
+        ) {
             this.setState({
                 checkValidation: true
             })
         } else {
-            let body = {
-                ...formData,
-            }
-            axios.post(`/api/leads/project`, body)
-                .then((res) => {
-                    helper.errorToast(res.data)
-                    RootNavigation.navigate('Lead')
+            if (formData.confirmPassword != formData.password) {
+                this.setState({
+                    confirmPassword: true
                 })
+            } else {
+                axios.post(`/api/user/signup`, formData)
+                    .then((res) => {
+                        const { navigation } = this.props
+                        navigation.navigate('Landing')
+                    })
+            }
         }
-    }
-
-    changeStatus = (status) => {
-        this.setState({
-            formType: status,
-        })
     }
 
     render() {
         const {
             formData,
             cities,
-            getClients,
-            getProject,
             checkValidation,
+            getRoles,
+            organization,
+            confirmPassword,
         } = this.state
-        const { route } = this.props
+        // console.log('getRoles',formData)
         return (
             <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
@@ -127,9 +128,10 @@ class CreateUser extends Component {
                                     checkValidation={checkValidation}
                                     handleForm={this.handleForm}
                                     formData={formData}
+                                    getRoles={getRoles}
                                     cities={cities}
-                                    getClients={getClients}
-                                    getProject={getProject}
+                                    organization={organization}
+                                    confirmPassword={confirmPassword}
                                 />
 
                             </View>

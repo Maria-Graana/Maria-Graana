@@ -35,7 +35,7 @@ class PropertyDetail extends React.Component {
         const bath = property.bath;
         const lattitude = property.lat === null ? ' ' : property.lat + '/';
         const longitude = property.lng === null ? ' ' : property.lng;
-        const ownerName = property.customer.first_name;
+        const ownerName = property.customer !==null && property.customer.first_name;
         const ownerPhoneNumber = property.phone.trim();
         const address = property.address;
         const status = property.status === 'pending' ? 'Open' : property.status;

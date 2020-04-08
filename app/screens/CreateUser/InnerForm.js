@@ -31,72 +31,21 @@ class InnerForm extends Component {
       <View>
 
         {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={getClients} name={'customerId'} placeholder='Client' />
-            {
-              checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
-            }
-          </View>
-        </View>
-
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={cities} name={'cityId'} placeholder='Select City' />
-          </View>
-        </View>
-
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} value={''} placeholder='Project' />
-            {
-              checkValidation === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />
-            }
-          </View>
-        </View>
-
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={StaticData.projectType} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Project Type' />
-            {
-              checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
-            }
-          </View>
-        </View>
-
-        <View style={AppStyles.multiFormInput}>
-
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
+        <View style={[AppStyles.mainInputWrap,]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Min Price'} />
-              {
-                checkValidation === true && formData.minPrice === '' && <ErrorMessage errorMessage={'Required'} />
-              }
-            </View>
-          </View>
-
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Max Price'} />
+              <TextInput onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl]} name={'ownerNumber'} placeholder={'Max Price'} />
               {
                 checkValidation === true && formData.maxPrice === '' && <ErrorMessage errorMessage={'Required'} />
               }
             </View>
           </View>
 
-        </View>
-
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <Button
             onPress={() => { formSubmit(formData) }}
             style={[AppStyles.formBtn, styles.addInvenBtn]}>
-            <Text style={AppStyles.btnText}>ADD</Text>
+            <Text style={AppStyles.btnText}>CREATE USER</Text>
           </Button>
         </View>
       </View>

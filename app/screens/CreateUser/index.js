@@ -117,7 +117,7 @@ class CreateUser extends Component {
         } = this.state
         const { route } = this.props
         return (
-            <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
+            <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
                     <KeyboardAvoidingView behavior="padding" enabled>
                         <ScrollView>

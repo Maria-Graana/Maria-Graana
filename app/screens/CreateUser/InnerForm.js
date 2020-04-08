@@ -25,7 +25,6 @@ class InnerForm extends Component {
       cities,
       getRoles,
       organization,
-      confirmPassword,
     } = this.props
 
     return (

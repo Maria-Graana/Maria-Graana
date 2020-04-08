@@ -7,9 +7,6 @@ import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
-import * as RootNavigation from '../../navigation/RootNavigation';
-import StaticData from '../../StaticData'
-import helper from '../../helper';
 
 class CreateUser extends Component {
     constructor(props) {
@@ -17,7 +14,6 @@ class CreateUser extends Component {
         const { user } = this.props
         this.state = {
             checkValidation: false,
-            confirmPassword: false,
             cities: [],
             getRoles: [],
             organization: [{ value: user.organizationId, name: user.organizationName }],
@@ -40,12 +36,9 @@ class CreateUser extends Component {
 
     componentDidMount() {
         const { user } = this.props
-        // console.log(user)
         this.getCities();
         this.getRoles(user.organizationId)
     }
-
-
 
     getCities = () => {
         axios.get(`/api/cities`)
@@ -69,12 +62,10 @@ class CreateUser extends Component {
             })
     }
 
-
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
         this.setState({ formData })
-
     }
 
     formSubmit = () => {
@@ -93,11 +84,7 @@ class CreateUser extends Component {
                 checkValidation: true
             })
         } else {
-            if (formData.confirmPassword != formData.password) {
-                this.setState({
-                    confirmPassword: true
-                })
-            } else {
+            if (formData.confirmPassword == formData.password) {
                 axios.post(`/api/user/signup`, formData)
                     .then((res) => {
                         const { navigation } = this.props
@@ -114,9 +101,7 @@ class CreateUser extends Component {
             checkValidation,
             getRoles,
             organization,
-            confirmPassword,
         } = this.state
-        // console.log('getRoles',formData)
         return (
             <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
@@ -131,7 +116,6 @@ class CreateUser extends Component {
                                     getRoles={getRoles}
                                     cities={cities}
                                     organization={organization}
-                                    confirmPassword={confirmPassword}
                                 />
 
                             </View>

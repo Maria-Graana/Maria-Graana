@@ -36,8 +36,8 @@ export default styles = StyleSheet.create({
         overflow: 'hidden',
         borderBottomWidth: 0,
     },
-    // padLeft: {
-    //     paddingLeft: 15,
-    //     color: '#000'
-    // },
+    padLeft: {
+        paddingLeft: 15,
+        color: '#000'
+    },
 })

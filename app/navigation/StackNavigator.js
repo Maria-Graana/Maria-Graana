@@ -24,6 +24,7 @@ import Attachments from '../screens/Attachments';
 import Comments from '../screens/Comments';
 import AddTargets from '../screens/ViewTargets';
 import Targets from '../screens/Targets';
+import CreateUser from '../screens/CreateUser';
 
 const Stack = createStackNavigator();
 
@@ -204,6 +205,14 @@ function MainStack() {
             <Stack.Screen name='Targets' component={Targets}
                 options={({ navigation, route }) => ({
                     title: 'TARGETS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+
+            <Stack.Screen name='CreateUser' component={CreateUser}
+                options={({ navigation, route }) => ({
+                    title: 'CREATE USER',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

@@ -34,7 +34,7 @@ export default styles = StyleSheet.create({
   blackInputText: {
     color: '#000',
     marginBottom: 2,
-    marginLeft: 5,
+    marginLeft: 3,
     fontSize: 10,
     fontWeight: 'bold',
     letterSpacing: 2,
@@ -42,12 +42,13 @@ export default styles = StyleSheet.create({
   blackInput: {
     minHeight: 30,
     fontSize: 14,
-    marginLeft: 2,
+    marginLeft: 3,
     fontWeight: 'bold',
     color: '#0F74EE',
   },
   blackInputdate: {
-    marginTop: 20,
+    width: '20%',
+    borderRadius: 4,
   },
   dateText: {
     width: '20%',
@@ -64,7 +65,7 @@ export default styles = StyleSheet.create({
     backgroundColor: '#0D73EE'
   },
   addBtnColorRight: {
-    backgroundColor: AppStyles.colors.primaryColor
+    backgroundColor: 'transparent'
   },
   addImg: {
     width: 30,

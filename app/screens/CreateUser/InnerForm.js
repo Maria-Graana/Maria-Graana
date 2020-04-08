@@ -32,13 +32,106 @@ class InnerForm extends Component {
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl]} name={'ownerNumber'} placeholder={'Max Price'} />
-              {
-                checkValidation === true && formData.maxPrice === '' && <ErrorMessage errorMessage={'Required'} />
-              }
-            </View>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'firstName') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'First Name'} />
+            {
+              checkValidation === true && formData.firstName === '' && <ErrorMessage errorMessage={'Required'} />
+            }
           </View>
+        </View>
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap,]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'lastName') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Last Name'} />
+            {
+              checkValidation === true && formData.lastName === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+          </View>
+        </View>
+
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap,]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Email'} />
+            {
+              checkValidation === true && formData.email === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+          </View>
+        </View>
+
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap,]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'password') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Password'} />
+            {
+              checkValidation === true && formData.password === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+          </View>
+        </View>
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap,]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'confirmPassword') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Confirm Password'} />
+            {
+              checkValidation === true && formData.confirmPassword === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+          </View>
+        </View>
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap,]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Contact Number'} />
+            {
+              checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+          </View>
+        </View>
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap,]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'cnic') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'CNIC'} />
+            {
+              checkValidation === true && formData.cnic === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+          </View>
+        </View>
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap,]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'city') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'City'} />
+            {
+              checkValidation === true && formData.city === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+          </View>
+        </View>
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap,]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'graana') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Graana'} />
+            {
+              checkValidation === true && formData.graana === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+          </View>
+        </View>
+
+        {/* **************************************** */}
+        <View style={[AppStyles.mainInputWrap,]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput onChangeText={(text) => { handleForm(text, 'areaManager') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Area Manager'} />
+            {
+              checkValidation === true && formData.areaManager === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+          </View>
+        </View>
+
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

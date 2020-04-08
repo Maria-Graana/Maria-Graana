@@ -38,7 +38,7 @@ export default styles = StyleSheet.create({
     },
     padLeft: {
         paddingLeft: 15,
-        color: '#000'
+        color: '#000',
     },
     mobileIcon: {
         position: 'absolute',

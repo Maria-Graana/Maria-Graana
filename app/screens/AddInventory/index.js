@@ -94,7 +94,7 @@ class AddInventory extends Component {
                 status: property.status,
                 lat: property.lat,
                 lng: property.lng,
-                ownerName: property.customer.first_name,
+                ownerName: property.customer!==null && property.customer.first_name,
                 phone: property.phone,
                 address: property.address,
                 description: property.description,
@@ -200,6 +200,9 @@ class AddInventory extends Component {
         formData.bath = this.convertToInteger(formData.bath)
         formData.price = this.convertToInteger(formData.price)
         formData.imageIds = _.pluck(images, 'id');
+
+        console.log(property.id);
+
 
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)
@@ -344,7 +347,7 @@ class AddInventory extends Component {
         }
         else {
             this.img = _.without(images, image);
-           // console.log(this.img);
+            // console.log(this.img);
             this.setState({
                 images: this.img,
             }, () => {
@@ -359,10 +362,10 @@ class AddInventory extends Component {
     }
 
     deleteImageFromServer(id) {
-       // console.log(id);
+        // console.log(id);
         axios.delete(`/api/inventory/image/${id}`)
             .then((res) => {
-               // console.log('response', res.status);
+                // console.log('response', res.status);
             })
             .catch((error) => {
                 console.log('error', error.message)

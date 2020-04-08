@@ -14,6 +14,7 @@ export default styles = StyleSheet.create({
     },
     textContainer: {
         flexDirection: 'column', 
+        justifyContent:'center',
         paddingLeft: 10
     },
     nameText: {

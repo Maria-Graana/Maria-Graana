@@ -1,11 +1,11 @@
 import { StyleSheet } from 'react-native';
+import AppStyles from '../../AppStyles';
 
 export default styles = StyleSheet.create({
   mainTileWrap: {
     height: 87,
     overflow: 'hidden',
     backgroundColor: '#fff',
-    marginBottom: 15,
     borderBottomWidth: 1,
     borderColor: '#F6F6F6'
   },
@@ -17,12 +17,8 @@ export default styles = StyleSheet.create({
     padding: 10,
   },
   avatarMain: {
-    width: '20%',
-  },
-  avatarImg: {
-    width: 65,
-    height: 65,
-    borderRadius: 50
+    justifyContent: 'center',
+    width:'20%'
   },
   contentMain: {
     paddingTop: 10,
@@ -45,12 +41,13 @@ export default styles = StyleSheet.create({
   targetText: {
     fontSize: 12,
     color: '#000',
-    fontWeight: '600',
+    fontFamily:AppStyles.fonts.semiBoldFont,
+
   },
   priceText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1173EE'
+    fontSize: AppStyles.fontSize.large,
+    color: '#1173EE',
+    fontFamily:AppStyles.fonts.boldFont,
   },
   inputTarget: {
     margin: 15,
@@ -58,23 +55,31 @@ export default styles = StyleSheet.create({
   },
   formControl: {
     height: 50,
-    borderWidth: 1,
-    borderColor: '#ebebeb',
     paddingLeft: 10,
     borderRadius: 4,
-  },
-  boxShadow: {
+    backgroundColor: '#fff',
+    zIndex: 5,
     elevation: 5,
     shadowOffset: { width: 5, height: 5 },
     shadowColor: '#33333312',
     shadowOpacity: 1,
-    borderWidth: 1,
-    borderColor: '#ebebeb'
+  },
+  boxShadow: {
+    backgroundColor: '#fff',
+    padding: 15,
+    marginBottom: 15,
+    zIndex: 5,
+    elevation: 5,
+    shadowOffset: { width: 5, height: 5 },
+    shadowColor: '#33333312',
+    shadowOpacity: 1,
   },
   arrowIcon: {
     position: 'absolute',
     right: 12,
     top: 12,
+    zIndex: 10,
+    elevation: 10,
   },
   arrowImgWidth: {
     width: 25,

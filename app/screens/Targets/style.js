@@ -1,34 +1,16 @@
 import { StyleSheet } from 'react-native';
 export default styles = StyleSheet.create({
-    targetMain: {
-        marginTop: 10,
-        elevation: 5,
-        shadowOffset: { width: 5, height: 5 },
-        shadowColor: '#33333312',
-        shadowOpacity: 1,
-    },
-    bgcWhite: {
-        backgroundColor: '#fff'
+    titleMain: {
+        backgroundColor: '#fff',
+        padding: 10,
+        marginBottom: 25,
+        borderRadius: 4,
     },
     formMain: {
         marginBottom: 15,
     },
-    scrollViewHeight: {
-        height: '75%'
-    },
-    titleMain: {
-        backgroundColor: '#fff',
-        padding: 15,
-        marginBottom: 25,
-        borderRadius: 4,
-        marginTop: 20,
-        elevation: 5,
-        shadowOffset: { width: 5, height: 5 },
-        shadowColor: '#33333312',
-        shadowOpacity: 1,
-    },
     labelText: {
-        fontSize: 12,
+        fontSize: 10,
         letterSpacing: 1.5,
         marginBottom: 3,
         fontWeight: '600'
@@ -37,7 +19,7 @@ export default styles = StyleSheet.create({
         textAlign: 'right',
         color: '#1876EF',
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: 16,
         letterSpacing: 2,
     },
 })

@@ -23,8 +23,9 @@ class InnerForm extends Component {
       handleForm,
       formData,
       cities,
-      getClients,
-      getProject,
+      getRoles,
+      organization,
+      confirmPassword,
     } = this.props
 
     return (
@@ -55,9 +56,6 @@ class InnerForm extends Component {
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
             <TextInput onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Email'} />
-            {
-              checkValidation === true && formData.email === '' && <ErrorMessage errorMessage={'Required'} />
-            }
           </View>
         </View>
 
@@ -65,7 +63,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'password') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Password'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'password') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Password'} />
             {
               checkValidation === true && formData.password === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -75,9 +73,12 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'confirmPassword') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Confirm Password'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'confirmPassword') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Confirm Password'} />
             {
               checkValidation === true && formData.confirmPassword === '' && <ErrorMessage errorMessage={'Required'} />
+            }
+            {
+              formData.confirmPassword != formData.password && <ErrorMessage errorMessage={'Confirm Pass Not Match'} />
             }
           </View>
         </View>
@@ -85,10 +86,10 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <Image source={mobileIcon} style={styles.mobileIcon}/>
-            <TextInput onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Contact Number'} />
+            <Image source={mobileIcon} style={styles.mobileIcon} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'phoneNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Contact Number'} />
             {
-              checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
+              checkValidation === true && formData.phoneNumber === '' && <ErrorMessage errorMessage={'Required'} />
             }
           </View>
         </View>
@@ -106,9 +107,9 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'city') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'City'} />
+            <PickerComponent onValueChange={handleForm} data={cities} selectedItem={formData.cityId} name={'cityId'} value={''} placeholder='City' />
             {
-              checkValidation === true && formData.city === '' && <ErrorMessage errorMessage={'Required'} />
+              checkValidation === true && formData.cityId === '' && <ErrorMessage errorMessage={'Required'} />
             }
           </View>
         </View>
@@ -116,19 +117,16 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'graana') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Graana'} />
-            {
-              checkValidation === true && formData.graana === '' && <ErrorMessage errorMessage={'Required'} />
-            }
+            <TextInput  style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000"  value={organization[0].name} />
           </View>
         </View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'areaManager') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Area Manager'} />
+            <PickerComponent onValueChange={handleForm} data={getRoles} selectedItem={formData.armsUserRoleId} name={'armsUserRoleId'} placeholder='Area Manager' />
             {
-              checkValidation === true && formData.areaManager === '' && <ErrorMessage errorMessage={'Required'} />
+              checkValidation === true && formData.armsUserRoleId === '' && <ErrorMessage errorMessage={'Required'} />
             }
           </View>
         </View>

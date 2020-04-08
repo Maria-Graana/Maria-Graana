@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, Image } from 'react-native';
 import { Button } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import styles from './style';
 import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
-import StaticData from '../../StaticData'
+import mobileIcon from '../../../assets/img/mobile.png'
 
 class InnerForm extends Component {
   constructor(props) {
@@ -85,6 +85,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
+            <Image source={mobileIcon} style={styles.mobileIcon}/>
             <TextInput onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Contact Number'} />
             {
               checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />

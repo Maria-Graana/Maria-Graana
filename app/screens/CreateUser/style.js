@@ -40,4 +40,13 @@ export default styles = StyleSheet.create({
         paddingLeft: 15,
         color: '#000'
     },
+    mobileIcon: {
+        position: 'absolute',
+        right: 10,
+        zIndex: 2,
+        width: 25,
+        height: 25,
+        resizeMode: 'contain',
+        top: 12,
+    },
 })

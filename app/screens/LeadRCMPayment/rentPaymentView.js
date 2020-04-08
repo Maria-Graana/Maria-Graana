@@ -9,7 +9,6 @@ import moment from 'moment';
 
 const RentPaymentView = (props) => {
     const { token, pickerData, handleForm, formData, handleMonthlyRentPress,showMonthlyRentArrow, commissionPayment, handleTokenAmountChange, handleCommissionAmountChange, showTokenAmountArrow, showCommissionAmountArrow, handleTokenAmountPress, handleCommissionAmountPress, lead } = props;
-    console.log(formData)
     return (
         <View>
             <View style={[styles.mainBlackWrap]}>

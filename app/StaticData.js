@@ -209,6 +209,31 @@ export default StaticData = {
             value: 'client_not_satisfied'
         }
     ],
+    leadCloseReasonsWithPayment: [
+        {
+            name: 'Payment Done',
+            value: 'payment_done'
+        },
+        {
+            name: 'Client not responding',
+            value: 'client_not_responding'
+        },
+        {
+            name: 'Client withdrew requirements',
+            value: 'client_withdrew_requirements'
+        },
+        {
+            name: 'No property found',
+            value: 'no_property_found'
+        },
+        {
+            name: 'Client got property from some other source',
+            value: 'property_other_source'
+        }, {
+            name: 'Client not satisfied with options',
+            value: 'client_not_satisfied'
+        }
+    ],
     projectType: [
         { value: 'shop', name: 'shop' },
         { value: 'office', name: 'Office' },

@@ -30,7 +30,7 @@ class LeadRCMPayment extends React.Component {
             showSelectPaymentView: false,
             checkReasonValidation: false,
             selectedReason: '',
-            reasons: StaticData.leadCloseReasons,
+            reasons: [],
             agreedAmount: null,
             token: null,
             commissionPayment: null,
@@ -63,7 +63,6 @@ class LeadRCMPayment extends React.Component {
 
     fetchProperties = () => {
         const { lead } = this.state
-        console.log(lead);
         this.setState({ loading: true }, () => {
             axios.get(`/api/leads/${lead.id}/shortlist`)
                 .then((res) => {
@@ -73,6 +72,13 @@ class LeadRCMPayment extends React.Component {
                         showSelectPaymentView: false,
                         selectedReason: '',
                         checkReasonValidation: '',
+                    }, () => {
+                         if(lead.commissionPayment!==null){
+                             this.setState({reasons:StaticData.leadCloseReasonsWithPayment})
+                         }
+                         else{
+                            this.setState({reasons:StaticData.leadCloseReasons})
+                         }
                     })
                 })
                 .catch((error) => {

@@ -7,7 +7,7 @@ export const formatPrice = (price) => {
     const r = price / 100000;
     return isFloat(r) ? `${r.toFixed(2)} Lac` : `${r} Lac`
   }  else {
-    return `${price} PKR`
+    return `${price}`
   }
 }
 

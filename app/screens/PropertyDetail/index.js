@@ -77,14 +77,13 @@ class PropertyDetail extends React.Component {
                         <Text style={styles.headingText}> Grade </Text>
                         <Text style={styles.labelText}> {grade} </Text>
 
-                        {type === 'residential' ?
+                        {type === 'Residential' &&
                             <View>
                                 <Text style={styles.headingText}> Beds </Text>
                                 <Text style={styles.labelText}> {bed + ' Bed(s)'} </Text>
                                 <Text style={styles.headingText}> Baths </Text>
                                 <Text style={styles.labelText}> {bath + ' Bath(s)'} </Text>
                             </View>
-                            : null
                         }
 
 

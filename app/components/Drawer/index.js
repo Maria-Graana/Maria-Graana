@@ -14,11 +14,31 @@ import UserAvatar from 'react-native-user-avatar';
 import AppStyles from '../../AppStyles';
 import styles from './style';
 import Ability from '../../hoc/Ability';
+import axios from 'axios';
 
 class CustomDrawerContent extends React.Component {
 
     constructor(props) {
         super(props)
+        this.state = {
+            count: {},
+        }
+    }
+
+    componentDidMount() {
+        this.getListingsCount();
+    }
+
+    getListingsCount = () => {
+        const that = this;
+        setTimeout(function () {
+            //Put All Your Code Here, Which You Want To Execute After Some Delay Time.
+            axios.get(`/api/inventory/counts`).then(response => {
+                that.setState({ count: response.data });
+            }).catch(error => {
+                console.log('error', error);
+            })
+        }, 2000);
     }
 
     navigateTo = (screen) => {
@@ -32,6 +52,7 @@ class CustomDrawerContent extends React.Component {
     render() {
         const { user } = this.props
         const { role } = user
+        const { count } = this.state;
         return (
             <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
                 <ScrollView style={[styles.scrollContainer, { width: '100%' }]}>
@@ -49,10 +70,10 @@ class CustomDrawerContent extends React.Component {
                         </View>
                     </View>
                     <View style={styles.underLine} />
-                    {Ability.canView(role, 'Diary') && <DrawerIconItem screen={'Diary'} badges={15} navigateTo={() => { this.navigateTo('Diary') }} />}
+                    {Ability.canView(role, 'Diary') && <DrawerIconItem screen={'Diary'} badges={count.diary} navigateTo={() => { this.navigateTo('Diary') }} />}
                     {Ability.canView(role, 'TeamDiary') && <DrawerItem screen={'Team Diary'} navigateTo={() => { this.navigateTo('TeamDiary') }} />}
-                    <DrawerIconItem screen={'Leads'} badges={20} navigateTo={() => { this.navigateTo('Lead') }} />
-                    {Ability.canView(role, 'Inventory') && <DrawerIconItem screen={'Inventory'} badges={30} navigateTo={() => { this.navigateTo('Inventory') }} />}
+                    <DrawerIconItem screen={'Leads'} badges={count.leads} navigateTo={() => { this.navigateTo('Lead') }} />
+                    {Ability.canView(role, 'Inventory') && <DrawerIconItem screen={'Inventory'} badges={count.inventory} navigateTo={() => { this.navigateTo('Inventory') }} />}
                     {Ability.canView(role, 'Client') && <DrawerItem screen={'Clients'} navigateTo={() => { this.navigateTo('Client') }} />}
                     {Ability.canView(role, 'Targets') && <DrawerItem screen={'Targets'} navigateTo={() => { this.navigateTo('Targets', { screen: 'Targets' }) }} />}
                     <DrawerItem screen={'Create User'} navigateTo={() => { this.navigateTo('CreateUser') }} />

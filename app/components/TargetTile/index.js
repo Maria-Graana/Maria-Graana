@@ -12,9 +12,9 @@ class TargetTile extends React.Component {
   }
 
   render() {
-    const { id, dropDownFunction, dropDownId, dropDown, data, handleForm, onPress } = this.props
+    const { id, dropDownFunction, armsUserId, dropDown, data, handleForm, onPress } = this.props
     return (
-      <View style={[styles.mainTileWrap, dropDown && dropDownId === id && styles.removeHeight]}>
+      <View style={[styles.mainTileWrap, dropDown && armsUserId === id && styles.removeHeight]}>
         {/* ******Main Content View */}
         <View style={styles.tileInline}>
           {/* *****Image View */}
@@ -29,15 +29,15 @@ class TargetTile extends React.Component {
           </View>
 
           {/* *****Price View */}
-          <TouchableOpacity style={[styles.priceView, dropDown && dropDownId === id && styles.boxShadow]} onPress={() => { dropDownFunction(id) }}>
+          <TouchableOpacity style={[styles.priceView, dropDown && armsUserId === id && styles.boxShadow]} onPress={() => { dropDownFunction(id) }}>
             <Text style={styles.targetText}>Target</Text>
-            <Text style={styles.priceText}>{formatPrice(data.armsUserTargets[0].targetAmount)}</Text>
+            <Text style={styles.priceText}>{data.armsUserTargets.length > 0 && formatPrice(data.armsUserTargets[0].targetAmount)}</Text>
           </TouchableOpacity>
 
         </View>
         <View style={styles.inputTarget}>
           <TextInput style={styles.formControl} placeholder={'Set New Target'} onChangeText={(text) => handleForm(text, 'targetAmount')} keyboardType={"number-pad"} />
-          <TouchableOpacity onPress={()=>onPress(data.armsUserTargets[0].id)} style={styles.arrowIcon}>
+          <TouchableOpacity onPress={() => onPress(data.armsUserTargets.length > 0 ? data.armsUserTargets[0].id : null)} style={styles.arrowIcon}>
             <Image source={arrowIcon} style={styles.arrowImgWidth} />
           </TouchableOpacity>
         </View>

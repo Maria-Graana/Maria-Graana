@@ -71,15 +71,18 @@ class AddClient extends Component {
                 first_name: formData.firstName,
                 last_name: formData.lastName,
                 email: formData.email,
-                phone: formData.cnic,
-                cnic: formData.contactNumber,
+                cnic: formData.cnic,
+                phone: formData.contactNumber,
                 address: formData.address,
             }
+            console.log(body);
             if (!update) {
                 axios.post(`/api/customer/create`, body)
                     .then((res) => {
-                        RootNavigation.navigate('Client')
-                        helper.successToast('CLIENT CREATED')
+                        if(res.status===200){
+                            RootNavigation.navigate('Client')
+                            helper.successToast('CLIENT CREATED')
+                        }
                     })
                     .catch((error) => {
                         console.log(error)

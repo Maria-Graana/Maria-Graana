@@ -201,8 +201,6 @@ class AddInventory extends Component {
         formData.price = this.convertToInteger(formData.price)
         formData.imageIds = _.pluck(images, 'id');
 
-        console.log(property.id);
-
 
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)

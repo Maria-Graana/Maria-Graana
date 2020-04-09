@@ -25,7 +25,7 @@ class TeamTargets extends Component {
                 targetAmount: ''
             },
             dropDown: false,
-            dropDownId: '',
+            armsUserId: '',
 
         }
     }
@@ -53,7 +53,7 @@ class TeamTargets extends Component {
     dropDown = (id) => {
         this.setState({
             dropDown: !this.state.dropDown,
-            dropDownId: id,
+            armsUserId: id,
         })
     }
 
@@ -69,6 +69,17 @@ class TeamTargets extends Component {
     }
 
     setIndividualTarget = (targetId) => {
+        if (targetId !== null) {
+            // update target id
+            this.updateTarget(targetId);
+
+        }
+        else {
+            this.createTarget();
+        }
+    }
+
+    updateTarget = (targetId) => {
         const { formData } = this.state;
         const { targetAmount, date } = formData;
         if (targetAmount === '' || targetAmount === undefined) {
@@ -86,6 +97,22 @@ class TeamTargets extends Component {
                 this.setState({ dropDown: !this.state.dropDown, })
                 this.getTeamTargets(date);
             }
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+
+    createTarget = () => {
+        const { armsUserId } = this.state;
+        const { targetAmount, date } = this.state.formData;
+        const body = {
+            targetMonth: date,
+            armsUserId: armsUserId,
+            targetAmount: targetAmount
+        }
+        axios.post(`api/user/setTarget`, body).then(response => {
+            this.setState({ dropDown: !this.state.dropDown, })
+            this.getTeamTargets(date);
         }).catch(error => {
             console.log(error);
         })
@@ -110,15 +137,15 @@ class TeamTargets extends Component {
             formData,
             checkValidation,
             dropDown,
-            dropDownId,
+            armsUserId,
             rows,
             loading
         } = this.state
         return (
             !loading ?
-                <View style={[AppStyles.container, styles.bgcWhite]}>
+                <View style={[AppStyles.container, styles.bgcWhite, { paddingLeft: 0, paddingRight: 0 }]}>
                     <View style={[styles.targetMain]}>
-                        <View style={[styles.formMain]}>
+                        <View style={[styles.formMain, { marginLeft: 15, marginRight: 15 }]}>
                             {/* **************************************** */}
                             <View style={[AppStyles.mainInputWrap]}>
                                 <View style={[AppStyles.inputWrap]}>
@@ -139,7 +166,7 @@ class TeamTargets extends Component {
                                 onPress={this.onPress}
                                 id={String(item.id)}
                                 dropDown={dropDown}
-                                dropDownId={dropDownId}
+                                armsUserId={armsUserId}
                                 handleForm={this.handleForm}
                             />
                         )}

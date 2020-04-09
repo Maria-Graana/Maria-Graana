@@ -16,7 +16,7 @@ class LandingButtonTile extends React.Component {
         <TouchableOpacity style={styles.mainbutton} onPress={() => navigateFunction(pagePath, screenName)}>
           <Image source={buttonImg} style={styles.buttonImg} />
           <Text style={styles.buttonText}>{label}</Text>
-          <Badge badges={badges}/>
+          {badges > 0 && <Badge badges={String(badges)} />}
         </TouchableOpacity>
       </View>
     )

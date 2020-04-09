@@ -23,6 +23,8 @@ export default styles = StyleSheet.create({
         borderRadius: 4,
         marginTop: 20,
         elevation: 5,
+        marginLeft:15,
+        marginRight:15,
         shadowOffset: { width: 5, height: 5 },
         shadowColor: '#33333312',
         shadowOpacity: 1,

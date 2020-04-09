@@ -7,7 +7,9 @@ export default styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderColor: '#F6F6F6'
+    borderColor: '#F6F6F6',
+    marginRight:15,
+    marginLeft:15
   },
   removeHeight: {
     height: 'auto'
@@ -37,6 +39,7 @@ export default styles = StyleSheet.create({
     width: '30%',
     paddingTop: 12,
     paddingLeft: 10,
+    alignItems:'flex-end'
   },
   targetText: {
     fontSize: 12,
@@ -66,8 +69,7 @@ export default styles = StyleSheet.create({
   },
   boxShadow: {
     backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 15,
+    paddingHorizontal: 15,
     zIndex: 5,
     elevation: 5,
     shadowOffset: { width: 5, height: 5 },

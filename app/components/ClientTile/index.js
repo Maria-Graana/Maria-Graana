@@ -12,7 +12,6 @@ class CustomerTile extends React.Component {
     render() {
         const { item } = this.props.data
         const { user } = this.props
-        console.log(item)
         return (
             <TouchableOpacity
                 activeOpacity={.7}

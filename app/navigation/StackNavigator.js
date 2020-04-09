@@ -25,6 +25,7 @@ import Comments from '../screens/Comments';
 import Targets from '../screens/Targets';
 import TeamTargets from '../screens/TeamTargets';
 import CreateUser from '../screens/CreateUser';
+import ChangePassword from '../screens/ChangePassword';
 
 const Stack = createStackNavigator();
 
@@ -217,6 +218,15 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
+
+            <Stack.Screen name='ChangePassword' component={ChangePassword}
+                options={({ navigation, route }) => ({
+                    title: 'CHANGE PASSWORD',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+
 
         </Stack.Navigator>
     );

@@ -39,11 +39,19 @@ class Inventory extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads('sale', 'all');
+		const { navigation } = this.props;
+		this._unsubscribe = navigation.addListener('focus', () => {
+			this.fetchLeads('sale', 'all');
+		});
+
+	}
+
+	componentWillUnmount() {
+		this._unsubscribe();
 	}
 
 	fetchLeads = (purposeTab, statusFilter) => {
-		console.log(purposeTab, statusFilter)
+		//console.log(purposeTab, statusFilter)
 		let query = ``
 		if (purposeTab === 'invest') {
 			query = `/api/leads/projects?all=${true}&status=${statusFilter}`
@@ -82,7 +90,7 @@ class Inventory extends React.Component {
 		})
 	}
 
-	goToFormPage = (page,status) => {
+	goToFormPage = (page, status) => {
 		const { navigation } = this.props;
 		navigation.navigate(page, { 'pageName': status });
 	}
@@ -98,7 +106,7 @@ class Inventory extends React.Component {
 	}
 
 	navigateTo = (data) => {
-		const {purposeTab}= this.state
+		const { purposeTab } = this.state
 		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: purposeTab })
 	}
 
@@ -179,10 +187,10 @@ class Inventory extends React.Component {
 						position="bottomRight"
 						onPress={() => this.setState({ active: !this.state.active })}>
 						<Ionicons name="md-add" color="#ffffff" />
-						<Button style={{ backgroundColor:  AppStyles.colors.primary }} onPress={() => { this.goToFormPage('AddRCMLead','RCM') }}>
+						<Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToFormPage('AddRCMLead', 'RCM') }}>
 							<Icon name="logo-whatsapp" />
 						</Button>
-						<Button style={{ backgroundColor:  AppStyles.colors.primary }} onPress={() => { this.goToFormPage('AddCMLead','CM') }}>
+						<Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToFormPage('AddCMLead', 'CM') }}>
 							<Icon name="logo-facebook" />
 						</Button>
 					</Fab>

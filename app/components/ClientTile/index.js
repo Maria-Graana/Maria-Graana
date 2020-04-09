@@ -10,32 +10,38 @@ class CustomerTile extends React.Component {
         super(props)
     }
     render() {
-        const {item}= this.props.data
-        const {user}= this.props
+        const { item } = this.props.data
+        const { user } = this.props
+        console.log(item)
         return (
-            <TouchableOpacity 
-            activeOpacity={.7}
-            onPress = { () => {this.props.onPress(item)}}
-            onLongPress={(val) => {
-                if (Ability.canDelete(user.role, 'Client')) this.props.handleLongPress(item)
-            }}
+            <TouchableOpacity
+                activeOpacity={.7}
+                onPress={() => { this.props.onPress(item) }}
+                onLongPress={(val) => {
+                    if (Ability.canDelete(user.role, 'Client')) this.props.handleLongPress(item)
+                }}
             >
-                <View style= {{flexDirection: 'row', marginVertical: 15}}>
-                    <View style={{paddingRight: 10}}>
-                        <UserAvatar  size="50" src='https://pickaface.net/gallery/avatar/unr_ironman_170308_2112_9ldw5b.png' name={`${item.name}`}/>
+                <View style={{ flexDirection: 'row', marginVertical: 15 }}>
+                    <View style={{ paddingRight: 10 }}>
+                        <UserAvatar size="50" name={item.firstName + ' ' + item.lastName} />
                     </View>
-                    <View style= {{flexDirection: 'column'}}>
+                    <View style={{ flexDirection: 'column',justifyContent:'center' }}>
                         <View>
-                            <Text style={[styles.textFont, {fontSize: 15}]}>
+                            <Text style={[styles.textFont, { fontSize: 15 }]}>
                                 {item.firstName} {item.lastName}
                             </Text>
                         </View>
-                        <View style={{paddingTop: 5}}>
-                            <Text style={[styles.textFont, {fontSize: 12, color: AppStyles.colors.subTextColor}]}>
-                                {item.address}
-                            </Text>
-                        </View>
-                    </View> 
+                        {
+                            item.address !== '' ?
+                                <View style={{ paddingTop: 5 }}>
+                                    <Text style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
+                                        {item.address}
+                                    </Text>
+                                </View>
+                                : null
+                        }
+
+                    </View>
                 </View>
                 <View style={styles.underLine}
                 />

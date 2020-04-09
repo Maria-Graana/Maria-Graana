@@ -7,16 +7,17 @@ export default styles = StyleSheet.create({
     padding: 15,
     position: 'relative',
     marginBottom: 15,
-    zIndex: 5,
     elevation: 5,
     shadowOffset: { width: 5, height: 5 },
     shadowColor: '#33333312',
     shadowOpacity: 1,
   },
+  tileIndex: {
+    zIndex: 10,
+  },
   contentView: {
     position: 'relative',
     paddingRight: 15,
-    zIndex: 20,
   },
   fontBold: {
     fontWeight: 'bold',
@@ -31,10 +32,8 @@ export default styles = StyleSheet.create({
     flexDirection: 'row'
   },
   dotsWrap: {
-    // position: 'absolute',
-    zIndex: 22,
-    // right: 0,
-    // top: 1,
+    zIndex: 20,
+    position: 'relative'
   },
   dotsImg: {
     width: 10,
@@ -56,12 +55,12 @@ export default styles = StyleSheet.create({
     fontSize: 12,
   },
   dropDownMain: {
+    zIndex: 10,
     position: 'absolute',
     right: 15,
     top: '100%',
     width: 190,
     backgroundColor: '#fff',
-    zIndex: 20,
     borderWidth: 1,
     borderColor: '#ebebeb',
     borderRadius: 4,
@@ -70,8 +69,8 @@ export default styles = StyleSheet.create({
   doneBtnBottom: {
     paddingTop: 0,
     paddingLeft: 10,
-    marginBottom: 5,
-    marginTop: 5,
+    marginBottom: 7,
+    marginTop: 7,
   },
   blueColor: {
     color: '#333',

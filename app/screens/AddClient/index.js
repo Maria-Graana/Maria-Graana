@@ -75,7 +75,6 @@ class AddClient extends Component {
                 phone: formData.contactNumber,
                 address: formData.address,
             }
-            console.log(body);
             if (!update) {
                 axios.post(`/api/customer/create`, body)
                     .then((res) => {

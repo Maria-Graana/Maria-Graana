@@ -25,7 +25,8 @@ export default styles = StyleSheet.create({
   },
   meetingCon: {
     fontSize: 14,
-    color: '#0D73EE'
+    color: '#0D73EE',
+    textTransform: 'capitalize'
   },
   border: {
     width: '99%',

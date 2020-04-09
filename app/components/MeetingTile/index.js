@@ -1,9 +1,10 @@
-import React from 'react'
-import { View, Text, Image, TouchableOpacity } from 'react-native'
-import styles from './style'
-import AppStyles from '../../AppStyles'
-import dots from '../../../assets/img/dots.png'
-import moment from 'moment'
+import React from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import styles from './style';
+import AppStyles from '../../AppStyles';
+import dots from '../../../assets/img/dots.png';
+import moment from 'moment';
+import StaticData from '../../StaticData'
 
 class MeetingTile extends React.Component {
   constructor(props) {
@@ -30,27 +31,19 @@ class MeetingTile extends React.Component {
                   <Image source={dots} style={styles.dotsImg} />
                 </TouchableOpacity>
             }
+            {console.log(StaticData.callStatus.length)}
             {
               doneStatus === true && doneStatusId == data.id &&
               <View style={[styles.dropDownMain]}>
-                <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { openStatus('done') }}>
-                  <Text style={styles.blueColor}>No Response</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { openStatus('done2') }}>
-                  <Text style={styles.blueColor}>Powered Off</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { openStatus('done3') }}>
-                  <Text style={styles.blueColor}>Invalid Number</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { openStatus('done4') }}>
-                  <Text style={styles.blueColor}>Awaiting Response</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { openStatus('done4') }}>
-                  <Text style={styles.blueColor}>Expected Visit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { openStatus('done4') }}>
-                  <Text style={styles.blueColor}>Not Intrested</Text>
-                </TouchableOpacity>
+                {
+                  StaticData.callStatus.map((item, key) => {
+                    return (
+                      <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { openStatus(item.value) }} key={key}>
+                        <Text style={styles.blueColor}>{item.name}</Text>
+                      </TouchableOpacity>
+                    )
+                  })
+                }
               </View>
             }
           </View>

@@ -257,5 +257,15 @@ export default StaticData = {
         { value: '11', name: '11' },
         { value: '12', name: '12' },
     ],
+    callStatus: [
+        { value: 'No Response', name: 'No Response' },
+        { value: 'Powered Off', name: 'Powered Off' },
+        { value: 'Invalid Number', name: 'Invalid Number' },
+        { value: 'Follow-up', name: 'Follow-up' },
+        { value: 'Awaiting Response', name: 'Awaiting Response' },
+        { value: 'Details Sent', name: 'Details Sent' },
+        { value: 'Expected Visit', name: 'Expected Visit' },
+        { value: 'Not Intrested', name: 'Not Intrested' },
+    ],
 }
 

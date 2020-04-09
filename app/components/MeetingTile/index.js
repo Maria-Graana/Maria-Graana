@@ -27,7 +27,6 @@ class MeetingTile extends React.Component {
             <Text style={[styles.fontBold]}>{data.time} </Text>
             <Text style={[styles.fontBold]}>{moment(data.date).format("MMM DD")}</Text>
           </View>
-          {console.log(data.status)}
           <View style={[styles.dotsWrap]}>
             {
               data.status !== 'pending' ?

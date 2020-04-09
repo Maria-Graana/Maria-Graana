@@ -50,9 +50,7 @@ class ChangePassword extends Component {
             password: data.newPassword,
             oldPassword: data.oldPassword
         }
-
-        console.log(body);
-
+        
         axios.patch(`/api/user/resetpassword`, body).then(response => {
             if (response.status === 400) {
                 helper.errorToast(response.data)

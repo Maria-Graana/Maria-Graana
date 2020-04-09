@@ -52,11 +52,11 @@ class Meetings extends Component {
     } else {
       axios.post(`api/leads/project/meeting`, formData)
         .then((res) => {
-          helper.successToast(res.data)
+          helper.successToast(`Meeting Added`)
           this.getMeetingLead();
           this.setState({
             active: false,
-            formData: { time: '', data: '' }
+            formData: { time: '', date: '' }
           })
         })
     }
@@ -82,41 +82,44 @@ class Meetings extends Component {
     // axios.patch(`/api/diary/update?id=${id}`, body)
     //   .then((res) => {
     //     this.getMeetingLead();
-        
+
     //   })
   }
 
   render() {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId } = this.state
     return (
-      <View>
+      <View style={styles.mainWrapCon}>
 
         {/* ************Fab For Open Modal************ */}
         <View style={[styles.meetingConteiner]}>
           <ScrollView>
-            {
-              meetings && meetings != '' && meetings.rows.map((item, key) => {
-                return (
-                  <MeetingTile
-                    data={item}
-                    key={key}
-                    openStatus={this.openStatus}
-                    doneStatus={doneStatus}
-                    doneStatusId={doneStatusId}
-                  />
-                )
-              })
-            }
+            <View  style={styles.paddBottom}>
+              {
+                meetings && meetings != '' && meetings.rows.map((item, key) => {
+                  return (
+                    <MeetingTile
+                      data={item}
+                      key={key}
+                      openStatus={this.openStatus}
+                      doneStatus={doneStatus}
+                      doneStatusId={doneStatusId}
+                    />
+                  )
+                })
+              }
+            </View>
           </ScrollView>
+
         </View>
 
         <Fab
-            active={active}
-            style={{ backgroundColor: '#0D73EE' }}
-            position="bottomRight"
-            onPress={() => { this.openModal() }}>
-            <Ionicons name="md-add" color="#ffffff" />
-          </Fab>
+          active={active}
+          style={{ backgroundColor: '#0D73EE' }}
+          position="bottomRight"
+          onPress={() => { this.openModal() }}>
+          <Ionicons name="md-add" color="#ffffff" />
+        </Fab>
 
         {/* ************Modal Component************ */}
         <MeetingModal

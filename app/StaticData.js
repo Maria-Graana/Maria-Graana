@@ -258,14 +258,19 @@ export default StaticData = {
         { value: '12', name: '12' },
     ],
     callStatus: [
-        { value: 'No Response', name: 'No Response' },
-        { value: 'Powered Off', name: 'Powered Off' },
-        { value: 'Invalid Number', name: 'Invalid Number' },
-        { value: 'Follow-up', name: 'Follow-up' },
-        { value: 'Awaiting Response', name: 'Awaiting Response' },
-        { value: 'Details Sent', name: 'Details Sent' },
-        { value: 'Expected Visit', name: 'Expected Visit' },
-        { value: 'Not Intrested', name: 'Not Intrested' },
+        { value: 'no_response', name: 'No Response' },
+        { value: 'powered_off', name: 'Powered Off' },
+        { value: 'invalid_number', name: 'Invalid Number' },
+        { value: 'follow_up', name: 'Follow-up' },
+        { value: 'awaiting_response', name: 'Awaiting Response' },
+        { value: 'details_sent', name: 'Details Sent' },
+        { value: 'expected_visit', name: 'Expected Visit' },
+        { value: 'not_interested', name: 'Not Intrested' },
+    ],
+    meetingStatus: [
+        { value: 'completed', name: 'Done' },
+        { value: 'pending', name: 'Pending' },
+        { value: 'progress', name: 'Progress' },
     ],
 }
 

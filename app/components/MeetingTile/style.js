@@ -33,7 +33,8 @@ export default styles = StyleSheet.create({
   },
   dotsWrap: {
     zIndex: 20,
-    position: 'relative'
+    position: 'absolute',
+    right: 0,
   },
   dotsImg: {
     width: 10,
@@ -53,6 +54,7 @@ export default styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     fontSize: 12,
+    textTransform: 'capitalize'
   },
   dropDownMain: {
     zIndex: 10,

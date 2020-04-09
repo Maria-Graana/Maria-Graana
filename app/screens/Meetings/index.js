@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
@@ -71,19 +71,26 @@ class Meetings extends Component {
   }
 
   openStatus = (id) => {
-    let body = {
-      status: 'completed',
-    }
-    console.log(id)
     this.setState({
       doneStatus: !this.state.doneStatus,
       doneStatusId: id,
     })
-    // axios.patch(`/api/diary/update?id=${id}`, body)
-    //   .then((res) => {
-    //     this.getMeetingLead();
 
-    //   })
+  }
+
+  sendStatus = (status) => {
+    let body = {
+      status: status
+    }
+    axios.patch(`/api/diary/update?id=${this.state.doneStatusId}`, body)
+      .then((res) => {
+        console.log(res.data)
+        this.getMeetingLead();
+        this.setState({
+          doneStatus: !this.state.doneStatus,
+          doneStatusId: '',
+        })
+      })
   }
 
   render() {
@@ -94,7 +101,7 @@ class Meetings extends Component {
         {/* ************Fab For Open Modal************ */}
         <View style={[styles.meetingConteiner]}>
           <ScrollView>
-            <View  style={styles.paddBottom}>
+            <View style={styles.paddBottom}>
               {
                 meetings && meetings != '' && meetings.rows.map((item, key) => {
                   return (
@@ -102,6 +109,7 @@ class Meetings extends Component {
                       data={item}
                       key={key}
                       openStatus={this.openStatus}
+                      sendStatus={this.sendStatus}
                       doneStatus={doneStatus}
                       doneStatusId={doneStatusId}
                     />
@@ -111,6 +119,19 @@ class Meetings extends Component {
             </View>
           </ScrollView>
 
+        </View>
+
+        <View style={[styles.callMeetingBtn]}>
+          <View style={[styles.btnsMainWrap]}>
+            <TouchableOpacity style={styles.actionBtn}>
+              <Text style={styles.alignCenter}>CALL</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.btnsMainWrap]}>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
+              <Text style={styles.alignCenter}>ADD MEETING</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <Fab

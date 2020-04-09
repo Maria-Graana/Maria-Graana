@@ -12,7 +12,7 @@ class MeetingTile extends React.Component {
   }
 
   render() {
-    const { data, openStatus, doneStatusId, doneStatus } = this.props
+    const { data, openStatus, doneStatusId, doneStatus, sendStatus } = this.props
     let taskTypeData = []
     data.taskType === 'meeting'? 
     taskTypeData = StaticData.meetingStatus
@@ -27,13 +27,13 @@ class MeetingTile extends React.Component {
             <Text style={[styles.fontBold]}>{data.time} </Text>
             <Text style={[styles.fontBold]}>{moment(data.date).format("MMM DD")}</Text>
           </View>
+          {console.log(data.status)}
           <View style={[styles.dotsWrap]}>
             {
-              data.status === 'completed' ?
+              data.status !== 'pending' ?
                 <Text style={[styles.doneText]}>{data.status}</Text>
                 :
                 <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data.id) }}>
-                  {/* <Text style={styles.blueColor}>Mark As Done</Text> */}
                   <Image source={dots} style={styles.dotsImg} />
                 </TouchableOpacity>
             }
@@ -43,7 +43,7 @@ class MeetingTile extends React.Component {
                 {
                   taskTypeData.map((item, key) => {
                     return (
-                      <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { openStatus(item.value) }} key={key}>
+                      <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { sendStatus(item.value) }} key={key}>
                         <Text style={styles.blueColor}>{item.name}</Text>
                       </TouchableOpacity>
                     )

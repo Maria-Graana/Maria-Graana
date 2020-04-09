@@ -14,7 +14,7 @@ class MeetingTile extends React.Component {
   render() {
     const { data, openStatus, doneStatusId, doneStatus } = this.props
     let taskTypeData = []
-    data.taskType !== 'meeting'? 
+    data.taskType === 'meeting'? 
     taskTypeData = StaticData.meetingStatus
     : 
     taskTypeData = StaticData.callStatus

@@ -53,18 +53,17 @@ class ChangePassword extends Component {
 
         console.log(body);
 
-        axios.patch(`/api/user/resetpassword`,body).then(response => {
-            console.log(response);
-            if (response.data === 'incorrect old password') {
-                helper.errorToast('Incorrect old password entered!')
+        axios.patch(`/api/user/resetpassword`, body).then(response => {
+            if (response.status === 400) {
+                helper.errorToast(response.data)
             }
             else {
                 helper.successToast('Password Changed Successfully!')
+                this.setState({ formData: { oldPassword: '', newPassword: '', confirmNewPassword: '' } })
             }
 
         }).catch(error => {
-            console.log(error);
-            helper.errorToast('Something went wrong, please try again!')
+            helper.errorToast(error.response.data)
         })
     }
 
@@ -77,7 +76,7 @@ class ChangePassword extends Component {
             <View style={AppStyles.container}>
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} secureTextEntry={true} placeholder={'Current Password'} onChangeText={(text) => this.handleForm(text, 'oldPassword')} />
+                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} value={oldPassword} secureTextEntry={true} placeholder={'Current Password'} onChangeText={(text) => this.handleForm(text, 'oldPassword')} />
                     </View>
                     {
                         checkValidation === true && oldPassword === '' && <ErrorMessage errorMessage={'Required'} />
@@ -86,7 +85,7 @@ class ChangePassword extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} secureTextEntry={true} placeholder={'New Password'} onChangeText={(text) => this.handleForm(text, 'newPassword')} />
+                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} value={newPassword} secureTextEntry={true} placeholder={'New Password'} onChangeText={(text) => this.handleForm(text, 'newPassword')} />
                     </View>
                     {
                         checkValidation === true && newPassword === '' && <ErrorMessage errorMessage={'Required'} />
@@ -95,7 +94,7 @@ class ChangePassword extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} secureTextEntry={true} placeholder={'Confirm new password'} onChangeText={(text) => this.handleForm(text, 'confirmNewPassword')} />
+                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} value={confirmNewPassword} secureTextEntry={true} placeholder={'Confirm new password'} onChangeText={(text) => this.handleForm(text, 'confirmNewPassword')} />
                     </View>
                     {
                         checkValidation === true && confirmNewPassword === '' && <ErrorMessage errorMessage={'Required'} />

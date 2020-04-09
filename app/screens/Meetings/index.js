@@ -52,7 +52,7 @@ class Meetings extends Component {
     } else {
       axios.post(`api/leads/project/meeting`, formData)
         .then((res) => {
-          helper.errorToast(res.data)
+          helper.successToast(res.data)
           this.getMeetingLead();
           this.setState({
             active: false,
@@ -74,10 +74,16 @@ class Meetings extends Component {
     let body = {
       status: 'completed',
     }
-    axios.patch(`/api/diary/update?id=${id}`, body)
-      .then((res) => {
-        this.getMeetingLead();
-      })
+    console.log(id)
+    this.setState({
+      doneStatus: !this.state.doneStatus,
+      doneStatusId: id,
+    })
+    // axios.patch(`/api/diary/update?id=${id}`, body)
+    //   .then((res) => {
+    //     this.getMeetingLead();
+        
+    //   })
   }
 
   render() {

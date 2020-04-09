@@ -43,6 +43,7 @@ class Inventory extends React.Component {
 	}
 
 	fetchLeads = (purposeTab, statusFilter) => {
+		console.log(purposeTab, statusFilter)
 		let query = ``
 		if (purposeTab === 'invest') {
 			query = `/api/leads/projects?all=${true}&status=${statusFilter}`
@@ -103,6 +104,7 @@ class Inventory extends React.Component {
 
 	render() {
 		const { selectInventory, dropDownId, purposeTab, leadsData } = this.state
+		// console.log(leadsData)
 		return (
 			<View>
 

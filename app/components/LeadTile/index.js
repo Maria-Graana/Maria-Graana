@@ -52,7 +52,10 @@ class LeadTile extends React.Component {
             						</Text>
                 <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
                   {
-                    data.price != null ? data.price : '---'
+                    data.price != null ? data.price : ''
+                  }
+                  {
+                    data.maxPrice && data.maxPrice != null && data.maxPrice
                   }
                 </Text>
               </View>

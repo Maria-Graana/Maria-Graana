@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text, Linking } from 'react-native';
 import { Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import styles from './style'
 import MeetingTile from '../../components/MeetingTile'
 import MeetingModal from '../../components/MeetingModal'
+import moment from 'moment'
 import helper from '../../helper';
 
 class Meetings extends Component {
@@ -28,6 +29,7 @@ class Meetings extends Component {
 
   componentDidMount() {
     this.getMeetingLead()
+    console.log(this.props.route.params.lead)
   }
 
   //  ************ Function for open modal ************ 
@@ -93,6 +95,42 @@ class Meetings extends Component {
       })
   }
 
+  sendCallStatus = () => {
+    var a = new Date()
+    let body = {
+      start: a,
+      end: a,
+      time: moment(a).format("LT"),
+      date: a,
+      taskType: 'call',
+      subject: 'Call to client ' + this.props.route.params.lead.armsuser.phoneNumber,
+      cutomerId: this.props.route.params.lead.customer.id
+    }
+    console.log(body)
+    axios.post(`api/leads/project/meeting`, body)
+      .then((res) => {
+        this.getMeetingLead();
+      })
+  }
+
+  callNumber = (url) => {
+    console.log(url)
+    if (url != 'tel:null') {
+      Linking.canOpenURL(url)
+        .then(supported => {
+          if (!supported) {
+            console.log("Can't handle url: " + url);
+            this.sendCallStatus()
+          } else {
+            
+            return Linking.openURL(url) 
+          }
+        }).catch(err => console.error('An error occurred', err));
+    } else {
+      helper.errorToast(`No Phone Number`)
+    }
+  }
+
   render() {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId } = this.state
     return (
@@ -123,7 +161,7 @@ class Meetings extends Component {
 
         <View style={[styles.callMeetingBtn]}>
           <View style={[styles.btnsMainWrap]}>
-            <TouchableOpacity style={styles.actionBtn}>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${this.props.route.params.lead.armsuser.phoneNumber}`) }}>
               <Text style={styles.alignCenter}>CALL</Text>
             </TouchableOpacity>
           </View>

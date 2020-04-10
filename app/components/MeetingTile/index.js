@@ -18,7 +18,6 @@ class MeetingTile extends React.Component {
       taskTypeData = StaticData.meetingStatus
       :
       taskTypeData = StaticData.callStatus
-    console.log(data.status)
     return (
       <View style={[styles.mainTileView, doneStatus === true && doneStatusId == data.id && styles.tileIndex]}>
         <View style={[styles.contentView, AppStyles.flexDirectionRow]}>

@@ -29,7 +29,7 @@ class Meetings extends Component {
 
   componentDidMount() {
     this.getMeetingLead()
-    console.log(this.props.route.params.lead)
+    // console.log(this.props.route.params.lead)
   }
 
   //  ************ Function for open modal ************ 
@@ -86,7 +86,6 @@ class Meetings extends Component {
     }
     axios.patch(`/api/diary/update?id=${this.state.doneStatusId}`, body)
       .then((res) => {
-        console.log(res.data)
         this.getMeetingLead();
         this.setState({
           doneStatus: !this.state.doneStatus,
@@ -108,12 +107,12 @@ class Meetings extends Component {
     }
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
+        // console.log(res.data)
         this.getMeetingLead();
       })
   }
 
   callNumber = (url) => {
-    console.log(url)
     if (url != 'tel:null') {
       Linking.canOpenURL(url)
         .then(supported => {

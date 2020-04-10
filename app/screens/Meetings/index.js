@@ -107,7 +107,6 @@ class Meetings extends Component {
     }
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
-        // console.log(res.data)
         this.getMeetingLead();
       })
   }

@@ -106,7 +106,6 @@ class Meetings extends Component {
       subject: 'Call to client ' + this.props.route.params.lead.armsuser.phoneNumber,
       cutomerId: this.props.route.params.lead.customer.id
     }
-    console.log(body)
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
         this.getMeetingLead();

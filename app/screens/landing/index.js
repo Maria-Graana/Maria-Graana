@@ -10,41 +10,26 @@ import InventoryImg from '../../../assets/img/inventory.png'
 import Ability from '../../hoc/Ability'
 import axios from 'axios'
 import Loader from '../../components/loader';
+import { getListingsCount } from '../../actions/listings'
 
 class Landing extends React.Component {
 	constructor(props) {
 		super(props)
-		this.state = {
-			count: {},
-			loading: false,
-		}
 	}
 
 	componentDidMount() {
-		const { navigation } = this.props;
+		const { navigation, dispatch } = this.props;
 		this._unsubscribe = navigation.addListener('focus', () => {
-			this.getListingsCount();
+			setTimeout(function () {
+				dispatch(getListingsCount())
+			}, 2000)
 		});
-
-
 	}
 
 	componentWillUnmount() {
 		this._unsubscribe();
 	}
 
-	getListingsCount = () => {
-		this.setState({ loading: true })
-		const that = this;
-		setTimeout(function () {
-			//Put All Your Code Here, Which You Want To Execute After Some Delay Time.
-			axios.get(`/api/inventory/counts`).then(response => {
-				that.setState({ loading: false, count: response.data });
-			}).catch(error => {
-				console.log('error', error);
-			})
-		}, 2000);
-	}
 	// ****** Navigate Function
 	navigateFunction = (name, screenName) => {
 		const { navigation } = this.props
@@ -52,10 +37,8 @@ class Landing extends React.Component {
 	}
 
 	render() {
-		const { user } = this.props
-		const { loading, count } = this.state;
+		const { user, count } = this.props
 		return (
-			!loading ?
 				<ScrollView style={[AppStyles.container, { paddingLeft: 25, paddingRight: 25 }]} >
 					<SafeAreaView >
 						{/* Main Wrap of Landing Page Buttons (Diary Button) */}
@@ -69,15 +52,14 @@ class Landing extends React.Component {
 					</SafeAreaView>
 
 				</ScrollView>
-				:
-				<Loader loading={loading} />
 		)
 	}
 }
 
 mapStateToProps = (store) => {
 	return {
-		user: store.user.user
+		user: store.user.user,
+		count: store.listings.count
 	}
 }
 

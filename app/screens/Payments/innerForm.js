@@ -66,7 +66,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOKEN</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'token') }} />
+                <TextInput style={[AppStyles.blackInput]} placeholderTextColor={'#0D73EE'} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'token') }} />
                 {
                   checkValidation === true && formData.token === '' && <ErrorMessage errorMessage={'Required'} />
                 }
@@ -83,7 +83,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>DOWN PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'downPayment') }} />
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} placeholderTextColor={'#0D73EE'} onChangeText={(text) => { handleForm(text, 'downPayment') }} />
                 {
                   checkValidation === true && formData.downPayment === '' && <ErrorMessage errorMessage={'Required'} />
                 }
@@ -113,7 +113,7 @@ class InnerForm extends Component {
                   <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
                     <Text style={[AppStyles.blackInputText]}>INSTALMENTS {key + 1}</Text>
                     <View style={[AppStyles.blackInput]}>
-                      <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleInstalments(text, key) }} />
+                      <TextInput style={[AppStyles.blackInput]} placeholderTextColor={'#0D73EE'} placeholder={'10 LAC'} onChangeText={(text) => { handleInstalments(text, key) }} />
                     </View>
                   </View>
 

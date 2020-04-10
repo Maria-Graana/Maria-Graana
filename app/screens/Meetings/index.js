@@ -102,8 +102,9 @@ class Meetings extends Component {
       time: moment(a).format("LT"),
       date: a,
       taskType: 'call',
-      subject: 'Call to client ' + this.props.route.params.lead.armsuser.phoneNumber,
-      cutomerId: this.props.route.params.lead.customer.id
+      subject: 'Call to client ' + this.props.route.params.lead.customer.customerName,
+      cutomerId: this.props.route.params.lead.customer.id,
+      leadId: this.props.route.params.lead.id,
     }
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
@@ -157,7 +158,7 @@ class Meetings extends Component {
 
         <View style={[styles.callMeetingBtn]}>
           <View style={[styles.btnsMainWrap]}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${this.props.route.params.lead.armsuser.phoneNumber}`) }}>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${this.props.route.params.lead.customer.phone}`) }}>
               <Text style={styles.alignCenter}>CALL</Text>
             </TouchableOpacity>
           </View>

@@ -20,26 +20,8 @@ class CustomDrawerContent extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {
-            count: {},
-        }
     }
 
-    componentDidMount() {
-        this.getListingsCount();
-    }
-
-    getListingsCount = () => {
-        const that = this;
-        setTimeout(function () {
-            //Put All Your Code Here, Which You Want To Execute After Some Delay Time.
-            axios.get(`/api/inventory/counts`).then(response => {
-                that.setState({ count: response.data });
-            }).catch(error => {
-                console.log('error', error);
-            })
-        }, 2000);
-    }
 
     navigateTo = (screen) => {
         RootNavigation.navigate(screen)
@@ -50,9 +32,8 @@ class CustomDrawerContent extends React.Component {
     }
 
     render() {
-        const { user } = this.props
+        const { user,count } = this.props
         const { role } = user
-        const { count } = this.state;
         return (
             <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
                 <ScrollView style={[styles.scrollContainer, { width: '100%' }]}>
@@ -91,7 +72,8 @@ mapStateToProps = (store) => {
         user: store.user.user,
         token: store.user.token,
         store: store,
-        loading: store.user.loading
+        loading: store.user.loading,
+        count: store.listings.count
     }
 }
 

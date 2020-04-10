@@ -14,13 +14,13 @@ class MeetingTile extends React.Component {
   render() {
     const { data, openStatus, doneStatusId, doneStatus, sendStatus } = this.props
     let taskTypeData = []
-    data.taskType === 'meeting'? 
-    taskTypeData = StaticData.meetingStatus
-    : 
-    taskTypeData = StaticData.callStatus
-
+    data.taskType === 'meeting' ?
+      taskTypeData = StaticData.meetingStatus
+      :
+      taskTypeData = StaticData.callStatus
+    console.log(data.status)
     return (
-      <View style={[styles.mainTileView,doneStatus === true && doneStatusId == data.id && styles.tileIndex]}>
+      <View style={[styles.mainTileView, doneStatus === true && doneStatusId == data.id && styles.tileIndex]}>
         <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
           <View style={styles.border}>
             <Text style={[AppStyles.mrTen, styles.meetingCon]}>{data.taskType} @</Text>
@@ -28,14 +28,10 @@ class MeetingTile extends React.Component {
             <Text style={[styles.fontBold]}>{moment(data.date).format("MMM DD")}</Text>
           </View>
           <View style={[styles.dotsWrap]}>
-            {
-              data.status !== 'pending' ?
-                <Text style={[styles.doneText]}>{data.status}</Text>
-                :
-                <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data.id) }}>
-                  <Image source={dots} style={styles.dotsImg} />
-                </TouchableOpacity>
-            }
+            <Text style={[styles.doneText]}>{data.status}</Text>
+            <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data.id) }}>
+              <Image source={dots} style={styles.dotsImg} />
+            </TouchableOpacity>
             {
               doneStatus === true && doneStatusId == data.id &&
               <View style={[styles.dropDownMain]}>

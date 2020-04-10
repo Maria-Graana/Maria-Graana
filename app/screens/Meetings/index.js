@@ -119,9 +119,8 @@ class Meetings extends Component {
         .then(supported => {
           if (!supported) {
             console.log("Can't handle url: " + url);
-            this.sendCallStatus()
           } else {
-            
+            this.sendCallStatus()
             return Linking.openURL(url) 
           }
         }).catch(err => console.error('An error occurred', err));

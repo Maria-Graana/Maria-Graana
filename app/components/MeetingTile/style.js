@@ -34,13 +34,19 @@ export default styles = StyleSheet.create({
   },
   dotsWrap: {
     zIndex: 20,
+    flexDirection: 'row',
     position: 'absolute',
     right: 0,
+    top: 0,
   },
   dotsImg: {
     width: 10,
     height: 20,
     resizeMode: 'contain'
+  },
+  doneBtn: {
+    position: 'relative',
+    top: -2,
   },
   doneText: {
     borderWidth: 1,
@@ -52,8 +58,9 @@ export default styles = StyleSheet.create({
     top: -4,
     paddingTop: 3,
     paddingBottom: 3,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginRight: 10,
     fontSize: 12,
     textTransform: 'capitalize'
   },

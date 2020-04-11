@@ -77,7 +77,7 @@ class InnerForm extends Component {
           }
 
           {/* **************************************** */}
-          {/* {
+          {
             readOnly.rate != '' &&
             <View style={[AppStyles.mainBlackWrap]}>
               <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
@@ -87,7 +87,7 @@ class InnerForm extends Component {
                 </View>
               </View>
             </View>
-          } */}
+          }
 
           {/* **************************************** */}
           {/* {

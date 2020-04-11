@@ -143,13 +143,13 @@ class Payments extends Component {
 
 	formSubmit = () => {
 		const { formData, totalInstalments } = this.state
-		if (!formData.projectId || !formData.floorId || !formData.unitId || !formData.token || !formData.downPayment || !formData.commisionPayment) {
+		if (!formData.projectId || !formData.floorId || !formData.unitId || !formData.token || !formData.downPayment) {
 			this.setState({
 				checkValidation: true
 			})
 		} else {
 			let body = {
-				commisionPayment: parseInt(formData.commisionPayment),
+				discount: parseInt(formData.discount),
 				downPayment: parseInt(formData.downPayment),
 				floorId: formData.floorId,
 				token: parseInt(formData.token),
@@ -157,6 +157,8 @@ class Payments extends Component {
 				installments: totalInstalments,
 				no_of_installments: totalInstalments.length,
 			}
+
+			console.log(body)
 
 			axios.patch(`/api/leads/project?id=${formData.projectId}`, body)
 				.then((res) => {

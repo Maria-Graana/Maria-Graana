@@ -180,7 +180,7 @@ class InnerForm extends Component {
           }
 
           {/* **************************************** */}
-          {/* {
+          {
             remainingPayment != '' &&
             <View style={[AppStyles.mainBlackWrap]}>
               <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
@@ -190,7 +190,7 @@ class InnerForm extends Component {
                 </View>
               </View>
             </View>
-          } */}
+          }
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>

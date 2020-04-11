@@ -26,6 +26,8 @@ class InnerForm extends Component {
       totalInstalments,
       handleInstalments,
       formSubmit,
+      readOnly,
+      remainingPayment,
     } = this.props
     return (
       <View style={[AppStyles.modalMain]}>
@@ -58,6 +60,58 @@ class InnerForm extends Component {
               {
                 checkValidation === true && formData.unitId === '' && <ErrorMessage errorMessage={'Required'} />
               }
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          {/* {
+            readOnly.totalSize != '' &&
+            < View style={[AppStyles.mainBlackWrap]}>
+              <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+                <Text style={[AppStyles.blackInputText]}>TOTAL SIZE</Text>
+                <View style={[AppStyles.blackInput]}>
+                  <TextInput style={[AppStyles.blackInput]} placeholderTextColor={'#0D73EE'} placeholder={'10 LAC'} value={readOnly.totalSize} />
+                </View>
+              </View>
+            </View>
+          } */}
+
+          {/* **************************************** */}
+          {/* {
+            readOnly.rate != '' &&
+            <View style={[AppStyles.mainBlackWrap]}>
+              <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+                <Text style={[AppStyles.blackInputText]}>RATE</Text>
+                <View style={[AppStyles.blackInput]}>
+                  <TextInput style={[AppStyles.blackInput]} placeholderTextColor={'#0D73EE'} placeholder={'10 LAC'} value={readOnly.rate.toString()} />
+                </View>
+              </View>
+            </View>
+          } */}
+
+          {/* **************************************** */}
+          {/* {
+            readOnly.totalPrice != '' &&
+            <View style={[AppStyles.mainBlackWrap]}>
+              <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+                <Text style={[AppStyles.blackInputText]}>TOTAL PRICE</Text>
+                <View style={[AppStyles.blackInput]}>
+                  <TextInput style={[AppStyles.blackInput]} placeholderTextColor={'#0D73EE'} placeholder={'10 LAC'} value={readOnly.totalPrice.toString()} />
+                </View>
+              </View>
+            </View>
+          } */}
+
+          {/* **************************************** */}
+          <View style={[AppStyles.mainBlackWrap]}>
+            <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+              <Text style={[AppStyles.blackInputText]}>DISCOUNT</Text>
+              <View style={[AppStyles.blackInput]}>
+                <TextInput style={[AppStyles.blackInput]} placeholderTextColor={'#0D73EE'} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'discount') }} />
+                {
+                  checkValidation === true && formData.discount === '' && <ErrorMessage errorMessage={'Required'} />
+                }
+              </View>
             </View>
           </View>
 
@@ -126,17 +180,17 @@ class InnerForm extends Component {
           }
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
-            <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
-              <Text style={[AppStyles.blackInputText]}>COMMISSION PAYMENT</Text>
-              <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} onChangeText={(text) => { handleForm(text, 'commisionPayment') }}/>
-                {
-                  checkValidation === true && formData.commisionPayment === "" && <ErrorMessage errorMessage={'Required'} />
-                }
+          {/* {
+            remainingPayment != '' &&
+            <View style={[AppStyles.mainBlackWrap]}>
+              <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
+                <Text style={[AppStyles.blackInputText]}>REMAINING PAYMENT</Text>
+                <View style={[AppStyles.blackInput]}>
+                  <TextInput style={[AppStyles.blackInput]} value={remainingPayment.toString()} />
+                </View>
               </View>
             </View>
-          </View>
+          } */}
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
@@ -148,7 +202,7 @@ class InnerForm extends Component {
           </View>
 
         </View>
-      </View>
+      </View >
 
     )
   }

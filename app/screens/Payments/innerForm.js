@@ -90,7 +90,7 @@ class InnerForm extends Component {
           }
 
           {/* **************************************** */}
-          {/* {
+          {
             readOnly.totalPrice != '' &&
             <View style={[AppStyles.mainBlackWrap]}>
               <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
@@ -100,7 +100,7 @@ class InnerForm extends Component {
                 </View>
               </View>
             </View>
-          } */}
+          }
 
           {/* **************************************** */}
           <View style={[AppStyles.mainBlackWrap]}>

@@ -106,7 +106,6 @@ class Payments extends Component {
 
 	remainingPayment = (discount) => {
 		// Total Price - Discount - Any payment done
-		console.log('in')
 		const { readOnly } = this.state
 		var remaining = readOnly.totalPrice - discount
 		this.setState({

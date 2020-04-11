@@ -65,6 +65,12 @@ class Payments extends Component {
 				res && res.data.rows.map((item, index) => { return (Array.push({ value: item.id, name: item.name })) })
 				this.setState({
 					getFloors: Array,
+					readOnly: {
+						totalSize: '',
+						rate: '',
+						totalPrice: '',
+					},
+					remainingPayment: '',
 				})
 			})
 	}

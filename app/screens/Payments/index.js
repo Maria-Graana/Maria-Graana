@@ -4,7 +4,6 @@ import axios from 'axios'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
-import * as RootNavigation from '../../navigation/RootNavigation';
 import InnerForm from './innerForm';
 import StaticData from '../../StaticData';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
@@ -19,10 +18,18 @@ class Payments extends Component {
 			getUnit: [],
 			getFloors: [],
 			totalInstalments: [],
+			units: [],
+			remainingPayment: '',
+			readOnly: {
+				totalSize: '',
+				rate: '',
+				totalPrice: '',
+			},
 			formData: {
 				projectId: '',
 				floorId: '',
 				unitId: '',
+				discount:'',
 				token: '',
 				commisionPayment: '',
 				downPayment: '',
@@ -57,7 +64,7 @@ class Payments extends Component {
 				let Array = [];
 				res && res.data.rows.map((item, index) => { return (Array.push({ value: item.id, name: item.name })) })
 				this.setState({
-					getFloors: Array
+					getFloors: Array,
 				})
 			})
 	}
@@ -65,11 +72,11 @@ class Payments extends Component {
 	getUnits = (projectId, floorId) => {
 		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}`)
 			.then((res) => {
-				console.log(res.data)
 				let array = [];
 				res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
 				this.setState({
-					getUnit: array
+					getUnit: array,
+					units: res.data.rows
 				})
 			})
 	}
@@ -83,6 +90,30 @@ class Payments extends Component {
 		})
 	}
 
+	readOnly = (unitId) => {
+		const { units } = this.state
+		let array = {};
+		array = units && units.filter((item) => { return item.id === unitId && item })
+		let data = array[0]
+		this.setState({
+			readOnly: {
+				totalSize: data.area + ' ' + data.area_unit,
+				rate: data.pricePerSqFt,
+				totalPrice: data.area * data.pricePerSqFt,
+			}
+		})
+	}
+
+	remainingPayment = (discount) => {
+		// Total Price - Discount - Any payment done
+		console.log('in')
+		const { readOnly } = this.state
+		var remaining = readOnly.totalPrice - discount
+		this.setState({
+				remainingPayment: remaining
+		})
+	}
+
 	handleForm = (value, name) => {
 		const { formData } = this.state
 		formData[name] = value
@@ -93,6 +124,12 @@ class Payments extends Component {
 		}
 		if (name === 'floorId' && value != '') {
 			this.getUnits(formData.projectId, formData.floorId)
+		}
+		if (name === 'unitId' && value != '') {
+			this.readOnly(value)
+		}
+		if (name === 'discount' && value != '') {
+			this.remainingPayment(value)
 		}
 		if (name === 'instalments' && value != '') {
 			this.instalmentsField(value)
@@ -142,7 +179,7 @@ class Payments extends Component {
 	}
 
 	onHandleCloseLead = (reason) => {
-		const {lead, navigation}= this.props
+		const { lead, navigation } = this.props
 		const { selectedReason } = this.state;
 		let body = {
 			reasons: selectedReason
@@ -159,7 +196,20 @@ class Payments extends Component {
 	}
 
 	render() {
-		const { getProject, formData, getFloors, getUnit, totalInstalments, checkValidation, reasons, selectedReason, checkReasonValidation, isVisible } = this.state
+		const {
+			getProject,
+			formData,
+			getFloors,
+			getUnit,
+			totalInstalments,
+			checkValidation,
+			reasons,
+			selectedReason,
+			checkReasonValidation,
+			isVisible,
+			remainingPayment,
+			readOnly,
+		} = this.state
 		return (
 			<ScrollView>
 				<View style={[AppStyles.container]}>
@@ -183,6 +233,8 @@ class Payments extends Component {
 						handleInstalments={this.handleInstalments}
 						handleForm={this.handleForm}
 						formSubmit={this.formSubmit}
+						readOnly={readOnly}
+						remainingPayment={remainingPayment}
 					/>
 				</View>
 			</ScrollView>

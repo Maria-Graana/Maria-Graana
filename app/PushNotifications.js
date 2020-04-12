@@ -56,7 +56,6 @@ class PushNotifications extends React.Component {
                 let body = {
                     token: fcmPushToken.data,
                     armsuserId: user.id,
-                    topic: 'fcm-token'
                 }
                 console.log(body)
                 axios.post('/api/notifications/add-token', body)
@@ -65,8 +64,6 @@ class PushNotifications extends React.Component {
                             fcmPushToken: fcmPushToken
                         })
                         Alert.alert('FCM: ', fcmPushToken.data)
-                        console.log('<<<<<<< >>>>>>>>')
-                        console.log(res.data)
                     })
                     .catch((error) => {
                         console.log(error)

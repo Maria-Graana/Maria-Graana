@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "372529293613",
+    "firebase_url": "https://graana-push-notification-e4375.firebaseio.com",
+    "project_id": "graana-push-notification-e4375",
+    "storage_bucket": "graana-push-notification-e4375.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:372529293613:android:bfef441253d13a95c74ba4",
+        "android_client_info": {
+          "package_name": "com.agency21.realtor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "372529293613-1rbpp26999bc71ub26dpq8conru5pfrn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUn48Pp1tf9qh5QMZA_3SEUCbJ0v6DPAs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "372529293613-1rbpp26999bc71ub26dpq8conru5pfrn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

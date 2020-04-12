@@ -11,6 +11,7 @@ import Ability from '../../hoc/Ability'
 import axios from 'axios'
 import Loader from '../../components/loader';
 import { getListingsCount } from '../../actions/listings'
+import PushNotification from '../../PushNotifications';
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -41,6 +42,7 @@ class Landing extends React.Component {
 		return (
 				<ScrollView style={[AppStyles.container, { paddingLeft: 25, paddingRight: 25 }]} >
 					<SafeAreaView >
+						<PushNotification />
 						{/* Main Wrap of Landing Page Buttons (Diary Button) */}
 						{Ability.canView(user.role, 'Diary') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} screenName={'Diary'} buttonImg={DiaryImg} badges={count.diary} />}
 

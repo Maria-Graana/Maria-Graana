@@ -20,8 +20,9 @@ class OfferModal extends React.Component {
 				animationType="slide"
 				onRequestClose={isVisible}
 			>
-				<SafeAreaView style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}>
-					<View style={{ flexDirection: 'row', marginVertical: 50, zIndex: 20 }}>
+				<SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
+					<View style={{ flexDirection: 'row', marginHorizontal: 10, }}>
+						<View style={{flex: 1}} />
 						<AntDesign style={styles.closeStyle} onPress={() => { this.props.openModal() }} name="close" size={26} color={AppStyles.colors.textColor} />
 					</View>
 

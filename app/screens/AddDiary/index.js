@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView, Platform, TouchableWithoutFeedback, SafeAreaView, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import DetailForm from './detailForm';
 import helper from '../../helper';
 import AppStyles from '../../AppStyles'
-
+import TimerNotification from '../../LocalNotifications';
 
 class AddDiary extends Component {
     constructor(props) {
@@ -24,7 +24,15 @@ class AddDiary extends Component {
         }
     }
 
+    // argument in gmt timezone
+    convertTimeZone = (date) => {
+        let _format = 'YYYY-MM-DDTHH:mm'
+        let paktz = moment.tz(date, 'Asia/Karachi').format(_format)
+        var duration = moment.duration({ hours: 5, minutes: 15 })
+        var sub = moment(paktz, _format).subtract(duration).format();
 
+        return (new Date(sub)).valueOf()
+    }
 
     formSubmit = (data) => {
         if (!data.subject || !data.taskType || !data.date || !data.startTime || !data.endTime) {
@@ -97,13 +105,11 @@ class AddDiary extends Component {
         const { route, navigation } = this.props;
         const { leadId } = route.params;
         let diary = this.generatePayload(data)
-
         if (leadId) {
             // create task for lead
             axios.post(`/api/leads/task`, diary)
                 .then((res) => {
                     if (res.status === 200) {
-                        console.log(res.data);
                         helper.successToast('DIARY ADDED SUCCESSFULLY!')
                         navigation.goBack();
                     }
@@ -123,6 +129,12 @@ class AddDiary extends Component {
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('DIARY ADDED SUCCESSFULLY!')
+                        let timeStamp = this.convertTimeZone(res.data.start)
+                        let data = {
+                            title: res.data.taskType,
+                            body: res.data.taskType + ' in 15 Minutes'
+                        }
+                        TimerNotification(data, timeStamp)
                         navigation.navigate('Diary',
                             {
                                 'agentId': this.props.route.params.agentId

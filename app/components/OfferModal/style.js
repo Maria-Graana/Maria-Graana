@@ -32,13 +32,11 @@ export default styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   closeStyle: {
-    position: 'absolute',
-    right: 15,
-    top: Platform.OS == 'android' ? 10 : 40,
+    paddingTop: 10,
     paddingVertical: 5
   },
   mainInputWrap: {
-    marginVertical: 20,
+    marginVertical: 10,
     width: '50%',
     paddingLeft: 5,
     paddingRight: 5,
@@ -85,11 +83,12 @@ export default styles = StyleSheet.create({
 
   chatContainer: {
     marginHorizontal: 10,
-    paddingTop: 10,
+    // paddingTop: 10,
     paddingBottom: 10,
-    minHeight: '75%',
-    maxHeight: '75%',
-    overflow: 'hidden',
+    flex: 1,
+    // minHeight: '75%',
+    // maxHeight: '75%',
+    // overflow: 'hidden',
   },
 
   mainChatWrap: {

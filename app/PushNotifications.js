@@ -5,7 +5,6 @@ import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { View, Vibration, Alert } from 'react-native';
 import axios from 'axios';
-import { Textarea } from 'native-base';
 import * as Sentry from 'sentry-expo';
 
 class PushNotifications extends React.Component {
@@ -40,7 +39,6 @@ class PushNotifications extends React.Component {
             }
 
             let expoPushToken = await Notifications.getExpoPushTokenAsync();
-            console.log(expoPushToken)
 
             if (expoPushToken) {
                 this.setState({
@@ -57,7 +55,6 @@ class PushNotifications extends React.Component {
                     token: fcmPushToken.data,
                     armsuserId: user.id,
                 }
-                console.log(body)
                 axios.post('/api/notifications/add-token', body)
                     .then((res) => {
                         this.setState({
@@ -72,7 +69,7 @@ class PushNotifications extends React.Component {
                 Alert.alert('No Token Found!')
             }
         } else {
-            console.log('Must use physical device for Push Notifications');
+            console.log('Must use physical device for Push Notifications')
         }
         if (Platform.OS === 'android') {
             Notifications.createChannelAndroidAsync('development', {
@@ -82,17 +79,14 @@ class PushNotifications extends React.Component {
                 vibrate: [0, 250, 250, 250],
             });
         }
-        this.sendPushNotification()
     }
 
     _handleNotification = notification => {
         // Vibration.vibrate();
-        console.log('notification: ', notification);
         this.setState({ notification: notification });
     }
 
 
-    // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
     sendPushNotification = async () => {
         const message = {
             to: this.state.expoPushToken,
@@ -114,9 +108,7 @@ class PushNotifications extends React.Component {
     };
 
     render() {
-        const { fcmPushToken } = this.state
-        return (<View>
-        </View>)
+        return (<View />)
     }
 }
 

@@ -48,15 +48,8 @@ class PushNotifications extends React.Component {
                 })
             }
 
-            let config = {
-                gcmSenderId: '372529293613'
-            }
-
-            let fcmPushToken = null
             Sentry.captureException(`Before Function Start:`)
-
-            fcmPushToken = await Notifications.getDevicePushTokenAsync(config)
-
+            let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
             Sentry.captureException(`After Function End: ${JSON.stringify(fcmPushToken)}`)
 
             if (fcmPushToken) {

@@ -10,16 +10,16 @@ import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { SplashScreen } from 'expo';
 import * as Sentry from 'sentry-expo';
-import * as firebase from 'firebase';
+// import * as firebase from 'firebase';
 import Constants from 'expo-constants';
 
-const firebaseConfig = {
-	apiKey: "AIzaSyBcMF6jv0j0EY82JC9XW0jKMu4o7fRDKrg",
-	authDomain: "graana-push-notification-e4375.firebaseapp.com",
-	databaseURL: "https://graana-push-notification-e4375.firebaseio.com",
-	storageBucket: "graana-push-notification-e4375.appspot.com",
-	measurementId: "G-8CRWYW95PT"
-  }
+// const firebaseConfig = {
+// 	apiKey: "AIzaSyBcMF6jv0j0EY82JC9XW0jKMu4o7fRDKrg",
+// 	authDomain: "graana-push-notification-e4375.firebaseapp.com",
+// 	databaseURL: "https://graana-push-notification-e4375.firebaseio.com",
+// 	storageBucket: "graana-push-notification-e4375.appspot.com",
+// 	measurementId: "G-8CRWYW95PT"
+//   }
 
 export default class App extends React.Component {
 	constructor(props) {
@@ -31,7 +31,7 @@ export default class App extends React.Component {
 
 	async componentDidMount() {
 		SplashScreen.preventAutoHide();
-		firebase.initializeApp(firebaseConfig)
+		// firebase.initializeApp(firebaseConfig)
 		Sentry.init({
 			dsn: 'https://d23d9b7296fa43a1ab41150269693c2f@o375514.ingest.sentry.io/5195102',
 			enableInExpoDevelopment: true,

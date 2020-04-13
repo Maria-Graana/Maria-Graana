@@ -82,7 +82,6 @@ class CreateUser extends Component {
             !formData.armsUserRoleId &&
             !formData.confirmPassword
         ) {
-            console.log('in')
             this.setState({
                 checkValidation: true
             })

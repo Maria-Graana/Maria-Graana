@@ -66,7 +66,7 @@ function MainStack() {
             />
             <Stack.Screen name='TeamDiary' component={TeamDiary}
                 options={({ navigation, route }) => ({
-                    title: 'TEAM DIARY LIST',
+                    title: 'SELECT TEAM MEMBER',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

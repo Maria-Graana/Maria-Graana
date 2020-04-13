@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { Text, View, KeyboardAvoidingView, Image } from 'react-native';
+import { Text, View, KeyboardAvoidingView, Image, SafeAreaView } from 'react-native';
 import styles from './style';
 import { LinearGradient } from 'expo-linear-gradient';
 import TouchableButton from '../../components/TouchableButton/index';
 import { connect } from 'react-redux';
 import { setuser } from '../../actions/user';
-import { Item, Input } from 'native-base';
+import { Container, Header, Content, Form, Item, Input, Label } from 'native-base';
 import AppStyles from '../../AppStyles';
 import AppJson from '../../../app.json';
 
@@ -81,6 +81,37 @@ class Login extends Component {
             checkLoginText = <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
 
         return (
+            // <SafeAreaView style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: 20 }}>
+            //     <View style={{ justifyContent: "center", height: 400 }}>
+            //         <Image
+            //             style={styles.logo}
+            //             source={require('../../../assets/img/login.png')}
+            //         />
+            //     </View>
+            //     <KeyboardAvoidingView style={{ flex: 1,}}>
+            //         <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 20, marginVertical: 5 }}>
+            //             <View>
+            //                 <Item floatingLabel>
+            //                     <Label>Username</Label>
+            //                     <Input />
+            //                 </Item>
+            //             </View>
+            //             <View style={{ marginVertical: 15 }}>
+            //                 <Item floatingLabel>
+            //                     <Label>Password</Label>
+            //                     <Input />
+            //                 </Item>
+            //             </View>
+            //         </View>
+            //         <View style={{ flex: 1, marginVertical: 25 }}>
+            //             <TouchableButton
+            //                 style={{ }}
+            //                 label='Sign In'
+            //                 onPress={this.submitForm} loading={this.props.loading}
+            //             />
+            //         </View>
+            //     </KeyboardAvoidingView>
+            // </SafeAreaView>
             <View style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: 20 }}>
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

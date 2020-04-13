@@ -16,7 +16,7 @@ class TeamTile extends React.Component {
             >
                 <View style= {{flexDirection: 'row', marginVertical: 15}}>
                     <View style={{paddingRight: 10}}>
-                        <UserAvatar  size="50" src='https://pickaface.net/gallery/avatar/unr_ironman_170308_2112_9ldw5b.png' name={`${item.name}`}/>
+                        <UserAvatar  size="50" name={`${item.firstName} ${item.lastName}`}/>
                     </View>
                     <View style= {{flexDirection: 'column'}}>
                         <View>

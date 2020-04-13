@@ -23,7 +23,10 @@ class LeadMatch extends React.Component {
         this.state = {
             organization: 'arms',
             loading: true,
-            matchData: [],
+            matchData: {
+                data: [],
+                type: 'arms'
+            },
             checkAllBoolean: false,
             showFilter: false,
             active: false,
@@ -48,6 +51,7 @@ class LeadMatch extends React.Component {
                 propertySubType: '',
                 propertyType: '',
                 purpose: '',
+                leadAreas: []
             },
             checkCount: {
                 'true': 0,
@@ -76,7 +80,7 @@ class LeadMatch extends React.Component {
         })
     }
 
-    
+
 
     filterModal = () => {
         const { showFilter } = this.state
@@ -121,7 +125,7 @@ class LeadMatch extends React.Component {
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
         }
-        
+
         if ('armsLeadAreas' in lead) {
             if (lead.armsLeadAreas.length) {
                 if ('area' in lead.armsLeadAreas[0]) {
@@ -142,7 +146,9 @@ class LeadMatch extends React.Component {
                 propertySubType: lead.subtype || '',
                 propertyType: lead.type || '',
                 purpose: lead.purpose || '',
-            }
+            },
+            showFilter: false,
+            loading: true
         }, () => {
             this.fetchMatches()
         })
@@ -152,11 +158,30 @@ class LeadMatch extends React.Component {
         const { organization, matchesBol, formData, showCheckBoxes } = this.state
         const { route } = this.props
         const { lead } = route.params
+
+        const params = {
+            leadId: lead.id,
+            organization: organization,
+            type: formData.propertyType,
+            subtype: formData.propertySubType,
+            area_id: formData.leadAreas,
+            purpose: formData.purpose,
+            price_min: formData.minPrice,
+            price_max: formData.maxPrice,
+            city_id: formData.cityId,
+            bed: formData.bed,
+            bath: formData.bath,
+            size: formData.size,
+            unit: formData.sizeUnit
+        }
+
         let callApi = this.canCallApi()
         let matches = []
         if (callApi || !showCheckBoxes) {
-            console.log(`/api/leads/matches?leadId=${lead.id}&organization=${organization}&type=${formData.propertyType}&subtype=${formData.propertySubType}&area_id=${formData.areaId}&purpose=${formData.purpose}&price_min=${formData.minPrice}&price_max=${formData.maxPrice}&city_id=${formData.cityId}&bed=${formData.bed}&bath=${formData.bath}&size=${formData.size}&unit=${formData.sizeUnit}`)
-            axios.get(`/api/leads/matches?leadId=${lead.id}&organization=${organization}&type=${formData.propertyType}&subtype=${formData.propertySubType}&area_id=${formData.areaId}&purpose=${formData.purpose}&price_min=${formData.minPrice}&price_max=${formData.maxPrice}&city_id=${formData.cityId}&bed=${formData.bed}&bath=${formData.bath}&size=${formData.size}&unit=${formData.sizeUnit}`)
+            axios.get(`/api/leads/matches`,
+                {
+                    params: params
+                })
                 .then((res) => {
                     res.data.rows.map((item, index) => {
                         if ('armsuser' in item) {
@@ -168,13 +193,11 @@ class LeadMatch extends React.Component {
                             return (matches.push(item))
                         }
                     })
-                    // console.log(matches[0])
                     this.setState({
                         matchData: {
                             type: organization,
                             data: matches
                         },
-                        loading: false,
                     }, () => {
                         this.loadData()
                     })
@@ -189,9 +212,9 @@ class LeadMatch extends React.Component {
 
     loadData = () => {
         const { organization, matchData } = this.state
-        if (matchData.type === 'arms') { this.setState({ armsData: matchData.data }) }
-        else if (matchData.type === 'graana') { this.setState({ graanaData: matchData.data }) }
-        else { this.setState({ agency21Data: matchData.data }) }
+        if (matchData.type === 'arms') { this.setState({ armsData: matchData.data, loading: false, }) }
+        else if (matchData.type === 'graana') { this.setState({ graanaData: matchData.data, loading: false, }) }
+        else { this.setState({ agency21Data: matchData.data, loading: false, }) }
     }
 
     changeComBool = () => {
@@ -386,11 +409,10 @@ class LeadMatch extends React.Component {
     render() {
         // const { user } = this.props
         const { cities, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, active } = this.state
-
+        
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
-
                     <View style={{ opacity: active ? 0.3 : 1, flex: 1 }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
@@ -403,7 +425,7 @@ class LeadMatch extends React.Component {
                                 <Text style={[(organization === 'agency21') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Agency21 </Text>
                             </TouchableOpacity>
                         </View>
-                        <FilterModal openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter}/>
+                        <FilterModal resetFilter={this.resetFilter} formData={formData} openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter} />
                         <View style={{ flexDirection: "row", paddingTop: 5, paddingLeft: 15 }}>
                             <View style={{ marginRight: 15 }}>
                                 <CheckBox onPress={() => { this.unSelectAll() }} color={AppStyles.colors.primaryColor} checked={checkAllBoolean} />

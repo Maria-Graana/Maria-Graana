@@ -4,7 +4,8 @@ import {
     Modal,
     SafeAreaView,
     Text,
-    TextInput
+    TextInput,
+    TouchableOpacity
 } from 'react-native'
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles';
@@ -12,6 +13,7 @@ import PickerComponent from '../Picker/index';
 import axios from 'axios';
 import { Button } from 'native-base';
 import StaticData from '../../StaticData';
+import MultiSelect from 'react-native-multiple-select';
 
 class FilterModal extends React.Component {
     constructor(props) {
@@ -32,13 +34,14 @@ class FilterModal extends React.Component {
                 propertySubType: '',
                 propertyType: '',
                 purpose: '',
+                leadAreas: []
             },
         }
     }
 
     componentDidMount() {
         this.getCities()
-        this.resetFilter()
+        this.setFilter()
     }
 
     handleForm = (value, name) => {
@@ -47,11 +50,32 @@ class FilterModal extends React.Component {
         this.setState({ formData })
     }
 
+    setFilter = () => {
+        const { formData, lead } = this.props
+        let cityId = ''
+        let areaId = ''
+        if ('city' in lead && lead.city) {
+            cityId = lead.city.id
+            this.getAreas(cityId)
+        }
+        if ('armsLeadAreas' in lead) {
+            if (lead.armsLeadAreas.length) {
+                if ('area' in lead.armsLeadAreas[0]) {
+                    areaId = lead.armsLeadAreas[0].area.id
+                }
+            }
+        }
+        if (lead.type) {
+            this.getSubType(lead.type)
+        }
+        formData.areaId = areaId
+        this.setState({ formData })
+    }
+
     resetFilter = () => {
         const { lead } = this.props
         let cityId = ''
         let areaId = ''
-
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
             this.getAreas(cityId)
@@ -137,8 +161,40 @@ class FilterModal extends React.Component {
                             this.getAreas(text)
                         }} data={cities.length ? cities : []} name={'city'} placeholder='Select City' />
                     </View>
-                    <View style={[{ padding: 15 }]}>
+                    {/* <View style={[{ padding: 15 }]}>
                         <PickerComponent selectedItem={formData.areaId} onValueChange={(text) => { this.handleForm(text, 'area') }} data={areas.length ? areas : []} name={'area'} placeholder='Select Area' />
+                    </View> */}
+                    <View style={[AppStyles.mainInputWrap, { marginHorizontal: 15 }]}>
+                        <View style={[AppStyles.inputWrap]}>
+                            <MultiSelect
+                                hideTags
+                                items={areas.length ? areas : []}
+                                uniqueKey="value"
+                                displayKey="name"
+                                ref={(component) => { this.multiSelect = component }}
+                                onSelectedItemsChange={(text) => this.handleForm(text, 'leadAreas')}
+                                selectedItems={formData.leadAreas}
+                                styleDropdownMenuSubsection={{
+                                    paddingTop: 8,
+                                    paddingBottom: 8,
+                                    paddingLeft: 15,
+                                    paddingRight: 10,
+                                    backgroundColor: '#ffffff',
+                                    borderWidth: 1,
+                                    position: 'relative',
+                                    borderRadius: 5,
+                                    borderColor: '#f0f0f0',
+                                    minHeight: 45,
+                                }}
+                                styleListContainer={styles.formControlMulti}
+                                searchInputStyle={styles.formControlMulti}
+                                searchInputPlaceholderText="Search Items..."
+                                selectedItemTextColor="#000"
+                                selectedItemIconColor="#757575"
+                                // submitButtonColor="#000"
+                                submitButtonText="Done"
+                            />
+                        </View>
                     </View>
                     <View style={[{ padding: 15 }]}>
                         <PickerComponent selectedItem={formData.propertyType} onValueChange={(text) => {
@@ -180,6 +236,9 @@ class FilterModal extends React.Component {
                             <Text style={AppStyles.btnText}>MATCH</Text>
                         </Button>
                     </View>
+                    <TouchableOpacity onPress={() => { this.props.resetFilter() }}>
+                        <Text style={{ color: AppStyles.colors.primaryColor, fontSize: 18, paddingLeft: 15 }}>Reset</Text>
+                    </TouchableOpacity>
                 </SafeAreaView>
             </Modal>
         )

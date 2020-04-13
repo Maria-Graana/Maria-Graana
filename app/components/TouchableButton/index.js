@@ -14,16 +14,18 @@ class TouchableButton extends Component {
         const {
             label,
             loading,
-            style
+            style,
+            color
         } = this.props;
         const title = label || 'Button';
         const disabled = loading || false;
+        let loaderColor = color || AppStyles.colors.primaryColor
         return (
             <View style = {{...style,...styles.container }}>
                 <TouchableOpacity activeOpacity={.7} style = {styles.buttonContainer} onPress={this.onPress}>
                     {
                         disabled == true ?
-                        <Loader loading={loading}/>
+                        <Loader loading={loading} color={loaderColor}/>
                         :
                         <Text style = {styles.buttonText}>
                             {title}

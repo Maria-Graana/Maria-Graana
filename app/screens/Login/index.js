@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Text, View, KeyboardAvoidingView, Image, SafeAreaView } from 'react-native';
 import styles from './style';
-import { LinearGradient } from 'expo-linear-gradient';
 import TouchableButton from '../../components/TouchableButton/index';
 import { connect } from 'react-redux';
 import { setuser } from '../../actions/user';
-import { Container, Header, Content, Form, Item, Input, Label } from 'native-base';
+import { Item, Input, Label } from 'native-base';
 import AppStyles from '../../AppStyles';
 import AppJson from '../../../app.json';
+import ErrorMessage from '../../components/ErrorMessage'
 
 class Login extends Component {
 
@@ -15,162 +15,110 @@ class Login extends Component {
         super(props)
         this.state = {
             loading: false,
-            id: null,
-            error: "",
-            emailEmpty: false,
-            passwordEmpty: false,
+            checkValidation: false,
             checkLogin: false,
-            password: '',
-            email: ''
+            formData: {
+                email: '',
+                password: ''
+            }
         }
     }
-
-    onEmailChangeText = (email) => {
-        if (email == '') {
-            this.setState({ emailEmpty: true })
-        }
-        else if (!this.validateEmail(email)) {
-            this.setState({ checkLogin: true })
-        }
-        else {
-            this.setState({ checkLogin: false })
-            this.setState({ emailEmpty: false })
-            this.state.email = email
-        }
-    }
-
-
 
     validateEmail = (email) => {
         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(email);
     }
 
-    onPasswordChangeText = (password) => {
-        if (password == '') {
-            this.setState({ passwordEmpty: true })
+    submitForm = () => {
+        const { formData } = this.state
+        console.log(formData)
+        if (!formData.email || !formData.password) {
+            this.setState({
+                checkValidation: true
+            })
         } else {
-            this.setState({ passwordEmpty: false })
-            this.state.password = password
+            let creds = {
+                email: formData.email.toLocaleLowerCase(),
+                password: formData.password,
+            }
+            this.props.dispatch(setuser(creds))
         }
     }
 
-    submitForm = () => {
-        const { email, password } = this.state
-        let creds = {
-            email: email.toLocaleLowerCase(),
-            password: password,
-        }
-        this.props.dispatch(setuser(creds))
+    handleForm = (value, name) => {
+        const { formData } = this.state
+        formData[name] = value
+        this.setState({ formData })
+    }
+
+    onFocus = () => {
+        console.log('i am here')
+        this.setState({ checkLogin: true })
     }
 
     render() {
-        // const isRequired = value => value ? undefined : 'This Field is Required'
-
-        let emailText = <View style={{ justifyContent: "center" }}></View>
-        let passwordText = <View style={{ justifyContent: "center" }}></View>
-        let checkLoginText = <View style={{ justifyContent: "center" }}></View>
-
-        if (this.state.emailEmpty)
-            emailText = <Text style={styles.requiredTextColor}>This Field is Required</Text>
-        // 
-        if (this.state.passwordEmpty)
-            passwordText = <Text style={styles.requiredTextColor}>This Field is Required</Text>
-
-        if (this.state.checkLogin)
-            checkLoginText = <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
+        const { checkValidation, formData, checkLogin } = this.state
+        console.log('checkLogin: ', checkLogin)
 
         return (
-            // <SafeAreaView style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: 20 }}>
-            //     <View style={{ justifyContent: "center", height: 400 }}>
-            //         <Image
-            //             style={styles.logo}
-            //             source={require('../../../assets/img/login.png')}
-            //         />
-            //     </View>
-            //     <KeyboardAvoidingView style={{ flex: 1,}}>
-            //         <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 20, marginVertical: 5 }}>
-            //             <View>
-            //                 <Item floatingLabel>
-            //                     <Label>Username</Label>
-            //                     <Input />
-            //                 </Item>
-            //             </View>
-            //             <View style={{ marginVertical: 15 }}>
-            //                 <Item floatingLabel>
-            //                     <Label>Password</Label>
-            //                     <Input />
-            //                 </Item>
-            //             </View>
-            //         </View>
-            //         <View style={{ flex: 1, marginVertical: 25 }}>
-            //             <TouchableButton
-            //                 style={{ }}
-            //                 label='Sign In'
-            //                 onPress={this.submitForm} loading={this.props.loading}
-            //             />
-            //         </View>
-            //     </KeyboardAvoidingView>
-            // </SafeAreaView>
-            <View style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: 20 }}>
-                <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
-                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+                <KeyboardAvoidingView style={{ flex: 1 }}>
+                    <View style={{ flex: 1 }}>
                         <Image
                             style={styles.logo}
                             source={require('../../../assets/img/login.png')}
                         />
                     </View>
-                    {/* {checkLoginText} */}
-                    <View style={{ flex: 1, marginBottom: 10 }}>
-                        <View style={{ paddingLeft: 2 }}>
-                            <Text style={{ color: AppStyles.colors.subTextColor, fontSize: 12 }}>
-                                USERNAME
-                            </Text>
-                        </View>
-                        <View style={{ flexDirection: "row", justifyContent: 'center', alignItems: "center", marginBottom: 15 }}>
-                            <Item>
+                    <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 15 }}>
+                        {
+                            !checkLogin && <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
+                        }
+                        <View>
+                            <Item floatingLabel>
+                                <Label
+                                    style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}
+                                >USERNAME</Label>
                                 <Input
-                                    // placeholder='USERNAME'
+                                    focus={this.onFocus}
                                     keyboardType='email-address'
                                     textContentType='emailAddress'
                                     autoCompleteType='email'
-                                    style={{ color: 'black', fontSize: 14, minHeight: 40 }}
-                                    placeholderTextColor={AppStyles.colors.subTextColor}
-                                    onChangeText={this.onEmailChangeText}
-                                />
+                                    onChangeText={(text) => { this.handleForm(text, 'email') }} />
                             </Item>
                         </View>
-                        {emailText}
-                        <View style={{ marginTop: 5, paddingLeft: 2 }}>
-                            <Text style={{ color: AppStyles.colors.subTextColor, fontSize: 12 }}>
-                                PASSWORD
-                            </Text>
-                        </View>
-                        <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginBottom: 15 }}>
-                            <Item>
+                        {
+                            (checkValidation === true && formData.email === '') ? <ErrorMessage errorMessage={'Required'}/> 
+                            : <ErrorMessage errorMessage={''}/>
+                        }
+                        <View style={{ marginTop: 0 }}>
+                            <Item floatingLabel>
+                                <Label
+                                    style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}>
+                                    PASSWORD</Label>
                                 <Input
-                                    secureTextEntry={true}
-                                    // placeholder='Password'
-                                    style={{ color: 'black', borderBottomEndRadius: 50, fontSize: 14, }}
-                                    placeholderTextColor={AppStyles.colors.subTextColor}
-                                    onChangeText={this.onPasswordChangeText}
-                                />
+                                    focus={this.onFocus}
+                                    secureTextEntry={true} onChangeText={(text) => { this.handleForm(text, 'password') }} />
                             </Item>
                         </View>
-                        {passwordText}
-                        <View style={{ flex: 1, marginVertical: 10 }}>
+                        {
+                            (checkValidation === true && formData.password === '') ? <ErrorMessage errorMessage={'Required'}/> 
+                            : <ErrorMessage errorMessage={''}/>
+                        }
+                        <View style={{ marginTop: 10 }}>
                             <TouchableButton
-                                style={{ marginTop: 30 }}
+                                style={{}}
                                 label='Sign In'
-                                onPress={this.submitForm} loading={this.props.loading}
+                                onPress={this.submitForm} 
+                                loading={this.props.loading}
+                                color= 'white'
                             />
-                        </View>
-                        <View style={{alignSelf:'center',alignItems:'center',marginBottom:25 }}>
-                            <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
                         </View>
                     </View>
                 </KeyboardAvoidingView>
-            </View>
+                <View style={{ alignSelf: 'center', alignItems: 'center', position: 'absolute', bottom: 0, center: 0 }}>
+                    <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
+                </View>
+            </SafeAreaView>
         );
     }
     static getDerivedStateFromProps(nextProps, prevState) {

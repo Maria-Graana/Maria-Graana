@@ -208,7 +208,6 @@ export default AppStyles = {
       },
       blackInputText: {
         color: '#000',
-        marginBottom: 2,
         fontSize: 10,
         fontWeight: 'bold',
         letterSpacing: 2,

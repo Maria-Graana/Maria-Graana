@@ -130,26 +130,26 @@ class InnerRCMForm extends Component {
           </View>
 
         </View>
+        {
+          formData.type != 'plot' && formData.type != 'commercial' &&
+          <View style={AppStyles.multiFormInput}>
 
-        {/* **************************************** */}
-        <View style={AppStyles.multiFormInput}>
-
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
-            <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={size} name={'bed'} placeholder='Bed' />
+            {/* **************************************** */}
+            <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent onValueChange={handleForm} data={size} name={'bed'} placeholder='Bed' />
+              </View>
             </View>
-          </View>
 
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
-            <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={size} name={'bath'} placeholder='Bath' />
+            {/* **************************************** */}
+            <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent onValueChange={handleForm} data={size} name={'bath'} placeholder='Bath' />
+              </View>
             </View>
+
           </View>
-
-        </View>
-
+        }
 
         {/* **************************************** */}
         <View style={AppStyles.multiFormInput}>

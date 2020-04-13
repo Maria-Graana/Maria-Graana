@@ -7,6 +7,7 @@ import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
+import helper from '../../helper'
 
 class CreateUser extends Component {
     constructor(props) {
@@ -87,6 +88,7 @@ class CreateUser extends Component {
             if (formData.confirmPassword == formData.password) {
                 axios.post(`/api/user/signup`, formData)
                     .then((res) => {
+                        helper.successToast('Uer Added')
                         const { navigation } = this.props
                         navigation.navigate('Landing')
                     })

@@ -77,7 +77,7 @@ class InnerForm extends Component {
               checkValidation === true && formData.confirmPassword === '' && <ErrorMessage errorMessage={'Required'} />
             }
             {
-              formData.confirmPassword != formData.password && <ErrorMessage errorMessage={'Confirm Pass Not Match'} />
+              formData.confirmPassword != '' && formData.confirmPassword != formData.password && <ErrorMessage errorMessage={'Password do not match'} />
             }
           </View>
         </View>
@@ -116,17 +116,14 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput  style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000"  value={organization[0].name} />
+            <TextInput style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" value={organization[0].name} editable={false} />
           </View>
         </View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={getRoles} selectedItem={formData.armsUserRoleId} name={'armsUserRoleId'} placeholder='Area Manager' />
-            {
-              checkValidation === true && formData.armsUserRoleId === '' && <ErrorMessage errorMessage={'Required'} />
-            }
+            <TextInput style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" value={organization[0].name} editable={false} />
           </View>
         </View>
 

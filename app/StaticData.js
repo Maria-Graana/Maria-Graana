@@ -52,10 +52,6 @@ export default StaticData = {
             value: 'follow up'
         },
         {
-            name: 'Day Structure',
-            value: 'day structure'
-        },
-        {
             name: 'Other',
             value: 'other'
         }

@@ -27,6 +27,7 @@ class InnerForm extends Component {
       organization,
     } = this.props
 
+    console.log(getRoles)
     return (
       <View>
 
@@ -123,7 +124,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" value={organization[0].name} editable={false} />
+            <TextInput style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" value={getRoles.name === 'sub_admin 2' && 'Sub-Role'} editable={false} />
           </View>
         </View>
 

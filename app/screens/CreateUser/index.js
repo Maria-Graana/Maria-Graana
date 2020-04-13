@@ -55,10 +55,11 @@ class CreateUser extends Component {
     getRoles = (id) => {
         axios.get(`/api/user/roles/${id}`)
             .then((res) => {
-                let array = [];
-                res && res.data['sub_admin 2'].map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
                 this.setState({
-                    getRoles: array
+                    getRoles: res.data['sub_admin 2'][0],
+                    formData:{
+                        armsUserRoleId: res.data['sub_admin 2'][0].id
+                    }
                 })
             })
     }
@@ -81,6 +82,7 @@ class CreateUser extends Component {
             !formData.armsUserRoleId &&
             !formData.confirmPassword
         ) {
+            console.log('in')
             this.setState({
                 checkValidation: true
             })

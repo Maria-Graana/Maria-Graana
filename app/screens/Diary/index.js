@@ -176,8 +176,10 @@ class Diary extends React.Component {
   }
 
   updateDay = (day) => {
+    const {navigation} = this.props;
     const { dateString } = day
     let newDate = moment(dateString).format(_format)
+    navigation.setOptions({ title: moment(dateString).format('DD MMMM YYYY') })
     this.setState({
       startDate: newDate,
       showCalendar: false
@@ -228,7 +230,7 @@ class Diary extends React.Component {
     endPoint = `/api/diary/delete?id=${data.id}`
     axios.delete(endPoint).then(function (response) {
       if (response.status === 200) {
-        helper.successToast('DIARY DELETED SUCCESSFULLY!')
+        helper.successToast('TASK DELETED SUCCESSFULLY!')
         that.diaryMain();
       }
 
@@ -248,7 +250,7 @@ class Diary extends React.Component {
           status: type
         }).then(function (response) {
           if (response.status == 200)
-            console.log('responseSuccessCompleted');
+           // console.log('responseSuccessCompleted');
           that.diaryMain();
         })
         break;
@@ -257,7 +259,7 @@ class Diary extends React.Component {
           status: type
         }).then(function (response) {
           if (response.status == 200)
-            console.log('responseSuccessInProgress');
+           // console.log('responseSuccessInProgress');
           that.diaryMain();
         })
 
@@ -286,7 +288,7 @@ class Diary extends React.Component {
   }
 
   showDeleteDialog(val) {
-    Alert.alert('Delete Diary', 'Are you sure you want to delete this diary ?', [
+    Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', onPress: () => this.deleteDiary(val) },
     ],

@@ -40,7 +40,7 @@ class PickerComponent extends React.Component {
         let selectedValue = selectedItem || this.state.selectedTask
 
         if (Platform.OS == 'android') {
-            pickerItems.push(<Picker.Item key={0} value={placeholderLabel} label={placeholderLabel} color={AppStyles.colors.subTextColor} />)
+            pickerItems.push(<Picker.Item key={0} value={placeholderLabel} label={placeholderLabel} color={AppStyles.colors.subTextColor} style={styles.paddingPicker} />)
         }
 
         if (items.length) {
@@ -57,8 +57,7 @@ class PickerComponent extends React.Component {
                     headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff', }}
                     headerBackButtonTextStyle={{ color: '#fff' }}
                     headerTitleStyle={{ color: "#fff" }}
-                    textStyle={[AppStyles.pickerTextStyle, AppStyles.formFontSettings]}
-                    headerTitleStyle={{ color: "#fff" }}
+                    textStyle={[AppStyles.formFontSettings]}
                     mode="dropdown"
                     style={[AppStyles.formControlForPicker, customStyle]}
                     placeholder={placeholderLabel}
@@ -85,6 +84,7 @@ const styles = StyleSheet.create({
         top: 12,
         zIndex: 2,
     },
+    
 })
 
 export default PickerComponent;

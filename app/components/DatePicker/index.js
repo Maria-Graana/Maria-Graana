@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Image,
+  Platform
 } from 'react-native'
 import moment from 'moment';
 import DatePicker from 'react-native-datepicker'
@@ -74,7 +75,7 @@ class DateComponent extends React.Component {
           placeholderText: {
             alignSelf: 'flex-start',
             fontFamily: AppStyles.fonts.defaultFont,
-            padding: 12,
+            padding: Platform.OS === 'android' ? 10 : 15,
           },
           dateInput: {
             borderWidth: 0
@@ -85,7 +86,7 @@ class DateComponent extends React.Component {
           dateText: {
             alignSelf: 'flex-start',
             fontFamily: AppStyles.fonts.defaultFont,
-            padding: 12,
+            padding: Platform.OS === 'android' ? 10 : 15,
           },
           btnTextConfirm: {
             color: '#fff'

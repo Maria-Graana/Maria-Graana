@@ -29,7 +29,7 @@ import ChangePassword from '../screens/ChangePassword';
 
 const Stack = createStackNavigator();
 
-const _format = 'MMMM YYYY';
+const _format = 'DD MMMM YYYY';
 const _today = moment(new Date().dateString).format(_format);
 
 const headerStyle = {

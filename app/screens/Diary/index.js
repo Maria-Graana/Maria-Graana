@@ -57,6 +57,10 @@ class Diary extends React.Component {
     });
   }
 
+  componentWillUnmount(){
+    this._unsubscribe();
+  }
+
   _toggleShow = () => {
     this.setState({ showCalendar: !this.state.showCalendar })
   }
@@ -309,6 +313,7 @@ class Diary extends React.Component {
   render() {
     const { showCalendar, startDate, newDiaryData, loading, selectedDiary } = this.state;
     const { user, route } = this.props;
+    console.log(user.role);
     return (
       !loading ?
         <View style={styles.container}>

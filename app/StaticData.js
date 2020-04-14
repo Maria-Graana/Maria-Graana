@@ -233,7 +233,6 @@ export default StaticData = {
     projectType: [
         { value: 'shop', name: 'shop' },
         { value: 'office', name: 'Office' },
-        { value: 'other', name: 'other' },
         { value: 'food Court', name: 'Food Court' },
         { value: 'hotel Suite', name: 'Hotel Suite' },
         { value: 'harley Center', name: 'Harley Center' },

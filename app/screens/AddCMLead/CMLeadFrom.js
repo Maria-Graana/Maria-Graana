@@ -75,7 +75,12 @@ class CMLeadFrom extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} placeholder={'Min Price'} />
+              <TextInput
+                onChangeText={(text) => { handleForm(text, 'minPrice') }}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]}
+                placeholder={'Min Investment'}
+                keyboardType={'numeric'}
+              />
               <Text style={[AppStyles.countPrice]}>{formatPrice(minPrice)}</Text>
               {
                 checkValidation === true && formData.minPrice === '' && <ErrorMessage errorMessage={'Required'} />
@@ -86,7 +91,12 @@ class CMLeadFrom extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} placeholder={'Max Price'} />
+              <TextInput
+                onChangeText={(text) => { handleForm(text, 'maxPrice') }}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]}
+                placeholder={'Max Investment'}
+                keyboardType={'numeric'}
+              />
               <Text style={[AppStyles.countPrice]}>{formatPrice(formData.maxPrice)}</Text>
               {
                 checkValidation === true && formData.maxPrice === '' && <ErrorMessage errorMessage={'Required'} />
@@ -101,7 +111,7 @@ class CMLeadFrom extends Component {
           <Button
             onPress={() => { formSubmit(formData) }}
             style={[AppStyles.formBtn, styles.addInvenBtn]}>
-            <Text style={AppStyles.btnText}>ADD</Text>
+            <Text style={AppStyles.btnText}>CREATE LEAD</Text>
           </Button>
         </View>
       </View>

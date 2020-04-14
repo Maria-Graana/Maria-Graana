@@ -260,7 +260,7 @@ export default StaticData = {
         { value: 'awaiting_response', name: 'Awaiting Response' },
         { value: 'details_sent', name: 'Details Sent' },
         { value: 'expected_visit', name: 'Expected Visit' },
-        { value: 'not_interested', name: 'Not Intrested' },
+        { value: 'not_interested', name: 'Not Interested' },
     ],
     meetingStatus: [
         { value: 'completed', name: 'Done' },

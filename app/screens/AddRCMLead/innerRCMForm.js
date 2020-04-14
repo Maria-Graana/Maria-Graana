@@ -7,6 +7,7 @@ import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
 import MultiSelect from 'react-native-multiple-select';
+import { formatPrice } from '../../PriceFormate'
 
 class InnerRCMForm extends Component {
   constructor(props) {
@@ -157,14 +158,16 @@ class InnerRCMForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'min_price') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'min_price'} placeholder={'Min Price'} />
+              <TextInput onChangeText={(text) => { handleForm(text, 'min_price') }} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} name={'min_price'} placeholder={'Min Price'} />
+              <Text style={[AppStyles.countPrice]}>{formatPrice(formData.min_price != null ? formData.min_price : '')}</Text>
             </View>
           </View>
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'max_price') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'max_price'} placeholder={'Max Price'} />
+              <TextInput onChangeText={(text) => { handleForm(text, 'max_price') }} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} name={'max_price'} placeholder={'Max Price'} />
+              <Text style={[AppStyles.countPrice]}>{formatPrice(formData.max_price != null ? formData.max_price : '')}</Text>
             </View>
           </View>
 

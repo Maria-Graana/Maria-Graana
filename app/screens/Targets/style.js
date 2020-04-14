@@ -22,4 +22,20 @@ export default styles = StyleSheet.create({
         fontSize: 16,
         letterSpacing: 2,
     },
+    input: {
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        width: '100%',
+        flexDirection: 'row',
+        // justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 10,
+        borderRadius: 4,
+      },
+      inputText: {
+        fontSize: 16,
+        // fontWeight: '500',
+        marginLeft: 15
+      },
 })

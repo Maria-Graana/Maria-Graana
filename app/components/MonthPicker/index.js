@@ -1,101 +1,223 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import {
   View,
+  Picker,
   Text,
-  Modal,
-  TouchableOpacity,
-  Image,
   StyleSheet,
+  Modal,
+  SafeAreaView,
+  TouchableOpacity,
+  Platform,
 } from 'react-native';
-import moment from 'moment';
-import MonthPicker from 'react-native-month-picker';
+import AppStyles from '../../AppStyles';
+import { AntDesign } from '@expo/vector-icons';
+import moment from 'moment'
 
-function MonthPickerModal({ placeholder, onDateChange }) {
-  const [isOpen, toggleOpen] = useState(false);
-  const [value, onChange] = useState(null);
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => toggleOpen(true)} style={styles.input}>
-        <Image style={{ width: 26, height: 26 }} source={require('../../../assets/img/calendar.png')} />
-        <Text style={styles.inputText}>
-          {value ? moment(value).format('MMM YYYY') : placeholder}
-        </Text>
-      </TouchableOpacity>
+class MonthPicker extends Component {
 
+
+  constructor(props) {
+    super(props);
+    let { startYear, endYear, selectedYear, selectedMonth, visible } = props;
+    let years = this.getYears(startYear, endYear);
+    let months = this.getMonths();
+    selectedYear = selectedYear || years[0];
+    selectedMonth = selectedMonth || ((new Date()).getMonth() + 1);
+    this.state = {
+      years,
+      months,
+      selectedYear,
+      selectedMonth,
+      visible: visible
+    }
+  }
+
+  show = async ({ startYear, endYear, selectedYear, selectedMonth }) => {
+    let years = this.getYears(startYear, endYear);
+    let months = this.getMonths();
+    selectedYear = selectedYear || years[0];
+    selectedMonth = selectedMonth || ((new Date()).getMonth() + 1);
+    let promise = new Promise((resolve) => {
+      this.confirm = (year, month) => {
+        resolve({
+          year,
+          month
+        });
+      }
+      this.setState({
+        visible: true,
+        years,
+        months,
+        startYear: startYear,
+        endYear: endYear,
+        selectedYear: selectedYear,
+        selectedMonth: selectedMonth,
+      })
+    })
+    return promise;
+  }
+
+  dismiss = () => {
+    this.setState({
+      visible: false
+    })
+  }
+
+  getYears = (startYear, endYear) => {
+    startYear = startYear || (new Date()).getFullYear();
+    endYear = endYear || (new Date()).getFullYear();
+    let years = []
+    for (let i = startYear; i <= endYear; i++) {
+      years.push(i)
+    }
+    return years;
+  }
+
+  getMonths = () => {
+    let months = []
+    for (let i = 1; i <= 12; i++) {
+      months.push({ value: i, name: moment().month(i - 1).format("MMM") });
+    }
+    return months;
+  }
+
+  renderPickerItems = (data) => {
+    let items = data.map((value, index) => {
+      return (<Picker.Item key={'r-' + index} label={'' + value} value={value} />)
+    })
+    return items;
+  }
+
+  renderMonthPickerItems = (data) => {
+    let items = data.map((item, index) => {
+      return (<Picker.Item key={'r-' + index} label={'' + item.name} value={item.value} />)
+    })
+    return items;
+  }
+
+  onCancelPress = () => {
+    this.dismiss();
+  }
+
+  onConfirmPress = () => {
+    const confirm = this.confirm;
+    const { selectedYear, selectedMonth } = this.state;
+    confirm && confirm(selectedYear, selectedMonth);
+    this.dismiss();
+  }
+
+  render() {
+    const { years, months, selectedYear, selectedMonth, visible } = this.state;
+    if (!visible) return null;
+    return (
       <Modal
-        transparent
-        animationType="fade"
-        visible={isOpen}
-        onRequestClose={() => {
-          toggleOpen(false)
-          // Alert.alert('Modal has been closed.');
-        }}
-        // presentationStyle="overFullScreen"
+        visible={visible}
+        animationType="slide"
+      // onRequestClose={closeModal}
       >
-        <View style={styles.contentContainer}>
-          <View style={styles.content}>
-            <MonthPicker
-              selectedDate={value || new Date()}
-              onMonthChange={onChange}
-            />
+        <SafeAreaView style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}>
+          <AntDesign style={styles.closeStyle} onPress={this.onCancelPress} name="close" size={26} color={AppStyles.colors.textColor} />
+          <View style={[styles.viewContainer]}>
             <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={() => {
-                toggleOpen(false);
-                onDateChange(value);
-              }}>
-              <Text>Confirm</Text>
+              style={styles.modal}
+              onPress={this.onCancelPress}
+            >
+              <View
+                style={styles.outerContainer}
+              >
+                <View style={styles.toolBar}>
+                  <TouchableOpacity style={styles.toolBarButton} onPress={this.onCancelPress}>
+                    <Text style={styles.toolBarButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <View style={{ flex: 1 }} />
+                  <TouchableOpacity style={styles.toolBarButton} onPress={this.onConfirmPress}>
+                    <Text style={styles.toolBarButtonText}>Confirm</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.innerContainer}>
+                  <Picker
+                    style={styles.picker}
+                    selectedValue={selectedYear}
+                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedYear: itemValue }, () => {
+                    })}
+                  >
+                    {this.renderPickerItems(years)}
+                  </Picker>
+                  <Picker
+                    style={styles.picker}
+                    selectedValue={selectedMonth}
+                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedMonth: itemValue }, () => {
+                    })}
+                  >
+                    {this.renderMonthPickerItems(months)}
+                  </Picker>
+                </View>
+              </View>
             </TouchableOpacity>
+
+
+
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
-    </View>
-  );
+    )
+  }
 }
 
 const styles = StyleSheet.create({
-  container: {},
-  input: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    width: '100%',
-    flexDirection: 'row',
-    // justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 4,
-  },
-  inputText: {
-    fontSize: 16,
-    // fontWeight: '500',
-    marginLeft: 15
-  },
-  contentContainer: {
-    flexDirection: 'column',
+  viewContainer: {
+    marginLeft: 25,
+    marginRight: 25,
     justifyContent: 'center',
-    height: '100%',
-    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  content: {
-    backgroundColor: '#fff',
-    marginHorizontal: 20,
-    marginVertical: 70,
+  closeStyle: {
+    position: 'absolute',
+    right: 15,
+    top: Platform.OS == 'android' ? 10 : 40,
+    paddingVertical: 5
   },
-  confirmButton: {
-    borderWidth: 0.5,
-    padding: 15,
-    margin: 10,
-    borderRadius: 5,
+  modal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  outerContainer: {
+    backgroundColor: 'white',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0
+  },
+  toolBar: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    height: 44,
+    borderBottomWidth: 1,
+    borderColor: '#EBECED',
   },
-});
+  toolBarButton: {
+    height: 44,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  toolBarButtonText: {
+    fontSize: 15,
+    color: '#2d4664',
+  },
+  innerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  picker: {
+    flex: 1,
+  }
+})
 
-MonthPickerModal.defaultProps = {
-  placeholder: 'Select month',
-};
+export default MonthPicker;
 
-export default React.memo(MonthPickerModal);
+

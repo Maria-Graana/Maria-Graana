@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, AccessibilityInfo } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Picker } from 'react-native';
 import AppStyles from '../../AppStyles';
 import styles from './style.js'
 import { Button, } from 'native-base';
@@ -13,29 +13,33 @@ import Ability from '../../hoc/Ability'
 
 
 class Targets extends Component {
+    months = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
     constructor(props) {
         super(props)
         this.state = {
             checkValidation: false,
             loading: false,
             data: {},
-            formData: {
-                date: moment().format('YYYY-MM-DD'),
-            }
+            startYear: 2000,
+            endYear: 2050,
+            selectedYear: 2020,
+            selectedMonth: 1,
         }
     }
 
     componentDidMount() {
-        const { navigation } = this.props;
-        const { date } = this.state.formData;
+     const { navigation } = this.props;
         this._unsubscribe = navigation.addListener('focus', () => {
-            this.getMyTarget(date);
+            this.getMyTarget();
         });
     }
 
-    getMyTarget = (date) => {
+    getMyTarget = () => {
+        const { selectedMonth, selectedYear } = this.state;
+        let date = `${selectedYear}-${moment().month(selectedMonth-1).format('MM')}-${moment().format('D')}`;
         this.setState({ loading: true })
-        axios.get(`/api/user/mytarget?date=${moment(date).format('YYYY-MM')}`).then(response => {
+        axios.get(`/api/user/mytarget?date=${date}`).then(response => {
             if (response.status === 200 && response.data) {
                 this.setState({ data: response.data, loading: false });
             }
@@ -44,29 +48,35 @@ class Targets extends Component {
         })
     }
 
-    handleForm = (value, name) => {
-        const { formData } = this.state
-        formData[name] = value
-        this.setState({ formData })
-
-        if (formData.date !== '' && name === 'date') { this.getMyTarget(value) }
-    }
-
     navigateFunction = (name) => {
         const { navigation } = this.props
-        const { formData } = this.state;
-        const { date } = formData;
-        navigation.navigate(name, { date: date })
+        navigation.navigate(name)
     }
 
+
+
+
+    showPicker = () => {
+        const { startYear, endYear, selectedYear, selectedMonth } = this.state;
+        this.picker
+            .show({ startYear, endYear, selectedYear, selectedMonth })
+            .then(({ year, month }) => {
+                this.setState({
+                    selectedYear: year,
+                    selectedMonth: month,
+                }, () => {
+                    this.getMyTarget();
+                })
+            })
+    }
 
 
     render() {
         const {
-            formData,
-            checkValidation,
             loading,
-            data
+            data,
+            selectedYear,
+            selectedMonth
         } = this.state
         const { user, route } = this.props;
         return (
@@ -78,10 +88,13 @@ class Targets extends Component {
                                 {/* **************************************** */}
                                 <View style={[AppStyles.mainInputWrap]}>
                                     <View style={[AppStyles.inputWrap]}>
-                                        <MonthPicker date={formData.date} mode='date' placeholder='Select Month' onDateChange={(value) => { this.handleForm(value, 'date') }} />
-                                        {
-                                            checkValidation === true && formData.date === '' && <ErrorMessage errorMessage={'Required'} />
-                                        }
+                                        <TouchableOpacity onPress={() => this.showPicker()} style={styles.input}>
+                                            <Image style={{ width: 26, height: 26 }} source={require('../../../assets/img/calendar.png')} />
+                                            <Text style={styles.inputText}>
+                                                {this.months[selectedMonth - 1]} {selectedYear}
+                                            </Text>
+                                        </TouchableOpacity>
+                                        <MonthPicker ref={(picker) => this.picker = picker} />
                                     </View>
                                 </View>
                             </View>
@@ -92,7 +105,7 @@ class Targets extends Component {
 
                             <View style={[styles.titleMain]}>
                                 <Text style={[styles.labelText]}>TEAM TARGET</Text>
-                                <Text style={[styles.priceText]}>{data.teamTarget && data.teamTarget.teamTarget!==null && formatPrice(data.teamTarget.teamTarget)}</Text>
+                                <Text style={[styles.priceText]}>{data.teamTarget && data.teamTarget.teamTarget !== null && formatPrice(data.teamTarget.teamTarget)}</Text>
                             </View>
 
                             {
@@ -116,6 +129,8 @@ class Targets extends Component {
         )
     }
 }
+
+
 
 
 mapStateToProps = (store) => {

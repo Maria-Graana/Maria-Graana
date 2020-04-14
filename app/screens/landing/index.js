@@ -12,6 +12,7 @@ import axios from 'axios'
 import Loader from '../../components/loader';
 import { getListingsCount } from '../../actions/listings'
 import PushNotification from '../../PushNotifications';
+import {widthPercentageToDP as wp , heightPercentageToDP as hp} from 'react-native-responsive-screen'
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -40,7 +41,7 @@ class Landing extends React.Component {
 	render() {
 		const { user, count } = this.props
 		return (
-				<ScrollView style={[AppStyles.container, { paddingLeft: 25, paddingRight: 25 }]} >
+				<View style={[AppStyles.container, { paddingLeft: wp('5%'), paddingRight: wp('5%'), justifyContent:'space-between' }]} >
 					<SafeAreaView >
 						<PushNotification />
 						{/* Main Wrap of Landing Page Buttons (Diary Button) */}
@@ -52,8 +53,7 @@ class Landing extends React.Component {
 						{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
 						{Ability.canView(user.role, 'Inventory') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={count.inventory} />}
 					</SafeAreaView>
-
-				</ScrollView>
+				</View>
 		)
 	}
 }

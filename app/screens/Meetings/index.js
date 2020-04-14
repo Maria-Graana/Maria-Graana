@@ -101,7 +101,7 @@ class Meetings extends Component {
       end: a,
       time: moment(a).format("LT"),
       date: a,
-      taskType: 'call',
+      taskType: 'called',
       subject: 'Call to client ' + this.props.route.params.lead.customer.customerName,
       cutomerId: this.props.route.params.lead.customer.id,
       leadId: this.props.route.params.lead.id,

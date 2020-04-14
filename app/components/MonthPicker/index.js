@@ -1,90 +1,101 @@
-import React from 'react'
+import React, { useState } from 'react';
 import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
   Image,
-} from 'react-native'
+  StyleSheet,
+} from 'react-native';
 import moment from 'moment';
-import DatePicker from 'react-native-datepicker'
-import AppStyles from '../../AppStyles';
+import MonthPicker from 'react-native-month-picker';
 
-console.disableYellowBox = true;
+function MonthPickerModal({ placeholder, onDateChange }) {
+  const [isOpen, toggleOpen] = useState(false);
+  const [value, onChange] = useState(null);
 
-const _format = 'YYYY-MM-DD';
-const _today = moment(new Date().dateString).format(_format);
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => toggleOpen(true)} style={styles.input}>
+        <Image style={{ width: 26, height: 26 }} source={require('../../../assets/img/calendar.png')} />
+        <Text style={styles.inputText}>
+          {value ? moment(value).format('MMM YYYY') : placeholder}
+        </Text>
+      </TouchableOpacity>
 
-
-class DateComponent extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      date: '',
-    }
-  }
-
-  onChange = (date, mode) => {
-      this.props.onDateChange(date)
-    this.setState({
-      date: date
-    })
-  }
-
-  render() {
-    const {
-      mode,
-      placeholder,
-      date,
-    } = this.props;
-
-
-    const placeholderlabel = placeholder || 'Select Date';
-    const addMode = mode || 'date';
-    const dateTime = date || this.state.date;
-    let iconSource = null;
-    if (addMode === 'date') {
-      iconSource = require('../../../assets/img/calendar.png');
-    }
-
-    return (
-      <DatePicker
-        style={[{
-          borderRadius: 4,
-          borderWidth: 0,
-          height: 50, backgroundColor: '#fff', width: '100%', justifyContent: 'center', paddingRight: 15
-        }]}
-        mode={addMode}
-        date={dateTime}
-        format={'YYYY-MM-DD'}
-        placeholder={placeholderlabel}
-        confirmBtnText="Confirm"
-        cancelBtnText="Cancel"
-        iconComponent={< Image style={{ width: 26, height: 26 }} source={iconSource} />}
-        customStyles={{
-          datePickerCon: { backgroundColor: AppStyles.colors.primaryColor, },
-          placeholderText: {
-            alignSelf: 'flex-start',
-            fontFamily: AppStyles.fonts.defaultFont,
-            padding: 12,
-          },
-          dateInput: {
-            borderWidth: 0
-          },
-          dateText: {
-            alignSelf: 'flex-start',
-            fontFamily: AppStyles.fonts.defaultFont,
-            padding: 12,
-          },
-          btnTextConfirm: {
-            color: '#fff'
-          },
-          btnTextCancel: {
-            color: '#333'
-          },
-
-
+      <Modal
+        transparent
+        animationType="fade"
+        visible={isOpen}
+        onRequestClose={() => {
+          toggleOpen(false)
+          // Alert.alert('Modal has been closed.');
         }}
-        onDateChange={(date) => { this.onChange(date, addMode) }}
-      />
-    )
-  }
+        // presentationStyle="overFullScreen"
+      >
+        <View style={styles.contentContainer}>
+          <View style={styles.content}>
+            <MonthPicker
+              selectedDate={value || new Date()}
+              onMonthChange={onChange}
+            />
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={() => {
+                toggleOpen(false);
+                onDateChange(value);
+              }}>
+              <Text>Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
 }
 
-export default DateComponent;
+const styles = StyleSheet.create({
+  container: {},
+  input: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    width: '100%',
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 4,
+  },
+  inputText: {
+    fontSize: 16,
+    // fontWeight: '500',
+    marginLeft: 15
+  },
+  contentContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  content: {
+    backgroundColor: '#fff',
+    marginHorizontal: 20,
+    marginVertical: 70,
+  },
+  confirmButton: {
+    borderWidth: 0.5,
+    padding: 15,
+    margin: 10,
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
+MonthPickerModal.defaultProps = {
+  placeholder: 'Select month',
+};
+
+export default React.memo(MonthPickerModal);

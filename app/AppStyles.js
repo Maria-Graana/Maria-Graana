@@ -97,6 +97,18 @@ export default AppStyles = {
     inputWrap: {
         position: 'relative',
     },
+    countPrice: {
+        position: 'absolute',
+        right: 5,
+        top: 16,
+        color: '#0f73ee',
+        fontWeight: 'bold',
+        fontSize: 12,
+        width: 70,
+    },
+    minMaxPrice: {
+        paddingRight: 90,
+    },
     formControl: {
         backgroundColor: '#fff',
         borderRadius: 4,

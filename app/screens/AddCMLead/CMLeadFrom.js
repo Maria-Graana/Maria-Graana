@@ -7,6 +7,7 @@ import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
 import StaticData from '../../StaticData'
+import { formatPrice } from '../../PriceFormate'
 
 class CMLeadFrom extends Component {
   constructor(props) {
@@ -26,6 +27,8 @@ class CMLeadFrom extends Component {
       getClients,
       getProject,
     } = this.props
+
+    let minPrice = formData.minPrice
 
     return (
       <View>
@@ -60,7 +63,7 @@ class CMLeadFrom extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={StaticData.projectType} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Project Type' />
+            <PickerComponent onValueChange={handleForm} data={StaticData.projectType} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Product Type' />
             {
               checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -72,7 +75,13 @@ class CMLeadFrom extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Min Price'} />
+              <TextInput
+                onChangeText={(text) => { handleForm(text, 'minPrice') }}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]}
+                placeholder={'Min Investment'}
+                keyboardType={'numeric'}
+              />
+              <Text style={[AppStyles.countPrice]}>{formatPrice(minPrice)}</Text>
               {
                 checkValidation === true && formData.minPrice === '' && <ErrorMessage errorMessage={'Required'} />
               }
@@ -82,7 +91,13 @@ class CMLeadFrom extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Max Price'} />
+              <TextInput
+                onChangeText={(text) => { handleForm(text, 'maxPrice') }}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]}
+                placeholder={'Max Investment'}
+                keyboardType={'numeric'}
+              />
+              <Text style={[AppStyles.countPrice]}>{formatPrice(formData.maxPrice)}</Text>
               {
                 checkValidation === true && formData.maxPrice === '' && <ErrorMessage errorMessage={'Required'} />
               }
@@ -96,7 +111,7 @@ class CMLeadFrom extends Component {
           <Button
             onPress={() => { formSubmit(formData) }}
             style={[AppStyles.formBtn, styles.addInvenBtn]}>
-            <Text style={AppStyles.btnText}>ADD</Text>
+            <Text style={AppStyles.btnText}>CREATE LEAD</Text>
           </Button>
         </View>
       </View>

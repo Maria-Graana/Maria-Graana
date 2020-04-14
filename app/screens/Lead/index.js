@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, Linking } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import PickerComponent from '../../components/Picker/index';
@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import SortImg from '../../../assets/img/sort.png'
 import LeadTile from '../../components/LeadTile'
 import axios from 'axios';
+import helper from '../../helper'
 
 
 class Inventory extends React.Component {
@@ -110,6 +111,21 @@ class Inventory extends React.Component {
 		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: purposeTab })
 	}
 
+	callNumber = (url) => {
+    if (url != 'tel:null') {
+      Linking.canOpenURL(url)
+        .then(supported => {
+          if (!supported) {
+            console.log("Can't handle url: " + url);
+          } else {
+            return Linking.openURL(url) 
+          }
+        }).catch(err => console.error('An error occurred', err));
+    } else {
+      helper.errorToast(`No Phone Number`)
+    }
+  }
+
 	render() {
 		const { selectInventory, dropDownId, purposeTab, leadsData } = this.state
 		// console.log(leadsData)
@@ -172,6 +188,7 @@ class Inventory extends React.Component {
 											unSelectInventory={this.unSelectInventory}
 											goToInventoryForm={this.goToInventoryForm}
 											navigateTo={this.navigateTo}
+											callNumber={this.callNumber}
 										/>
 									)
 								})

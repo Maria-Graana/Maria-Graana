@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, TextInput, Alert } from 'react-native'
+import { Text, View, TextInput, Alert, Keyboard } from 'react-native'
 import { connect } from 'react-redux';
 import { Button } from 'native-base'
 import AppStyles from '../../AppStyles';
@@ -50,17 +50,20 @@ class ChangePassword extends Component {
             password: data.newPassword,
             oldPassword: data.oldPassword
         }
-        
+
         axios.patch(`/api/user/resetpassword`, body).then(response => {
             if (response.status === 400) {
+                Keyboard.dismiss();
                 helper.errorToast(response.data)
             }
             else {
+                Keyboard.dismiss();
                 helper.successToast('Password Changed Successfully!')
-                this.setState({ formData: { oldPassword: '', newPassword: '', confirmNewPassword: '' } })
+                this.setState({ formData: { oldPassword: '', newPassword: '', confirmNewPassword: '' }, checkValidation: false })
             }
 
         }).catch(error => {
+            Keyboard.dismiss();
             helper.errorToast(error.response.data)
         })
     }

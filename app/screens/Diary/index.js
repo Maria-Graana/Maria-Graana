@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
 import { ActionSheet } from 'native-base';
-import { Ionicons, EvilIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
 import CalendarComponent from '../../components/CalendarComponent'

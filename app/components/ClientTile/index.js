@@ -1,9 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import AppStyles from '../../AppStyles';
 import UserAvatar from 'react-native-user-avatar';
 import Ability from '../../hoc/Ability';
 import { connect } from 'react-redux';
+import Avatar from '../Avatar';
 
 class CustomerTile extends React.Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class CustomerTile extends React.Component {
             >
                 <View style={{ flexDirection: 'row', marginVertical: 15 }}>
                     <View style={{ paddingRight: 10 }}>
-                        <UserAvatar size="50" name={item.firstName + ' ' + item.lastName} />
+                        <Avatar data={item}/>
                     </View>
                     <View style={{ flexDirection: 'column',justifyContent:'center' }}>
                         <View>

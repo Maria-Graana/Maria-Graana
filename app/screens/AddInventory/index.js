@@ -29,18 +29,19 @@ class AddInventory extends Component {
             images: [],
             showImages: false,
             selectedGrade: '',
+            sizeUnit: StaticData.sizeUnit,
             buttonText: 'ADD PROPERTY',
             buttonDisabled: false,
             formData: {
                 type: '',
                 subtype: '',
                 purpose: '',
-                bed: null,
-                bath: null,
+                bed: 0,
+                bath: 0,
                 size: null,
                 city_id: '',
                 area_id: '',
-                size_unit: null,
+                size_unit: 'marla',
                 price: '',
                 grade: '',
                 status: 'pending',
@@ -51,7 +52,7 @@ class AddInventory extends Component {
                 phone: '',
                 address: '',
                 description: '',
-                generale_size: null,
+                general_size: null,
                 lisitng_type: 'mm',
                 features: JSON.stringify({}),
                 custom_title: '',
@@ -79,13 +80,13 @@ class AddInventory extends Component {
                 type: property.type,
                 subtype: property.subtype,
                 purpose: property.purpose,
-                bed: String(property.bed),
-                bath: String(property.bath),
+                bed: property.bed != 0 ? String(property.bed) : '',
+                bath: property.bath != 0 ? String(property.bath) : '',
                 size_unit: property.size_unit,
                 size: String(property.size),
                 city_id: property.city_id,
                 area_id: property.area_id,
-                price: String(property.price),
+                price: property.price != 0 ? String(property.price) :'' ,
                 imageIds: property.armsPropertyImages.length === 0 || property.armsPropertyImages === undefined
                     ?
                     []
@@ -94,19 +95,20 @@ class AddInventory extends Component {
                 status: property.status,
                 lat: property.lat,
                 lng: property.lng,
-                ownerName: property.customer!==null && property.customer.first_name,
+                ownerName: property.customer !== null && property.customer.first_name,
                 phone: property.phone,
                 address: property.address,
                 description: property.description,
-                generale_size: null,
+                general_size: null,
                 lisitng_type: 'mm',
                 features: JSON.stringify({}),
                 custom_title: '',
                 show_address: true,
                 video: property.video,
             },
-            buttonText: 'EDIT PROPERTY'
+            buttonText: 'UPDATE PROPERTY'
         }, () => {
+            // console.log(this.state.formData);
             this.selectSubtype(property.type);
             this.getAreas(property.city_id);
             this.setImagesForEditMode();
@@ -196,11 +198,12 @@ class AddInventory extends Component {
         formData.lat = this.convertLatitude(formData.lat);
         formData.lng = this.convertLongitude(formData.lng);
         formData.size = this.convertToInteger(formData.size)
-        formData.bed = this.convertToInteger(formData.bed)
-        formData.bath = this.convertToInteger(formData.bath)
-        formData.price = this.convertToInteger(formData.price)
+        formData.bed = this.convertToIntegerForZero(formData.bed)
+        formData.bath = this.convertToIntegerForZero(formData.bath)
+        formData.price = this.convertToIntegerForZero(formData.price)
         formData.imageIds = _.pluck(images, 'id');
 
+         console.log(formData);
 
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)
@@ -417,6 +420,15 @@ class AddInventory extends Component {
         }
     }
 
+    convertToIntegerForZero = (val) => {
+        if (val === '') {
+            return 0;
+        }
+        else if (typeof (val) === 'string' && val != '') {
+            return parseInt(val);
+        }
+    }
+
 
 
     render() {
@@ -429,7 +441,8 @@ class AddInventory extends Component {
             showImages,
             images,
             buttonText,
-            buttonDisabled
+            buttonDisabled,
+            sizeUnit
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
@@ -450,7 +463,7 @@ class AddInventory extends Component {
                                 getCurrentLocation={this._getLocationAsync}
                                 getImages={this.getImages}
                                 selectSubType={selectSubType}
-                                sizeUnit={StaticData.sizeUnit}
+                                sizeUnit={sizeUnit}
                                 selectedGrade={formData.grade}
                                 size={StaticData.oneToTen}
                                 latitude={formData.lat}

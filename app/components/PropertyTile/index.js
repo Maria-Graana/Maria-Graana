@@ -84,12 +84,12 @@ class InventoryTile extends React.Component {
             <View style={styles.bedBathViewStyle}>
               <Ionicons name={'ios-bed'} color={AppStyles.colors.subTextColor} size={18} />
               <Text style={styles.bedTextStyle}>
-                {data.bed}
+                {data.bed === null ? '0' : String(data.bed)}
               </Text>
               <FontAwesome style={{ paddingLeft: 8 }} name={'bathtub'} color={AppStyles.colors.subTextColor} size={18} />
               <Text
                 style={styles.bedTextStyle}>
-                {data.bath}
+                {data.bath === null ? '0' : String(data.bath)}
               </Text>
             </View>
           }

@@ -102,7 +102,7 @@ class Targets extends Component {
                                             style={[AppStyles.formBtn, styles.addInvenBtn]}
                                             onPress={() => { this.navigateFunction('TeamTargets') }}
                                         >
-                                            <Text style={AppStyles.btnText}>SET TARGET</Text>
+                                            <Text style={AppStyles.btnText}>SET TARGETS</Text>
                                         </Button>
                                     </View>
                                     : null

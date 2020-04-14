@@ -99,7 +99,7 @@ function MainStack() {
             />
             <Stack.Screen name='AddInventory' component={AddInventory}
                 options={({ navigation, route }) => ({
-                    title: 'ADD PROPERTIES',
+                    title: 'ADD PROPERTY',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -205,7 +205,7 @@ function MainStack() {
 
             <Stack.Screen name='TeamTargets' component={TeamTargets}
                 options={({ navigation, route }) => ({
-                    title: 'TARGETS',
+                    title: 'SET TARGETS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

@@ -39,9 +39,10 @@ class Diary extends React.Component {
   }
 
   componentDidMount() {
-    const { navigation, route, user } = this.props;
+    const { navigation } = this.props;
     this._unsubscribe = navigation.addListener('focus', () => {
-      if (route.params !== undefined && 'agentId' in route.params && route.params.agentId) {
+      const { route, user } = this.props;
+      if (route.params !== undefined && 'agentId' in route.params) {
         this.setState({ agentId: route.params.agentId }, () => {
           this.diaryMain();
           this.listData();

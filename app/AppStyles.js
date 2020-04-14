@@ -75,7 +75,7 @@ export default AppStyles = {
     lightColor: {
         color: '#333',
     },
-    textCenter:{
+    textCenter: {
         textAlign: 'center',
     },
     whiteColor: {
@@ -95,6 +95,18 @@ export default AppStyles = {
     inputWrap: {
         position: 'relative',
     },
+    countPrice: {
+        position: 'absolute',
+        right: 5,
+        top: 16,
+        color: '#0f73ee',
+        fontWeight: 'bold',
+        fontSize: 12,
+        width: 70,
+    },
+    minMaxPrice: {
+        paddingRight: 90,
+    },
     formControl: {
         backgroundColor: '#fff',
         borderRadius: 4,
@@ -102,7 +114,7 @@ export default AppStyles = {
         height: 50,
         fontFamily: 'OpenSans_regular',
     },
-    formFontSettings:{
+    formFontSettings: {
         fontSize: 14,
         fontFamily: 'OpenSans_regular',
     },
@@ -174,11 +186,11 @@ export default AppStyles = {
         fontFamily: 'OpenSans_bold',
         letterSpacing: 0.6,
     },
-    pickerTextStyle:{
+    pickerTextStyle: {
         fontSize: 14,
         fontFamily: 'OpenSans_regular',
     },
-    require:{
+    require: {
         color: 'red',
         fontSize: 10,
         marginTop: 5,
@@ -186,46 +198,46 @@ export default AppStyles = {
     mainInputWrap: {
         marginBottom: 10,
         marginTop: 10,
-      },
-      modalMain:{
+    },
+    modalMain: {
         paddingBottom: 50,
         paddingTop: 15,
-      },
-      mainBlackWrap: {
+    },
+    mainBlackWrap: {
         flexDirection: 'row',
         marginBottom: 10,
         marginTop: 10,
         backgroundColor: '#fff',
         borderRadius: 4,
         overflow: 'hidden'
-      },
-      blackInputWrap: {
+    },
+    blackInputWrap: {
         width: '60%',
         padding: 5,
-      },
-      fullWidth:{
+    },
+    fullWidth: {
         width: '100%',
-      },
-      blackInputText: {
+    },
+    blackInputText: {
         color: '#000',
         marginBottom: 2,
         fontSize: 10,
         fontWeight: 'bold',
         letterSpacing: 2,
-      },
-      blackInput: {
+    },
+    blackInput: {
         minHeight: 30,
         fontSize: 14,
         fontWeight: 'bold',
         color: '#0F74EE',
-      },
-      blackInputdate: {
+    },
+    blackInputdate: {
         position: 'relative',
         top: 20,
         marginLeft: 15,
-      },
-      dateText:{
+    },
+    dateText: {
         letterSpacing: 2,
         fontSize: 10,
-      },
+    },
 }

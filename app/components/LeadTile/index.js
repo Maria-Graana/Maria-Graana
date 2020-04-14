@@ -13,9 +13,9 @@ class LeadTile extends React.Component {
 
   render() {
 
-    const {  selectInventory, data, selectedInventory, unSelectInventory, navigateTo } = this.props
+    const { selectInventory, data, selectedInventory, unSelectInventory, navigateTo, callNumber } = this.props
     return (
-      <TouchableOpacity onPress={() => {navigateTo(data)}} onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
+      <TouchableOpacity onPress={() => { navigateTo(data) }} onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
 
         <View style={[styles.tileMainWrap, selectedInventory.includes(data.id) && styles.selectedInventory]}>
 
@@ -30,10 +30,12 @@ class LeadTile extends React.Component {
                 </Text>
               </View>
               <View>
-                <Image
-                  style={[styles.fireIcon, AppStyles.mlFive]}
-                  source={phone}
-                />
+                <TouchableOpacity style={styles.actionBtn} onPress={() => { callNumber(`tel:${data.customer && data.customer.phone}`) }}>
+                  <Image
+                    style={[styles.fireIcon, AppStyles.mlFive]}
+                    source={phone}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
 

@@ -7,6 +7,7 @@ import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
 import StaticData from '../../StaticData'
+import { formatPrice } from '../../PriceFormate'
 
 class CMLeadFrom extends Component {
   constructor(props) {
@@ -26,6 +27,8 @@ class CMLeadFrom extends Component {
       getClients,
       getProject,
     } = this.props
+
+    let minPrice = formData.minPrice
 
     return (
       <View>
@@ -72,7 +75,8 @@ class CMLeadFrom extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Min Price'} />
+              <TextInput onChangeText={(text) => { handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} placeholder={'Min Price'} />
+              <Text style={[AppStyles.countPrice]}>{formatPrice(minPrice)}</Text>
               {
                 checkValidation === true && formData.minPrice === '' && <ErrorMessage errorMessage={'Required'} />
               }
@@ -82,7 +86,8 @@ class CMLeadFrom extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'ownerNumber'} placeholder={'Max Price'} />
+              <TextInput onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} placeholder={'Max Price'} />
+              <Text style={[AppStyles.countPrice]}>{formatPrice(formData.maxPrice)}</Text>
               {
                 checkValidation === true && formData.maxPrice === '' && <ErrorMessage errorMessage={'Required'} />
               }

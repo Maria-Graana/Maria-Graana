@@ -1,22 +1,26 @@
 import { StyleSheet } from 'react-native';
 import AppStyles from '../../AppStyles'
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
+import { Dimensions } from 'react-native';
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 export default styles = StyleSheet.create({
-  buttonWrap: {
-    marginBottom: 35,
-  },
   mainbutton: {
+    height: hp('25%'),
+    marginBottom: wp('5%'),
     borderWidth: 0,
-    zIndex:5,
-    elevation:5,
+    zIndex: 5,
+    elevation: 5,
     shadowOffset: { width: 5, height: 5 },
     shadowColor: 'lightgrey',
     shadowOpacity: 1,
-    padding: 15,
+    paddingHorizontal: wp('5%'),
+    paddingVertical: hp('2%'),
     borderColor: '#ddd',
     backgroundColor: '#fff',
-    position: 'relative',
     alignItems: 'center',
+    justifyContent:'center',
     borderRadius: 20,
   },
   buttonText: {

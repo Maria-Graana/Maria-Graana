@@ -35,7 +35,7 @@ class Targets extends Component {
 
     getMyTarget = (date) => {
         this.setState({ loading: true })
-        axios.get(`/api/user/mytarget?date=${date}`).then(response => {
+        axios.get(`/api/user/mytarget?date=${moment(date).format('YYYY-MM')}`).then(response => {
             if (response.status === 200 && response.data) {
                 this.setState({ data: response.data, loading: false });
             }
@@ -78,7 +78,7 @@ class Targets extends Component {
                                 {/* **************************************** */}
                                 <View style={[AppStyles.mainInputWrap]}>
                                     <View style={[AppStyles.inputWrap]}>
-                                        <MonthPicker date={formData.date} mode='date' placeholder='Select Date' onDateChange={(value) => { this.handleForm(value, 'date') }} />
+                                        <MonthPicker date={formData.date} mode='date' placeholder='Select Month' onDateChange={(value) => { this.handleForm(value, 'date') }} />
                                         {
                                             checkValidation === true && formData.date === '' && <ErrorMessage errorMessage={'Required'} />
                                         }
@@ -102,7 +102,7 @@ class Targets extends Component {
                                             style={[AppStyles.formBtn, styles.addInvenBtn]}
                                             onPress={() => { this.navigateFunction('TeamTargets') }}
                                         >
-                                            <Text style={AppStyles.btnText}>SET TARGET</Text>
+                                            <Text style={AppStyles.btnText}>SET TARGETS</Text>
                                         </Button>
                                     </View>
                                     : null

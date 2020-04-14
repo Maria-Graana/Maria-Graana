@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, Platform } from 'react-native';
 import { Button, Toast, Textarea } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import AppStyles from '../../AppStyles';
@@ -8,6 +8,7 @@ import moment from 'moment'
 import StaticData from '../../StaticData'
 import DateComponent from '../../components/DatePicker'
 import ErrorMessage from '../../components/ErrorMessage'
+import style from './style';
 
 class DetailForm extends Component {
 
@@ -16,7 +17,7 @@ class DetailForm extends Component {
         this.state = {
             formData: {
                 subject: '',
-                taskType: 'Meeting',
+                taskType: '',
                 startTime: '',
                 endTime: '',
                 date: '',
@@ -85,7 +86,7 @@ class DetailForm extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} placeholder={'Subject/Title'} value={subject} onChangeText={(text) => this.handleForm(text, 'subject')} />
+                        <TextInput style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings]} placeholder={'Subject/Title'} value={subject} onChangeText={(text) => this.handleForm(text, 'subject')} />
                     </View>
                     {
                         checkValidation === true && subject === '' && <ErrorMessage errorMessage={'Required'} />
@@ -94,7 +95,7 @@ class DetailForm extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent   onValueChange={this.handleForm} selectedItem={taskType} data={this.taskValues} name={'taskType'} placeholder='Task Type' />
+                        <PickerComponent onValueChange={this.handleForm} selectedItem={taskType} data={this.taskValues} name={'taskType'} placeholder='Task Type' />
                     </View>
                     {
                         checkValidation === true && taskType === '' && <ErrorMessage errorMessage={'Required'} />
@@ -118,7 +119,7 @@ class DetailForm extends Component {
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
-                    <DateComponent date={endTime} mode='time' placeholder='Select End Time' disabled={startTime === '' ? true : false} onTimeChange={(value) => this.handleForm(value ,'endTime')} />
+                    <DateComponent date={endTime} mode='time' placeholder='Select End Time' disabled={startTime === '' ? true : false} onTimeChange={(value) => this.handleForm(value, 'endTime')} />
                     {
                         checkValidation === true && endTime === '' && <ErrorMessage errorMessage={'Required'} />
                     }
@@ -128,7 +129,7 @@ class DetailForm extends Component {
                 <View style={[AppStyles.mainInputWrap]}>
                     <Textarea
                         placeholderTextColor="#bfbbbb"
-                        style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, { height: 100 }]} rowSpan={5}
+                        style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings, { height: 100, paddingTop: 10, }]} rowSpan={5}
                         placeholder="Description"
                         onChangeText={(text) => this.handleForm(text, 'notes')}
                         value={notes}

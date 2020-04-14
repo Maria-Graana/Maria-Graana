@@ -9,6 +9,7 @@ class TeamTile extends React.Component {
     }
     render() {
         const {item}= this.props.data
+        
         return (
             <TouchableOpacity 
             activeOpacity={.7}
@@ -26,7 +27,7 @@ class TeamTile extends React.Component {
                         </View>
                         <View style={{paddingTop: 5}}>
                             <Text style={[styles.textFont, {fontSize: 12, color: AppStyles.colors.subTextColor}]}>
-                                {item.armsUserRole.subRole}
+                                {item.armsUserRole && item.armsUserRole.subRole}
                             </Text>
                         </View>
                     </View> 

@@ -17,7 +17,7 @@ class DetailForm extends Component {
         this.state = {
             formData: {
                 subject: '',
-                taskType: 'Meeting',
+                taskType: '',
                 startTime: '',
                 endTime: '',
                 date: '',

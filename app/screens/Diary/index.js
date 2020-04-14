@@ -41,6 +41,7 @@ class Diary extends React.Component {
   componentDidMount() {
     const { navigation, route, user } = this.props;
     this._unsubscribe = navigation.addListener('focus', () => {
+      console.log(route.params);
       if (route.params !== undefined && 'agentId' in route.params && route.params.agentId) {
         this.setState({ agentId: route.params.agentId }, () => {
           this.diaryMain();
@@ -54,6 +55,10 @@ class Diary extends React.Component {
         })
       }
     });
+  }
+
+  componentWillUnmount(){
+    this._unsubscribe();
   }
 
   _toggleShow = () => {
@@ -308,6 +313,7 @@ class Diary extends React.Component {
   render() {
     const { showCalendar, startDate, newDiaryData, loading, selectedDiary } = this.state;
     const { user, route } = this.props;
+    console.log(user.role);
     return (
       !loading ?
         <View style={styles.container}>

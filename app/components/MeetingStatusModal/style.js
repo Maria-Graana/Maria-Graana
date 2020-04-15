@@ -40,6 +40,7 @@ export default styles = StyleSheet.create({
     borderColor: '#ebebeb',
     borderRadius: 4,
     padding: 10,
+    paddingTop: 30,
   },
   doneBtnBottom: {
     paddingTop: 0,
@@ -49,5 +50,15 @@ export default styles = StyleSheet.create({
   },
   blueColor: {
     color: '#333',
+  },
+  timesBtn: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  timesImg: {
+    width: 15,
+    height: 15,
+    resizeMode: 'contain',
   },
 });

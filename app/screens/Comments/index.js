@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList, Alert } from 'react-native';
+import { View, FlatList, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import axios from 'axios';
 import _ from 'underscore';
 import AppStyles from '../../AppStyles';
@@ -41,7 +41,7 @@ class Comments extends Component {
     }
 
     showDeleteDialog(item) {
-        Alert.alert('Delete attachment', 'Are you sure you want to delete this attachment ?', [
+        Alert.alert('Delete comment', 'Are you sure you want to delete this comment?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Delete', onPress: () => this.deleteComment(item) },
         ],
@@ -85,9 +85,11 @@ class Comments extends Component {
         const { commentsList, loading, comment } = this.state;
         return (
             !loading ?
-                <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
+                <KeyboardAvoidingView style={[{ paddingLeft: 0, paddingRight: 0,backgroundColor:AppStyles.container.backgroundColor }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={100} enabled >
                     <FlatList
                         contentContainerStyle={{ flexGrow: 1 }}
+                        ref={ref => this.flatList = ref}
+                        onContentSizeChange={() => { this.flatList.scrollToEnd({ animated: true }) }}
                         data={commentsList}
                         renderItem={({ item }) => (
                             <CommentTile
@@ -101,8 +103,7 @@ class Comments extends Component {
                                 setComment={this.setComment} />}
                         keyExtractor={(item, index) => index.toString()}
                     />
-
-                </View>
+                </KeyboardAvoidingView>
                 :
                 <Loader loading={loading} />
         )

@@ -13,7 +13,7 @@ class MeetingStatusModal extends React.Component {
   }
 
   render() {
-    const { data, openStatus, doneStatusId, doneStatus, sendStatus, editFunction } = this.props
+    const { data, doneStatus, sendStatus } = this.props
     let taskTypeData = []
     data.taskType === 'meeting' ?
       taskTypeData = StaticData.meetingStatus
@@ -22,20 +22,17 @@ class MeetingStatusModal extends React.Component {
     return (
       <Modal isVisible={doneStatus}>
         <View style={[styles.dotsWrap]}>
-          {
-            doneStatus === true &&
-            <View style={[styles.dropDownMain]}>
-              {
-                taskTypeData.map((item, key) => {
-                  return (
-                    <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { sendStatus(item.value) }} key={key}>
-                      <Text style={styles.blueColor}>{item.name}</Text>
-                    </TouchableOpacity>
-                  )
-                })
-              }
-            </View>
-          }
+          <View style={[styles.dropDownMain]}>
+            {
+              taskTypeData.map((item, key) => {
+                return (
+                  <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { sendStatus(item.value) }} key={key}>
+                    <Text style={styles.blueColor}>{item.name}</Text>
+                  </TouchableOpacity>
+                )
+              })
+            }
+          </View>
         </View>
       </Modal>
     )

@@ -9,9 +9,23 @@ class CustomerTile extends React.Component {
     constructor(props) {
         super(props)
     }
+
+    getHeading = () => {
+        const { item } = this.props.data
+        if (item.firstName && item.lastName && item.firstName !== '' && item.lastName !== '' ) {
+            return item.firstName + ' ' + item.lastName
+        } else if (item.firstName && item.firstName !== '') {
+            return item.firstName
+        } else {
+            return item.contact1
+        }
+    }
+
     render() {
         const { item } = this.props.data
         const { user } = this.props
+        let heading = this.getHeading()
+
         return (
             <TouchableOpacity
                 activeOpacity={.7}
@@ -24,16 +38,18 @@ class CustomerTile extends React.Component {
                     <View style={{ paddingRight: 10 }}>
                         <UserAvatar size="50" name={item.firstName + ' ' + item.lastName} />
                     </View>
-                    <View style={{ flexDirection: 'column',justifyContent:'center' }}>
+                    <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
                         <View>
                             <Text style={[styles.textFont, { fontSize: 15 }]}>
-                                {item.firstName} {item.lastName}
+                                {heading}
                             </Text>
                         </View>
                         {
                             item.address !== '' ?
                                 <View style={{ paddingTop: 5 }}>
-                                    <Text style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
                                         {item.address}
                                     </Text>
                                 </View>

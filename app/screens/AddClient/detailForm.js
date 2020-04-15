@@ -6,6 +6,7 @@ import styles from './style';
 import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
+import helper from '../../helper';
 
 class DetailForm extends Component {
 	constructor(props) {
@@ -24,9 +25,12 @@ class DetailForm extends Component {
 			checkValidation,
 			handleForm,
 			formData,
-			update
+			update,
+			phoneValidate,
+			emailValidate,
+			cnicValidate
 		} = this.props
-		let btnText= update? 'UPDATE': 'ADD'
+		let btnText = update ? 'UPDATE' : 'ADD'
 		return (
 			<View>
 
@@ -50,9 +54,12 @@ class DetailForm extends Component {
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput value={formData.contactNumber} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number*'} />
+						<TextInput maxLength={11} value={formData.contactNumber} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number*'} />
 						{
-							checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
+							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+						}
+						{
+							phoneValidate == false && checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
 						}
 					</View>
 				</View>
@@ -60,34 +67,40 @@ class DetailForm extends Component {
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<TextInput value={formData.email} keyboardType='email-address' autoCompleteType='email' onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'email'} placeholder={'Email'} />
+						{
+							emailValidate == false && <ErrorMessage errorMessage={'Enter a Valid Email Address'} />
+						}
 					</View>
 				</View>
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput value={formData.cnic} onChangeText={(text) => { handleForm(text, 'cnic') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'cnic'} placeholder={'CNIC'} />
+						<TextInput keyboardType={'number-pad'} maxLength={15} value={formData.cnic} onChangeText={(text) => { handleForm(text, 'cnic') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'cnic'} placeholder={'CNIC'} />
+						{
+							cnicValidate == true && <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+						}
 					</View>
 				</View>
 
 				<View style={[AppStyles.mainInputWrap]}>
-                    <Textarea
-                        placeholderTextColor="#bfbbbb"
-                        style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, styles.textArea]} rowSpan={5}
-                        placeholder="Address"
-                        onChangeText={(text) => handleForm(text, 'address')}
-                        value={formData.address}
-                    />
-                </View>
+					<Textarea
+						placeholderTextColor={AppStyles.colors.subTextColor}
+						style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, styles.textArea]} rowSpan={5}
+						placeholder="Address"
+						onChangeText={(text) => handleForm(text, 'address')}
+						value={formData.address}
+					/>
+				</View>
 
-                <View style={[AppStyles.mainInputWrap]}>
-                    <Textarea
-                        placeholderTextColor="#bfbbbb"
-                        style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, styles.textArea]} rowSpan={5}
-                        placeholder="Secondary Address"
-                        onChangeText={(text) => handleForm(text, 'secondaryAddress')}
-                        value={formData.secondaryAddress}
-                    />
-                </View>
+				<View style={[AppStyles.mainInputWrap]}>
+					<Textarea
+						placeholderTextColor={AppStyles.colors.subTextColor}
+						style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings, styles.textArea]} rowSpan={5}
+						placeholder="Secondary Address"
+						onChangeText={(text) => handleForm(text, 'secondaryAddress')}
+						value={formData.secondaryAddress}
+					/>
+				</View>
 
 
 				{/* **************************************** */}

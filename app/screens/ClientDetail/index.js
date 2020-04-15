@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Ability from '../../hoc/Ability';
+import helper from '../../helper';
 
 class ClientDetail extends React.Component {
     constructor(props) {
@@ -19,33 +20,34 @@ class ClientDetail extends React.Component {
 
     navigateTo = () => {
         const { route } = this.props
-        const {client}= route.params
-        this.props.navigation.navigate('AddClient', {client: client, update: true})
+        const { client } = route.params
+        this.props.navigation.navigate('AddClient', { client: client, update: true })
     }
 
     render() {
         const { route, user } = this.props;
-        const {client}= route.params
+        const { client } = route.params
+        
         return (
-            <View style={[AppStyles.container, styles.container, {backgroundColor: AppStyles.colors.backgroundColor}]}>
+            <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
                     <View style={styles.innerContainer}>
-                        <Text style={styles.headingText}> First Name </Text>
-                        <Text style={styles.labelText}> {client.firstName} </Text>
-                        <Text style={styles.headingText}> Last Name </Text>
-                        <Text style={styles.labelText}> {client.lastName} </Text>
-                        <Text style={styles.headingText}> Contact Number </Text>
-                        <Text style={styles.labelText}> {client.contact1} </Text>
-                        <Text style={styles.headingText}> Email </Text>
-                        <Text style={styles.labelText}> {client.email} </Text>
-                        <Text style={styles.headingText}> CNIC </Text>
-                        <Text style={styles.labelText}> {client.cnic} </Text>
-                        <Text style={styles.headingText}> Address </Text>
-                        <Text style={styles.labelText}> {client.address} </Text>
+                        <Text style={styles.headingText}>First Name </Text>
+                        <Text style={styles.labelText}>{client.firstName} </Text>
+                        <Text style={styles.headingText}>Last Name </Text>
+                        <Text style={styles.labelText}>{client.lastName} </Text>
+                        <Text style={styles.headingText}>Contact Number </Text>
+                        <Text style={styles.labelText}>{client.contact1} </Text>
+                        <Text style={styles.headingText}>Email </Text>
+                        <Text style={styles.labelText}>{client.email} </Text>
+                        <Text style={styles.headingText}>CNIC </Text>
+                        <Text style={styles.labelText}>{client.cnic && helper.normalizeCnic(client.cnic)} </Text>
+                        <Text style={styles.headingText}>Address </Text>
+                        <Text style={styles.labelText}>{client.address} </Text>
                     </View>
                     <View style={styles.pad}>
                         {
-                            Ability.canEdit(user.role, 'Client') && <MaterialCommunityIcons onPress={() => {this.navigateTo()}} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
+                            Ability.canEdit(user.role, 'Client') && <MaterialCommunityIcons onPress={() => { this.navigateTo() }} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                         }
                     </View>
                 </View>

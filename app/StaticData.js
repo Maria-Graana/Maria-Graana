@@ -263,9 +263,10 @@ export default StaticData = {
         { value: 'not_interested', name: 'Not Interested' },
     ],
     meetingStatus: [
-        { value: 'completed', name: 'Done' },
-        { value: 'pending', name: 'Pending' },
-        { value: 'progress', name: 'Progress' },
+        { value: 'visited', name: 'Visited' },
+        { value: 'expected_conversion', name: 'Expected Conversion' },
+        { value: 'deal_signed', name: 'Deal Signed' },
+        { value: 'cancel_meeting', name: 'Cancel Meeting' },
     ],
 }
 

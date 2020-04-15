@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import AppStyles from '../../AppStyles';
-import UserAvatar from 'react-native-user-avatar';
+import Avatar from '../../components/Avatar/index';
 
 class TeamTile extends React.Component {
     constructor(props) {
@@ -9,24 +9,25 @@ class TeamTile extends React.Component {
     }
     render() {
         const {item}= this.props.data
+
         return (
             <TouchableOpacity 
             activeOpacity={.7}
             onPress = { () => { this.props.onPressItem(item) }}
             >
                 <View style= {{flexDirection: 'row', marginVertical: 15}}>
-                    <View style={{paddingRight: 10}}>
-                        <UserAvatar  size="50" name={`${item.firstName} ${item.lastName}`}/>
+                    <View style={{paddingRight: 10,}}>
+                        <Avatar data={item}/>
                     </View>
                     <View style= {{flexDirection: 'column'}}>
-                        <View>
+                        <View style={{paddingTop: 5}}>
                             <Text style={[styles.textFont, {fontSize: 15}]}>
                                 {item.firstName} {item.lastName}
                             </Text>
                         </View>
                         <View style={{paddingTop: 5}}>
                             <Text style={[styles.textFont, {fontSize: 12, color: AppStyles.colors.subTextColor}]}>
-                                {item.armsUserRole.subRole}
+                                {item.armsUserRole && item.armsUserRole.subRole}
                             </Text>
                         </View>
                     </View> 

@@ -52,10 +52,6 @@ export default StaticData = {
             value: 'follow up'
         },
         {
-            name: 'Day Structure',
-            value: 'day structure'
-        },
-        {
             name: 'Other',
             value: 'other'
         }
@@ -235,13 +231,12 @@ export default StaticData = {
         }
     ],
     projectType: [
-        { value: 'shop', name: 'shop' },
+        { value: 'shop', name: 'Shop' },
         { value: 'office', name: 'Office' },
-        { value: 'other', name: 'other' },
         { value: 'food Court', name: 'Food Court' },
         { value: 'hotel Suite', name: 'Hotel Suite' },
         { value: 'harley Center', name: 'Harley Center' },
-        { value: 'other', name: 'other' },
+        { value: 'other', name: 'Other' },
     ],
     oneToTwelve: [
         { value: '1', name: '1' },
@@ -265,7 +260,7 @@ export default StaticData = {
         { value: 'awaiting_response', name: 'Awaiting Response' },
         { value: 'details_sent', name: 'Details Sent' },
         { value: 'expected_visit', name: 'Expected Visit' },
-        { value: 'not_interested', name: 'Not Intrested' },
+        { value: 'not_interested', name: 'Not Interested' },
     ],
     meetingStatus: [
         { value: 'completed', name: 'Done' },

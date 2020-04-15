@@ -1,90 +1,223 @@
-import React from 'react'
+import React, { Component } from 'react';
 import {
-  Image,
-} from 'react-native'
-import moment from 'moment';
-import DatePicker from 'react-native-datepicker'
+  View,
+  Picker,
+  Text,
+  StyleSheet,
+  Modal,
+  SafeAreaView,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import AppStyles from '../../AppStyles';
-
-console.disableYellowBox = true;
-
-const _format = 'YYYY-MM-DD';
-const _today = moment(new Date().dateString).format(_format);
+import { AntDesign } from '@expo/vector-icons';
+import moment from 'moment'
 
 
-class DateComponent extends React.Component {
+class MonthPicker extends Component {
+
+
   constructor(props) {
-    super(props)
+    super(props);
+    let { startYear, endYear, selectedYear, selectedMonth, visible } = props;
+    let years = this.getYears(startYear, endYear);
+    let months = this.getMonths();
+    selectedYear = selectedYear || years[0];
+    selectedMonth = selectedMonth || ((new Date()).getMonth() + 1);
     this.state = {
-      date: '',
+      years,
+      months,
+      selectedYear,
+      selectedMonth,
+      visible: visible
     }
   }
 
-  onChange = (date, mode) => {
-      this.props.onDateChange(date)
+  show = async ({ startYear, endYear, selectedYear, selectedMonth }) => {
+    let years = this.getYears(startYear, endYear);
+    let months = this.getMonths();
+    selectedYear = selectedYear || years[0];
+    selectedMonth = selectedMonth || ((new Date()).getMonth() + 1);
+    let promise = new Promise((resolve) => {
+      this.confirm = (year, month) => {
+        resolve({
+          year,
+          month
+        });
+      }
+      this.setState({
+        visible: true,
+        years,
+        months,
+        startYear: startYear,
+        endYear: endYear,
+        selectedYear: selectedYear,
+        selectedMonth: selectedMonth,
+      })
+    })
+    return promise;
+  }
+
+  dismiss = () => {
     this.setState({
-      date: date
+      visible: false
     })
   }
 
-  render() {
-    const {
-      mode,
-      placeholder,
-      date,
-    } = this.props;
-
-
-    const placeholderlabel = placeholder || 'Select Date';
-    const addMode = mode || 'date';
-    const dateTime = date || this.state.date;
-    let iconSource = null;
-    if (addMode === 'date') {
-      iconSource = require('../../../assets/img/calendar.png');
+  getYears = (startYear, endYear) => {
+    startYear = startYear || (new Date()).getFullYear();
+    endYear = endYear || (new Date()).getFullYear();
+    let years = []
+    for (let i = startYear; i <= endYear; i++) {
+      years.push(i)
     }
+    return years;
+  }
 
+  getMonths = () => {
+    let months = []
+    for (let i = 1; i <= 12; i++) {
+      months.push({ value: i, name: moment().month(i - 1).format("MMM") });
+    }
+    return months;
+  }
+
+  renderPickerItems = (data) => {
+    let items = data.map((value, index) => {
+      return (<Picker.Item key={'r-' + index} label={'' + value} value={value} />)
+    })
+    return items;
+  }
+
+  renderMonthPickerItems = (data) => {
+    let items = data.map((item, index) => {
+      return (<Picker.Item key={'r-' + index} label={'' + item.name} value={item.value} />)
+    })
+    return items;
+  }
+
+  onCancelPress = () => {
+    this.dismiss();
+  }
+
+  onConfirmPress = () => {
+    const confirm = this.confirm;
+    const { selectedYear, selectedMonth } = this.state;
+    confirm && confirm(selectedYear, selectedMonth);
+    this.dismiss();
+  }
+
+  render() {
+    const { years, months, selectedYear, selectedMonth, visible } = this.state;
+    if (!visible) return null;
     return (
-      <DatePicker
-        style={[{
-          borderRadius: 4,
-          borderWidth: 0,
-          height: 50, backgroundColor: '#fff', width: '100%', justifyContent: 'center', paddingRight: 15
-        }]}
-        mode={addMode}
-        date={dateTime}
-        format={'YYYY-MM-DD'}
-        placeholder={placeholderlabel}
-        confirmBtnText="Confirm"
-        cancelBtnText="Cancel"
-        iconComponent={< Image style={{ width: 26, height: 26 }} source={iconSource} />}
-        customStyles={{
-          datePickerCon: { backgroundColor: AppStyles.colors.primaryColor, },
-          placeholderText: {
-            alignSelf: 'flex-start',
-            fontFamily: AppStyles.fonts.defaultFont,
-            padding: 12,
-          },
-          dateInput: {
-            borderWidth: 0
-          },
-          dateText: {
-            alignSelf: 'flex-start',
-            fontFamily: AppStyles.fonts.defaultFont,
-            padding: 12,
-          },
-          btnTextConfirm: {
-            color: '#fff'
-          },
-          btnTextCancel: {
-            color: '#333'
-          },
+      <Modal
+        visible={visible}
+        animationType="slide"
+      // onRequestClose={closeModal}
+      >
+        <SafeAreaView style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}>
+          <AntDesign style={styles.closeStyle} onPress={this.onCancelPress} name="close" size={26} color={AppStyles.colors.textColor} />
+          <View style={[styles.viewContainer]}>
+            <TouchableOpacity
+              style={styles.modal}
+              onPress={this.onCancelPress}
+            >
+              <View
+                style={styles.outerContainer}
+              >
+                <View style={styles.toolBar}>
+                  <TouchableOpacity style={styles.toolBarButton} onPress={this.onCancelPress}>
+                    <Text style={styles.toolBarButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <View style={{ flex: 1 }} />
+                  <TouchableOpacity style={styles.toolBarButton} onPress={this.onConfirmPress}>
+                    <Text style={styles.toolBarButtonText}>Confirm</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.innerContainer}>
+                  <Picker
+                    style={styles.picker}
+                    selectedValue={selectedYear}
+                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedYear: itemValue }, () => {
+                    })}
+                  >
+                    {this.renderPickerItems(years)}
+                  </Picker>
+                  <Picker
+                    style={styles.picker}
+                    selectedValue={selectedMonth}
+                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedMonth: itemValue }, () => {
+                    })}
+                  >
+                    {this.renderMonthPickerItems(months)}
+                  </Picker>
+                </View>
+              </View>
+            </TouchableOpacity>
 
 
-        }}
-        onDateChange={(date) => { this.onChange(date, addMode) }}
-      />
+
+          </View>
+        </SafeAreaView>
+      </Modal>
     )
   }
 }
 
-export default DateComponent;
+const styles = StyleSheet.create({
+  viewContainer: {
+    marginLeft: 25,
+    marginRight: 25,
+    justifyContent: 'center',
+  },
+  closeStyle: {
+    position: 'absolute',
+    right: 15,
+    top: Platform.OS == 'android' ? 10 : 40,
+    paddingVertical: 5
+  },
+  modal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  outerContainer: {
+    backgroundColor: 'white',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0
+  },
+  toolBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 44,
+    borderBottomWidth: 1,
+    borderColor: '#EBECED',
+  },
+  toolBarButton: {
+    height: 44,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  toolBarButtonText: {
+    fontSize: 15,
+    color: '#2d4664',
+  },
+  innerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  picker: {
+    flex: 1,
+  }
+})
+
+export default MonthPicker;
+
+

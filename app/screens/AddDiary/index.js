@@ -128,7 +128,7 @@ class AddDiary extends Component {
             axios.post(`/api/diary/create`, diary)
                 .then((res) => {
                     if (res.status === 200) {
-                        helper.successToast('DIARY ADDED SUCCESSFULLY!')
+                        helper.successToast('TASK ADDED SUCCESSFULLY!')
                         let timeStamp = this.convertTimeZone(res.data.start)
                         let data = {
                             title: res.data.taskType,
@@ -146,7 +146,7 @@ class AddDiary extends Component {
 
                 })
                 .catch((error) => {
-                    helper.errorToast('ERROR: ADDING DIARY')
+                    helper.errorToast('ERROR: ADDING TASK')
                     console.log('error', error.message)
                 })
         }
@@ -157,11 +157,11 @@ class AddDiary extends Component {
         let diary = this.generatePayload(data)
         axios.patch(`/api/diary/update?id=${diary.id}`, diary)
             .then((res) => {
-                helper.successToast('DIARY UPDATED SUCCESSFULLY!')
+                helper.successToast('TASK UPDATED SUCCESSFULLY!')
                 this.props.navigation.navigate('Diary', { update: false, 'agentId': this.props.route.params.agentId })
             })
             .catch((error) => {
-                helper.errorToast('ERROR: UPDATING DIARY')
+                helper.errorToast('ERROR: UPDATING TASK')
                 console.log(error)
             })
     }

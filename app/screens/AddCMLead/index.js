@@ -90,14 +90,19 @@ class AddCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            let body = {
-                ...formData,
+            if (formData.minPrice > formData.maxPrice) {
+                helper.errorToast('Min Price Greater Than Max Price')
+            } else {
+                let body = {
+                    ...formData,
+                }
+                axios.post(`/api/leads/project`, body)
+                    .then((res) => {
+                        helper.successToast(res.data)
+                        RootNavigation.navigate('Lead')
+                    })
             }
-            axios.post(`/api/leads/project`, body)
-                .then((res) => {
-                    helper.errorToast(res.data)
-                    RootNavigation.navigate('Lead')
-                })
+
         }
     }
 

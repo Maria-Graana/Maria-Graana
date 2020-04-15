@@ -116,25 +116,30 @@ class AddRCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            let payLoad = {
-                purpose: formType,
-                type: RCMFormData.type,
-                subtype: RCMFormData.subtype,
-                bed: RCMFormData.bed,
-                bath: RCMFormData.bath,
-                size: RCMFormData.size,
-                leadAreas: RCMFormData.leadAreas,
-                customerId: RCMFormData.customerId,
-                city_id: RCMFormData.city_id,
-                size_unit: RCMFormData.size_unit,
-                price: RCMFormData.max_price,
-                min_price: RCMFormData.min_price,
+            if (RCMFormData.min_price > RCMFormData.max_price) {
+                helper.errorToast('Min Price Greater Than Max Price')
+            } else {
+                let payLoad = {
+                    purpose: formType,
+                    type: RCMFormData.type,
+                    subtype: RCMFormData.subtype,
+                    bed: RCMFormData.bed,
+                    bath: RCMFormData.bath,
+                    size: RCMFormData.size,
+                    leadAreas: RCMFormData.leadAreas,
+                    customerId: RCMFormData.customerId,
+                    city_id: RCMFormData.city_id,
+                    size_unit: RCMFormData.size_unit,
+                    price: RCMFormData.max_price,
+                    min_price: RCMFormData.min_price,
+                }
+                axios.post(`/api/leads`, payLoad)
+                    .then((res) => {
+                        helper.successToast(res.data)
+                        RootNavigation.navigate('Lead')
+                    })
             }
-            axios.post(`/api/leads`, payLoad)
-                .then((res) => {
-                    helper.successToast(res.data)
-                    RootNavigation.navigate('Lead')
-                })
+
         }
     }
 

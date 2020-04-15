@@ -7,6 +7,7 @@ import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
+import helper from '../../helper'
 
 class CreateUser extends Component {
     constructor(props) {
@@ -54,10 +55,11 @@ class CreateUser extends Component {
     getRoles = (id) => {
         axios.get(`/api/user/roles/${id}`)
             .then((res) => {
-                let array = [];
-                res && res.data['sub_admin 2'].map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
                 this.setState({
-                    getRoles: array
+                    getRoles: res.data['sub_admin 2'][0],
+                    formData:{
+                        armsUserRoleId: res.data['sub_admin 2'][0].id
+                    }
                 })
             })
     }
@@ -87,6 +89,7 @@ class CreateUser extends Component {
             if (formData.confirmPassword == formData.password) {
                 axios.post(`/api/user/signup`, formData)
                     .then((res) => {
+                        helper.successToast('Uer Added')
                         const { navigation } = this.props
                         navigation.navigate('Landing')
                     })

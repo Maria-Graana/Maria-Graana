@@ -10,11 +10,10 @@ import * as RootNavigation from '../../navigation/RootNavigation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DrawerIconItem from '../DrawerIconItem';
 import DrawerItem from '../DrawerItem';
-import UserAvatar from 'react-native-user-avatar';
 import AppStyles from '../../AppStyles';
 import styles from './style';
 import Ability from '../../hoc/Ability';
-import axios from 'axios';
+import Avatar from '../Avatar/index';
 
 class CustomDrawerContent extends React.Component {
 
@@ -39,7 +38,7 @@ class CustomDrawerContent extends React.Component {
                 <ScrollView style={[styles.scrollContainer, { width: '100%', }]}>
                     <View style={AppStyles.flexDirectionRow}>
                         <View >
-                            <UserAvatar size="50" name={`${user.firstName} ${user.lastName}`} />
+                            <Avatar data={user}/>
                         </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.nameText}>

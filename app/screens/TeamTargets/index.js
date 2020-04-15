@@ -14,29 +14,32 @@ import moment from 'moment'
 
 
 class TeamTargets extends Component {
+    months = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
     constructor(props) {
         super(props)
         this.state = {
             checkValidation: false,
             rows: [],
             loading: false,
+            startYear: 2000,
+            endYear: 2050,
+            selectedYear: 2020,
+            selectedMonth: 1,
             formData: {
-                date: '',
                 targetAmount: ''
             },
             dropDown: false,
             armsUserId: '',
-
+          
         }
     }
 
     componentDidMount() {
         const { navigation, route } = this.props;
-        const { date } = route.params;
         this._unsubscribe = navigation.addListener('focus', () => {
-            this.getTeamTargets(date);
+            this.getTeamTargets();
         });
-        this.setState({ formData: { date: date } })
     }
     componentWillUnmount() {
         this._unsubscribe();
@@ -46,8 +49,6 @@ class TeamTargets extends Component {
         const { formData } = this.state
         formData[name] = value
         this.setState({ formData })
-
-        if (formData.date !== '' && name === 'date') { this.getTeamTargets(value) }
     }
 
     dropDown = (id) => {
@@ -57,8 +58,10 @@ class TeamTargets extends Component {
         })
     }
 
-    getTeamTargets = (date) => {
+    getTeamTargets = () => {
+        const { selectedMonth, selectedYear } = this.state;
         this.setState({ loading: true })
+        let date = `${selectedYear}-${moment().month(selectedMonth - 1).format('MM')}-${moment().format('D')}`;
         axios.get(`/api/user/agents?target=true&date=${date}`).then(response => {
             if (response.data && response.status === 200) {
                 this.setState({ rows: response.data, loading: false });
@@ -80,8 +83,9 @@ class TeamTargets extends Component {
     }
 
     updateTarget = (targetId) => {
-        const { formData } = this.state;
-        const { targetAmount, date } = formData;
+        const { formData, selectedMonth, selectedYear } = this.state;
+        const { targetAmount } = formData;
+        let date = `${selectedYear}-${moment().month(selectedMonth - 1).format('MM')}-${moment().format('D')}`;
         if (targetAmount === '' || targetAmount === undefined) {
             Alert.alert('Enter Target', 'Target amount cannot be empty !');
             return;
@@ -95,7 +99,7 @@ class TeamTargets extends Component {
         axios.patch(`/api/user/editTarget?id=${targetId}`, body).then(response => {
             if (response.status === 200) {
                 this.setState({ dropDown: !this.state.dropDown, })
-                this.getTeamTargets(date);
+                this.getTeamTargets();
             }
         }).catch(error => {
             console.log(error);
@@ -104,7 +108,9 @@ class TeamTargets extends Component {
 
     createTarget = () => {
         const { armsUserId } = this.state;
-        const { targetAmount, date } = this.state.formData;
+        const { targetAmount } = this.state.formData;
+        const { selectedMonth, selectedYear } = this.state;
+        let date = `${selectedYear}-${moment().month(selectedMonth - 1).format('MM')}-${moment().format('D')}`;
         const body = {
             targetMonth: date,
             armsUserId: armsUserId,
@@ -112,7 +118,7 @@ class TeamTargets extends Component {
         }
         axios.post(`api/user/setTarget`, body).then(response => {
             this.setState({ dropDown: !this.state.dropDown, })
-            this.getTeamTargets(date);
+            this.getTeamTargets();
         }).catch(error => {
             console.log(error);
         })
@@ -132,14 +138,28 @@ class TeamTargets extends Component {
         }
     }
 
+    showPicker = () => {
+        const { startYear, endYear, selectedYear, selectedMonth } = this.state;
+        this.picker
+            .show({ startYear, endYear, selectedYear, selectedMonth })
+            .then(({ year, month }) => {
+                this.setState({
+                    selectedYear: year,
+                    selectedMonth: month,
+                }, () => {
+                    this.getTeamTargets();
+                })
+            })
+    }
+
     render() {
         const {
-            formData,
-            checkValidation,
             dropDown,
             armsUserId,
             rows,
-            loading
+            loading,
+            selectedMonth,
+            selectedYear
         } = this.state
         return (
             !loading ?
@@ -149,10 +169,13 @@ class TeamTargets extends Component {
                             {/* **************************************** */}
                             <View style={[AppStyles.mainInputWrap]}>
                                 <View style={[AppStyles.inputWrap]}>
-                                    <MonthPicker date={formData.date} mode='date' placeholder='Select Date' onDateChange={(value) => { this.handleForm(value, 'date') }} />
-                                    {
-                                        checkValidation === true && formData.date === '' && <ErrorMessage errorMessage={'Required'} />
-                                    }
+                                    <TouchableOpacity onPress={() => this.showPicker()} style={styles.input}>
+                                        <Image style={{ width: 26, height: 26 }} source={require('../../../assets/img/calendar.png')} />
+                                        <Text style={styles.inputText}>
+                                            {this.months[selectedMonth - 1]} {selectedYear}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <MonthPicker ref={(picker) => this.picker = picker} />
                                 </View>
                             </View>
                         </View>

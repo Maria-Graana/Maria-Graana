@@ -4,7 +4,6 @@ import { View, FlatList, Image } from 'react-native';
 import { connect } from 'react-redux';
 import TeamTile from '../../components/TeamTile'
 import AppStyles from '../../AppStyles'
-import StaticData from '../../StaticData';
 import axios from 'axios';
 
 class TeamDiary extends React.Component {
@@ -19,7 +18,6 @@ class TeamDiary extends React.Component {
     fetchTeam = () => {
         axios.get('/api/user/agents')
             .then((res) => {
-                // console.log(res.data)
                 this.setState({
                     teamDiary: res.data
                 })
@@ -31,7 +29,6 @@ class TeamDiary extends React.Component {
     }
 
     navigateTo = (data) => {
-        console.log(data)
         this.props.navigation.navigate('Diary', { agentId: data.id, screen: 'TeamDiary' })
     }
 

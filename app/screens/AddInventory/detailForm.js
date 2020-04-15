@@ -65,7 +65,8 @@ class DetailForm extends Component {
             buttonDisabled
         } = this.props
 
-     //console.log(imagesData);
+        const { size_unit} = this.props.formData;
+
         return (
 
             <View>
@@ -119,7 +120,7 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <PickerComponent onValueChange={handleForm} name={'size_unit'} selectedItem={formData.size_unit} data={sizeUnit} value={''} placeholder='Size Unit' />
+                            <PickerComponent onValueChange={handleForm} name={'size_unit'} selectedItem={size_unit} data={sizeUnit}  placeholder='Size Unit' />
                             {
                                 checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
                             }
@@ -131,7 +132,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.inputWrap]}>
                             <TextInput onChangeText={(text) => { handleForm(text, 'size') }} value={formData.size} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
                             {
-                                checkValidation === true && formData.size === '' && <ErrorMessage errorMessage={'Required'} />
+                                checkValidation === true && formData.size === null && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                     </View>
@@ -166,7 +167,7 @@ class DetailForm extends Component {
                     </View>
                     {/* **************************************** */}
 
-                    <Text style={styles.countPrice}>{formatPrice(price)}</Text>
+                    <Text style={[styles.countPrice,{textAlignVertical:'center'}]}>{formatPrice(price)}</Text>
 
 
                 </View>

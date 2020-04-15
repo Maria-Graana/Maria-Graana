@@ -29,7 +29,7 @@ import ChangePassword from '../screens/ChangePassword';
 
 const Stack = createStackNavigator();
 
-const _format = 'MMMM YYYY';
+const _format = 'DD MMMM YYYY';
 const _today = moment(new Date().dateString).format(_format);
 
 const headerStyle = {
@@ -97,7 +97,7 @@ function MainStack() {
             />
             <Stack.Screen name='AddInventory' component={AddInventory}
                 options={({ navigation, route }) => ({
-                    title: 'ADD PROPERTIES',
+                    title: 'ADD PROPERTY',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -105,7 +105,7 @@ function MainStack() {
             />
             <Stack.Screen name='AddCMLead' component={AddCMLead}
                 options={({ navigation, route }) => ({
-                    title: 'CREATE CM LEAD',
+                    title: 'CREATE INVESTMENT LEAD',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -113,7 +113,7 @@ function MainStack() {
             />
             <Stack.Screen name='AddRCMLead' component={AddRCMLead}
                 options={({ navigation, route }) => ({
-                    title: 'CREATE RCM LEAD',
+                    title: 'CREATE BUY/RENT LEAD',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -169,7 +169,7 @@ function MainStack() {
             />
             <Stack.Screen name='CMLeadTabs' component={CMLeadTabs}
                 options={({ navigation, route }) => ({
-                    title: 'LEAD WORKFLOW',
+                    title: 'Calls/Meetings',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -198,7 +198,7 @@ function MainStack() {
             />
             <Stack.Screen name='TeamTargets' component={TeamTargets}
                 options={({ navigation, route }) => ({
-                    title: 'TARGETS',
+                    title: 'SET TARGETS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

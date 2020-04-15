@@ -29,10 +29,8 @@ class PropertyDetail extends React.Component {
         const size = property.size;
         const sizeUnit = property.size_unit.charAt(0).toUpperCase() + property.size_unit.slice(1);
         const purpose = property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1);;
-        const demandPrice = formatPrice(property.price);
+        const demandPrice = property.price===null ? '0' : formatPrice(property.price);
         const grade = property.grade === null ? '' : property.grade;
-        const bed = property.bed;
-        const bath = property.bath;
         const lattitude = property.lat === null ? ' ' : property.lat + '/';
         const longitude = property.lng === null ? ' ' : property.lng;
         const ownerName = property.customer !==null && property.customer.first_name;
@@ -80,9 +78,9 @@ class PropertyDetail extends React.Component {
                         {type === 'Residential' &&
                             <View>
                                 <Text style={styles.headingText}> Beds </Text>
-                                <Text style={styles.labelText}> {bed + ' Bed(s)'} </Text>
+                                <Text style={styles.labelText}> {property.bed === null ? '0' + ' Bed(s)' : String(property.bed) + ' Bed(s)'} </Text>
                                 <Text style={styles.headingText}> Baths </Text>
-                                <Text style={styles.labelText}> {bath + ' Bath(s)'} </Text>
+                                <Text style={styles.labelText}> {property.bath === null ? '0' + ' Bed(s)' : String(property.bath) + ' Bath(s)'} </Text>
                             </View>
                         }
 

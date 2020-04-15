@@ -201,7 +201,7 @@ class LeadPropsure extends React.Component {
     renderPropsurePendingView = (item) => {
         return item.propsures.map(propsure => {
             return (
-                <TouchableOpacity key={item.id.toString()} onPress={propsure.status === 'pending' ? () => this.showDocumentModal(propsure.id) : () => alert('Property is already verified!')}
+                <TouchableOpacity key={item.id.toString()} onPress={propsure.status === 'pending' ? () => this.showDocumentModal(propsure.id) : null }
                     style={[styles.viewButtonStyle, { backgroundColor: propsure.status === 'pending' ? '#FCD12A' : AppStyles.colors.primaryColor }]} activeOpacity={0.7}>
                     <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>
                         {

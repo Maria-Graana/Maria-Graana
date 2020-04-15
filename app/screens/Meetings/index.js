@@ -27,6 +27,7 @@ class Meetings extends Component {
       doneStatusId: '',
       editMeeting: false,
       meetingId: '',
+      modalStatus: 'dropdown'
     }
   }
 
@@ -93,6 +94,14 @@ class Meetings extends Component {
     this.setState({
       doneStatus: !this.state.doneStatus,
       doneStatusId: data,
+      modalStatus: 'dropdown'
+    })
+  }
+
+  openAttechment = () => {
+    this.setState({
+      modalStatus: 'btnOptions',
+      doneStatus: !this.state.doneStatus,
     })
   }
 
@@ -102,12 +111,12 @@ class Meetings extends Component {
     }
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
-      .then((res) => {
-        this.getMeetingLead();
-        this.setState({
-          doneStatus: !this.state.doneStatus,
+        .then((res) => {
+          this.getMeetingLead();
+          this.setState({
+            doneStatus: !this.state.doneStatus,
+          })
         })
-      })
     } else {
       axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
         .then((res) => {
@@ -169,8 +178,27 @@ class Meetings extends Component {
     })
   }
 
+  goToDiaryForm = () => {
+    const { navigation, route } = this.props;
+    navigation.navigate('AddDiary', {
+      update: false,
+      leadId: route.params.lead
+    });
+  }
+
+  goToAttachments = () => {
+    const { navigation, route } = this.props;
+    console.log(route.params.lead)
+    navigation.navigate('Attachments', { leadId: route.params.lead.id });
+  }
+
+  goToComments = () => {
+    const { navigation, route } = this.props;
+    navigation.navigate('Comments', { leadId: route.params.lead });
+  }
+
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId } = this.state
+    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus } = this.state
     return (
       <View style={styles.mainWrapCon}>
 
@@ -215,7 +243,7 @@ class Meetings extends Component {
           active={active}
           style={{ backgroundColor: '#0D73EE' }}
           position="bottomRight"
-          onPress={() => { this.openModal() }}>
+          onPress={() => { this.openAttechment() }}>
           <Ionicons name="md-add" color="#ffffff" />
         </Fab>
 
@@ -234,6 +262,11 @@ class Meetings extends Component {
           doneStatus={doneStatus}
           sendStatus={this.sendStatus}
           data={doneStatusId}
+          openStatus={this.openStatus}
+          modalType={modalStatus}
+          goToDiaryForm={this.goToDiaryForm}
+          goToAttachments={this.goToAttachments}
+          goToComments={this.goToComments}
         />
 
       </View>

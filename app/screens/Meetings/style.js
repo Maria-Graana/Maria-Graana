@@ -3,13 +3,12 @@ export default styles = StyleSheet.create({
   meetingConteiner: {
     marginTop: 0,
     padding: 15,
-    maxHeight: '80%',
   },
   mainWrapCon: {
     minHeight: '100%',
   },
   paddBottom: {
-    paddingBottom: 250,
+    // paddingBottom: 250,
   },
   callMeetingBtn: {
     flexDirection: 'row',

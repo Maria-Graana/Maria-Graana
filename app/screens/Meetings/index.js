@@ -102,7 +102,6 @@ class Meetings extends Component {
     }
     axios.patch(`/api/diary/update?id=${this.state.doneStatusId}`, body)
       .then((res) => {
-       
         this.getMeetingLead();
         this.setState({
           doneStatus: !this.state.doneStatus,
@@ -148,7 +147,6 @@ class Meetings extends Component {
   editFunction = (id) => {
     const { meetings, active } = this.state
     let filter = meetings.rows.filter((item) => { return item.id === id && item })
-    console.log(filter[0].date)
     this.setState({
       active: !active,
       formData: {

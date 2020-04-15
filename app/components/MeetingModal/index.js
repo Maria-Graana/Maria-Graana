@@ -49,7 +49,7 @@ class MeetingModal extends React.Component {
               <Button
                 onPress={() => { formSubmit() }}
                 style={[AppStyles.formBtn, styles.addInvenBtn]}>
-                <Text style={AppStyles.btnText}>ADD Meeting</Text>
+                <Text style={AppStyles.btnText}>ADD MEETING</Text>
               </Button>
             </View>
 

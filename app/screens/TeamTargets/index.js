@@ -15,7 +15,7 @@ import moment from 'moment'
 
 class TeamTargets extends Component {
     months = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
+        "July", "August", "September", "October", "November", "December"];
     constructor(props) {
         super(props)
         this.state = {
@@ -31,7 +31,7 @@ class TeamTargets extends Component {
             },
             dropDown: false,
             armsUserId: '',
-          
+
         }
     }
 
@@ -166,18 +166,13 @@ class TeamTargets extends Component {
                 <View style={[AppStyles.container, styles.bgcWhite, { paddingLeft: 0, paddingRight: 0 }]}>
                     <View style={[styles.targetMain]}>
                         <View style={[styles.formMain, { marginLeft: 15, marginRight: 15 }]}>
-                            {/* **************************************** */}
-                            <View style={[AppStyles.mainInputWrap]}>
-                                <View style={[AppStyles.inputWrap]}>
-                                    <TouchableOpacity onPress={() => this.showPicker()} style={styles.input}>
-                                        <Image style={{ width: 26, height: 26 }} source={require('../../../assets/img/calendar.png')} />
-                                        <Text style={styles.inputText}>
-                                            {this.months[selectedMonth - 1]} {selectedYear}
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <MonthPicker ref={(picker) => this.picker = picker} />
-                                </View>
-                            </View>
+                            <TouchableOpacity onPress={() => this.showPicker()} style={styles.input}>
+                                <Image style={{ width: 26, height: 26 }} source={require('../../../assets/img/calendar.png')} />
+                                <Text style={styles.inputText}>
+                                    {this.months[selectedMonth - 1]} {selectedYear}
+                                </Text>
+                            </TouchableOpacity>
+                            <MonthPicker ref={(picker) => this.picker = picker} />
                         </View>
                     </View>
                     <FlatList contentContainerStyle={{ flexGrow: 1 }}

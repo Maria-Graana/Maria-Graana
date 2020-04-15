@@ -1,14 +1,16 @@
 import React from 'react'
-import { View, Text, } from 'react-native'
+import { View, Text, KeyboardAvoidingView} from 'react-native'
 import { Button, Textarea } from 'native-base';
 import AppStyles from '../../AppStyles';
 import styles from './styles'
+
+
 
 const AddComment = (props) => {
     const { comment,setComment, onPress } = props;
     return (
 
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container}>
             <Textarea
                 placeholderTextColor="#bfbbbb"
                 style={[AppStyles.formControl, AppStyles.formFontSettings, { height: 150, paddingRight: 20,  
@@ -29,7 +31,7 @@ const AddComment = (props) => {
             </View>
 
 
-        </View>
+        </KeyboardAvoidingView>
 
 
 

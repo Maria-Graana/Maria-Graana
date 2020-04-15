@@ -77,7 +77,7 @@ class Attachments extends Component {
         const { leadId } = route.params;
         axios.get(`/api/leads/comments?rcmLeadId=${leadId}&type=attachment`).then(response => {
             // console.log(response.data);
-            this.setState({ attachmentRows: response.data, loading: false });
+            this.setState({ attachmentRows: response.data, loading: false , checkValidation:false});
         }).catch(error => {
             console.log(error);
         })

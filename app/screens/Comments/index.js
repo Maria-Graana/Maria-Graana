@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { View, FlatList, Alert, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
+import { View, FlatList, Alert, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import axios from 'axios';
 import _ from 'underscore';
 import AppStyles from '../../AppStyles';
 import AddComment from './addComment';
 import CommentTile from '../../components/CommentTile'
 import Loader from '../../components/loader'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 class Comments extends Component {
     comments = [];
@@ -86,10 +86,10 @@ class Comments extends Component {
         const { commentsList, loading, comment } = this.state;
         return (
             !loading ?
-                <KeyboardAvoidingView style={[AppStyles.container, { paddingHorizontal: 0 }]} keyboardVerticalOffset={80} behavior='padding'  >
+                <KeyboardAwareScrollView style={[AppStyles.container, { paddingHorizontal: 0, marginBottom: 25 }]} >
                     <FlatList
+                        contentContainerStyle={{ flexGrow: 1 }}
                         ref={r => (this.flatList = r)}
-                        onContentSizeChange={() => { this.flatList.scrollToEnd({ animated: true }) }}
                         data={commentsList}
                         renderItem={({ item }) => (
                             <CommentTile
@@ -102,7 +102,7 @@ class Comments extends Component {
                     <AddComment onPress={this.addComment}
                         comment={comment}
                         setComment={this.setComment} />
-                </KeyboardAvoidingView>
+                </KeyboardAwareScrollView>
                 :
                 <Loader loading={loading} />
         )

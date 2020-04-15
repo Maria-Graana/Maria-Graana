@@ -10,9 +10,10 @@ const AddComment = (props) => {
     const { comment,setComment, onPress } = props;
     return (
 
-        <KeyboardAvoidingView style={styles.container}>
+        <View style={[styles.container]}>
             <Textarea
                 placeholderTextColor="#bfbbbb"
+                autoFocus
                 style={[AppStyles.formControl, AppStyles.formFontSettings, { height: 150, paddingRight: 20,  
                     elevation: 10,
                     shadowOffset: { width: 5, height: 5 },
@@ -31,7 +32,7 @@ const AddComment = (props) => {
             </View>
 
 
-        </KeyboardAvoidingView>
+        </View>
 
 
 

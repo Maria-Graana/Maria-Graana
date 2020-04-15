@@ -13,7 +13,6 @@ export default styles = StyleSheet.create({
         fontFamily: AppStyles.fonts.lightFont
     },
     padLeft: {
-        marginLeft: 10,
         paddingBottom: 2
     },
     labelText: {
@@ -58,4 +57,18 @@ export default styles = StyleSheet.create({
         paddingRight: 20,
         fontSize: 12,
     },
+    mainView: {
+        borderColor: AppStyles.colors.primaryColor,
+        height: 20,
+        width: 80,
+        borderWidth: 1,
+        borderRadius: 10,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    textStyle: {
+        fontSize: 12,
+        fontFamily: AppStyles.fonts.defaultFont,
+        color: AppStyles.colors.primaryColor
+    }
 });

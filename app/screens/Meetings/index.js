@@ -56,7 +56,7 @@ class Meetings extends Component {
     } else {
       if (editMeeting === true) {
         console.log(meetingId, formData)
-        axios.patch(`api/diary/update?id=${meetingId}`, formData)
+        axios.patch(`/api/diary/update?id=${meetingId}`, formData)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
             this.getMeetingLead();
@@ -100,7 +100,8 @@ class Meetings extends Component {
     let body = {
       status: status
     }
-    axios.patch(`/api/diary/update?id=${this.state.doneStatusId}`, body)
+    if (status === 'cancel_meeting') {
+      axios.delete(`/api/diary/delete?id=${this.state.doneStatusId}`)
       .then((res) => {
         this.getMeetingLead();
         this.setState({
@@ -108,6 +109,17 @@ class Meetings extends Component {
           doneStatusId: '',
         })
       })
+    } else {
+      axios.patch(`/api/diary/update?id=${this.state.doneStatusId}`, body)
+        .then((res) => {
+          this.getMeetingLead();
+          this.setState({
+            doneStatus: !this.state.doneStatus,
+            doneStatusId: '',
+          })
+        })
+    }
+
   }
 
   sendCallStatus = () => {

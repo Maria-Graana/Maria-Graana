@@ -40,10 +40,19 @@ class ClientDetail extends React.Component {
                         <Text style={styles.labelText}>{client.contact1} </Text>
                         <Text style={styles.headingText}>Email </Text>
                         <Text style={styles.labelText}>{client.email} </Text>
-                        <Text style={styles.headingText}>CNIC </Text>
-                        <Text style={styles.labelText}>{client.cnic && helper.normalizeCnic(client.cnic)} </Text>
+                        {
+                            client.cnic ?
+                                <View>
+                                    <Text style={styles.headingText}>CNIC </Text>
+                                    <Text style={styles.labelText}>{client.cnic && helper.normalizeCnic(client.cnic)}</Text>
+                                </View>
+                                :
+                                null
+                        }
                         <Text style={styles.headingText}>Address </Text>
                         <Text style={styles.labelText}>{client.address} </Text>
+                        <Text style={styles.headingText}>Secondary Address</Text>
+                        <Text style={styles.labelText}>{client.secondary_address} </Text>
                     </View>
                     <View style={styles.pad}>
                         {

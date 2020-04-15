@@ -102,6 +102,7 @@ class AddDiary extends Component {
     }
 
     addDiary = (data) => {
+        console.log(data)
         const { route, navigation } = this.props;
         const { leadId } = route.params;
         let diary = this.generatePayload(data)

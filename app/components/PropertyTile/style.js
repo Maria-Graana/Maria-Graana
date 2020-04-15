@@ -63,14 +63,13 @@ export default styles = StyleSheet.create({
   },
   phoneButton: {
     alignSelf: 'flex-end',
-    marginRight:wp('1%')
+    marginRight:wp('1%'),
   },
   bedBathViewStyle: {
     flex:1,
     flexDirection: 'row',
-    paddingTop: hp('2%'),
     paddingLeft: wp('0.5%'),
-    alignItems: 'center'
+    alignItems: 'flex-end',
   },
   bedTextStyle: {
     fontFamily: AppStyles.fonts.semiBoldFont,

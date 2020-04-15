@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import styles from './style'
 import MeetingTile from '../../components/MeetingTile'
 import MeetingModal from '../../components/MeetingModal'
+import MeetingStatusModal from '../../components/MeetingStatusModal'
 import moment from 'moment'
 import helper from '../../helper';
 
@@ -55,7 +56,6 @@ class Meetings extends Component {
       this.setState({ checkValidation: true })
     } else {
       if (editMeeting === true) {
-        console.log(meetingId, formData)
         axios.patch(`/api/diary/update?id=${meetingId}`, formData)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
@@ -89,10 +89,10 @@ class Meetings extends Component {
       })
   }
 
-  openStatus = (id) => {
+  openStatus = (data) => {
     this.setState({
       doneStatus: !this.state.doneStatus,
-      doneStatusId: id,
+      doneStatusId: data,
     })
   }
 
@@ -101,21 +101,19 @@ class Meetings extends Component {
       status: status
     }
     if (status === 'cancel_meeting') {
-      axios.delete(`/api/diary/delete?id=${this.state.doneStatusId}`)
+      axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
       .then((res) => {
         this.getMeetingLead();
         this.setState({
           doneStatus: !this.state.doneStatus,
-          doneStatusId: '',
         })
       })
     } else {
-      axios.patch(`/api/diary/update?id=${this.state.doneStatusId}`, body)
+      axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
         .then((res) => {
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
-            doneStatusId: '',
           })
         })
     }
@@ -229,6 +227,13 @@ class Meetings extends Component {
           openModal={this.openModal}
           handleForm={this.handleForm}
           formSubmit={this.formSubmit}
+        />
+
+        {/* ************Modal Component************ */}
+        <MeetingStatusModal
+          doneStatus={doneStatus}
+          sendStatus={this.sendStatus}
+          data={doneStatusId}
         />
 
       </View>

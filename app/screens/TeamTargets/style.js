@@ -50,7 +50,6 @@ export default styles = StyleSheet.create({
         // justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#fff',
-        padding: 10,
         borderRadius: 4,
       },
       inputText: {

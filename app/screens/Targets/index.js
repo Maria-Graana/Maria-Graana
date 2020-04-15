@@ -29,7 +29,7 @@ class Targets extends Component {
     }
 
     componentDidMount() {
-     const { navigation } = this.props;
+        const { navigation } = this.props;
         this._unsubscribe = navigation.addListener('focus', () => {
             this.getMyTarget();
         });
@@ -37,7 +37,7 @@ class Targets extends Component {
 
     getMyTarget = () => {
         const { selectedMonth, selectedYear } = this.state;
-        let date = `${selectedYear}-${moment().month(selectedMonth-1).format('MM')}-${moment().format('D')}`;
+        let date = `${selectedYear}-${moment().month(selectedMonth - 1).format('MM')}-${moment().format('D')}`;
         this.setState({ loading: true })
         axios.get(`/api/user/mytarget?date=${date}`).then(response => {
             if (response.status === 200 && response.data) {
@@ -82,6 +82,7 @@ class Targets extends Component {
         return (
             !loading ?
                 <View style={[AppStyles.container]}>
+                    <MonthPicker ref={(picker) => this.picker = picker} />
                     <ScrollView>
                         <View style={[styles.targetMain]}>
                             <View style={[styles.formMain]}>
@@ -94,7 +95,6 @@ class Targets extends Component {
                                                 {this.months[selectedMonth - 1]} {selectedYear}
                                             </Text>
                                         </TouchableOpacity>
-                                        <MonthPicker ref={(picker) => this.picker = picker} />
                                     </View>
                                 </View>
                             </View>

@@ -13,7 +13,7 @@ class Avatar extends React.Component {
             let name = data.firstName[0] + data.lastName[0]
             return name.toLocaleUpperCase()
         } else if (data.firstName && data.firstName !== '') {
-            let name = data.firstName[0] + data.lastName[0]
+            let name = data.firstName[0] + data.firstName[1]
             return name.toLocaleUpperCase()
         } else {
             return ''

@@ -4,14 +4,14 @@ import {
   Picker,
   Text,
   StyleSheet,
-  Modal,
-  SafeAreaView,
   TouchableOpacity,
-  Platform,
+  SafeAreaView,
+  Modal,
+  Platform
 } from 'react-native';
-import AppStyles from '../../AppStyles';
-import { AntDesign } from '@expo/vector-icons';
 import moment from 'moment'
+import AppStyles from '../../AppStyles'
+import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 
 
 class MonthPicker extends Component {
@@ -114,50 +114,39 @@ class MonthPicker extends Component {
       <Modal
         visible={visible}
         animationType="slide"
-      // onRequestClose={closeModal}
       >
         <SafeAreaView style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}>
           <AntDesign style={styles.closeStyle} onPress={this.onCancelPress} name="close" size={26} color={AppStyles.colors.textColor} />
           <View style={[styles.viewContainer]}>
-            <TouchableOpacity
-              style={styles.modal}
-              onPress={this.onCancelPress}
-            >
-              <View
-                style={styles.outerContainer}
+            <View style={styles.innerContainer}>
+              <Picker
+                style={[styles.picker]}
+                selectedValue={selectedYear}
+                mode="dropdown"
+                onValueChange={(itemValue, itemIndex) => this.setState({ selectedYear: itemValue }, () => {
+                })}
               >
-                <View style={styles.toolBar}>
-                  <TouchableOpacity style={styles.toolBarButton} onPress={this.onCancelPress}>
-                    <Text style={styles.toolBarButtonText}>Cancel</Text>
-                  </TouchableOpacity>
-                  <View style={{ flex: 1 }} />
-                  <TouchableOpacity style={styles.toolBarButton} onPress={this.onConfirmPress}>
-                    <Text style={styles.toolBarButtonText}>Confirm</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.innerContainer}>
-                  <Picker
-                    style={styles.picker}
-                    selectedValue={selectedYear}
-                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedYear: itemValue }, () => {
-                    })}
-                  >
-                    {this.renderPickerItems(years)}
-                  </Picker>
-                  <Picker
-                    style={styles.picker}
-                    selectedValue={selectedMonth}
-                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedMonth: itemValue }, () => {
-                    })}
-                  >
-                    {this.renderMonthPickerItems(months)}
-                  </Picker>
-                </View>
-              </View>
-            </TouchableOpacity>
-
-
-
+                {this.renderPickerItems(years)}
+              </Picker>
+              <Picker
+                style={styles.picker}
+                selectedValue={selectedMonth}
+                mode="dropdown"
+                onValueChange={(itemValue, itemIndex) => this.setState({ selectedMonth: itemValue }, () => {
+                })}
+              >
+                {this.renderMonthPickerItems(months)}
+              </Picker>
+            </View>
+            <View style={styles.toolBar}>
+              <TouchableOpacity style={styles.toolBarButton} onPress={this.onCancelPress}>
+                <Text style={styles.toolBarButtonText}>CANCEL</Text>
+              </TouchableOpacity>
+              <View style={{ flex: 1 }} />
+              <TouchableOpacity style={styles.toolBarButton} onPress={this.onConfirmPress}>
+                <Text style={styles.toolBarButtonText}>CONFIRM</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </SafeAreaView>
       </Modal>
@@ -170,6 +159,7 @@ const styles = StyleSheet.create({
     marginLeft: 25,
     marginRight: 25,
     justifyContent: 'center',
+    backgroundColor: 'white'
   },
   closeStyle: {
     position: 'absolute',
@@ -177,25 +167,8 @@ const styles = StyleSheet.create({
     top: Platform.OS == 'android' ? 10 : 40,
     paddingVertical: 5
   },
-  modal: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  outerContainer: {
-    backgroundColor: 'white',
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0
-  },
   toolBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     height: 44,
     borderBottomWidth: 1,
     borderColor: '#EBECED',
@@ -210,11 +183,11 @@ const styles = StyleSheet.create({
     color: '#2d4664',
   },
   innerContainer: {
-    flex: 1,
     flexDirection: 'row',
+    marginHorizontal: 15,
   },
   picker: {
-    flex: 1,
+    width: '50%'
   }
 })
 

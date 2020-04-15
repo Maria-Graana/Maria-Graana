@@ -67,6 +67,9 @@ const helper = {
 			helper.errorToast(`No Phone Number`)
 		}
 	},
+	capitalize(str) {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	}
 }
 
 

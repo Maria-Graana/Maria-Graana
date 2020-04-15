@@ -41,8 +41,6 @@ const headerStyle = {
     }
 }
 
-
-
 function MainStack() {
     return (
         <Stack.Navigator
@@ -66,7 +64,7 @@ function MainStack() {
             />
             <Stack.Screen name='TeamDiary' component={TeamDiary}
                 options={({ navigation, route }) => ({
-                    title: 'TEAM DIARY LIST',
+                    title: 'SELECT TEAM MEMBER',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -131,7 +129,7 @@ function MainStack() {
             />
             <Stack.Screen name='AddClient' component={AddClient}
                 options={({ navigation, route }) => ({
-                    title: 'ADD CLIENT INFO',
+                    title: route.params.title,
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -153,7 +151,6 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-
             <Stack.Screen name='LeadDetail' component={LeadDetail}
                 options={({ navigation, route }) => ({
                     title: 'LEAD DETAILS',
@@ -178,7 +175,6 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-
             <Stack.Screen name='Attachments' component={Attachments}
                 options={({ navigation, route }) => ({
                     title: 'ADD ATTACHMENT',
@@ -186,7 +182,6 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-
             <Stack.Screen name='Comments' component={Comments}
                 options={({ navigation, route }) => ({
                     title: 'COMMENTS',
@@ -194,7 +189,6 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-
             <Stack.Screen name='Targets' component={Targets}
                 options={({ navigation, route }) => ({
                     title: 'TARGETS',
@@ -202,7 +196,6 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-
             <Stack.Screen name='TeamTargets' component={TeamTargets}
                 options={({ navigation, route }) => ({
                     title: 'SET TARGETS',
@@ -210,7 +203,6 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-
             <Stack.Screen name='CreateUser' component={CreateUser}
                 options={({ navigation, route }) => ({
                     title: 'CREATE USER',
@@ -218,7 +210,6 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-
             <Stack.Screen name='ChangePassword' component={ChangePassword}
                 options={({ navigation, route }) => ({
                     title: 'CHANGE PASSWORD',
@@ -226,8 +217,6 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-
-
         </Stack.Navigator>
     );
 }

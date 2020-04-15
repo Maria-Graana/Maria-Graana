@@ -5,6 +5,8 @@ export default styles = StyleSheet.create({
         marginBottom: 40,
     },
     textArea: {
+        paddingTop: 15,
         height: 100,
+        color: 'black'
     }
 })

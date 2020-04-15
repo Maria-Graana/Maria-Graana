@@ -1,5 +1,4 @@
-import { StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet, Dimensions } from 'react-native';
 
 export default styles = StyleSheet.create({
     wrapper: {
@@ -36,8 +35,10 @@ export default styles = StyleSheet.create({
         paddingBottom: 5
     },
     logo: {
-        // flex: 1,
-        width: "100%",
+        flex: 1,
+        width: Math.round(Dimensions.get('window').width) - 20,
+        marginLeft: 10,
+        // height: 400,
         resizeMode: "contain",
         // alignSelf: "center"
     },
@@ -92,7 +93,6 @@ export default styles = StyleSheet.create({
     },
     requiredTextColor: {
         color: "red",
-        marginBottom: 5
         // paddingLeft : 
     }
 });

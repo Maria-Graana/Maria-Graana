@@ -24,7 +24,7 @@ export default class DrawerIconItem extends React.Component {
             <TouchableWithoutFeedback
                 activeOpacity={.7}
                 onPress={() => { this.props.navigateTo() }}>
-                <ListItem icon style={{ marginBottom: 15 }}>
+                <ListItem icon style={{ marginBottom: 10 }}>
                     <Body style={{ borderBottomColor: 'white' }}>
                         <Text style={{ color: 'black', fontSize: 15 }}>{screen}</Text>
                     </Body>

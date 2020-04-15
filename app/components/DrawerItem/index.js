@@ -20,7 +20,7 @@ export default class DrawerItem extends React.Component {
         return (
             <TouchableWithoutFeedback
             onPress={() => {this.props.navigateTo()}}>
-                <ListItem icon style={{marginBottom : 20}}>
+                <ListItem icon style={{marginBottom : 10}}>
                     <Body style={{borderBottomColor: 'white'}}>
                         <Text style={{color : 'black', fontSize : 15}}>{screen}</Text>
                     </Body>

@@ -16,6 +16,7 @@ export default styles = StyleSheet.create({
         fontSize: 18, 
         paddingBottom: 5,
         paddingLeft: 5,
+        textAlign: 'left',
         fontFamily: AppStyles.fonts.defaultFont
     },
     outerContainer: { 

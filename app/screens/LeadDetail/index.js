@@ -42,7 +42,7 @@ class LeadDetail extends React.Component {
         const { navigation, route } = this.props
         const { lead } = route.params
         const { type } = this.state
-        if (type === 'Invest') {
+        if (type === 'Investment') {
             navigation.navigate('CMLeadTabs', {
                 screen: 'Meetings',
                 params: { lead: lead },

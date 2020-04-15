@@ -1,4 +1,5 @@
 import { Toast } from 'native-base';
+import { Linking } from 'react-native';
 
 const helper = {
 	successToast(message) {
@@ -51,7 +52,23 @@ const helper = {
 	validateEmail(email) {
 		var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		return re.test(email);
-	}
+	},
+	callNumber(url) {
+		if (url != 'tel:null') {
+			Linking.canOpenURL(url)
+				.then(supported => {
+					if (!supported) {
+						console.log("Can't handle url: " + url);
+					} else {
+						return Linking.openURL(url)
+					}
+				}).catch(err => console.error('An error occurred', err));
+		} else {
+			helper.errorToast(`No Phone Number`)
+		}
+	},
 }
+
+
 
 module.exports = helper;

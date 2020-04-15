@@ -3,17 +3,16 @@ import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   viewButtonStyle: {
-    backgroundColor: 'white',
-    height: 40,
-    borderBottomEndRadius: 10,
-    borderBottomLeftRadius: 10,
-    justifyContent: "center",
-    alignItems: "center"
+    backgroundColor: '#fff',
+        height: 30,
+        borderBottomEndRadius: 10,
+        borderBottomLeftRadius: 10,
+        justifyContent: "center",
+        alignItems: "center"
   },
   buttonTextStyle: {
-    fontFamily: AppStyles.fonts.boldFont,
+    fontFamily: AppStyles.fonts.defaultFont,
     color: AppStyles.colors.primaryColor,
-    letterSpacing: 0.7
   },
   mainBlackWrap: {
     flexDirection: 'row',

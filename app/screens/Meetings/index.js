@@ -24,6 +24,8 @@ class Meetings extends Component {
       checkValidation: false,
       doneStatus: false,
       doneStatusId: '',
+      editMeeting: false,
+      meetingId: '',
     }
   }
 
@@ -47,20 +49,35 @@ class Meetings extends Component {
   }
 
   //  ************ Form submit Function  ************ 
-  formSubmit = () => {
-    const { formData } = this.state
+  formSubmit = (id) => {
+    const { formData, editMeeting, meetingId } = this.state
     if (!formData.time || !formData.date) {
       this.setState({ checkValidation: true })
     } else {
-      axios.post(`api/leads/project/meeting`, formData)
-        .then((res) => {
-          helper.successToast(`Meeting Added`)
-          this.getMeetingLead();
-          this.setState({
-            active: false,
-            formData: { time: '', date: '' }
+      if (editMeeting === true) {
+        console.log(meetingId, formData)
+        axios.patch(`api/diary/update?id=${meetingId}`, formData)
+          .then((res) => {
+            helper.successToast(`Meeting Updated`)
+            this.getMeetingLead();
+            this.setState({
+              active: false,
+              formData: { time: '', date: '' },
+              editMeeting: false,
+            })
           })
-        })
+      } else {
+        axios.post(`api/leads/project/meeting`, formData)
+          .then((res) => {
+            helper.successToast(`Meeting Added`)
+            this.getMeetingLead();
+            this.setState({
+              active: false,
+              formData: { time: '', date: '' }
+            })
+          })
+      }
+
     }
   }
 
@@ -77,7 +94,6 @@ class Meetings extends Component {
       doneStatus: !this.state.doneStatus,
       doneStatusId: id,
     })
-
   }
 
   sendStatus = (status) => {
@@ -86,6 +102,7 @@ class Meetings extends Component {
     }
     axios.patch(`/api/diary/update?id=${this.state.doneStatusId}`, body)
       .then((res) => {
+       
         this.getMeetingLead();
         this.setState({
           doneStatus: !this.state.doneStatus,
@@ -120,12 +137,28 @@ class Meetings extends Component {
             console.log("Can't handle url: " + url);
           } else {
             this.sendCallStatus()
-            return Linking.openURL(url) 
+            return Linking.openURL(url)
           }
         }).catch(err => console.error('An error occurred', err));
     } else {
       helper.errorToast(`No Phone Number`)
     }
+  }
+
+  editFunction = (id) => {
+    const { meetings, active } = this.state
+    let filter = meetings.rows.filter((item) => { return item.id === id && item })
+    console.log(filter[0].date)
+    this.setState({
+      active: !active,
+      formData: {
+        date: filter[0].date,
+        time: filter[0].time,
+        leadId: this.props.route.params.lead.id,
+      },
+      editMeeting: true,
+      meetingId: id,
+    })
   }
 
   render() {
@@ -147,6 +180,7 @@ class Meetings extends Component {
                       sendStatus={this.sendStatus}
                       doneStatus={doneStatus}
                       doneStatusId={doneStatusId}
+                      editFunction={this.editFunction}
                     />
                   )
                 })

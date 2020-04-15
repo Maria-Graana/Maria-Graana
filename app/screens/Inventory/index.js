@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, Image, FlatList, Alert,Text } from 'react-native';
+import { View, Image, FlatList, Alert, Text} from 'react-native';
 import { ActionSheet } from 'native-base';
 import { connect } from 'react-redux';
 import PropertyTile from '../../components/PropertyTile'
@@ -106,6 +106,10 @@ class Inventory extends React.Component {
 			{ cancelable: false })
 	}
 
+	onHandleOnCall = (url) => {
+		helper.callNumber(url);
+	}
+
 
 	render() {
 		const { propertiesList, loading } = this.state;
@@ -139,6 +143,7 @@ class Inventory extends React.Component {
 								data={item}
 								onPress={(data) => this.onHandlePress(data)}
 								onLongPress={(id) => this.onHandleLongPress(id)}
+								onCall={(number) => this.onHandleOnCall(`tel:${number}`)}
 							/>
 						)}
 						ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}

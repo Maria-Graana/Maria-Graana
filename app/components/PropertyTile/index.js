@@ -30,8 +30,9 @@ class InventoryTile extends React.Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, onCall } = this.props;
     const imagesList = data.armsPropertyImages;
+    //console.log(data);
     return (
       <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => this.onLongPress(data.id)} activeOpacity={0.7}>
         <View>
@@ -97,8 +98,13 @@ class InventoryTile extends React.Component {
 
 
         </View>
+        {
+          data.customer && data.customer.phone !== '' ?
+            <Foundation name={'telephone'} onPress={() => onCall(data.customer.phone)} color={AppStyles.colors.subTextColor} size={32} style={styles.phoneButton} />
+            :
+            null
+        }
 
-        <Foundation name={'telephone'} color={AppStyles.colors.subTextColor} size={32} style={styles.phoneButton} />
 
       </TouchableOpacity>
 

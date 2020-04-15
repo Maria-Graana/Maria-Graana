@@ -10,6 +10,7 @@ import SortImg from '../../../assets/img/sort.png'
 import LeadTile from '../../components/LeadTile'
 import axios from 'axios';
 import helper from '../../helper'
+import StaticData from '../../StaticData'
 
 
 class Inventory extends React.Component {
@@ -128,7 +129,7 @@ class Inventory extends React.Component {
 
 	render() {
 		const { selectInventory, dropDownId, purposeTab, leadsData } = this.state
-		// console.log(leadsData)
+		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
 			<View>
 
@@ -157,7 +158,7 @@ class Inventory extends React.Component {
 					<View style={styles.pickerMain}>
 						<PickerComponent
 							placeholder={'Lead Status'}
-							data={this.filterData}
+							data={leadStatus}
 							customStyle={styles.pickerStyle}
 							customIconStyle={styles.customIconStyle}
 							onValueChange={this.changeStatus}

@@ -107,7 +107,7 @@ class Meetings extends Component {
 
   sendStatus = (status) => {
     let body = {
-      status: status
+      response: status
     }
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)

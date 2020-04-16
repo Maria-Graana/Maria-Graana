@@ -29,13 +29,13 @@ class MeetingTile extends React.Component {
             </View>
             <View style={[styles.dotsWrap]}>
               {
-                data.taskType === 'called' && data.status != 'pending' &&
-                <Text style={[styles.doneText]}>{data.status}</Text>
+                data.taskType === 'called' && data.response != 'pending' &&
+                <Text style={[styles.doneText]}>{data.response}</Text>
               }
 
               {
                 data.taskType === 'meeting' &&
-                <Text style={[styles.doneText]}>{data.status}</Text>
+                <Text style={[styles.doneText]}>{data.response}</Text>
               }
               <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data) }}>
                 <Image source={dots} style={styles.dotsImg} />

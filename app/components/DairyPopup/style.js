@@ -36,25 +36,21 @@ export default styles = StyleSheet.create({
         flexDirection: 'row',
         paddingVertical: 15,
         paddingHorizontal: 15, 
-        justifyContent:'space-evenly'
-    },
-    markBtn: {
-        backgroundColor: '#ffffff',
-        justifyContent: 'center',
-        borderRadius: 5,
-        marginHorizontal: 10
+        marginTop:10,
+        justifyContent:'space-around'
     },
     disabledBtnStyle: {
         justifyContent: 'center',
         minHeight: 55,
         borderRadius: 4,
         padding: 15,
-        opacity: 0.2,
+        opacity: 0.5,
         width:150,
     },
 
     disabledBtnText: {
-        color: '#333',
+        color: '#999',
+        fontFamily:AppStyles.fonts.semiBoldFont
     },
 
     textStyle:{
@@ -69,7 +65,7 @@ export default styles = StyleSheet.create({
     },
     statusText: {
         fontFamily: AppStyles.fonts.boldFont,
-        width: '22%',
+        width: '30%',
         textAlign: 'center',
         alignSelf:'center',
         fontSize: AppStyles.noramlSize.fontSize,

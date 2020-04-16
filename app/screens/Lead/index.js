@@ -41,15 +41,10 @@ class Inventory extends React.Component {
 	}
 
 	componentDidMount() {
-		const { navigation } = this.props;
-		this._unsubscribe = navigation.addListener('focus', () => {
-			this.fetchLeads('sale', 'all');
-		});
-
+		this.fetchLeads('sale', 'all');
 	}
 
 	componentWillUnmount() {
-		this._unsubscribe();
 	}
 
 	fetchLeads = (purposeTab, statusFilter) => {
@@ -113,19 +108,19 @@ class Inventory extends React.Component {
 	}
 
 	callNumber = (url) => {
-    if (url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then(supported => {
-          if (!supported) {
-            console.log("Can't handle url: " + url);
-          } else {
-            return Linking.openURL(url) 
-          }
-        }).catch(err => console.error('An error occurred', err));
-    } else {
-      helper.errorToast(`No Phone Number`)
-    }
-  }
+		if (url != 'tel:null') {
+			Linking.canOpenURL(url)
+				.then(supported => {
+					if (!supported) {
+						console.log("Can't handle url: " + url);
+					} else {
+						return Linking.openURL(url)
+					}
+				}).catch(err => console.error('An error occurred', err));
+		} else {
+			helper.errorToast(`No Phone Number`)
+		}
+	}
 
 	render() {
 		const { selectInventory, dropDownId, purposeTab, leadsData } = this.state

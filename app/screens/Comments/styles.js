@@ -4,11 +4,6 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 export default styles = StyleSheet.create({
     container: {
-        flex: 1,
-        elevation: 10,
-        shadowOffset: { width: 5, height: 5 },
-        shadowColor: 'lightgrey',
-        shadowOpacity: 1,
         borderRadius: 4,
         marginVertical: hp('1%%'),
         paddingHorizontal: wp('2%'),

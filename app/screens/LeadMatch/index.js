@@ -8,7 +8,6 @@ import Ability from '../../hoc/Ability';
 import { CheckBox } from 'native-base';
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
-import { Fab, Button, Icon } from 'native-base';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import Loader from '../../components/loader';
@@ -16,11 +15,13 @@ import FilterModal from '../../components/FilterModal/index';
 import _ from 'underscore';
 import helper from '../../helper';
 import { setlead } from '../../actions/lead';
+import { FAB } from 'react-native-paper';
 
 class LeadMatch extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            open: false,
             organization: 'arms',
             loading: true,
             matchData: {
@@ -385,35 +386,34 @@ class LeadMatch extends React.Component {
     goToDiaryForm = () => {
         const { navigation, route } = this.props;
         const { lead } = route.params;
-        this.setState({ active: false })
         navigation.navigate('AddDiary', {
             update: false,
             leadId: lead.id
         });
     }
 
-    goToAttachments() {
+    goToAttachments = () => {
         const { navigation, route } = this.props;
         const { lead } = route.params;
-        this.setState({ active: false })
         navigation.navigate('Attachments', { leadId: lead.id });
     }
 
-    goToComments() {
+    goToComments = () => {
         const { navigation, route } = this.props;
         const { lead } = route.params;
-        this.setState({ active: false })
         navigation.navigate('Comments', { leadId: lead.id });
     }
 
+    _onStateChange = ({ open }) => this.setState({ open });
+
     render() {
         // const { user } = this.props
-        const { cities, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, active } = this.state
-        
+        const { cities, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, open } = this.state
+
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
-                    <View style={{ opacity: active ? 0.3 : 1, flex: 1 }}>
+                    <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
                                 <Text style={[(organization === 'arms') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> ARMS </Text>
@@ -444,6 +444,7 @@ class LeadMatch extends React.Component {
                         {
                             matchData.data.length ?
                                 <FlatList
+                                    style={{ height: 135 }}
                                     data={matchData.data}
                                     renderItem={(item, index) => (
                                         <View style={{ marginVertical: 10, marginHorizontal: 15 }}>
@@ -485,23 +486,19 @@ class LeadMatch extends React.Component {
                             :
                             null
                     }
-                    <Fab
-                        active={active}
-                        direction="up"
-                        style={{ backgroundColor: AppStyles.colors.primaryColor }}
-                        position="bottomRight"
-                        onPress={() => this.setState({ active: !active })}>
-                        <Ionicons name="md-add" color="#ffffff" />
-                        <Button style={{ backgroundColor: AppStyles.colors.primary }} activeOpacity={1} onPress={() => { this.goToDiaryForm() }}>
-                            <Icon name="md-calendar" size={20} color={'#fff'} />
-                        </Button>
-                        <Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToAttachments() }}>
-                            <Icon name="md-attach" />
-                        </Button>
-                        <Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToComments() }}>
-                            <FontAwesome name="comment" size={20} color={'#fff'} />
-                        </Button>
-                    </Fab>
+                    <FAB.Group
+                        open={open}
+                        icon="plus"
+                        fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+                        color={AppStyles.bgcWhite.backgroundColor}
+                        actions={[
+                            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+                            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+                            { icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+                        ]}
+                        onStateChange={({ open }) => this.setState({ open })}
+                    />
+
                 </View>
                 :
                 <Loader loading={loading} />

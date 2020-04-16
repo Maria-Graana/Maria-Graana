@@ -30,18 +30,26 @@ const PropsureDocumentPopup = (props) => {
                             <View style={{ alignSelf: 'flex-start', marginTop: 7, marginLeft: 10, flex: 0.1 }}>
                                 <MaterialCommunityIcons name="file-upload-outline" size={32} color={AppStyles.colors.primaryColor} />
                             </View>
-                            <Text style={[AppStyles.formControl, {
+                            <View style={[{
+                                backgroundColor: '#fff',
+                                borderRadius: 4,
+                                borderWidth: 0,
+                                height: 50,
                                 marginHorizontal: 10,
-                                letterSpacing: 1,
                                 flex: 0.9,
-                                fontFamily: AppStyles.fonts.semiBoldFont,
-                                textColor: AppStyles.colors.textColor,
-                                textAlignVertical:'center'
-                            }]}
-                                numberOfLines={2}
-                            >
-                                {selectedFile ? selectedFile.name : 'UPLOAD PROPSURE REPORT'}
-                            </Text>
+                                justifyContent:'center'
+                            }]}>
+
+                                <Text style={[{
+                                    letterSpacing: 1,
+                                    fontFamily: AppStyles.fonts.semiBoldFont,
+                                    color: AppStyles.colors.textColor,
+                                }]}
+                                    numberOfLines={2}
+                                >
+                                    {selectedFile ? selectedFile.name : 'UPLOAD PROPSURE REPORT'}
+                                </Text>
+                            </View>
                         </View>
                         {
                             checkValidation === true && selectedFile === null && <ErrorMessage errorMessage={'Required'} />

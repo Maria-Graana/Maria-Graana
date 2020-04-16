@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, KeyboardAvoidingView, Image, SafeAreaView } from 'react-native';
+import { Text, View, KeyboardAvoidingView, Image, SafeAreaView, Keyboard, TouchableWithoutFeedback, TextInput } from 'react-native';
 import styles from './style';
 import TouchableButton from '../../components/TouchableButton/index';
 import { connect } from 'react-redux';
@@ -31,7 +31,6 @@ class Login extends Component {
 
     submitForm = () => {
         const { formData } = this.state
-        console.log(formData)
         if (!formData.email || !formData.password) {
             this.setState({
                 checkValidation: true
@@ -52,45 +51,39 @@ class Login extends Component {
     }
 
     onFocus = () => {
-        console.log('i am here')
         this.setState({ checkLogin: true })
     }
 
     render() {
         const { checkValidation, formData, checkLogin } = this.state
-        console.log('checkLogin: ', checkLogin)
 
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-                <KeyboardAvoidingView style={{ flex: 1 }}>
-                    <View style={{ flex: 1 }}>
-                        <Image
-                            style={styles.logo}
-                            source={require('../../../assets/img/login.png')}
-                        />
-                    </View>
-                    <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 15 }}>
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+                    <Image
+                        style={styles.logo}
+                        source={require('../../../assets/img/login.png')}
+                    />
+                    {
+                        !checkLogin && <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
+                    }
+                    <View style={{ flex: 0.6, marginHorizontal: 15, marginTop: 25 }}>
+                        <Item floatingLabel>
+                            <Label
+                                style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}
+                            >USERNAME</Label>
+                            <Input
+                                focus={this.onFocus}
+                                keyboardType='email-address'
+                                textContentType='emailAddress'
+                                autoCompleteType='email'
+                                onChangeText={(text) => { this.handleForm(text, 'email') }} />
+                        </Item>
                         {
-                            !checkLogin && <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
+                            (checkValidation === true && formData.email === '') ? <ErrorMessage errorMessage={'Required'} />
+                                : <ErrorMessage errorMessage={''} />
                         }
-                        <View>
-                            <Item floatingLabel>
-                                <Label
-                                    style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}
-                                >USERNAME</Label>
-                                <Input
-                                    focus={this.onFocus}
-                                    keyboardType='email-address'
-                                    textContentType='emailAddress'
-                                    autoCompleteType='email'
-                                    onChangeText={(text) => { this.handleForm(text, 'email') }} />
-                            </Item>
-                        </View>
-                        {
-                            (checkValidation === true && formData.email === '') ? <ErrorMessage errorMessage={'Required'}/> 
-                            : <ErrorMessage errorMessage={''}/>
-                        }
-                        <View style={{ marginTop: 0 }}>
+                        <View style={{ marginTop: 10 }}>
                             <Item floatingLabel>
                                 <Label
                                     style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}>
@@ -101,24 +94,27 @@ class Login extends Component {
                             </Item>
                         </View>
                         {
-                            (checkValidation === true && formData.password === '') ? <ErrorMessage errorMessage={'Required'}/> 
-                            : <ErrorMessage errorMessage={''}/>
+                            (checkValidation === true && formData.password === '') ? <ErrorMessage errorMessage={'Required'} />
+                                : <ErrorMessage errorMessage={''} />
                         }
-                        <View style={{ marginTop: 10 }}>
+                        <View style={{ marginTop: 25 }}>
                             <TouchableButton
                                 style={{}}
                                 label='Sign In'
-                                onPress={this.submitForm} 
+                                onPress={this.submitForm}
                                 loading={this.props.loading}
-                                color= 'white'
+                                color='white'
                             />
                         </View>
+                       
                     </View>
-                </KeyboardAvoidingView>
-                <View style={{ alignSelf: 'center', alignItems: 'center', position: 'absolute', bottom: 0, center: 0 }}>
-                    <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
-                </View>
-            </SafeAreaView>
+                    <View style={{ alignSelf: 'center', alignItems: 'center', position: 'absolute', bottom: 0}}>
+                            <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
+                        </View>
+                </SafeAreaView>
+            </TouchableWithoutFeedback>
+
+
         );
     }
     static getDerivedStateFromProps(nextProps, prevState) {

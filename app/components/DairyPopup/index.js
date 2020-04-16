@@ -132,12 +132,12 @@ class DairyPopup extends React.Component {
                         <View style={styles.btnWrap}>
                             {
                                 Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
-                                    <Button
+                                    <Button bordered
                                         onPress={() => { this.inProgress(data, 'inProgress') }}
                                         style={data.status == 'inProgress' ? styles.disabledBtnStyle : [AppStyles.formBtn,{width:150}]}
                                         disabled={data.status == 'inProgress'}
                                     >
-                                        <Text style={data.status == 'inProgress' ? [AppStyles.btnText, styles.disabledBtnText,] : [AppStyles.btnText]}>In Progress</Text>
+                                        <Text style={data.status == 'inProgress' ? [AppStyles.btnText, styles.disabledBtnText,] : [AppStyles.btnText,{ fontFamily:AppStyles.fonts.semiBoldFont}]}>In Progress</Text>
                                     </Button>
                                     :
                                     null
@@ -148,7 +148,7 @@ class DairyPopup extends React.Component {
                                 Ability.canEdit(user.role, screenName) && data.status !== 'completed' ?
                                     <Button onPress={() => { this.markDone(data, 'completed') }}
                                         style={[AppStyles.formBtn,{width:150}]}>
-                                        <Text style={[AppStyles.btnText]}>Done</Text>
+                                    <Text style={[AppStyles.btnText, {fontFamily:AppStyles.fonts.semiBoldFont}]}>Done</Text>
                                     </Button>
                                     :
                                     null

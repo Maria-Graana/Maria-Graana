@@ -14,7 +14,7 @@ const AttachmentTile = (props) => {
             {/*   First Row    */}
             <View style={styles.horizontalContainer}>
                 <Text style={styles.headingStyle}>{data.value}</Text>
-                <TouchableOpacity onPress={() => deleteComment(data.id)} activeOpacity={0.7} >
+                <TouchableOpacity style={{ position: 'absolute', right: 5, top: 5 }} onPress={() => deleteComment(data.id)} activeOpacity={0.7} >
                     <AntDesign name="close" size={18} color={AppStyles.colors.subTextColor} />
                 </TouchableOpacity>
             </View>

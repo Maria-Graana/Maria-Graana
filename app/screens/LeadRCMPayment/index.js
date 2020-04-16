@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
-import { Fab, Button, Icon } from 'native-base';
+import { Button } from 'native-base';
 import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import Loader from '../../components/loader';
@@ -17,6 +17,7 @@ import StaticData from '../../StaticData';
 import { formatPrice } from '../../PriceFormate'
 import { setlead } from '../../actions/lead';
 import RentPaymentView from './rentPaymentView';
+import { FAB } from 'react-native-paper';
 
 class LeadRCMPayment extends React.Component {
     constructor(props) {
@@ -24,7 +25,7 @@ class LeadRCMPayment extends React.Component {
         this.state = {
             loading: true,
             isVisible: false,
-            active: false,
+            open: false,
             allProperties: [],
             selectedProperty: {},
             showSelectPaymentView: false,
@@ -73,12 +74,12 @@ class LeadRCMPayment extends React.Component {
                         selectedReason: '',
                         checkReasonValidation: '',
                     }, () => {
-                         if(lead.commissionPayment!==null){
-                             this.setState({reasons:StaticData.leadCloseReasonsWithPayment})
-                         }
-                         else{
-                            this.setState({reasons:StaticData.leadCloseReasons})
-                         }
+                        if (lead.commissionPayment !== null) {
+                            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment })
+                        }
+                        else {
+                            this.setState({ reasons: StaticData.leadCloseReasons })
+                        }
                     })
                 })
                 .catch((error) => {
@@ -336,24 +337,21 @@ class LeadRCMPayment extends React.Component {
     goToDiaryForm = () => {
         const { navigation } = this.props
         const { lead } = this.state;
-        this.setState({ active: false })
         navigation.navigate('AddDiary', {
             update: false,
             leadId: lead.id
         });
     }
 
-    goToAttachments() {
+    goToAttachments = () => {
         const { navigation } = this.props
         const { lead } = this.state;
-        this.setState({ active: false })
         navigation.navigate('Attachments', { leadId: lead.id });
     }
 
-    goToComments() {
+    goToComments = () => {
         const { navigation } = this.props
         const { lead } = this.state;
-        this.setState({ active: false })
         navigation.navigate('Comments', { leadId: lead.id });
     }
 
@@ -367,7 +365,7 @@ class LeadRCMPayment extends React.Component {
             checkReasonValidation,
             selectedReason,
             reasons,
-            active,
+            open,
             agreedAmount,
             showAgreedAmountArrow,
             showTokenAmountArrow,
@@ -382,7 +380,7 @@ class LeadRCMPayment extends React.Component {
 
         return (
             !loading ?
-                <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.Os == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
+                <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
 
                     <LeadRCMPaymentPopup
                         reasons={reasons}
@@ -393,7 +391,7 @@ class LeadRCMPayment extends React.Component {
                         closeModal={() => this.closeModal()}
                         onPress={this.onHandleCloseLead}
                     />
-                    <View style={{ opacity: active ? 0.3 : 1, flex: 1 }}>
+                    <View style={{ flex: 1 }}>
                         {
                             allProperties.length ?
                                 <FlatList
@@ -482,24 +480,21 @@ class LeadRCMPayment extends React.Component {
                                 <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                         }
 
+                        <FAB.Group
+                            open={open}
+                            icon="plus"
+                            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+                            color={AppStyles.bgcWhite.backgroundColor}
+                            actions={[
+                                { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+                                { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+                                { icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+                            ]}
+                            onStateChange={({ open }) => this.setState({ open })}
+                        />
+
                     </View>
-                    <Fab
-                        active={active}
-                        direction="up"
-                        style={{ backgroundColor: AppStyles.colors.primaryColor }}
-                        position="bottomRight"
-                        onPress={() => this.setState({ active: !active })}>
-                        <Ionicons name="md-add" color="#ffffff" />
-                        <Button style={{ backgroundColor: AppStyles.colors.primary }} activeOpacity={1} onPress={() => { this.goToDiaryForm() }}>
-                            <Icon name="md-calendar" size={20} color={'#fff'} />
-                        </Button>
-                        <Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToAttachments() }}>
-                            <Icon name="md-attach" />
-                        </Button>
-                        <Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToComments() }}>
-                            <FontAwesome name="comment" size={20} color={'#fff'} />
-                        </Button>
-                    </Fab>
+
                 </KeyboardAvoidingView>
 
                 :

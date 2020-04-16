@@ -10,14 +10,15 @@ import axios from 'axios';
 import Loader from '../../components/loader';
 import _ from 'underscore';
 import OfferModal from '../../components/OfferModal'
+import { FAB } from 'react-native-paper';
 
 class LeadOffer extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			open: false,
 			loading: true,
 			modalActive: false,
-			active: false,
 			offersData: [],
 			leadData: {
 				my: '',
@@ -140,22 +141,19 @@ class LeadOffer extends React.Component {
 
 	goToDiaryForm = () => {
 		const { lead, navigation } = this.props
-		this.setState({ active: false })
 		navigation.navigate('AddDiary', {
 			update: false,
 			leadId: lead.id
 		});
 	}
 
-	goToAttachments() {
+	goToAttachments = () => {
 		const { lead, navigation } = this.props
-		this.setState({ active: false })
 		navigation.navigate('Attachments', { leadId: lead.id });
 	}
 
-	goToComments() {
+	goToComments = () => {
 		const { lead, navigation } = this.props
-		this.setState({ active: false })
 		navigation.navigate('Comments', { leadId: lead.id });
 	}
 
@@ -229,11 +227,11 @@ class LeadOffer extends React.Component {
 	}
 
 	render() {
-		const { loading, matchData, user, modalActive, offersData, offerChat, active } = this.state
+		const { loading, matchData, user, modalActive, offersData, offerChat, open } = this.state
 		return (
 			!loading ?
 				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-					<View style={{ opacity: active ? 0.3 : 1, flex: 1 }}>
+					<View style={{ flex: 1 }}>
 						{
 							matchData.length ?
 								<View>
@@ -281,23 +279,19 @@ class LeadOffer extends React.Component {
 								<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
 						}
 					</View>
-					<Fab
-						active={active}
-						direction="up"
-						style={{ backgroundColor: AppStyles.colors.primaryColor }}
-						position="bottomRight"
-						onPress={() => this.setState({ active: !active })}>
-						<Ionicons name="md-add" color="#ffffff" />
-						<Button style={{ backgroundColor: AppStyles.colors.primary }} activeOpacity={1} onPress={() => { this.goToDiaryForm() }}>
-							<Icon name="md-calendar" size={20} color={'#fff'} />
-						</Button>
-						<Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToAttachments() }}>
-							<Icon name="md-attach" />
-						</Button>
-						<Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToComments() }}>
-							<FontAwesome name="comment" size={20} color={'#fff'} />
-						</Button>
-					</Fab>
+					<FAB.Group
+						open={open}
+						icon="plus"
+						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+						color={AppStyles.bgcWhite.backgroundColor}
+						actions={[
+							{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+							{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+							{ icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+						]}
+						onStateChange={({ open }) => this.setState({ open })}
+					/>
+
 				</View>
 				:
 				<Loader loading={loading} />

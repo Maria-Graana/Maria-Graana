@@ -6,6 +6,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { store, persistor } from './app/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { Provider as PaperProvider } from 'react-native-paper';
+
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { SplashScreen } from 'expo';
@@ -60,7 +62,9 @@ export default class App extends React.Component {
 				<PersistGate loading={null} persistor={persistor}>
 					<SafeAreaProvider>
 						<Root>
-							<RootStack />
+							<PaperProvider>
+								<RootStack />
+							</PaperProvider>
 						</Root>
 					</SafeAreaProvider>
 				</PersistGate>

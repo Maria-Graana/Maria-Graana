@@ -4,6 +4,7 @@ import {
     Text,
     Modal,
     SafeAreaView,
+    ScrollView,
     TouchableOpacity
 } from 'react-native'
 import { Button, } from 'native-base';
@@ -13,6 +14,8 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles';
 import Ability from '../../hoc/Ability';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
+
 
 
 class DairyPopup extends React.Component {
@@ -87,15 +90,15 @@ class DairyPopup extends React.Component {
                         <View style={styles.horizontalWrapStyle}>
                             <Text style={styles.textStyle}>{data.subject} </Text>
                             {
-                                 data.taskType !== 'dayTask' && data.taskType !== 'weekly' &&
-                                Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress'  ?
-                                < MaterialCommunityIcons onPress={() => this.updateDiary(data)} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
+                                data.taskType !== 'dayTask' && data.taskType !== 'weekly' &&
+                                    Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
+                                    < MaterialCommunityIcons onPress={() => this.updateDiary(data)} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                                     : null
                             }
 
 
                         </View>
-                        <Text style={styles.textStyle}>{data.taskType !== undefined && data.taskType.charAt(0).toUpperCase() + data.taskType.slice(1)}</Text>
+                        <Text style={[styles.textStyle, { paddingHorizontal: 15 }]}>{data.taskType !== undefined && data.taskType.charAt(0).toUpperCase() + data.taskType.slice(1)}</Text>
 
                         <View style={styles.horizontalWrapStyle}>
                             <Text style={styles.textStyle}>{moment.utc(data.start).format('hh:mm a')} - {moment.utc(data.end).format("hh:mm a")} </Text>
@@ -117,9 +120,13 @@ class DairyPopup extends React.Component {
                         />
 
                         {
-                            data.notes ? <Text style={[styles.textStyle, { fontSize: AppStyles.fontSize.medium, paddingBottom: 15, }]}>
-                                {data.notes}
-                            </Text> : null
+                            data.notes ?
+                                <ScrollView style={{ minHeight: 20, maxHeight: 200 }} >
+                                    <Text style={[styles.textStyle, { fontSize: AppStyles.fontSize.medium, paddingHorizontal: 15 }]}>
+                                        {data.notes}
+                                    </Text>
+                                </ScrollView>
+                                : null
                         }
 
                         <View style={styles.btnWrap}>
@@ -127,10 +134,10 @@ class DairyPopup extends React.Component {
                                 Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
                                     <Button
                                         onPress={() => { this.inProgress(data, 'inProgress') }}
-                                        style={data.status == 'inProgress' ? styles.disabledBtnStyle : [AppStyles.formBtn, { width: 120, minHeight: 45, marginHorizontal: 15 }]}
+                                        style={data.status == 'inProgress' ? styles.disabledBtnStyle : [AppStyles.formBtn,{width:150}]}
                                         disabled={data.status == 'inProgress'}
                                     >
-                                        <Text style={data.status == 'inProgress' ? [AppStyles.btnText, styles.disabledBtnText,] : [AppStyles.btnText, { fontSize: 14 }]}>In Progress</Text>
+                                        <Text style={data.status == 'inProgress' ? [AppStyles.btnText, styles.disabledBtnText,] : [AppStyles.btnText]}>In Progress</Text>
                                     </Button>
                                     :
                                     null
@@ -140,8 +147,8 @@ class DairyPopup extends React.Component {
                             {
                                 Ability.canEdit(user.role, screenName) && data.status !== 'completed' ?
                                     <Button onPress={() => { this.markDone(data, 'completed') }}
-                                        style={[AppStyles.formBtn, { width: 100, minHeight: 45 }]}>
-                                        <Text style={[AppStyles.btnText, { fontSize: 14 }]}>Done</Text>
+                                        style={[AppStyles.formBtn,{width:150}]}>
+                                        <Text style={[AppStyles.btnText]}>Done</Text>
                                     </Button>
                                     :
                                     null

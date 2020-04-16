@@ -102,7 +102,6 @@ class AddDiary extends Component {
     }
 
     addDiary = (data) => {
-        console.log(data)
         const { route, navigation } = this.props;
         const { leadId } = route.params;
         let diary = this.generatePayload(data)
@@ -162,6 +161,7 @@ class AddDiary extends Component {
                 this.props.navigation.navigate('Diary', { update: false, 'agentId': this.props.route.params.agentId })
             })
             .catch((error) => {
+                //console.log('error', error)
                 helper.errorToast('ERROR: UPDATING TASK')
                 console.log(error)
             })

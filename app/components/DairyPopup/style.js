@@ -3,18 +3,10 @@ import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
     viewContainer: {
-        backgroundColor: 'white',
-        marginLeft: 15, 
-        marginRight: 15,
-        paddingHorizontal: 15, 
-        paddingTop: 10,
-        zIndex:5,
-        elevation:5,
-        shadowOffset: { width: 5, height: 5 },
-        shadowColor: 'lightgrey',
-        shadowOpacity: 1,
-        borderRadius: 20,
-        
+        backgroundColor:'white',
+        marginLeft: 25,
+        marginRight: 25,
+        paddingTop:10
     },
     closeStyle: {
         position: 'absolute',
@@ -43,28 +35,26 @@ export default styles = StyleSheet.create({
     btnWrap: {
         flexDirection: 'row',
         paddingVertical: 15,
-        alignSelf:'flex-end',
+        paddingHorizontal: 15, 
+        justifyContent:'space-evenly'
     },
     markBtn: {
         backgroundColor: '#ffffff',
-        height: 50,
         justifyContent: 'center',
         borderRadius: 5,
-        width: 100,
         marginHorizontal: 10
     },
     disabledBtnStyle: {
-        opacity: 0.3,
-        height: 50,
         justifyContent: 'center',
-        borderRadius: 5,
-        width: 100,
-        marginHorizontal: 10
+        minHeight: 55,
+        borderRadius: 4,
+        padding: 15,
+        opacity: 0.2,
+        width:150,
     },
 
     disabledBtnText: {
         color: '#333',
-        fontSize: 14,
     },
 
     textStyle:{
@@ -74,7 +64,8 @@ export default styles = StyleSheet.create({
     },
     horizontalWrapStyle:{
         flexDirection: 'row', 
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        paddingHorizontal: 15, 
     },
     statusText: {
         fontFamily: AppStyles.fonts.boldFont,

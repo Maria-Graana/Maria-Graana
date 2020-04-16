@@ -106,8 +106,10 @@ class Meetings extends Component {
   }
 
   sendStatus = (status) => {
+    const { formData } = this.state
     let body = {
-      response: status
+      response: status,
+      leadId: formData.leadId
     }
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)

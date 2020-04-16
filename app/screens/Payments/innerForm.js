@@ -7,7 +7,7 @@ import AppStyles from '../../AppStyles'
 import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
-import ErrorMessage from '../../components/ErrorMessage'
+import { formatPrice } from '../../PriceFormate'
 
 class InnerForm extends Component {
   constructor(props) {
@@ -28,7 +28,10 @@ class InnerForm extends Component {
       formSubmit,
       readOnly,
       remainingPayment,
+      downPayment,
+      tokenDate,
     } = this.props
+    console.log('remainingPayment',remainingPayment)
     return (
       <View style={[AppStyles.modalMain]}>
         <View style={[AppStyles.formMain]}>
@@ -37,9 +40,6 @@ class InnerForm extends Component {
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} placeholder='Project' />
-              {
-                checkValidation === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />
-              }
             </View>
           </View>
 
@@ -47,9 +47,6 @@ class InnerForm extends Component {
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent onValueChange={handleForm} data={getFloor} name={'floorId'} placeholder='Floors' />
-              {
-                checkValidation === true && formData.floorId === '' && <ErrorMessage errorMessage={'Required'} />
-              }
             </View>
           </View>
 
@@ -57,60 +54,47 @@ class InnerForm extends Component {
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' />
-              {
-                checkValidation === true && formData.unitId === '' && <ErrorMessage errorMessage={'Required'} />
-              }
             </View>
           </View>
 
           {/* **************************************** */}
-          {
-            readOnly.totalSize != '' &&
-            < View style={[AppStyles.mainBlackWrap]}>
-              <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
-                <Text style={[AppStyles.blackInputText]}>TOTAL SIZE</Text>
-                <View style={[AppStyles.blackInput]}>
-                  <TextInput style={[AppStyles.blackInput]} placeholderTextColor={'#0D73EE'} placeholder={'10 LAC'} value={readOnly.totalSize} />
-                </View>
+          < View style={[AppStyles.mainBlackWrap]}>
+            <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+              <Text style={[AppStyles.blackInputText]}>TOTAL SIZE</Text>
+              <View style={[AppStyles.blackInput]}>
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 SQFT'} value={readOnly.totalSize} editable={false} />
               </View>
             </View>
-          }
+          </View>
 
-          {/* **************************************** */}
-          {
-            readOnly.rate != '' &&
-            <View style={[AppStyles.mainBlackWrap]}>
-              <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
-                <Text style={[AppStyles.blackInputText]}>RATE</Text>
-                <View style={[AppStyles.blackInput]}>
-                  <TextInput style={[AppStyles.blackInput]} placeholderTextColor={'#0D73EE'} placeholder={'10 LAC'} value={readOnly.rate.toString()} />
-                </View>
-              </View>
-            </View>
-          }
-
-          {/* **************************************** */}
-          {
-            readOnly.totalPrice != '' &&
-            <View style={[AppStyles.mainBlackWrap]}>
-              <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
-                <Text style={[AppStyles.blackInputText]}>TOTAL PRICE</Text>
-                <View style={[AppStyles.blackInput]}>
-                  <TextInput style={[AppStyles.blackInput]} placeholderTextColor={'#0D73EE'} placeholder={'10 LAC'} value={readOnly.totalPrice.toString()} />
-                </View>
-              </View>
-            </View>
-          }
 
           {/* **************************************** */}
           <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+              <Text style={[AppStyles.blackInputText]}>RATE</Text>
+              <View style={[AppStyles.blackInput]}>
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} value={formatPrice(readOnly.rate.toString())} editable={false} />
+              </View>
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <View style={[AppStyles.mainBlackWrap]}>
+            <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+              <Text style={[AppStyles.blackInputText]}>TOTAL PRICE</Text>
+              <View style={[AppStyles.blackInput]}>
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} value={formatPrice(readOnly.totalPrice.toString())} editable={false} />
+              </View>
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <View style={[AppStyles.mainBlackWrap]}>
+            <View style={[AppStyles.fullWidthPad, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>DISCOUNT</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'discount') }} />
-                {
-                  checkValidation === true && formData.discount === '' && <ErrorMessage errorMessage={'Required'} />
-                }
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'discount') }} keyboardType={'numeric'}/>
+                <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.discount != null ? formData.discount : '')}</Text>
               </View>
             </View>
           </View>
@@ -120,15 +104,13 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOKEN</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]}  placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'token') }} />
-                {
-                  checkValidation === true && formData.token === '' && <ErrorMessage errorMessage={'Required'} />
-                }
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'token') }} keyboardType={'numeric'}/>
+                <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.token != null ? formData.token : '')}</Text>
               </View>
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
-              <Text style={AppStyles.dateText}>10:30am Mar 29</Text>
+              <Text style={AppStyles.dateText}>{tokenDate}</Text>
             </View>
           </View>
 
@@ -137,15 +119,13 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>DOWN PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'}  onChangeText={(text) => { handleForm(text, 'downPayment') }} />
-                {
-                  checkValidation === true && formData.downPayment === '' && <ErrorMessage errorMessage={'Required'} />
-                }
+                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'downPayment') }} keyboardType={'numeric'}/>
+                <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.downPayment != null ? formData.downPayment : '')}</Text>
               </View>
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
-              <Text style={AppStyles.dateText}>10:30am Mar 29</Text>
+              <Text style={AppStyles.dateText}>{downPayment}</Text>
             </View>
           </View>
 
@@ -153,9 +133,6 @@ class InnerForm extends Component {
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent onValueChange={handleForm} data={getInstallments} name={'instalments'} placeholder='Instalments' />
-              {
-                checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
-              }
             </View>
           </View>
 
@@ -167,12 +144,13 @@ class InnerForm extends Component {
                   <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
                     <Text style={[AppStyles.blackInputText]}>INSTALMENTS {key + 1}</Text>
                     <View style={[AppStyles.blackInput]}>
-                      <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleInstalments(text, key) }} />
+                      <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'}/>
+                      <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount)}</Text>
                     </View>
                   </View>
 
                   <View style={[AppStyles.blackInputdate]}>
-                    <Text style={AppStyles.dateText}>10:30am Mar 29</Text>
+                    <Text style={AppStyles.dateText}>{totalInstalments[key].installmentDate}</Text>
                   </View>
                 </View>
               )
@@ -180,17 +158,14 @@ class InnerForm extends Component {
           }
 
           {/* **************************************** */}
-          {
-            remainingPayment != '' &&
-            <View style={[AppStyles.mainBlackWrap]}>
-              <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
-                <Text style={[AppStyles.blackInputText]}>REMAINING PAYMENT</Text>
-                <View style={[AppStyles.blackInput]}>
-                  <TextInput style={[AppStyles.blackInput]} value={remainingPayment.toString()} />
-                </View>
+          <View style={[AppStyles.mainBlackWrap]}>
+            <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
+              <Text style={[AppStyles.blackInputText]}>REMAINING PAYMENT</Text>
+              <View style={[AppStyles.blackInput]}>
+                <TextInput style={[AppStyles.blackInput]} value={formatPrice(remainingPayment.toString())} editable={false} />
               </View>
             </View>
-          }
+          </View>
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>

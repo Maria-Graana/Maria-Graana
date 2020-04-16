@@ -29,7 +29,7 @@ class TeamDiary extends React.Component {
     }
 
     navigateTo = (data) => {
-        this.props.navigation.navigate('Diary', { agentId: data.id, screen: 'TeamDiary' })
+        this.props.navigation.navigate('Diary', { agentId: data.id, screen: 'TeamDiary', name: `${data.firstName} ${data.lastName}'s` })
     }
 
     render() {

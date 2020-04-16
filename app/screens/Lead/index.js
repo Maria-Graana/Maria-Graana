@@ -11,6 +11,7 @@ import LeadTile from '../../components/LeadTile'
 import axios from 'axios';
 import helper from '../../helper'
 import StaticData from '../../StaticData'
+import { FAB } from 'react-native-paper';
 
 
 class Inventory extends React.Component {
@@ -20,13 +21,13 @@ class Inventory extends React.Component {
 		this.state = {
 			language: '',
 			leadsData: [],
-			active: false,
 			dotsDropDown: false,
 			dropDownId: '',
 			selectInventory: [],
 			febDrawer: false,
 			purposeTab: 'sale',
 			statusFilter: 'all',
+			open: false,
 		}
 
 		this.filterData = [
@@ -123,7 +124,7 @@ class Inventory extends React.Component {
 	}
 
 	render() {
-		const { selectInventory, dropDownId, purposeTab, leadsData } = this.state
+		const { selectInventory, dropDownId, purposeTab, leadsData, open } = this.state
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
 			<View>
@@ -192,21 +193,18 @@ class Inventory extends React.Component {
 						</ScrollView>
 
 					</View>
+					<FAB.Group
+						open={open}
+						icon="plus"
+						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+						color={AppStyles.bgcWhite.backgroundColor}
+						actions={[
+							{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
+							{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
 
-					<Fab
-						active={this.state.active}
-						direction="up"
-						style={{ backgroundColor: AppStyles.colors.primaryColor }}
-						position="bottomRight"
-						onPress={() => this.setState({ active: !this.state.active })}>
-						<Ionicons name="md-add" color="#ffffff" />
-						<Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToFormPage('AddRCMLead', 'RCM') }}>
-							<Icon name="logo-whatsapp" />
-						</Button>
-						<Button style={{ backgroundColor: AppStyles.colors.primary }} onPress={() => { this.goToFormPage('AddCMLead', 'CM') }}>
-							<Icon name="logo-facebook" />
-						</Button>
-					</Fab>
+						]}
+						onStateChange={({ open }) => this.setState({ open })}
+					/>
 				</View>
 
 			</View>

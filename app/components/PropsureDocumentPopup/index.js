@@ -37,7 +37,7 @@ const PropsureDocumentPopup = (props) => {
                                 height: 50,
                                 marginHorizontal: 10,
                                 flex: 0.9,
-                                justifyContent:'center'
+                                justifyContent: 'center'
                             }]}>
 
                                 <Text style={[{
@@ -51,19 +51,21 @@ const PropsureDocumentPopup = (props) => {
                                 </Text>
                             </View>
                         </View>
-                        {
-                            checkValidation === true && selectedFile === null && <ErrorMessage errorMessage={'Required'} />
-                        }
                     </TouchableOpacity>
+                    {
+                        checkValidation === true && selectedFile === null && <ErrorMessage errorMessage={'Required'} />
+                    }
                 </View>
 
 
-                {/* <View style={[AppStyles.mainInputWrap,{marginLeft:25,marginRight:25}]}>
+
+
+                <View style={[AppStyles.mainInputWrap, { marginLeft: 25, marginRight: 25 }]}>
                     <Button
                         style={[AppStyles.formBtn, { marginTop: 10 }]} onPress={onPress}>
                         <Text style={AppStyles.btnText}>DONE</Text>
                     </Button>
-                </View> */}
+                </View>
 
             </SafeAreaView>
         </Modal>

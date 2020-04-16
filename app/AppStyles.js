@@ -134,11 +134,10 @@ export default AppStyles = {
     },
     flexOne: {
         width: '48%',
-        marginRight: '2%'
     },
     flexMarginRight: {
         marginRight: 0,
-        marginLeft: '2%',
+        marginLeft: '4%',
     },
     latLngMain: {
         flexDirection: 'row',

@@ -216,9 +216,15 @@ export default AppStyles = {
     blackInputWrap: {
         width: '60%',
         padding: 5,
+        position: 'relative'
     },
     fullWidth: {
         width: '100%',
+    },
+    fullWidthPad: {
+        width: '100%',
+        padding: 5,
+        position: 'relative'
     },
     blackInputText: {
         color: '#000',

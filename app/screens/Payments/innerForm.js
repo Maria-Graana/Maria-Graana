@@ -132,7 +132,7 @@ class InnerForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={getInstallments} name={'instalments'} placeholder='Instalments' />
+              <PickerComponent onValueChange={handleForm} data={getInstallments} name={'instalments'} placeholder='Installments' />
             </View>
           </View>
 
@@ -142,7 +142,7 @@ class InnerForm extends Component {
               return (
                 <View style={[AppStyles.mainBlackWrap]} key={key}>
                   <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
-                    <Text style={[AppStyles.blackInputText]}>INSTALMENTS {key + 1}</Text>
+                    <Text style={[AppStyles.blackInputText]}>INSTALLMENTS {key + 1}</Text>
                     <View style={[AppStyles.blackInput]}>
                       <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'}/>
                       <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount)}</Text>

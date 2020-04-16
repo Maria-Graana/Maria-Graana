@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import InnerForm from './innerForm';
 import StaticData from '../../StaticData';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import moment from 'moment'
 
 class Payments extends Component {
 	constructor(props) {
@@ -29,8 +30,8 @@ class Payments extends Component {
 				projectId: '',
 				floorId: '',
 				unitId: '',
-				discount:'',
 				token: '',
+				discount: '',
 				commisionPayment: '',
 				downPayment: '',
 			},
@@ -80,6 +81,7 @@ class Payments extends Component {
 				})
 			})
 	}
+
 	instalmentsField = (value) => {
 		let array = []
 		for (var i = 1; i <= value; i++) {
@@ -100,23 +102,49 @@ class Payments extends Component {
 				totalSize: data.area + ' ' + data.area_unit,
 				rate: data.pricePerSqFt,
 				totalPrice: data.area * data.pricePerSqFt,
-			}
+			},
+			remainingPayment: data.area * data.pricePerSqFt,
 		})
 	}
 
-	remainingPayment = (discount) => {
-		// Total Price - Discount - Any payment done
-		const { readOnly } = this.state
-		var remaining = readOnly.totalPrice - discount
+	discountPayment = (value, name) => {
+		const { readOnly, formData, remainingPayment } = this.state
+		var totalPrice = readOnly.totalPrice
+		var remaining = ''
+		var total = ''
+		if(name === 'discount'){
+			total = totalPrice - (formData.discount === '' ? 0 : formData.discount) 
+		}
+
+		if(name === 'token'){
+			total = totalPrice - (formData.token === '' ? 0 : formData.token) 
+		}
 		this.setState({
-				remainingPayment: remaining
+			remainingPayment: total
 		})
+	}
+
+	currentDate = (name) => {
+		var date = new Date()
+		if (name === 'downPayment') {
+			this.setState({
+				downPayment: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+			})
+		}
+
+		if (name === 'token') {
+			this.setState({
+				tokenDate: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+			})
+		}
 	}
 
 	handleForm = (value, name) => {
 		const { formData } = this.state
-		formData[name] = value
-		this.setState({ formData })
+		let newFormData = { ...formData }
+		newFormData[name] = value
+		this.setState({ formData: newFormData })
+
 
 		if (name === 'projectId' && value != '') {
 			this.getFloors(formData.projectId)
@@ -127,8 +155,15 @@ class Payments extends Component {
 		if (name === 'unitId' && value != '') {
 			this.readOnly(value)
 		}
-		if (name === 'discount' && value != '') {
-			this.remainingPayment(value)
+		if (name === 'discount') {
+			this.discountPayment(value, name)
+		}
+		if (name === 'token') {
+			this.currentDate(name)
+			this.discountPayment(value, name)
+		}
+		if (name === 'downPayment' && value != '') {
+			this.currentDate(name)
 		}
 		if (name === 'instalments' && value != '') {
 			this.instalmentsField(value)
@@ -137,8 +172,11 @@ class Payments extends Component {
 
 	handleInstalments = (value, index) => {
 		const { totalInstalments } = this.state
-		totalInstalments[index].installmentAmount = parseInt(value)
-		this.setState(totalInstalments)
+		var date = new Date()
+		let newInstallments = [...totalInstalments]
+		newInstallments[index].installmentAmount = parseInt(value)
+		newInstallments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+		this.setState({ totalInstalments: newInstallments })
 	}
 
 	formSubmit = () => {
@@ -207,7 +245,10 @@ class Payments extends Component {
 			isVisible,
 			remainingPayment,
 			readOnly,
+			downPayment,
+			tokenDate,
 		} = this.state
+		
 		return (
 			<ScrollView>
 				<View style={[AppStyles.container]}>
@@ -225,7 +266,6 @@ class Payments extends Component {
 						getUnit={getUnit}
 						getProject={getProject}
 						getInstallments={StaticData.getInstallments}
-						formData={formData}
 						totalInstalments={totalInstalments}
 						checkValidation={checkValidation}
 						handleInstalments={this.handleInstalments}
@@ -233,6 +273,9 @@ class Payments extends Component {
 						formSubmit={this.formSubmit}
 						readOnly={readOnly}
 						remainingPayment={remainingPayment}
+						formData={formData}
+						tokenDate={tokenDate}
+						downPayment={downPayment}
 					/>
 				</View>
 			</ScrollView>

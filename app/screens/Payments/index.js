@@ -112,12 +112,12 @@ class Payments extends Component {
 		var totalPrice = readOnly.totalPrice
 		var remaining = ''
 		var total = ''
-		if(name === 'discount'){
-			total = totalPrice - (formData.discount === '' ? 0 : formData.discount) 
+		if (name === 'discount') {
+			total = totalPrice - (formData.discount === '' ? 0 : formData.discount)
 		}
 
-		if(name === 'token'){
-			total = totalPrice - (formData.token === '' ? 0 : formData.token) 
+		if (name === 'token') {
+			total = totalPrice - (formData.token === '' ? 0 : formData.token)
 		}
 		this.setState({
 			remainingPayment: total
@@ -181,29 +181,29 @@ class Payments extends Component {
 
 	formSubmit = () => {
 		const { formData, totalInstalments } = this.state
-		if (!formData.projectId || !formData.floorId || !formData.unitId || !formData.token || !formData.downPayment) {
-			this.setState({
-				checkValidation: true
-			})
-		} else {
-			let body = {
-				discount: parseInt(formData.discount),
-				downPayment: parseInt(formData.downPayment),
-				floorId: formData.floorId,
-				token: parseInt(formData.token),
-				unitId: formData.unitId,
-				installments: totalInstalments,
-				no_of_installments: totalInstalments.length,
-			}
-			axios.patch(`/api/leads/project?id=${formData.projectId}`, body)
-				.then((res) => {
-					if (body.commisionPayment !== null && body.commisionPayment === '') {
-						this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
-					} else {
-						this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
-					}
-				})
+		// if (!formData.projectId || !formData.floorId || !formData.unitId || !formData.token || !formData.downPayment) {
+		// 	this.setState({
+		// 		checkValidation: true
+		// 	})
+		// } else {
+		let body = {
+			discount: parseInt(formData.discount),
+			downPayment: parseInt(formData.downPayment),
+			floorId: formData.floorId,
+			token: parseInt(formData.token),
+			unitId: formData.unitId,
+			installments: totalInstalments,
+			no_of_installments: totalInstalments.length,
 		}
+		axios.patch(`/api/leads/project?id=${formData.projectId}`, body)
+			.then((res) => {
+				if (body.commisionPayment !== null && body.commisionPayment === '') {
+					this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+				} else {
+					this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+				}
+			})
+		// }
 	}
 
 	handleReasonChange = (value) => {
@@ -248,7 +248,7 @@ class Payments extends Component {
 			downPayment,
 			tokenDate,
 		} = this.state
-		
+
 		return (
 			<ScrollView>
 				<View style={[AppStyles.container]}>
@@ -260,6 +260,7 @@ class Payments extends Component {
 						isVisible={isVisible}
 						closeModal={() => this.closeModal()}
 						onPress={this.onHandleCloseLead}
+						CMlead={true}
 					/>
 					<InnerForm
 						getFloor={getFloors}

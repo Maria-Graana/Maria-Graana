@@ -97,7 +97,7 @@ class Login extends Component {
                             (checkValidation === true && formData.password === '') ? <ErrorMessage errorMessage={'Required'} />
                                 : <ErrorMessage errorMessage={''} />
                         }
-                        <View style={{ marginTop: 25 }}>
+                        <View style={{ marginTop: 25 ,marginBottom:25}}>
                             <TouchableButton
                                 style={{}}
                                 label='Sign In'
@@ -106,11 +106,11 @@ class Login extends Component {
                                 color='white'
                             />
                         </View>
-                       
-                    </View>
-                    <View style={{ alignSelf: 'center', alignItems: 'center', position: 'absolute', bottom: 0}}>
+                        <View style={{ alignSelf: 'center', alignItems: 'center'}}>
                             <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
                         </View>
+                    </View>
+                   
                 </SafeAreaView>
             </TouchableWithoutFeedback>
 

@@ -37,24 +37,38 @@ const AddAttachmentPopup = (props) => {
                     <View style={[AppStyles.mainInputWrap]}>
                         <View style={[AppStyles.inputWrap]}>
                             <TouchableOpacity onPress={getAttachmentFromStorage} activeOpacity={0.7} >
-                                <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, { textAlign: 'center', letterSpacing: 3, fontFamily: AppStyles.fonts.semiBoldFont }]}
-                                    editable={false}
-                                    placeholderTextColor={AppStyles.colors.textColor}
-                                    value={formData.fileName}
-                                    placeholder={'UPLOAD ATTACHMENT'}
-                                />
-                                <View style={{ position: 'absolute', left: 10, top: 7 }}>
-                                    <MaterialCommunityIcons name="file-upload-outline" size={32} color={AppStyles.colors.primaryColor} />
+                                <View style={[AppStyles.flexDirectionRow, AppStyles.bgcWhite]}>
+                                    <View style={{ alignSelf: 'flex-start', marginTop: 7, marginLeft: 10, flex: 0.1 }}>
+                                        <MaterialCommunityIcons name="file-upload-outline" size={32} color={AppStyles.colors.primaryColor} />
+                                    </View>
+                                    <View style={[{
+                                        backgroundColor: '#fff',
+                                        borderRadius: 4,
+                                        borderWidth: 0,
+                                        height: 50,
+                                        marginHorizontal: 10,
+                                        flex: 0.9,
+                                        justifyContent: 'center'
+                                    }]}>
+
+                                        <Text style={[{
+                                            letterSpacing: 1,
+                                            fontFamily: AppStyles.fonts.semiBoldFont,
+                                            color: AppStyles.colors.textColor,
+                                        }]}
+                                            numberOfLines={2}
+                                        >
+                                            {formData.fileName ? formData.fileName : 'UPLOAD ATTACHMENT'}
+                                        </Text>
+                                    </View>
                                 </View>
                             </TouchableOpacity>
+
                         </View>
-                        {
-                            checkValidation === true && formData.fileName === '' && <ErrorMessage errorMessage={'Required'} />
-                        }
-
-
-
                     </View>
+                    {
+                        checkValidation === true && formData.fileName === '' && <ErrorMessage errorMessage={'Required'} />
+                    }
 
 
                     {/* **************************************** */}

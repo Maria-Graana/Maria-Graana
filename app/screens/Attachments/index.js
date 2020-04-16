@@ -11,8 +11,6 @@ import Loader from '../../components/loader'
 
 class Attachments extends Component {
 
-    newRow = [];
-
     constructor(props) {
         super(props);
         this.state = {
@@ -35,7 +33,7 @@ class Attachments extends Component {
     }
 
     showModal = () => {
-        this.setState({ isVisible: true })
+        this.setState({ isVisible: true, checkValidation: false })
     }
 
     closeModal = () => {
@@ -77,26 +75,27 @@ class Attachments extends Component {
         const { leadId } = route.params;
         axios.get(`/api/leads/comments?rcmLeadId=${leadId}&type=attachment`).then(response => {
             // console.log(response.data);
-            this.setState({ attachmentRows: response.data, loading: false , checkValidation:false});
+            this.setState({
+                attachmentRows: response.data,
+                formData:
+                    { title: '', fileName: '', size: '', uri: '' },
+                title: '',
+                loading: false
+            });
         }).catch(error => {
             console.log(error);
+            this.setState({ loading: false });
         })
     }
 
     addAttachmentToList = () => {
         const { formData } = this.state;
-        this.newRow.push(formData);
         let document = {
             name: formData.fileName,
             type: 'file/' + formData.fileName.split('.').pop(),
             uri: formData.uri
         }
         this.uploadAttachment(document);
-        this.setState({
-            attachmentRows: this.newRow,
-            title: '',
-            formData: { fileName: '', size: '', uri: '', title: '' }
-        });
     }
 
     uploadAttachment(data) {
@@ -105,6 +104,7 @@ class Attachments extends Component {
         const { leadId } = route.params;
         let fd = new FormData()
         fd.append('file', data);
+        this.setState({ loading: true });
 
         axios.post(`/api/leads/attachment?rcmLeadId=${leadId}&title=${title}`, fd).then(response => {
             this.getAttachmentsFromServer();
@@ -114,9 +114,6 @@ class Attachments extends Component {
     }
 
     deleteAttachment = (item) => {
-        const { attachmentRows } = this.state;
-        this.newRow = _.without(attachmentRows, item)
-        this.setState({ attachmentRows: this.newRow })
         this.deleteAttachmentFromServer(item.id);
     }
 
@@ -130,6 +127,7 @@ class Attachments extends Component {
 
 
     deleteAttachmentFromServer(attachmentId) {
+        this.setState({ loading: true });
         axios.delete(`/api/leads/comments/remove?id=${attachmentId}`)
             .then((res) => {
                 this.getAttachmentsFromServer();
@@ -173,8 +171,11 @@ class Attachments extends Component {
                         closeModal={() => this.closeModal()}
                     />
                     <FlatList
+                        ref={ref => { this.flatList = ref }}
                         contentContainerStyle={{ flexGrow: 1 }}
+                        onContentSizeChange={() => this.flatList.scrollToEnd({ animated: true })}
                         data={attachmentRows}
+
                         renderItem={({ item }) => (
                             <AttachmentTile
                                 data={item}

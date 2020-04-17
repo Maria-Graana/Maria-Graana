@@ -53,7 +53,7 @@ class CreateUser extends Component {
     }
 
     getRoles = (id) => {
-        axios.get(`/api/user/roles/${id}`)
+        axios.get(`/api/user/roles?orgId=${id}`)
             .then((res) => {
                 this.setState({
                     getRoles: res.data['sub_admin 2'][0],

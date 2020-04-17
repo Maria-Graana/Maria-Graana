@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 export default styles = StyleSheet.create({
     wrapper: {
@@ -35,7 +36,7 @@ export default styles = StyleSheet.create({
         paddingBottom: 5
     },
     logo: {
-        flex: 1,
+        flex: 0.4,
         width: Math.round(Dimensions.get('window').width) - 20,
         marginLeft: 10,
         // height: 400,

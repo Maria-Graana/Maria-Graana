@@ -57,7 +57,7 @@ class Diary extends React.Component {
     });
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this._unsubscribe();
   }
 
@@ -181,7 +181,7 @@ class Diary extends React.Component {
   }
 
   updateDay = (day) => {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     const { dateString } = day
     let newDate = moment(dateString).format(_format)
     navigation.setOptions({ title: moment(dateString).format('DD MMMM YYYY') })
@@ -255,8 +255,8 @@ class Diary extends React.Component {
           status: type
         }).then(function (response) {
           if (response.status == 200)
-           // console.log('responseSuccessCompleted');
-          that.diaryMain();
+            // console.log('responseSuccessCompleted');
+            that.diaryMain();
         })
         break;
       case 'inProgress':
@@ -264,8 +264,8 @@ class Diary extends React.Component {
           status: type
         }).then(function (response) {
           if (response.status == 200)
-           // console.log('responseSuccessInProgress');
-          that.diaryMain();
+            // console.log('responseSuccessInProgress');
+            that.diaryMain();
         })
 
         break;
@@ -302,10 +302,10 @@ class Diary extends React.Component {
 
   handleLeadLinkPress = (armsLeadId) => {
     axios.get(`/api/leads/byId?id=${armsLeadId}`).then(response => {
-      this.setState({ openPopup: false})
+      this.setState({ openPopup: false })
       this.props.navigation.navigate('LeadDetail', { lead: response.data, purposeTab: response.data.purpose })
     }).catch(error => {
-         console.log('error',error)
+      console.log('error', error)
     })
 
   }
@@ -313,9 +313,11 @@ class Diary extends React.Component {
   render() {
     const { showCalendar, startDate, newDiaryData, loading, selectedDiary } = this.state;
     const { user, route } = this.props;
+    const { name } = route.params;
     return (
       !loading ?
         <View style={styles.container}>
+
           <DairyPopup
             screenName={route.params.screen}
             data={selectedDiary}
@@ -342,8 +344,22 @@ class Diary extends React.Component {
           }
 
           {
+            // Show view with team member name if coming from team member screen
+            route.params.screen === 'TeamDiary' ?
+              <View style={styles.calenderIconContainer}>
+                <View style={AppStyles.flexDirectionRow}>
+                  <Text style={styles.teamMemberNameText}>{name !== null && name !== undefined ? name : ''}</Text>
+                  <Text style={styles.diaryText}>Diary</Text>
+                </View>
+              </View>
+              : null
+          }
+
+
+          {
             !showCalendar ?
               <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
+                <View style={styles.underLine} />
                 <View style={styles.calenderIconContainer}>
                   <Image style={{ width: 30, height: 26 }} source={require('../../../assets/img/calendar2.png')} />
                   <Text style={styles.calendarText}>Calendar</Text>
@@ -360,7 +376,7 @@ class Diary extends React.Component {
             newDiaryData && newDiaryData.length ?
               <DiaryTile data={newDiaryData} showPopup={this.showPopup} onLeadLinkPressed={this.handleLeadLinkPress} onLongPress={(val) => this.handleLongPress(val)} /> : null
           }
-        </View>
+        </View >
         :
         <Loader loading={loading} />
     )

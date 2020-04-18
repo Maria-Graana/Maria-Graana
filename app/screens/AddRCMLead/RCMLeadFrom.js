@@ -31,9 +31,9 @@ class CMLeadFrom extends Component {
       subType,
       sizeUnit,
       size,
-      getAreas,
       formSubmit,
       checkValidation,
+      handleAreaClick
     } = this.props
     const checkBuy = formType === 'sale'
     const checkRent = formType === 'rent'
@@ -55,13 +55,13 @@ class CMLeadFrom extends Component {
             handleForm={handleForm}
             getClients={getClients}
             cities={cities}
-            getAreas={getAreas}
             propertyType={propertyType}
             subType={subType}
             sizeUnit={sizeUnit}
             size={size}
             formSubmit={formSubmit}
             checkValidation={checkValidation}
+            handleAreaClick={handleAreaClick}
           />
         </View>
       </View>

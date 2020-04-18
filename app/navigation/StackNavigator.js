@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text, TouchableOpacity } from 'react-native';
 import Landing from '../screens/Landing/index';
 import { createStackNavigator } from '@react-navigation/stack';
 import Diary from '../screens/Diary/index';
@@ -26,6 +27,7 @@ import Targets from '../screens/Targets';
 import TeamTargets from '../screens/TeamTargets';
 import CreateUser from '../screens/CreateUser';
 import ChangePassword from '../screens/ChangePassword';
+import AreaPickerScreen from '../screens/AreaPickerScreen';
 
 const Stack = createStackNavigator();
 
@@ -214,6 +216,18 @@ function MainStack() {
                 options={({ navigation, route }) => ({
                     title: 'CHANGE PASSWORD',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='AreaPickerScreen' component={AreaPickerScreen}
+                options={({ navigation, route }) => ({
+                    title: 'Select Areas',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Text style={{ paddingRight: 15 }}>
+                            Done
+                        </Text>
+                    </TouchableOpacity>,
                     headerTitleAlign: 'center',
                 })}
             />

@@ -76,16 +76,16 @@ class LeadPropsure extends React.Component {
 
     addProperty = () => { }
 
-    ownProperty = (property) => {
-        const { user } = this.props
-        if ('armsuser' in property && property.armsuser) {
-            return user.id === property.armsuser.id
-        } else if ('user' in property && property.user) {
-            return user.id === property.user.id
-        } else {
-            return false
-        }
-    }
+	ownProperty = (property) => {
+		const { user } = this.props
+		const { organization } = this.state
+		if (property.assigned_to_armsuser_id) {
+			return user.id === property.assigned_to_armsuser_id
+		}
+		else {
+			return false
+		}
+	}
 
     closeModal = () => {
         this.setState({ isVisible: false })

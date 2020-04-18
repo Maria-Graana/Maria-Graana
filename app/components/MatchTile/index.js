@@ -91,7 +91,7 @@ class InventoryTile extends React.Component {
 							showLable ?
 								<Entypo style={{ paddingLeft: 10 }} onPress={() => { this.props.doneViewing(data) }} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
 								:
-								null
+								<View />
 						}
 						<View style={{ flexDirection: 'column' }}>
 							<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />

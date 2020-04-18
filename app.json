@@ -11,7 +11,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/img/Splash.png",
+      "image": "./assets/img/splash-beta.png",
       "resizeMode": "cover"
     },
     "updates": {

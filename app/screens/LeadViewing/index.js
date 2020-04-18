@@ -21,7 +21,7 @@ class LeadViewing extends React.Component {
 		super(props)
 		this.state = {
 			isVisible: false,
-			open:false,
+			open: false,
 			loading: true,
 			viewing: {
 				date: '',
@@ -68,11 +68,11 @@ class LeadViewing extends React.Component {
 
 	ownProperty = (property) => {
 		const { user } = this.props
-		if ('armsuser' in property && property.armsuser) {
-			return user.id === property.armsuser.id
-		} else if ('user' in property && property.user) {
-			return user.id === property.user.id
-		} else {
+		const { organization } = this.state
+		if (property.assigned_to_armsuser_id) {
+			return user.id === property.assigned_to_armsuser_id
+		}
+		else {
 			return false
 		}
 	}
@@ -215,7 +215,7 @@ class LeadViewing extends React.Component {
 			!loading ?
 				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
 					<ProgressBar progress={0.4} color={'#0277FD'} />
-					<View style={{  flex: 1 }}>
+					<View style={{ flex: 1 }}>
 						<AddViewing
 							onPress={this.submitViewing}
 							handleForm={this.handleForm}

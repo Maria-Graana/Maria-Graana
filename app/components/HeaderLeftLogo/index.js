@@ -20,7 +20,7 @@ export default class HeaderLeftLogo extends React.Component {
                     </View>
                     :
                     <View style={styles.imageViewWrap}>
-                        <Image source={require('../../../assets/img/logo.png')} style={styles.imageStyle} />
+                        <Image source={require('../../../assets/img/logo1.png')} style={styles.imageStyle} />
                     </View>
                 }
             </View>

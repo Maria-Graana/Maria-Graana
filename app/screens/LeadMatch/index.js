@@ -197,7 +197,6 @@ class LeadMatch extends React.Component {
                             return (matches.push(item))
                         }
                     })
-                    console.log(res.data.rows[0])
                     this.setState({
                         matchData: {
                             type: organization,
@@ -454,6 +453,7 @@ class LeadMatch extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={showCheckBoxes}
                                                         addProperty={this.addProperty}
+                                                        organization= {matchData.type}
                                                     />
                                                     :
                                                     <AgentTile
@@ -462,6 +462,7 @@ class LeadMatch extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={showCheckBoxes}
                                                         addProperty={this.addProperty}
+                                                        organization= {matchData.type}
                                                     />
                                             }
                                         </View>

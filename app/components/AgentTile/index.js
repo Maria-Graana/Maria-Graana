@@ -18,9 +18,12 @@ class InventoryTile extends React.Component {
 	}
 
 	render() {
-		const { data, showCheckBoxes, menuShow } = this.props
+		const { data, showCheckBoxes, menuShow, organization } = this.props
 		let showLable = menuShow || false
-
+		let phoneNumber = null
+		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
+		else phoneNumber = data.user ? data.user.phoneNumber : null
+		
 		return (
 			<TouchableOpacity
 				style={{ flexDirection: "row" }}
@@ -62,7 +65,7 @@ class InventoryTile extends React.Component {
 							<Text numberOfLines={1} style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
 							<View style={{ flexDirection: 'row-reverse', height: 60 }}>
 								{/* <View style={{ flex: 1 }}></View> */}
-								<FontAwesome onPress= {() => {helper.callNumber(data.user ? data.user.phoneNumber: null)}} style={{ paddingTop: 25, paddingRight: 5 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+								<FontAwesome onPress= {() => {helper.callNumber(phoneNumber)}} style={{ paddingTop: 25, paddingRight: 5 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 							</View>
 						</View>
 					</View>
@@ -70,7 +73,7 @@ class InventoryTile extends React.Component {
 				{
 					showCheckBoxes ?
 						<View style={{ marginTop: 20, marginRight: 5 }}>
-							<CheckBox color={AppStyles.colors.primaryColor} checked={data.checkBox} />
+							<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
 						</View>
 						:
 						null

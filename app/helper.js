@@ -58,6 +58,7 @@ const helper = {
 			Linking.canOpenURL(url)
 				.then(supported => {
 					if (!supported) {
+						helper.errorToast(`No Phone Number`)
 						console.log("Can't handle url: " + url);
 					} else {
 						return Linking.openURL(url)

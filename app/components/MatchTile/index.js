@@ -19,10 +19,10 @@ class InventoryTile extends React.Component {
 	}
 
 	render() {
-		const { data, menuShow, showCheckBoxes } = this.props
+		const { data, menuShow, showCheckBoxes, organization } = this.props
 		let imagesList = []
 		let showLable = menuShow || false
-
+		let phoneNumber = null
 		if ('armsPropertyImages' in data) {
 			if (data.armsPropertyImages.length) {
 				imagesList = data.armsPropertyImages.map((item) => {
@@ -31,6 +31,9 @@ class InventoryTile extends React.Component {
 			}
 		}
 
+		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
+		else phoneNumber = data.user.phoneNumber
+		
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row' }}
 				onLongPress={() => {
@@ -90,13 +93,15 @@ class InventoryTile extends React.Component {
 								:
 								null
 						}
-						<FontAwesome onPress={() => { helper.callNumber(data.user ? data.user.phoneNumber : null) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+						<View style={{ flexDirection: 'column' }}>
+							<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+						</View>
 					</View>
 				</View>
 				{
 					showCheckBoxes ?
 						<View style={{ marginRight: 5, marginTop: 5 }}>
-							<CheckBox color={AppStyles.colors.primaryColor} checked={data.checkBox} />
+							<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
 						</View>
 						:
 						null

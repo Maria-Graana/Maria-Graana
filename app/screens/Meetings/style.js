@@ -31,4 +31,7 @@ export default styles = StyleSheet.create({
     marginRight: 15,
     borderRadius: 5,
   },
+  meetingLine:{
+    width: '50%',
+  }
 });

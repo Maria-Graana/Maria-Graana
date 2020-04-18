@@ -12,11 +12,11 @@ export default function CMLeadTabs() {
             tabBarOptions={{
                 scrollEnabled: true,
                 labelStyle: { fontSize: 12 },
-                tabStyle: { width: 206},
+                tabStyle: { width: 206 },
                 indicatorStyle: {
                     borderBottomColor: '#ffffff',
                     borderBottomWidth: 2,
-                  }
+                }
                 // style: { shadowColor: 'transparent', elevation: 0, borderTopColor: "transparent", borderTopWidth: 0 },
             }}>
             <Tab.Screen name="Meetings" component={Meetings} />

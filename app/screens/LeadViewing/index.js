@@ -15,6 +15,8 @@ import _ from 'underscore';
 import moment from 'moment';
 import { FAB } from 'react-native-paper';
 import { ProgressBar, Colors } from 'react-native-paper';
+import StaticData from '../../StaticData';
+import { setlead } from '../../actions/lead';
 
 class LeadViewing extends React.Component {
 	constructor(props) {
@@ -28,23 +30,28 @@ class LeadViewing extends React.Component {
 				time: ''
 			},
 			checkValidation: false,
-			currentProperty: {}
+			currentProperty: {},
+			progressValue: 0
 		}
 	}
 
 	componentDidMount = () => {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
+			this.fetchLead()
 			this.fetchProperties()
 		})
 	}
 
 	fetchProperties = () => {
 		const { lead } = this.props
+		const { rcmProgressBar } = StaticData
+		console.log(lead.status)
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
 				this.setState({
 					loading: false,
-					matchData: res.data.rows
+					matchData: res.data.rows,
+					progressValue: rcmProgressBar[lead.status]
 				})
 			})
 			.catch((error) => {
@@ -52,6 +59,17 @@ class LeadViewing extends React.Component {
 				this.setState({
 					loading: false,
 				})
+			})
+	}
+
+	fetchLead = () => {
+		const { lead } = this.props
+		axios.get(`api/leads/byid?id=${lead.id}`)
+			.then((res) => {
+				this.props.dispatch(setlead(res.data))
+			})
+			.catch((error) => {
+				console.log(error)
 			})
 	}
 
@@ -131,6 +149,7 @@ class LeadViewing extends React.Component {
 					isVisible: false,
 					loading: true
 				})
+				this.fetchLead()
 				this.fetchProperties()
 			})
 			.catch((error) => {
@@ -210,11 +229,11 @@ class LeadViewing extends React.Component {
 	}
 
 	render() {
-		const { loading, matchData, user, isVisible, checkValidation, viewing, open } = this.state
+		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue } = this.state
 		return (
 			!loading ?
 				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-					<ProgressBar progress={0.4} color={'#0277FD'} />
+					<ProgressBar progress={progressValue} color={'#0277FD'} />
 					<View style={{ flex: 1 }}>
 						<AddViewing
 							onPress={this.submitViewing}

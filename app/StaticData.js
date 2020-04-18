@@ -302,6 +302,15 @@ export default StaticData = {
         { value: 'comment', name: 'Comment' },
         { value: 'task', name: 'Task' },
     ],
+    rcmProgressBar: {
+        open: 0,
+        viewing: 0.2,
+        offer: 0.4,
+        propsure: 0.6,
+        token: 0.8,
+        payment: 0.8,
+        closed: 1
+    },
     lead: {
         "added_by_armsroleid": 12,
         "added_by_armsuser_id": 251,

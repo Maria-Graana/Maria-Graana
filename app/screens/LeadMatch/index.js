@@ -64,7 +64,8 @@ class LeadMatch extends React.Component {
             displayButton: false,
             cities: [],
             areas: [],
-            subTypVal: []
+            subTypVal: [],
+            progressValue: 0
         }
     }
 
@@ -162,6 +163,7 @@ class LeadMatch extends React.Component {
         const { organization, matchesBol, formData, showCheckBoxes } = this.state
         const { route } = this.props
         const { lead } = route.params
+        const { rcmProgressBar } = StaticData
 
         const params = {
             leadId: lead.id,
@@ -178,7 +180,8 @@ class LeadMatch extends React.Component {
             size: formData.size,
             unit: formData.sizeUnit
         }
-
+        console.log(lead.status)
+        console.log(rcmProgressBar[lead.status])
         let callApi = this.canCallApi()
         let matches = []
         if (callApi || !showCheckBoxes) {
@@ -202,6 +205,7 @@ class LeadMatch extends React.Component {
                             type: organization,
                             data: matches
                         },
+                        progressValue: rcmProgressBar[lead.status]
                     }, () => {
                         this.loadData()
                     })
@@ -269,7 +273,7 @@ class LeadMatch extends React.Component {
         const { organization } = this.state
         if (property.assigned_to_armsuser_id) {
             return user.id === property.assigned_to_armsuser_id
-        } 
+        }
         else {
             return false
         }
@@ -404,12 +408,12 @@ class LeadMatch extends React.Component {
 
     render() {
         // const { user } = this.props
-        const { cities, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, open } = this.state
+        const { progressValue, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, open } = this.state
 
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
-                    <ProgressBar progress={0.2} color={'#0277FD'} />
+                    <ProgressBar progress={progressValue} color={'#0277FD'} />
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
@@ -453,7 +457,7 @@ class LeadMatch extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={showCheckBoxes}
                                                         addProperty={this.addProperty}
-                                                        organization= {matchData.type}
+                                                        organization={matchData.type}
                                                     />
                                                     :
                                                     <AgentTile
@@ -462,7 +466,7 @@ class LeadMatch extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={showCheckBoxes}
                                                         addProperty={this.addProperty}
-                                                        organization= {matchData.type}
+                                                        organization={matchData.type}
                                                     />
                                             }
                                         </View>

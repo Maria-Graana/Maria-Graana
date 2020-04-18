@@ -15,6 +15,7 @@ import _ from 'underscore';
 import StaticData from '../../StaticData';
 import { FAB } from 'react-native-paper';
 import { ProgressBar, Colors } from 'react-native-paper';
+import { setlead } from '../../actions/lead';
 
 class LeadPropsure extends React.Component {
     constructor(props) {
@@ -32,11 +33,13 @@ class LeadPropsure extends React.Component {
             selectedPropsureId: null,
             matchData: [],
             file: null,
+            progressValue: 0
         }
     }
 
     componentDidMount = () => {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            this.fetchLead()
             this.fetchProperties()
         })
     }
@@ -47,6 +50,8 @@ class LeadPropsure extends React.Component {
 
     fetchProperties = () => {
         const { lead } = this.props
+        const { rcmProgressBar } = StaticData
+
         this.setState({ loading: true }, () => {
             axios.get(`/api/leads/${lead.id}/shortlist`)
                 .then((res) => {
@@ -56,7 +61,8 @@ class LeadPropsure extends React.Component {
                         matchData: res.data.rows,
                         selectedPropertyId: null,
                         selctedPropsureId: null,
-                        selectedPackage: ''
+                        selectedPackage: '',
+                        progressValue: rcmProgressBar[lead.status]
                     })
                 })
                 .catch((error) => {
@@ -71,6 +77,17 @@ class LeadPropsure extends React.Component {
         })
 
     }
+
+    fetchLead = () => {
+		const { lead } = this.props
+		axios.get(`api/leads/byid?id=${lead.id}`)
+			.then((res) => {
+				this.props.dispatch(setlead(res.data))
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}
 
     displayChecks = () => { }
 
@@ -113,6 +130,7 @@ class LeadPropsure extends React.Component {
             }
 
             axios.post(`api/leads/propsure/${lead.id}`, body).then(response => {
+                this.fetchLead()
                 this.fetchProperties();
             }).catch(error => {
                 console.log(error);
@@ -181,6 +199,7 @@ class LeadPropsure extends React.Component {
         let fd = new FormData()
         fd.append('file', data);
         axios.post(`api/leads/propsureDoc?id=${selectedPropsureId}`, fd).then(response => {
+            this.fetchLead()
             this.fetchProperties();
         }).catch(error => {
             console.log('error=>', error.message);
@@ -234,11 +253,11 @@ class LeadPropsure extends React.Component {
     }
 
     render() {
-        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation,open } = this.state;
+        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation,open, progressValue } = this.state;
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
-                    <ProgressBar progress={0.8} color={'#0277FD'} />
+                    <ProgressBar progress={progressValue} color={'#0277FD'} />
                     <PropsurePackagePopup
                         packages={packages}
                         selectedPackage={selectedPackage}

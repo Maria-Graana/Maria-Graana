@@ -7,9 +7,9 @@
       "ios",
       "android"
     ],
-    "version": "1.0.42",
+    "version": "1.0.43",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/img/arms1024.png",
     "splash": {
       "image": "./assets/img/splash-beta.png",
       "resizeMode": "cover"

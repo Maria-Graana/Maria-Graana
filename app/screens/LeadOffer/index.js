@@ -12,6 +12,8 @@ import _ from 'underscore';
 import OfferModal from '../../components/OfferModal'
 import { FAB } from 'react-native-paper';
 import { ProgressBar, Colors } from 'react-native-paper';
+import { setlead } from '../../actions/lead';
+import StaticData from '../../StaticData';
 
 class LeadOffer extends React.Component {
 	constructor(props) {
@@ -26,23 +28,27 @@ class LeadOffer extends React.Component {
 				their: '',
 				agreed: ''
 			},
-			currentProperty: {}
+			currentProperty: {},
+			progressValue: 0
 		}
 	}
 
 	componentDidMount = () => {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
+			this.fetchLead()
 			this.fetchProperties()
 		})
 	}
 
 	fetchProperties = () => {
 		const { lead } = this.props
+		const { rcmProgressBar } = StaticData
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
 				this.setState({
 					loading: false,
-					matchData: res.data.rows
+					matchData: res.data.rows,
+					progressValue: rcmProgressBar[lead.status]
 				})
 			})
 			.catch((error) => {
@@ -50,6 +56,17 @@ class LeadOffer extends React.Component {
 				this.setState({
 					loading: false,
 				})
+			})
+	}
+
+	fetchLead = () => {
+		const { lead } = this.props
+		axios.get(`api/leads/byid?id=${lead.id}`)
+			.then((res) => {
+				this.props.dispatch(setlead(res.data))
+			})
+			.catch((error) => {
+				console.log(error)
 			})
 	}
 
@@ -74,6 +91,7 @@ class LeadOffer extends React.Component {
 			modalActive: !modalActive,
 		}, () => {
 			if (!this.state.modalActive) {
+				this.fetchLead()
 				this.fetchProperties()
 			}
 		})
@@ -228,11 +246,11 @@ class LeadOffer extends React.Component {
 	}
 
 	render() {
-		const { loading, matchData, user, modalActive, offersData, offerChat, open } = this.state
+		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue } = this.state
 		return (
 			!loading ?
 				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-					<ProgressBar progress={0.6} color={'#0277FD'} />
+					<ProgressBar progress={progressValue} color={'#0277FD'} />
 					<View style={{ flex: 1 }}>
 						{
 							matchData.length ?

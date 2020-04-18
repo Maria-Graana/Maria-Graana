@@ -47,19 +47,31 @@ class LeadRCMPayment extends React.Component {
                 monthlyRent: null,
                 security: null,
                 advance: null
-            }
-
+            },
+            progressValue: 0
         }
     }
 
     componentDidMount = () => {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            this.fetchLead()
             this.getSelectedProperty(this.state.lead)
         })
     }
 
     componentWillUnmount() {
         this._unsubscribe();
+    }
+
+    fetchLead = () => {
+        const { lead } = this.props
+        axios.get(`api/leads/byid?id=${lead.id}`)
+            .then((res) => {
+                this.props.dispatch(setlead(res.data))
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     getSelectedProperty = (lead) => {
@@ -94,11 +106,11 @@ class LeadRCMPayment extends React.Component {
                             let offerObject = this.state.allProperties[0].agreedOffer[0];
                             // if payment amount is null then set the agreed amount as payment amount as well.
                             if (this.state.lead.payment === null) {
-                                this.setState({ 
+                                this.setState({
                                     agreedAmount: String(offerObject.offer),
                                     token: String(this.state.lead.token),
                                     commissionPayment: String(this.state.lead.commissionPayment)
-                                 }, () => {
+                                }, () => {
                                     this.handleAgreedAmountPress();
                                 })
                             }
@@ -177,15 +189,15 @@ class LeadRCMPayment extends React.Component {
     addProperty = () => { }
 
     ownProperty = (property) => {
-		const { user } = this.props
-		const { organization } = this.state
-		if (property.assigned_to_armsuser_id) {
-			return user.id === property.assigned_to_armsuser_id
-		}
-		else {
-			return false
-		}
-	}
+        const { user } = this.props
+        const { organization } = this.state
+        if (property.assigned_to_armsuser_id) {
+            return user.id === property.assigned_to_armsuser_id
+        }
+        else {
+            return false
+        }
+    }
 
     handleReasonChange = (value) => {
         this.setState({ selectedReason: value });
@@ -208,7 +220,7 @@ class LeadRCMPayment extends React.Component {
         payload.armsProperty = selectedProperty[0].arms_id;
         payload.graanaProperty = selectedProperty[0].graana_id;
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
-            this.setState({ lead: response.data },()=>{
+            this.setState({ lead: response.data }, () => {
                 this.getSelectedProperty();
             });
         }).catch(error => {

@@ -4,12 +4,12 @@ import styles from './style'
 import AppStyles from '../../AppStyles'
 import { Ionicons, FontAwesome, Entypo } from '@expo/vector-icons';
 import { CheckBox } from 'native-base';
+import helper from '../../helper'
 
 class InventoryTile extends React.Component {
 	constructor(props) {
 		super(props)
 	}
-
 
 	_renderItem = (item) => {
 		return (
@@ -20,7 +20,7 @@ class InventoryTile extends React.Component {
 	render() {
 		const { data, showCheckBoxes, menuShow } = this.props
 		let showLable = menuShow || false
-		
+
 		return (
 			<TouchableOpacity
 				style={{ flexDirection: "row" }}
@@ -33,16 +33,16 @@ class InventoryTile extends React.Component {
 				<View style={styles.tileContainer}>
 					<View style={[AppStyles.mb1, styles.pad5]}>
 						<Text style={styles.currencyText}> PKR  <Text style={styles.priceText}>{data.price}</Text> </Text>
-						<Text style={styles.marlaText}> {data.size} {data.size_unit} House For Sale </Text>
-						<Text style={styles.addressText}> {data.area ? data.area.name + ', ': null} {data.city ? data.city.name: null} </Text>
+						<Text numberOfLines={1} style={styles.marlaText}> {data.size} {data.size_unit} {data.subtype && helper.capitalize(data.subtype)} For {data.purpose && helper.capitalize(data.purpose)} </Text>
+						<Text numberOfLines={1} style={styles.addressText}> {data.area ? data.area.name + ', ' : null} {data.city ? data.city.name : null} </Text>
 						<View style={styles.iconContainer}>
 							<View style={styles.iconInner}>
-								<Ionicons name="ios-bed" size={20} color={AppStyles.colors.subTextColor} />
-								<Text> {data.bed} </Text>
+								<Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
+								<Text style={{ fontSize: 18 }}> {data.bed} </Text>
 							</View>
 							<View style={styles.iconInner}>
-								<FontAwesome name="bath" size={17} color={AppStyles.colors.subTextColor} />
-								<Text> {data.bath} </Text>
+								<FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
+								<Text style={{ fontSize: 18 }}> {data.bath} </Text>
 							</View>
 						</View>
 					</View>
@@ -52,24 +52,24 @@ class InventoryTile extends React.Component {
 							<View style={{ flex: 1 }}></View>
 							{
 								showLable ?
-									<Entypo onPress={() => {this.props.doneViewing(data)}} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
-									:
+							<Entypo onPress={() => { this.props.doneViewing(data) }} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
+							:
 									null
 							}
 						</View>
-						<View style={{ marginTop: 10 }}>
+						<View style={{ marginTop: 10, height: 120 }}>
 							<Text style={styles.agentText}> Agent Name </Text>
-							<Text style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
-							<View style={{ flexDirection: 'row', height: 26 }}>
-								<View style={{ flex: 1 }}></View>
-								<FontAwesome name="phone" size={25} color={AppStyles.colors.subTextColor} />
+							<Text numberOfLines={1} style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
+							<View style={{ flexDirection: 'row-reverse', height: 60 }}>
+								{/* <View style={{ flex: 1 }}></View> */}
+								<FontAwesome onPress= {() => {helper.callNumber(data.user ? data.user.phoneNumber: null)}} style={{ paddingTop: 25, paddingRight: 5 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 							</View>
 						</View>
 					</View>
 				</View>
 				{
 					showCheckBoxes ?
-						<View style={{ marginTop: 20, marginRight: 10 }}>
+						<View style={{ marginTop: 20, marginRight: 5 }}>
 							<CheckBox color={AppStyles.colors.primaryColor} checked={data.checkBox} />
 						</View>
 						:

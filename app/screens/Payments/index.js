@@ -8,6 +8,7 @@ import InnerForm from './innerForm';
 import StaticData from '../../StaticData';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import moment from 'moment'
+import { ProgressBar, Colors } from 'react-native-paper';
 
 class Payments extends Component {
 	constructor(props) {
@@ -107,21 +108,20 @@ class Payments extends Component {
 		})
 	}
 
-	discountPayment = (value, name) => {
-		const { readOnly, formData, remainingPayment } = this.state
-		var totalPrice = readOnly.totalPrice
-		var remaining = ''
-		var total = ''
-		if (name === 'discount') {
-			total = totalPrice - (formData.discount === '' ? 0 : formData.discount)
-		}
+	discountPayment = (value) => {
+		const { readOnly } = this.state
+		let totalPrice = readOnly.totalPrice
+		let remaining = totalPrice - value['discount'] - value['downPayment'] - value['token']
+		this.setState({remainingPayment: remaining})
+	}
 
-		if (name === 'token') {
-			total = totalPrice - (formData.token === '' ? 0 : formData.token)
-		}
-		this.setState({
-			remainingPayment: total
-		})
+	discountInstallments = (value, index) => {
+		const { readOnly, remainingPayment } = this.state
+		let totalPrice = readOnly.totalPrice
+		// let remaining = value.map((item, index) => {return totalPrice - item.installmentAmount})
+		let remaining =  remainingPayment - value[index].installmentAmount
+		console.log(value[index])
+		this.setState({remainingPayment: remaining})
 	}
 
 	currentDate = (name) => {
@@ -147,25 +147,26 @@ class Payments extends Component {
 
 
 		if (name === 'projectId' && value != '') {
-			this.getFloors(formData.projectId)
+			this.getFloors(newFormData.projectId)
 		}
 		if (name === 'floorId' && value != '') {
-			this.getUnits(formData.projectId, formData.floorId)
+			this.getUnits(newFormData.projectId, newFormData.floorId)
 		}
 		if (name === 'unitId' && value != '') {
 			this.readOnly(value)
 		}
 		if (name === 'discount') {
-			this.discountPayment(value, name)
+			this.discountPayment(newFormData)
 		}
-		if (name === 'token') {
+		if (name == 'token') {
 			this.currentDate(name)
-			this.discountPayment(value, name)
+			this.discountPayment(newFormData)
 		}
-		if (name === 'downPayment' && value != '') {
+		if (name === 'downPayment') {
 			this.currentDate(name)
+			this.discountPayment(newFormData)
 		}
-		if (name === 'instalments' && value != '') {
+		if (name === 'instalments') {
 			this.instalmentsField(value)
 		}
 	}
@@ -177,15 +178,11 @@ class Payments extends Component {
 		newInstallments[index].installmentAmount = parseInt(value)
 		newInstallments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
 		this.setState({ totalInstalments: newInstallments })
+		// this.discountInstallments(newInstallments, index)
 	}
 
 	formSubmit = () => {
 		const { formData, totalInstalments } = this.state
-		// if (!formData.projectId || !formData.floorId || !formData.unitId || !formData.token || !formData.downPayment) {
-		// 	this.setState({
-		// 		checkValidation: true
-		// 	})
-		// } else {
 		let body = {
 			discount: parseInt(formData.discount),
 			downPayment: parseInt(formData.downPayment),
@@ -203,7 +200,6 @@ class Payments extends Component {
 					this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
 				}
 			})
-		// }
 	}
 
 	handleReasonChange = (value) => {
@@ -251,7 +247,7 @@ class Payments extends Component {
 
 		return (
 			<View>
-				<View style={[AppStyles.lineView, styles.paymentLine]}></View>
+				<ProgressBar progress={1} color={'#0277FD'} />
 				<ScrollView>
 					
 					<View style={[AppStyles.container]}>

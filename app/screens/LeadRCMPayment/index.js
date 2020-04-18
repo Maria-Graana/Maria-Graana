@@ -53,13 +53,13 @@ class LeadRCMPayment extends React.Component {
     }
 
     componentDidMount = () => {
-       // this._unsubscribe = this.props.navigation.addListener('focus', () => {
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.getSelectedProperty(this.state.lead)
-       // })
+        })
     }
 
     componentWillUnmount() {
-       // this._unsubscribe();
+        this._unsubscribe();
     }
 
     getSelectedProperty = (lead) => {
@@ -177,15 +177,15 @@ class LeadRCMPayment extends React.Component {
     addProperty = () => { }
 
     ownProperty = (property) => {
-        const { user } = this.props
-        if ('armsuser' in property && property.armsuser) {
-            return user.id === property.armsuser.id
-        } else if ('user' in property && property.user) {
-            return user.id === property.user.id
-        } else {
-            return false
-        }
-    }
+		const { user } = this.props
+		const { organization } = this.state
+		if (property.assigned_to_armsuser_id) {
+			return user.id === property.assigned_to_armsuser_id
+		}
+		else {
+			return false
+		}
+	}
 
     handleReasonChange = (value) => {
         this.setState({ selectedReason: value });

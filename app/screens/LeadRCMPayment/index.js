@@ -18,6 +18,7 @@ import { formatPrice } from '../../PriceFormate'
 import { setlead } from '../../actions/lead';
 import RentPaymentView from './rentPaymentView';
 import { FAB } from 'react-native-paper';
+import { ProgressBar, Colors } from 'react-native-paper';
 
 class LeadRCMPayment extends React.Component {
     constructor(props) {
@@ -381,7 +382,7 @@ class LeadRCMPayment extends React.Component {
         return (
             !loading ?
                 <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
-
+                    <ProgressBar progress={1} color={'#0277FD'} />
                     <LeadRCMPaymentPopup
                         reasons={reasons}
                         selectedReason={selectedReason}

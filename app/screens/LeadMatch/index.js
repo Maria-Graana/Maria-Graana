@@ -16,6 +16,7 @@ import _ from 'underscore';
 import helper from '../../helper';
 import { setlead } from '../../actions/lead';
 import { FAB } from 'react-native-paper';
+import StaticData from '../../StaticData';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -122,31 +123,32 @@ class LeadMatch extends React.Component {
         const { lead } = this.props
         let cityId = ''
         let areaId = ''
-
+        let areas = []
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
         }
 
         if ('armsLeadAreas' in lead) {
             if (lead.armsLeadAreas.length) {
-                if ('area' in lead.armsLeadAreas[0]) {
-                    areaId = lead.armsLeadAreas[0].area.id
-                }
+                areas = lead.armsLeadAreas.map((area) => {
+                    if ('area' in area)
+                        return area.area.id
+                })
             }
         }
         this.setState({
             formData: {
                 cityId: cityId,
-                areaId: areaId,
-                minPrice: lead.min_price || '',
-                maxPrice: lead.price || '',
-                bed: lead.bed || '',
-                bath: lead.bath || '',
-                size: lead.size || '',
-                sizeUnit: lead.size_unit || '',
-                propertySubType: lead.subtype || '',
-                propertyType: lead.type || '',
-                purpose: lead.purpose || '',
+                leadAreas: areas,
+                minPrice: lead.min_price,
+                maxPrice: lead.price,
+                bed: lead.bed,
+                bath: lead.bath,
+                size: lead.size,
+                sizeUnit: lead.size_unit,
+                propertySubType: lead.subtype,
+                propertyType: lead.type,
+                purpose: lead.purpose,
             },
             showFilter: false,
             loading: true
@@ -194,6 +196,7 @@ class LeadMatch extends React.Component {
                             return (matches.push(item))
                         }
                     })
+                    console.log(res.data.rows[0])
                     this.setState({
                         matchData: {
                             type: organization,
@@ -264,16 +267,9 @@ class LeadMatch extends React.Component {
     ownProperty = (property) => {
         const { user } = this.props
         const { organization } = this.state
-
-        if (organization === 'arms' && 'armsuser' in property && property.armsuser) {
-            return user.id === property.armsuser.id
-        }
-        else if (organization === 'graana' && 'user' in property && property.user) {
-            return user.id === property.user.id
-        }
-        else if (organization === 'aragency21' && 'user' in property && property.user) {
-            return user.id === property.user.id
-        }
+        if (property.assigned_to_armsuser_id) {
+            return user.id === property.assigned_to_armsuser_id
+        } 
         else {
             return false
         }
@@ -444,10 +440,10 @@ class LeadMatch extends React.Component {
                         {
                             matchData.data.length ?
                                 <FlatList
-                                    style={{ height: 135 }}
+                                    style={{ flex: 1 }}
                                     data={matchData.data}
                                     renderItem={(item, index) => (
-                                        <View style={{ marginVertical: 10, marginHorizontal: 15 }}>
+                                        <View style={{ marginVertical: 2, marginHorizontal: 8 }}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile

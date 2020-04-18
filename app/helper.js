@@ -54,7 +54,7 @@ const helper = {
 		return re.test(email);
 	},
 	callNumber(url) {
-		if (url != 'tel:null') {
+		if (url && url != 'tel:null') {
 			Linking.canOpenURL(url)
 				.then(supported => {
 					if (!supported) {

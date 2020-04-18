@@ -53,13 +53,13 @@ class LeadRCMPayment extends React.Component {
     }
 
     componentDidMount = () => {
-        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+       // this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.getSelectedProperty(this.state.lead)
-        })
+       // })
     }
 
     componentWillUnmount() {
-        this._unsubscribe();
+       // this._unsubscribe();
     }
 
     getSelectedProperty = (lead) => {
@@ -208,7 +208,9 @@ class LeadRCMPayment extends React.Component {
         payload.armsProperty = selectedProperty[0].arms_id;
         payload.graanaProperty = selectedProperty[0].graana_id;
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
-            this.setState({ lead: response.data });
+            this.setState({ lead: response.data },()=>{
+                this.getSelectedProperty();
+            });
         }).catch(error => {
             console.log(error);
         })

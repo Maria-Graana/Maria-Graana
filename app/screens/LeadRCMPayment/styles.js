@@ -46,18 +46,17 @@ export default styles = StyleSheet.create({
     color: '#0F74EE',
   },
   blackInputdate: {
-    width: '20%',
+    width: '32%',
     borderRadius: 4,
   },
   dateText: {
     width: '20%',
     minHeight: 30,
     alignSelf:'center',
-    letterSpacing: 2,
     fontSize: 10,
   },
   sideBtnInput: {
-    width: '20%',
+    width: '30%',
     borderRadius: 4,
   },
   addBtnColorLeft: {

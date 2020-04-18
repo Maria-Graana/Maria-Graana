@@ -177,15 +177,15 @@ class LeadRCMPayment extends React.Component {
     addProperty = () => { }
 
     ownProperty = (property) => {
-        const { user } = this.props
-        if ('armsuser' in property && property.armsuser) {
-            return user.id === property.armsuser.id
-        } else if ('user' in property && property.user) {
-            return user.id === property.user.id
-        } else {
-            return false
-        }
-    }
+		const { user } = this.props
+		const { organization } = this.state
+		if (property.assigned_to_armsuser_id) {
+			return user.id === property.assigned_to_armsuser_id
+		}
+		else {
+			return false
+		}
+	}
 
     handleReasonChange = (value) => {
         this.setState({ selectedReason: value });
@@ -208,7 +208,9 @@ class LeadRCMPayment extends React.Component {
         payload.armsProperty = selectedProperty[0].arms_id;
         payload.graanaProperty = selectedProperty[0].graana_id;
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
-            this.setState({ lead: response.data });
+            this.setState({ lead: response.data },()=>{
+                this.getSelectedProperty();
+            });
         }).catch(error => {
             console.log(error);
         })

@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
 import helper from '../../helper';
+import { setSelectedAreas } from "../../actions/areas";
 
 
 class AddRCMLead extends Component {
@@ -22,7 +23,6 @@ class AddRCMLead extends Component {
             getProject: [],
             formType: 'sale',
             selectSubType: [],
-            getAreas: [],
             RCMFormData: {
                 type: "",
                 subtype: "",
@@ -40,10 +40,25 @@ class AddRCMLead extends Component {
     }
 
     componentDidMount() {
-        const { user } = this.props
+        const { user, navigation } = this.props
+        navigation.addListener('focus', () => {
+            setTimeout(() => {
+                const { selectedAreasIds } = this.props;
+                const { RCMFormData } = this.state;
+                let copyObject = Object.assign({}, RCMFormData);
+                copyObject.leadAreas = selectedAreasIds;
+                this.setState({ RCMFormData: copyObject })
+            }, 1000)
+        })
         this.getCities();
         this.getAllProjects();
         this.getClients(user.id);
+    }
+
+    componentWillUnmount() {
+        const { dispatch } = this.props;
+        // selected Areas should be cleared to be used anywhere else
+        dispatch(setSelectedAreas([]));
     }
 
     getClients = (id) => {
@@ -82,21 +97,34 @@ class AddRCMLead extends Component {
 
     handleRCMForm = (value, name) => {
         const { RCMFormData } = this.state
+        const { dispatch } = this.props;
         RCMFormData[name] = value
         this.setState({ RCMFormData })
+        if (RCMFormData.city_id !== '' && name === 'city_id') {
+            let copyObject = Object.assign({}, RCMFormData);
+            copyObject.leadAreas = [];
+            this.setState({ RCMFormData: copyObject });
+            dispatch(setSelectedAreas([]))
+
+        }
         if (RCMFormData.type != '') { this.selectSubtype(RCMFormData.type) }
-        if (RCMFormData.city_id != '') { this.getAreas(RCMFormData.city_id) }
+
     }
 
-    getAreas = (cityId) => {
-        axios.get(`/api/areas?city_id=${cityId}&all=true`)
-            .then((res) => {
-                let getArea = [];
-                res && res.data.items.map((item, index) => { return (getArea.push({ value: item.id, name: item.name })) })
-                this.setState({
-                    getAreas: getArea
-                })
-            })
+
+    handleAreaClick = () => {
+        const { RCMFormData } = this.state;
+        const { city_id, leadAreas } = RCMFormData;
+        const { navigation } = this.props;
+
+        const isEditMode = `${leadAreas.length > 0 ? true : false}`
+
+        if (city_id !== '' && city_id !== undefined) {
+            navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode });
+        }
+        else {
+            alert('Please select city first!')
+        }
     }
 
     selectSubtype = (type) => {
@@ -108,7 +136,7 @@ class AddRCMLead extends Component {
         if (
             !RCMFormData.customerId ||
             !RCMFormData.city_id ||
-            !RCMFormData.leadAreas ||
+            !RCMFormData.leadAreas||
             !RCMFormData.type ||
             !RCMFormData.subtype
         ) {
@@ -156,7 +184,6 @@ class AddRCMLead extends Component {
             formType,
             RCMFormData,
             selectSubType,
-            getAreas,
             checkValidation,
         } = this.state
         const { route } = this.props
@@ -176,10 +203,10 @@ class AddRCMLead extends Component {
                                     propertyType={StaticData.type}
                                     formData={RCMFormData}
                                     cities={cities}
-                                    getAreas={getAreas}
                                     getClients={getClients}
                                     formType={formType}
                                     subType={selectSubType}
+                                    handleAreaClick={this.handleAreaClick}
                                 />
                             </View>
                         </ScrollView>
@@ -194,6 +221,7 @@ class AddRCMLead extends Component {
 mapStateToProps = (store) => {
     return {
         user: store.user.user,
+        selectedAreasIds: store.areasReducer.selectedAreas,
     }
 }
 

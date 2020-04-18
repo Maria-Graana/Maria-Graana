@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Button } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import styles from './style';
@@ -16,6 +16,8 @@ class InnerRCMForm extends Component {
 
   componentDidMount() { }
 
+
+
   render() {
 
     const {
@@ -29,8 +31,10 @@ class InnerRCMForm extends Component {
       subType,
       sizeUnit,
       size,
-      getAreas,
+      handleAreaClick,
     } = this.props
+
+    const { leadAreas } = formData;
 
     return (
       <View>
@@ -56,42 +60,17 @@ class InnerRCMForm extends Component {
         </View>
 
         {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            {/* <PickerComponent onValueChange={handleForm} data={getAreas} name={'leadAreas'} placeholder='Select Area' /> */}
-            <MultiSelect
-              hideTags
-              items={getAreas}
-              uniqueKey="value"
-              displayKey="name"
-              ref={(component) => { this.multiSelect = component }}
-              onSelectedItemsChange={(text) => handleForm(text, 'leadAreas')}
-              selectedItems={formData.leadAreas}
-              styleDropdownMenuSubsection={{
-                paddingTop: 8,
-                paddingBottom: 8,
-                paddingLeft: 15,
-                paddingRight: 10,
-                backgroundColor: '#ffffff',
-                borderWidth: 1,
-                position: 'relative',
-                borderRadius: 5,
-                borderColor: '#f0f0f0',
-                minHeight: 45,
-              }}
-              styleListContainer={styles.formControlMulti}
-              searchInputStyle={styles.formControlMulti}
-              searchInputPlaceholderText="Search Items..."
-              selectedItemTextColor="#000"
-              selectedItemIconColor="#757575"
-              // submitButtonColor="#000"
-              submitButtonText="Done"
-            />
-            {
-              checkValidation === true && formData.leadAreas === '' && <ErrorMessage errorMessage={'Required'} />
-            }
+        <TouchableOpacity onPress={() => handleAreaClick()}  >
+          <View style={[AppStyles.mainInputWrap, AppStyles.inputPadLeft, AppStyles.formControl, { justifyContent: 'center' }]} >
+            <Text style={[AppStyles.formFontSettings, { color: leadAreas.length > 0 ? AppStyles.colors.textColor : AppStyles.colors.subTextColor }]} >
+              {leadAreas.length > 0 ? `${leadAreas.length} Areas Selected` : 'Select Areas'}
+            </Text>
           </View>
-        </View>
+        </TouchableOpacity>
+
+        {
+          checkValidation === true && leadAreas.length === 0 && <ErrorMessage errorMessage={'Required'} />
+        }
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

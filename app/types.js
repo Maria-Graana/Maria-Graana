@@ -11,3 +11,7 @@ export const SET_TOKEN_ERROR = 'SET_TOKEN_ERROR';
 export const SET_USER = 'SET_USER';
 export const LOGOUT_USER = 'LOGOUT_USER';
 export const UPDATE_LISTING_COUNT = 'UPDATE_LISTING_COUNT';
+export const GET_AREAS = 'GET_AREAS';
+export const CLEAR_AREAS = 'CLEAR_AREAS';
+export const SET_AREA_LOADER = 'SET_AREA_LOADER';
+export const SET_SELECTED_AREAS = 'SET_SELECTED_AREAS';

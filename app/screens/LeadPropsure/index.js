@@ -189,7 +189,7 @@ class LeadPropsure extends React.Component {
     renderPropsureVerificationView = (item) => {
         return (
             <TouchableOpacity key={item.id.toString()} onPress={() => this.showPackageModal(item.id)}
-                style={styles.viewButtonStyle} activeOpacity={0.7}>
+                style={[styles.viewButtonStyle,{backgroundColor:AppStyles.bgcWhite.backgroundColor}]} activeOpacity={0.7}>
                 <Text style={styles.propsureVerificationTextStyle}>
                     PROPSURE VERIFICATION
                 </Text>

@@ -11,6 +11,7 @@ import MeetingStatusModal from '../../components/MeetingStatusModal'
 import moment from 'moment'
 import helper from '../../helper';
 import AppStyles from '../../AppStyles';
+import { ProgressBar, Colors } from 'react-native-paper';
 
 class Meetings extends Component {
   constructor(props) {
@@ -205,7 +206,7 @@ class Meetings extends Component {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus } = this.state
     return (
       <View style={styles.mainWrapCon}>
-        <View style={[AppStyles.lineView, styles.meetingLine]}></View>
+        <ProgressBar progress={0.5} color={'#0277FD'} />
 
         {/* ************Fab For Open Modal************ */}
         <View style={[styles.meetingConteiner]}>

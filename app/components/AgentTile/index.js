@@ -73,7 +73,7 @@ class InventoryTile extends React.Component {
 				{
 					showCheckBoxes ?
 						<View style={{ marginTop: 20, marginRight: 5 }}>
-							<CheckBox color={AppStyles.colors.primaryColor} checked={data.checkBox} />
+							<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
 						</View>
 						:
 						null

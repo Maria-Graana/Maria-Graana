@@ -11,6 +11,7 @@ import Loader from '../../components/loader';
 import _ from 'underscore';
 import OfferModal from '../../components/OfferModal'
 import { FAB } from 'react-native-paper';
+import { ProgressBar, Colors } from 'react-native-paper';
 
 class LeadOffer extends React.Component {
 	constructor(props) {
@@ -231,6 +232,7 @@ class LeadOffer extends React.Component {
 		return (
 			!loading ?
 				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
+					<ProgressBar progress={0.6} color={'#0277FD'} />
 					<View style={{ flex: 1 }}>
 						{
 							matchData.length ?

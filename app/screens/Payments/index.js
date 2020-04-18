@@ -250,36 +250,40 @@ class Payments extends Component {
 		} = this.state
 
 		return (
-			<ScrollView>
-				<View style={[AppStyles.container]}>
-					<LeadRCMPaymentPopup
-						reasons={reasons}
-						selectedReason={selectedReason}
-						changeReason={this.handleReasonChange}
-						checkValidation={checkReasonValidation}
-						isVisible={isVisible}
-						closeModal={() => this.closeModal()}
-						onPress={this.onHandleCloseLead}
-						CMlead={true}
-					/>
-					<InnerForm
-						getFloor={getFloors}
-						getUnit={getUnit}
-						getProject={getProject}
-						getInstallments={StaticData.getInstallments}
-						totalInstalments={totalInstalments}
-						checkValidation={checkValidation}
-						handleInstalments={this.handleInstalments}
-						handleForm={this.handleForm}
-						formSubmit={this.formSubmit}
-						readOnly={readOnly}
-						remainingPayment={remainingPayment}
-						formData={formData}
-						tokenDate={tokenDate}
-						downPayment={downPayment}
-					/>
-				</View>
-			</ScrollView>
+			<View>
+				<View style={[AppStyles.lineView, styles.paymentLine]}></View>
+				<ScrollView>
+					
+					<View style={[AppStyles.container]}>
+						<LeadRCMPaymentPopup
+							reasons={reasons}
+							selectedReason={selectedReason}
+							changeReason={this.handleReasonChange}
+							checkValidation={checkReasonValidation}
+							isVisible={isVisible}
+							closeModal={() => this.closeModal()}
+							onPress={this.onHandleCloseLead}
+							CMlead={true}
+						/>
+						<InnerForm
+							getFloor={getFloors}
+							getUnit={getUnit}
+							getProject={getProject}
+							getInstallments={StaticData.getInstallments}
+							totalInstalments={totalInstalments}
+							checkValidation={checkValidation}
+							handleInstalments={this.handleInstalments}
+							handleForm={this.handleForm}
+							formSubmit={this.formSubmit}
+							readOnly={readOnly}
+							remainingPayment={remainingPayment}
+							formData={formData}
+							tokenDate={tokenDate}
+							downPayment={downPayment}
+						/>
+					</View>
+				</ScrollView>
+			</View>
 		)
 	}
 }

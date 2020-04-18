@@ -246,4 +246,11 @@ export default AppStyles = {
         letterSpacing: 2,
         fontSize: 10,
     },
+    lineView: {
+        position: 'relative',
+        top: 0,
+        left: 0,
+        height: 2,
+        backgroundColor: '#333',
+    }
 }

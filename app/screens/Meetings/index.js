@@ -12,7 +12,7 @@ import moment from 'moment'
 import helper from '../../helper';
 import AppStyles from '../../AppStyles';
 import { ProgressBar, Colors } from 'react-native-paper';
-
+import { FAB } from 'react-native-paper';
 class Meetings extends Component {
   constructor(props) {
     super(props)
@@ -29,7 +29,8 @@ class Meetings extends Component {
       doneStatusId: '',
       editMeeting: false,
       meetingId: '',
-      modalStatus: 'dropdown'
+      modalStatus: 'dropdown',
+      open: false,
     }
   }
 
@@ -203,7 +204,7 @@ class Meetings extends Component {
   }
 
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus } = this.state
+    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus,open } = this.state
     return (
       <View style={styles.mainWrapCon}>
         <ProgressBar progress={0.5} color={'#0277FD'} />
@@ -245,13 +246,27 @@ class Meetings extends Component {
           </View>
         </View>
 
-        <Fab
+        {/* <Fab
           active={active}
           style={{ backgroundColor: '#0D73EE' }}
           position="bottomRight"
           onPress={() => { this.openAttechment() }}>
           <Ionicons name="md-add" color="#ffffff" />
-        </Fab>
+        </Fab> */}
+
+        <FAB.Group
+						open={open}
+						icon="plus"
+						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+						color={AppStyles.bgcWhite.backgroundColor}
+						actions={[
+							{ icon: 'plus', label: 'Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+							{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+							{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+
+						]}
+						onStateChange={({ open }) => this.setState({ open })}
+					/>
 
         {/* ************Modal Component************ */}
         <MeetingModal
@@ -261,18 +276,6 @@ class Meetings extends Component {
           openModal={this.openModal}
           handleForm={this.handleForm}
           formSubmit={this.formSubmit}
-        />
-
-        {/* ************Modal Component************ */}
-        <MeetingStatusModal
-          doneStatus={doneStatus}
-          sendStatus={this.sendStatus}
-          data={doneStatusId}
-          openStatus={this.openStatus}
-          modalType={modalStatus}
-          goToDiaryForm={this.goToDiaryForm}
-          goToAttachments={this.goToAttachments}
-          goToComments={this.goToComments}
         />
 
       </View>

@@ -108,20 +108,18 @@ class Payments extends Component {
 		})
 	}
 
-	discountPayment = (value) => {
-		const { readOnly } = this.state
+	discountPayment = () => {
+		const { readOnly, formData, totalInstalments } = this.state
 		let totalPrice = readOnly.totalPrice
-		let remaining = totalPrice - value['discount'] - value['downPayment'] - value['token']
-		this.setState({remainingPayment: remaining})
-	}
+		let totalInstallments = 0
+		totalInstalments.map((item, index) => {
+			if (item.installmentAmount) {
+				totalInstallments = totalInstallments + item.installmentAmount
+			}
+		})
+		let remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - totalInstallments
 
-	discountInstallments = (value, index) => {
-		const { readOnly, remainingPayment } = this.state
-		let totalPrice = readOnly.totalPrice
-		// let remaining = value.map((item, index) => {return totalPrice - item.installmentAmount})
-		let remaining =  remainingPayment - value[index].installmentAmount
-		console.log(value[index])
-		this.setState({remainingPayment: remaining})
+		this.setState({ remainingPayment: remaining })
 	}
 
 	currentDate = (name) => {
@@ -143,32 +141,31 @@ class Payments extends Component {
 		const { formData } = this.state
 		let newFormData = { ...formData }
 		newFormData[name] = value
-		this.setState({ formData: newFormData })
-
-
-		if (name === 'projectId' && value != '') {
-			this.getFloors(newFormData.projectId)
-		}
-		if (name === 'floorId' && value != '') {
-			this.getUnits(newFormData.projectId, newFormData.floorId)
-		}
-		if (name === 'unitId' && value != '') {
-			this.readOnly(value)
-		}
-		if (name === 'discount') {
-			this.discountPayment(newFormData)
-		}
-		if (name == 'token') {
-			this.currentDate(name)
-			this.discountPayment(newFormData)
-		}
-		if (name === 'downPayment') {
-			this.currentDate(name)
-			this.discountPayment(newFormData)
-		}
-		if (name === 'instalments') {
-			this.instalmentsField(value)
-		}
+		this.setState({ formData: newFormData }, () => {
+			if (name === 'projectId' && value != '') {
+				this.getFloors(newFormData.projectId)
+			}
+			if (name === 'floorId' && value != '') {
+				this.getUnits(newFormData.projectId, newFormData.floorId)
+			}
+			if (name === 'unitId' && value != '') {
+				this.readOnly(value)
+			}
+			if (name === 'discount') {
+				this.discountPayment(newFormData)
+			}
+			if (name == 'token') {
+				this.currentDate(name)
+				this.discountPayment(newFormData)
+			}
+			if (name === 'downPayment') {
+				this.currentDate(name)
+				this.discountPayment(newFormData)
+			}
+			if (name === 'instalments') {
+				this.instalmentsField(value)
+			}
+		})
 	}
 
 	handleInstalments = (value, index) => {
@@ -177,8 +174,10 @@ class Payments extends Component {
 		let newInstallments = [...totalInstalments]
 		newInstallments[index].installmentAmount = parseInt(value)
 		newInstallments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
-		this.setState({ totalInstalments: newInstallments })
-		// this.discountInstallments(newInstallments, index)
+		this.setState({ totalInstalments: newInstallments }, () => {
+			this.discountPayment()
+		})
+		
 	}
 
 	formSubmit = () => {
@@ -249,7 +248,7 @@ class Payments extends Component {
 			<View>
 				<ProgressBar progress={1} color={'#0277FD'} />
 				<ScrollView>
-					
+
 					<View style={[AppStyles.container]}>
 						<LeadRCMPaymentPopup
 							reasons={reasons}

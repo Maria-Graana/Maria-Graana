@@ -16,6 +16,7 @@ import _ from 'underscore';
 import helper from '../../helper';
 import { setlead } from '../../actions/lead';
 import { FAB } from 'react-native-paper';
+import { ProgressBar, Colors } from 'react-native-paper';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -413,6 +414,7 @@ class LeadMatch extends React.Component {
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
+                    <ProgressBar progress={0.2} color={'#0277FD'} />
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>

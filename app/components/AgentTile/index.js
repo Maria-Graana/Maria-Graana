@@ -50,12 +50,12 @@ class InventoryTile extends React.Component {
 					<View style={[styles.pad5, { marginRight: 5 }]}>
 						<View style={{ flexDirection: 'row', height: 20 }}>
 							<View style={{ flex: 1 }}></View>
-							{/* {
-								showLable ? */}
+							{
+								showLable ?
 							<Entypo onPress={() => { this.props.doneViewing(data) }} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
-							{/* :
+							:
 									null
-							} */}
+							}
 						</View>
 						<View style={{ marginTop: 10, height: 120 }}>
 							<Text style={styles.agentText}> Agent Name </Text>

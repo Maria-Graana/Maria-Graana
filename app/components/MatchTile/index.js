@@ -19,8 +19,10 @@ class InventoryTile extends React.Component {
 	}
 
 	render() {
-		const { data } = this.props
+		const { data, menuShow, showCheckBoxes } = this.props
 		let imagesList = []
+		let showLable = menuShow || false
+
 		if ('armsPropertyImages' in data) {
 			if (data.armsPropertyImages.length) {
 				imagesList = data.armsPropertyImages.map((item) => {
@@ -31,7 +33,11 @@ class InventoryTile extends React.Component {
 
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row' }}
-				onLongPress={() => { }}
+				onLongPress={() => {
+					this.props.displayChecks()
+					this.props.addProperty(data)
+				}}
+				onPress={() => { this.props.addProperty(data) }}
 			>
 				<View style={styles.tileContainer}>
 					<View style={[styles.pad5]}>
@@ -78,13 +84,23 @@ class InventoryTile extends React.Component {
 						</View>
 					</View>
 					<View style={styles.phoneIcon}>
-						<Entypo style={{ paddingLeft: 10 }} onPress={() => { this.props.doneViewing(data) }} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
-						<FontAwesome onPress= {() => {helper.callNumber(data.user ? data.user.phoneNumber: null)}} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+						{
+							showLable ?
+								<Entypo style={{ paddingLeft: 10 }} onPress={() => { this.props.doneViewing(data) }} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
+								:
+								null
+						}
+						<FontAwesome onPress={() => { helper.callNumber(data.user ? data.user.phoneNumber : null) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 					</View>
 				</View>
-				{/* <View style={{ marginRight: 5, marginTop: 5 }}>
-					<CheckBox color={AppStyles.colors.primaryColor} checked={true} />
-				</View> */}
+				{
+					showCheckBoxes ?
+						<View style={{ marginRight: 5, marginTop: 5 }}>
+							<CheckBox color={AppStyles.colors.primaryColor} checked={data.checkBox} />
+						</View>
+						:
+						null
+				}
 			</TouchableOpacity>
 		)
 	}

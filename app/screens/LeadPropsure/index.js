@@ -14,6 +14,7 @@ import PropsureDocumentPopup from '../../components/PropsureDocumentPopup/index'
 import _ from 'underscore';
 import StaticData from '../../StaticData';
 import { FAB } from 'react-native-paper';
+import { ProgressBar, Colors } from 'react-native-paper';
 
 class LeadPropsure extends React.Component {
     constructor(props) {
@@ -189,7 +190,7 @@ class LeadPropsure extends React.Component {
     renderPropsureVerificationView = (item) => {
         return (
             <TouchableOpacity key={item.id.toString()} onPress={() => this.showPackageModal(item.id)}
-                style={styles.viewButtonStyle} activeOpacity={0.7}>
+                style={[styles.viewButtonStyle,{backgroundColor:AppStyles.bgcWhite.backgroundColor}]} activeOpacity={0.7}>
                 <Text style={styles.propsureVerificationTextStyle}>
                     PROPSURE VERIFICATION
                 </Text>
@@ -237,6 +238,7 @@ class LeadPropsure extends React.Component {
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
+                    <ProgressBar progress={0.8} color={'#0277FD'} />
                     <PropsurePackagePopup
                         packages={packages}
                         selectedPackage={selectedPackage}

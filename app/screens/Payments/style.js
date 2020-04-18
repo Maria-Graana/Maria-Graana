@@ -5,4 +5,7 @@ export default styles = StyleSheet.create({
     top: 8,
     width: 100,
   },
+  paymentLine:{
+    width: '100%',
+  },
 });

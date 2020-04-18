@@ -14,6 +14,7 @@ import AddViewing from '../../components/AddViewing/index';
 import _ from 'underscore';
 import moment from 'moment';
 import { FAB } from 'react-native-paper';
+import { ProgressBar, Colors } from 'react-native-paper';
 
 class LeadViewing extends React.Component {
 	constructor(props) {
@@ -213,6 +214,7 @@ class LeadViewing extends React.Component {
 		return (
 			!loading ?
 				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
+					<ProgressBar progress={0.4} color={'#0277FD'} />
 					<View style={{  flex: 1 }}>
 						<AddViewing
 							onPress={this.submitViewing}

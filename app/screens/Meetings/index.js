@@ -10,6 +10,7 @@ import MeetingModal from '../../components/MeetingModal'
 import MeetingStatusModal from '../../components/MeetingStatusModal'
 import moment from 'moment'
 import helper from '../../helper';
+import AppStyles from '../../AppStyles';
 
 class Meetings extends Component {
   constructor(props) {
@@ -122,6 +123,7 @@ class Meetings extends Component {
     } else {
       axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
         .then((res) => {
+          console.log(res.data)
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
@@ -203,6 +205,7 @@ class Meetings extends Component {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus } = this.state
     return (
       <View style={styles.mainWrapCon}>
+        <View style={[AppStyles.lineView, styles.meetingLine]}></View>
 
         {/* ************Fab For Open Modal************ */}
         <View style={[styles.meetingConteiner]}>

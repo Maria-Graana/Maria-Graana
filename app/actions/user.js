@@ -1,8 +1,9 @@
 import * as types from '../types';
+
 import {AsyncStorage} from 'react-native';
-import config from '../config';
-import axios from 'axios';
 import { SplashScreen } from 'expo';
+import axios from 'axios';
+import config from '../config';
 
 storeItem = async (key, item) =>  {
     try {
@@ -53,7 +54,7 @@ export function setuser(data){
         dispatch({
             type: types.USER_LOADING
         })
-        axios.post(`${config.apiPath}/api/user/login`, data).then((response) => {
+        return axios.post(`${config.apiPath}/api/user/login`, data).then((response) => {
             console.log('<<<<<<<<<< User >>>>>>>>>>>>>>')
             console.log(response.data)
             storeItem('token', response.data.token)
@@ -70,6 +71,7 @@ export function setuser(data){
             dispatch({
                 type: types.SET_TOKEN_SUCCESS
             })
+            return response
         })
         .catch((error) => {
             console.log(error)
@@ -81,7 +83,7 @@ export function setuser(data){
                 type: types.SET_USER_ERROR,
                 payload: error.response ? error.response.data : error.message,
             })
-            return null
+            return error
         })
     }
 }

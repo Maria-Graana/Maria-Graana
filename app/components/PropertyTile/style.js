@@ -62,7 +62,7 @@ imageStyle: {
     paddingTop: hp('1%'),
     fontSize: AppStyles.fontSize.medium,
     fontFamily: AppStyles.fonts.defaultFont,
-    width: wp('60%'),
+    width: wp('51%'),
   },
   phoneButton: {
     alignSelf: 'flex-end',

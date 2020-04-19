@@ -207,7 +207,7 @@ class FilterModal extends React.Component {
                     </View>
                     <View style={{ flexDirection: "row", padding: 15 }}>
                         <View style={[{ paddingRight: 10, flex: 1, }]}>
-                            <PickerComponent selectedItem={formData.size} onValueChange={(text) => { this.handleForm(text, 'size') }} data={oneToTen} name={'type'} placeholder='Size' />
+                            <PickerComponent selectedItem={formData.size ? String(formData.size) : ''} onValueChange={(text) => { this.handleForm(text, 'size') }} data={oneToTen} name={'type'} placeholder='Size' />
                         </View>
                         <View style={[{ flex: 1, }]}>
                             <PickerComponent selectedItem={formData.sizeUnit} onValueChange={(text) => { this.handleForm(text, 'sizeUnit') }} data={sizeUnit} name={'type'} placeholder='Size Unit' />
@@ -223,10 +223,10 @@ class FilterModal extends React.Component {
                     </View>
                     <View style={{ flexDirection: "row", padding: 15 }}>
                         <View style={[{ paddingRight: 10, flex: 1, }]}>
-                            <TextInput value={formData.bed} onChangeText={(text) => { this.handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
+                            <TextInput value={formData.bed ? String(formData.bed) : ''} onChangeText={(text) => { this.handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
                         </View>
                         <View style={[{ flex: 1, }]}>
-                            <TextInput value={formData.bath} onChangeText={(text) => { this.handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
+                            <TextInput value={formData.bath ? String(formData.bath): ''} onChangeText={(text) => { this.handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
                         </View>
                     </View>
                     <View style={[AppStyles.mainInputWrap, { padding: 15 }]}>

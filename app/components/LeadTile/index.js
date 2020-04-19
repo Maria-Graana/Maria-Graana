@@ -5,6 +5,7 @@ import PropertyImg from '../../../assets/img/property.jpg'
 import React from 'react'
 import phone from '../../../assets/img/phone2.png'
 import styles from './style'
+import helper from '../../helper';
 
 class LeadTile extends React.Component {
   constructor(props) {
@@ -15,6 +16,7 @@ class LeadTile extends React.Component {
 
   render() {
     const { selectInventory, data, selectedInventory, unSelectInventory, navigateTo, callNumber } = this.props
+    console.log(data)
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }} onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
 
@@ -76,7 +78,7 @@ class LeadTile extends React.Component {
               {/* ****** Location Wrap */}
               <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                 <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                  f/12 Markaz, {data.city && data.city.name}
+                  {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length && data.armsLeadAreas[0].area && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
                 </Text>
               </View>
             </View>

@@ -202,10 +202,12 @@ class Diary extends React.Component {
   }
 
   showPopup = (val) => {
-    this.setState({
-      openPopup: true,
-      selectedDiary: val
-    });
+    if(val.taskType!=='viewing' && val.taskType !=='called'){
+      this.setState({
+        openPopup: true,
+        selectedDiary: val
+      });
+    }
   }
 
   closePopup = (val) => {

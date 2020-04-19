@@ -6,7 +6,7 @@ export default AppStyles = {
     container: {
         flex: 1,
         backgroundColor: '#e7ecf0',
-        paddingHorozntal: wp('2%')
+        paddingHorizontal: wp('2%')
     },
     colors: {
         background: '#f4f9fd',

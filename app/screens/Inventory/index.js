@@ -1,18 +1,21 @@
-import React from 'react';
-import styles from './style'
-import { View, Image, FlatList, Alert, Text} from 'react-native';
-import { ActionSheet } from 'native-base';
-import { connect } from 'react-redux';
-import PropertyTile from '../../components/PropertyTile'
-import AppStyles from '../../AppStyles'
+import * as RootNavigation from '../../navigation/RootNavigation';
+
+import { Alert, FlatList, Image, Text, View } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+
 import Ability from '../../hoc/Ability'
-import axios from 'axios';
+import { ActionSheet } from 'native-base';
+import AppStyles from '../../AppStyles'
 import { Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
-import * as RootNavigation from '../../navigation/RootNavigation';
 import Loader from '../../components/loader';
 import NoResultsComponent from '../../components/NoResultsComponent';
+import PropertyTile from '../../components/PropertyTile'
+import React from 'react';
+import axios from 'axios';
+import { connect } from 'react-redux';
 import helper from '../../helper';
+import styles from './style'
 
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
@@ -116,7 +119,7 @@ class Inventory extends React.Component {
 		const { user, route } = this.props;
 		return (
 			!loading ?
-				<View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0, marginBottom: 25 }]}>
+				<View style={[AppStyles.container, { marginBottom: 25 }]}>
 
 
 					{
@@ -136,9 +139,9 @@ class Inventory extends React.Component {
 
 					{/* ***** Main Tile Wrap */}
 					< FlatList
-						contentContainerStyle={{ flexGrow: 1 }}
+						contentContainerStyle={{ paddingHorizontal: wp('2%') }}
 						data={propertiesList}
-						renderItem={({ item }) => (
+						renderItem={({ item  }) => (
 							<PropertyTile
 								data={item}
 								onPress={(data) => this.onHandlePress(data)}

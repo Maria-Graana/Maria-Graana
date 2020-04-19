@@ -1,10 +1,10 @@
-import { StyleSheet } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+
 import AppStyles from '../../AppStyles'
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { StyleSheet } from 'react-native';
 
 export default styles = StyleSheet.create({
   mainContainer: {
-    width: wp('95%'),
     flexDirection: 'row',
     elevation: 10,
     shadowOffset: { width: 5, height: 5 },
@@ -16,12 +16,13 @@ export default styles = StyleSheet.create({
     paddingVertical: 10,
     marginTop: 10,
     marginBottom: hp('0.5%%'),
-    marginHorizontal: wp('2.5%')
+    // marginHorizontal: wp('2.5%')
   },
 
-  imageStyle: {
-    width: 140,
-    height: 140,
+imageStyle: { 
+    width: wp('32%'),
+    height: wp('32%'),
+    marginRight: wp('2%'),
     borderRadius: 4,
     borderWidth: 0.1,
     borderColor: AppStyles.colors.backgroundColor,
@@ -31,7 +32,7 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    top: 125,
+    top: wp('4%'),
     left: 15,
     backgroundColor: '#000',
     opacity: 0.7,
@@ -50,6 +51,7 @@ export default styles = StyleSheet.create({
     letterSpacing: 0.6,
   },
   priceTextStyle: {
+    width: wp('62%'),
     fontFamily: AppStyles.fonts.boldFont,
     fontSize: 22,
     color: AppStyles.colors.primaryColor,
@@ -58,8 +60,9 @@ export default styles = StyleSheet.create({
   },
   textControlStyle: {
     paddingTop: hp('1%'),
-    fontSize: AppStyles.fontSize.large,
+    fontSize: AppStyles.fontSize.medium,
     fontFamily: AppStyles.fonts.defaultFont,
+    width: wp('60%'),
   },
   phoneButton: {
     alignSelf: 'flex-end',

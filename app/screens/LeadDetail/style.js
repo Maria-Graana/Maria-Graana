@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles';
+import { StyleSheet } from 'react-native'
 
 export default styles = StyleSheet.create({
     container: {
@@ -59,10 +59,12 @@ export default styles = StyleSheet.create({
     },
     mainView: {
         borderColor: AppStyles.colors.primaryColor,
-        height: 20,
-        width: 80,
+        // height: 20,
+        paddingVertical: 5,
+        paddingHorizontal: 10, 
+        // width: 80,
         borderWidth: 1,
-        borderRadius: 10,
+        borderRadius: 100,
         justifyContent: "center",
         alignItems: "center"
     },

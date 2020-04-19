@@ -1,4 +1,5 @@
-import { StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
+
 import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
@@ -27,7 +28,7 @@ export default styles = StyleSheet.create({
         borderWidth: 0.5
     },
     leadText: {
-        fontSize: 12,
+        fontSize: 10,
         fontFamily: AppStyles.fonts.semiBoldFont,
         color: AppStyles.colors.textColor,
         textAlign: 'center',

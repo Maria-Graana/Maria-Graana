@@ -1,14 +1,14 @@
+import { Image, Keyboard, KeyboardAvoidingView, SafeAreaView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Input, Item, Label } from 'native-base';
 import React, { Component } from 'react';
-import { Text, View, KeyboardAvoidingView, Image, SafeAreaView, Keyboard, TouchableWithoutFeedback, TextInput } from 'react-native';
-import styles from './style';
+
+import AppJson from '../../../app.json';
+import AppStyles from '../../AppStyles';
+import ErrorMessage from '../../components/ErrorMessage'
 import TouchableButton from '../../components/TouchableButton/index';
 import { connect } from 'react-redux';
 import { setuser } from '../../actions/user';
-import { Item, Input, Label } from 'native-base';
-import AppStyles from '../../AppStyles';
-import AppJson from '../../../app.json';
-import ErrorMessage from '../../components/ErrorMessage'
-import { logoutUser } from '../../actions/user';
+import styles from './style';
 
 class Login extends Component {
 
@@ -18,15 +18,12 @@ class Login extends Component {
             loading: false,
             checkValidation: false,
             checkLogin: false,
+            showError: false,
             formData: {
                 email: '',
                 password: ''
             }
         }
-    }
-
-    componentDidMount = () => {
-        this.props.dispatch(logoutUser())
     }
 
     validateEmail = (email) => {
@@ -46,22 +43,33 @@ class Login extends Component {
                 password: formData.password,
             }
             this.props.dispatch(setuser(creds))
+            .then((response) => {
+                if(!response.data) {
+                    this.setState({showError: true})
+                }
+            })
+            .catch((error) => {
+                // console.log('caughtError', error)
+            })
         }
     }
 
     handleForm = (value, name) => {
-        const { formData } = this.state
+        const { formData, showError } = this.state
+        if(showError) {
+            this.setState({showError: false})
+        }
         formData[name] = value
         this.setState({ formData, checkLogin: false })
     }
 
     onFocus = () => {
-        this.setState({ checkLogin: false })
+        this.setState({ checkLogin: true, showError: false })
     }
 
     render() {
-        const { checkValidation, formData, checkLogin } = this.state
-        const { error } = this.props
+        const { checkValidation, formData, checkLogin,showError } = this.state
+
         return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -69,9 +77,6 @@ class Login extends Component {
                         style={styles.logo}
                         source={require('../../../assets/img/login.png')}
                     />
-                    {
-                        error !== '' && checkLogin && <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
-                    }
                     <View style={{ flex: 0.6, marginHorizontal: 15, marginTop: 25 }}>
                         <Item floatingLabel>
                             <Label
@@ -102,7 +107,10 @@ class Login extends Component {
                             (checkValidation === true && formData.password === '') ? <ErrorMessage errorMessage={'Required'} />
                                 : <ErrorMessage errorMessage={''} />
                         }
-                        <View style={{ marginTop: 25, marginBottom: 25 }}>
+                        {
+                            showError && <ErrorMessage errorMessage={'Invlaid Email or Password'} />
+                        }
+                        <View style={{ marginTop: 25 ,marginBottom:25}}>
                             <TouchableButton
                                 style={{}}
                                 label='Sign In'

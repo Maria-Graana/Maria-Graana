@@ -1,18 +1,19 @@
-import React from 'react';
-import AppStyles from '../../AppStyles'
-import { View, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { connect } from 'react-redux';
-import LandingButtonTile from '../../components/LandingButtonTile'
-import DiaryImg from '../../../assets/img/diary.png'
-import LeadImg from '../../../assets/img/leads.png'
-import InventoryImg from '../../../assets/img/inventory.png'
+import { ScrollView, View } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen'
+
 import Ability from '../../hoc/Ability'
-import axios from 'axios'
+import AppStyles from '../../AppStyles'
+import DiaryImg from '../../../assets/img/diary.png'
+import InventoryImg from '../../../assets/img/inventory.png'
+import LandingButtonTile from '../../components/LandingButtonTile'
+import LeadImg from '../../../assets/img/leads.png'
 import Loader from '../../components/loader';
-import { getListingsCount } from '../../actions/listings'
 import PushNotification from '../../PushNotifications';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
+import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import axios from 'axios'
+import { connect } from 'react-redux';
+import { getListingsCount } from '../../actions/listings'
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -41,7 +42,7 @@ class Landing extends React.Component {
 	render() {
 		const { user, count } = this.props
 		return (
-			<View style={[AppStyles.container, { paddingLeft: wp('5%'), paddingRight: wp('5%'), justifyContent: 'space-between' }]} >
+			<ScrollView contentContainerStyle={[AppStyles.container, { paddingLeft: wp('5%'), paddingRight: wp('5%'), justifyContent: 'space-between' }]} >
 				<SafeAreaView >
 					<PushNotification />
 					{/* Main Wrap of Landing Page Buttons (Diary Button) */}
@@ -53,7 +54,7 @@ class Landing extends React.Component {
 					{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
 					{Ability.canView(user.role, 'Inventory') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={count.inventory} />}
 				</SafeAreaView>
-			</View>
+			</ScrollView>
 		)
 	}
 }

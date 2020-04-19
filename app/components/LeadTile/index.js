@@ -1,9 +1,11 @@
-import React from 'react'
-import { View, Text, Image, TouchableOpacity } from 'react-native'
-import styles from './style'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
+
 import AppStyles from '../../AppStyles'
-import phone from '../../../assets/img/phone2.png'
 import PropertyImg from '../../../assets/img/property.jpg'
+import React from 'react'
+import phone from '../../../assets/img/phone2.png'
+import styles from './style'
+
 class LeadTile extends React.Component {
   constructor(props) {
     super(props)
@@ -12,7 +14,6 @@ class LeadTile extends React.Component {
 
 
   render() {
-
     const { selectInventory, data, selectedInventory, unSelectInventory, navigateTo, callNumber } = this.props
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }} onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
@@ -26,7 +27,7 @@ class LeadTile extends React.Component {
             <View style={styles.topIcons}>
               <View>
                 <Text style={[styles.tokenLabel, AppStyles.mrFive]}>
-                  {data.status}
+                  {data.status.split('_').join(' ').toUpperCase()}
                 </Text>
               </View>
               <View>

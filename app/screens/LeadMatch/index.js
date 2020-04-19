@@ -180,8 +180,7 @@ class LeadMatch extends React.Component {
             size: formData.size,
             unit: formData.sizeUnit
         }
-        console.log(lead.status)
-        console.log(rcmProgressBar[lead.status])
+        
         let callApi = this.canCallApi()
         let matches = []
         if (callApi || !showCheckBoxes) {

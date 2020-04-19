@@ -23,7 +23,7 @@ class InventoryTile extends React.Component {
 		let phoneNumber = null
 		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user ? data.user.phoneNumber : null
-		
+
 		return (
 			<TouchableOpacity
 				style={{ flexDirection: "row" }}
@@ -55,8 +55,12 @@ class InventoryTile extends React.Component {
 							<View style={{ flex: 1 }}></View>
 							{
 								showLable ?
-							<Entypo onPress={() => { this.props.doneViewing(data) }} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
-							:
+									<TouchableOpacity
+										style={{ justifyContent: "center", borderRadius: 10, borderColor: AppStyles.colors.primaryColor, borderWidth: 1, }}
+										onPress={() => { this.props.doneViewing(data) }}>
+										<Text style={{ color: AppStyles.colors.primaryColor, fontSize: 10, padding: 2 }}> Done </Text>
+									</TouchableOpacity>
+									:
 									null
 							}
 						</View>
@@ -65,7 +69,7 @@ class InventoryTile extends React.Component {
 							<Text numberOfLines={1} style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
 							<View style={{ flexDirection: 'row-reverse', height: 60 }}>
 								{/* <View style={{ flex: 1 }}></View> */}
-								<FontAwesome onPress= {() => {helper.callNumber(phoneNumber)}} style={{ paddingTop: 25, paddingRight: 5 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+								<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} style={{ paddingTop: 25, paddingRight: 0 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 							</View>
 						</View>
 					</View>

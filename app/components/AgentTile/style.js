@@ -17,7 +17,7 @@ export default styles = StyleSheet.create({
   },
   agentText: {
     fontFamily: AppStyles.fonts.lightFont,
-    fontSize: 17, 
+    fontSize: 17,
     paddingTop: 2,
   },
   labelText: {
@@ -33,10 +33,10 @@ export default styles = StyleSheet.create({
     height: 160,
     flexDirection: 'row'
   },
-  marlaText: { 
-    fontSize: 17, 
+  marlaText: {
+    fontSize: 17,
     paddingTop: 2,
-    fontFamily: AppStyles.fonts.defaultFont 
+    fontFamily: AppStyles.fonts.defaultFont
   },
   pad5: {
     padding: 5
@@ -66,8 +66,24 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 5
   },
+  textStyle: {
+    fontSize: 12,
+    fontFamily: AppStyles.fonts.defaultFont,
+    color: AppStyles.colors.primaryColor
+  },
+  mainView: {
+    borderColor: AppStyles.colors.primaryColor,
+    // height: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    // width: 80,
+    borderWidth: 1,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center"
+  },
   phoneIcon: {
-    justifyContent: "space-between", 
+    justifyContent: "space-between",
     padding: 10
   }
 });

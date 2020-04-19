@@ -47,6 +47,7 @@ class LeadViewing extends React.Component {
 		const { rcmProgressBar } = StaticData
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
+				console.log(res.data.rows)
 				this.setState({
 					loading: false,
 					matchData: res.data.rows,
@@ -231,7 +232,7 @@ class LeadViewing extends React.Component {
 		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue } = this.state
 		return (
 			!loading ?
-				<View style={{flex: 1}}>
+				<View style={{ flex: 1 }}>
 					<View>
 						<ProgressBar progress={progressValue} color={'#0277FD'} />
 					</View>
@@ -253,6 +254,8 @@ class LeadViewing extends React.Component {
 												{
 													this.ownProperty(item.item) ?
 														<MatchTile
+															doneViewing={this.doneViewing}
+															menuShow={true}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}

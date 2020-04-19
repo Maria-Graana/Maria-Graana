@@ -54,7 +54,6 @@ class LeadRCMPayment extends React.Component {
 
     componentDidMount = () => {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            this.fetchLead()
             this.getSelectedProperty(this.state.lead)
         })
     }
@@ -63,21 +62,12 @@ class LeadRCMPayment extends React.Component {
         this._unsubscribe();
     }
 
-    fetchLead = () => {
-        const { lead } = this.props
-        axios.get(`api/leads/byid?id=${lead.id}`)
-            .then((res) => {
-                this.props.dispatch(setlead(res.data))
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-    }
-
     getSelectedProperty = (lead) => {
         const { dispatch } = this.props;
+        const { rcmProgressBar } = StaticData
         axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
             dispatch(setlead(response.data));
+            this.setState({progressValue: rcmProgressBar[lead.status]})
             if (response.data.armsProperty === null && response.data.property === null) {
                 this.getShortlistedProperties(lead)
             }
@@ -445,6 +435,7 @@ class LeadRCMPayment extends React.Component {
             showAgreedAmountArrow,
             showTokenAmountArrow,
             commissionPayment,
+            progressValue,
             token,
             lead,
             pickerData,
@@ -456,7 +447,7 @@ class LeadRCMPayment extends React.Component {
         return (
             !loading ?
                 <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
-                    <ProgressBar progress={1} color={'#0277FD'} />
+                    <ProgressBar progress={progressValue} color={'#0277FD'} />
                     <LeadRCMPaymentPopup
                         reasons={reasons}
                         selectedReason={selectedReason}

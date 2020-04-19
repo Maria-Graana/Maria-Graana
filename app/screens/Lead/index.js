@@ -25,7 +25,7 @@ class Inventory extends React.Component {
 			dropDownId: '',
 			selectInventory: [],
 			febDrawer: false,
-			purposeTab: 'sale',
+			purposeTab: 'invest',
 			statusFilter: 'all',
 			open: false,
 		}
@@ -42,7 +42,7 @@ class Inventory extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads('sale', 'all');
+		this.fetchLeads('invest', 'all');
 	}
 
 	componentWillUnmount() {
@@ -124,13 +124,19 @@ class Inventory extends React.Component {
 	}
 
 	render() {
-		const { selectInventory, dropDownId, purposeTab, leadsData, open } = this.state
+		const { selectInventory, dropDownId, purposeTab, leadsData, open,statusFilter } = this.state
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
 			<View>
 
 				{/* ******************* TAb BUTTON VIEW ******* */}
 				<View style={styles.mainTopTabs}>
+
+				<View style={styles.mainTabs}>
+						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'invest' && styles.activeTab]} onPress={() => { this.changeTab('invest') }}>
+							<Text style={AppStyles.textCenter}>INVEST</Text>
+						</TouchableOpacity>
+					</View>
 
 					<View style={styles.mainTabs}>
 						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('sale') }}>
@@ -142,11 +148,7 @@ class Inventory extends React.Component {
 							<Text style={AppStyles.textCenter}>RENT</Text>
 						</TouchableOpacity>
 					</View>
-					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'invest' && styles.activeTab]} onPress={() => { this.changeTab('invest') }}>
-							<Text style={AppStyles.textCenter}>INVEST</Text>
-						</TouchableOpacity>
-					</View>
+					
 				</View>
 
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
@@ -158,6 +160,7 @@ class Inventory extends React.Component {
 							customStyle={styles.pickerStyle}
 							customIconStyle={styles.customIconStyle}
 							onValueChange={this.changeStatus}
+							selectedItem = {statusFilter}
 						/>
 					</View>
 					<View style={styles.stylesMainSort}>

@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
 import AppStyles from '../../AppStyles'
+import { StyleSheet } from 'react-native';
 
 export default styles = StyleSheet.create({
     container: {
@@ -72,12 +72,14 @@ export default styles = StyleSheet.create({
     },
     statusText: {
         fontFamily: AppStyles.fonts.boldFont,
-        width: '25%',
+        // width: '25%',
         textAlign: 'center',
-        fontSize: 12,
+        fontSize: 10,
         padding: 3,
+        paddingHorizontal:5,
+        paddingVertical: 5,
         color: AppStyles.colors.primaryColor,
-        borderRadius: 12,
+        borderRadius: 100,
         borderColor: AppStyles.colors.primaryColor,
         borderWidth: 0.5
     },

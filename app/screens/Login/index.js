@@ -60,7 +60,7 @@ class Login extends Component {
             this.setState({showError: false})
         }
         formData[name] = value
-        this.setState({ formData })
+        this.setState({ formData, checkLogin: false })
     }
 
     onFocus = () => {
@@ -69,7 +69,7 @@ class Login extends Component {
 
     render() {
         const { checkValidation, formData, checkLogin,showError } = this.state
-        console.log('this.props.error', this.props.error)
+
         return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -77,16 +77,13 @@ class Login extends Component {
                         style={styles.logo}
                         source={require('../../../assets/img/login.png')}
                     />
-                    {
-                        checkLogin && <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
-                    }
                     <View style={{ flex: 0.6, marginHorizontal: 15, marginTop: 25 }}>
                         <Item floatingLabel>
                             <Label
                                 style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}
                             >USERNAME</Label>
                             <Input
-                                focus={this.onFocus}
+                                onFocus={() => { this.onFocus() }}
                                 keyboardType='email-address'
                                 textContentType='emailAddress'
                                 autoCompleteType='email'
@@ -102,7 +99,7 @@ class Login extends Component {
                                     style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}>
                                     PASSWORD</Label>
                                 <Input
-                                    focus={this.onFocus}
+                                    onFocus={() => { this.onFocus() }}
                                     secureTextEntry={true} onChangeText={(text) => { this.handleForm(text, 'password') }} />
                             </Item>
                         </View>
@@ -122,11 +119,11 @@ class Login extends Component {
                                 color='white'
                             />
                         </View>
-                        <View style={{ alignSelf: 'center', alignItems: 'center'}}>
+                        <View style={{ alignSelf: 'center', alignItems: 'center' }}>
                             <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
                         </View>
                     </View>
-                   
+
                 </SafeAreaView>
             </TouchableWithoutFeedback>
 

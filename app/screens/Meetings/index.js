@@ -41,7 +41,6 @@ class Meetings extends Component {
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
-    // console.log(this.props.route.params.lead)
   }
 
   fetchLead = () => {
@@ -107,7 +106,8 @@ class Meetings extends Component {
 
   getMeetingLead = () => {
     const { formData } = this.state
-    axios.get(`/api/diary/all?leadId=${formData.leadId}`)
+    const { lead } = this.props
+    axios.get(`/api/diary/all?leadId=${lead.id}`)
       .then((res) => {
         this.setState({ meetings: res.data })
       })

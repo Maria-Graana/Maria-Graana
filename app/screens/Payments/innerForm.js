@@ -31,7 +31,6 @@ class InnerForm extends Component {
       downPayment,
       tokenDate,
     } = this.props
-    console.log('remainingPayment',remainingPayment)
     return (
       <View style={[AppStyles.modalMain]}>
         <View style={[AppStyles.formMain]}>

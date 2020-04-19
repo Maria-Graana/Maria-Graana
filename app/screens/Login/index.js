@@ -8,6 +8,7 @@ import { Item, Input, Label } from 'native-base';
 import AppStyles from '../../AppStyles';
 import AppJson from '../../../app.json';
 import ErrorMessage from '../../components/ErrorMessage'
+import { logoutUser } from '../../actions/user';
 
 class Login extends Component {
 
@@ -22,6 +23,10 @@ class Login extends Component {
                 password: ''
             }
         }
+    }
+
+    componentDidMount = () => {
+        this.props.dispatch(logoutUser())
     }
 
     validateEmail = (email) => {
@@ -47,16 +52,16 @@ class Login extends Component {
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
-        this.setState({ formData })
+        this.setState({ formData, checkLogin: false })
     }
 
     onFocus = () => {
-        this.setState({ checkLogin: true })
+        this.setState({ checkLogin: false })
     }
 
     render() {
         const { checkValidation, formData, checkLogin } = this.state
-        console.log('this.props.error', this.props.error)
+        const { error } = this.props
         return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -65,7 +70,7 @@ class Login extends Component {
                         source={require('../../../assets/img/login.png')}
                     />
                     {
-                        checkLogin && <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
+                        error !== '' && checkLogin && <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
                     }
                     <View style={{ flex: 0.6, marginHorizontal: 15, marginTop: 25 }}>
                         <Item floatingLabel>
@@ -73,7 +78,7 @@ class Login extends Component {
                                 style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}
                             >USERNAME</Label>
                             <Input
-                                focus={this.onFocus}
+                                onFocus={() => { this.onFocus() }}
                                 keyboardType='email-address'
                                 textContentType='emailAddress'
                                 autoCompleteType='email'
@@ -89,7 +94,7 @@ class Login extends Component {
                                     style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}>
                                     PASSWORD</Label>
                                 <Input
-                                    focus={this.onFocus}
+                                    onFocus={() => { this.onFocus() }}
                                     secureTextEntry={true} onChangeText={(text) => { this.handleForm(text, 'password') }} />
                             </Item>
                         </View>
@@ -97,7 +102,7 @@ class Login extends Component {
                             (checkValidation === true && formData.password === '') ? <ErrorMessage errorMessage={'Required'} />
                                 : <ErrorMessage errorMessage={''} />
                         }
-                        <View style={{ marginTop: 25 ,marginBottom:25}}>
+                        <View style={{ marginTop: 25, marginBottom: 25 }}>
                             <TouchableButton
                                 style={{}}
                                 label='Sign In'
@@ -106,11 +111,11 @@ class Login extends Component {
                                 color='white'
                             />
                         </View>
-                        <View style={{ alignSelf: 'center', alignItems: 'center'}}>
+                        <View style={{ alignSelf: 'center', alignItems: 'center' }}>
                             <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
                         </View>
                     </View>
-                   
+
                 </SafeAreaView>
             </TouchableWithoutFeedback>
 

@@ -278,6 +278,17 @@ class Meetings extends Component {
           formSubmit={this.formSubmit}
         />
 
+<MeetingStatusModal
+          doneStatus={doneStatus}
+          sendStatus={this.sendStatus}
+          data={doneStatusId}
+          openStatus={this.openStatus}
+          modalType={modalStatus}
+          goToDiaryForm={this.goToDiaryForm}
+          goToAttachments={this.goToAttachments}
+          goToComments={this.goToComments}
+        />
+
       </View>
     )
   }

@@ -311,6 +311,32 @@ export default StaticData = {
         payment: 0.8,
         closed: 1
     },
+    rcmProgressBar: {
+        open: 0,
+        viewing: 0.2,
+        offer: 0.4,
+        propsure: 0.6,
+        token: 0.8,
+        payment: 0.8,
+        closed: 1
+    },
+    cmProgressBar: {
+        meeting_visited: 0.5,
+        meeting_expected_conversion: 0,
+        meeting_deal_signed: 0.5,
+        call_no_response: 0,
+        call_powered_off: 0,
+        call_invalid_number: 0,
+        call_follow_up: 0,
+        call_awaiting_response: 0,
+        call_details_sent: 0.5,
+        call_expected_visit: 0.5,
+        call_not_interested: 0,
+        payment: 0.5,
+        Token: 0.5,
+        closed: 1,
+        open: 0
+    },
     lead: {
         "added_by_armsroleid": 12,
         "added_by_armsuser_id": 251,

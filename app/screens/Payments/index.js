@@ -9,6 +9,7 @@ import StaticData from '../../StaticData';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import moment from 'moment'
 import { ProgressBar, Colors } from 'react-native-paper';
+import { setlead } from '../../actions/lead';
 
 class Payments extends Component {
 	constructor(props) {
@@ -40,12 +41,14 @@ class Payments extends Component {
 			reasons: [],
 			isVisible: false,
 			selectedReason: '',
-			checkReasonValidation: false
+			checkReasonValidation: false,
+			progressValue: 0
 		}
 
 	}
 
 	componentDidMount() {
+		this.fetchLead()
 		this.getAllProjects();
 	}
 
@@ -57,6 +60,21 @@ class Payments extends Component {
 				this.setState({
 					getProject: projectArray
 				})
+			})
+	}
+
+	fetchLead = () => {
+		const { lead } = this.props
+		const { cmProgressBar } = StaticData
+		axios.get(`api/leads/byid?id=${lead.id}`)
+			.then((res) => {
+				this.props.dispatch(setlead(res.data))
+				this.setState({
+					progressValue: cmProgressBar[res.data.status] || 0
+				})
+			})
+			.catch((error) => {
+				console.log(error)
 			})
 	}
 
@@ -112,16 +130,16 @@ class Payments extends Component {
 		const { readOnly } = this.state
 		let totalPrice = readOnly.totalPrice
 		let remaining = totalPrice - value['discount'] - value['downPayment'] - value['token']
-		this.setState({remainingPayment: remaining})
+		this.setState({ remainingPayment: remaining })
 	}
 
 	discountInstallments = (value, index) => {
 		const { readOnly, remainingPayment } = this.state
 		let totalPrice = readOnly.totalPrice
 		// let remaining = value.map((item, index) => {return totalPrice - item.installmentAmount})
-		let remaining =  remainingPayment - value[index].installmentAmount
+		let remaining = remainingPayment - value[index].installmentAmount
 		console.log(value[index])
-		this.setState({remainingPayment: remaining})
+		this.setState({ remainingPayment: remaining })
 	}
 
 	currentDate = (name) => {
@@ -199,6 +217,7 @@ class Payments extends Component {
 				} else {
 					this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
 				}
+				this.fetchLead()
 			})
 	}
 
@@ -243,13 +262,14 @@ class Payments extends Component {
 			readOnly,
 			downPayment,
 			tokenDate,
+			progressValue
 		} = this.state
 
 		return (
 			<View>
-				<ProgressBar progress={1} color={'#0277FD'} />
+				<ProgressBar progress={progressValue} color={'#0277FD'} />
 				<ScrollView>
-					
+
 					<View style={[AppStyles.container]}>
 						<LeadRCMPaymentPopup
 							reasons={reasons}

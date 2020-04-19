@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "realtor-mobile",
+    "name": "ARMS",
     "slug": "realtormobile",
     "privacy": "public",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "1.0.43",
+    "version": "1.0.44",
     "orientation": "portrait",
     "icon": "./assets/img/arms1024.png",
     "splash": {

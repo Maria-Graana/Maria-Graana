@@ -471,7 +471,7 @@ class LeadRCMPayment extends React.Component {
                                 <FlatList
                                     data={allProperties}
                                     renderItem={(item, index) => (
-                                        <View style={{ marginVertical: 10, marginHorizontal: 15 }}>
+                                        <View style={{ marginVertical: 3, marginHorizontal: 15 }}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile

@@ -249,69 +249,71 @@ class LeadOffer extends React.Component {
 		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue } = this.state
 		return (
 			!loading ?
-				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
+				<View style={{flex: 1}}>
 					<ProgressBar progress={progressValue} color={'#0277FD'} />
-					<View style={{ flex: 1 }}>
-						{
-							matchData.length ?
-								<View>
-									<FlatList
-										data={matchData}
-										renderItem={(item, index) => (
-											<View style={{ marginVertical: 10 }}>
-												{
-													this.ownProperty(item.item) ?
-														<MatchTile
-															data={item.item}
-															user={user}
-															displayChecks={this.displayChecks}
-															showCheckBoxes={false}
-															addProperty={this.addProperty}
-														/>
-														:
-														<AgentTile
-															data={item.item}
-															user={user}
-															displayChecks={this.displayChecks}
-															showCheckBoxes={false}
-															addProperty={this.addProperty}
-														/>
-												}
-												<View>
-													{this.checkStatus(item.item)}
+					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
+						<View style={{ flex: 1 }}>
+							{
+								matchData.length ?
+									<View>
+										<FlatList
+											data={matchData}
+											renderItem={(item, index) => (
+												<View style={{ marginVertical: 3 }}>
+													{
+														this.ownProperty(item.item) ?
+															<MatchTile
+																data={item.item}
+																user={user}
+																displayChecks={this.displayChecks}
+																showCheckBoxes={false}
+																addProperty={this.addProperty}
+															/>
+															:
+															<AgentTile
+																data={item.item}
+																user={user}
+																displayChecks={this.displayChecks}
+																showCheckBoxes={false}
+																addProperty={this.addProperty}
+															/>
+													}
+													<View>
+														{this.checkStatus(item.item)}
+													</View>
 												</View>
-											</View>
-										)}
-										keyExtractor={(item, index) => item.id.toString()}
-									/>
-									<OfferModal
-										offersData={offersData}
-										active={modalActive}
-										offerChat={offerChat}
-										placeMyOffer={this.placeMyOffer}
-										placeTheirOffer={this.placeTheirOffer}
-										placeAgreedOffer={this.placeAgreedOffer}
-										handleForm={this.handleForm}
-										openModal={this.openChatModal}
-									/>
-								</View>
-								:
-								<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
-						}
-					</View>
-					<FAB.Group
-						open={open}
-						icon="plus"
-						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-						color={AppStyles.bgcWhite.backgroundColor}
-						actions={[
-							{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-							{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-							{ icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-						]}
-						onStateChange={({ open }) => this.setState({ open })}
-					/>
+											)}
+											keyExtractor={(item, index) => item.id.toString()}
+										/>
+										<OfferModal
+											offersData={offersData}
+											active={modalActive}
+											offerChat={offerChat}
+											placeMyOffer={this.placeMyOffer}
+											placeTheirOffer={this.placeTheirOffer}
+											placeAgreedOffer={this.placeAgreedOffer}
+											handleForm={this.handleForm}
+											openModal={this.openChatModal}
+										/>
+									</View>
+									:
+									<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
+							}
+						</View>
+						<FAB.Group
+							open={open}
+							icon="plus"
+							fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+							color={AppStyles.bgcWhite.backgroundColor}
+							actions={[
+								{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+								{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+								{ icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+							]}
+							onStateChange={({ open }) => this.setState({ open })}
+						/>
 
+					</View>
 				</View>
 				:
 				<Loader loading={loading} />

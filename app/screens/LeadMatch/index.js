@@ -384,24 +384,25 @@ class LeadMatch extends React.Component {
     }
 
     goToDiaryForm = () => {
-        const { navigation, route } = this.props;
+        const { navigation, route,user} = this.props;
         const { lead } = route.params;
         navigation.navigate('AddDiary', {
             update: false,
-            leadId: lead.id
+            rcmLeadId: lead.id,
+            agentId: user.id
         });
     }
 
     goToAttachments = () => {
         const { navigation, route } = this.props;
         const { lead } = route.params;
-        navigation.navigate('Attachments', { leadId: lead.id });
+        navigation.navigate('Attachments', { rcmLeadId: lead.id });
     }
 
     goToComments = () => {
         const { navigation, route } = this.props;
         const { lead } = route.params;
-        navigation.navigate('Comments', { leadId: lead.id });
+        navigation.navigate('Comments', { rcmLeadId: lead.id });
     }
 
     _onStateChange = ({ open }) => this.setState({ open });

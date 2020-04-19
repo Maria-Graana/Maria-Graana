@@ -48,7 +48,7 @@ class AddDiary extends Component {
 
     generatePayload = (data) => {
         const { route } = this.props;
-        const { leadId } = route.params;
+        const { rcmLeadId, cmLeadId } = route.params;
         let payload = null;
         let start = moment(data.date + data.startTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
         let end = moment(data.date + data.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
@@ -78,8 +78,11 @@ class AddDiary extends Component {
             payload.diaryTime = start
             payload.start = start
             payload.end = end
-            if (leadId) {
-                payload.rcmLeadId = leadId
+            if (rcmLeadId) {
+                payload.rcmLeadId = rcmLeadId
+            }
+            else {
+                payload.cmLeadId = cmLeadId
             }
 
             delete payload.startTime
@@ -103,9 +106,10 @@ class AddDiary extends Component {
 
     addDiary = (data) => {
         const { route, navigation } = this.props;
-        const { leadId } = route.params;
+        const { rcmLeadId,cmLeadId } = route.params;
         let diary = this.generatePayload(data)
-        if (leadId) {
+        console.log(diary);
+        if (rcmLeadId || cmLeadId) {
             // create task for lead
             axios.post(`/api/leads/task`, diary)
                 .then((res) => {

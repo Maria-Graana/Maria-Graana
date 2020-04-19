@@ -29,8 +29,11 @@ class Comments extends Component {
     getCommentsFromServer = () => {
         const { type } = this.state;
         const { route } = this.props;
-        const { leadId } = route.params;
-        axios.get(`/api/leads/comments?rcmLeadId=${leadId}&type=${type}`).then(response => {
+        const { rcmLeadId, cmLeadId } = route.params;
+        const url = rcmLeadId ? `/api/leads/comments?rcmLeadId=${rcmLeadId}&type=${type}`
+            : `/api/leads/comments?cmLeadId=${cmLeadId}&type=${type}`
+
+        axios.get(url).then(response => {
             this.setState({ commentsList: response.data, comment: '', loading: false });
         }).catch(error => {
             console.log(error);
@@ -62,14 +65,25 @@ class Comments extends Component {
     addComment = () => {
         const { comment } = this.state;
         const { route } = this.props;
-        const { leadId } = route.params;
+        const { rcmLeadId, cmLeadId } = route.params;
+        let commentObject = {};
 
         if (comment.length > 0 && comment !== '') {
-            const commentObject = {
-                value: comment,
-                type: 'comment',
-                rcmLeadId: leadId,
+            if (rcmLeadId) {
+                commentObject = {
+                    value: comment,
+                    type: 'comment',
+                    rcmLeadId: rcmLeadId,
+                }
             }
+            else {
+                commentObject = {
+                    value: comment,
+                    type: 'comment',
+                    cmLeadId: cmLeadId,
+                }
+            }
+
             axios.post(`/api/leads/comments`, commentObject).then(response => {
                 this.getCommentsFromServer();
             }).catch(error => {

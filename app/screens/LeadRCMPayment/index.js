@@ -409,24 +409,25 @@ class LeadRCMPayment extends React.Component {
 
 
     goToDiaryForm = () => {
-        const { navigation } = this.props
+        const { navigation,user } = this.props
         const { lead } = this.state;
         navigation.navigate('AddDiary', {
             update: false,
-            leadId: lead.id
+            rcmLeadId: lead.id,
+            agentId: user.id
         });
     }
 
     goToAttachments = () => {
         const { navigation } = this.props
         const { lead } = this.state;
-        navigation.navigate('Attachments', { leadId: lead.id });
+        navigation.navigate('Attachments', { rcmLeadId: lead.id });
     }
 
     goToComments = () => {
         const { navigation } = this.props
         const { lead } = this.state;
-        navigation.navigate('Comments', { leadId: lead.id });
+        navigation.navigate('Comments', { rcmLeadId: lead.id });
     }
 
 

@@ -4,7 +4,7 @@ import AppStyles from '../../AppStyles'
 import { Button } from 'native-base';
 import React from 'react';
 import { connect } from 'react-redux';
-import helper from '../../helper';
+import healper from '../../helper';
 import moment from 'moment';
 import { setlead } from '../../actions/lead';
 import styles from './style'
@@ -89,7 +89,7 @@ class LeadDetail extends React.Component {
                         <Text style={[styles.headingText, styles.padLeft, { paddingLeft: 0 }]}>Status</Text>
                         <View style={styles.mainView}>
                             <Text style={styles.textStyle}>
-                                {lead.status.toUpperCase()}
+                                {lead.status.split('_').join(' ').toUpperCase()}
                             </Text>
                         </View>
                     </View>

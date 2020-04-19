@@ -230,6 +230,30 @@ export default StaticData = {
             value: 'client_not_satisfied'
         }
     ],
+    paymentPopup: [
+        {
+            name: 'Payment Done',
+            value: 'payment_done'
+        },
+        {
+            name: 'Client not responding',
+            value: 'client_not_responding'
+        },
+        {
+            name: 'Client not satisfied with options',
+            value: 'client_not_satisfied'
+        }
+    ],
+    paymentPopupDone: [
+        {
+            name: 'Client not responding',
+            value: 'client_not_responding'
+        },
+        {
+            name: 'Client not satisfied with options',
+            value: 'client_not_satisfied'
+        }
+    ],
     projectType: [
         { value: 'shop', name: 'Shop' },
         { value: 'office', name: 'Office' },
@@ -302,15 +326,6 @@ export default StaticData = {
         { value: 'comment', name: 'Comment' },
         { value: 'task', name: 'Task' },
     ],
-    rcmProgressBar: {
-        open: 0,
-        viewing: 0.2,
-        offer: 0.4,
-        propsure: 0.6,
-        token: 0.8,
-        payment: 0.8,
-        closed: 1
-    },
     rcmProgressBar: {
         open: 0,
         viewing: 0.2,

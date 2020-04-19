@@ -12,7 +12,7 @@ import axios from 'axios'
 import Loader from '../../components/loader';
 import { getListingsCount } from '../../actions/listings'
 import PushNotification from '../../PushNotifications';
-import {widthPercentageToDP as wp , heightPercentageToDP as hp} from 'react-native-responsive-screen'
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -41,19 +41,19 @@ class Landing extends React.Component {
 	render() {
 		const { user, count } = this.props
 		return (
-				<View style={[AppStyles.container, { paddingLeft: wp('5%'), paddingRight: wp('5%'), justifyContent:'space-between' }]} >
-					<SafeAreaView >
-						<PushNotification />
-						{/* Main Wrap of Landing Page Buttons (Diary Button) */}
-						{Ability.canView(user.role, 'Diary') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} screenName={'Diary'} buttonImg={DiaryImg} badges={count.diary} />}
+			<View style={[AppStyles.container, { paddingLeft: wp('5%'), paddingRight: wp('5%'), justifyContent: 'space-between' }]} >
+				<SafeAreaView >
+					<PushNotification />
+					{/* Main Wrap of Landing Page Buttons (Diary Button) */}
+					{Ability.canView(user.role, 'Diary') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'DIARY'} pagePath={'Diary'} screenName={'Diary'} buttonImg={DiaryImg} badges={count.diary} />}
 
-						{/* Main Wrap of Landing Page Buttons (Leads Button) */}
-						<LandingButtonTile navigateFunction={this.navigateFunction} label={'LEADS'} pagePath={'Lead'} screenName={'Lead'} buttonImg={LeadImg} badges={count.leads} />
+					{/* Main Wrap of Landing Page Buttons (Leads Button) */}
+					{Ability.canView(user.role, 'Lead') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'LEADS'} pagePath={'Lead'} screenName={'Lead'} buttonImg={LeadImg} badges={count.leads} />}
 
-						{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
-						{Ability.canView(user.role, 'Inventory') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={count.inventory} />}
-					</SafeAreaView>
-				</View>
+					{/* Main Wrap of Landing Page Buttons (Inventory Button) */}
+					{Ability.canView(user.role, 'Inventory') && <LandingButtonTile navigateFunction={this.navigateFunction} label={'PROPERTIES'} pagePath={'Inventory'} screenName={'Inventory'} buttonImg={InventoryImg} badges={count.inventory} />}
+				</SafeAreaView>
+			</View>
 		)
 	}
 }

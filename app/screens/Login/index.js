@@ -68,8 +68,8 @@ class Login extends Component {
     }
 
     render() {
-        const { checkValidation, formData, checkLogin, showError } = this.state
-
+        const { checkValidation, formData, checkLogin,showError } = this.state
+        console.log('this.props.error', this.props.error)
         return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -78,7 +78,7 @@ class Login extends Component {
                         source={require('../../../assets/img/login.png')}
                     />
                     {
-                        !checkLogin && <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
+                        checkLogin && <Text style={styles.checkLogin}> Incorrect Info Please Check! </Text>
                     }
                     <View style={{ flex: 0.6, marginHorizontal: 15, marginTop: 25 }}>
                         <Item floatingLabel>

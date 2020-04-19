@@ -278,7 +278,7 @@ class AddInventory extends Component {
     _pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 0,
+            quality: 0.5,
             allowsMultipleSelection: true,
             base64: true
         });

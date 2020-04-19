@@ -12,6 +12,7 @@ import moment from 'moment'
 import helper from '../../helper';
 import AppStyles from '../../AppStyles';
 import { ProgressBar, Colors } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 import StaticData from '../../StaticData';
 
@@ -32,6 +33,7 @@ class Meetings extends Component {
       editMeeting: false,
       meetingId: '',
       modalStatus: 'dropdown',
+      open: false,
       progressValue: 0
     }
   }
@@ -45,7 +47,7 @@ class Meetings extends Component {
   fetchLead = () => {
     const { lead } = this.props
     const { cmProgressBar } = StaticData
-    axios.get(`api/leads/byid?id=${lead.id}`)
+    axios.get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
         this.setState({
@@ -81,7 +83,6 @@ class Meetings extends Component {
         axios.patch(`/api/diary/update?id=${meetingId}`, formData)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
-            this.fetchLead()
             this.getMeetingLead();
             this.setState({
               active: false,
@@ -93,7 +94,6 @@ class Meetings extends Component {
         axios.post(`api/leads/project/meeting`, formData)
           .then((res) => {
             helper.successToast(`Meeting Added`)
-            this.fetchLead()
             this.getMeetingLead();
             this.setState({
               active: false,
@@ -137,7 +137,6 @@ class Meetings extends Component {
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
         .then((res) => {
-          this.fetchLead()
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
@@ -146,8 +145,6 @@ class Meetings extends Component {
     } else {
       axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
         .then((res) => {
-          console.log(res.data)
-          this.fetchLead()
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
@@ -171,7 +168,6 @@ class Meetings extends Component {
     }
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
-        this.fetchLead()
         this.getMeetingLead();
       })
   }
@@ -207,6 +203,16 @@ class Meetings extends Component {
     })
   }
 
+  goToComments = () => {
+    const { navigation, route } = this.props;
+    navigation.navigate('Comments', { leadId: route.params.lead });
+  }
+
+  goToAttachments = () => {
+    const { navigation, route } = this.props;
+    navigation.navigate('Attachments', { leadId: route.params.lead.id });
+  }
+
   goToDiaryForm = () => {
     const { navigation, route } = this.props;
     navigation.navigate('AddDiary', {
@@ -214,20 +220,9 @@ class Meetings extends Component {
       leadId: route.params.lead
     });
   }
-
-  goToAttachments = () => {
-    const { navigation, route } = this.props;
-    console.log(route.params.lead)
-    navigation.navigate('Attachments', { leadId: route.params.lead.id });
-  }
-
-  goToComments = () => {
-    const { navigation, route } = this.props;
-    navigation.navigate('Comments', { leadId: route.params.lead });
-  }
-
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, progressValue } = this.state
+    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus,open, progressValue } = this.state
+    let leadData = this.props.route.params.lead
     return (
       <View style={styles.mainWrapCon}>
         <ProgressBar progress={progressValue} color={'#0277FD'} />
@@ -258,7 +253,7 @@ class Meetings extends Component {
 
         <View style={[styles.callMeetingBtn]}>
           <View style={[styles.btnsMainWrap]}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${this.props.route.params.lead.customer.phone}`) }}>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.phone && leadData.phone}`) }}>
               <Text style={styles.alignCenter}>CALL</Text>
             </TouchableOpacity>
           </View>
@@ -269,13 +264,27 @@ class Meetings extends Component {
           </View>
         </View>
 
-        <Fab
+        {/* <Fab
           active={active}
           style={{ backgroundColor: '#0D73EE' }}
           position="bottomRight"
           onPress={() => { this.openAttechment() }}>
           <Ionicons name="md-add" color="#ffffff" />
-        </Fab>
+        </Fab> */}
+
+        <FAB.Group
+						open={open}
+						icon="plus"
+						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+						color={AppStyles.bgcWhite.backgroundColor}
+						actions={[
+							{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+							{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+							{ icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+
+						]}
+						onStateChange={({ open }) => this.setState({ open })}
+					/>
 
         {/* ************Modal Component************ */}
         <MeetingModal
@@ -287,8 +296,7 @@ class Meetings extends Component {
           formSubmit={this.formSubmit}
         />
 
-        {/* ************Modal Component************ */}
-        <MeetingStatusModal
+<MeetingStatusModal
           doneStatus={doneStatus}
           sendStatus={this.sendStatus}
           data={doneStatusId}

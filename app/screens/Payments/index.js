@@ -10,6 +10,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import moment from 'moment'
 import { ProgressBar, Colors } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
+import helper from '../../helper';
 
 class Payments extends Component {
 	constructor(props) {
@@ -66,7 +67,7 @@ class Payments extends Component {
 	fetchLead = () => {
 		const { lead } = this.props
 		const { cmProgressBar } = StaticData
-		axios.get(`api/leads/byid?id=${lead.id}`)
+		axios.get(`/api/leads/project/byId?id=${lead.id}`)
 			.then((res) => {
 				this.props.dispatch(setlead(res.data))
 				this.setState({
@@ -126,19 +127,17 @@ class Payments extends Component {
 		})
 	}
 
-	discountPayment = (value) => {
-		const { readOnly } = this.state
+	discountPayment = () => {
+		const { readOnly, formData, totalInstalments } = this.state
 		let totalPrice = readOnly.totalPrice
-		let remaining = totalPrice - value['discount'] - value['downPayment'] - value['token']
-		this.setState({ remainingPayment: remaining })
-	}
+		let totalInstallments = 0
+		totalInstalments.map((item, index) => {
+			if (item.installmentAmount) {
+				totalInstallments = totalInstallments + item.installmentAmount
+			}
+		})
+		let remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - totalInstallments
 
-	discountInstallments = (value, index) => {
-		const { readOnly, remainingPayment } = this.state
-		let totalPrice = readOnly.totalPrice
-		// let remaining = value.map((item, index) => {return totalPrice - item.installmentAmount})
-		let remaining = remainingPayment - value[index].installmentAmount
-		console.log(value[index])
 		this.setState({ remainingPayment: remaining })
 	}
 
@@ -161,32 +160,31 @@ class Payments extends Component {
 		const { formData } = this.state
 		let newFormData = { ...formData }
 		newFormData[name] = value
-		this.setState({ formData: newFormData })
-
-
-		if (name === 'projectId' && value != '') {
-			this.getFloors(newFormData.projectId)
-		}
-		if (name === 'floorId' && value != '') {
-			this.getUnits(newFormData.projectId, newFormData.floorId)
-		}
-		if (name === 'unitId' && value != '') {
-			this.readOnly(value)
-		}
-		if (name === 'discount') {
-			this.discountPayment(newFormData)
-		}
-		if (name == 'token') {
-			this.currentDate(name)
-			this.discountPayment(newFormData)
-		}
-		if (name === 'downPayment') {
-			this.currentDate(name)
-			this.discountPayment(newFormData)
-		}
-		if (name === 'instalments') {
-			this.instalmentsField(value)
-		}
+		this.setState({ formData: newFormData }, () => {
+			if (name === 'projectId' && value != '') {
+				this.getFloors(newFormData.projectId)
+			}
+			if (name === 'floorId' && value != '') {
+				this.getUnits(newFormData.projectId, newFormData.floorId)
+			}
+			if (name === 'unitId' && value != '') {
+				this.readOnly(value)
+			}
+			if (name === 'discount') {
+				this.discountPayment(newFormData)
+			}
+			if (name == 'token') {
+				this.currentDate(name)
+				this.discountPayment(newFormData)
+			}
+			if (name === 'downPayment') {
+				this.currentDate(name)
+				this.discountPayment(newFormData)
+			}
+			if (name === 'instalments') {
+				this.instalmentsField(value)
+			}
+		})
 	}
 
 	handleInstalments = (value, index) => {
@@ -195,12 +193,15 @@ class Payments extends Component {
 		let newInstallments = [...totalInstalments]
 		newInstallments[index].installmentAmount = parseInt(value)
 		newInstallments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
-		this.setState({ totalInstalments: newInstallments })
-		// this.discountInstallments(newInstallments, index)
+		this.setState({ totalInstalments: newInstallments }, () => {
+			this.discountPayment()
+		})
+		
 	}
 
 	formSubmit = () => {
-		const { formData, totalInstalments } = this.state
+		const { lead } = this.props
+		const { formData, totalInstalments, remainingPayment } = this.state
 		let body = {
 			discount: parseInt(formData.discount),
 			downPayment: parseInt(formData.downPayment),
@@ -210,14 +211,15 @@ class Payments extends Component {
 			installments: totalInstalments,
 			no_of_installments: totalInstalments.length,
 		}
-		axios.patch(`/api/leads/project?id=${formData.projectId}`, body)
+		console.log(body)
+		console.log('projectId', formData.projectId)
+		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				if (body.commisionPayment !== null && body.commisionPayment === '') {
-					this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+				if (remainingPayment === 0) {
+					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 				} else {
-					this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+					this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 				}
-				this.fetchLead()
 			})
 	}
 
@@ -238,6 +240,7 @@ class Payments extends Component {
 		if (selectedReason && selectedReason !== '') {
 			axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
 				this.setState({ isVisible: false }, () => {
+					helper.successToast(`Lead Closed`)
 					navigation.navigate('Lead');
 				});
 			}).catch(error => {

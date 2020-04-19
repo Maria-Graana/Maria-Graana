@@ -79,6 +79,7 @@ class DairyPopup extends React.Component {
             user,
             onLeadLinkClicked
         } = this.props;
+
         return (
             <Modal visible={openPopup}
                 animationType="slide"
@@ -89,8 +90,8 @@ class DairyPopup extends React.Component {
                     <View style={[styles.viewContainer]}>
                         <View style={styles.horizontalWrapStyle}>
                             <Text style={styles.textStyle}>{data.subject} </Text>
-                            {
-                                data.taskType !== 'dayTask' && data.taskType !== 'weekly' &&
+                            { 
+                                  data.taskType != 'called' &&  data.taskType !== 'dayTask' && data.taskType !== 'weekly'  &&
                                     Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
                                     < MaterialCommunityIcons onPress={() => this.updateDiary(data)} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                                     : null
@@ -134,10 +135,10 @@ class DairyPopup extends React.Component {
                                 Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
                                     <Button bordered
                                         onPress={() => { this.inProgress(data, 'inProgress') }}
-                                        style={data.status == 'inProgress' ? styles.disabledBtnStyle : [AppStyles.formBtn,{width:150}]}
+                                        style={data.status == 'inProgress' ? styles.disabledBtnStyle : [AppStyles.formBtn, { width: 150 }]}
                                         disabled={data.status == 'inProgress'}
                                     >
-                                        <Text style={data.status == 'inProgress' ? [AppStyles.btnText, styles.disabledBtnText,] : [AppStyles.btnText,{ fontFamily:AppStyles.fonts.semiBoldFont}]}>In Progress</Text>
+                                        <Text style={data.status == 'inProgress' ? [AppStyles.btnText, styles.disabledBtnText,] : [AppStyles.btnText, { fontFamily: AppStyles.fonts.semiBoldFont }]}>In Progress</Text>
                                     </Button>
                                     :
                                     null
@@ -147,8 +148,8 @@ class DairyPopup extends React.Component {
                             {
                                 Ability.canEdit(user.role, screenName) && data.status !== 'completed' ?
                                     <Button onPress={() => { this.markDone(data, 'completed') }}
-                                        style={[AppStyles.formBtn,{width:150}]}>
-                                    <Text style={[AppStyles.btnText, {fontFamily:AppStyles.fonts.semiBoldFont}]}>Done</Text>
+                                        style={[AppStyles.formBtn, { width: 150 }]}>
+                                        <Text style={[AppStyles.btnText, { fontFamily: AppStyles.fonts.semiBoldFont }]}>Done</Text>
                                     </Button>
                                     :
                                     null

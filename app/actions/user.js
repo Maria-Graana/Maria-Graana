@@ -96,6 +96,9 @@ export function logoutUser(){
         dispatch({
             type: types.LOGOUT_USER,
         })
+        dispatch({
+            type: types.REMOVE_USER_ERROR,
+        })
     }
 }
 

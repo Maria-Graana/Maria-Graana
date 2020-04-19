@@ -70,6 +70,14 @@ const helper = {
 	},
 	capitalize(str) {
 		return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+	},
+	convertTimeZone(date) {
+		let _format = 'YYYY-MM-DDTHH:mm'
+		let paktz = moment.tz(date, 'Asia/Karachi').format(_format)
+		var duration = moment.duration({ hours: 5, minutes: 15 })
+		var sub = moment(paktz, _format).subtract(duration).format();
+
+		return (new Date(sub)).valueOf()
 	}
 }
 

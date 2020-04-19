@@ -17,6 +17,8 @@ import { FAB } from 'react-native-paper';
 import { ProgressBar, Colors } from 'react-native-paper';
 import StaticData from '../../StaticData';
 import { setlead } from '../../actions/lead';
+import helper from '../../helper';
+import TimerNotification from '../../LocalNotifications';
 
 class LeadViewing extends React.Component {
 	constructor(props) {
@@ -47,7 +49,6 @@ class LeadViewing extends React.Component {
 		const { rcmProgressBar } = StaticData
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
-				console.log(res.data.rows)
 				this.setState({
 					loading: false,
 					matchData: res.data.rows,
@@ -96,7 +97,7 @@ class LeadViewing extends React.Component {
 	}
 
 	goToDiaryForm = () => {
-		const { lead, navigation,user } = this.props
+		const { lead, navigation, user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
 			rcmLeadId: lead.id,
@@ -150,6 +151,12 @@ class LeadViewing extends React.Component {
 					isVisible: false,
 					loading: true
 				})
+				let timeStamp = helper.convertTimeZone(res.data.start)
+				let data = {
+					title: res.data.taskType,
+					body: res.data.taskType + ' in 15 Minutes'
+				}
+				TimerNotification(data, timeStamp)
 				this.fetchLead()
 				this.fetchProperties()
 			})

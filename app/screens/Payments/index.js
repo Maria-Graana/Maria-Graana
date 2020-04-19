@@ -10,6 +10,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import moment from 'moment'
 import { ProgressBar, Colors } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
+import helper from '../../helper';
 
 class Payments extends Component {
 	constructor(props) {
@@ -199,7 +200,8 @@ class Payments extends Component {
 	}
 
 	formSubmit = () => {
-		const { formData, totalInstalments } = this.state
+		const { lead } = this.props
+		const { formData, totalInstalments, remainingPayment } = this.state
 		let body = {
 			discount: parseInt(formData.discount),
 			downPayment: parseInt(formData.downPayment),
@@ -211,12 +213,12 @@ class Payments extends Component {
 		}
 		console.log(body)
 		console.log('projectId', formData.projectId)
-		axios.patch(`/api/leads/project?id=${formData.projectId}`, body)
+		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				if (body.commisionPayment !== null && body.commisionPayment === '') {
-					this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+				if (remainingPayment === 0) {
+					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 				} else {
-					this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+					this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 				}
 			})
 	}
@@ -238,6 +240,7 @@ class Payments extends Component {
 		if (selectedReason && selectedReason !== '') {
 			axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
 				this.setState({ isVisible: false }, () => {
+					helper.successToast(`Lead Closed`)
 					navigation.navigate('Lead');
 				});
 			}).catch(error => {

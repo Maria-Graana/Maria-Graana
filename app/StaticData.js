@@ -230,6 +230,30 @@ export default StaticData = {
             value: 'client_not_satisfied'
         }
     ],
+    paymentPopup: [
+        {
+            name: 'Payment Done',
+            value: 'payment_done'
+        },
+        {
+            name: 'Client not responding',
+            value: 'client_not_responding'
+        },
+        {
+            name: 'Client not satisfied with options',
+            value: 'client_not_satisfied'
+        }
+    ],
+    paymentPopupDone: [
+        {
+            name: 'Client not responding',
+            value: 'client_not_responding'
+        },
+        {
+            name: 'Client not satisfied with options',
+            value: 'client_not_satisfied'
+        }
+    ],
     projectType: [
         { value: 'shop', name: 'Shop' },
         { value: 'office', name: 'Office' },

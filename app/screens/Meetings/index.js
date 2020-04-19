@@ -222,6 +222,7 @@ class Meetings extends Component {
   }
   render() {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus,open, progressValue } = this.state
+    let leadData = this.props.route.params.lead
     return (
       <View style={styles.mainWrapCon}>
         <ProgressBar progress={progressValue} color={'#0277FD'} />
@@ -252,7 +253,7 @@ class Meetings extends Component {
 
         <View style={[styles.callMeetingBtn]}>
           <View style={[styles.btnsMainWrap]}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${this.props.route.params.lead.customer.phone}`) }}>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.phone && leadData.phone}`) }}>
               <Text style={styles.alignCenter}>CALL</Text>
             </TouchableOpacity>
           </View>

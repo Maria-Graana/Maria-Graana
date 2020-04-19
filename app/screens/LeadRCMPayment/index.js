@@ -102,7 +102,7 @@ class LeadRCMPayment extends React.Component {
                     if (this.state.lead.purpose === 'sale') {
                         // for sale lead
                         // if agreed amount already exists for selected inventory, do this
-                        if (this.state.allProperties[0].agreedOffer && this.state.allProperties[0].agreedOffer.length > 0) {
+                        if (this.state.allProperties[0].agreedOffer && this.state.allProperties[0].agreedOffer && this.state.allProperties[0].agreedOffer.length > 0) {
                             let offerObject = this.state.allProperties[0].agreedOffer[0];
                             // if payment amount is null then set the agreed amount as payment amount as well.
                             if (this.state.lead.payment === null) {

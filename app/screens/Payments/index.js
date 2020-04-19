@@ -211,8 +211,8 @@ class Payments extends Component {
 			installments: totalInstalments,
 			no_of_installments: totalInstalments.length,
 		}
-		console.log(body)
-		console.log('projectId', formData.projectId)
+		// console.log(body)
+		// console.log('projectId', formData.projectId)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (remainingPayment === 0) {

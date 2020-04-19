@@ -205,19 +205,20 @@ class Meetings extends Component {
 
   goToComments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Comments', { leadId: route.params.lead });
+    navigation.navigate('Comments', { cmLeadId: route.params.lead.id });
   }
 
   goToAttachments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Attachments', { leadId: route.params.lead.id });
+    navigation.navigate('Attachments', { cmLeadId: route.params.lead.id });
   }
 
   goToDiaryForm = () => {
-    const { navigation, route } = this.props;
+    const { navigation, route , user} = this.props;
     navigation.navigate('AddDiary', {
       update: false,
-      leadId: route.params.lead
+      cmLeadId: route.params.lead.id,
+      agentId: user.id
     });
   }
   render() {
@@ -263,14 +264,6 @@ class Meetings extends Component {
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* <Fab
-          active={active}
-          style={{ backgroundColor: '#0D73EE' }}
-          position="bottomRight"
-          onPress={() => { this.openAttechment() }}>
-          <Ionicons name="md-add" color="#ffffff" />
-        </Fab> */}
 
         <FAB.Group
 						open={open}

@@ -72,9 +72,12 @@ class Attachments extends Component {
 
     getAttachmentsFromServer = () => {
         const { route } = this.props;
-        const { leadId } = route.params;
-        axios.get(`/api/leads/comments?rcmLeadId=${leadId}&type=attachment`).then(response => {
-            // console.log(response.data);
+        const { rcmLeadId, cmLeadId } = route.params;
+        // url is based if coming for rcmlead or cmlead
+        const url = rcmLeadId ? `/api/leads/comments?rcmLeadId=${rcmLeadId}&type=attachment` :
+            `/api/leads/comments?cmLeadId=${cmLeadId}&type=attachment`;
+
+        axios.get(url).then(response => {
             this.setState({
                 attachmentRows: response.data,
                 formData:
@@ -101,12 +104,14 @@ class Attachments extends Component {
     uploadAttachment(data) {
         const { title } = this.state;
         const { route } = this.props;
-        const { leadId } = route.params;
+        const { rcmLeadId, cmLeadId } = route.params;
+        const url = rcmLeadId ? `/api/leads/attachment?rcmLeadId=${rcmLeadId}&title=${title}` :
+            `/api/leads/attachment?cmLeadId=${cmLeadId}&title=${title}`
+
         let fd = new FormData()
         fd.append('file', data);
         this.setState({ loading: true });
-
-        axios.post(`/api/leads/attachment?rcmLeadId=${leadId}&title=${title}`, fd).then(response => {
+        axios.post(url, fd).then(response => {
             this.getAttachmentsFromServer();
         }).catch(error => {
             console.log('error=>', error.message);

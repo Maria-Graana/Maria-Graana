@@ -159,21 +159,23 @@ class LeadOffer extends React.Component {
 
 
 	goToDiaryForm = () => {
-		const { lead, navigation } = this.props
+		const { lead, navigation,user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
-			leadId: lead.id
+			rcmLeadId: lead.id,
+			agentId: user.id
+
 		});
 	}
 
 	goToAttachments = () => {
 		const { lead, navigation } = this.props
-		navigation.navigate('Attachments', { leadId: lead.id });
+		navigation.navigate('Attachments', { rcmLeadId: lead.id });
 	}
 
 	goToComments = () => {
 		const { lead, navigation } = this.props
-		navigation.navigate('Comments', { leadId: lead.id });
+		navigation.navigate('Comments', { rcmLeadId: lead.id });
 	}
 
 	placeAgreedOffer = () => {

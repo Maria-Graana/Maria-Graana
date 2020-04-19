@@ -1,12 +1,13 @@
-import React from 'react';
-import styles from './style'
-import { View, Text } from 'react-native';
-import { connect } from 'react-redux';
+import { ScrollView, Text, View } from 'react-native';
+
 import AppStyles from '../../AppStyles'
 import { Button } from 'native-base';
+import React from 'react';
+import { connect } from 'react-redux';
+import healper from '../../helper';
 import moment from 'moment';
 import { setlead } from '../../actions/lead';
-import helper from '../../helper';
+import styles from './style'
 
 const _format = 'YYYY-MM-DD';
 
@@ -61,7 +62,7 @@ class LeadDetail extends React.Component {
         const { lead } = route.params
         
         return (
-            <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
+            <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
                     <View style={styles.innerContainer}>
                         <Text style={styles.headingText}>Lead Type</Text>
@@ -88,7 +89,7 @@ class LeadDetail extends React.Component {
                         <Text style={[styles.headingText, styles.padLeft, { paddingLeft: 0 }]}>Status</Text>
                         <View style={styles.mainView}>
                             <Text style={styles.textStyle}>
-                                {helper.capitalize(lead.status)}
+                                {lead.status.split('_').join(' ').toUpperCase()}
                             </Text>
                         </View>
                     </View>
@@ -100,7 +101,7 @@ class LeadDetail extends React.Component {
                         <Text style={AppStyles.btnText}>OPEN LEAD WORKFLOW</Text>
                     </Button>
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 }

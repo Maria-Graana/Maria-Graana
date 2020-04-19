@@ -1,11 +1,12 @@
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+
 import { Platform } from "react-native";
 
 export default AppStyles = {
     container: {
         flex: 1,
-        paddingRight: 15,
-        paddingLeft: 15,
-        backgroundColor: '#e7ecf0'
+        backgroundColor: '#e7ecf0',
+        paddingHorizontal: wp('2%')
     },
     colors: {
         background: '#f4f9fd',

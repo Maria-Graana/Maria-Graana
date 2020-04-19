@@ -1,13 +1,13 @@
-import React from 'react'
-import { View, Text, Image, TouchableOpacity } from 'react-native'
-import { Feather, Ionicons, FontAwesome, Foundation } from '@expo/vector-icons'
-import styles from './style'
+import { Feather, FontAwesome, Foundation, Ionicons } from '@expo/vector-icons'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+
 import AppStyles from '../../AppStyles'
-import { formatPrice } from '../../PriceFormate'
 import Carousel from 'react-native-snap-carousel';
+import React from 'react'
 import _ from 'underscore';
-
-
+import { formatPrice } from '../../PriceFormate'
+import styles from './style'
 
 class InventoryTile extends React.Component {
   constructor(props) {
@@ -38,12 +38,12 @@ class InventoryTile extends React.Component {
         <View>
           {
             imagesList.length ?
-              <Carousel
+              <Carousel 
                 // ref={(c) => { this._carousel = c; }}
                 data={imagesList}
                 renderItem={this._renderItem}
-                sliderWidth={140}
-                itemWidth={140}
+                sliderWidth={wp('34%')}
+                itemWidth={wp('33%')}
                 enableSnap={true}
                 enableMomentum={false}
                 autoplay={true}
@@ -65,7 +65,7 @@ class InventoryTile extends React.Component {
           <Text style={styles.imageCount}>{data.armsPropertyImages.length}</Text>
         </View>
 
-        <View style={{ flex: 1, flexDirection: 'column', paddingLeft: 15 }}>
+        <View style={{ width: wp('60%') }}>
 
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.currencyTextStyle}>PKR</Text>
@@ -100,7 +100,9 @@ class InventoryTile extends React.Component {
         </View>
         {
           data.customer && data.customer.phone !== '' ?
+          <View style={{position: "absolute", bottom:0, left: wp('85%')}}>
             <Foundation name={'telephone'} onPress={() => onCall(data.customer.phone)} color={AppStyles.colors.subTextColor} size={32} style={styles.phoneButton} />
+            </View>
             :
             null
         }

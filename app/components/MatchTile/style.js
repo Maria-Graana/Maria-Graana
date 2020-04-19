@@ -1,55 +1,71 @@
 import { StyleSheet } from 'react-native';
 import AppStyles from '../../AppStyles'
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default styles = StyleSheet.create({
   noImage: {
-    width: 110,
-    height: 110,
+    width: 130,
+    height: 140,
     borderRadius: 5,
   },
   tileContainer: { 
+    backgroundColor : 'white',
     flex: 1, 
-    backgroundColor: 'white', 
-    marginVertical: 10, 
     borderRadius: 5, 
-    height: 120, 
+    height: 150, 
     flexDirection: 'row' 
   },
   pad5: {
-    padding: 5
+    padding: 5,
   },
   currencyText: { 
-    fontSize: 12, 
-    fontFamily: AppStyles.fonts.lightFont, 
-    padding: 1 
+    paddingTop : 5,
+    fontSize: 15, 
+    fontFamily: AppStyles.fonts.lightFont 
   },
   priceText: { 
-    fontSize: 18, 
-    fontFamily: AppStyles.fonts.defaultFont, 
+    fontSize: 22, 
+    fontFamily: AppStyles.fonts.semiBoldFont, 
     color: AppStyles.colors.primaryColor 
   },
   marlaText: { 
-    fontSize: 14, 
-    fontFamily: AppStyles.fonts.defaultFont, 
-    padding: 1 
+    fontSize: 17, 
+    paddingTop: 2,
+    fontFamily: AppStyles.fonts.defaultFont 
   },
   addressText: { 
-    fontSize: 14,
+    fontSize: 17,
+    paddingTop: 5,
     fontFamily: AppStyles.fonts.defaultFont, 
-    color: AppStyles.colors.subTextColor, 
-    padding: 1 
+    color: AppStyles.colors.subTextColor
   },
   iconContainer: { 
     flexDirection: 'row',
-    paddingTop: 7 
+    paddingTop: 15
   },
   iconInner: { 
     flexDirection: 'row', 
     padding: 5 
   },
   phoneIcon: {
-    justifyContent: "flex-end", 
-    padding: 10, 
-    marginLeft: 10
-  }
+    justifyContent: "space-between", 
+    padding: 10
+  },
+  imageCountViewStyle: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    top: 120,
+    left: 10,
+    backgroundColor: '#000',
+    opacity: 0.7,
+    borderRadius: 4,
+    width: wp('12%'),
+    height: 20
+  },
+  imageCount: {
+    color: 'white',
+    paddingLeft: wp('1%')
+  },
 });

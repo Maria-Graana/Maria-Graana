@@ -2,7 +2,8 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity, } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import helper from '../../helper'
+import { Ionicons, FontAwesome, Entypo, Feather } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { CheckBox } from 'native-base';
 
@@ -11,7 +12,6 @@ class InventoryTile extends React.Component {
 		super(props)
 	}
 
-
 	_renderItem = (item) => {
 		return (
 			<Image style={styles.noImage} source={{ uri: item.item }} />
@@ -19,11 +19,28 @@ class InventoryTile extends React.Component {
 	}
 
 	render() {
-		const { data } = this.props
-		const imagesList = ['https://i.ytimg.com/vi/JvkrkSpVYg0/maxresdefault.jpg', 'https://4.bp.blogspot.com/--aHpPUF-b9Y/WFzfPaRg7EI/AAAAAAAAAE0/t050gnUwxfIOxyGnpBWupvXXpXCapScfACLcB/s1600/unique-beautiful-houses-on-home-garden-with-beautiful-beautiful-home-designs-in-kerala-beautiful-home-design-in-india-1024x680.jpg', 'https://beautyharmonylife.com/wp-content/uploads/2013/08/558084_455703801173433_581948460_n.jpg']
+		const { data, menuShow, showCheckBoxes, organization } = this.props
+		let imagesList = []
+		let showLable = menuShow || false
+		let phoneNumber = null
+		if ('armsPropertyImages' in data) {
+			if (data.armsPropertyImages.length) {
+				imagesList = data.armsPropertyImages.map((item) => {
+					return item.url
+				})
+			}
+		}
+
+		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
+		else phoneNumber = data.user.phoneNumber
+		
 		return (
-			<TouchableOpacity
-				onLongPress={() => { }}
+			<TouchableOpacity style={{ flexDirection: 'row' }}
+				onLongPress={() => {
+					this.props.displayChecks()
+					this.props.addProperty(data)
+				}}
+				onPress={() => { this.props.addProperty(data) }}
 			>
 				<View style={styles.tileContainer}>
 					<View style={[styles.pad5]}>
@@ -33,8 +50,8 @@ class InventoryTile extends React.Component {
 									// ref={(c) => { this._carousel = c; }}
 									data={imagesList}
 									renderItem={this._renderItem}
-									sliderWidth={110}
-									itemWidth={110}
+									sliderWidth={130}
+									itemWidth={130}
 									enableSnap={true}
 									enableMomentum={false}
 									autoplay={true}
@@ -50,28 +67,45 @@ class InventoryTile extends React.Component {
 								/>
 						}
 					</View>
+					<View style={styles.imageCountViewStyle}>
+						<Feather name={'camera'} color={'#fff'} size={16} />
+						<Text style={styles.imageCount}>{data.armsPropertyImages.length}</Text>
+					</View>
 					<View style={[AppStyles.mb1, styles.pad5]}>
 						<Text style={styles.currencyText}> PKR  <Text style={styles.priceText}>{data.price}</Text> </Text>
-						<Text style={styles.marlaText}> {data.size} {data.size_unit} House For Sale </Text>
-						<Text style={styles.addressText}> F-10 Markaz, Islamabad </Text>
+						<Text numberOfLines={1} style={styles.marlaText}> {data.size} {data.size_unit} {data.subtype && helper.capitalize(data.subtype)} For {data.purpose && helper.capitalize(data.purpose)} </Text>
+						<Text numberOfLines={1} style={styles.addressText}> {data.area ? data.area.name + ', ' : null} {data.city ? data.city.name : null} </Text>
 						<View style={styles.iconContainer}>
 							<View style={styles.iconInner}>
-								<Ionicons name="ios-bed" size={20} color={AppStyles.colors.subTextColor} />
-								<Text> {data.bed} </Text>
+								<Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
+								<Text style={{ fontSize: 18 }}> {data.bed} </Text>
 							</View>
 							<View style={styles.iconInner}>
-								<FontAwesome name="bath" size={17} color={AppStyles.colors.subTextColor} />
-								<Text> {data.bath} </Text>
+								<FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
+								<Text style={{ fontSize: 18 }}> {data.bath} </Text>
 							</View>
 						</View>
 					</View>
 					<View style={styles.phoneIcon}>
-						<FontAwesome name="phone" size={25} color={AppStyles.colors.subTextColor} />
+						{
+							showLable ?
+								<Entypo style={{ paddingLeft: 10 }} onPress={() => { this.props.doneViewing(data) }} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
+								:
+								<View />
+						}
+						<View style={{ flexDirection: 'column' }}>
+							<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+						</View>
 					</View>
 				</View>
-				<View style={{ flex: 1 }}>
-					<CheckBox color={AppStyles.colors.primaryColor} checked={true} />
-				</View>
+				{
+					showCheckBoxes ?
+						<View style={{ marginRight: 5, marginTop: 5 }}>
+							<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
+						</View>
+						:
+						null
+				}
 			</TouchableOpacity>
 		)
 	}

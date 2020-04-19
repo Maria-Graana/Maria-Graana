@@ -14,10 +14,13 @@ export default function RCMLeadTabs() {
             tabBarOptions={{
                 scrollEnabled: true,
                 labelStyle: { fontSize: 10 },
-                tabStyle: { width: 85},
+                tabStyle: { width: 85 },
+                indicatorStyle: {
+                    backgroundColor: 'white',
+                }
                 // style: { shadowColor: 'transparent', elevation: 0, borderTopColor: "transparent", borderTopWidth: 0 },
             }}>
-            <Tab.Screen name="Match" component={LeadMatch}/>
+            <Tab.Screen name="Match" component={LeadMatch} />
             <Tab.Screen name="Viewing" component={LeadViewing} />
             <Tab.Screen name="Offer" component={LeadOffer} />
             <Tab.Screen name="Propsure" component={LeadPropsure} />

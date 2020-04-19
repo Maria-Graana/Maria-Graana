@@ -13,6 +13,9 @@ import helper from '../../helper';
 import AppStyles from '../../AppStyles';
 import { ProgressBar, Colors } from 'react-native-paper';
 import { FAB } from 'react-native-paper';
+import { setlead } from '../../actions/lead';
+import StaticData from '../../StaticData';
+
 class Meetings extends Component {
   constructor(props) {
     super(props)
@@ -31,12 +34,29 @@ class Meetings extends Component {
       meetingId: '',
       modalStatus: 'dropdown',
       open: false,
+      progressValue: 0
     }
   }
 
   componentDidMount() {
+    this.fetchLead()
     this.getMeetingLead()
     // console.log(this.props.route.params.lead)
+  }
+
+  fetchLead = () => {
+    const { lead } = this.props
+    const { cmProgressBar } = StaticData
+    axios.get(`api/leads/byid?id=${lead.id}`)
+      .then((res) => {
+        this.props.dispatch(setlead(res.data))
+        this.setState({
+          progressValue: cmProgressBar[res.data.status] || 0
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   //  ************ Function for open modal ************ 
@@ -63,6 +83,7 @@ class Meetings extends Component {
         axios.patch(`/api/diary/update?id=${meetingId}`, formData)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
+            this.fetchLead()
             this.getMeetingLead();
             this.setState({
               active: false,
@@ -74,6 +95,7 @@ class Meetings extends Component {
         axios.post(`api/leads/project/meeting`, formData)
           .then((res) => {
             helper.successToast(`Meeting Added`)
+            this.fetchLead()
             this.getMeetingLead();
             this.setState({
               active: false,
@@ -117,6 +139,7 @@ class Meetings extends Component {
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
         .then((res) => {
+          this.fetchLead()
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
@@ -126,6 +149,7 @@ class Meetings extends Component {
       axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
         .then((res) => {
           console.log(res.data)
+          this.fetchLead()
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
@@ -149,6 +173,7 @@ class Meetings extends Component {
     }
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
+        this.fetchLead()
         this.getMeetingLead();
       })
   }
@@ -204,10 +229,10 @@ class Meetings extends Component {
   }
 
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus,open } = this.state
+    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus,open, progressValue } = this.state
     return (
       <View style={styles.mainWrapCon}>
-        <ProgressBar progress={0.5} color={'#0277FD'} />
+        <ProgressBar progress={progressValue} color={'#0277FD'} />
 
         {/* ************Fab For Open Modal************ */}
         <View style={[styles.meetingConteiner]}>
@@ -298,6 +323,7 @@ class Meetings extends Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    lead: store.lead.lead
   }
 }
 

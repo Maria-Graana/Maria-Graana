@@ -54,10 +54,11 @@ const helper = {
 		return re.test(email);
 	},
 	callNumber(url) {
-		if (url != 'tel:null') {
+		if (url && url != 'tel:null') {
 			Linking.canOpenURL(url)
 				.then(supported => {
 					if (!supported) {
+						helper.errorToast(`No Phone Number`)
 						console.log("Can't handle url: " + url);
 					} else {
 						return Linking.openURL(url)

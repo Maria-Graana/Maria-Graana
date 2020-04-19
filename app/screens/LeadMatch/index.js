@@ -16,6 +16,7 @@ import _ from 'underscore';
 import helper from '../../helper';
 import { setlead } from '../../actions/lead';
 import { FAB } from 'react-native-paper';
+import StaticData from '../../StaticData';
 import { ProgressBar, Colors } from 'react-native-paper';
 
 class LeadMatch extends React.Component {
@@ -63,7 +64,8 @@ class LeadMatch extends React.Component {
             displayButton: false,
             cities: [],
             areas: [],
-            subTypVal: []
+            subTypVal: [],
+            progressValue: 0
         }
     }
 
@@ -123,31 +125,32 @@ class LeadMatch extends React.Component {
         const { lead } = this.props
         let cityId = ''
         let areaId = ''
-
+        let areas = []
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
         }
 
         if ('armsLeadAreas' in lead) {
             if (lead.armsLeadAreas.length) {
-                if ('area' in lead.armsLeadAreas[0]) {
-                    areaId = lead.armsLeadAreas[0].area.id
-                }
+                areas = lead.armsLeadAreas.map((area) => {
+                    if ('area' in area)
+                        return area.area.id
+                })
             }
         }
         this.setState({
             formData: {
                 cityId: cityId,
-                areaId: areaId,
-                minPrice: lead.min_price || '',
-                maxPrice: lead.price || '',
-                bed: lead.bed || '',
-                bath: lead.bath || '',
-                size: lead.size || '',
-                sizeUnit: lead.size_unit || '',
-                propertySubType: lead.subtype || '',
-                propertyType: lead.type || '',
-                purpose: lead.purpose || '',
+                leadAreas: areas,
+                minPrice: lead.min_price,
+                maxPrice: lead.price,
+                bed: lead.bed,
+                bath: lead.bath,
+                size: lead.size,
+                sizeUnit: lead.size_unit,
+                propertySubType: lead.subtype,
+                propertyType: lead.type,
+                purpose: lead.purpose,
             },
             showFilter: false,
             loading: true
@@ -160,6 +163,7 @@ class LeadMatch extends React.Component {
         const { organization, matchesBol, formData, showCheckBoxes } = this.state
         const { route } = this.props
         const { lead } = route.params
+        const { rcmProgressBar } = StaticData
 
         const params = {
             leadId: lead.id,
@@ -176,7 +180,8 @@ class LeadMatch extends React.Component {
             size: formData.size,
             unit: formData.sizeUnit
         }
-
+        console.log(lead.status)
+        console.log(rcmProgressBar[lead.status])
         let callApi = this.canCallApi()
         let matches = []
         if (callApi || !showCheckBoxes) {
@@ -200,6 +205,7 @@ class LeadMatch extends React.Component {
                             type: organization,
                             data: matches
                         },
+                        progressValue: rcmProgressBar[lead.status]
                     }, () => {
                         this.loadData()
                     })
@@ -265,15 +271,8 @@ class LeadMatch extends React.Component {
     ownProperty = (property) => {
         const { user } = this.props
         const { organization } = this.state
-
-        if (organization === 'arms' && 'armsuser' in property && property.armsuser) {
-            return user.id === property.armsuser.id
-        }
-        else if (organization === 'graana' && 'user' in property && property.user) {
-            return user.id === property.user.id
-        }
-        else if (organization === 'aragency21' && 'user' in property && property.user) {
-            return user.id === property.user.id
+        if (property.assigned_to_armsuser_id) {
+            return user.id === property.assigned_to_armsuser_id
         }
         else {
             return false
@@ -409,12 +408,12 @@ class LeadMatch extends React.Component {
 
     render() {
         // const { user } = this.props
-        const { cities, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, open } = this.state
+        const { progressValue, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, open } = this.state
 
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
-                    <ProgressBar progress={0.2} color={'#0277FD'} />
+                    <ProgressBar progress={progressValue} color={'#0277FD'} />
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
@@ -446,10 +445,10 @@ class LeadMatch extends React.Component {
                         {
                             matchData.data.length ?
                                 <FlatList
-                                    style={{ height: 135 }}
+                                    style={{ flex: 1 }}
                                     data={matchData.data}
                                     renderItem={(item, index) => (
-                                        <View style={{ marginVertical: 10, marginHorizontal: 15 }}>
+                                        <View style={{ marginVertical: 2, marginHorizontal: 8 }}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile
@@ -458,6 +457,7 @@ class LeadMatch extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={showCheckBoxes}
                                                         addProperty={this.addProperty}
+                                                        organization={matchData.type}
                                                     />
                                                     :
                                                     <AgentTile
@@ -466,6 +466,7 @@ class LeadMatch extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={showCheckBoxes}
                                                         addProperty={this.addProperty}
+                                                        organization={matchData.type}
                                                     />
                                             }
                                         </View>

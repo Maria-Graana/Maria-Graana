@@ -8,16 +8,17 @@ export default styles = StyleSheet.create({
     borderRadius: 5,
   },
   underLine: {
-      borderLeftWidth: 1,
-      borderLeftColor: '#f5f5f6',
-      // marginRight: 5,
-      height: 90,
-      marginVertical: 20,
-      padding: 10
+    borderLeftWidth: 1,
+    borderLeftColor: '#f5f5f6',
+    // marginRight: 5,
+    height: 90,
+    marginVertical: 20,
+    padding: 10
   },
   agentText: {
     fontFamily: AppStyles.fonts.lightFont,
-    fontSize: 12
+    fontSize: 17, 
+    paddingTop: 2,
   },
   labelText: {
     fontFamily: AppStyles.fonts.defaultFont,
@@ -29,44 +30,44 @@ export default styles = StyleSheet.create({
     backgroundColor: 'white',
     marginVertical: 2,
     borderRadius: 5,
-    height: 120,
+    height: 160,
     flexDirection: 'row'
+  },
+  marlaText: { 
+    fontSize: 17, 
+    paddingTop: 2,
+    fontFamily: AppStyles.fonts.defaultFont 
   },
   pad5: {
     padding: 5
   },
   currencyText: {
-    fontSize: 12,
-    fontFamily: AppStyles.fonts.lightFont,
-    padding: 1
+    paddingTop: 5,
+    fontSize: 15,
+    fontFamily: AppStyles.fonts.lightFont
   },
   priceText: {
-    fontSize: 18,
-    fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: 22,
+    fontFamily: AppStyles.fonts.semiBoldFont,
     color: AppStyles.colors.primaryColor
   },
-  marlaText: {
-    fontSize: 14,
-    fontFamily: AppStyles.fonts.defaultFont,
-    padding: 1
-  },
   addressText: {
-    fontSize: 14,
+    fontSize: 17,
+    paddingTop: 5,
     fontFamily: AppStyles.fonts.defaultFont,
-    color: AppStyles.colors.subTextColor,
-    padding: 1
+    color: AppStyles.colors.subTextColor
   },
   iconContainer: {
     flexDirection: 'row',
-    paddingTop: 7
+    paddingTop: 20,
+    paddingBottom: 10
   },
   iconInner: {
     flexDirection: 'row',
     padding: 5
   },
   phoneIcon: {
-    justifyContent: "flex-end",
-    padding: 10,
-    marginLeft: 10
+    justifyContent: "space-between", 
+    padding: 10
   }
 });

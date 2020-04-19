@@ -12,6 +12,8 @@ import _ from 'underscore';
 import OfferModal from '../../components/OfferModal'
 import { FAB } from 'react-native-paper';
 import { ProgressBar, Colors } from 'react-native-paper';
+import { setlead } from '../../actions/lead';
+import StaticData from '../../StaticData';
 
 class LeadOffer extends React.Component {
 	constructor(props) {
@@ -26,23 +28,27 @@ class LeadOffer extends React.Component {
 				their: '',
 				agreed: ''
 			},
-			currentProperty: {}
+			currentProperty: {},
+			progressValue: 0
 		}
 	}
 
 	componentDidMount = () => {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
+			this.fetchLead()
 			this.fetchProperties()
 		})
 	}
 
 	fetchProperties = () => {
 		const { lead } = this.props
+		const { rcmProgressBar } = StaticData
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
 				this.setState({
 					loading: false,
-					matchData: res.data.rows
+					matchData: res.data.rows,
+					progressValue: rcmProgressBar[lead.status]
 				})
 			})
 			.catch((error) => {
@@ -53,17 +59,28 @@ class LeadOffer extends React.Component {
 			})
 	}
 
+	fetchLead = () => {
+		const { lead } = this.props
+		axios.get(`api/leads/byid?id=${lead.id}`)
+			.then((res) => {
+				this.props.dispatch(setlead(res.data))
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}
+
 	displayChecks = () => { }
 
 	addProperty = () => { }
 
 	ownProperty = (property) => {
 		const { user } = this.props
-		if ('armsuser' in property && property.armsuser) {
-			return user.id === property.armsuser.id
-		} else if ('user' in property && property.user) {
-			return user.id === property.user.id
-		} else {
+		const { organization } = this.state
+		if (property.assigned_to_armsuser_id) {
+			return user.id === property.assigned_to_armsuser_id
+		}
+		else {
 			return false
 		}
 	}
@@ -74,6 +91,7 @@ class LeadOffer extends React.Component {
 			modalActive: !modalActive,
 		}, () => {
 			if (!this.state.modalActive) {
+				this.fetchLead()
 				this.fetchProperties()
 			}
 		})
@@ -228,72 +246,74 @@ class LeadOffer extends React.Component {
 	}
 
 	render() {
-		const { loading, matchData, user, modalActive, offersData, offerChat, open } = this.state
+		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue } = this.state
 		return (
 			!loading ?
-				<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-					<ProgressBar progress={0.6} color={'#0277FD'} />
-					<View style={{ flex: 1 }}>
-						{
-							matchData.length ?
-								<View>
-									<FlatList
-										data={matchData}
-										renderItem={(item, index) => (
-											<View style={{ marginVertical: 10 }}>
-												{
-													this.ownProperty(item.item) ?
-														<MatchTile
-															data={item.item}
-															user={user}
-															displayChecks={this.displayChecks}
-															showCheckBoxes={false}
-															addProperty={this.addProperty}
-														/>
-														:
-														<AgentTile
-															data={item.item}
-															user={user}
-															displayChecks={this.displayChecks}
-															showCheckBoxes={false}
-															addProperty={this.addProperty}
-														/>
-												}
-												<View>
-													{this.checkStatus(item.item)}
+				<View style={{flex: 1}}>
+					<ProgressBar progress={progressValue} color={'#0277FD'} />
+					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
+						<View style={{ flex: 1 }}>
+							{
+								matchData.length ?
+									<View>
+										<FlatList
+											data={matchData}
+											renderItem={(item, index) => (
+												<View style={{ marginVertical: 3 }}>
+													{
+														this.ownProperty(item.item) ?
+															<MatchTile
+																data={item.item}
+																user={user}
+																displayChecks={this.displayChecks}
+																showCheckBoxes={false}
+																addProperty={this.addProperty}
+															/>
+															:
+															<AgentTile
+																data={item.item}
+																user={user}
+																displayChecks={this.displayChecks}
+																showCheckBoxes={false}
+																addProperty={this.addProperty}
+															/>
+													}
+													<View>
+														{this.checkStatus(item.item)}
+													</View>
 												</View>
-											</View>
-										)}
-										keyExtractor={(item, index) => item.id.toString()}
-									/>
-									<OfferModal
-										offersData={offersData}
-										active={modalActive}
-										offerChat={offerChat}
-										placeMyOffer={this.placeMyOffer}
-										placeTheirOffer={this.placeTheirOffer}
-										placeAgreedOffer={this.placeAgreedOffer}
-										handleForm={this.handleForm}
-										openModal={this.openChatModal}
-									/>
-								</View>
-								:
-								<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
-						}
-					</View>
-					<FAB.Group
-						open={open}
-						icon="plus"
-						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-						color={AppStyles.bgcWhite.backgroundColor}
-						actions={[
-							{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-							{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-							{ icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-						]}
-						onStateChange={({ open }) => this.setState({ open })}
-					/>
+											)}
+											keyExtractor={(item, index) => item.id.toString()}
+										/>
+										<OfferModal
+											offersData={offersData}
+											active={modalActive}
+											offerChat={offerChat}
+											placeMyOffer={this.placeMyOffer}
+											placeTheirOffer={this.placeTheirOffer}
+											placeAgreedOffer={this.placeAgreedOffer}
+											handleForm={this.handleForm}
+											openModal={this.openChatModal}
+										/>
+									</View>
+									:
+									<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
+							}
+						</View>
+						<FAB.Group
+							open={open}
+							icon="plus"
+							fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+							color={AppStyles.bgcWhite.backgroundColor}
+							actions={[
+								{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+								{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+								{ icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+							]}
+							onStateChange={({ open }) => this.setState({ open })}
+						/>
 
+					</View>
 				</View>
 				:
 				<Loader loading={loading} />

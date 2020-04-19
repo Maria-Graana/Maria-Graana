@@ -203,12 +203,9 @@ class Meetings extends Component {
     })
   }
 
-  goToDiaryForm = () => {
+  goToComments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('AddDiary', {
-      update: false,
-      leadId: route.params.lead
-    });
+    navigation.navigate('Comments', { leadId: route.params.lead });
   }
 
   goToAttachments = () => {
@@ -216,11 +213,13 @@ class Meetings extends Component {
     navigation.navigate('Attachments', { leadId: route.params.lead.id });
   }
 
-  goToComments = () => {
+  goToDiaryForm = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Comments', { leadId: route.params.lead });
+    navigation.navigate('AddDiary', {
+      update: false,
+      leadId: route.params.lead
+    });
   }
-
   render() {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus,open, progressValue } = this.state
     return (
@@ -278,9 +277,9 @@ class Meetings extends Component {
 						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
 						color={AppStyles.bgcWhite.backgroundColor}
 						actions={[
-							{ icon: 'plus', label: 'Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
 							{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
 							{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+							{ icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
 
 						]}
 						onStateChange={({ open }) => this.setState({ open })}

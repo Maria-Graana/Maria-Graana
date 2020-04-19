@@ -66,7 +66,7 @@ class Payments extends Component {
 	fetchLead = () => {
 		const { lead } = this.props
 		const { cmProgressBar } = StaticData
-		axios.get(`api/leads/byid?id=${lead.id}`)
+		axios.get(`/api/leads/project/byId?id=${lead.id}`)
 			.then((res) => {
 				this.props.dispatch(setlead(res.data))
 				this.setState({
@@ -216,7 +216,6 @@ class Payments extends Component {
 				} else {
 					this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
 				}
-				this.fetchLead()
 			})
 	}
 

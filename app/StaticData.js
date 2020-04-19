@@ -311,15 +311,6 @@ export default StaticData = {
         payment: 0.8,
         closed: 1
     },
-    rcmProgressBar: {
-        open: 0,
-        viewing: 0.2,
-        offer: 0.4,
-        propsure: 0.6,
-        token: 0.8,
-        payment: 0.8,
-        closed: 1
-    },
     cmProgressBar: {
         meeting_visited: 0.5,
         meeting_expected_conversion: 0,

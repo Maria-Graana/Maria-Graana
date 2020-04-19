@@ -47,7 +47,7 @@ class Meetings extends Component {
   fetchLead = () => {
     const { lead } = this.props
     const { cmProgressBar } = StaticData
-    axios.get(`api/leads/byid?id=${lead.id}`)
+    axios.get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
         this.setState({
@@ -83,7 +83,6 @@ class Meetings extends Component {
         axios.patch(`/api/diary/update?id=${meetingId}`, formData)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
-            this.fetchLead()
             this.getMeetingLead();
             this.setState({
               active: false,
@@ -95,7 +94,6 @@ class Meetings extends Component {
         axios.post(`api/leads/project/meeting`, formData)
           .then((res) => {
             helper.successToast(`Meeting Added`)
-            this.fetchLead()
             this.getMeetingLead();
             this.setState({
               active: false,
@@ -139,7 +137,6 @@ class Meetings extends Component {
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
         .then((res) => {
-          this.fetchLead()
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
@@ -149,7 +146,6 @@ class Meetings extends Component {
       axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
         .then((res) => {
           console.log(res.data)
-          this.fetchLead()
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
@@ -173,7 +169,6 @@ class Meetings extends Component {
     }
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
-        this.fetchLead()
         this.getMeetingLead();
       })
   }

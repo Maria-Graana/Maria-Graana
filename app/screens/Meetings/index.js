@@ -145,7 +145,6 @@ class Meetings extends Component {
     } else {
       axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
         .then((res) => {
-          console.log(res.data)
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
@@ -214,7 +213,6 @@ class Meetings extends Component {
 
   goToAttachments = () => {
     const { navigation, route } = this.props;
-    console.log(route.params.lead)
     navigation.navigate('Attachments', { leadId: route.params.lead.id });
   }
 

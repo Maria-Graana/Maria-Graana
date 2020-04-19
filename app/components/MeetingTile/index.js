@@ -29,7 +29,7 @@ class MeetingTile extends React.Component {
             </View>
             <View style={[styles.dotsWrap]}>
               {
-                data.taskType === 'called' || data.taskType === 'call' && data.response != 'pending' &&
+                data.taskType === 'called' && data.response != 'pending' &&
                 <Text style={[styles.doneText]}>{data.response}</Text>
               }
 

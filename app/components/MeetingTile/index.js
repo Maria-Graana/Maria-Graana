@@ -34,7 +34,7 @@ class MeetingTile extends React.Component {
               }
 
               {
-                data.taskType === 'meeting' &&
+                data.taskType === 'meeting' && data.response != null &&
                 <Text style={[styles.doneText]}>{data.response}</Text>
               }
               <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data) }}>

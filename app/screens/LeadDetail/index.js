@@ -4,7 +4,7 @@ import AppStyles from '../../AppStyles'
 import { Button } from 'native-base';
 import React from 'react';
 import { connect } from 'react-redux';
-import healper from '../../helper';
+import helper from '../../helper';
 import moment from 'moment';
 import { setlead } from '../../actions/lead';
 import styles from './style'

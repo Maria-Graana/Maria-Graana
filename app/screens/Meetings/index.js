@@ -145,7 +145,6 @@ class Meetings extends Component {
     } else {
       axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
         .then((res) => {
-          console.log(res.data)
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
@@ -204,6 +203,16 @@ class Meetings extends Component {
     })
   }
 
+  goToComments = () => {
+    const { navigation, route } = this.props;
+    navigation.navigate('Comments', { leadId: route.params.lead });
+  }
+
+  goToAttachments = () => {
+    const { navigation, route } = this.props;
+    navigation.navigate('Attachments', { leadId: route.params.lead.id });
+  }
+
   goToDiaryForm = () => {
     const { navigation, route } = this.props;
     navigation.navigate('AddDiary', {
@@ -211,18 +220,6 @@ class Meetings extends Component {
       leadId: route.params.lead
     });
   }
-
-  goToAttachments = () => {
-    const { navigation, route } = this.props;
-    console.log(route.params.lead)
-    navigation.navigate('Attachments', { leadId: route.params.lead.id });
-  }
-
-  goToComments = () => {
-    const { navigation, route } = this.props;
-    navigation.navigate('Comments', { leadId: route.params.lead });
-  }
-
   render() {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus,open, progressValue } = this.state
     return (
@@ -280,9 +277,9 @@ class Meetings extends Component {
 						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
 						color={AppStyles.bgcWhite.backgroundColor}
 						actions={[
-							{ icon: 'plus', label: 'Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
 							{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
 							{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+							{ icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
 
 						]}
 						onStateChange={({ open }) => this.setState({ open })}

@@ -65,74 +65,39 @@ class LeadRCMPayment extends React.Component {
     getSelectedProperty = (lead) => {
         const { dispatch } = this.props;
         const { rcmProgressBar } = StaticData
+        let properties = [];
         axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
             dispatch(setlead(response.data));
-            this.setState({progressValue: rcmProgressBar[lead.status]})
-            if (response.data.armsProperty === null && response.data.property === null) {
+            this.setState({ progressValue: rcmProgressBar[lead.status] })
+            if (response.data.shortlist_id === null) {
                 this.getShortlistedProperties(lead)
             }
             else {
-                let properties = [];
-                if (response.data.armsProperty !== null) {
-                    properties.push(response.data.armsProperty);
+                if (response.data.paymentProperty) {
+                    properties.push(response.data.paymentProperty);
                 }
-                else if (response.data.graana_id !== null) {
-                    properties.push(response.data.graanaProperty);
+                else {
+                    alert('Something went wrong...')
                 }
-                else if (response.data.graana_agency_id !== null) {
-                    properties.push(response.data.graanaProperty);
-                }
-                this.setState({
-                    loading: false,
-                    allProperties: properties,
-                    showSelectPaymentView: true,
-                    selectedReason: '',
-                    checkReasonValidation: '',
-                }, () => {
-                    if (this.state.lead.purpose === 'sale') {
-                        // for sale lead
-                        // if agreed amount already exists for selected inventory, do this
-                        if (this.state.allProperties[0].agreedOffer && this.state.allProperties[0].agreedOffer && this.state.allProperties[0].agreedOffer.length > 0) {
-                            let offerObject = this.state.allProperties[0].agreedOffer[0];
-                            // if payment amount is null then set the agreed amount as payment amount as well.
-                            if (this.state.lead.payment === null) {
-                                this.setState({
-                                    agreedAmount: String(offerObject.offer),
-                                    token: String(this.state.lead.token),
-                                    commissionPayment: String(this.state.lead.commissionPayment)
-                                }, () => {
-                                    this.handleAgreedAmountPress();
-                                })
-                            }
-                        }
-                        else {
-                            this.setState({
-                                agreedAmount: String(this.state.lead.payment),
-                                token: String(this.state.lead.token),
-                                commissionPayment: String(this.state.lead.commissionPayment)
-                            }, () => {
-                                if (this.state.lead.payment === null) {
-                                    this.setState({ agreedAmount: String(offerObject.offer) }, () => {
-                                        this.handleAgreedAmountPress();
-                                    })
-                                }
-                            })
-                        }
-                    }
-                    else {
-                        this.setState({
-                            formData: { contract_months: String(this.state.lead.contract_months), security: String(this.state.lead.security), advance: String(this.state.lead.advance), monthlyRent: String(this.state.lead.monthlyRent) },
-                            token: String(this.state.lead.token),
-                            commissionPayment: String(this.state.lead.commissionPayment)
-                        })
-
-                    }
-
-                    this.checkCommissionPayment(response.data);
-
-
-                })
             }
+            this.setState({
+                loading: false,
+                allProperties: properties.length > 0 && properties,
+                showSelectPaymentView: true,
+                selectedReason: '',
+                checkReasonValidation: '',
+                agreedAmount: lead.payment ? String(lead.payment) : '',
+                token: lead.token ? String(lead.token) : '',
+                commissionPayment: lead.commissionPayment ? String(lead.commissionPayment) : '',
+                formData: {
+                    contract_months: lead.contract_months ? String(lead.contract_months) : '',
+                    security: lead.security ? String(lead.security) : '',
+                    advance: lead.advance ? String(lead.advance) : '',
+                    monthlyRent: lead.monthlyRent ? String(tmonthlyRent) : ''
+                }
+            }, () => {
+                this.checkCommissionPayment(response.data);
+            })
         }).catch(error => {
             console.log(error)
             this.setState({
@@ -207,11 +172,14 @@ class LeadRCMPayment extends React.Component {
         const { allProperties, lead } = this.state;
         const selectedProperty = allProperties.filter(property => property.id === item.id);
         let payload = Object.create({});
-        payload.armsProperty = selectedProperty[0].arms_id;
-        payload.graanaProperty = selectedProperty[0].graana_id;
+        payload.shortlist_id = selectedProperty[0].id;
+        //console.log(payload);
+        //         payload.armsProperty = selectedProperty[0].arms_id;
+        // payload.graanaProperty = selectedProperty[0].graana_id;
+
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.setState({ lead: response.data }, () => {
-                this.getSelectedProperty();
+                this.getSelectedProperty(lead);
             });
         }).catch(error => {
             console.log(error);
@@ -399,7 +367,7 @@ class LeadRCMPayment extends React.Component {
 
 
     goToDiaryForm = () => {
-        const { navigation,user } = this.props
+        const { navigation, user } = this.props
         const { lead } = this.state;
         navigation.navigate('AddDiary', {
             update: false,

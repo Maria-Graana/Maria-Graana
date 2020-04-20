@@ -24,16 +24,6 @@ class AddDiary extends Component {
         }
     }
 
-    // argument in gmt timezone
-    convertTimeZone = (date) => {
-        let _format = 'YYYY-MM-DDTHH:mm'
-        let paktz = moment.tz(date, 'Asia/Karachi').format(_format)
-        var duration = moment.duration({ hours: 5, minutes: 15 })
-        var sub = moment(paktz, _format).subtract(duration).format();
-
-        return (new Date(sub)).valueOf()
-    }
-
     formSubmit = (data) => {
         if (!data.subject || !data.taskType || !data.date || !data.startTime || !data.endTime) {
             this.setState({
@@ -106,7 +96,7 @@ class AddDiary extends Component {
 
     addDiary = (data) => {
         const { route, navigation } = this.props;
-        const { rcmLeadId,cmLeadId } = route.params;
+        const { rcmLeadId, cmLeadId } = route.params;
         let diary = this.generatePayload(data)
         console.log(diary);
         if (rcmLeadId || cmLeadId) {
@@ -115,6 +105,12 @@ class AddDiary extends Component {
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('DIARY ADDED SUCCESSFULLY!')
+                        let timeStamp = helper.convertTimeZone(res.data.start)
+                        let data = {
+                            title: res.data.taskType,
+                            body: res.data.taskType + ' in 15 Minutes'
+                        }
+                        TimerNotification(data, timeStamp)
                         navigation.goBack();
                     }
                     else {
@@ -133,7 +129,7 @@ class AddDiary extends Component {
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('TASK ADDED SUCCESSFULLY!')
-                        let timeStamp = this.convertTimeZone(res.data.start)
+                        let timeStamp = helper.convertTimeZone(res.data.start)
                         let data = {
                             title: res.data.taskType,
                             body: res.data.taskType + ' in 15 Minutes'

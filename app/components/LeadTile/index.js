@@ -5,7 +5,8 @@ import PropertyImg from '../../../assets/img/property.jpg'
 import React from 'react'
 import phone from '../../../assets/img/phone2.png'
 import styles from './style'
-
+import helper from '../../helper';
+import { formatPrice } from '../../PriceFormate'
 class LeadTile extends React.Component {
   constructor(props) {
     super(props)
@@ -19,10 +20,6 @@ class LeadTile extends React.Component {
       <TouchableOpacity onPress={() => { navigateTo(data) }} onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
 
         <View style={[styles.tileMainWrap, selectedInventory.includes(data.id) && styles.selectedInventory]}>
-
-          {/* <View style={[styles.leftimgView]}>
-            <Image source={PropertyImg} style={[styles.propertyImg]} />
-          </View> */}
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
               <View>
@@ -44,7 +41,7 @@ class LeadTile extends React.Component {
               {/* ****** Name Wrap */}
               <View style={[styles.contentMain, AppStyles.mbTen]}>
                 <Text style={[styles.largeText, AppStyles.darkColor]}>
-                  {data.customer && data.customer.customerName}
+                  {data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)}
                 </Text>
               </View>
 
@@ -52,31 +49,30 @@ class LeadTile extends React.Component {
               <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                 <Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor, AppStyles.mrTen]}>
                   PKR
-            						</Text>
+            	 	</Text>
                 <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
-                  {
-                    data.price != null ? data.price : ''
-                  }
-                  {
-                    data.maxPrice && data.maxPrice != null && data.maxPrice
-                  }
+                  {!data.projectId && data.min_price && formatPrice(data.price === null ? 0 : data.min_price) + ' - '} {!data.projectId && formatPrice(data.price === null ? 0 : data.price)}  {data.projectId && data.minPrice && formatPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && formatPrice(data.maxPrice)}
                 </Text>
               </View>
 
               {/* ****** Address Wrap */}
               <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                 {
-                  data.size != null &&
-                  <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                    {data.size} {data.size_unit} {data.type} {data.purpose != null && 'for'} {data.purpose}
-                  </Text>
+                  data.size != null && !data.projectId ?
+                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                      {data.size} {data.size_unit} {data.type} {data.purpose != null && 'for'} {data.purpose}
+                    </Text>
+                    :
+                    <Text style={[AppStyles.darkColor]}>
+                      {`${helper.capitalize(data.subtype)}${helper.capitalize(data.projectType)}`}
+                    </Text>
                 }
               </View>
 
               {/* ****** Location Wrap */}
               <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                 <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                  f/12 Markaz, {data.city && data.city.name}
+                  {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length && data.armsLeadAreas[0].area && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
                 </Text>
               </View>
             </View>

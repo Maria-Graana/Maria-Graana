@@ -82,8 +82,7 @@ function MainStack() {
             />
             <Stack.Screen name='Lead' component={Lead}
                 options={({ navigation, route }) => ({
-                    ...headerStyle,
-                    title: '',
+                    title: 'LEADS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

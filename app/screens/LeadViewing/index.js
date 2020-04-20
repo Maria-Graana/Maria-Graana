@@ -17,6 +17,8 @@ import { FAB } from 'react-native-paper';
 import { ProgressBar, Colors } from 'react-native-paper';
 import StaticData from '../../StaticData';
 import { setlead } from '../../actions/lead';
+import helper from '../../helper';
+import TimerNotification from '../../LocalNotifications';
 
 class LeadViewing extends React.Component {
 	constructor(props) {
@@ -95,7 +97,7 @@ class LeadViewing extends React.Component {
 	}
 
 	goToDiaryForm = () => {
-		const { lead, navigation,user } = this.props
+		const { lead, navigation, user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
 			rcmLeadId: lead.id,
@@ -149,6 +151,12 @@ class LeadViewing extends React.Component {
 					isVisible: false,
 					loading: true
 				})
+				let timeStamp = helper.convertTimeZone(res.data.start)
+				let data = {
+					title: res.data.taskType,
+					body: res.data.taskType + ' in 15 Minutes'
+				}
+				TimerNotification(data, timeStamp)
 				this.fetchLead()
 				this.fetchProperties()
 			})
@@ -232,7 +240,7 @@ class LeadViewing extends React.Component {
 		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue } = this.state
 		return (
 			!loading ?
-				<View style={{flex: 1}}>
+				<View style={{ flex: 1 }}>
 					<View>
 						<ProgressBar progress={progressValue} color={'#0277FD'} />
 					</View>
@@ -254,6 +262,8 @@ class LeadViewing extends React.Component {
 												{
 													this.ownProperty(item.item) ?
 														<MatchTile
+															doneViewing={this.doneViewing}
+															menuShow={true}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}

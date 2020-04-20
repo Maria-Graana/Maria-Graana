@@ -60,7 +60,6 @@ class PushNotifications extends React.Component {
                         this.setState({
                             fcmPushToken: fcmPushToken
                         })
-                        Alert.alert('FCM: ', fcmPushToken.data)
                     })
                     .catch((error) => {
                         console.log(error)

@@ -108,7 +108,7 @@ class Login extends Component {
                                 : <ErrorMessage errorMessage={''} />
                         }
                         {
-                            showError && <ErrorMessage errorMessage={'Invlaid Email or Password'} />
+                            showError && <ErrorMessage errorMessage={'Invalid Email or Password'} />
                         }
                         <View style={{ marginTop: 25 ,marginBottom:25}}>
                             <TouchableButton

@@ -8,47 +8,63 @@ export default styles = StyleSheet.create({
     height: 140,
     borderRadius: 5,
   },
-  tileContainer: { 
-    backgroundColor : 'white',
-    flex: 1, 
-    borderRadius: 5, 
-    height: 150, 
-    flexDirection: 'row' 
+  tileContainer: {
+    backgroundColor: 'white',
+    flex: 1,
+    borderRadius: 5,
+    height: 150,
+    flexDirection: 'row'
   },
   pad5: {
     padding: 5,
   },
-  currencyText: { 
-    paddingTop : 5,
-    fontSize: 15, 
-    fontFamily: AppStyles.fonts.lightFont 
+  currencyText: {
+    paddingTop: 5,
+    fontSize: 15,
+    fontFamily: AppStyles.fonts.lightFont
   },
-  priceText: { 
-    fontSize: 22, 
-    fontFamily: AppStyles.fonts.semiBoldFont, 
-    color: AppStyles.colors.primaryColor 
+  priceText: {
+    fontSize: 22,
+    fontFamily: AppStyles.fonts.semiBoldFont,
+    color: AppStyles.colors.primaryColor
   },
-  marlaText: { 
-    fontSize: 17, 
+  marlaText: {
+    fontSize: 17,
     paddingTop: 2,
-    fontFamily: AppStyles.fonts.defaultFont 
+    fontFamily: AppStyles.fonts.defaultFont
   },
-  addressText: { 
+  addressText: {
     fontSize: 17,
     paddingTop: 5,
-    fontFamily: AppStyles.fonts.defaultFont, 
+    fontFamily: AppStyles.fonts.defaultFont,
     color: AppStyles.colors.subTextColor
   },
-  iconContainer: { 
+  iconContainer: {
     flexDirection: 'row',
     paddingTop: 15
   },
-  iconInner: { 
-    flexDirection: 'row', 
-    padding: 5 
+  textStyle: {
+    fontSize: 12,
+    fontFamily: AppStyles.fonts.defaultFont,
+    color: AppStyles.colors.primaryColor
+  },
+  mainView: {
+    borderColor: AppStyles.colors.primaryColor,
+    // height: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    // width: 80,
+    borderWidth: 1,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  iconInner: {
+    flexDirection: 'row',
+    padding: 5
   },
   phoneIcon: {
-    justifyContent: "space-between", 
+    justifyContent: "space-between",
     padding: 10
   },
   imageCountViewStyle: {

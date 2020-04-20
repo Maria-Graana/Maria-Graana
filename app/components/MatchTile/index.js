@@ -33,9 +33,9 @@ class InventoryTile extends React.Component {
 
 		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user.phoneNumber
-		
+
 		return (
-			<TouchableOpacity style={{ flexDirection: 'row' }}
+			<TouchableOpacity style={{ flexDirection: 'row', marginVertical: 2 }}
 				onLongPress={() => {
 					this.props.displayChecks()
 					this.props.addProperty(data)
@@ -89,11 +89,15 @@ class InventoryTile extends React.Component {
 					<View style={styles.phoneIcon}>
 						{
 							showLable ?
-								<Entypo style={{ paddingLeft: 10 }} onPress={() => { this.props.doneViewing(data) }} name="dots-three-vertical" size={20} color={AppStyles.colors.subTextColor} />
+								<TouchableOpacity
+									style={{ justifyContent: "center", borderRadius: 10, borderColor: AppStyles.colors.primaryColor, borderWidth: 1, }}
+									onPress={() => { this.props.doneViewing(data) }}>
+									<Text style={{ color: AppStyles.colors.primaryColor, fontSize: 10, padding: 2 }}> Done </Text>
+								</TouchableOpacity>
 								:
 								<View />
 						}
-						<View style={{ flexDirection: 'column' }}>
+						<View style={{ flexDirection: 'row-reverse' }}>
 							<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 						</View>
 					</View>

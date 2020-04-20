@@ -23,8 +23,8 @@ class InventoryTile extends React.Component {
 		let imagesList = []
 		let showLable = menuShow || false
 		let phoneNumber = null
-		if ('armsPropertyImages' in data) {
-			if (data.armsPropertyImages.length) {
+		if ('armsPropertyImages' in data && data.armsPropertyImages!==undefined) {
+			if (data.armsPropertyImages.length > 0) {
 				imagesList = data.armsPropertyImages.map((item) => {
 					return item.url
 				})
@@ -69,7 +69,7 @@ class InventoryTile extends React.Component {
 					</View>
 					<View style={styles.imageCountViewStyle}>
 						<Feather name={'camera'} color={'#fff'} size={16} />
-						<Text style={styles.imageCount}>{data.armsPropertyImages.length}</Text>
+						<Text style={styles.imageCount}>{data.armsPropertyImages && data.armsPropertyImages.length}</Text>
 					</View>
 					<View style={[AppStyles.mb1, styles.pad5]}>
 						<Text style={styles.currencyText}> PKR  <Text style={styles.priceText}>{data.price}</Text> </Text>

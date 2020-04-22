@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.48",
+    "version": "0.0.50",
     "orientation": "portrait",
     "icon": "./assets/img/arms1024.png",
     "splash": {
@@ -27,6 +27,11 @@
     "android": {
       "package": "com.agency21.realtor",
       "googleServicesFile": "./google-services.json"
+    },
+    "notification": {
+      "icon": "./assets/img/ARMS-notif.png",
+      "color": "#2A7EF0",
+      "iosDisplayInForeground": true
     },
     "hooks": {
       "postPublish": [

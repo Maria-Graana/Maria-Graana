@@ -90,7 +90,7 @@ class InnerForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.fullWidthPad, styles.blackBorder]}>
-              <Text style={[AppStyles.blackInputText]}>DISCOUNT</Text>
+              <Text style={[AppStyles.blackInputText]}>PROMOTIONAL OFFER</Text>
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'discount') }} keyboardType={'numeric'}/>
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.discount != null ? formData.discount : '')}</Text>

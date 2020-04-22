@@ -100,8 +100,8 @@ class InventoryTile extends React.Component {
         </View>
         {
           data.customer && data.customer.phone !== '' ?
-          <View style={{position: "absolute", bottom:0, left: wp('85%')}}>
-            <Foundation name={'telephone'} onPress={() => onCall(data.customer.phone)} color={AppStyles.colors.subTextColor} size={32} style={styles.phoneButton} />
+          <View style={{position: "absolute", bottom:5, left: wp('82%')}}>
+            <Foundation name={'telephone'} onPress={() => onCall(data.customer.phone)} color={AppStyles.colors.subTextColor} size={30} style={styles.phoneButton} />
             </View>
             :
             null

@@ -199,6 +199,7 @@ class Inventory extends React.Component {
 					<FAB.Group
 						open={open}
 						icon="plus"
+						style={{marginBottom:16}}
 						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
 						color={AppStyles.bgcWhite.backgroundColor}
 						actions={[

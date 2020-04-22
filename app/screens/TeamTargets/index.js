@@ -17,6 +17,7 @@ class TeamTargets extends Component {
     months = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
     constructor(props) {
+        const date = new Date();
         super(props)
         this.state = {
             checkValidation: false,
@@ -24,8 +25,8 @@ class TeamTargets extends Component {
             loading: false,
             startYear: 2000,
             endYear: 2050,
-            selectedYear: 2020,
-            selectedMonth: 1,
+            selectedYear: date.getFullYear(),
+            selectedMonth: date.getMonth() + 1,
             formData: {
                 targetAmount: ''
             },

@@ -18,6 +18,7 @@ import { setlead } from '../../actions/lead';
 import { FAB } from 'react-native-paper';
 import StaticData from '../../StaticData';
 import { ProgressBar, Colors } from 'react-native-paper';
+import { widthPercentageToDP } from 'react-native-responsive-screen';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -180,7 +181,7 @@ class LeadMatch extends React.Component {
             size: formData.size,
             unit: formData.sizeUnit
         }
-        
+
         let callApi = this.canCallApi()
         let matches = []
         if (callApi || !showCheckBoxes) {
@@ -383,7 +384,7 @@ class LeadMatch extends React.Component {
     }
 
     goToDiaryForm = () => {
-        const { navigation, route,user} = this.props;
+        const { navigation, route, user } = this.props;
         const { lead } = route.params;
         navigation.navigate('AddDiary', {
             update: false,
@@ -479,19 +480,26 @@ class LeadMatch extends React.Component {
                     </View>
                     {
                         displayButton ?
-                            <View style={{ position: "absolute", left: 0, bottom: 0, zIndex: 20, height: 50, width: '100%' }}>
-                                <TouchableOpacity
-                                    onPress={() => this.sendProperties()}
-                                    style={{ marginHorizontal: 15, marginRight: 80, opacity: 0.9, backgroundColor: AppStyles.colors.primaryColor, justifyContent: "center", alignItems: "center", padding: 10, borderRadius: 5 }}>
-                                    <Text style={{ color: 'white' }}> Continue With Selected Properties </Text>
-                                </TouchableOpacity>
-                            </View>
+
+                            <TouchableOpacity onPress={() => this.sendProperties()}
+                                style={{
+                                    height: 50, alignSelf: 'center', marginBottom: 20, width: '90%',
+                                    opacity: 0.9,
+                                    backgroundColor: AppStyles.colors.primaryColor,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    padding: 10,
+                                    borderRadius: 5
+                                }}>
+                                <Text style={{ color: 'white' }}> Continue With Selected Properties </Text>
+                            </TouchableOpacity>
                             :
                             null
                     }
                     <FAB.Group
                         open={open}
                         icon="plus"
+                        style={{ marginBottom: displayButton ? 70 : 0 }}
                         fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
                         color={AppStyles.bgcWhite.backgroundColor}
                         actions={[

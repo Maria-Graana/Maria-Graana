@@ -290,6 +290,7 @@ class LeadRCMPayment extends React.Component {
         payload.shortlist_id = selectedProperty.id;
         payload.monthlyRent = this.convertToInteger(monthlyRent);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
+            this.props.dispatch(setlead(response.data));
             this.setState({ showMonthlyRentArrow: false, lead: response.data })
         }).catch(error => {
             console.log(error);
@@ -342,10 +343,8 @@ class LeadRCMPayment extends React.Component {
         }
 
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
-            this.setState({ lead: response.data }, () => {
-                this.props.dispatch(setlead(this.state.lead));
-            })
-
+            this.props.dispatch(setlead(response.data));
+            this.setState({ lead: response.data });
         }).catch(error => {
             console.log(error);
         })

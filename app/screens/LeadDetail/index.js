@@ -8,6 +8,7 @@ import helper from '../../helper';
 import moment from 'moment';
 import { setlead } from '../../actions/lead';
 import styles from './style'
+import axios from 'axios';
 
 const _format = 'YYYY-MM-DD';
 
@@ -15,14 +16,15 @@ class LeadDetail extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            type: ''
+            type: '',
+            lead: []
         }
     }
 
     componentDidMount() {
         const { route } = this.props
         const { purposeTab, lead } = route.params
-        this.props.dispatch(setlead(lead))
+        this.fetchLead()
         if (purposeTab === 'invest') {
             this.setState({
                 type: 'Investment'
@@ -39,10 +41,22 @@ class LeadDetail extends React.Component {
         }
     }
 
-    navigateTo = () => {
-        const { navigation, route } = this.props
+    fetchLead = () => {
+        const { route } = this.props
         const { lead } = route.params
-        const { type } = this.state
+        axios.get(`api/leads/byid?id=${lead.id}`)
+            .then((res) => {
+                this.props.dispatch(setlead(res.data))
+                this.setState({ lead: res.data })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+    navigateTo = () => {
+        const { navigation } = this.props
+        const { lead, type } = this.state
         if (type === 'Investment') {
             navigation.navigate('CMLeadTabs', {
                 screen: 'Meetings',
@@ -57,10 +71,7 @@ class LeadDetail extends React.Component {
     }
 
     render() {
-        const { type } = this.state
-        const { route, user } = this.props;
-        const { lead } = route.params
-        
+        const { type, lead } = this.state
         return (
             <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
@@ -89,7 +100,7 @@ class LeadDetail extends React.Component {
                         <Text style={[styles.headingText, styles.padLeft, { paddingLeft: 0 }]}>Status</Text>
                         <View style={styles.mainView}>
                             <Text style={styles.textStyle}>
-                                {lead.status.split('_').join(' ').toUpperCase()}
+                                {lead.status && lead.status.split('_').join(' ').toUpperCase()}
                             </Text>
                         </View>
                     </View>

@@ -15,6 +15,7 @@ const AddComment = (props) => {
                 placeholderTextColor="#bfbbbb"
                 autoFocus
                 style={[AppStyles.formControl, AppStyles.formFontSettings, { height: 150, paddingRight: 20,  
+                    paddingTop:10,
                     elevation: 10,
                     shadowOffset: { width: 5, height: 5 },
                     shadowColor: 'lightgrey',

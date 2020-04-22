@@ -19,7 +19,7 @@ export default function CMLeadTabs() {
                 }
                 // style: { shadowColor: 'transparent', elevation: 0, borderTopColor: "transparent", borderTopWidth: 0 },
             }}>
-            <Tab.Screen name="Meetings" component={Meetings} />
+            <Tab.Screen name="Meetings" options={{ title: 'Calls/Meetings' }} component={Meetings} />
             <Tab.Screen name="Payments" component={Payments} />
         </Tab.Navigator>
     );

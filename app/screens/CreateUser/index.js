@@ -57,7 +57,7 @@ class CreateUser extends Component {
             .then((res) => {
                 this.setState({
                     getRoles: res.data['sub_admin 2'][0],
-                    formData:{
+                    formData: {
                         armsUserRoleId: res.data['sub_admin 2'][0].id
                     }
                 })
@@ -89,7 +89,7 @@ class CreateUser extends Component {
             if (formData.confirmPassword == formData.password) {
                 axios.post(`/api/user/signup`, formData)
                     .then((res) => {
-                        helper.successToast('Uer Added')
+                        helper.successToast('User Added')
                         const { navigation } = this.props
                         navigation.navigate('Landing')
                     })

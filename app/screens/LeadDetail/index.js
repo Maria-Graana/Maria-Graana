@@ -24,7 +24,9 @@ class LeadDetail extends React.Component {
     componentDidMount() {
         const { route } = this.props
         const { purposeTab, lead } = route.params
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
         this.fetchLead()
+        })
         if (purposeTab === 'invest') {
             this.setState({
                 type: 'Investment'

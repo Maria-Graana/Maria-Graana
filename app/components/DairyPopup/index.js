@@ -79,6 +79,14 @@ class DairyPopup extends React.Component {
             user,
             onLeadLinkClicked
         } = this.props;
+        let checkTaskType = null;
+
+        if (data.taskType === 'Daily Task' || data.taskType === 'Weekly Task') {
+            checkTaskType = false;
+        }
+        else {
+            checkTaskType = true
+        }
 
         return (
             <Modal visible={openPopup}
@@ -90,9 +98,9 @@ class DairyPopup extends React.Component {
                     <View style={[styles.viewContainer]}>
                         <View style={styles.horizontalWrapStyle}>
                             <Text style={styles.textStyle}>{data.subject} </Text>
-                            { 
-                                  data.taskType != 'called' &&  data.taskType !== 'dayTask' && data.taskType !== 'weekly'  &&
-                                    Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
+                            {
+                                checkTaskType &&  (data.status === 'pending' || data.status === 'inProgress') &&
+                                    Ability.canEdit(user.role, screenName)?
                                     < MaterialCommunityIcons onPress={() => this.updateDiary(data)} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                                     : null
                             }

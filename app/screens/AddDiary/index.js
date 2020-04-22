@@ -25,7 +25,7 @@ class AddDiary extends Component {
     }
 
     formSubmit = (data) => {
-        if (!data.subject || !data.taskType || !data.date || !data.startTime || !data.endTime) {
+        if (!data.taskType || !data.date || !data.startTime) {
             this.setState({
                 checkValidation: true
             })
@@ -41,7 +41,8 @@ class AddDiary extends Component {
         const { rcmLeadId, cmLeadId } = route.params;
         let payload = null;
         let start = moment(data.date + data.startTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
-        let end = moment(data.date + data.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+        let end = data.endTime !== '' ? moment(data.date + data.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss') : start;
+
         if (route.params.update) {
             // payload for update contains id of diary from existing api call and other user data
             payload = Object.assign({}, data);
@@ -71,7 +72,7 @@ class AddDiary extends Component {
             if (rcmLeadId) {
                 payload.rcmLeadId = rcmLeadId
             }
-            else {
+            else if (cmLeadId) {
                 payload.cmLeadId = cmLeadId
             }
 
@@ -98,7 +99,6 @@ class AddDiary extends Component {
         const { route, navigation } = this.props;
         const { rcmLeadId, cmLeadId } = route.params;
         let diary = this.generatePayload(data)
-        console.log(diary);
         if (rcmLeadId || cmLeadId) {
             // create task for lead
             axios.post(`/api/leads/task`, diary)

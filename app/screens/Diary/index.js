@@ -210,7 +210,7 @@ class Diary extends React.Component {
     }
   }
 
-  closePopup = (val) => {
+  closePopup = () => {
     this.setState({
       openPopup: false,
       loading: true,

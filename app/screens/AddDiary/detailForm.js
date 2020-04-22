@@ -88,9 +88,6 @@ class DetailForm extends Component {
                     <View style={[AppStyles.inputWrap]}>
                         <TextInput style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings]} placeholder={'Subject/Title'} value={subject} onChangeText={(text) => this.handleForm(text, 'subject')} />
                     </View>
-                    {
-                        checkValidation === true && subject === '' && <ErrorMessage errorMessage={'Required'} />
-                    }
                 </View>
 
                 <View style={[AppStyles.mainInputWrap]}>
@@ -120,9 +117,6 @@ class DetailForm extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <DateComponent date={endTime} mode='time' placeholder='Select End Time' disabled={startTime === '' ? true : false} onTimeChange={(value) => this.handleForm(value, 'endTime')} />
-                    {
-                        checkValidation === true && endTime === '' && <ErrorMessage errorMessage={'Required'} />
-                    }
                 </View>
 
 

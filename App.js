@@ -16,6 +16,7 @@ import RootStack from './app/navigation/AppNavigation'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SplashScreen } from 'expo';
 import { setCustomTouchableOpacity } from 'react-native-global-props'
+import helper from './app/helper';
 
 // const firebaseConfig = {
 // 	apiKey: "AIzaSyBcMF6jv0j0EY82JC9XW0jKMu4o7fRDKrg",
@@ -39,8 +40,6 @@ export default class App extends React.Component {
 		// firebase.initializeApp(firebaseConfig)
 		Sentry.init({
 			dsn: 'https://d23d9b7296fa43a1ab41150269693c2f@o375514.ingest.sentry.io/5195102',
-			enableInExpoDevelopment: true,
-			debug: true
 		})
 		Sentry.setRelease(Constants.manifest.revisionId);
 
@@ -53,6 +52,7 @@ export default class App extends React.Component {
 			OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
 			...Ionicons.font,
 		});
+		await helper.checkInternet()
 		this.setState({ isReady: true });
 	}
 

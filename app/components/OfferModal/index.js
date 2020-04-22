@@ -32,7 +32,7 @@ class OfferModal extends React.Component {
 						<View style={styles.mainInputWrap}>
 							<Text style={styles.offerColor}>My Offers</Text>
 							<View style={styles.inputWrap}>
-								<TextInput style={[styles.formControl]} placeholder={'PKR 4.5 Crore'} onChangeText={(text) => { handleForm(text, 'my') }} />
+								<TextInput keyboardType={'numeric'} style={[styles.formControl]} placeholder={'PKR 4.5 Crore'} onChangeText={(text) => { handleForm(text, 'my') }} />
 								<TouchableOpacity
 									onPress={placeMyOffer}
 									style={[styles.addBtnColorLeft, styles.sideBtnInput]}>
@@ -45,7 +45,7 @@ class OfferModal extends React.Component {
 						<View style={styles.mainInputWrap}>
 							<Text style={styles.offerColor}>Their Offers</Text>
 							<View style={styles.inputWrap}>
-								<TextInput style={[styles.formControl]} placeholder={'PKR 4.5 Crore'} onChangeText={(text) => { handleForm(text, 'their') }} />
+								<TextInput keyboardType={'numeric'} style={[styles.formControl]} placeholder={'PKR 4.5 Crore'} onChangeText={(text) => { handleForm(text, 'their') }} />
 								<TouchableOpacity
 									onPress={placeTheirOffer}
 									style={[styles.addBtnColorRight, styles.sideBtnInput]}>
@@ -90,7 +90,7 @@ class OfferModal extends React.Component {
 					<View style={[{ marginHorizontal: 10, marginBottom: 20}]}>
 						<Text style={styles.offerColorLast}>AGREED AMOUNT</Text>
 						<View style={styles.inputWrapLast}>
-							<TextInput style={[styles.formControlLast]} placeholder={'PKR 4.5 Crore'} onChangeText={(text) => { handleForm(text, 'agreed') }} />
+							<TextInput keyboardType={'numeric'} style={[styles.formControlLast]} placeholder={'PKR 4.5 Crore'} onChangeText={(text) => { handleForm(text, 'agreed') }} />
 							<TouchableOpacity
 								onPress={placeAgreedOffer}
 								style={[styles.addBtnColorLeft, styles.sideBtnInputLast]}>

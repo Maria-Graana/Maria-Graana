@@ -89,7 +89,7 @@ class AddClient extends Component {
         const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
         const { route } = this.props
         const { update, client } = route.params
-        if (formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
+        if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
         if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
             this.setState({
                 checkValidation: true
@@ -119,7 +119,6 @@ class AddClient extends Component {
                             helper.errorToast('ERROR CREATING CLIENT')
                         })
                 } else {
-                    body.id = client.id
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')

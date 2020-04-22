@@ -58,7 +58,7 @@ class DetailForm extends Component {
         const newObject = Object.assign({}, formData, data)
         newObject.subject = data.subject;
         newObject.notes = data.notes;
-        newObject.date = moment(data.date).format("YYYY-MM-DD");
+        newObject.date = moment(data.date).utcOffset(data.date).format('YYYY-MM-DD');
         newObject.status = data.status;
         newObject.startTime = startReplace;
         newObject.endTime = endReplace;

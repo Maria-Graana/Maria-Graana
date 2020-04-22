@@ -52,6 +52,12 @@ class AddDiary extends Component {
             payload.diaryTime = start
             payload.start = start
             payload.end = end
+            if (rcmLeadId) {
+                payload.rcmLeadId = rcmLeadId
+            }
+            else if (cmLeadId) {
+                payload.cmLeadId = cmLeadId
+            }
 
             delete payload.startTime
             delete payload.endTime

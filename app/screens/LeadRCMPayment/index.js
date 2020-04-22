@@ -173,10 +173,6 @@ class LeadRCMPayment extends React.Component {
         const selectedProperty = allProperties.filter(property => property.id === item.id);
         let payload = Object.create({});
         payload.shortlist_id = selectedProperty[0].id;
-        //console.log(payload);
-        //         payload.armsProperty = selectedProperty[0].arms_id;
-        // payload.graanaProperty = selectedProperty[0].graana_id;
-
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.setState({ lead: response.data }, () => {
                 this.getSelectedProperty(lead);
@@ -241,9 +237,7 @@ class LeadRCMPayment extends React.Component {
         const { allProperties } = this.state;
         const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.armsProperty = selectedProperty.arms_id;
-        payload.graanaProperty = selectedProperty.graana_id;
-        payload.graanaProperty = selectedProperty.graana_agency_id;
+        payload.shortlist_id = selectedProperty.id;
         payload.token = this.convertToInteger(token);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
@@ -259,9 +253,7 @@ class LeadRCMPayment extends React.Component {
         const { allProperties } = this.state;
         const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.armsProperty = selectedProperty.arms_id;
-        payload.graanaProperty = selectedProperty.graana_id;
-        payload.graanaProperty = selectedProperty.graana_agency_id;
+        payload.shortlist_id = selectedProperty.id;
         payload.payment = this.convertToInteger(agreedAmount);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
@@ -278,9 +270,7 @@ class LeadRCMPayment extends React.Component {
         const { allProperties } = this.state;
         const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.armsProperty = selectedProperty.arms_id;
-        payload.graanaProperty = selectedProperty.graana_id;
-        payload.graanaProperty = selectedProperty.graana_agency_id;
+        payload.shortlist_id = selectedProperty.id;
         payload.commissionPayment = this.convertToInteger(commissionPayment);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
@@ -297,9 +287,7 @@ class LeadRCMPayment extends React.Component {
         const { allProperties } = this.state;
         const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.armsProperty = selectedProperty.arms_id;
-        payload.graanaProperty = selectedProperty.graana_id;
-        payload.graanaProperty = selectedProperty.graana_agency_id;
+        payload.shortlist_id = selectedProperty.id;
         payload.monthlyRent = this.convertToInteger(monthlyRent);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.setState({ showMonthlyRentArrow: false, lead: response.data })
@@ -340,9 +328,7 @@ class LeadRCMPayment extends React.Component {
         const { allProperties } = this.state;
         const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.armsProperty = selectedProperty.arms_id;
-        payload.graanaProperty = selectedProperty.graana_id;
-        payload.graanaProperty = selectedProperty.graana_agency_id;
+        payload.shortlist_id = selectedProperty.id;
         switch (key) {
             case 'contract_months':
                 payload.contract_months = this.convertToInteger(value);

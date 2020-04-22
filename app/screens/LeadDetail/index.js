@@ -23,7 +23,6 @@ class LeadDetail extends React.Component {
 
     componentDidMount() {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            this.fetchLead()
             this.purposeTab()
         })
     }
@@ -32,25 +31,28 @@ class LeadDetail extends React.Component {
         const { route } = this.props
         const { purposeTab } = route.params
         if (purposeTab === 'invest') {
+            this.fetchLead('/api/leads/project/byId')
             this.setState({
                 type: 'Investment'
             })
         }
         else if (purposeTab === 'sale') {
+            this.fetchLead('api/leads/byId')
             this.setState({
                 type: 'Buy'
             })
         } else {
+            this.fetchLead('api/leads/byId')
             this.setState({
                 type: 'Rent'
             })
         }
     }
 
-    fetchLead = () => {
+    fetchLead = (url) => {
         const { route } = this.props
         const { lead } = route.params
-        axios.get(`api/leads/byid?id=${lead.id}`)
+        axios.get(`${url}?id=${lead.id}`)
             .then((res) => {
                 this.props.dispatch(setlead(res.data))
                 this.setState({ lead: res.data })

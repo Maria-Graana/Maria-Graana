@@ -29,7 +29,6 @@ class LeadRCMPayment extends React.Component {
             open: false,
             allProperties: [],
             selectedProperty: {},
-            showSelectPaymentView: false,
             checkReasonValidation: false,
             selectedReason: '',
             reasons: [],
@@ -66,6 +65,7 @@ class LeadRCMPayment extends React.Component {
         const { dispatch } = this.props;
         const { rcmProgressBar } = StaticData
         let properties = [];
+        this.setState({ loading: true });
         axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
             dispatch(setlead(response.data));
             this.setState({ progressValue: rcmProgressBar[lead.status] })
@@ -83,7 +83,6 @@ class LeadRCMPayment extends React.Component {
             this.setState({
                 loading: false,
                 allProperties: properties.length > 0 && properties,
-                showSelectPaymentView: true,
                 selectedReason: '',
                 checkReasonValidation: '',
                 agreedAmount: lead.payment ? String(lead.payment) : '',
@@ -108,13 +107,11 @@ class LeadRCMPayment extends React.Component {
     }
 
     getShortlistedProperties = (lead) => {
-        this.setState({ loading: true });
         axios.get(`/api/leads/${lead.id}/shortlist`)
             .then((res) => {
                 //console.log('response=>', res.data.rows);
                 this.setState({
                     allProperties: res.data.rows,
-                    showSelectPaymentView: false,
                     loading: false,
                     selectedReason: '',
                     checkReasonValidation: '',
@@ -182,15 +179,34 @@ class LeadRCMPayment extends React.Component {
         })
     }
 
+    selectDifferentProperty = () => {
+        const { lead } = this.state;
+        axios.patch(`/api/leads/unselectProperty?leadId=${lead.id}`).then(response => {
+            this.props.dispatch(setlead(response.data));
+            this.setState({ lead: response.data }, () => {
+                this.getSelectedProperty(response.data);
+
+            });
+          
+        }).catch(error => {
+            console.log('errorr', error);
+        })
+    }
+
     renderSelectPaymentView = (item) => {
+        const { lead } = this.state;
         return (
-            !this.state.showSelectPaymentView ?
-                <TouchableOpacity key={item.id.toString()} onPress={() => this.selectForPayment(item)} style={styles.viewButtonStyle} activeOpacity={0.7}>
-                    <Text style={styles.buttonTextStyle}>
-                        SELECT FOR PAYMENT
-            </Text>
-                </TouchableOpacity>
-                : null
+            <TouchableOpacity key={item.id.toString()} onPress={lead.shortlist_id === null ? () => this.selectForPayment(item) : () => this.selectDifferentProperty()} style={styles.viewButtonStyle} activeOpacity={0.7}>
+                <Text style={styles.buttonTextStyle}>
+                    {
+                        lead.shortlist_id === null ?
+                            'SELECT FOR PAYMENT'
+                            :
+                            'SELECT A DIFFERENT PROPERTY'
+                    }
+
+                </Text>
+            </TouchableOpacity>
         );
     }
 
@@ -379,7 +395,6 @@ class LeadRCMPayment extends React.Component {
             allProperties,
             user,
             isVisible,
-            showSelectPaymentView,
             checkReasonValidation,
             selectedReason,
             reasons,
@@ -445,7 +460,7 @@ class LeadRCMPayment extends React.Component {
                                     ListFooterComponent={
                                         <View style={{ marginHorizontal: 15 }}>
                                             {
-                                                showSelectPaymentView ?
+                                                lead.shortlist_id !== null ?
                                                     lead.purpose === 'sale' ?
                                                         <BuyPaymentView
                                                             lead={lead}

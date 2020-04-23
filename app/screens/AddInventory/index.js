@@ -11,8 +11,8 @@ import DetailForm from './detailForm';
 import StaticData from '../../StaticData'
 import AppStyles from '../../AppStyles';
 import helper from '../../helper';
+import { connect } from 'react-redux';
 import _ from 'underscore';
-import { getAppLoadingLifecycleEmitter } from 'expo/build/launch/AppLoading';
 
 
 class AddInventory extends Component {
@@ -32,6 +32,7 @@ class AddInventory extends Component {
             sizeUnit: StaticData.sizeUnit,
             buttonText: 'ADD PROPERTY',
             buttonDisabled: false,
+            getClients: [],
             formData: {
                 type: '',
                 subtype: '',
@@ -42,15 +43,13 @@ class AddInventory extends Component {
                 city_id: '',
                 area_id: '',
                 size_unit: 'marla',
+                customer_id: '',
                 price: '',
                 grade: '',
                 status: 'pending',
                 imageIds: [],
                 lat: '',
                 lng: '',
-                ownerName: '',
-                phone: '',
-                address: '',
                 description: '',
                 general_size: null,
                 lisitng_type: 'mm',
@@ -63,12 +62,32 @@ class AddInventory extends Component {
     }
 
     componentDidMount() {
-        const { route, navigation } = this.props;
+        const { route, navigation, user } = this.props;
         if (route.params.update) {
             navigation.setOptions({ title: 'EDIT PROPERTY' })
             this.setEditValues()
         }
         this.getCities();
+        this.getClients(user.id);
+    }
+
+    getClients = (id) => {
+        axios.get(`/api/customer/find?userId=${id}`)
+            .then((res) => {
+                let clientsArray = [];
+                res && res.data.rows.map((item, index) => {
+                    return (
+                        clientsArray.push(
+                            {
+                                value: item.id, name: item.firstName === '' || item.firstName === null ? item.contact1 : item.firstName + ' ' + item.lastName
+                            }
+                        )
+                    )
+                })
+                this.setState({
+                    getClients: clientsArray
+                })
+            })
     }
 
     setEditValues = () => {
@@ -86,7 +105,8 @@ class AddInventory extends Component {
                 size: String(property.size),
                 city_id: property.city_id,
                 area_id: property.area_id,
-                price: property.price != 0 ? String(property.price) :'' ,
+                customer_id: property.customer_id ? property.customer_id : '',
+                price: property.price != 0 ? String(property.price) : '',
                 imageIds: property.armsPropertyImages.length === 0 || property.armsPropertyImages === undefined
                     ?
                     []
@@ -95,9 +115,6 @@ class AddInventory extends Component {
                 status: property.status,
                 lat: property.lat,
                 lng: property.lng,
-                ownerName: property.customer !== null && property.customer.first_name,
-                phone: property.phone,
-                address: property.address,
                 description: property.description,
                 general_size: null,
                 lisitng_type: 'mm',
@@ -163,7 +180,6 @@ class AddInventory extends Component {
         const { formData } = this.state
         formData[name] = value
         this.setState({ formData }, () => {
-            // console.log('formData', formData)
         })
         if (formData.type != '') { this.selectSubtype(formData.type) }
         if (formData.city_id != '') { this.getAreas(formData.city_id) }
@@ -440,6 +456,7 @@ class AddInventory extends Component {
             images,
             buttonText,
             buttonDisabled,
+            getClients,
             sizeUnit
         } = this.state
         return (
@@ -468,6 +485,7 @@ class AddInventory extends Component {
                                 longitude={formData.lng}
                                 price={formData.price}
                                 showImages={showImages}
+                                getClients={getClients}
                                 imagesData={images}
                                 deleteImage={(image) => this.deleteImage(image)}
                                 buttonDisabled={buttonDisabled}
@@ -480,6 +498,12 @@ class AddInventory extends Component {
     }
 }
 
-export default AddInventory;
+mapStateToProps = (store) => {
+    return {
+        user: store.user.user,
+    }
+}
+
+export default connect(mapStateToProps)(AddInventory)
 
 

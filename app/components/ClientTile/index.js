@@ -13,7 +13,7 @@ class CustomerTile extends React.Component {
 
     getHeading = () => {
         const { item } = this.props.data
-        if (item.firstName && item.lastName && item.firstName !== '' && item.lastName !== '' ) {
+        if (item.firstName && item.lastName && item.firstName !== '' && item.lastName !== '') {
             return item.firstName + ' ' + item.lastName
         } else if (item.firstName && item.firstName !== '') {
             return item.firstName
@@ -26,7 +26,7 @@ class CustomerTile extends React.Component {
         const { item } = this.props.data
         const { user } = this.props
         let heading = this.getHeading()
-        
+
         return (
             <TouchableOpacity
                 activeOpacity={.7}
@@ -37,7 +37,7 @@ class CustomerTile extends React.Component {
             >
                 <View style={{ flexDirection: 'row', marginVertical: 15 }}>
                     <View style={{ paddingRight: 10 }}>
-                        <Avatar data={item}/>
+                        <Avatar data={item} />
                     </View>
                     <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
                         <View>
@@ -46,7 +46,7 @@ class CustomerTile extends React.Component {
                             </Text>
                         </View>
                         {
-                            item.address && item.address !== '' ?
+                            item.address !== '' && item.address !== null ?
                                 <View style={{ paddingTop: 5 }}>
                                     <Text
                                         numberOfLines={1}

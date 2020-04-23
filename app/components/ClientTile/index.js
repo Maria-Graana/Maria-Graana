@@ -26,7 +26,7 @@ class CustomerTile extends React.Component {
         const { item } = this.props.data
         const { user } = this.props
         let heading = this.getHeading()
-
+        
         return (
             <TouchableOpacity
                 activeOpacity={.7}
@@ -46,7 +46,7 @@ class CustomerTile extends React.Component {
                             </Text>
                         </View>
                         {
-                            item.address !== '' ?
+                            item.address && item.address !== '' ?
                                 <View style={{ paddingTop: 5 }}>
                                     <Text
                                         numberOfLines={1}

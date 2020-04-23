@@ -13,12 +13,7 @@ class OfferModal extends React.Component {
 		super(props)
 	}
 
-	componentDidMount = () => {
-		// this.flatList = React.createRef()
-	}
-
 	render() {
-		// console.log(this.refs)
 		const { active, isVisible, handleForm, placeMyOffer, placeTheirOffer, placeAgreedOffer, offerChat } = this.props
 		return (
 			<Modal
@@ -70,10 +65,8 @@ class OfferModal extends React.Component {
 					<View style={[styles.chatContainer]}>
 						<FlatList
 							data={offerChat}
-							keyExtractor={(item) => item.id.toString()}
 							ref={(ref)=> this._flatList = ref }
 							onContentSizeChange={(contentWidth, contentHeight) => {
-								// console.log('@@@ onContentSizeChange', contentWidth, contentHeight)
 								if (contentHeight > 0) {
 									this._flatList.scrollToEnd()
 								}

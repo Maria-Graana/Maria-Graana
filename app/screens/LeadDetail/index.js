@@ -80,6 +80,7 @@ class LeadDetail extends React.Component {
 
     render() {
         const { type, lead } = this.state
+        
         return (
             <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
@@ -91,14 +92,14 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}>Requirement </Text>
                         <Text style={styles.labelText}>{!lead.projectId && lead.size && lead.size + ' '}{!lead.projectId && lead.size_unit && lead.size_unit + ' '}{!lead.projectId && helper.capitalize(lead.subtype)}{lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}</Text>
                         <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
-                        <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length && lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', '}{!lead.projectId && lead.city && lead.city.name}{lead.projectId && lead.project && helper.capitalize(lead.project.name)}</Text>
+                        <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{lead.projectId && lead.project && helper.capitalize(lead.project.name)}</Text>
                         <Text style={styles.headingText}>Price Range </Text>
                         <Text style={styles.labelText}>PKR {!lead.projectId && lead.price} {lead.projectId && lead.minPrice && lead.minPrice + ' - '} {lead.projectId && lead.maxPrice && lead.maxPrice}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Created Date </Text>
-                        <Text style={styles.labelText}>{moment(lead.createdAt).format(_format)} </Text>
+                        <Text style={styles.labelText}>{moment(lead.createdAt).format('LL')} </Text>
                         <Text style={styles.headingText}>Modified Date </Text>
-                        <Text style={styles.labelText}>{moment(lead.updatedAt).format(_format)} </Text>
+                        <Text style={styles.labelText}>{moment(lead.updatedAt).format('LL')} </Text>
                         <Text style={styles.headingText}>Lead Source </Text>
                         <Text style={styles.labelText}>{lead.origin ? (lead.origin.split('_').join(' ')).toLocaleUpperCase() : null} </Text>
                         <Text style={styles.headingText}>Additional Information </Text>

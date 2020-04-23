@@ -70,18 +70,14 @@ class OfferModal extends React.Component {
 					<View style={[styles.chatContainer]}>
 						<FlatList
 							data={offerChat}
-							ref={(ref)=>{
-								if(ref !== null && ref !== undefined) 
-								this.flatList = ref ; 
-								console.log('yahan',ref)
-							} 
-							}
-							onContentSizeChange={() => {
-								if (this.flatList !== null && this.flatList !== undefined) 
-									this.flatList.scrollToEnd(); 
-									console.log('wahan',this.flatList)
+							keyExtractor={(item) => item.id.toString()}
+							ref={(ref)=> this._flatList = ref }
+							onContentSizeChange={(contentWidth, contentHeight) => {
+								// console.log('@@@ onContentSizeChange', contentWidth, contentHeight)
+								if (contentHeight > 0) {
+									this._flatList.scrollToEnd()
 								}
-							}
+							}}
 							renderItem={(item, index) => (
 								<View >
 									{

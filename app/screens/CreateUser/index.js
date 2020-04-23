@@ -18,6 +18,9 @@ class CreateUser extends Component {
             cities: [],
             getRoles: [],
             organization: [{ value: user.organizationId, name: user.organizationName }],
+            emailValidate: true,
+            phoneValidate: false,
+            cnicValidate: false,
             formData: {
                 email: '',
                 password: '',
@@ -56,7 +59,7 @@ class CreateUser extends Component {
         axios.get(`/api/user/roles?orgId=${id}`)
             .then((res) => {
                 const { formData } = this.state
-                formData[armsUserRoleId] = res.data['sub_admin 2'][0].id
+                formData['armsUserRoleId'] = res.data['sub_admin 2'][0].id
                 this.setState({
                     getRoles: res.data['sub_admin 2'][0],
                     formData,
@@ -64,17 +67,46 @@ class CreateUser extends Component {
             })
     }
 
+    validateEmail = (value) => {
+        let res = helper.validateEmail(value)
+        if (value !== '') this.setState({ emailValidate: res })
+        else this.setState({ emailValidate: true })
+    }
+
+    validatePhone = (value) => {
+        if (value.length < 11 && value !== '') this.setState({ phoneValidate: true })
+        else this.setState({ phoneValidate: false })
+    }
+
+    validateCnic = (value) => {
+        if (value.length < 15 && value !== '') this.setState({ cnicValidate: true })
+        else this.setState({ cnicValidate: false })
+    }
+
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
+        if (name == 'cnic') {
+            value = helper.normalizeCnic(value)
+            this.validateCnic(value)
+        }
+        if (name == 'email') {
+            this.validateEmail(value)
+        }
+        if (name == 'phoneNumber') {
+            this.validatePhone(value)
+        }
         this.setState({ formData })
     }
 
+
     formSubmit = () => {
         const { formData } = this.state
+
         if (
             !formData.firstName ||
             !formData.lastName ||
+            !formData.email ||
             !formData.phoneNumber ||
             !formData.password ||
             !formData.phoneNumber ||
@@ -82,13 +114,16 @@ class CreateUser extends Component {
             !formData.armsUserRoleId ||
             !formData.confirmPassword
         ) {
-            console.log('hello')
             this.setState({
                 checkValidation: true
             })
         } else {
+            let body = {
+                ...formData,
+                email: formData.email.toLowerCase()
+            }
             if (formData.confirmPassword == formData.password) {
-                axios.post(`/api/user/signup`, formData)
+                axios.post(`/api/user/signup`, body)
                     .then((res) => {
                         helper.successToast('User Added')
                         const { navigation } = this.props
@@ -105,6 +140,9 @@ class CreateUser extends Component {
             checkValidation,
             getRoles,
             organization,
+            emailValidate,
+            phoneValidate,
+            cnicValidate,
         } = this.state
         return (
             <View style={[AppStyles.container]}>
@@ -120,6 +158,9 @@ class CreateUser extends Component {
                                     getRoles={getRoles}
                                     cities={cities}
                                     organization={organization}
+                                    emailValidate={emailValidate}
+                                    phoneValidate={phoneValidate}
+                                    cnicValidate={cnicValidate}
                                 />
                             </View>
                         </ScrollView>

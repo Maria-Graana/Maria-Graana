@@ -22,22 +22,22 @@ class PropertyDetail extends React.Component {
     render() {
         const { route } = this.props;
         const property = route.params.property;
-        const type = property.type.charAt(0).toUpperCase() + property.type.slice(1);
-        const subtype = property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1);
-        const areaName = property.area.name;
-        const cityName = property.city.name;
-        const size = property.size;
-        const sizeUnit = property.size_unit.charAt(0).toUpperCase() + property.size_unit.slice(1);
-        const purpose = property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1);;
-        const demandPrice = property.price===null ? '0' : formatPrice(property.price);
+        const type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1);
+        const subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1);
+        const areaName = property && property.area.name;
+        const cityName = property && property.city.name;
+        const size = property && property.size;
+        const sizeUnit = property && property.size_unit.charAt(0).toUpperCase() + property.size_unit.slice(1);
+        const purpose = property && property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1);;
+        const demandPrice = property.price === null ? '0' : formatPrice(property.price);
         const grade = property.grade === null ? '' : property.grade;
         const lattitude = property.lat === null ? ' ' : property.lat + '/';
         const longitude = property.lng === null ? ' ' : property.lng;
-        const ownerName = property.customer !==null && property.customer.first_name;
-        const ownerPhoneNumber = property.phone.trim();
-        const address = property.address;
+        const ownerName = property.customer && property.customer.first_name + ' ' + property.customer.last_name;
+        const ownerPhoneNumber = property.customer && property.customer.phone.trim();
+        const address = property.customer.address && property.customer.address;
         const status = property.status === 'pending' ? 'Open' : property.status;
-        const images = property.armsPropertyImages;
+        const images = property && property.armsPropertyImages;
 
 
         return (

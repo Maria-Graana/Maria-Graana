@@ -86,7 +86,7 @@ class DetailForm extends Component {
                     <View style={[AppStyles.inputWrap]}>
                         <PickerComponent onValueChange={handleForm} data={selectSubType} selectedItem={formData.subtype} name={'subtype'} placeholder='Property Sub Type' />
                         {
-                            checkValidation === true && formData.subType === '' && <ErrorMessage errorMessage={'Required'} />
+                            checkValidation === true && formData.subtype === '' && <ErrorMessage errorMessage={'Required'} />
                         }
                     </View>
                 </View>

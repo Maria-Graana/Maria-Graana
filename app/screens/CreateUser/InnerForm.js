@@ -33,7 +33,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'firstName') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'First Name*'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'firstName') }} style={[AppStyles.formControl, styles.padLeft]}  placeholder={'First Name*'} />
             {
               checkValidation === true && formData.firstName === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -43,7 +43,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'lastName') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Last Name*'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'lastName') }} style={[AppStyles.formControl, styles.padLeft]}  placeholder={'Last Name*'} />
             {
               checkValidation === true && formData.lastName === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -54,7 +54,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Email*'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, styles.padLeft]}  placeholder={'Email*'} />
           </View>
         </View>
 
@@ -62,7 +62,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'password') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Password*'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'password') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]}  placeholder={'Password*'} />
             {
               checkValidation === true && formData.password === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -72,7 +72,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'confirmPassword') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Confirm Password*'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'confirmPassword') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]}  placeholder={'Confirm Password*'} />
             {
               checkValidation === true && formData.confirmPassword === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -86,7 +86,7 @@ class InnerForm extends Component {
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
             <Image source={mobileIcon} style={styles.mobileIcon} />
-            <TextInput onChangeText={(text) => { handleForm(text, 'phoneNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'Contact Number*'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'phoneNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Contact Number*'} />
             {
               checkValidation === true && formData.phoneNumber === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -96,7 +96,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'cnic') }} style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" placeholder={'CNIC'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'cnic') }} style={[AppStyles.formControl, styles.padLeft]}  placeholder={'CNIC'} />
             {
               checkValidation === true && formData.cnic === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -116,14 +116,14 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" value={organization[0].name} editable={false} />
+            <TextInput style={[AppStyles.formControl, styles.padLeft]} value={organization[0].name} editable={false} />
           </View>
         </View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput style={[AppStyles.formControl, styles.padLeft]} placeholderTextColor="#000" value={getRoles.name === 'sub_admin 2' && 'Sub-Role'} editable={false} />
+            <TextInput style={[AppStyles.formControl, styles.padLeft]}  value={getRoles.name === 'sub_admin 2' && 'Sub-Role'} editable={false} />
           </View>
         </View>
 

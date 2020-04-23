@@ -30,15 +30,6 @@ class Inventory extends React.Component {
 			open: false,
 		}
 
-		this.filterData = [
-			{ value: 'all', name: 'All' },
-			{ value: 'open', name: 'Open' },
-			{ value: 'meetings', name: 'Meetings' },
-			{ value: 'token', name: 'Token' },
-			{ value: 'payments', name: 'Payments' },
-			{ value: 'closed', name: 'Closed' },
-		]
-
 	}
 
 	componentDidMount() {

@@ -296,11 +296,11 @@ export default StaticData = {
         { value: 'all', name: 'All' },
         { value: 'open', name: 'Open' },
         { value: 'viewing', name: 'Viewing' },
+        { value: 'propsure', name: 'Propsure' },
+        { value: 'offer', name: 'Offer' },
         { value: 'token', name: 'Token' },
         { value: 'payments', name: 'Payments' },
         { value: 'closed', name: 'Closed' },
-        { value: 'offer', name: 'Offer' },
-        { value: 'propsure', name: 'Propsure' },
     ],
     investmentFilter: [
         { value: 'all', name: 'All' },

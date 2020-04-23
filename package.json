@@ -51,7 +51,8 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
     "sentry-expo": "^2.0.3",
-    "underscore": "^1.9.2"
+    "underscore": "^1.9.2",
+    "expo-network": "~2.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.0.0",

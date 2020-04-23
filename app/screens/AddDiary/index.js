@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, Platform, TouchableWithoutFeedback, SafeAreaView, Keyboard } from 'react-native';
+import { TouchableWithoutFeedback, SafeAreaView, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment-timezone';
 import axios from 'axios';
@@ -111,10 +111,12 @@ class AddDiary extends Component {
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('DIARY ADDED SUCCESSFULLY!')
-                        let timeStamp = helper.convertTimeZone(res.data.start)
+                        let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
+                        let start = helper.convertTimeZone(res.data.start)
+                        let end = helper.convertTimeZone(res.data.end)
                         let data = {
-                            title: res.data.taskType,
-                            body: res.data.taskType + ' in 15 Minutes'
+                            title: res.data.subject,
+                            body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
                         }
                         TimerNotification(data, timeStamp)
                         navigation.goBack();
@@ -135,10 +137,12 @@ class AddDiary extends Component {
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('TASK ADDED SUCCESSFULLY!')
-                        let timeStamp = helper.convertTimeZone(res.data.start)
+                        let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
+                        let start = helper.convertTimeZone(res.data.start)
+                        let end = helper.convertTimeZone(res.data.end)
                         let data = {
-                            title: res.data.taskType,
-                            body: res.data.taskType + ' in 15 Minutes'
+                            title: res.data.subject,
+                            body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
                         }
                         TimerNotification(data, timeStamp)
                         navigation.navigate('Diary',

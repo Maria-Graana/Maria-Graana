@@ -80,7 +80,13 @@ export default styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-
+  backImg: {
+    width: 30,
+    height: 30,
+    marginTop: 5,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+  },
   chatContainer: {
     marginHorizontal: 10,
     // paddingTop: 10,

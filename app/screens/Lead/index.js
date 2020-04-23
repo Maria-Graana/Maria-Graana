@@ -117,6 +117,7 @@ class Inventory extends React.Component {
 	render() {
 		const { selectInventory, dropDownId, purposeTab, leadsData, open,statusFilter } = this.state
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
+		console.log(leadsData && leadsData.rows && leadsData.rows[3])
 		return (
 			<View>
 

@@ -18,8 +18,11 @@ class MeetingTile extends React.Component {
       taskTypeData = StaticData.meetingStatus
       :
       taskTypeData = StaticData.callStatus
+
+    let response = data && data.response != null && data.response.replace(/_+/g, " ");
+
     return (
-      <TouchableOpacity onPress={() => {data.taskType === 'meeting' && editFunction(data.id)}}>
+      <TouchableOpacity onPress={() => { data.taskType === 'meeting' && editFunction(data.id) }}>
         <View style={[styles.mainTileView,]}>
           <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
             <View style={styles.border}>
@@ -30,12 +33,12 @@ class MeetingTile extends React.Component {
             <View style={[styles.dotsWrap]}>
               {
                 data.taskType === 'called' && data.response != 'pending' &&
-                <Text style={[styles.doneText]}>{data.response}</Text>
+                <Text style={[styles.doneText]}>{data.response !== null ? response : 'Called'}</Text>
               }
 
               {
-                data.taskType === 'meeting' && data.response != null &&
-                <Text style={[styles.doneText]}>{data.response}</Text>
+                data.taskType === 'meeting' &&
+                <Text style={[styles.doneText]}>{data.response != null ? response : 'Meeting'}</Text>
               }
               <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data) }}>
                 <Image source={dots} style={styles.dotsImg} />

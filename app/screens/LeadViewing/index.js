@@ -3,18 +3,15 @@ import styles from './style'
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
-import Ability from '../../hoc/Ability';
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
-import { Fab, Button, Icon } from 'native-base';
-import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import Loader from '../../components/loader';
 import AddViewing from '../../components/AddViewing/index';
 import _ from 'underscore';
 import moment from 'moment';
 import { FAB } from 'react-native-paper';
-import { ProgressBar, Colors } from 'react-native-paper';
+import { ProgressBar } from 'react-native-paper';
 import StaticData from '../../StaticData';
 import { setlead } from '../../actions/lead';
 import helper from '../../helper';
@@ -151,10 +148,12 @@ class LeadViewing extends React.Component {
 					isVisible: false,
 					loading: true
 				})
-				let timeStamp = helper.convertTimeZone(res.data.start)
+				let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
+				let start = helper.convertTimeZone(res.data.start)
+				let end = helper.convertTimeZone(res.data.end)
 				let data = {
-					title: res.data.taskType,
-					body: res.data.taskType + ' in 15 Minutes'
+					title: res.data.subject,
+					body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
 				}
 				TimerNotification(data, timeStamp)
 				this.fetchLead()
@@ -194,7 +193,7 @@ class LeadViewing extends React.Component {
 							alignItems: "center"
 						}}
 					>
-						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Viewing at <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>{property.diaries[0].time}</Text></Text>
+						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Viewing at <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>{moment(helper.convertTimeZone(property.diaries[0].start)).format('LLL')}</Text></Text>
 					</TouchableOpacity >
 				)
 			}

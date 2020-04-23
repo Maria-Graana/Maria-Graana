@@ -5,6 +5,7 @@ import AppStyles from '../../AppStyles'
 import moment from 'moment'
 import { AntDesign } from '@expo/vector-icons';
 import addImg from '../../../assets/img/add.png'
+import backArrow from '../../../assets/img/backArrow.png'
 import checkImg from '../../../assets/img/check.png'
 
 class OfferModal extends React.Component {
@@ -18,12 +19,15 @@ class OfferModal extends React.Component {
 			<Modal
 				visible={active}
 				animationType="slide"
-				onRequestClose={isVisible}
+				onRequestClose={() => { this.props.openModal() }}
 			>
 				<SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
-					<View style={{ flexDirection: 'row', marginHorizontal: 10, }}>
-						<View style={{flex: 1}} />
-						<AntDesign style={styles.closeStyle} onPress={() => { this.props.openModal() }} name="close" size={26} color={AppStyles.colors.textColor} />
+					<View style={{ flexDirection: 'row-reverse', marginHorizontal: 10, }}>
+						<View style={{ flex: 1 }} />
+						<TouchableOpacity
+							onPress={() => { this.props.openModal() }}>
+							<Image source={backArrow} style={[styles.backImg]} />
+						</TouchableOpacity>
 					</View>
 
 					{/* **************************************** */}
@@ -32,7 +36,7 @@ class OfferModal extends React.Component {
 						<View style={styles.mainInputWrap}>
 							<Text style={styles.offerColor}>My Offers</Text>
 							<View style={styles.inputWrap}>
-								<TextInput style={[styles.formControl]} placeholder={'PKR 4.5 Crore'} onChangeText={(text) => { handleForm(text, 'my') }} />
+								<TextInput keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'my') }} />
 								<TouchableOpacity
 									onPress={placeMyOffer}
 									style={[styles.addBtnColorLeft, styles.sideBtnInput]}>
@@ -45,7 +49,7 @@ class OfferModal extends React.Component {
 						<View style={styles.mainInputWrap}>
 							<Text style={styles.offerColor}>Their Offers</Text>
 							<View style={styles.inputWrap}>
-								<TextInput style={[styles.formControl]} placeholder={'PKR 4.5 Crore'} onChangeText={(text) => { handleForm(text, 'their') }} />
+								<TextInput keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'their') }} />
 								<TouchableOpacity
 									onPress={placeTheirOffer}
 									style={[styles.addBtnColorRight, styles.sideBtnInput]}>
@@ -61,6 +65,12 @@ class OfferModal extends React.Component {
 					<View style={[styles.chatContainer]}>
 						<FlatList
 							data={offerChat}
+							ref={(ref)=> this._flatList = ref }
+							onContentSizeChange={(contentWidth, contentHeight) => {
+								if (contentHeight > 0) {
+									this._flatList.scrollToEnd()
+								}
+							}}
 							renderItem={(item, index) => (
 								<View >
 									{
@@ -87,10 +97,10 @@ class OfferModal extends React.Component {
 
 
 					{/* **************************************** */}
-					<View style={[{ marginHorizontal: 10, marginBottom: 20}]}>
+					<View style={[{ marginHorizontal: 10, marginBottom: 20 }]}>
 						<Text style={styles.offerColorLast}>AGREED AMOUNT</Text>
 						<View style={styles.inputWrapLast}>
-							<TextInput style={[styles.formControlLast]} placeholder={'PKR 4.5 Crore'} onChangeText={(text) => { handleForm(text, 'agreed') }} />
+							<TextInput keyboardType={'numeric'} style={[styles.formControlLast]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'agreed') }} />
 							<TouchableOpacity
 								onPress={placeAgreedOffer}
 								style={[styles.addBtnColorLeft, styles.sideBtnInputLast]}>

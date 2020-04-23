@@ -1,6 +1,7 @@
 import { Linking } from 'react-native';
 import { Toast } from 'native-base';
 import moment from 'moment-timezone';
+import * as Network from 'expo-network';
 
 const helper = {
 	successToast(message) {
@@ -22,6 +23,13 @@ const helper = {
 			text: message,
 			duration: 3000,
 			type: 'warning'
+		})
+	},
+	internetToast(message) {
+		Toast.show({
+			text: message,
+			duration: 30000,
+			type: 'danger'
 		})
 	},
 	normalizeCnic(value) {
@@ -72,13 +80,28 @@ const helper = {
 	capitalize(str) {
 		return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 	},
-	convertTimeZone(date) {
+	convertTimeZoneTimeStamp(date) {
 		let _format = 'YYYY-MM-DDTHH:mm'
 		let paktz = moment.tz(date, 'Asia/Karachi').format(_format)
 		var duration = moment.duration({ hours: 5, minutes: 15 })
 		var sub = moment(paktz, _format).subtract(duration).format();
 
 		return (new Date(sub)).valueOf()
+	},
+	convertTimeZone(date) {
+		let _format = 'YYYY-MM-DDTHH:mm'
+		let paktz = moment.tz(date, 'Asia/Karachi').format(_format)
+		var duration = moment.duration({ hours: 5 })
+		var sub = moment(paktz, _format).subtract(duration).format();
+		return sub
+	},
+	checkInternet(){
+		Network.getNetworkStateAsync()
+			.then((res) => {
+				if (res.type === 'NONE') {
+					helper.internetToast('No Internet Connection!')
+				}
+			})
 	}
 }
 

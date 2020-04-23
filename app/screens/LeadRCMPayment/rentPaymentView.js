@@ -57,7 +57,7 @@ const RentPaymentView = (props) => {
                 {
                     showTokenAmountArrow ?
                         <TouchableOpacity onPress={handleTokenAmountPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center', justifyContent: "center" }]}>
-                            <Ionicons style={{alignSelf:'flex-end',marginRight:10}} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
+                            <Ionicons style={{ alignSelf: 'flex-end', marginRight: 10 }} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
                         </TouchableOpacity>
                         :
                         <View style={[styles.blackInputdate, { justifyContent: 'center' }]}>
@@ -67,7 +67,7 @@ const RentPaymentView = (props) => {
                                 minWidth: 50,
                                 marginLeft: 10,
                                 fontSize: 10,
-                                alignSelf: 'flex-end', 
+                                alignSelf: 'flex-end',
                                 marginRight: 10
                             }}>{moment(lead.tokenPaymentTime).format('hh:mm A, MMMM DD')}</Text>
                         </View>
@@ -83,10 +83,21 @@ const RentPaymentView = (props) => {
                 </View>
                 <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(commissionPayment)} PKR`}</Text>
                 {
-                    showCommissionAmountArrow &&
-                    <TouchableOpacity onPress={handleCommissionAmountPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center', justifyContent: "center" }]} >
-                        <Ionicons style={{alignSelf:'flex-end',marginRight:10}} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
-                    </TouchableOpacity>
+                    showCommissionAmountArrow ?
+                        <TouchableOpacity onPress={handleCommissionAmountPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center', justifyContent: "center" }]} >
+                            <Ionicons style={{ alignSelf: 'flex-end', marginRight: 10 }} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
+                        </TouchableOpacity>
+                        :
+                        <View style={[styles.blackInputdate, { justifyContent: 'center' }]}>
+                            <Text style={{
+                                letterSpacing: 0.5,
+                                minHeight: 30,
+                                marginLeft: 10,
+                                fontSize: 10,
+                                alignSelf: 'flex-end',
+                                marginRight: 10
+                            }}>{lead.commissionTime && moment(lead.commissionTime).format('hh:mm A, MMMM DD')}</Text>
+                        </View>
                 }
 
             </View>

@@ -37,11 +37,11 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     position: 'absolute',
     right: 0,
-    top: 0,
+    top: -3,
   },
   dotsImg: {
-    width: 10,
-    height: 20,
+    width: 14,
+    height: 24,
     resizeMode: 'contain'
   },
   doneBtn: {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './styles'
-import { View, Text, FlatList, Image, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableHighlightBase } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
@@ -193,10 +193,19 @@ class LeadRCMPayment extends React.Component {
         })
     }
 
+    
+    showConfirmationDialog(item) {
+        Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
+            { text: 'No', style: 'cancel' },
+            { text: 'Yes', onPress: () => this.selectDifferentProperty() },
+        ],
+            { cancelable: false })
+    }
+
     renderSelectPaymentView = (item) => {
         const { lead } = this.state;
         return (
-            <TouchableOpacity key={item.id.toString()} onPress={lead.shortlist_id === null ? () => this.selectForPayment(item) : () => this.selectDifferentProperty()} style={styles.viewButtonStyle} activeOpacity={0.7}>
+            <TouchableOpacity key={item.id.toString()} onPress={lead.shortlist_id === null ? () => this.selectForPayment(item) : () => this.showConfirmationDialog()} style={styles.viewButtonStyle} activeOpacity={0.7}>
                 <Text style={styles.buttonTextStyle}>
                     {
                         lead.shortlist_id === null ?

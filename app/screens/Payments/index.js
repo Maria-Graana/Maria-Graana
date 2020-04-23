@@ -204,13 +204,13 @@ class Payments extends Component {
 		const { lead } = this.props
 		const { formData, totalInstalments, remainingPayment } = this.state
 		let body = {
-			discount: formData.discount ? parseInt(formData.discount) : '',
-			downPayment: formData.downPayment ? parseInt(formData.downPayment) : '',
-			floorId: formData.floorId,
-			token: formData.token ? parseInt(formData.token) : '',
-			unitId: formData.unitId,
-			installments: totalInstalments,
-			no_of_installments: totalInstalments.length,
+			discount: formData.discount ? parseInt(formData.discount) : null,
+			downPayment: formData.downPayment ? parseInt(formData.downPayment) : null,
+			floorId: formData.floorId ? formData.floorId : null,
+			token: formData.token ? parseInt(formData.token) : null,
+			unitId: formData.unitId ? formData.unitId : null,
+			installments: totalInstalments ? totalInstalments : null,
+			no_of_installments: totalInstalments.length ? totalInstalments.length : null,
 		}
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
@@ -253,19 +253,19 @@ class Payments extends Component {
 
 	goToComments = () => {
 		const { navigation, route } = this.props;
-		navigation.navigate('Comments', { cmLeadId: route.params.lead.id });
+		navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
 	}
 
 	goToAttachments = () => {
 		const { navigation, route } = this.props;
-		navigation.navigate('Attachments', { cmLeadId: route.params.lead.id });
+		navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
 	}
 
 	goToDiaryForm = () => {
 		const { navigation, route, user } = this.props;
 		navigation.navigate('AddDiary', {
 			update: false,
-			cmLeadId: route.params.lead.id,
+			cmLeadId: this.props.lead.id,
 			agentId: user.id
 		});
 	}

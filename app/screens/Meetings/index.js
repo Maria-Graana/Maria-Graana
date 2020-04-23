@@ -72,6 +72,15 @@ class Meetings extends Component {
     this.setState({ formData })
   }
 
+  getMeetingLead = () => {
+    const { formData } = this.state
+    const { lead } = this.props
+    axios.get(`/api/diary/all?leadId=${lead.id}`)
+      .then((res) => {
+        this.setState({ meetings: res.data })
+      })
+  }
+
   //  ************ Form submit Function  ************ 
   formSubmit = (id) => {
     const { formData, editMeeting, meetingId } = this.state
@@ -83,9 +92,11 @@ class Meetings extends Component {
           .then((res) => {
             helper.successToast(`Meeting Updated`)
             this.getMeetingLead();
+            formData['time'] = ''
+            formData['date'] = ''
             this.setState({
               active: false,
-              formData: { time: '', date: '' },
+              formData,
               editMeeting: false,
             })
           }).catch(() => {
@@ -94,11 +105,13 @@ class Meetings extends Component {
       } else {
         axios.post(`api/leads/project/meeting`, formData)
           .then((res) => {
+            formData['time'] = ''
+            formData['date'] = ''
             helper.successToast(`Meeting Added`)
             this.getMeetingLead();
             this.setState({
               active: false,
-              formData: { time: '', date: '' }
+              formData,
             })
           }).catch(() => {
             helper.errorToast(`Some thing went wrong!!!`)
@@ -106,15 +119,6 @@ class Meetings extends Component {
       }
 
     }
-  }
-
-  getMeetingLead = () => {
-    const { formData } = this.state
-    const { lead } = this.props
-    axios.get(`/api/diary/all?leadId=${lead.id}`)
-      .then((res) => {
-        this.setState({ meetings: res.data })
-      })
   }
 
   openStatus = (data) => {

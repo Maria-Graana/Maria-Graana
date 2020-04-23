@@ -34,6 +34,15 @@ export default styles = StyleSheet.create({
   },
   contentMainWrap: {
     position: 'relative',
+    flexDirection: 'row',
+    marginTop: 15,
+  },
+  leftContent:{
+    width: '90%',
+  },
+  phoneMain:{
+    justifyContent: 'flex-end',
+    marginBottom: 15,
   },
   tokenLabel: {
     borderWidth: 1,
@@ -48,8 +57,8 @@ export default styles = StyleSheet.create({
     fontSize: 12,
   },
   fireIcon: {
-    width: 18,
-    height: 18,
+    width: 22,
+    height: 22,
   },
   verticalIcon: {
     position: 'relative',

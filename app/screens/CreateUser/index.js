@@ -55,11 +55,11 @@ class CreateUser extends Component {
     getRoles = (id) => {
         axios.get(`/api/user/roles?orgId=${id}`)
             .then((res) => {
+                const { formData } = this.state
+                formData[armsUserRoleId] = res.data['sub_admin 2'][0].id
                 this.setState({
                     getRoles: res.data['sub_admin 2'][0],
-                    formData: {
-                        armsUserRoleId: res.data['sub_admin 2'][0].id
-                    }
+                    formData,
                 })
             })
     }
@@ -73,15 +73,16 @@ class CreateUser extends Component {
     formSubmit = () => {
         const { formData } = this.state
         if (
-            !formData.firstName &&
-            !formData.lastName &&
-            !formData.phoneNumber &&
-            !formData.password &&
-            !formData.phoneNumber &&
-            !formData.cityId &&
-            !formData.armsUserRoleId &&
+            !formData.firstName ||
+            !formData.lastName ||
+            !formData.phoneNumber ||
+            !formData.password ||
+            !formData.phoneNumber ||
+            !formData.cityId ||
+            !formData.armsUserRoleId ||
             !formData.confirmPassword
         ) {
+            console.log('hello')
             this.setState({
                 checkValidation: true
             })
@@ -120,7 +121,6 @@ class CreateUser extends Component {
                                     cities={cities}
                                     organization={organization}
                                 />
-
                             </View>
                         </ScrollView>
                     </KeyboardAvoidingView>

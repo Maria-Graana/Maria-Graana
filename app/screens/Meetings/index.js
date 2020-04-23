@@ -162,6 +162,7 @@ class Meetings extends Component {
       time: moment(a).format("LT"),
       date: a,
       taskType: 'called',
+      response: 'Called',
       subject: 'Call to client ' + this.props.route.params.lead.customer.customerName,
       cutomerId: this.props.route.params.lead.customer.id,
       leadId: this.props.route.params.lead.id,
@@ -177,6 +178,8 @@ class Meetings extends Component {
       Linking.canOpenURL(url)
         .then(supported => {
           if (!supported) {
+            this.sendCallStatus()
+
             console.log("Can't handle url: " + url);
           } else {
             this.sendCallStatus()
@@ -214,7 +217,7 @@ class Meetings extends Component {
   }
 
   goToDiaryForm = () => {
-    const { navigation, route , user} = this.props;
+    const { navigation, route, user } = this.props;
     navigation.navigate('AddDiary', {
       update: false,
       cmLeadId: route.params.lead.id,
@@ -222,7 +225,7 @@ class Meetings extends Component {
     });
   }
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus,open, progressValue } = this.state
+    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue } = this.state
     let leadData = this.props.route.params.lead
     return (
       <View style={styles.mainWrapCon}>
@@ -254,7 +257,7 @@ class Meetings extends Component {
 
         <View style={[styles.callMeetingBtn]}>
           <View style={[styles.btnsMainWrap]}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.phone && leadData.phone}`) }}>
+            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
               <Text style={styles.alignCenter}>CALL</Text>
             </TouchableOpacity>
           </View>
@@ -266,18 +269,18 @@ class Meetings extends Component {
         </View>
 
         <FAB.Group
-						open={open}
-						icon="plus"
-						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-						color={AppStyles.bgcWhite.backgroundColor}
-						actions={[
-							{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-							{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-							{ icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+          open={open}
+          icon="plus"
+          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+          color={AppStyles.bgcWhite.backgroundColor}
+          actions={[
+            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+            { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
 
-						]}
-						onStateChange={({ open }) => this.setState({ open })}
-					/>
+          ]}
+          onStateChange={({ open }) => this.setState({ open })}
+        />
 
         {/* ************Modal Component************ */}
         <MeetingModal
@@ -289,7 +292,7 @@ class Meetings extends Component {
           formSubmit={this.formSubmit}
         />
 
-<MeetingStatusModal
+        <MeetingStatusModal
           doneStatus={doneStatus}
           sendStatus={this.sendStatus}
           data={doneStatusId}

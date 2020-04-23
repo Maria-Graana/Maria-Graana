@@ -11,6 +11,7 @@ import moment from 'moment'
 import { ProgressBar, Colors } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 import helper from '../../helper';
+import { FAB } from 'react-native-paper';
 
 class Payments extends Component {
 	constructor(props) {
@@ -196,30 +197,31 @@ class Payments extends Component {
 		this.setState({ totalInstalments: newInstallments }, () => {
 			this.discountPayment()
 		})
-		
+
 	}
 
 	formSubmit = () => {
 		const { lead } = this.props
 		const { formData, totalInstalments, remainingPayment } = this.state
 		let body = {
-			discount: parseInt(formData.discount),
-			downPayment: parseInt(formData.downPayment),
+			discount: formData.discount ? parseInt(formData.discount) : '',
+			downPayment: formData.downPayment ? parseInt(formData.downPayment) : '',
 			floorId: formData.floorId,
-			token: parseInt(formData.token),
+			token: formData.token ? parseInt(formData.token) : '',
 			unitId: formData.unitId,
 			installments: totalInstalments,
 			no_of_installments: totalInstalments.length,
 		}
-		// console.log(body)
-		// console.log('projectId', formData.projectId)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
+				console.log(res.data)
 				if (remainingPayment === 0) {
 					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 				} else {
 					this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 				}
+			}).catch(() => {
+				console.log('Some thing went wrong!!')
 			})
 	}
 
@@ -249,6 +251,25 @@ class Payments extends Component {
 		}
 	}
 
+	goToComments = () => {
+		const { navigation, route } = this.props;
+		navigation.navigate('Comments', { cmLeadId: route.params.lead.id });
+	}
+
+	goToAttachments = () => {
+		const { navigation, route } = this.props;
+		navigation.navigate('Attachments', { cmLeadId: route.params.lead.id });
+	}
+
+	goToDiaryForm = () => {
+		const { navigation, route, user } = this.props;
+		navigation.navigate('AddDiary', {
+			update: false,
+			cmLeadId: route.params.lead.id,
+			agentId: user.id
+		});
+	}
+
 	render() {
 		const {
 			getProject,
@@ -265,7 +286,8 @@ class Payments extends Component {
 			readOnly,
 			downPayment,
 			tokenDate,
-			progressValue
+			progressValue,
+			open,
 		} = this.state
 
 		return (
@@ -302,6 +324,19 @@ class Payments extends Component {
 						/>
 					</View>
 				</ScrollView>
+				<FAB.Group
+					open={open}
+					icon="plus"
+					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+					color={AppStyles.bgcWhite.backgroundColor}
+					actions={[
+						{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+						{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+						{ icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+
+					]}
+					onStateChange={({ open }) => this.setState({ open })}
+				/>
 			</View>
 		)
 	}

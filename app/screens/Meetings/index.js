@@ -88,6 +88,8 @@ class Meetings extends Component {
               formData: { time: '', date: '' },
               editMeeting: false,
             })
+          }).catch(() => {
+            helper.errorToast(`Some thing went wrong!!!`)
           })
       } else {
         axios.post(`api/leads/project/meeting`, formData)
@@ -98,6 +100,8 @@ class Meetings extends Component {
               active: false,
               formData: { time: '', date: '' }
             })
+          }).catch(() => {
+            helper.errorToast(`Some thing went wrong!!!`)
           })
       }
 

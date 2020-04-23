@@ -3,13 +3,24 @@ import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   tileMainWrap: {
-    borderWidth: 1,
-    borderColor: '#ddd',
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 5,
-    position: 'relative',
-    marginBottom: 15,
+    padding: 5,
+    borderRadius: 4,
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  // leftimgView: {
+  //   width: '40%',
+  //   padding: 5,
+  // },
+  rightContentView: {
+    width: '100%',
+    padding: 5,
+  },
+  propertyImg: {
+    width: '100%',
+    borderRadius: 4,
+    height: 140,
   },
   largeText: {
     fontSize: 18,
@@ -20,64 +31,39 @@ export default styles = StyleSheet.create({
   topIcons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    position: 'absolute',
-    top: 15,
-    right: 0,
-    zIndex: 2,
   },
   contentMainWrap: {
     position: 'relative',
-    paddingRight: 30,
   },
   tokenLabel: {
-    backgroundColor: '#494949',
+    borderWidth: 1,
+    borderColor: '#2A7EF0',
     overflow: 'hidden',
     borderRadius: 12,
+    color: '#2A7EF0',
     paddingTop: 3,
     paddingBottom: 3,
     paddingLeft: 20,
     paddingRight: 20,
     fontSize: 12,
   },
-  phoneWrap: {
-    position: 'absolute',
-    right: 0,
-    bottom: 5,
-  },
-  phoneIcon: {
-    width: 20,
-    height: 20,
-    zIndex: 1,
-  },
   fireIcon: {
-    width: 15,
-    height: 20,
+    width: 18,
+    height: 18,
   },
   verticalIcon: {
     position: 'relative',
     top: -5,
   },
-  dropDownParent: {
-    position: 'relative',
+  priceText: {
+    fontSize: 16,
+    fontWeight: '600'
   },
-  dropDownWrap: {
-    position: 'absolute',
-    right: 10,
-    top: '110%',
-    width: 150,
-    borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 5,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-    zIndex: 10,
-  },
-  dropButtons:{
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+  priceColor: {
+    color: '#2A7EF0',
   },
   selectedInventory: {
-    borderColor: '#333',
+    borderColor: '#2A7EF0',
+    borderWidth: 1,
   },
 });

@@ -1,14 +1,11 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import AppStyles from '../../AppStyles';
 
 export default styles = StyleSheet.create({
-    itemWrap: {
-        backgroundColor: '#ffffff', 
-        borderRadius: 5,
-        marginVertical : 10,
-        borderBottomWidth: 1,
-        minHeight: 60,
-        borderColor: '#f0f0f0',
-        marginHorizontal: 15,
-        // flex:1
-    }
+    arrowIcon: {
+        position: 'absolute',
+        right: 15,
+        top: 12,
+        zIndex: 2,
+    },
 })

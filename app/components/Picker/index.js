@@ -2,88 +2,89 @@ import React from 'react'
 import {
     Platform, View
 } from 'react-native'
-import {Item, Picker } from 'native-base';
+import { Item, Picker } from 'native-base';
 import { StyleSheet } from 'react-native';
-import { EvilIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import AppStyles from '../../AppStyles'
 
 
 class PickerComponent extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state= {
-        selectedTask: 'Select'
+    constructor(props) {
+        super(props)
+        this.state = {
+            selectedTask: 'Select'
+        }
     }
-  }
 
-  onChange = (itemValue, itemIndex) => {
-    if(itemValue !== this.props.placeholder) {
-        this.props.onValueChange(itemValue)
+    onChange = (itemValue, itemIndex, name) => {
+        if (itemValue !== this.props.placeholder) {
+            this.props.onValueChange(itemValue, name)
+        }
+        this.setState({
+            selectedTask: itemValue
+        })
     }
-    this.setState({
-        selectedTask: itemValue
-    })
-  }
 
-  render() {
-    const {
-        data,
-        value,
-        placeholder,
-        container,
-        itemStyle,
-        pickerStyle,
-        selectedItem
-    } = this.props;
-    const items = data || [];
-    let serviceItems = []
-    const placeholderLabel = placeholder || 'Select'
-    const ItemWrap= itemStyle || styles.itemWrap
-    const PickerWrap= pickerStyle || styles.pickerWrap
-    const selectedValue= selectedItem || this.state.selectedTask
+    render() {
+        const {
+            data,
+            placeholder,
+            selectedItem,
+            name,
+            customStyle,
+            customIconStyle
+        } = this.props;
+        const items = data || [];
+        let pickerItems = []
+        const placeholderLabel = placeholder || 'Select'
+        let selectedValue = selectedItem || this.state.selectedTask
 
-    if(Platform.OS == 'android') {
-        serviceItems.push(<Picker.Item key={0} value={placeholderLabel} label={placeholderLabel} />)
+        if (Platform.OS == 'android') {
+            pickerItems.push(<Picker.Item key={0} value={placeholderLabel} label={placeholderLabel} color={AppStyles.colors.subTextColor} style={styles.paddingPicker} />)
+        }
+
+        if (items.length) {
+            data.map((item, key) => {
+                let pickerItem = <Picker.Item key={key} value={item.value} label={item.name} />
+                pickerItems.push(pickerItem)
+            })
+        }
+
+        return (
+            <View style={[styles.pickerMain]}>
+                <Ionicons style={[styles.arrowIcon, customIconStyle]} name="ios-arrow-down" size={26} color={AppStyles.colors.subTextColor} />
+                <Picker
+                    headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff', }}
+                    headerBackButtonTextStyle={{ color: '#fff' }}
+                    headerTitleStyle={{ color: "#fff" }}
+                    textStyle={[AppStyles.formFontSettings]}
+                    mode="dropdown"
+                    style={[AppStyles.formControlForPicker, customStyle]}
+                    placeholder={placeholderLabel}
+                    selectedValue={this.state.selectedTask != '' && selectedValue}
+                    onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}
+                >
+                    {pickerItems}
+                </Picker>
+            </View>
+
+        )
     }
-    for (let i = 0; i < items.length; i++) {
-        let item =  <Picker.Item key={i+1} value={items[i]} label={items[i]} />
-        serviceItems.push(item)
-    }
-    return (
-        <View style={ItemWrap}>
-            <Picker
-                headerStyle={{ backgroundColor: "#484848", borderColor: "#484848", }}
-                headerTitleStyle={{ color: "#fff" }}
-                mode="dropdown"
-                iosIcon={<EvilIcons name="arrow-down" />}
-                style={PickerWrap}
-                placeholder= {placeholderLabel}
-                selectedValue={selectedValue.toString()}
-                onValueChange={(itemValue, itemIndex) =>
-                    this.onChange(itemValue, itemIndex)
-                }
-            >
-                {serviceItems}
-            </Picker>
-        </View>
-    )}
 }
 
 const styles = StyleSheet.create({
-    itemWrap: {
-        backgroundColor: '#ffffff', 
-        borderRadius: 5,
-        marginVertical : 10,
-        borderBottomWidth: 1,
-        minHeight: 60,
-        borderColor: '#f0f0f0',
-        // flex:1
+    pickerMain: {
+        position: 'relative',
+        overflow: 'hidden',
+        borderRadius: 4,
     },
-    pickerWrap: {
-        width: undefined, 
-        minHeight: 60,
-        // paddingTop: Platform.OS ? 10 : 3,
-        // paddingBottom: Platform.OS ? 14 : 10
-    }
+    arrowIcon: {
+        position: 'absolute',
+        right: 15,
+        top: 12,
+        zIndex: 2,
+    },
+    
 })
 
 export default PickerComponent;

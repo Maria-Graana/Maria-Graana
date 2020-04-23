@@ -1,15 +1,16 @@
 import React from 'react'
 import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  TextInput,
+  Image,
+  Platform
 } from 'react-native'
 import moment from 'moment';
 import DatePicker from 'react-native-datepicker'
+import AppStyles from '../../AppStyles';
 
 console.disableYellowBox = true;
+
+const _format = 'YYYY-MM-DD';
+const _today = moment(new Date().dateString).format(_format);
 
 
 class DateComponent extends React.Component {
@@ -21,6 +22,7 @@ class DateComponent extends React.Component {
   }
 
   onChange = (date, mode) => {
+    console.log(date);
     if (mode == 'time') {
       this.props.onTimeChange(date)
     } else {
@@ -35,7 +37,6 @@ class DateComponent extends React.Component {
     const {
       mode,
       placeholder,
-      is24Hour,
       date,
       disabled,
     } = this.props;
@@ -43,32 +44,58 @@ class DateComponent extends React.Component {
 
     const placeholderlabel = placeholder || 'Select Date';
     const addMode = mode || 'date';
-    const addis24Hour = is24Hour || false;
     const dateTime = date || this.state.date;
+    let iconSource = null;
+    if (addMode === 'date') {
+      iconSource = require('../../../assets/img/calendar.png');
+    }
+    else {
+      iconSource = require('../../../assets/img/clock.png');
+    }
+
     return (
       <DatePicker
-        style={{ marginVertical: 10, marginHorizontal: 15, width: "89%", height: 60, borderRadius: 5 }}
+        style={[{
+          borderRadius: 4,
+          borderWidth: 0,
+          height: 50, backgroundColor: `${disabled ? '#ddd' : '#fff'}`, width: '100%', justifyContent: 'center', paddingRight: 15
+        }]}
         mode={addMode}
         date={dateTime}
+        format={addMode == 'time' ? 'hh:mm a' : 'YYYY-MM-DD'}
         placeholder={placeholderlabel}
-        minDate={mode == 'time' ? moment().format("HH:mm") : moment().format("YYYY-MM-DD")}
-        disabled={mode == 'time' ? disabled : false}
+        minDate={addMode == 'date' ? moment().format("YYYY-MM-DD") : ''}
+        disabled={addMode == 'time' ? disabled : false}
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"
-        is24Hour={addis24Hour}
+        iconComponent={< Image style={{ width: 26, height: 26 }} source={iconSource} />}
+        is24Hour={false}
         customStyles={{
-          dateIcon: {
-            position: 'absolute',
-            left: 0,
-            top: 4,
-            marginLeft: 0
+          datePickerCon: { backgroundColor: AppStyles.colors.primaryColor, },
+          placeholderText: {
+            alignSelf: 'flex-start',
+            fontFamily: AppStyles.fonts.defaultFont,
+            padding: Platform.OS === 'android' ? 10 : 15,
           },
           dateInput: {
-            marginLeft: 36
+            borderWidth: 0
+          },
+          disabled: {
+            backgroundColor: `${disabled ? '#ddd' : '#fff'}`,
+          },
+          dateText: {
+            alignSelf: 'flex-start',
+            fontFamily: AppStyles.fonts.defaultFont,
+            padding: Platform.OS === 'android' ? 10 : 15,
           },
           btnTextConfirm: {
-            color: '#484848'
-          }
+            color: '#fff'
+          },
+          btnTextCancel: {
+            color: '#333'
+          },
+
+
         }}
         onDateChange={(date) => { this.onChange(date, addMode) }}
       />

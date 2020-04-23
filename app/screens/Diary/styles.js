@@ -32,6 +32,16 @@ export default StyleSheet.create({
         fontFamily: AppStyles.fonts.defaultFont,
         color: AppStyles.colors.textColor
     },
+    teamMemberNameText:{
+        fontFamily: AppStyles.fonts.boldFont,
+        color: AppStyles.colors.textColor,
+      
+    },
+    diaryText:{
+        paddingLeft:5,
+        fontFamily: AppStyles.fonts.defaultFont,
+        color: AppStyles.colors.textColor
+    },
     underLine: {
         height: 1, 
         width: "100%",

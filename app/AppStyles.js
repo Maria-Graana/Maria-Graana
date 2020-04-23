@@ -1,10 +1,12 @@
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+
+import { Platform } from "react-native";
+
 export default AppStyles = {
     container: {
         flex: 1,
-        minHeight: '100%',
-        paddingRight: 15,
-        paddingLeft: 15,
-        backgroundColor: '#e7ecf0'
+        backgroundColor: '#e7ecf0',
+        paddingHorizontal: wp('2%')
     },
     colors: {
         background: '#f4f9fd',
@@ -20,12 +22,12 @@ export default AppStyles = {
     flexDirectionRow: {
         flexDirection: 'row'
     },
-
     fonts: {
-        defaultFont: 'OpenSans_regular', 
-        boldFont:'OpenSans_bold'
+        defaultFont: 'OpenSans_regular',
+        boldFont: 'OpenSans_bold',
+        lightFont: 'OpenSans_light',
+        semiBoldFont: 'OpenSans_semi_bold'
     },
-
     mb1: {
         flex: 1
     },
@@ -34,8 +36,8 @@ export default AppStyles = {
     },
     fontSize: {
         small: 10,
-        medium: 15,
-        large: 20
+        medium: 16,
+        large: 18
     },
     standardPadding: {
         padding: 16
@@ -45,6 +47,10 @@ export default AppStyles = {
         borderBottomWidth: 0,
     },
     // ****** Margins Classes
+    noMargin: {
+        marginTop: 0,
+        marginBottom: 0,
+    },
     mrTen: {
         marginRight: 10,
     },
@@ -53,6 +59,9 @@ export default AppStyles = {
     },
     mbTen: {
         marginBottom: 10,
+    },
+    mtTen: {
+        marginTop: 10,
     },
     mbFive: {
         marginBottom: 5,
@@ -69,7 +78,180 @@ export default AppStyles = {
     lightColor: {
         color: '#333',
     },
+    textCenter: {
+        textAlign: 'center',
+    },
     whiteColor: {
         color: '#fff',
     },
+    standardPaddingVertical: {
+        paddingVertical: 16
+    },
+    standardMarginVertical: {
+        marginVertical: 16
+    },
+    mainInputWrap: {
+        position: 'relative',
+        marginBottom: 15,
+        marginTop: 15,
+    },
+    inputWrap: {
+        position: 'relative',
+    },
+    countPrice: {
+        position: 'absolute',
+        right: 5,
+        top: 16,
+        color: '#0f73ee',
+        fontWeight: 'bold',
+        fontSize: 12,
+        width: 70,
+    },
+    minMaxPrice: {
+        paddingRight: 90,
+    },
+    formControl: {
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        borderWidth: 0,
+        height: 50,
+        fontFamily: 'OpenSans_regular',
+    },
+    formFontSettings: {
+        fontSize: 14,
+        fontFamily: 'OpenSans_regular',
+    },
+    formControlForPicker: {
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        borderWidth: 0,
+        height: 50,
+    },
+    inputPadLeft: {
+        paddingLeft: 15,
+    },
+    multiFormInput: {
+        flexDirection: 'row',
+    },
+    flexOne: {
+        width: '48%',
+    },
+    flexMarginRight: {
+        marginRight: 0,
+        marginLeft: '4%',
+    },
+    latLngMain: {
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        marginTop: 15,
+        marginBottom: 15,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    locationBtn: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        backgroundColor: '#fff',
+        height: '100%',
+        width: '14%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderLeftWidth: 1,
+        borderColor: '#EAEEF1',
+    },
+    locationIcon: {
+        width: 28,
+        height: 28,
+    },
+    borderrightLat: {
+        borderRightWidth: 1,
+        borderColor: '#EAEEF1',
+    },
+    bgcWhite: {
+        backgroundColor: '#fff',
+    },
+    latLngInputWrap: {
+        width: '43%',
+    },
+    formBtn: {
+        justifyContent: 'center',
+        minHeight: 55,
+        borderRadius: 4,
+        backgroundColor: '#0f73ee',
+        padding: 15,
+    },
+    btnText: {
+        color: '#fff',
+        fontSize: 18,
+        fontFamily: 'OpenSans_bold',
+        letterSpacing: 0.6,
+    },
+    pickerTextStyle: {
+        fontSize: 14,
+        fontFamily: 'OpenSans_regular',
+    },
+    require: {
+        color: 'red',
+        fontSize: 10,
+        marginTop: 5,
+    },
+    mainInputWrap: {
+        marginBottom: 10,
+        marginTop: 10,
+    },
+    modalMain: {
+        paddingBottom: 50,
+        paddingTop: 15,
+    },
+    mainBlackWrap: {
+        flexDirection: 'row',
+        marginBottom: 10,
+        marginTop: 10,
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        overflow: 'hidden'
+    },
+    blackInputWrap: {
+        width: '60%',
+        padding: 5,
+        position: 'relative'
+    },
+    fullWidth: {
+        width: '100%',
+    },
+    fullWidthPad: {
+        width: '100%',
+        padding: 5,
+        position: 'relative'
+    },
+    blackInputText: {
+        color: '#000',
+        fontSize: 10,
+        fontWeight: 'bold',
+        letterSpacing: 2,
+    },
+    blackInput: {
+        minHeight: 30,
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#0F74EE',
+    },
+    blackInputdate: {
+        position: 'relative',
+        top: 20,
+        marginLeft: 15,
+    },
+    dateText: {
+        letterSpacing: 2,
+        fontSize: 10,
+    },
+    lineView: {
+        position: 'relative',
+        top: 0,
+        left: 0,
+        height: 2,
+        backgroundColor: '#333',
+    }
 }

@@ -3,14 +3,13 @@ import {
     View,
     Text,
     FlatList,
-    TouchableWithoutFeedback
+    TouchableOpacity,
 } from 'react-native'
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import ListItem from "../ListItem/index";
 import styles from './style';
 import AppStyles from '../../AppStyles'
 import moment from 'moment';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 class DiaryTile extends React.Component {
@@ -18,6 +17,7 @@ class DiaryTile extends React.Component {
         super(props)
         this.state = {
             openPopup: false,
+            todayDate: moment(new Date()).format('L'),
         }
     }
 
@@ -32,14 +32,37 @@ class DiaryTile extends React.Component {
     }
 
     showPopup = (val) => {
-        //console.log('val=>',val)
         this.props.showPopup(val)
+    }
+
+    setStatusText = (val) => {
+        let taskDate = moment(val.date).format('L')
+        if (taskDate > this.state.todayDate) {
+            return 'To-do'
+        }
+        else if (taskDate != this.state.todayDate && val.status !== 'completed') {
+            return 'Overdue';
+        }
+        else if (val.status === 'inProgress') {
+            return 'In Progress';
+        }
+        else if (val.status === 'completed') {
+            return 'Completed';
+        }
+        else if (val.status === 'pending') {
+            return 'To-do';
+        }
+    }
+
+    handleLongPress = (val) => {
+        this.props.onLongPress(val);
     }
 
 
     render() {
         const {
-            data
+            data,
+            onLeadLinkPressed
         } = this.props;
         return (
             <View style={AppStyles.mb1}>
@@ -57,28 +80,34 @@ class DiaryTile extends React.Component {
                                         {
                                             item.item.diary.map((val, index) => {
                                                 return (
-                                                    <View styles={AppStyles.mb1} key={index}>
-                                                        <TouchableWithoutFeedback onPress={() => { this.showPopup(val) }}>
-                                                            <View style={[styles.tileWrap, { borderLeftColor: val.statusColor }]} key={index}>
-                                                                <View style={styles.innerTile}>
-                                                                    <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - {moment.utc(val.end).format("hh:mm a")} </Text>
-                                                                    <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{val.status}</Text>
-                                                                </View>
-                                                                <Text style={styles.meetingText}>{val.subject}</Text>
-                                                                <Text style={styles.meetingText}>{val.taskType}</Text>
-                                                                {
-                                                                    val.leadLink === true ?
-                                                                        <TouchableOpacity   style={styles.lead}  >
-                                                                            <Text style={styles.leadText} >
-                                                                                Lead Link
+                                                    <TouchableOpacity
+                                                        onPress={() => this.showPopup(val)}
+                                                        onLongPress={() => this.handleLongPress(val)}
+                                                        key={index}
+                                                        activeOpacity={0.7}
+                                                        style={[styles.tileWrap, { borderLeftColor: val.statusColor }]}
+                                                    >
+                                                        <View style={styles.innerTile}>
+                                                            <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - {moment.utc(val.end).format("hh:mm a")} </Text>
+                                                            <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{this.setStatusText(val)}</Text>
+                                                        </View>
+                                                        <Text style={styles.meetingText}>{val.subject}</Text>
+                                                        <View style={styles.innerTile}>
+                                                            <Text style={styles.meetingText}>{val.taskType.charAt(0).toUpperCase() + val.taskType.slice(1)}</Text>
+                                                            {
+                                                                val.armsLeadId !== null ?
+                                                                    <TouchableOpacity style={styles.lead} onPress={() => onLeadLinkPressed(val.armsLeadId)}  >
+                                                                        <Text style={styles.leadText} >
+                                                                            Lead Link
                                                                              </Text>
-                                                                        </TouchableOpacity>
-                                                                        :
-                                                                        null
-                                                                }
-                                                            </View>
-                                                        </TouchableWithoutFeedback>
-                                                    </View>
+                                                                    </TouchableOpacity>
+                                                                    :
+                                                                    null
+                                                            }
+                                                        </View>
+
+
+                                                    </TouchableOpacity>
                                                 )
                                             })
                                         }

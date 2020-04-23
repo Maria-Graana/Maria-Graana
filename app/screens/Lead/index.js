@@ -1,11 +1,18 @@
 import React from 'react';
 import styles from './style'
-import { View, ScrollView, TextInput, FlatList } from 'react-native';
-import { Picker } from 'native-base';
+import { View, Text, TouchableOpacity, Image, ScrollView, Linking } from 'react-native';
 import { connect } from 'react-redux';
-import InventoryTile from '../../components/InventoryTile'
 import AppStyles from '../../AppStyles'
-import { Feather } from '@expo/vector-icons';
+import PickerComponent from '../../components/Picker/index';
+import { Fab, Button, Icon } from 'native-base';
+import { Ionicons } from '@expo/vector-icons';
+import SortImg from '../../../assets/img/sort.png'
+import LeadTile from '../../components/LeadTile'
+import axios from 'axios';
+import helper from '../../helper'
+import StaticData from '../../StaticData'
+import { FAB } from 'react-native-paper';
+
 
 class Inventory extends React.Component {
 	constructor(props) {
@@ -13,46 +20,40 @@ class Inventory extends React.Component {
 
 		this.state = {
 			language: '',
+			leadsData: [],
 			dotsDropDown: false,
 			dropDownId: '',
 			selectInventory: [],
-
+			febDrawer: false,
+			purposeTab: 'invest',
+			statusFilter: 'all',
+			open: false,
 		}
 
-		this.staticData = [
-			{
-				id: '1',
-				propertyName: '10 marla house for sale',
-				action: 'Token',
-				price: '10 Crore',
-				address: 'G/11, Islamabad',
-				location: 'G/11, Islamabad',
-			},
-			{
-				id: '2',
-				propertyName: '40 marla house for sale',
-				action: 'Deal Done',
-				price: '20 Crore',
-				address: 'i8/4, Islamabad',
-				location: 'i8/4, Islamabad',
-			},
-			{
-				id: '3',
-				propertyName: '16 marla house for sale',
-				action: 'Deal Done',
-				price: '13 Crore',
-				address: 'G2/11, Islamabad',
-				location: 'G2/11, Islamabad',
-			},
-			{
-				id: '4',
-				propertyName: '5 marla house for sale',
-				action: 'Token',
-				price: '2 Crore',
-				address: 'H1/11, Islamabad',
-				location: 'H1/11, Islamabad',
-			}
-		]
+	}
+
+	componentDidMount() {
+		this.fetchLeads('invest', 'all');
+	}
+
+	componentWillUnmount() {
+	}
+
+	fetchLeads = (purposeTab, statusFilter) => {
+		//console.log(purposeTab, statusFilter)
+		let query = ``
+		if (purposeTab === 'invest') {
+			query = `/api/leads/projects?all=${true}&status=${statusFilter}`
+		} else {
+			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}`
+		}
+		axios.get(`${query}`)
+			.then((res) => {
+				this.setState({
+					leadsData: res.data
+				})
+			})
+
 	}
 
 	showDropdown = (id) => {
@@ -65,7 +66,7 @@ class Inventory extends React.Component {
 	selectInventory = (id) => {
 		const { selectInventory } = this.state
 		this.setState({
-			selectInventory: [...selectInventory,id]
+			selectInventory: [...selectInventory, id]
 		})
 	}
 
@@ -78,45 +79,127 @@ class Inventory extends React.Component {
 		})
 	}
 
-	render() {
-		const { selectInventory, dropDownId } = this.state
-		return (
-			<View style={AppStyles.container}>
+	goToFormPage = (page, status) => {
+		const { navigation } = this.props;
+		navigation.navigate(page, { 'pageName': status });
+	}
 
-				{/* ***** Main Filter Wrap */}
-				<View style={styles.filterMainWrap}>
-					<View style={[styles.searchInputWrap, styles.borderRightFilter]}>
-						<Picker
-							placeholder={'Search By'}
-							selectedValue={this.state.language}
-							onValueChange={(itemValue, itemIndex) =>
-								this.setState({ language: itemValue })
-							}>
-							<Picker.Item label="Java" value="java" />
-							<Picker.Item label="JavaScript" value="js" />
-						</Picker>
+	changeTab = (status) => {
+		this.setState({ purposeTab: status })
+		this.fetchLeads(status, this.state.statusFilter);
+	}
+
+	changeStatus = (status) => {
+		this.setState({ statusFilter: status })
+		this.fetchLeads(this.state.purposeTab, status);
+	}
+
+	navigateTo = (data) => {
+		const { purposeTab } = this.state
+		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: purposeTab })
+	}
+
+	callNumber = (url) => {
+		if (url != 'tel:null') {
+			Linking.canOpenURL(url)
+				.then(supported => {
+					if (!supported) {
+						console.log("Can't handle url: " + url);
+					} else {
+						return Linking.openURL(url)
+					}
+				}).catch(err => console.error('An error occurred', err));
+		} else {
+			helper.errorToast(`No Phone Number`)
+		}
+	}
+
+	render() {
+		const { selectInventory, dropDownId, purposeTab, leadsData, open,statusFilter } = this.state
+		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
+		console.log(leadsData && leadsData.rows && leadsData.rows[3])
+		return (
+			<View>
+
+				{/* ******************* TAb BUTTON VIEW ******* */}
+				<View style={styles.mainTopTabs}>
+
+				<View style={styles.mainTabs}>
+						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'invest' && styles.activeTab]} onPress={() => { this.changeTab('invest') }}>
+							<Text style={AppStyles.textCenter}>INVEST</Text>
+						</TouchableOpacity>
 					</View>
-					<View style={[styles.searchInputWrap, styles.InputWrapSearch]}>
-						<TextInput style={styles.inputFilterStyle} />
-						<Feather name="search" size={20} color="#D0D0D0" style={styles.searchIcon} />
+
+					<View style={styles.mainTabs}>
+						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('sale') }}>
+							<Text style={AppStyles.textCenter}>BUY</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.mainTabs}>
+						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'rent' && styles.activeTab]} onPress={() => { this.changeTab('rent') }}>
+							<Text style={AppStyles.textCenter}>RENT</Text>
+						</TouchableOpacity>
+					</View>
+					
+				</View>
+
+				{/* ******************* TOP FILTER MAIN VIEW ********** */}
+				<View style={[styles.mainFilter]}>
+					<View style={styles.pickerMain}>
+						<PickerComponent
+							placeholder={'Lead Status'}
+							data={leadStatus}
+							customStyle={styles.pickerStyle}
+							customIconStyle={styles.customIconStyle}
+							onValueChange={this.changeStatus}
+							selectedItem = {statusFilter}
+						/>
+					</View>
+					<View style={styles.stylesMainSort}>
+						<TouchableOpacity style={styles.sortBtn}>
+							<Image source={SortImg} style={[styles.sortImg]} />
+							<Text style={styles.sortText}>Sort</Text>
+						</TouchableOpacity>
 					</View>
 				</View>
 
-				{/* ***** Main Tile Wrap */}
-				<View style={styles.mainInventoryTile}>
-					<FlatList
-						data={this.staticData}
-						renderItem={({ item }) => (
-							<InventoryTile
-								showDropdown={this.showDropdown}
-								dotsDropDown={this.state.dotsDropDown}
-								selectInventory={this.selectInventory}
-								selectedInventory={selectInventory}
-								data={item}
-								dropDownId={dropDownId}
-								unSelectInventory={this.unSelectInventory}
-							/>
-						)}
+				<View style={[AppStyles.container, styles.minHeight]}>
+					<View style={[styles.mainInventoryTile,]}>
+						<ScrollView>
+							{
+								leadsData && leadsData.rows && leadsData.rows.map((item, key) => {
+									return (
+										<LeadTile
+											key={key}
+											showDropdown={this.showDropdown}
+											dotsDropDown={this.state.dotsDropDown}
+											selectInventory={this.selectInventory}
+											selectedInventory={selectInventory}
+											data={item}
+											dropDownId={dropDownId}
+											unSelectInventory={this.unSelectInventory}
+											goToInventoryForm={this.goToInventoryForm}
+											navigateTo={this.navigateTo}
+											callNumber={this.callNumber}
+										/>
+									)
+								})
+							}
+						</ScrollView>
+
+					</View>
+					<FAB.Group
+						open={open}
+						icon="plus"
+						style={{marginBottom:16}}
+						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+						color={AppStyles.bgcWhite.backgroundColor}
+						actions={[
+							{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
+							{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
+
+						]}
+						onStateChange={({ open }) => this.setState({ open })}
 					/>
 				</View>
 

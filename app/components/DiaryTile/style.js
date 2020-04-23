@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
 import AppStyles from '../../AppStyles'
+import { StyleSheet } from 'react-native';
 
 export default styles = StyleSheet.create({
     container: {
@@ -18,9 +18,12 @@ export default styles = StyleSheet.create({
         fontFamily: AppStyles.fonts.boldFont,
     },
     tileWrap: {
-        flex: 2,
+        flex: 1,
         marginVertical: 5,
         elevation: 10,
+        shadowOffset: { width: 5, height: 5 },
+        shadowColor: 'lightgrey',
+        shadowOpacity: 1,
         backgroundColor: '#ffffff',
         padding: 10,
         borderRadius: 4,
@@ -51,29 +54,32 @@ export default styles = StyleSheet.create({
     },
 
     lead: {
-        marginTop: 6,
-        marginLeft: 3,
-        width: '25%',
-        padding: 6,
-        backgroundColor: AppStyles.colors.backgroundColor,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: AppStyles.colors.textColor
-    },
-    leadText: {
-        fontSize: 12,
-        fontFamily: AppStyles.fonts.boldFont,
-        color: AppStyles.colors.textColor,
-        textAlign: 'center',
-    },
-    statusText: {
         fontFamily: AppStyles.fonts.boldFont,
         width: '25%',
         textAlign: 'center',
         fontSize: 12,
         padding: 3,
-        color: AppStyles.colors.primaryColor,
+        color: AppStyles.colors.textColor,
         borderRadius: 12,
+        borderColor: AppStyles.colors.textColor,
+        borderWidth: 0.5
+    },
+    leadText: {
+        fontSize: 12,
+        fontFamily: AppStyles.fonts.semiBoldFont,
+        color: AppStyles.colors.textColor,
+        textAlign: 'center',
+    },
+    statusText: {
+        fontFamily: AppStyles.fonts.boldFont,
+        // width: '25%',
+        textAlign: 'center',
+        fontSize: 10,
+        padding: 3,
+        paddingHorizontal:5,
+        paddingVertical: 5,
+        color: AppStyles.colors.primaryColor,
+        borderRadius: 100,
         borderColor: AppStyles.colors.primaryColor,
         borderWidth: 0.5
     },

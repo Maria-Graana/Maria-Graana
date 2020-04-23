@@ -1,20 +1,25 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { StackActions } from '@react-navigation/native';
-import { Ionicons, EvilIcons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
+import { ActionSheet } from 'native-base';
+import { Ionicons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
 import CalendarComponent from '../../components/CalendarComponent'
+import axios from 'axios';
 import { Fab } from 'native-base';
-import data from '../../StaticData';
 import _ from 'underscore';
 import moment from 'moment';
+import DairyPopup from '../../components/DairyPopup'
 import AppStyles from '../../AppStyles'
 import styles from './styles'
+import Ability from '../../hoc/Ability'
 import { connect } from 'react-redux';
+import helper from '../../helper';
 
 const _format = 'YYYY-MM-DD';
 const _today = moment(new Date().dateString).format(_format);
+var BUTTONS = ['Delete', 'Cancel'];
+var CANCEL_INDEX = 1;
 
 class Diary extends React.Component {
   constructor(props) {
@@ -26,16 +31,30 @@ class Diary extends React.Component {
       todayDate: moment(new Date()).format('L'),
       newDiaryData: [],
       diaryData: [],
-      loading: false,
+      loading: true,
+      agentId: '',
+      openPopup: false,
+      selectedDiary: {}
     }
   }
 
   componentDidMount() {
     const { navigation } = this.props;
     this._unsubscribe = navigation.addListener('focus', () => {
-      this.diaryMain();
+      const { route, user } = this.props;
+      if (route.params !== undefined && 'agentId' in route.params) {
+        this.setState({ agentId: route.params.agentId }, () => {
+          this.diaryMain();
+          this.listData();
+        });
+      }
+      else {
+        this.setState({ agentId: user.id }, () => {
+          this.diaryMain();
+          this.listData();
+        })
+      }
     });
-    this.listData();
   }
 
   componentWillUnmount() {
@@ -72,65 +91,68 @@ class Diary extends React.Component {
   }
 
   diaryMain = () => {
+    const { agentId } = this.state;
     let endPoint = ``
-    // let date = moment(this.state.startDate).format('YYYY-MM-DD')
-    //endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}&agentId=${this.state.agentId}`
-    // axios.get(`${endPoint}`)
-    //  .then((res) => {
-    this.setState({
-      loading: true,
-      diaryData: data.diaryRows,
-    }, () => {
-      this.showTime()
+    this.setState({ loading: true }, () => {
+      let date = moment(this.state.startDate).format('YYYY-MM-DD')
+      endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}&agentId=${agentId}`
+      axios.get(`${endPoint}`)
+        .then((res) => {
+          this.setState({
+            diaryData: res.data.rows,
+          }, () => {
+            this.showTime()
+          })
+        }).catch((error) => {
+          console.log(error)
+          this.setState({
+            loading: false
+          })
+        })
     })
+
   }
 
   checkStatus = (val) => {
     let taskDate = moment(val.date).format('L')
     let checkForCDate = taskDate == this.state.todayDate
-    
-    if (val.status == 'In Progress' ) {
-      return '#edb73f'
+    if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
+      return '#FDD835'
     }
-    else if(val.status==='Open'){
-       return AppStyles.colors.primaryColor
+    else if (taskDate > this.state.todayDate) {
+      return 'red'
     }
-    else if ( val.status != 'completed') {
-      return '#3d78f6'
-    }
-    else if (taskDate != this.state.todayDate && val.status != 'completed') {
+    else if (checkForCDate && val.status === 'pending') {
       return 'red'
     }
     else if (val.status == 'completed') {
-      return '#15c559'
-    }
-    else if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
-      return '#edb73f'
+      return 'green'
     }
     else {
-      return '#000'
+      return AppStyles.colors.subTextColor;
     }
   }
 
 
+
   showTime = () => {
     const { diaryData, calendarList } = this.state;
+    let calendarData = null;
     if (diaryData.length) {
       let groupedData = diaryData.map((item, index) => {
         item.statusColor = this.checkStatus(item)
         if (item.hour) {
-          //item.hour = item.hour.replace(/(\d{2})/g, '$1 ').replace(/(^\s+|\s+$)/, '')
           return item;
         } else {
           return item
         }
       })
       groupedData = _.groupBy(diaryData, 'hour')
-      let calendarData = calendarList.map((item, index) => {
-        if (groupedData[item.replace(/\s/g,'')]) {
+      calendarData = calendarList.map((item, index) => {
+        if (groupedData[item]) {
           return {
             time: item,
-            diary: _.sortBy(groupedData[item.replace(/\s/g,'')], 'time')
+            diary: _.sortBy(groupedData[item], 'time')
           }
         } else {
           return {
@@ -159,47 +181,70 @@ class Diary extends React.Component {
   }
 
   updateDay = (day) => {
+    const { navigation } = this.props;
     const { dateString } = day
     let newDate = moment(dateString).format(_format)
+    navigation.setOptions({ title: moment(dateString).format('DD MMMM YYYY') })
     this.setState({
       startDate: newDate,
-      showCalendar:false
+      showCalendar: false
     }, () => {
-      //this.diaryMain()
+      this.diaryMain()
     })
   }
 
   goToDiaryForm = () => {
     const { navigation } = this.props;
-    navigation.dispatch(
-      StackActions.replace('AddDiary', {
-        agentId: this.state.agentId,
-        update: false
-      })
-    );
-  }
-
-  updateDiary = (data) => {
-    this.props.navigation.navigate('AddDiary', { 'agentId': this.state.agentId, 'update': true, data: data })
-    this.setState({
-      openPopup: false,
-    })
+    const { agentId } = this.state;
+    navigation.navigate('AddDiary', {
+      'agentId': agentId
+    });
   }
 
   showPopup = (val) => {
-    this.setState({
-      openPopup: true,
-      oneDiary: val
-    })
+    if(val.taskType!=='viewing' && val.taskType !=='called'){
+      this.setState({
+        openPopup: true,
+        selectedDiary: val
+      });
+    }
   }
 
-  closePopup = (val) => {
+  closePopup = () => {
     this.setState({
       openPopup: false,
       loading: true,
     }, () => {
       this.diaryMain()
     })
+  }
+
+  updateDiary = (data) => {
+    this.props.navigation.navigate('AddDiary',
+      {
+        'agentId': this.state.agentId,
+        'update': true,
+        'data': data
+      })
+    this.setState({
+      openPopup: false,
+    })
+  }
+
+  deleteDiary = (data) => {
+    let endPoint = ``
+    let that = this;
+    endPoint = `/api/diary/delete?id=${data.id}`
+    axios.delete(endPoint).then(function (response) {
+      if (response.status === 200) {
+        helper.successToast('TASK DELETED SUCCESSFULLY!')
+        that.diaryMain();
+      }
+
+    }).catch(function (error) {
+      helper.successToast(error.message)
+    })
+
   }
 
   popupAction = (val, type) => {
@@ -212,8 +257,8 @@ class Diary extends React.Component {
           status: type
         }).then(function (response) {
           if (response.status == 200)
-            console.log('responseSuccessCompleted');
-          that.diaryMain();
+            // console.log('responseSuccessCompleted');
+            that.diaryMain();
         })
         break;
       case 'inProgress':
@@ -221,8 +266,8 @@ class Diary extends React.Component {
           status: type
         }).then(function (response) {
           if (response.status == 200)
-            console.log('responseSuccessInProgress');
-          that.diaryMain();
+            // console.log('responseSuccessInProgress');
+            that.diaryMain();
         })
 
         break;
@@ -232,50 +277,113 @@ class Diary extends React.Component {
     }
   }
 
-  render() {
-    const { showCalendar, startDate, newDiaryData, loading } = this.state;
-    return (
-      <View style={styles.container}>
-        <Fab
-          active='true'
-          containerStyle={{ zIndex: 20 }}
-          style={{ backgroundColor: AppStyles.colors.primaryColor }}
-          position="bottomRight"
-          onPress={this.goToDiaryForm}
-        >
-          <Ionicons name="md-add" color="#ffffff" />
-        </Fab>
-        {
-          !showCalendar ?
-            <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
-              <Ionicons style={{ position: 'absolute', right: 20, top: 15 }}
-                name="md-add" size={26}
-                color={AppStyles.colors.primaryColor} />
-              <View style={styles.calenderIconContainer}>
-                <Ionicons name='md-calendar' size={26} color={AppStyles.colors.primaryColor} />
-                <Text style={styles.calendarText}>Calendar</Text>
-              </View>
-              <View style={styles.underLine}
-              />
-            </TouchableOpacity>
-            : null
+  handleLongPress = (val) => {
+    ActionSheet.show(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Select an Option',
+      },
+      buttonIndex => {
+        if (buttonIndex === 0) {
+          //Delete
+          this.showDeleteDialog(val);
         }
+      }
+    );
 
-        {
-          showCalendar ?
-            <CalendarComponent startDate={startDate} updateDay={this.updateDay} onPress={this._toggleShow} />
-            : null
-        }
-        {
-          newDiaryData && newDiaryData.length ?
-            <DiaryTile data={newDiaryData} showPopup={this.showPopup} />
-            : <Loader loading={loading} />
-        }
-      </View>
+  }
+
+  showDeleteDialog(val) {
+    Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', onPress: () => this.deleteDiary(val) },
+    ],
+      { cancelable: false })
+  }
+
+  handleLeadLinkPress = (armsLeadId) => {
+    axios.get(`/api/leads/byId?id=${armsLeadId}`).then(response => {
+      this.setState({ openPopup: false })
+      this.props.navigation.navigate('LeadDetail', { lead: response.data, purposeTab: response.data.purpose })
+    }).catch(error => {
+      console.log('error', error)
+    })
+
+  }
+
+  render() {
+    const { showCalendar, startDate, newDiaryData, loading, selectedDiary } = this.state;
+    const { user, route } = this.props;
+    const { name } = route.params;
+    return (
+      !loading ?
+        <View style={styles.container}>
+
+          <DairyPopup
+            screenName={route.params.screen}
+            data={selectedDiary}
+            updateDiary={this.updateDiary}
+            deleteDiary={this.deleteDiary}
+            openPopup={this.state.openPopup}
+            closePopup={this.closePopup}
+            onLeadLinkClicked={this.handleLeadLinkPress}
+            popupAction={(val, type) => this.popupAction(val, type)}
+          />
+
+          {
+            Ability.canAdd(user.role, route.params.screen) ?
+              <Fab
+                active='true'
+                containerStyle={{ zIndex: 20 }}
+                style={{ backgroundColor: AppStyles.colors.primaryColor }}
+                position="bottomRight"
+                onPress={this.goToDiaryForm}
+              >
+                <Ionicons name="md-add" color="#ffffff" />
+              </Fab> :
+              null
+          }
+
+          {
+            // Show view with team member name if coming from team member screen
+            route.params.screen === 'TeamDiary' ?
+              <View style={styles.calenderIconContainer}>
+                <View style={AppStyles.flexDirectionRow}>
+                  <Text style={styles.teamMemberNameText}>{name !== null && name !== undefined ? name : ''}</Text>
+                  <Text style={styles.diaryText}>Diary</Text>
+                </View>
+              </View>
+              : null
+          }
+
+
+          {
+            !showCalendar ?
+              <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
+                <View style={styles.underLine} />
+                <View style={styles.calenderIconContainer}>
+                  <Image style={{ width: 30, height: 26 }} source={require('../../../assets/img/calendar2.png')} />
+                  <Text style={styles.calendarText}>Calendar</Text>
+                </View>
+                <View style={styles.underLine}
+                />
+              </TouchableOpacity>
+              :
+              <CalendarComponent startDate={startDate} updateDay={this.updateDay} onPress={this._toggleShow} />
+          }
+
+
+          {
+            newDiaryData && newDiaryData.length ?
+              <DiaryTile data={newDiaryData} showPopup={this.showPopup} onLeadLinkPressed={this.handleLeadLinkPress} onLongPress={(val) => this.handleLongPress(val)} /> : null
+          }
+        </View >
+        :
+        <Loader loading={loading} />
     )
   }
 }
-
 
 mapStateToProps = (store) => {
   return {

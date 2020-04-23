@@ -1,8 +1,14 @@
 import { combineReducers } from "redux";
-import sale from './sale';
+import lead from './lead';
 import user from './user';
+import sale from './sale';
+import listings from './listings'
+import areasReducer from './areas'
 
 export default combineReducers({
+    lead,
+    user,
     sale,
-    user
+    listings,
+    areasReducer
 })

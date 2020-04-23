@@ -1,126 +1,309 @@
 import React, { Component } from 'react';
-import { View, Text, ImageBackground } from 'react-native';
-import { Button, Icon, StyleProvider, Toast } from 'native-base';
-import { AntDesign, Entypo, Ionicons, EvilIcons } from '@expo/vector-icons';
-import getTheme from '../../../native-base-theme/components';
-import formTheme from '../../../native-base-theme/variables/formTheme';
-import axios from 'axios';
+import { View, Text, TextInput, TouchableOpacity, Image, ImageBackground, FlatList, Dimensions } from 'react-native';
+import { Button } from 'native-base';
+import { AntDesign } from '@expo/vector-icons';
 import PickerComponent from '../../components/Picker/index';
-import PricePicker from '../../components/PricePicker/index';
-import InputField from '../../components/TextInput/index';
-import RadioComponent from '../../components/RadioButton/index';
-import _ from 'underscore';
-import { formatPrice } from '../../components/PriceFormate';
+import axios from 'axios'
 import styles from './style';
+import AppStyles from '../../AppStyles';
+import LocationImg from '../../../assets/img/location.png'
+import ErrorMessage from '../../components/ErrorMessage'
+import RadioComponent from '../../components/RadioButton/index';
+import { formatPrice } from '../../PriceFormate'
 import { connect } from 'react-redux';
-// import * as ImagePicker from 'expo-image-picker';
-// import * as Permissions from 'expo-permissions';
-// import * as Location from 'expo-location';
-import Constants from 'expo-constants';
-import helper from '../../helper';
-// import Validator from '../../validation';
-// import { threshold } from 'react-native-color-matrix-image-filters';
+import { YellowBox } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+const { width } = Dimensions.get('window')
+
+YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
 
 class DetailForm extends Component {
     constructor(props) {
         super(props)
-   
     }
 
-    componentDidMount() {
 
+    renderImageTile = ({ item }) => {
+        const { deleteImage } = this.props;
+        return (
+            <ImageBackground
+                style={styles.backGroundImg}
+                source={{ uri: item.uri }}
+                borderRadius={5}>
+                    <AntDesign style={styles.close} name="closecircle" size={20} onPress={(e) => deleteImage(item)}  />
+            </ImageBackground>
+        )
     }
 
+    getItemLayout = (data, index) => {
+        let length = width / 2;
+        return { length, offset: length * index, index }
+    }
 
     render() {
-        var currentLocation = ''
+        const {
+            formSubmit,
+            checkValidation,
+            handleForm,
+            formData,
+            propertyType,
+            selectSubType,
+            price,
+            cities,
+            areas,
+            sizeUnit,
+            selectedGrade,
+            purpose,
+            size,
+            getCurrentLocation,
+            getImages,
+            showImages,
+            imagesData,
+            longitude,
+            latitude,
+            buttonText,
+            buttonDisabled
+        } = this.props
+
+        const { size_unit} = this.props.formData;
 
         return (
-            <View style={{ margin: 10 }}>
-                <PickerComponent selectedItem={''} data={''} value={''} placeholder='Property Type' />
-                <PickerComponent selectedItem={''} data={''} value={''} placeholder='Property Sub Type' />
-                <PickerComponent selectedItem={''} data={''} value={''} placeholder='Select City' />
-                <PickerComponent selectedItem={''} data={''} value={''} placeholder='Select Area' />
-                <View style={styles.viewWrap}>
-                    <PickerComponent selectedItem={''} itemStyle={styles.itemWrap} data={''} value={''} placeholder='Size Unit' />
-                    <View style={{ width: 15 }}></View>
-                    <InputField selectedValue={''} style={{ flex: 1 }} placeholder='Size' keyboardType='numeric' />
+
+            <View>
+
+                {/* **************************************** */}
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={propertyType} selectedItem={formData.type} name={'type'} placeholder='Property Type' />
+                        {
+                            checkValidation === true && formData.type === '' && <ErrorMessage errorMessage={'Required'} />
+                        }
+                    </View>
                 </View>
-                <PricePicker selectedPrice={''} placeholder='Demand Price' />
-                <View>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Button
-                            style={{ flex: 1, marginVertical: 10, backgroundColor: '#ffffff', height: 60, justifyContent: 'center', borderRadius: 5 }} bordered dark>
-                            <Icon name={currentLocation === null ? 'ios-locate' : 'ios-checkmark-circle-outline'} style={{ color: '#484848' }} />
-                        </Button>
-                        <Button
-                            style={{ flex: 2, marginLeft: 10, marginVertical: 10, backgroundColor: '#ffffff', height: 60, justifyContent: 'center', borderRadius: 5 }} bordered dark>
-                            <Text style={{ color: '#484848' }}>UPLOAD IMAGES</Text>
-                        </Button>
+
+                {/* **************************************** */}
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={selectSubType} selectedItem={formData.subtype} name={'subtype'} placeholder='Property Sub Type' />
+                        {
+                            checkValidation === true && formData.subtype === '' && <ErrorMessage errorMessage={'Required'} />
+                        }
+                    </View>
+                </View>
+
+                {/* **************************************** */}
+
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={cities} selectedItem={formData.city_id} name={'city_id'} placeholder='Select City' />
+                        {
+                            checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
+                        }
+                    </View>
+                </View>
+
+                {/* **************************************** */}
+
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} name={'area_id'} data={areas} selectedItem={formData.area_id} placeholder='Select Area' />
+                        {
+                            checkValidation === true && formData.area_id === '' && <ErrorMessage errorMessage={'Required'} />
+                        }
+                    </View>
+                </View>
+
+                {/* **************************************** */}
+
+                <View style={AppStyles.multiFormInput}>
+
+                       {/* **************************************** */}
+                       <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
+                        <View style={[AppStyles.inputWrap]}>
+                            <TextInput onChangeText={(text) => { handleForm(text, 'size') }} value={formData.size} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
+                            {
+                                checkValidation === true && formData.size === null && <ErrorMessage errorMessage={'Required'} />
+                            }
+                        </View>
                     </View>
 
-                </View>
-                <View styles={styles.outerImageView}>
-                    {/* <View style={styles.innerImageView} >
-                                {
-                                    this.state.images.map((item, index) => {
-                                        return (
-                                            <ImageBackground
-                                                style={styles.backGroundImg}
-                                                source={{ uri: item }} key={index}
-                                                borderRadius={5}>
-                                                <AntDesign style={styles.close} name="closecircle" size={25} onPress={(e) => { this.deleteImage(item, index) }} />
-                                            </ImageBackground>
-                                        )
-                                    })
-                                }
-                            </View> */}
-                </View>
-                <View style={{ ...styles.viewWrap, marginBottom: 10, marginTop: 20 }}>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioComponent
-                            selectedButton={''}
-                            selected={false}
-                            value='Grade A' />
-                        <Text style={{ paddingLeft: 10 }}>Grade A</Text>
+                    {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap, AppStyles.flexOne,AppStyles.flexMarginRight]}>
+                        <View style={[AppStyles.inputWrap]}>
+                            <PickerComponent onValueChange={handleForm} name={'size_unit'} selectedItem={size_unit} data={sizeUnit}  placeholder='Size Unit' />
+                            {
+                                checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
+                            }
+                        </View>
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioComponent
-                            selectedButton={''}
-                            selected={false}
-                            value='Grade B' />
-                        <Text style={{ paddingLeft: 10 }}>Grade B</Text>
-                    </View>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioComponent
-                            selectedButton={''}
-                            selected={false}
-                            value='Grade C' />
-                        <Text style={{ paddingLeft: 10 }}>Grade C</Text>
+
+                 
+
+                </View>
+
+                {/* **************************************** */}
+
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={purpose} selectedItem={formData.purpose} name={'purpose'} placeholder='Available for' />
+                        {
+                            checkValidation === true && formData.purpose === '' && <ErrorMessage errorMessage={'Required'} />
+                        }
                     </View>
                 </View>
-                <View style={styles.inputWrap}>
-                    <InputField selectedValue={''} placeholder='Beds' keyboardType='numeric'  />
-                    <View style={{ width: 15 }}></View>
-                    <InputField selectedValue={''} placeholder='Baths' keyboardType='numeric'/>
+
+                {/* **************************************** */}
+
+
+                <View style={[AppStyles.latLngMain]}>
+
+                    {/* **************************************** */}
+                    <View style={[{ width: '75%' }, AppStyles.mainInputWrap, AppStyles.noMargin]}>
+                        <View style={[AppStyles.inputWrap]}>
+                            <TextInput onChangeText={(text) => { handleForm(text, 'price') }}
+                                value={price}
+                                keyboardType='number-pad'
+                                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                placeholder={'Demand Price'} />
+                        </View>
+                    </View>
+                    {/* **************************************** */}
+
+                    <Text style={[styles.countPrice,{textAlignVertical:'center'}]}>{formatPrice(price)}</Text>
+
+
                 </View>
-                <View style={styles.inputWrap}>
-                    <InputField selectedValue={''}  placeholder='Lattitude' keyboardType='numeric' />
-                    <View style={{ width: 15 }}></View>
-                    <InputField selectedValue={''}  placeholder='Longitude' keyboardType='numeric'/>
+
+
+
+                {/* **************************************** */}
+                <View style={[AppStyles.mainInputWrap]}>
+
+                    {
+                        showImages === true ?
+                            <View style={styles.imageContainerStyle}>
+                                <FlatList
+                                    data={imagesData}
+                                    numColumns={2}
+                                    renderItem={this.renderImageTile}
+                                    keyExtractor={(index) => index}
+                                    getItemLayout={this.getItemLayout}
+                                />
+                                <TouchableOpacity style={styles.addMoreImg} onPress={getImages}>
+                                    <Text style={styles.uploadImageText}>Add More</Text>
+                                </TouchableOpacity>
+
+                            </View>
+                            :
+                            <TouchableOpacity style={styles.uploadImg} onPress={getImages}>
+                                <Text style={styles.uploadImageText}>Upload Images</Text>
+                            </TouchableOpacity>
+                    }
+
                 </View>
-                <View style={{}}>
-                    <InputField selectedValue={''} placeholder='OwnerName' textContentType='name'/>
-                    <InputField selectedValue={''} placeholder='OwnerNumber' keyboardType='numeric'/>
-                    <InputField selectedValue={''} placeholder='OwnerAddress' textContentType='addressState' />
+
+                {/* **************************************** */}
+
+                <View style={[AppStyles.multiFormInput, styles.radioComponentStyle]}>
+                    <RadioComponent
+                        onGradeSelected={(val) => handleForm(val, 'grade')}
+                        selected={selectedGrade === 'Grade A' ? true : false}
+                        value='Grade A' >
+                        Grade A
+                        </RadioComponent>
+                    <RadioComponent
+                        onGradeSelected={(val) => handleForm(val, 'grade')}
+                        selected={selectedGrade === 'Grade B' ? true : false}
+                        value='Grade B' >
+                        Grade B
+                        </RadioComponent>
+                    <RadioComponent
+                        onGradeSelected={(val) => handleForm(val, 'grade')}
+                        selected={selectedGrade === 'Grade C' ? true : false}
+                        value='Grade C' >
+                        Grade C
+                        </RadioComponent>
                 </View>
-                <View style={{ marginVertical: 10 }}>
-                    <Button 
-                        style={{ backgroundColor: '#ffffff', height: 60, justifyContent: 'center', borderRadius: 5 }} bordered dark>
-                        <Text style={{ color: '#484848' }}>Add</Text>
+
+                {/* **************************************** */}
+
+                {
+                    formData.type === 'residential' ?
+                        <View style={AppStyles.multiFormInput}>
+
+                            {/* **************************************** */}
+                            <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
+                                <View style={[AppStyles.inputWrap]}>
+                                    <PickerComponent onValueChange={handleForm} data={size} selectedItem={formData.bed} name={'bed'} placeholder='Bed' />
+                                </View>
+                            </View>
+
+                            {/* **************************************** */}
+                            <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
+                                <View style={[AppStyles.inputWrap]}>
+                                    <PickerComponent onValueChange={handleForm} data={size} selectedItem={formData.bath} name={'bath'} placeholder='Bath' />
+                                </View>
+                            </View>
+
+                        </View>
+                        : null
+                }
+
+
+                <View style={AppStyles.latLngMain}>
+
+                    {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin, AppStyles.borderrightLat]}>
+                        <View style={[AppStyles.inputWrap]}>
+                            <TextInput onChangeText={(text) => { handleForm((text), 'lat') }} value={latitude === null ? '' : String(latitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Latitude'} />
+                        </View>
+                    </View>
+
+                    {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin]}>
+                        <View style={[AppStyles.inputWrap]}>
+                            <TextInput onChangeText={(text) => { handleForm((text), 'lng') }} value={longitude === null ? '' : String(longitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Longitude'} />
+                        </View>
+                    </View>
+
+                    {/* **************************************** */}
+                    <TouchableOpacity style={AppStyles.locationBtn} onPress={getCurrentLocation}>
+                        <Image source={LocationImg} style={AppStyles.locationIcon} />
+                    </TouchableOpacity>
+
+                </View>
+
+                {/* **************************************** */}
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <TextInput onChangeText={(text) => { handleForm(text, 'ownerName') }} value={formData.ownerName} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Name'} />
+                    </View>
+                </View>
+
+                {/* **************************************** */}
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <TextInput onChangeText={(text) => { handleForm(text, 'phone') }} value={formData.phone} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Number'} />
+                    </View>
+                </View>
+
+                {/* **************************************** */}
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <TextInput onChangeText={(text) => { handleForm(text, 'address') }} value={formData.address} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Address'} />
+                    </View>
+                </View>
+
+                {/* **************************************** */}
+                <View style={[AppStyles.mainInputWrap]}>
+                    <Button
+                        disabled={buttonDisabled}
+                        style={[AppStyles.formBtn, styles.addInvenBtn]} onPress={() => { formSubmit() }}>
+                        <Text style={AppStyles.btnText}>{buttonText}</Text>
                     </Button>
                 </View>
-            </View>
+
+            </View >
         )
     }
 }

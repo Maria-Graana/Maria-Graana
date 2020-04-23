@@ -1,76 +1,101 @@
 import { StyleSheet } from 'react-native';
+import AppStyles from '../../AppStyles';
 
 export default styles = StyleSheet.create({
-    container: {
-        flex: 1, 
-        backgroundColor: '#f5f5f5',
-        justifyContent: 'center'
+    mainInputWrap: {
+        position: 'relative',
+        marginBottom: 10,
+        marginTop: 10,
     },
-    TextProp: {
-        fontSize: 20, 
-        fontWeight: 'bold'
-    },
-    viewMargin: {
-        marginTop : 20, 
-        marginHorizontal: 10
-    },
-    textFieldProp: {
-        padding: '5%',
-        width: "100%"
-    },
-    requiredTextColor: {
-        color: 'red',
-        padding: 10
-    },
-    mainInputwrap:{
+    inputWrap: {
         position: 'relative',
     },
-    formControl:{
-        borderWidth: 1,
-        borderColor: '#f0f0f0',
+    formControl: {
+        backgroundColor: '#fff',
         borderRadius: 4,
-        paddingLeft: 15,
-        minHeight: 40,
+        fontSize: 14,
+        borderWidth: 0,
+        height: 45,
     },
-    viewWrap: {
-        flexDirection: 'row',
+    inputPadLeft: {
+        paddingLeft: 10,
     },
-    itemWrap: {
-        backgroundColor: '#ffffff', 
-        borderRadius: 5,
-        marginVertical : 10,
-        flex:1
+    uploadImg: {
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: '#5297F4',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+        paddingTop: 50,
+        paddingBottom: 50,
+        borderRadius: 4,
+    },
+    addMoreImg: {
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: '#5297F4',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'stretch',
+        backgroundColor: '#fff',
+        marginTop: 10,
+        paddingTop: 5,
+        paddingBottom: 5,
+        borderRadius: 4,
+        margin: 5
+    },
+
+    imageContainerStyle: {
+        alignItems: 'center',
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: '#5297F4',
+        backgroundColor: '#fff',
+        borderRadius: 4,
+    },
+    uploadImageText: {
+        color: '#5297F4'
     },
     close: {
         // margin: 5,
-        position: "relative",
-        top: 0,
-        width: 25,
-        height: 25,
-        color: "red"
+        position: "absolute",
+        top: -15,
+        right: -10,
+        color: "grey"
     },
     backGroundImg: {
-        resizeMode: "contain", 
-        width: 100, 
-        height: 100,
+        resizeMode: "contain",
+        width: 130,
+        height: 130,
+        marginHorizontal: 10,
+        marginTop: 25,
+        marginBottom:20,
         // marginBottom: 5
     },
-    outerImageView: {
-        flexDirection: 'row', 
-        flexWrap: 'wrap', 
-        // marginVertical : 10, 
-        // marginHorizontal: 15
+    addInvenBtn: {
+        marginBottom: 40,
     },
-    innerImageView: {
-        flex:1, 
-        flexDirection: 'row', 
-        justifyContent: 'space-evenly', 
-        flexWrap: 'wrap', 
-        // marginVertical : 10, 
-        // marginHorizontal: 15
+    radioComponentStyle: {
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+        marginHorizontal: 15
     },
-    inputWrap: {
-        // margin: 10,
-        flexDirection: 'row'
+    countPrice: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        backgroundColor: '#fff',
+        fontSize: AppStyles.noramlSize.fontSize,
+        fontFamily: AppStyles.fonts.defaultFont,
+        height: '100%',
+        width: '30%',
+        alignItems: 'center',
+        justifyContent:'center',
+        borderLeftWidth: 1,
+        backgroundColor: '#fafafa',
+        borderColor: '#EAEEF1',
     }
 })

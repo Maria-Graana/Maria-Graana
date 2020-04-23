@@ -253,19 +253,19 @@ class Payments extends Component {
 
 	goToComments = () => {
 		const { navigation, route } = this.props;
-		navigation.navigate('Comments', { cmLeadId: route.params.lead.id });
+		navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
 	}
 
 	goToAttachments = () => {
 		const { navigation, route } = this.props;
-		navigation.navigate('Attachments', { cmLeadId: route.params.lead.id });
+		navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
 	}
 
 	goToDiaryForm = () => {
 		const { navigation, route, user } = this.props;
 		navigation.navigate('AddDiary', {
 			update: false,
-			cmLeadId: route.params.lead.id,
+			cmLeadId: this.props.lead.id,
 			agentId: user.id
 		});
 	}

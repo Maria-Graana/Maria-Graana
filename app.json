@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "ARMS",
-    "slug": "realtormobile",
+    "slug": "arms",
     "privacy": "public",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "0.0.51",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/img/arms1024.png",
     "splash": {
@@ -21,11 +21,16 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.agency21.realtor",
-      "supportsTablet": true
+      "bundleIdentifier": "com.agency21.arms",
+      "buildNumber": "1",
+      "supportsTablet": true,
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
-      "package": "com.agency21.realtor",
+      "package": "com.agency21.arms",
+      "versionCode": 1,
       "googleServicesFile": "./google-services.json"
     },
     "notification": {

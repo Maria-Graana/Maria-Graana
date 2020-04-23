@@ -62,10 +62,21 @@ const BuyPaymentView = (props) => {
                 </View>
                 <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(commissionPayment)} PKR`}</Text>
                 {
-                    showCommissionAmountArrow &&
+                    showCommissionAmountArrow ?
                     <TouchableOpacity onPress={handleCommissionAmountPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center' }]} >
                         <Ionicons style={{alignSelf:'flex-end',marginRight:10}} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
                     </TouchableOpacity>
+                     :
+                     <View style={[styles.blackInputdate,{justifyContent:'center'}]}>
+                         <Text style={{
+                             letterSpacing: 0.5,
+                             minHeight:30,
+                             marginLeft:10,
+                             fontSize: 10,
+                             alignSelf:'flex-end',
+                             marginRight:10
+                         }}>{lead.commissionTime && moment(lead.commissionTime).format('hh:mm A, MMMM DD')}</Text>
+                     </View>
                 }
 
             </View>

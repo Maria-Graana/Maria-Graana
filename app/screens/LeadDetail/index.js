@@ -80,7 +80,6 @@ class LeadDetail extends React.Component {
 
     render() {
         const { type, lead } = this.state
-        console.log(lead)
         return (
             <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>

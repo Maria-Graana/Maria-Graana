@@ -299,7 +299,7 @@ export default StaticData = {
         { value: 'offer', name: 'Offer' },
         { value: 'propsure', name: 'Propsure' },
         { value: 'token', name: 'Token' },
-        { value: 'payments', name: 'Payment' },
+        { value: 'payments', name: 'Payments' },
         { value: 'closed', name: 'Closed' },
     ],
     investmentFilter: [

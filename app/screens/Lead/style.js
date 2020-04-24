@@ -42,7 +42,7 @@ export default styles = StyleSheet.create({
     paddingRight: 15,
   },
   pickerMain: {
-    width: 220,
+    width: 250,
     borderWidth: 1,
     borderRadius: 20,
     borderColor: '#ebebeb',

@@ -439,9 +439,9 @@ class LeadMatch extends React.Component {
                             <View style={{ marginRight: 5 }}>
                                 <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}> {matchData.data.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Matched</Text></Text>
                             </View>
-                            {/* <View style={{ marginLeft: 155 }}>
+                            <View style={{ marginLeft: 155 }}>
                                 <AntDesign onPress={() => { this.filterModal() }} name="filter" size={25} color={AppStyles.colors.subTextColor} />
-                            </View> */}
+                            </View>
                         </View>
                         {
                             matchData.data.length ?

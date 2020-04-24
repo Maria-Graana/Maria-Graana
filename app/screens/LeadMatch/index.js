@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './style'
-import { View, Text, FlatList, Image,TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import Ability from '../../hoc/Ability';
@@ -426,18 +426,24 @@ class LeadMatch extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <FilterModal resetFilter={this.resetFilter} formData={formData} openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter} />
-                        <View style={{ flexDirection: "row", marginTop: 5, paddingLeft: 15,marginBottom : 10}}>
-                            <View style={{ marginRight: 15 ,justifyContent:'center'}}>
+                        <View style={[{
+                            flexDirection: "row", paddingTop: 10, paddingLeft: 15, paddingBottom: 10, elevation: 10,
+                            shadowOffset: { width: 5, height: 5 },
+                            shadowColor: 'lightgrey',
+                            shadowOpacity: 1,
+                            backgroundColor: AppStyles.colors.backgroundColor
+                        }]}>
+                            <View style={{ marginRight: 15, justifyContent: 'center' }}>
                                 <CheckBox onPress={() => { this.unSelectAll() }} color={AppStyles.colors.primaryColor} checked={checkAllBoolean} />
                             </View>
-                            <View style={{ justifyContent:'center',marginRight:5}}>
+                            <View style={{ justifyContent: 'center', marginRight: 5 }}>
                                 <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}>{selectedProperties.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Selected</Text></Text>
                             </View>
-                            <View style={{ borderLeftWidth: 1, height: heightPercentageToDP('1.5%'), marginTop: 5,justifyContent:'center'}} />
-                            <View style={{ justifyContent:'center'}}>
+                            <View style={{ borderLeftWidth: 1, height: heightPercentageToDP('1.5%'), marginTop: 5, justifyContent: 'center' }} />
+                            <View style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}> {matchData.data.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Matched</Text></Text>
                             </View>
-                            <View style={{ position:'absolute' , right:15 }}>
+                            <View style={{ position: 'absolute', right: 15 }}>
                                 <TouchableOpacity onPress={() => { this.filterModal() }} >
                                     <Image source={require('../../../assets/img/filter.png')} style={{ width: 20, height: 20 }} />
                                 </TouchableOpacity>

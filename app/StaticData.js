@@ -320,6 +320,8 @@ export default StaticData = {
         { value: 'meeting_expected_conversion', name: 'Meeting: Expected Conversion' },
         { value: 'meeting_deal_signed', name: 'Meeting: Deal Signed' },
         { value: 'meeting_cancel_meeting', name: 'Meeting: Cancel Meeting' },
+        { value: 'payment', name: 'Payment' },
+        { value: 'closed', name: 'Closed' },
     ],
     cmLeadBtnOption: [
         { value: 'attachment', name: 'Attachment' },

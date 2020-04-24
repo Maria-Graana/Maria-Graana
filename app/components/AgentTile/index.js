@@ -70,6 +70,14 @@ class InventoryTile extends React.Component {
 						<View style={{ marginTop: 10, height: 120 }}>
 							<Text style={styles.agentText}> Agent Name </Text>
 							<Text numberOfLines={1} style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
+							{
+								showCheckBoxes ?
+									<View style={{ marginTop: 20, marginRight: 15 }}>
+										<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
+									</View>
+									:
+									null
+							}
 							<View style={{ flexDirection: 'row-reverse', height: 60 }}>
 								{/* <View style={{ flex: 1 }}></View> */}
 								<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} style={{ paddingTop: 25, paddingRight: 0 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
@@ -77,14 +85,7 @@ class InventoryTile extends React.Component {
 						</View>
 					</View>
 				</View>
-				{
-					showCheckBoxes ?
-						<View style={{ marginTop: 20, marginRight: 5 }}>
-							<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
-						</View>
-						:
-						null
-				}
+
 
 			</TouchableOpacity>
 		)

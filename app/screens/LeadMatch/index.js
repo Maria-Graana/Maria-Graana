@@ -34,7 +34,7 @@ class LeadMatch extends React.Component {
             active: false,
             user: null,
             matchesBol: true,
-            showCheckBoxes: false,
+            showCheckBoxes: true,
             armsBol: false,
             graanaBol: false,
             agency21Bol: false,

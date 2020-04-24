@@ -6,7 +6,7 @@ import helper from '../../helper'
 import { Ionicons, FontAwesome, Entypo, Feather } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { CheckBox } from 'native-base';
-import { Menu,Divider} from 'react-native-paper';
+import { Menu, Divider } from 'react-native-paper';
 
 
 class InventoryTile extends React.Component {
@@ -21,7 +21,7 @@ class InventoryTile extends React.Component {
 	}
 
 	render() {
-		const { data, isMenuVisible,menuShow, showCheckBoxes, organization, toggleMenu } = this.props
+		const { data, isMenuVisible, menuShow, showCheckBoxes, organization, toggleMenu } = this.props
 		let imagesList = []
 		let phoneNumber = null
 		if ('armsPropertyImages' in data && data.armsPropertyImages !== undefined) {
@@ -102,19 +102,20 @@ class InventoryTile extends React.Component {
 							</Menu>
 
 						}
+						{
+							showCheckBoxes ?
+								<View style={{ marginRight: 15, marginTop: 5 }}>
+									<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
+								</View>
+								:
+								null
+						}
 						<View style={{ flexDirection: 'row-reverse' }}>
 							<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 						</View>
 					</View>
 				</View>
-				{
-					showCheckBoxes ?
-						<View style={{ marginRight: 5, marginTop: 5 }}>
-							<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
-						</View>
-						:
-						null
-				}
+
 			</TouchableOpacity>
 		)
 	}

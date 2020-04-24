@@ -1,14 +1,12 @@
 import * as React from 'react';
 import styles from './style'
-import { View, Text, FlatList, Image } from 'react-native';
+import { View, Text, FlatList, Image,TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
-import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import Ability from '../../hoc/Ability';
 import { CheckBox } from 'native-base';
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import Loader from '../../components/loader';
 import FilterModal from '../../components/FilterModal/index';
@@ -440,7 +438,9 @@ class LeadMatch extends React.Component {
                                 <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}> {matchData.data.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Matched</Text></Text>
                             </View>
                             <View style={{ marginLeft: 155 }}>
-                                <AntDesign onPress={() => { this.filterModal() }} name="filter" size={25} color={AppStyles.colors.subTextColor} />
+                                <TouchableOpacity onPress={() => { this.filterModal() }} >
+                                    <Image source={require('../../../assets/img/filter.png')} style={{ width: 20, height: 20 }} />
+                                </TouchableOpacity>
                             </View>
                         </View>
                         {

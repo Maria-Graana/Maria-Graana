@@ -261,6 +261,20 @@ class Meetings extends Component {
             </View>
           </ScrollView>
 
+          <FAB.Group
+          open={open}
+          icon="plus"
+          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+          color={AppStyles.bgcWhite.backgroundColor}
+          actions={[
+            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+            { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+
+          ]}
+          onStateChange={({ open }) => this.setState({ open })}
+        />
+
         </View>
 
         <View style={[styles.callMeetingBtn]}>
@@ -276,19 +290,7 @@ class Meetings extends Component {
           </View>
         </View>
 
-        <FAB.Group
-          open={open}
-          icon="plus"
-          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-          color={AppStyles.bgcWhite.backgroundColor}
-          actions={[
-            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-            { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-
-          ]}
-          onStateChange={({ open }) => this.setState({ open })}
-        />
+        
 
         {/* ************Modal Component************ */}
         <MeetingModal

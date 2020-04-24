@@ -5,6 +5,7 @@ import AppStyles from '../../AppStyles'
 import { Ionicons, FontAwesome, Entypo } from '@expo/vector-icons';
 import { CheckBox } from 'native-base';
 import helper from '../../helper'
+import { Menu, Divider } from 'react-native-paper';
 
 class InventoryTile extends React.Component {
 	constructor(props) {
@@ -18,8 +19,7 @@ class InventoryTile extends React.Component {
 	}
 
 	render() {
-		const { data, showCheckBoxes, menuShow, organization } = this.props
-		let showLable = menuShow || false
+		const { data, isMenuVisible, showCheckBoxes, menuShow, organization, toggleMenu } = this.props
 		let phoneNumber = null
 		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user ? data.user.phoneNumber : null
@@ -54,14 +54,17 @@ class InventoryTile extends React.Component {
 						<View style={{ flexDirection: 'row', height: 20 }}>
 							<View style={{ flex: 1 }}></View>
 							{
-								showLable ?
-									<TouchableOpacity
-										style={{ justifyContent: "center", borderRadius: 10, borderColor: AppStyles.colors.primaryColor, borderWidth: 1, }}
-										onPress={() => { this.props.doneViewing(data) }}>
-										<Text style={{ color: AppStyles.colors.primaryColor, fontSize: 10, padding: 2 }}> Done </Text>
-									</TouchableOpacity>
-									:
-									null
+								isMenuVisible &&
+								<Menu
+									visible={menuShow}
+									onDismiss={() => toggleMenu(false)}
+									anchor={
+										<Entypo onPress={() => toggleMenu(true)} name='dots-three-vertical' size={20} />
+									}
+								>
+									<Menu.Item onPress={() => { }} title="Done" />
+									<Menu.Item onPress={() => { }} title="Cancel" />
+								</Menu>
 							}
 						</View>
 						<View style={{ marginTop: 10, height: 120 }}>

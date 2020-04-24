@@ -6,6 +6,8 @@ import helper from '../../helper'
 import { Ionicons, FontAwesome, Entypo, Feather } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { CheckBox } from 'native-base';
+import { Menu,Divider} from 'react-native-paper';
+
 
 class InventoryTile extends React.Component {
 	constructor(props) {
@@ -19,11 +21,10 @@ class InventoryTile extends React.Component {
 	}
 
 	render() {
-		const { data, menuShow, showCheckBoxes, organization } = this.props
+		const { data, isMenuVisible,menuShow, showCheckBoxes, organization, toggleMenu } = this.props
 		let imagesList = []
-		let showLable = menuShow || false
 		let phoneNumber = null
-		if ('armsPropertyImages' in data && data.armsPropertyImages!==undefined) {
+		if ('armsPropertyImages' in data && data.armsPropertyImages !== undefined) {
 			if (data.armsPropertyImages.length > 0) {
 				imagesList = data.armsPropertyImages.map((item) => {
 					return item.url
@@ -88,14 +89,18 @@ class InventoryTile extends React.Component {
 					</View>
 					<View style={styles.phoneIcon}>
 						{
-							showLable ?
-								<TouchableOpacity
-									style={{ justifyContent: "center", borderRadius: 10, borderColor: AppStyles.colors.primaryColor, borderWidth: 1, }}
-									onPress={() => { this.props.doneViewing(data) }}>
-									<Text style={{ color: AppStyles.colors.primaryColor, fontSize: 10, padding: 2 }}> Done </Text>
-								</TouchableOpacity>
-								:
-								<View />
+							isMenuVisible &&
+							<Menu
+								visible={menuShow}
+								onDismiss={() => toggleMenu(false)}
+								anchor={
+									<Entypo onPress={() => toggleMenu(true)} name='dots-three-vertical' size={20} />
+								}
+							>
+								<Menu.Item onPress={() => { }} title="Done" />
+								<Menu.Item onPress={() => { }} title="Cancel" />
+							</Menu>
+
 						}
 						<View style={{ flexDirection: 'row-reverse' }}>
 							<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />

@@ -30,7 +30,8 @@ class LeadViewing extends React.Component {
 			},
 			checkValidation: false,
 			currentProperty: {},
-			progressValue: 0
+			progressValue: 0,
+			menuShow:false
 		}
 	}
 
@@ -235,8 +236,13 @@ class LeadViewing extends React.Component {
 		}
 	}
 
+	toggleMenu = (val) => {
+		//console.log('val',val)
+		this.setState({ menuShow: val })
+	}
+
 	render() {
-		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue } = this.state
+		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue,menuShow } = this.state
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
@@ -262,7 +268,9 @@ class LeadViewing extends React.Component {
 													this.ownProperty(item.item) ?
 														<MatchTile
 															doneViewing={this.doneViewing}
-															menuShow={true}
+															isMenuVisible={true}
+															menuShow={menuShow}
+															toggleMenu={(val) => this.toggleMenu(val)}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}
@@ -272,7 +280,9 @@ class LeadViewing extends React.Component {
 														:
 														<AgentTile
 															doneViewing={this.doneViewing}
-															menuShow={true}
+															isMenuVisible={true}
+															menuShow={menuShow}
+															toggleMenu={(val) => this.toggleMenu(val)}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}

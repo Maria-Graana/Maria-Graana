@@ -3,6 +3,8 @@ export default styles = StyleSheet.create({
   meetingConteiner: {
     marginTop: 0,
     padding: 15,
+    minHeight: '87%',
+    paddingBottom: 80,
   },
   mainWrapCon: {
     minHeight: '100%',
@@ -27,9 +29,7 @@ export default styles = StyleSheet.create({
     backgroundColor: '#0D73EE',
     paddingTop: 20,
     paddingBottom: 20,
-    marginLeft: 15,
-    marginRight: 15,
-    borderRadius: 5,
+    marginRight: 1,
   },
   meetingLine:{
     width: '50%',

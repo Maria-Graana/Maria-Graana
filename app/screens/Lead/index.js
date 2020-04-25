@@ -42,14 +42,23 @@ class Inventory extends React.Component {
 	}
 
 	fetchLeads = (purposeTab, statusFilter) => {
+		const { sort } = this.state
 		this.setState({
 			loading: true,
+			sort: !sort,
 		})
 		let query = ``
+		let sortVar = ''
+		if(sort === true){
+			sortVar = `&order=Desc&field=updatedAt`
+		}else{
+			sortVar = `&order=Desc&field=createdAt`
+		}
+
 		if (purposeTab === 'invest') {
-			query = `/api/leads/projects?all=${true}&status=${statusFilter}`
+			query = `/api/leads/projects?all=${true}&status=${statusFilter}${sortVar != '' && sortVar}`
 		} else {
-			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}`
+			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}${sort}`
 		}
 		axios.get(`${query}`)
 			.then((res) => {
@@ -160,7 +169,7 @@ class Inventory extends React.Component {
 						/>
 					</View>
 					<View style={styles.stylesMainSort}>
-						<TouchableOpacity style={styles.sortBtn}>
+						<TouchableOpacity style={styles.sortBtn} onPress={() => {this.fetchLeads(purposeTab, statusFilter)}}>
 							<Image source={SortImg} style={[styles.sortImg]} />
 							<Text style={styles.sortText}>Sort</Text>
 						</TouchableOpacity>

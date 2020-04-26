@@ -58,7 +58,7 @@ class Inventory extends React.Component {
 		if (purposeTab === 'invest') {
 			query = `/api/leads/projects?all=${true}&status=${statusFilter}${sortVar != '' && sortVar}`
 		} else {
-			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}${sort}`
+			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}${sortVar != '' && sortVar}`
 		}
 		axios.get(`${query}`)
 			.then((res) => {

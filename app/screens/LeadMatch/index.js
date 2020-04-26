@@ -34,7 +34,7 @@ class LeadMatch extends React.Component {
             active: false,
             user: null,
             matchesBol: true,
-            showCheckBoxes: true,
+            showCheckBoxes: false,
             armsBol: false,
             graanaBol: false,
             agency21Bol: false,
@@ -159,7 +159,7 @@ class LeadMatch extends React.Component {
     }
 
     fetchMatches = () => {
-        const { organization, matchesBol, formData, showCheckBoxes } = this.state
+        const { organization, formData, showCheckBoxes } = this.state
         const { route } = this.props
         const { lead } = route.params
         const { rcmProgressBar } = StaticData
@@ -357,7 +357,6 @@ class LeadMatch extends React.Component {
                     },
                     selectedProperties: [],
                     checkCount: checkCount,
-                    showCheckBoxes: false,
                     checkAllBoolean: false,
                     showCheckBoxes: false,
                     displayButton: false
@@ -371,13 +370,12 @@ class LeadMatch extends React.Component {
         const { lead } = this.props.route.params
         axios.post(`/api/leads/${lead.id}/shortlist`, selectedProperties)
             .then((res) => {
-                helper.successToast('PROPERTIES SAVED!')
                 this.unSelectAll()
                 this.props.navigation.navigate('Viewing', { lead: lead })
             })
             .catch((error) => {
                 console.log(error)
-                helper.errorToast('ERROR: SAVING PROPERTIES!')
+                helper.errorToast('ERROR: SHORTLISTING PROPERTIES!')
             })
     }
 
@@ -412,7 +410,7 @@ class LeadMatch extends React.Component {
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
-                    <ProgressBar progress={progressValue} color={'#0277FD'} />
+                    <ProgressBar style={{backgroundColor: "ffffff"}}  progress={progressValue} color={'#0277FD'} />
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>

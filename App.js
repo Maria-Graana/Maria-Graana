@@ -35,7 +35,7 @@ export default class App extends React.Component {
 	}
 
 	async componentDidMount() {
-		setCustomTouchableOpacity({activeOpacity:0.8})
+		setCustomTouchableOpacity({ activeOpacity: 0.8 })
 		SplashScreen.preventAutoHide();
 		// firebase.initializeApp(firebaseConfig)
 		Sentry.init({
@@ -52,7 +52,9 @@ export default class App extends React.Component {
 			OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
 			...Ionicons.font,
 		});
-		await helper.checkInternet()
+		setInterval(() => {
+			helper.checkInternet()
+		}, 5000);
 		this.setState({ isReady: true });
 	}
 

@@ -100,6 +100,8 @@ const helper = {
 			.then((res) => {
 				if (res.type === 'NONE') {
 					helper.internetToast('No Internet Connection!')
+				} else {
+					// Toast.hide()
 				}
 			})
 	}

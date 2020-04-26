@@ -20,7 +20,6 @@ const submitNotification = (body, date) => {
     const schedulingOptions = {
         time: date
     };
-    console.log('inside 3 ', body)
     localNotification.title = body.title
     localNotification.body = body.body
     console.log(' <<<<<<<<< Local Notification >>>>>>>>>>>')
@@ -37,7 +36,6 @@ const handleNotification = () => {
 };
 
 const askNotification = async (body, date) => {
-    console.log('inside 1 ', body)
     if (Constants.isDevice) {
         const { status: existingStatus } = await Permissions.getAsync(
             Permissions.NOTIFICATIONS
@@ -52,7 +50,6 @@ const askNotification = async (body, date) => {
         if (finalStatus !== 'granted') {
             return;
         }
-        console.log('inside 2 ', body)
         submitNotification(body, date)
     } else {
         console.log('Must use physical device for Notifications')
@@ -60,7 +57,6 @@ const askNotification = async (body, date) => {
 };
 
 const TimerNotification = (body, date) => {
-    console.log('inside 0 ', body)
     askNotification(body, date);
 };
 

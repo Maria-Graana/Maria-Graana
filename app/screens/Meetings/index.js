@@ -237,7 +237,7 @@ class Meetings extends Component {
     let leadData = this.props.route.params.lead
     return (
       <View style={styles.mainWrapCon}>
-        <ProgressBar progress={progressValue} color={'#0277FD'} />
+        <ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
 
         {/* ************Fab For Open Modal************ */}
         <View style={[styles.meetingConteiner]}>

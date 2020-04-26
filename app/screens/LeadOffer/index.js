@@ -29,7 +29,8 @@ class LeadOffer extends React.Component {
 				agreed: ''
 			},
 			currentProperty: {},
-			progressValue: 0
+			progressValue: 0,
+			disableButton: false
 		}
 	}
 
@@ -46,6 +47,7 @@ class LeadOffer extends React.Component {
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
 				this.setState({
+					disableButton: false,
 					loading: false,
 					matchData: res.data.rows,
 					progressValue: rcmProgressBar[lead.status]
@@ -114,7 +116,7 @@ class LeadOffer extends React.Component {
 		const { lead } = this.props
 		axios.get(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`)
 			.then((res) => {
-				this.setState({ offerChat: res.data.rows })
+				this.setState({ offerChat: res.data.rows, disableButton: false })
 			})
 			.catch((error) => {
 				console.log(error)
@@ -129,6 +131,7 @@ class LeadOffer extends React.Component {
 				offer: leadData.my,
 				type: 'my'
 			}
+			this.setState({disableButton: true})
 			axios.post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
 				.then((res) => {
 					this.fetchOffers()
@@ -147,6 +150,7 @@ class LeadOffer extends React.Component {
 				offer: leadData.their,
 				type: 'their'
 			}
+			this.setState({disableButton: true})
 			axios.post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
 				.then((res) => {
 					this.fetchOffers()
@@ -186,9 +190,10 @@ class LeadOffer extends React.Component {
 				offer: leadData.agreed,
 				type: 'agreed'
 			}
+			this.setState({disableButton: true})
 			axios.post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
 				.then((res) => {
-					this.fetchOffers()
+					this.openChatModal()
 				})
 				.catch((error) => {
 					console.log(error)
@@ -248,11 +253,11 @@ class LeadOffer extends React.Component {
 	}
 
 	render() {
-		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue } = this.state
+		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton } = this.state
 		return (
 			!loading ?
 				<View style={{flex: 1}}>
-					<ProgressBar progress={progressValue} color={'#0277FD'} />
+					<ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
 					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
 						<View style={{ flex: 1 }}>
 							{
@@ -295,6 +300,7 @@ class LeadOffer extends React.Component {
 											placeTheirOffer={this.placeTheirOffer}
 											placeAgreedOffer={this.placeAgreedOffer}
 											handleForm={this.handleForm}
+											disableButton= {disableButton}
 											openModal={this.openChatModal}
 										/>
 									</View>

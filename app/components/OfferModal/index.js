@@ -14,7 +14,7 @@ class OfferModal extends React.Component {
 	}
 
 	render() {
-		const { active, isVisible, handleForm, placeMyOffer, placeTheirOffer, placeAgreedOffer, offerChat } = this.props
+		const { active, isVisible, handleForm, placeMyOffer, placeTheirOffer, placeAgreedOffer, offerChat, disableButton } = this.props
 		return (
 			<Modal
 				visible={active}
@@ -38,6 +38,7 @@ class OfferModal extends React.Component {
 							<View style={styles.inputWrap}>
 								<TextInput keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'my') }} />
 								<TouchableOpacity
+									disabled={disableButton}
 									onPress={placeMyOffer}
 									style={[styles.addBtnColorLeft, styles.sideBtnInput]}>
 									<Image source={addImg} style={[styles.addImg]} />
@@ -51,6 +52,7 @@ class OfferModal extends React.Component {
 							<View style={styles.inputWrap}>
 								<TextInput keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'their') }} />
 								<TouchableOpacity
+									disabled={disableButton}
 									onPress={placeTheirOffer}
 									style={[styles.addBtnColorRight, styles.sideBtnInput]}>
 									<Image source={addImg} style={[styles.addImg]} />
@@ -65,7 +67,7 @@ class OfferModal extends React.Component {
 					<View style={[styles.chatContainer]}>
 						<FlatList
 							data={offerChat}
-							ref={(ref)=> this._flatList = ref }
+							ref={(ref) => this._flatList = ref}
 							onContentSizeChange={(contentWidth, contentHeight) => {
 								if (contentHeight > 0) {
 									this._flatList.scrollToEnd()
@@ -102,6 +104,7 @@ class OfferModal extends React.Component {
 						<View style={styles.inputWrapLast}>
 							<TextInput keyboardType={'numeric'} style={[styles.formControlLast]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'agreed') }} />
 							<TouchableOpacity
+								disabled={disableButton}
 								onPress={placeAgreedOffer}
 								style={[styles.addBtnColorLeft, styles.sideBtnInputLast]}>
 								<Image source={checkImg} style={[styles.checkImg]} />

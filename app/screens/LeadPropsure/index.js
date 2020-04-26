@@ -258,7 +258,7 @@ class LeadPropsure extends React.Component {
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
-                    <ProgressBar progress={progressValue} color={'#0277FD'} />
+                    <ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
                     <PropsurePackagePopup
                         packages={packages}
                         selectedPackage={selectedPackage}

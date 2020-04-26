@@ -6,12 +6,15 @@ import helper from '../../helper'
 import { Ionicons, FontAwesome, Entypo, Feather } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { CheckBox } from 'native-base';
-import { Menu, Divider } from 'react-native-paper';
+import { Menu } from 'react-native-paper';
 
 
 class InventoryTile extends React.Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			menuShow: false
+		}
 	}
 
 	_renderItem = (item) => {
@@ -20,8 +23,13 @@ class InventoryTile extends React.Component {
 		)
 	}
 
+	toggleMenu = (val) => {
+		this.setState({ menuShow: val })
+	}
+
 	render() {
-		const { data, isMenuVisible, menuShow, showCheckBoxes, organization, toggleMenu } = this.props
+		const { data, isMenuVisible, showCheckBoxes, organization } = this.props
+		const { menuShow } = this.state
 		let imagesList = []
 		let phoneNumber = null
 		if ('armsPropertyImages' in data && data.armsPropertyImages !== undefined) {
@@ -31,7 +39,12 @@ class InventoryTile extends React.Component {
 				})
 			}
 		}
-
+		let show = isMenuVisible
+		if (isMenuVisible) {
+			if (data.diaries && data.diaries.length) {
+				if (data.diaries[0].status === 'completed') show = false
+			}
+		}
 		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user.phoneNumber
 
@@ -89,18 +102,26 @@ class InventoryTile extends React.Component {
 					</View>
 					<View style={styles.phoneIcon}>
 						{
-							isMenuVisible &&
-							<Menu
-								visible={menuShow}
-								onDismiss={() => toggleMenu(false)}
-								anchor={
-									<Entypo onPress={() => toggleMenu(true)} name='dots-three-vertical' size={20} />
-								}
-							>
-								<Menu.Item onPress={() => { }} title="Done" />
-								<Menu.Item onPress={() => { }} title="Cancel" />
-							</Menu>
-
+							show ?
+								<Menu
+									visible={menuShow}
+									onDismiss={() => this.toggleMenu(false)}
+									anchor={
+										<Entypo onPress={() => this.toggleMenu(true)} name='dots-three-vertical' size={20} />
+									}
+								>
+									{
+										data.diaries && data.diaries.length && data.diaries[0].status === 'pending' ?
+											<View>
+												<Menu.Item onPress={() => { this.props.doneViewing(data) }} title="Viewing done" />
+												<Menu.Item onPress={() => { this.props.cancelViewing(data) }} title="Cancel Viewing" />
+											</View>
+											:
+											<Menu.Item onPress={() => { this.props.deleteProperty(data) }} title="Remove from the list" />
+									}
+								</Menu>
+								:
+								null
 						}
 						{
 							showCheckBoxes ?
@@ -108,7 +129,7 @@ class InventoryTile extends React.Component {
 									<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
 								</View>
 								:
-								null
+								<View />
 						}
 						<View style={{ flexDirection: 'row-reverse' }}>
 							<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />

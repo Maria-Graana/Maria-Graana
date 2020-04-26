@@ -5,11 +5,14 @@ import AppStyles from '../../AppStyles'
 import { Ionicons, FontAwesome, Entypo } from '@expo/vector-icons';
 import { CheckBox } from 'native-base';
 import helper from '../../helper'
-import { Menu, Divider } from 'react-native-paper';
+import { Menu } from 'react-native-paper';
 
 class InventoryTile extends React.Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			menuShow: false
+		}
 	}
 
 	_renderItem = (item) => {
@@ -18,12 +21,22 @@ class InventoryTile extends React.Component {
 		)
 	}
 
+	toggleMenu = (val) => {
+		this.setState({ menuShow: val })
+	}
+
 	render() {
-		const { data, isMenuVisible, showCheckBoxes, menuShow, organization, toggleMenu } = this.props
+		const { data, isMenuVisible, showCheckBoxes, organization } = this.props
+		const { menuShow } = this.state
 		let phoneNumber = null
 		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user ? data.user.phoneNumber : null
-
+		let show = isMenuVisible
+		if (isMenuVisible) {
+			if (data.diaries && data.diaries.length) {
+				if (data.diaries[0].status === 'completed') show = false
+			}
+		}
 		return (
 			<TouchableOpacity
 				style={{ flexDirection: "row" }}
@@ -54,30 +67,39 @@ class InventoryTile extends React.Component {
 						<View style={{ flexDirection: 'row', height: 20 }}>
 							<View style={{ flex: 1 }}></View>
 							{
-								isMenuVisible &&
-								<Menu
-									visible={menuShow}
-									onDismiss={() => toggleMenu(false)}
-									anchor={
-										<Entypo onPress={() => toggleMenu(true)} name='dots-three-vertical' size={20} />
-									}
-								>
-									<Menu.Item onPress={() => { }} title="Done" />
-									<Menu.Item onPress={() => { }} title="Cancel" />
-								</Menu>
+								show ?
+									<Menu
+										visible={menuShow}
+										onDismiss={() => this.toggleMenu(false)}
+										anchor={
+											<Entypo onPress={() => this.toggleMenu(true)} name='dots-three-vertical' size={20} />
+										}
+									>
+										{
+											data.diaries && data.diaries.length && data.diaries[0].status === 'pending' ?
+												<View>
+													<Menu.Item onPress={() => { this.props.doneViewing(data) }} title="Viewing done" />
+													<Menu.Item onPress={() => { this.props.cancelViewing(data) }} title="Cancel Viewing" />
+												</View>
+												:
+												<Menu.Item onPress={() => { this.props.deleteProperty(data) }} title="Remove from the list" />
+										}
+									</Menu>
+									:
+									null
 							}
-						</View>
-						<View style={{ marginTop: 10, height: 120 }}>
-							<Text style={styles.agentText}> Agent Name </Text>
-							<Text numberOfLines={1} style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
 							{
 								showCheckBoxes ?
-									<View style={{ marginTop: 20, marginRight: 15 }}>
+									<View style={{ marginTop: 5, marginRight: 15 }}>
 										<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
 									</View>
 									:
 									null
 							}
+						</View>
+						<View style={{ marginTop: 10, height: 120 }}>
+							<Text style={styles.agentText}> Agent Name </Text>
+							<Text numberOfLines={1} style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
 							<View style={{ flexDirection: 'row-reverse', height: 60 }}>
 								{/* <View style={{ flex: 1 }}></View> */}
 								<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} style={{ paddingTop: 25, paddingRight: 0 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />

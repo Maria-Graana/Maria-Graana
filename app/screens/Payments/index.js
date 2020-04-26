@@ -292,7 +292,7 @@ class Payments extends Component {
 
 		return (
 			<View>
-				<ProgressBar progress={progressValue} color={'#0277FD'} />
+				<ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
 				<ScrollView>
 
 					<View style={[AppStyles.container]}>

@@ -180,9 +180,6 @@ class Inventory extends React.Component {
 					<View style={[styles.mainInventoryTile,]}>
 						<ScrollView>
 							{
-								console.log(leadsData)
-							}
-							{
 								leadsData && leadsData.rows && leadsData.rows.length > 0 ?
 									leadsData.rows.map((item, key) => {
 										return (

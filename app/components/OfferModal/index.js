@@ -7,6 +7,7 @@ import { AntDesign } from '@expo/vector-icons';
 import addImg from '../../../assets/img/add.png'
 import backArrow from '../../../assets/img/backArrow.png'
 import checkImg from '../../../assets/img/check.png'
+import { formatPrice } from '../../PriceFormate'
 
 class OfferModal extends React.Component {
 	constructor(props) {
@@ -79,14 +80,14 @@ class OfferModal extends React.Component {
 										item.item.from === 'agent' ?
 											<View style={[styles.mainChatWrap]}>
 												<View style={[styles.caret, styles.caretRight]}></View>
-												<Text style={[styles.priceStyle, styles.priceBlue]}>{item.item.offer}</Text>
+												<Text style={[styles.priceStyle, styles.priceBlue]}>{formatPrice(item.item.offer)}</Text>
 												<Text style={[styles.dataTime]}>{moment(item.item.createdAt).format("YYYY-MM-DD hh:mm a")}</Text>
 											</View>
 											:
 											<View style={[styles.alignRight]}>
 												<View style={[styles.mainChatWrap]}>
 													<View style={[styles.caret, styles.caretLeft]}></View>
-													<Text style={[styles.priceStyle, styles.priceBlack, styles.textRight]}>{item.item.offer}</Text>
+													<Text style={[styles.priceStyle, styles.priceBlack, styles.textRight]}>{formatPrice(item.item.offer)}</Text>
 													<Text style={[styles.dataTime, styles.textRight]}>{moment(item.item.createdAt).format("YYYY-MM-DD hh:mm a")}</Text>
 												</View>
 											</View>

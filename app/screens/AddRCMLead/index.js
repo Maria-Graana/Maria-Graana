@@ -107,7 +107,7 @@ class AddRCMLead extends Component {
         const { RCMFormData } = this.state
         const { dispatch } = this.props;
         RCMFormData[name] = value
-        this.setState({ RCMFormData },()=>console.log(this.state.RCMFormData))
+        this.setState({ RCMFormData })
         if (RCMFormData.city_id !== '' && name === 'city_id') {
             let copyObject = Object.assign({}, RCMFormData);
             copyObject.leadAreas = [];

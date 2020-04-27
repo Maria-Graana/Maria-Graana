@@ -6,7 +6,8 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    Image
+    Image,
+    ScrollView
 } from 'react-native'
 import backArrow from '../../../assets/img/backArrow.png'
 import { connect } from 'react-redux';
@@ -16,8 +17,8 @@ import axios from 'axios';
 import styles from './style';
 import { Button } from 'native-base';
 import StaticData from '../../StaticData';
-import MultiSelect from 'react-native-multiple-select';
 import AreaPicker from '../AreaPicker/index';
+import ErrorMessage from '../ErrorMessage/index';
 
 class FilterModal extends React.Component {
     constructor(props) {
@@ -119,6 +120,7 @@ class FilterModal extends React.Component {
     render() {
         const {
             openPopup,
+            maxCheck
         } = this.props;
 
         const { cities, areas, subTypVal, formData, showAreaPicker } = this.state
@@ -130,80 +132,87 @@ class FilterModal extends React.Component {
                 onRequestClose={this.closePopup}
             >
                 <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
-                    <View style={{ flexDirection: 'row', marginHorizontal: 15, }}>
-                        <TouchableOpacity
-                            onPress={() => { this.props.filterModal() }}>
-                            <Image source={backArrow} style={[styles.backImg]} />
+                    <ScrollView>
+                        <View style={{ flexDirection: 'row', marginHorizontal: 15, }}>
+                            <TouchableOpacity
+                                onPress={() => { this.props.filterModal() }}>
+                                <Image source={backArrow} style={[styles.backImg]} />
+                            </TouchableOpacity>
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: "center", }}>
+                                <Text style={{ paddingRight: 30, fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16 }}>SEARCH FILTERS</Text>
+                            </View>
+                        </View>
+                        <AreaPicker handleForm={this.handleForm} openModal={this.openModal} selectedAreaIds={formData.leadAreas} editable={false} isVisible={showAreaPicker} cityId={formData.cityId} areas={areas} />
+                        <View style={[{ padding: 15 }]}>
+                            <PickerComponent selectedItem={formData.cityId} onValueChange={(text) => {
+                                this.handleForm(text, 'cityId')
+                                this.getAreas(text)
+                            }} data={cities.length ? cities : []} name={'city'} placeholder='Select City' />
+                        </View>
+                        <TouchableOpacity onPress={() => this.openModal()} style={{ marginHorizontal: 15 }} >
+                            <View style={[AppStyles.mainInputWrap, AppStyles.inputPadLeft, AppStyles.formControl, { justifyContent: 'center' }]} >
+                                <Text style={[AppStyles.formFontSettings, { color: formData.leadAreas.length > 0 ? AppStyles.colors.textColor : AppStyles.colors.subTextColor }]} >
+                                    {formData.leadAreas.length > 0 ? `${formData.leadAreas.length} Areas Selected` : 'Select Areas'}
+                                </Text>
+                            </View>
                         </TouchableOpacity>
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: "center", }}>
-                            <Text style={{ paddingRight: 30, fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16 }}>SEARCH FILTERS</Text>
+                        <View style={[{ padding: 15 }]}>
+                            <PickerComponent selectedItem={formData.propertyType} onValueChange={(text) => {
+                                this.handleForm(text, 'propertyType')
+                                this.getSubType(text)
+                            }} data={type} name={'type'} placeholder='Property Type' />
                         </View>
-                    </View>
-                    <AreaPicker handleForm={this.handleForm} openModal={this.openModal} selectedAreaIds={formData.leadAreas} editable={false} isVisible={showAreaPicker} cityId={formData.cityId} areas={areas} />
-                    <View style={[{ padding: 15 }]}>
-                        <PickerComponent selectedItem={formData.cityId} onValueChange={(text) => {
-                            this.handleForm(text, 'cityId')
-                            this.getAreas(text)
-                        }} data={cities.length ? cities : []} name={'city'} placeholder='Select City' />
-                    </View>
-                    <TouchableOpacity onPress={() => this.openModal()} style={{ marginHorizontal: 15 }} >
-                        <View style={[AppStyles.mainInputWrap, AppStyles.inputPadLeft, AppStyles.formControl, { justifyContent: 'center' }]} >
-                            <Text style={[AppStyles.formFontSettings, { color: formData.leadAreas.length > 0 ? AppStyles.colors.textColor : AppStyles.colors.subTextColor }]} >
-                                {formData.leadAreas.length > 0 ? `${formData.leadAreas.length} Areas Selected` : 'Select Areas'}
-                            </Text>
+                        <View style={[{ padding: 15 }]}>
+                            <PickerComponent selectedItem={formData.propertySubType} onValueChange={(text) => { this.handleForm(text, 'propertySubType') }} data={subTypVal.length ? subTypVal : null} name={'type'} placeholder='Property Sub Type' />
                         </View>
-                    </TouchableOpacity>
-                    {/* <View style={[{ padding: 15 }]}>
-                        <PickerComponent selectedItem={formData.areaId} onValueChange={(text) => { this.handleForm(text, 'area') }} data={areas.length ? areas : []} name={'area'} placeholder='Select Area' />
-                    </View> */}
-                    <View style={[{ padding: 15 }]}>
-                        <PickerComponent selectedItem={formData.propertyType} onValueChange={(text) => {
-                            this.handleForm(text, 'propertyType')
-                            this.getSubType(text)
-                        }} data={type} name={'type'} placeholder='Property Type' />
-                    </View>
-                    <View style={[{ padding: 15 }]}>
-                        <PickerComponent selectedItem={formData.propertySubType} onValueChange={(text) => { this.handleForm(text, 'propertySubType') }} data={subTypVal.length ? subTypVal : null} name={'type'} placeholder='Property Sub Type' />
-                    </View>
-                    <View style={{ flexDirection: "row", padding: 15 }}>
-                        <View style={[{ paddingRight: 10, flex: 1, }]}>
-                            <TextInput onChangeText={(text) => { this.handleForm(text, 'size') }}
-                                value={formData.size ? String(formData.size) : ''}
-                                keyboardType='numeric'
-                                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                name={'size'}
-                                placeholder={'Size'} />
+                        <View style={{ flexDirection: "row", padding: 15 }}>
+                            <View style={[{ paddingRight: 10, flex: 1, }]}>
+                                <TextInput onChangeText={(text) => { this.handleForm(text, 'size') }}
+                                    value={formData.size ? String(formData.size) : ''}
+                                    keyboardType='numeric'
+                                    style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                    name={'size'}
+                                    placeholder={'Size'} />
+                            </View>
+                            <View style={[{ flex: 1, }]}>
+                                <PickerComponent selectedItem={formData.sizeUnit} onValueChange={(text) => { this.handleForm(text, 'sizeUnit') }} data={sizeUnit} name={'type'} placeholder='Size Unit' />
+                            </View>
                         </View>
-                        <View style={[{ flex: 1, }]}>
-                            <PickerComponent selectedItem={formData.sizeUnit} onValueChange={(text) => { this.handleForm(text, 'sizeUnit') }} data={sizeUnit} name={'type'} placeholder='Size Unit' />
+                        {
+                            maxCheck ?
+                                <View style={{ flexDirection: "row", paddingRight: 15, paddingLeft: 15 }}>
+                                    <ErrorMessage errorMessage={'Max Price must be greater than Min Price!'}/>
+                                </View>
+                                :
+                                null
+                        }
+                        <View style={{ flexDirection: "row", padding: 15 }}>
+                            <View style={[{ paddingRight: 10, flex: 1, }]}>
+                                <TextInput min={formData.maxPrice ? formData.maxPrice : 0} keyboardType={'numeric'} value={formData.minPrice} onChangeText={(text) => { this.handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'minPrince'} placeholder={'Min Price'} />
+                            </View>
+                            <View style={[{ flex: 1, }]}>
+                                <TextInput keyboardType={'numeric'} value={formData.maxPrice} onChangeText={(text) => { this.handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'maxPrince'} placeholder={'Max Price'} />
+                            </View>
                         </View>
-                    </View>
-                    <View style={{ flexDirection: "row", padding: 15 }}>
-                        <View style={[{ paddingRight: 10, flex: 1, }]}>
-                            <TextInput min={formData.maxPrice ? formData.maxPrice : 0} keyboardType={'numeric'} value={formData.minPrice} onChangeText={(text) => { this.handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'minPrince'} placeholder={'Min Price'} />
+                        <View style={{ flexDirection: "row", padding: 15 }}>
+                            <View style={[{ paddingRight: 10, flex: 1, }]}>
+                                <TextInput keyboardType={'numeric'} value={formData.bed ? String(formData.bed) : ''} onChangeText={(text) => { this.handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
+                            </View>
+                            <View style={[{ flex: 1, }]}>
+                                <TextInput keyboardType={'numeric'} value={formData.bath ? String(formData.bath) : ''} onChangeText={(text) => { this.handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
+                            </View>
                         </View>
-                        <View style={[{ flex: 1, }]}>
-                            <TextInput keyboardType={'numeric'} value={formData.maxPrice} onChangeText={(text) => { this.handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'maxPrince'} placeholder={'Max Price'} />
+                        <View style={[AppStyles.mainInputWrap, { padding: 15, paddingBottom: 0 }]}>
+                            <Button
+                                onPress={() => { this.submitFilter() }}
+                                style={[AppStyles.formBtn, styles.btn1]}>
+                                <Text style={AppStyles.btnText}>MATCH</Text>
+                            </Button>
                         </View>
-                    </View>
-                    <View style={{ flexDirection: "row", padding: 15 }}>
-                        <View style={[{ paddingRight: 10, flex: 1, }]}>
-                            <TextInput keyboardType={'numeric'} value={formData.bed ? String(formData.bed) : ''} onChangeText={(text) => { this.handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
-                        </View>
-                        <View style={[{ flex: 1, }]}>
-                            <TextInput keyboardType={'numeric'} value={formData.bath ? String(formData.bath) : ''} onChangeText={(text) => { this.handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
-                        </View>
-                    </View>
-                    <View style={[AppStyles.mainInputWrap, { padding: 15, paddingBottom: 0 }]}>
-                        <Button
-                            onPress={() => { this.submitFilter() }}
-                            style={[AppStyles.formBtn, styles.btn1]}>
-                            <Text style={AppStyles.btnText}>MATCH</Text>
-                        </Button>
-                    </View>
-                    <TouchableOpacity onPress={() => { this.props.resetFilter() }}>
-                        <Text style={{ color: AppStyles.colors.primaryColor, fontSize: 18, paddingLeft: 15 }}>Reset</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={() => { this.props.resetFilter() }}>
+                            <Text style={{ color: AppStyles.colors.primaryColor, fontSize: 18, paddingLeft: 15 }}>Reset</Text>
+                        </TouchableOpacity>
+                    </ScrollView>
                 </SafeAreaView>
             </Modal>
         )

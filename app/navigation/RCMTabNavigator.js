@@ -6,6 +6,7 @@ import LeadPropsure from '../screens/LeadPropsure/index'
 import LeadRCMPayment from '../screens/LeadRCMPayment/index'
 import React from 'react';
 import { Dimensions } from 'react-native'
+import AppStyles from '../AppStyles';
 const { width } = Dimensions.get('window')
 
 
@@ -16,12 +17,13 @@ export default function RCMLeadTabs() {
         <Tab.Navigator
             tabBarOptions={{
                 scrollEnabled: false,
-                labelStyle: { fontSize: 10 },
+                activeTintColor:AppStyles.colors.primaryColor,
+                labelStyle: { fontSize: 12, fontFamily:AppStyles.fonts.semiBoldFont },
+                inactiveTintColor:AppStyles.colors.subTextColor,
                 tabStyle: { width: width / 5, paddingLeft: 0, paddingRight: 0 },
                 indicatorStyle: {
                     backgroundColor: 'white',
                 }
-                // style: { shadowColor: 'transparent', elevation: 0, borderTopColor: "transparent", borderTopWidth: 0 },
             }}>
             <Tab.Screen name="Match" component={LeadMatch} />
             <Tab.Screen name="Viewing" component={LeadViewing} />

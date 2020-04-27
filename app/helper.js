@@ -29,7 +29,7 @@ const helper = {
 	internetToast(message) {
 		Toast.show({
 			text: message,
-			duration: 30000,
+			duration: 3000,
 			type: 'warning'
 		})
 	},
@@ -96,19 +96,7 @@ const helper = {
 		var sub = moment(paktz, _format).subtract(duration).format();
 		return sub
 	},
-	checkInternet() {
-		unsubscribe()
-	},
 }
-
-const unsubscribe = NetInfo.addEventListener(state => {
-	console.log(state.type)
-	if (state.type === 'NONE') {
-		helper.internetToast('No Internet Connection!')
-	} else {
-		// Toast.hide()
-	}
-});
 
 
 

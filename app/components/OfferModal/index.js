@@ -15,7 +15,7 @@ class OfferModal extends React.Component {
 	}
 
 	render() {
-		const { active, isVisible, handleForm, placeMyOffer, placeTheirOffer, placeAgreedOffer, offerChat, disableButton } = this.props
+		const { active, isVisible, handleForm, placeMyOffer, placeTheirOffer, placeAgreedOffer, offerChat, disableButton, leadData } = this.props
 		return (
 			<Modal
 				visible={active}
@@ -37,7 +37,7 @@ class OfferModal extends React.Component {
 						<View style={styles.mainInputWrap}>
 							<Text style={styles.offerColor}>My Offers</Text>
 							<View style={styles.inputWrap}>
-								<TextInput keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'my') }} />
+								<TextInput value={leadData.my} keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'my') }} />
 								<TouchableOpacity
 									disabled={disableButton}
 									onPress={placeMyOffer}
@@ -51,7 +51,7 @@ class OfferModal extends React.Component {
 						<View style={styles.mainInputWrap}>
 							<Text style={styles.offerColor}>Their Offers</Text>
 							<View style={styles.inputWrap}>
-								<TextInput keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'their') }} />
+								<TextInput value={leadData.their} keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'their') }} />
 								<TouchableOpacity
 									disabled={disableButton}
 									onPress={placeTheirOffer}

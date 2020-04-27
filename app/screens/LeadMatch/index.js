@@ -65,7 +65,8 @@ class LeadMatch extends React.Component {
             areas: [],
             subTypVal: [],
             progressValue: 0,
-            filterColor: false
+            filterColor: false,
+            maxCheck: false
         }
     }
 
@@ -94,14 +95,27 @@ class LeadMatch extends React.Component {
     }
 
     submitFilter = (formData) => {
-        this.setState({
-            formData: formData,
-            showFilter: false,
-            loading: true,
-            filterColor: true
-        }, () => {
-            this.fetchMatches()
-        })
+        if (formData.maxPrice && formData.maxPrice !== '') {
+            if (Number(formData.maxPrice) > Number(formData.minPrice)) {
+                this.setState({
+                    formData: formData,
+                    showFilter: false,
+                    loading: true,
+                    filterColor: true,
+                    maxCheck: false
+                }, () => {
+                    this.fetchMatches()
+                })
+            } else {
+                this.setState({
+                    maxCheck: true
+                })
+            }
+        } else {
+            this.setState({
+                maxCheck: true
+            })
+        }
     }
 
     canCallApi = () => {
@@ -408,7 +422,7 @@ class LeadMatch extends React.Component {
 
     render() {
         // const { user } = this.props
-        const { filterColor, progressValue, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, open } = this.state
+        const { maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, open } = this.state
 
         return (
             !loading ?
@@ -426,10 +440,10 @@ class LeadMatch extends React.Component {
                                 <Text style={[(organization === 'agency21') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Agency21 </Text>
                             </TouchableOpacity>
                         </View>
-                        <FilterModal resetFilter={this.resetFilter} formData={formData} openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter} />
+                        <FilterModal maxCheck={maxCheck} resetFilter={this.resetFilter} formData={formData} openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter} />
                         <View style={[{
                             flexDirection: "row", paddingTop: 10, paddingLeft: 15, paddingBottom: 10, elevation: 10,
-                            zIndex:15,
+                            zIndex: 15,
                             shadowOffset: { width: 5, height: 5 },
                             shadowColor: 'lightgrey',
                             shadowOpacity: 1,
@@ -450,7 +464,7 @@ class LeadMatch extends React.Component {
                             <View style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}> {matchData.data.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Matched</Text></Text>
                             </View>
-                            <View style={{ position: 'absolute', right: 15, alignSelf:'center'}}>
+                            <View style={{ position: 'absolute', right: 15, alignSelf: 'center' }}>
                                 <TouchableOpacity onPress={() => { this.filterModal() }} >
                                     <Image source={require('../../../assets/img/filter.png')} style={{ width: 20, height: 20, tintColor: filterColor && AppStyles.colors.primaryColor }} />
                                 </TouchableOpacity>

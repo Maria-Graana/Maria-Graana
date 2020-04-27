@@ -36,6 +36,10 @@ class Inventory extends React.Component {
 
 	componentDidMount() {
 		this.fetchLeads('invest', 'all');
+		this._unsubscribe = this.props.navigation.addListener('focus', () => {
+			this.fetchLeads('invest', 'all');
+		})
+
 	}
 
 	componentWillUnmount() {
@@ -46,12 +50,13 @@ class Inventory extends React.Component {
 		this.setState({
 			loading: true,
 			sort: !sort,
+			leadsData: [],
 		})
 		let query = ``
 		let sortVar = ''
-		if(sort === true){
+		if (sort === true) {
 			sortVar = `&order=Desc&field=updatedAt`
-		}else{
+		} else {
 			sortVar = `&order=Desc&field=createdAt`
 		}
 
@@ -169,7 +174,7 @@ class Inventory extends React.Component {
 						/>
 					</View>
 					<View style={styles.stylesMainSort}>
-						<TouchableOpacity style={styles.sortBtn} onPress={() => {this.fetchLeads(purposeTab, statusFilter)}}>
+						<TouchableOpacity style={styles.sortBtn} onPress={() => { this.fetchLeads(purposeTab, statusFilter) }}>
 							<Image source={SortImg} style={[styles.sortImg]} />
 							<Text style={styles.sortText}>Sort</Text>
 						</TouchableOpacity>
@@ -199,7 +204,7 @@ class Inventory extends React.Component {
 										)
 									})
 									:
-									<LoadingNoResult loading={loading}/>
+									<LoadingNoResult loading={loading} />
 							}
 						</ScrollView>
 

@@ -165,7 +165,7 @@ class AddRCMLead extends Component {
                     leadAreas: RCMFormData.leadAreas,
                     customerId: RCMFormData.customerId,
                     city_id: RCMFormData.city_id,
-                    size_unit: RCMFormData.size_unit,
+                    size_unit: parseInt(RCMFormData.size_unit),
                     price: RCMFormData.max_price,
                     min_price: RCMFormData.min_price,
                 }

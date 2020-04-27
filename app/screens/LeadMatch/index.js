@@ -449,7 +449,7 @@ class LeadMatch extends React.Component {
                             <View style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}> {matchData.data.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Matched</Text></Text>
                             </View>
-                            <View style={{ position: 'absolute', right: 15 }}>
+                            <View style={{ position: 'absolute', right: 15, alignSelf:'center'}}>
                                 <TouchableOpacity onPress={() => { this.filterModal() }} >
                                     <Image source={require('../../../assets/img/filter.png')} style={{ width: 20, height: 20, tintColor: filterColor && AppStyles.colors.primaryColor }} />
                                 </TouchableOpacity>

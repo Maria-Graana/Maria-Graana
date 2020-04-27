@@ -201,11 +201,16 @@ class LeadViewing extends React.Component {
 	createViewing = () => {
 		const { viewing, currentProperty } = this.state
 		const { lead } = this.props
+		let customer = lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName) || ''
+		let areaName = currentProperty.area && currentProperty.area.name && currentProperty.area.name || ''
+		let customerId= lead.customer && lead.customer.id
 		let body = {
 			date: viewing.date,
 			time: viewing.time,
 			propertyId: currentProperty.id,
-			leadId: lead.id
+			leadId: lead.id,
+			subject: "Viewing with " + customer + " at " + areaName,
+			customerId: customerId
 		}
 		axios.post(`/api/leads/viewing`, body)
 			.then((res) => {

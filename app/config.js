@@ -5,7 +5,7 @@ const config = {
     apiPath: 'https://api.realtor.agency21.rocks',
   },
   production: {
-    apiPath: 'https://apiarmsw.agency21.com.pk',
+    apiPath: 'https://apiarmsm.agency21.com.pk',
   },
 };
 

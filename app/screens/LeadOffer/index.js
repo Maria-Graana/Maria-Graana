@@ -116,7 +116,7 @@ class LeadOffer extends React.Component {
 		const { lead } = this.props
 		axios.get(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`)
 			.then((res) => {
-				this.setState({ offerChat: res.data.rows, disableButton: false })
+				this.setState({ offerChat: res.data.rows, disableButton: false, leadData: { my: '', their: '', agreed: '' } })
 			})
 			.catch((error) => {
 				console.log(error)
@@ -131,7 +131,7 @@ class LeadOffer extends React.Component {
 				offer: leadData.my,
 				type: 'my'
 			}
-			this.setState({disableButton: true})
+			this.setState({ disableButton: true })
 			axios.post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
 				.then((res) => {
 					this.fetchOffers()
@@ -150,7 +150,7 @@ class LeadOffer extends React.Component {
 				offer: leadData.their,
 				type: 'their'
 			}
-			this.setState({disableButton: true})
+			this.setState({ disableButton: true })
 			axios.post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
 				.then((res) => {
 					this.fetchOffers()
@@ -163,7 +163,7 @@ class LeadOffer extends React.Component {
 
 
 	goToDiaryForm = () => {
-		const { lead, navigation,user } = this.props
+		const { lead, navigation, user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
 			rcmLeadId: lead.id,
@@ -190,7 +190,7 @@ class LeadOffer extends React.Component {
 				offer: leadData.agreed,
 				type: 'agreed'
 			}
-			this.setState({disableButton: true})
+			this.setState({ disableButton: true })
 			axios.post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
 				.then((res) => {
 					this.openChatModal()
@@ -253,11 +253,11 @@ class LeadOffer extends React.Component {
 	}
 
 	render() {
-		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton } = this.state
+		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton, leadData } = this.state
 		return (
 			!loading ?
-				<View style={{flex: 1}}>
-					<ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
+				<View style={{ flex: 1 }}>
+					<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
 						<View style={{ flex: 1 }}>
 							{
@@ -293,6 +293,7 @@ class LeadOffer extends React.Component {
 											keyExtractor={(item, index) => item.id.toString()}
 										/>
 										<OfferModal
+											leadData={leadData}
 											offersData={offersData}
 											active={modalActive}
 											offerChat={offerChat}
@@ -300,7 +301,7 @@ class LeadOffer extends React.Component {
 											placeTheirOffer={this.placeTheirOffer}
 											placeAgreedOffer={this.placeAgreedOffer}
 											handleForm={this.handleForm}
-											disableButton= {disableButton}
+											disableButton={disableButton}
 											openModal={this.openChatModal}
 										/>
 									</View>

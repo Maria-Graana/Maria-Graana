@@ -104,13 +104,15 @@ class Inventory extends React.Component {
 	}
 
 	changeTab = (status) => {
-		this.setState({ purposeTab: status })
-		this.fetchLeads(status, this.state.statusFilter);
+		this.setState({ purposeTab: status, statusFilter: 'all' })
+		this.fetchLeads(status, 'all');
 	}
 
 	changeStatus = (status) => {
-		this.setState({ statusFilter: status })
-		this.fetchLeads(this.state.purposeTab, status);
+		this.setState({ statusFilter: status }, () => {
+			this.fetchLeads(this.state.purposeTab, status);
+
+		})
 	}
 
 	navigateTo = (data) => {

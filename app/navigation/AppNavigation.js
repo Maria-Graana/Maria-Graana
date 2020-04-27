@@ -42,7 +42,7 @@ class RootStack extends React.Component {
                 <NavigationContainer ref={navigationRef}>
                     {
                         user && loading === false && token?
-                            <Drawer.Navigator drawerContent={navigation => <CustomDrawerContent />} initialRouteName="MainStack">
+                            <Drawer.Navigator drawerContent={({ navigation }) => <CustomDrawerContent navigation={navigation} />}>
                                 <Drawer.Screen name="MainStack" component={MainStack} />
                             </Drawer.Navigator>
                         :

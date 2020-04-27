@@ -214,7 +214,6 @@ class Payments extends Component {
 		}
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				console.log(res.data)
 				if (remainingPayment === 0) {
 					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 				} else {

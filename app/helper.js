@@ -2,6 +2,7 @@ import { Linking } from 'react-native';
 import { Toast } from 'native-base';
 import moment from 'moment-timezone';
 import * as Network from 'expo-network';
+import NetInfo from '@react-native-community/netinfo';
 
 const helper = {
 	successToast(message) {
@@ -29,7 +30,7 @@ const helper = {
 		Toast.show({
 			text: message,
 			duration: 30000,
-			type: 'danger'
+			type: 'warning'
 		})
 	},
 	normalizeCnic(value) {
@@ -95,17 +96,19 @@ const helper = {
 		var sub = moment(paktz, _format).subtract(duration).format();
 		return sub
 	},
-	checkInternet(){
-		Network.getNetworkStateAsync()
-			.then((res) => {
-				if (res.type === 'NONE') {
-					helper.internetToast('No Internet Connection!')
-				} else {
-					// Toast.hide()
-				}
-			})
-	}
+	checkInternet() {
+		unsubscribe()
+	},
 }
+
+const unsubscribe = NetInfo.addEventListener(state => {
+	console.log(state.type)
+	if (state.type === 'NONE') {
+		helper.internetToast('No Internet Connection!')
+	} else {
+		// Toast.hide()
+	}
+});
 
 
 

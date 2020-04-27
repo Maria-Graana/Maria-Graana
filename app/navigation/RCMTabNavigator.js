@@ -5,6 +5,9 @@ import LeadOffer from '../screens/LeadOffer/index';
 import LeadPropsure from '../screens/LeadPropsure/index'
 import LeadRCMPayment from '../screens/LeadRCMPayment/index'
 import React from 'react';
+import { Dimensions } from 'react-native'
+const { width } = Dimensions.get('window')
+
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -12,9 +15,9 @@ export default function RCMLeadTabs() {
     return (
         <Tab.Navigator
             tabBarOptions={{
-                scrollEnabled: true,
+                scrollEnabled: false,
                 labelStyle: { fontSize: 10 },
-                tabStyle: { width: 85 },
+                tabStyle: { width: width / 5, paddingLeft: 0, paddingRight: 0 },
                 indicatorStyle: {
                     backgroundColor: 'white',
                 }

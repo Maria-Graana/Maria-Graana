@@ -123,7 +123,7 @@ class FilterModal extends React.Component {
 
         const { cities, areas, subTypVal, formData, showAreaPicker } = this.state
         const { sizeUnit, type, oneToTen, } = StaticData
-        
+
         return (
             <Modal visible={openPopup}
                 animationType="slide"
@@ -135,8 +135,8 @@ class FilterModal extends React.Component {
                             onPress={() => { this.props.filterModal() }}>
                             <Image source={backArrow} style={[styles.backImg]} />
                         </TouchableOpacity>
-                        <View style={{ flex: 1,justifyContent: 'center', alignItems: "center", }}>
-                            <Text style={{paddingRight: 30, fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16}}>SEARCH FILTERS</Text>
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: "center", }}>
+                            <Text style={{ paddingRight: 30, fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16 }}>SEARCH FILTERS</Text>
                         </View>
                     </View>
                     <AreaPicker handleForm={this.handleForm} openModal={this.openModal} selectedAreaIds={formData.leadAreas} editable={false} isVisible={showAreaPicker} cityId={formData.cityId} areas={areas} />
@@ -167,7 +167,12 @@ class FilterModal extends React.Component {
                     </View>
                     <View style={{ flexDirection: "row", padding: 15 }}>
                         <View style={[{ paddingRight: 10, flex: 1, }]}>
-                            <PickerComponent selectedItem={formData.size ? String(formData.size) : ''} onValueChange={(text) => { this.handleForm(text, 'size') }} data={oneToTen} name={'type'} placeholder='Size' />
+                            <TextInput onChangeText={(text) => { this.handleForm(text, 'size') }}
+                                value={formData.size ? String(formData.size) : ''}
+                                keyboardType='numeric'
+                                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                name={'size'}
+                                placeholder={'Size'} />
                         </View>
                         <View style={[{ flex: 1, }]}>
                             <PickerComponent selectedItem={formData.sizeUnit} onValueChange={(text) => { this.handleForm(text, 'sizeUnit') }} data={sizeUnit} name={'type'} placeholder='Size Unit' />

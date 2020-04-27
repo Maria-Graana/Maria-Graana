@@ -23,6 +23,9 @@ class AreaPicker extends React.Component {
     }
 
     componentDidMount() {
+        const { selectedAreaIds } = this.props
+        this.areaIds = [...selectedAreaIds]
+        this.setState({ selectedAreaIds: [...selectedAreaIds] })
     }
 
     setSelectedArea = (obj) => {
@@ -48,7 +51,6 @@ class AreaPicker extends React.Component {
     }
 
     renderListWithMultipleSelectOptions = ({ item }) => {
-
         return (
             <TouchableOpacity
                 onPress={() => this.setSelectedArea(item)}>

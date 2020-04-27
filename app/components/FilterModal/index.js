@@ -139,7 +139,6 @@ class FilterModal extends React.Component {
                             <Text style={{paddingRight: 30, fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16}}>SEARCH FILTERS</Text>
                         </View>
                     </View>
-
                     <AreaPicker handleForm={this.handleForm} openModal={this.openModal} selectedAreaIds={formData.leadAreas} editable={false} isVisible={showAreaPicker} cityId={formData.cityId} areas={areas} />
                     <View style={[{ padding: 15 }]}>
                         <PickerComponent selectedItem={formData.cityId} onValueChange={(text) => {

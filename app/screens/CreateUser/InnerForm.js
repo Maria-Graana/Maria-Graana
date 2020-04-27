@@ -136,7 +136,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput style={[AppStyles.formControl, styles.padLeft]} value={getRoles.name === 'sub_admin 2' && 'Sub-Role'} editable={false} />
+            <TextInput style={[AppStyles.formControl, styles.padLeft]} value={getRoles.subRole} editable={false} />
           </View>
         </View>
 

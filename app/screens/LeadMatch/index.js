@@ -429,6 +429,7 @@ class LeadMatch extends React.Component {
                         <FilterModal resetFilter={this.resetFilter} formData={formData} openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter} />
                         <View style={[{
                             flexDirection: "row", paddingTop: 10, paddingLeft: 15, paddingBottom: 10, elevation: 10,
+                            zIndex:15,
                             shadowOffset: { width: 5, height: 5 },
                             shadowColor: 'lightgrey',
                             shadowOpacity: 1,

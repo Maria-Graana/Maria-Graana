@@ -92,7 +92,7 @@ class LeadRCMPayment extends React.Component {
                     contract_months: lead.contract_months ? String(lead.contract_months) : '',
                     security: lead.security ? String(lead.security) : '',
                     advance: lead.advance ? String(lead.advance) : '',
-                    monthlyRent: lead.monthlyRent ? String(tmonthlyRent) : ''
+                    monthlyRent: lead.monthlyRent ? String(monthlyRent) : ''
                 }
             }, () => {
                 this.checkCommissionPayment(response.data);

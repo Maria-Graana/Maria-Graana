@@ -38,7 +38,7 @@ export default styles = StyleSheet.create({
   contentMainWrap: {
     position: 'relative',
     flexDirection: 'row',
-    marginTop: 10,
+    marginTop: 5,
   },
   leftContent:{
     width: '90%',

@@ -4,6 +4,7 @@ export default styles = StyleSheet.create({
     marginTop: 0,
     padding: 15,
     minHeight: '87%',
+    maxHeight: '87%',
     paddingBottom: 80,
   },
   mainWrapCon: {

@@ -230,7 +230,7 @@ export default StaticData = {
             value: 'client_not_satisfied'
         }
     ],
-    paymentPopup: [
+    paymentPopupDone: [
         {
             name: 'Payment Done',
             value: 'payment_done'
@@ -244,7 +244,7 @@ export default StaticData = {
             value: 'client_not_satisfied'
         }
     ],
-    paymentPopupDone: [
+    paymentPopup: [
         {
             name: 'Client not responding',
             value: 'client_not_responding'

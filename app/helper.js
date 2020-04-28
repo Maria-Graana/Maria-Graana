@@ -96,6 +96,27 @@ const helper = {
 		var sub = moment(paktz, _format).subtract(duration).format();
 		return sub
 	},
+	propertyCheck(data) {
+		let matches = []
+		if (data.length) {
+			data.map((item, index) => {
+				if (item.graana_id) {
+					item.images = item.property_images || []
+				} else {
+					item.images = item.armsPropertyImages || []
+				}
+				if ('armsuser' in item) {
+					item.user = item.armsuser
+					item.checkBox = false
+					return (matches.push(item))
+				} else {
+					item.checkBox = false
+					return (matches.push(item))
+				}
+			})
+			return matches
+		} else return []
+	}
 }
 
 

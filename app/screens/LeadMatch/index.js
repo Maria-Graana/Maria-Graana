@@ -205,16 +205,7 @@ class LeadMatch extends React.Component {
                     params: params
                 })
                 .then((res) => {
-                    res.data.rows.map((item, index) => {
-                        if ('armsuser' in item) {
-                            item.user = item.armsuser
-                            item.checkBox = false
-                            return (matches.push(item))
-                        } else {
-                            item.checkBox = false
-                            return (matches.push(item))
-                        }
-                    })
+                    matches = helper.propertyCheck(res.data.rows)
                     this.setState({
                         matchData: {
                             type: organization,

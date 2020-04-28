@@ -32,12 +32,10 @@ class InventoryTile extends React.Component {
 		const { menuShow } = this.state
 		let imagesList = []
 		let phoneNumber = null
-		if ('armsPropertyImages' in data && data.armsPropertyImages !== undefined) {
-			if (data.armsPropertyImages.length > 0) {
-				imagesList = data.armsPropertyImages.map((item) => {
-					return item.url
-				})
-			}
+		if (data.images.length > 0) {
+			imagesList = data.armsPropertyImages.map((item) => {
+				return item.url
+			})
 		}
 		let show = isMenuVisible
 		if (isMenuVisible) {
@@ -45,9 +43,8 @@ class InventoryTile extends React.Component {
 				if (data.diaries[0].status === 'completed') show = false
 			}
 		}
-		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
+		if (data.graana_id) phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user.phoneNumber
-
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row', marginVertical: 2 }}
 				onLongPress={() => {

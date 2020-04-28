@@ -107,11 +107,12 @@ class LeadRCMPayment extends React.Component {
     }
 
     getShortlistedProperties = (lead) => {
+        let matches = []
         axios.get(`/api/leads/${lead.id}/shortlist`)
             .then((res) => {
-                //console.log('response=>', res.data.rows);
+                matches = helper.propertyCheck(res.data.rows)
                 this.setState({
-                    allProperties: res.data.rows,
+                    allProperties: matches,
                     loading: false,
                     selectedReason: '',
                     checkReasonValidation: '',

@@ -4,16 +4,15 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
-import { Fab, Button, Icon } from 'native-base';
-import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import Loader from '../../components/loader';
 import _ from 'underscore';
 import OfferModal from '../../components/OfferModal'
 import { FAB } from 'react-native-paper';
-import { ProgressBar, Colors } from 'react-native-paper';
+import { ProgressBar } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 import StaticData from '../../StaticData';
+import helper from '../../helper';
 
 class LeadOffer extends React.Component {
 	constructor(props) {
@@ -44,12 +43,14 @@ class LeadOffer extends React.Component {
 	fetchProperties = () => {
 		const { lead } = this.props
 		const { rcmProgressBar } = StaticData
+		let matches = []
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
+				matches = helper.propertyCheck(res.data.rows)
 				this.setState({
 					disableButton: false,
 					loading: false,
-					matchData: res.data.rows,
+					matchData: matches,
 					progressValue: rcmProgressBar[lead.status]
 				})
 			})

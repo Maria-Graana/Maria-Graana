@@ -47,11 +47,13 @@ class LeadViewing extends React.Component {
 	fetchProperties = () => {
 		const { lead } = this.props
 		const { rcmProgressBar } = StaticData
+		let matches = []
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
+				matches = helper.propertyCheck(res.data.rows)
 				this.setState({
 					loading: false,
-					matchData: res.data.rows,
+					matchData: matches,
 					progressValue: rcmProgressBar[lead.status]
 				})
 			})
@@ -203,7 +205,7 @@ class LeadViewing extends React.Component {
 		const { lead } = this.props
 		let customer = lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName) || ''
 		let areaName = currentProperty.area && currentProperty.area.name && currentProperty.area.name || ''
-		let customerId= lead.customer && lead.customer.id
+		let customerId = lead.customer && lead.customer.id
 		let body = {
 			date: viewing.date,
 			time: viewing.time,

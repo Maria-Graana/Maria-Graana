@@ -99,7 +99,7 @@ class AddCMLead extends Component {
             })
         } else {
             if (formData.minPrice > formData.maxPrice) {
-                helper.errorToast('Min Price Greater Than Max Price')
+                helper.errorToast('Max Price cannot be less than Min Price')
             } else {
                 let body = {
                     ...formData,

@@ -153,7 +153,7 @@ class AddRCMLead extends Component {
             })
         } else {
             if (RCMFormData.min_price > RCMFormData.max_price) {
-                helper.errorToast('Min Price Greater Than Max Price')
+                helper.errorToast('Max Price cannot be less than Min Price')
             } else {
                 let payLoad = {
                     purpose: formType,

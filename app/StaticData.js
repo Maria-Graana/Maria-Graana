@@ -339,6 +339,7 @@ export default StaticData = {
     },
     cmProgressBar: {
         open: 0,
+        meeting: 0.5,
         meeting_visited: 0.5,
         meeting_expected_conversion: 0.5,
         meeting_deal_signed: 0.5,

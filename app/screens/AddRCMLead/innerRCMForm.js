@@ -147,10 +147,10 @@ class InnerRCMForm extends Component {
         }
 
         {/* **************************************** */}
-        <View style={AppStyles.multiFormInput}>
+        <View>
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
+          <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <TextInput onChangeText={(text) => { handleForm(text, 'min_price') }} keyboardType={'numeric'} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} name={'min_price'} placeholder={'Min Price'} />
               <Text style={[AppStyles.countPrice]}>{formatPrice(formData.min_price != null ? formData.min_price : '')}</Text>
@@ -158,7 +158,7 @@ class InnerRCMForm extends Component {
           </View>
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
+          <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <TextInput onChangeText={(text) => { handleForm(text, 'max_price') }} keyboardType={'numeric'} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} name={'max_price'} placeholder={'Max Price'} />
               <Text style={[AppStyles.countPrice]}>{formatPrice(formData.max_price != null ? formData.max_price : '')}</Text>

@@ -73,7 +73,7 @@ class LeadTile extends React.Component {
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                    {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length && data.armsLeadAreas[0].area && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
+                    {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
                   </Text>
                 </View>
               </View>

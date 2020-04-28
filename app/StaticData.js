@@ -446,6 +446,12 @@ export default StaticData = {
         "updatedAt": "2020-04-18T08:53:57.794Z",
         "wanted_id": null,
         "zone_id": null,
-    }
+    },
+    sortData: [
+        { name: 'Newest First', value: '&order=Desc&field=createdAt' },
+        { name: 'Recently Modified First', value: '&order=Desc&field=updatedAt' },
+        { name: 'Newest Last', value: '&order=Asc&field=createdAt' },
+        { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
+    ],
 }
 

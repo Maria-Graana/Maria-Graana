@@ -102,7 +102,7 @@ class InventoryTile extends React.Component {
 							<Text numberOfLines={1} style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
 							<View style={{ flexDirection: 'row-reverse', height: 60 }}>
 								{/* <View style={{ flex: 1 }}></View> */}
-								<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} style={{ paddingTop: 25, paddingRight: 0 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+								<FontAwesome onPress={() => { helper.callNumber(`tel:${phoneNumber}`) }} style={{ paddingTop: 25, paddingRight: 0 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 							</View>
 						</View>
 					</View>

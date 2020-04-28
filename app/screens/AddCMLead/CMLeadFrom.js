@@ -82,9 +82,6 @@ class CMLeadFrom extends Component {
                 keyboardType={'numeric'}
               />
               <Text style={[AppStyles.countPrice]}>{formatPrice(minPrice)}</Text>
-              {
-                checkValidation === true && formData.minPrice === '' && <ErrorMessage errorMessage={'Required'} />
-              }
             </View>
           </View>
 
@@ -98,9 +95,6 @@ class CMLeadFrom extends Component {
                 keyboardType={'numeric'}
               />
               <Text style={[AppStyles.countPrice]}>{formatPrice(formData.maxPrice)}</Text>
-              {
-                checkValidation === true && formData.maxPrice === '' && <ErrorMessage errorMessage={'Required'} />
-              }
             </View>
           </View>
 

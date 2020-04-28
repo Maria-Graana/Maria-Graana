@@ -37,12 +37,8 @@ class Inventory extends React.Component {
 	componentDidMount() {
 		this.fetchLeads('invest', 'all');
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads('invest', 'all');
+			this.fetchLeads(this.state.purposeTab, 'all');
 		})
-
-	}
-
-	componentWillUnmount() {
 	}
 
 	fetchLeads = (purposeTab, statusFilter) => {
@@ -53,7 +49,7 @@ class Inventory extends React.Component {
 			leadsData: [],
 		})
 		let query = ``
-		let sortVar = ''
+		let sortVar = '&order=Desc&field=createdAt'
 		if (sort === true) {
 			sortVar = `&order=Desc&field=updatedAt`
 		} else {
@@ -61,9 +57,9 @@ class Inventory extends React.Component {
 		}
 
 		if (purposeTab === 'invest') {
-			query = `/api/leads/projects?all=${true}&status=${statusFilter}${sortVar != '' && sortVar}`
+			query = `/api/leads/projects?all=${true}&status=${statusFilter}`
 		} else {
-			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}${sortVar != '' && sortVar}`
+			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}`
 		}
 		axios.get(`${query}`)
 			.then((res) => {

@@ -69,7 +69,7 @@ const RentPaymentView = (props) => {
                                 fontSize: 10,
                                 alignSelf: 'flex-end',
                                 marginRight: 10
-                            }}>{moment(lead.tokenPaymentTime).format('hh:mm A, MMMM DD')}</Text>
+                            }}>{lead.tokenPaymentTime && moment(lead.tokenPaymentTime).format('hh:mm A, MMMM DD')}</Text>
                         </View>
                 }
 

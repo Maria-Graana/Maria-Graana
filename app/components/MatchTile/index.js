@@ -129,7 +129,7 @@ class InventoryTile extends React.Component {
 								<View />
 						}
 						<View style={{ flexDirection: 'row-reverse' }}>
-							<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+							<FontAwesome onPress={() => { helper.callNumber(`tel:${phoneNumber}`) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 						</View>
 					</View>
 				</View>

@@ -13,12 +13,11 @@ import axios from 'axios';
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import { FAB } from 'react-native-paper';
-
+import SortModal from '../../components/SortModal'
 
 class Inventory extends React.Component {
 	constructor(props) {
 		super(props)
-
 		this.state = {
 			language: '',
 			leadsData: [],
@@ -29,9 +28,10 @@ class Inventory extends React.Component {
 			purposeTab: 'invest',
 			statusFilter: 'all',
 			open: false,
+			sort: '&order=Desc&field=createdAt',
 			loading: false,
+			activeSortModal: false,
 		}
-
 	}
 
 	componentDidMount() {
@@ -43,32 +43,17 @@ class Inventory extends React.Component {
 
 	fetchLeads = (purposeTab, statusFilter) => {
 		const { sort } = this.state
-		this.setState({
-			loading: true,
-			sort: !sort,
-			leadsData: [],
-		})
+		this.setState({ loading: true, leadsData: [], })
 		let query = ``
-		let sortVar = '&order=Desc&field=createdAt'
-		if (sort === true) {
-			sortVar = `&order=Desc&field=updatedAt`
-		} else {
-			sortVar = `&order=Desc&field=createdAt`
-		}
-
 		if (purposeTab === 'invest') {
-			query = `/api/leads/projects?all=${true}&status=${statusFilter}`
+			query = `/api/leads/projects?all=${true}&status=${statusFilter}${sort}`
 		} else {
-			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}`
+			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}${sort}`
 		}
 		axios.get(`${query}`)
 			.then((res) => {
-				this.setState({
-					leadsData: res.data,
-					loading: false,
-				})
+				this.setState({ leadsData: res.data, loading: false })
 			})
-
 	}
 
 	showDropdown = (id) => {
@@ -89,9 +74,7 @@ class Inventory extends React.Component {
 		const { selectInventory } = this.state
 		let index = selectInventory.indexOf(id)
 		selectInventory.splice(index, 1)
-		this.setState({
-			selectInventory: selectInventory,
-		})
+		this.setState({ selectInventory: selectInventory })
 	}
 
 	goToFormPage = (page, status) => {
@@ -100,14 +83,19 @@ class Inventory extends React.Component {
 	}
 
 	changeTab = (status) => {
-		this.setState({ purposeTab: status, statusFilter: 'all' })
-		this.fetchLeads(status, 'all');
+		this.setState({
+			purposeTab: status,
+			statusFilter: 'all',
+			sort: '&order=Desc&field=createdAt'
+		}, () => {
+			this.fetchLeads(status, 'all');
+		})
+
 	}
 
 	changeStatus = (status) => {
 		this.setState({ statusFilter: status }, () => {
 			this.fetchLeads(this.state.purposeTab, status);
-
 		})
 	}
 
@@ -131,12 +119,19 @@ class Inventory extends React.Component {
 		}
 	}
 
+	sendStatus = (status) => {
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(this.state.purposeTab, 'all'); })
+	}
+
+	openStatus = () => {
+		this.setState({ activeSortModal: !this.state.activeSortModal })
+	}
+
 	render() {
-		const { selectInventory, dropDownId, purposeTab, leadsData, open, statusFilter, loading } = this.state
+		const { selectInventory, dropDownId, purposeTab, leadsData, open, statusFilter, loading, activeSortModal, sort } = this.state
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
 			<View>
-
 				{/* ******************* TAb BUTTON VIEW ******* */}
 				<View style={styles.mainTopTabs}>
 
@@ -156,9 +151,7 @@ class Inventory extends React.Component {
 							<Text style={AppStyles.textCenter}>RENT</Text>
 						</TouchableOpacity>
 					</View>
-
 				</View>
-
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>
 					<View style={styles.pickerMain}>
@@ -172,13 +165,12 @@ class Inventory extends React.Component {
 						/>
 					</View>
 					<View style={styles.stylesMainSort}>
-						<TouchableOpacity style={styles.sortBtn} onPress={() => { this.fetchLeads(purposeTab, statusFilter) }}>
+						<TouchableOpacity style={styles.sortBtn} onPress={() => { this.openStatus() }}>
 							<Image source={SortImg} style={[styles.sortImg]} />
 							<Text style={styles.sortText}>Sort</Text>
 						</TouchableOpacity>
 					</View>
 				</View>
-
 				<View style={[AppStyles.container, styles.minHeight]}>
 					<View style={[styles.mainInventoryTile,]}>
 						<ScrollView>
@@ -221,7 +213,13 @@ class Inventory extends React.Component {
 						onStateChange={({ open }) => this.setState({ open })}
 					/>
 				</View>
-
+				<SortModal
+					sendStatus={this.sendStatus}
+					openStatus={this.openStatus}
+					data={StaticData.sortData}
+					doneStatus={activeSortModal}
+					sort={sort}
+				/>
 			</View>
 		)
 	}
@@ -232,5 +230,4 @@ mapStateToProps = (store) => {
 		user: store.user.user
 	}
 }
-
 export default connect(mapStateToProps)(Inventory)

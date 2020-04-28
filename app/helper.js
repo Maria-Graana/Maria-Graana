@@ -68,7 +68,7 @@ const helper = {
 			Linking.canOpenURL(url)
 				.then(supported => {
 					if (!supported) {
-						helper.errorToast(`Phone Number Not Supported`)
+						helper.errorToast(`No application available to dial phone number`)
 						console.log("Can't handle url: " + url);
 					} else {
 						return Linking.openURL(url)

@@ -24,7 +24,7 @@ class Payments extends Component {
 			getFloors: [],
 			totalInstalments: [],
 			units: [],
-			remainingPayment: '',
+			remainingPayment: 'no',
 			readOnly: {
 				totalSize: '',
 				rate: '',
@@ -214,10 +214,10 @@ class Payments extends Component {
 		}
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				if (remainingPayment === 0) {
-					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
-				} else {
+				if (remainingPayment <= 0 && remainingPayment != 'no') {
 					this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+				} else {
+					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 				}
 			}).catch(() => {
 				console.log('Some thing went wrong!!')

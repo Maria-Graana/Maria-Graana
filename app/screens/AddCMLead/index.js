@@ -93,7 +93,7 @@ class AddCMLead extends Component {
 
     formSubmit = () => {
         const { formData } = this.state
-        if (!formData.customerId || !formData.projectId || !formData.projectType || !formData.minPrice || !formData.maxPrice) {
+        if (!formData.customerId || !formData.projectId || !formData.projectType) {
             this.setState({
                 checkValidation: true
             })

@@ -466,7 +466,7 @@ class LeadMatch extends React.Component {
                             </View>
                             <View style={{ position: 'absolute', right: 15, alignSelf: 'center' }}>
                                 <TouchableOpacity onPress={() => { this.filterModal() }} >
-                                    <Image source={require('../../../assets/img/filter.png')} style={{ width: 20, height: 20, tintColor: filterColor && AppStyles.colors.primaryColor }} />
+                                    <Image source={require('../../../assets/img/filter.png')} style={{ width: 20, height: 20, tintColor: filterColor ? AppStyles.colors.primaryColor : AppStyles.colors.subTextColor }} />
                                 </TouchableOpacity>
                             </View>
                         </View>

@@ -106,7 +106,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'cnic') }} keyboardType={'number-pad'} maxLength={15} style={[AppStyles.formControl, styles.padLeft]} placeholder={'CNIC'} />
+            <TextInput onChangeText={(text) => { handleForm(text, 'cnic') }} keyboardType={'number-pad'} maxLength={15} style={[AppStyles.formControl, styles.padLeft]} placeholder={'CNIC*'} />
             {
               checkValidation === true && formData.cnic === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -119,7 +119,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={cities} selectedItem={formData.cityId} name={'cityId'} value={''} placeholder='City' />
+            <PickerComponent onValueChange={handleForm} data={cities} selectedItem={formData.cityId} name={'cityId'} value={''} placeholder='City*' />
             {
               checkValidation === true && formData.cityId === '' && <ErrorMessage errorMessage={'Required'} />
             }

@@ -155,6 +155,8 @@ class AddRCMLead extends Component {
             if (RCMFormData.min_price > RCMFormData.max_price || RCMFormData.min_price == RCMFormData.max_price) {
                 helper.errorToast('Max Price cannot be less than Min Price')
             } else {
+                if (RCMFormData.size === '') RCMFormData.size = null
+                else RCMFormData.size = Number(RCMFormData.size)
                 let payLoad = {
                     purpose: formType,
                     type: RCMFormData.type,
@@ -165,7 +167,7 @@ class AddRCMLead extends Component {
                     leadAreas: RCMFormData.leadAreas,
                     customerId: RCMFormData.customerId,
                     city_id: RCMFormData.city_id,
-                    size_unit: parseInt(RCMFormData.size_unit),
+                    size_unit: RCMFormData.size_unit,
                     price: RCMFormData.max_price,
                     min_price: RCMFormData.min_price,
                 }

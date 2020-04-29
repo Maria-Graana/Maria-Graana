@@ -59,8 +59,6 @@ export default styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    paddingTop: 35,
-    paddingBottom: 0
   },
   iconInner: {
     flexDirection: 'row',

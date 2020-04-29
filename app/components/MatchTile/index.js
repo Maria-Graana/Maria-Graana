@@ -46,7 +46,7 @@ class InventoryTile extends React.Component {
 		}
 		if (data.graana_id) phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user && data.user.phoneNumber ? data.user.phoneNumber : null
-		
+
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row', marginVertical: 2 }}
 				onLongPress={() => {
@@ -84,16 +84,18 @@ class InventoryTile extends React.Component {
 						<Feather name={'camera'} color={'#fff'} size={16} />
 						<Text style={styles.imageCount}>{data.armsPropertyImages && data.armsPropertyImages.length}</Text>
 					</View>
-					<View style={[AppStyles.mb1, styles.pad5]}>
-						<Text style={styles.currencyText}> PKR  <Text style={styles.priceText}>{data.price}</Text> </Text>
-						<Text numberOfLines={1} style={styles.marlaText}> {data.size} {data.size_unit} {data.subtype && helper.capitalize(data.subtype)} For {data.purpose && helper.capitalize(data.purpose)} </Text>
-						<Text numberOfLines={1} style={styles.addressText}> {data.area ? data.area.name + ', ' : null} {data.city ? data.city.name : null} </Text>
+					<View style={[AppStyles.mb1, styles.pad5, { paddingBottom: 2, justifyContent: 'space-between' }]}>
+						<View>
+							<Text style={styles.currencyText}> PKR  <Text style={styles.priceText}>{data.price}</Text> </Text>
+							<Text numberOfLines={1} style={styles.marlaText}> {data.size} {data.size_unit} {data.subtype && helper.capitalize(data.subtype)} For {data.purpose && helper.capitalize(data.purpose)} </Text>
+							<Text numberOfLines={1} style={styles.addressText}> {data.area ? data.area.name + ', ' : null} {data.city ? data.city.name : null} </Text>
+						</View>
 						<View style={styles.iconContainer}>
-							<View style={styles.iconInner}>
+							<View style={[styles.iconInner, { paddingBottom: 0 }]}>
 								<Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
 								<Text style={{ fontSize: 18 }}> {data.bed} </Text>
 							</View>
-							<View style={styles.iconInner}>
+							<View style={[styles.iconInner, { paddingBottom: 0 }]}>
 								<FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
 								<Text style={{ fontSize: 18 }}> {data.bath} </Text>
 							</View>

@@ -41,7 +41,6 @@ export default styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    paddingTop: 25
   },
   textStyle: {
     fontSize: 12,

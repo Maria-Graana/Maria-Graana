@@ -14,6 +14,7 @@ import BuyPaymentView from './buyPaymentView';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import _ from 'underscore';
 import StaticData from '../../StaticData';
+import helper from '../../helper';
 import { formatPrice } from '../../PriceFormate'
 import { setlead } from '../../actions/lead';
 import RentPaymentView from './rentPaymentView';
@@ -65,59 +66,73 @@ class LeadRCMPayment extends React.Component {
         const { dispatch } = this.props;
         const { rcmProgressBar } = StaticData
         let properties = [];
-        this.setState({ loading: true });
-        axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
-            dispatch(setlead(response.data));
-            this.setState({ progressValue: rcmProgressBar[lead.status] })
-            if (response.data.shortlist_id === null) {
-                this.getShortlistedProperties(lead)
-            }
-            else {
-                if (response.data.paymentProperty) {
-                    properties.push(response.data.paymentProperty);
+        this.setState({ loading: true }, () => {
+            axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
+                dispatch(setlead(response.data));
+                this.setState({ progressValue: rcmProgressBar[lead.status] })
+                if (response.data.shortlist_id === null) {
+                    this.getShortlistedProperties(lead)
+                    return;
                 }
                 else {
-                    alert('Something went wrong...')
+                    if (response.data.paymentProperty) {
+                        properties.push(response.data.paymentProperty);
+                        properties = helper.propertyCheck(properties)
+                        this.setState({
+                            loading: false,
+                            allProperties: properties.length > 0 && properties,
+                            selectedReason: '',
+                            checkReasonValidation: '',
+                            agreedAmount: lead.payment ? String(lead.payment) : '',
+                            token: lead.token ? String(lead.token) : '',
+                            commissionPayment: lead.commissionPayment ? String(lead.commissionPayment) : '',
+                            formData: {
+                                contract_months: lead.contract_months ? String(lead.contract_months) : '',
+                                security: lead.security ? String(lead.security) : '',
+                                advance: lead.advance ? String(lead.advance) : '',
+                                monthlyRent: lead.monthlyRent ? String(lead.monthlyRent) : ''
+                            }
+                        }, () => {
+                            this.checkCommissionPayment(response.data);
+                        })
+                    }
+                    else {
+                        alert('Something went wrong...')
+                    }
                 }
-            }
-            this.setState({
-                loading: false,
-                allProperties: properties.length > 0 && properties,
-                selectedReason: '',
-                checkReasonValidation: '',
-                agreedAmount: lead.payment ? String(lead.payment) : '',
-                token: lead.token ? String(lead.token) : '',
-                commissionPayment: lead.commissionPayment ? String(lead.commissionPayment) : '',
-                formData: {
-                    contract_months: lead.contract_months ? String(lead.contract_months) : '',
-                    security: lead.security ? String(lead.security) : '',
-                    advance: lead.advance ? String(lead.advance) : '',
-                    monthlyRent: lead.monthlyRent ? String(lead.monthlyRent) : ''
-                }
-            }, () => {
-                this.checkCommissionPayment(response.data);
+
+            }).catch(error => {
+                console.log(error)
+                this.setState({
+                    loading: false,
+                })
             })
-        }).catch(error => {
-            console.log(error)
-            this.setState({
-                loading: false,
-            })
-        })
+        });
+
 
     }
 
     getShortlistedProperties = (lead) => {
         let matches = []
         axios.get(`/api/leads/${lead.id}/shortlist`)
-            .then((res) => {
-                matches = helper.propertyCheck(res.data.rows)
+            .then((response) => {
+                matches = helper.propertyCheck(response.data.rows)
                 this.setState({
                     allProperties: matches,
                     loading: false,
                     selectedReason: '',
                     checkReasonValidation: '',
+                    agreedAmount: lead.payment ? String(lead.payment) : '',
+                    token: lead.token ? String(lead.token) : '',
+                    commissionPayment: lead.commissionPayment ? String(lead.commissionPayment) : '',
+                    formData: {
+                        contract_months: lead.contract_months ? String(lead.contract_months) : '',
+                        security: lead.security ? String(lead.security) : '',
+                        advance: lead.advance ? String(lead.advance) : '',
+                        monthlyRent: lead.monthlyRent ? String(lead.monthlyRent) : ''
+                    }
                 }, () => {
-                    this.checkCommissionPayment(lead);
+                    this.checkCommissionPayment(response.data);
                 })
             })
             .catch((error) => {
@@ -188,13 +203,13 @@ class LeadRCMPayment extends React.Component {
                 this.getSelectedProperty(response.data);
 
             });
-          
+
         }).catch(error => {
             console.log('errorr', error);
         })
     }
 
-    
+
     showConfirmationDialog(item) {
         Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
             { text: 'No', style: 'cancel' },
@@ -221,31 +236,18 @@ class LeadRCMPayment extends React.Component {
     }
 
     handleAgreedAmountChange = (agreedAmount) => {
-        if (agreedAmount === '') {
-            this.setState({ showAgreedAmountArrow: false, agreedAmount: '' });
-        }
-        else {
-            this.setState({ agreedAmount, showAgreedAmountArrow: true });
-        }
+        if (agreedAmount === '') { this.setState({ agreedAmount: '' }) }
+        else if (agreedAmount !== '') { this.setState({ agreedAmount, showAgreedAmountArrow: true }) }
     }
 
     handleTokenAmountChange = (token) => {
-        if (token === '') {
-            this.setState({ showTokenAmountArrow: false, token: '' });
-        }
-        else {
-            this.setState({ token, showTokenAmountArrow: true });
-
-        }
+        if (token === '') { this.setState({ token: '' }) }
+        else if (token !== '') { this.setState({ token, showTokenAmountArrow: true }) }
     }
 
     handleCommissionAmountChange = (commissionPayment) => {
-        if (commissionPayment === '') {
-            this.setState({ showCommissionAmountArrow: false, commissionPayment: '' });
-        }
-        else {
-            this.setState({ commissionPayment, showCommissionAmountArrow: true })
-        }
+        if (commissionPayment === '') { this.setState({ commissionPayment: '' }) }
+        if (commissionPayment !== '') { this.setState({ commissionPayment, showCommissionAmountArrow: true }) }
     }
 
     convertToInteger = (val) => {
@@ -260,10 +262,7 @@ class LeadRCMPayment extends React.Component {
     handleTokenAmountPress = () => {
         const { token } = this.state;
         const { lead } = this.state
-        const { allProperties } = this.state;
-        const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.shortlist_id = selectedProperty.id;
         payload.token = this.convertToInteger(token);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
@@ -276,10 +275,7 @@ class LeadRCMPayment extends React.Component {
     handleAgreedAmountPress = () => {
         const { agreedAmount } = this.state;
         const { lead } = this.state
-        const { allProperties } = this.state;
-        const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.shortlist_id = selectedProperty.id;
         payload.payment = this.convertToInteger(agreedAmount);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
@@ -293,14 +289,11 @@ class LeadRCMPayment extends React.Component {
     handleCommissionAmountPress = () => {
         const { commissionPayment } = this.state;
         const { lead } = this.state
-        const { allProperties } = this.state;
-        const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.shortlist_id = selectedProperty.id;
         payload.commissionPayment = this.convertToInteger(commissionPayment);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
-            this.setState({ showCommissionAmountArrow: false, lead: response.data })
+            this.setState({ showCommissionAmountArrow: false, lead: response.data },()=>  this.checkCommissionPayment(response.data))
         }).catch(error => {
             console.log(error);
         })
@@ -310,10 +303,7 @@ class LeadRCMPayment extends React.Component {
         const { formData } = this.state;
         const { monthlyRent } = formData;
         const { lead } = this.state
-        const { allProperties } = this.state;
-        const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.shortlist_id = selectedProperty.id;
         payload.monthlyRent = this.convertToInteger(monthlyRent);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
@@ -425,7 +415,7 @@ class LeadRCMPayment extends React.Component {
         return (
             !loading ?
                 <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
-                    <ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
+                    <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
                     <LeadRCMPaymentPopup
                         reasons={reasons}
                         selectedReason={selectedReason}
@@ -437,7 +427,7 @@ class LeadRCMPayment extends React.Component {
                     />
                     <View style={{ flex: 1 }}>
                         {
-                            allProperties.length ?
+                            allProperties.length > 0 ?
                                 <FlatList
                                     data={allProperties}
                                     renderItem={(item, index) => (

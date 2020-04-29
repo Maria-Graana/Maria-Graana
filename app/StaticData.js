@@ -230,7 +230,7 @@ export default StaticData = {
             value: 'client_not_satisfied'
         }
     ],
-    paymentPopup: [
+    paymentPopupDone: [
         {
             name: 'Payment Done',
             value: 'payment_done'
@@ -244,7 +244,7 @@ export default StaticData = {
             value: 'client_not_satisfied'
         }
     ],
-    paymentPopupDone: [
+    paymentPopup: [
         {
             name: 'Client not responding',
             value: 'client_not_responding'
@@ -296,8 +296,8 @@ export default StaticData = {
         { value: 'all', name: 'All' },
         { value: 'open', name: 'Open' },
         { value: 'viewing', name: 'Viewing' },
-        { value: 'propsure', name: 'Propsure' },
         { value: 'offer', name: 'Offer' },
+        { value: 'propsure', name: 'Propsure' },
         { value: 'token', name: 'Token' },
         { value: 'payments', name: 'Payments' },
         { value: 'closed', name: 'Closed' },
@@ -308,18 +308,19 @@ export default StaticData = {
         { value: 'called', name: 'Called' },
         { value: 'call_no_response', name: 'Call: No Response' },
         { value: 'call_powered_off', name: 'Call: Powered Off' },
-        { value: 'call_invalid_number', name: 'Call: Invalid Number' },
+        { value: 'call_invalid_number', name: 'Call: Invalid #' },
         { value: 'call_follow_up', name: 'Call: Follow-up' },
         { value: 'call_awaiting_response', name: 'Call: Awaiting Response' },
         { value: 'call_details_sent', name: 'Call: Details Sent' },
         { value: 'call_expected_visit', name: 'Call: Expected Visit' },
         { value: 'call_not_interested', name: 'Call: Not Interested' },
-        { value: 'meeting_payments', name: 'Meeting: Payments' },
-        { value: 'meeting_closed', name: 'Meeting: Closed' },
+        { value: 'meeting', name: 'Meeting' },
         { value: 'meeting_visited', name: 'Meeting: Visited' },
         { value: 'meeting_expected_conversion', name: 'Meeting: Expected Conversion' },
         { value: 'meeting_deal_signed', name: 'Meeting: Deal Signed' },
-        { value: 'meeting_cancel_meeting', name: 'Meeting: Cancel Meeting' },
+        { value: 'token', name: 'Token' },
+        { value: 'payment', name: 'Payment' },
+        { value: 'closed', name: 'Closed' },
     ],
     cmLeadBtnOption: [
         { value: 'attachment', name: 'Attachment' },
@@ -327,30 +328,32 @@ export default StaticData = {
         { value: 'task', name: 'Task' },
     ],
     rcmProgressBar: {
-        open: 0,
-        viewing: 0.2,
-        offer: 0.4,
-        propsure: 0.6,
-        token: 0.8,
-        payment: 0.8,
+        open: 0.2,
+        viewing: 0.4,
+        offer: 0.6,
+        propsure: 0.8,
+        token: 1,
+        payment: 1,
         closed: 1
     },
     cmProgressBar: {
-        meeting_visited: 0.5,
-        meeting_expected_conversion: 0,
-        meeting_deal_signed: 0.5,
-        call_no_response: 0,
-        call_powered_off: 0,
-        call_invalid_number: 0,
-        call_follow_up: 0,
-        call_awaiting_response: 0,
+        open: 0,
+        called: 0.5,
+        call_no_response: 0.5,
+        call_powered_off: 0.5,
+        call_invalid_number: 0.5,
+        call_follow_up: 0.5,
+        call_awaiting_response: 0.5,
         call_details_sent: 0.5,
         call_expected_visit: 0.5,
-        call_not_interested: 0,
-        payment: 0.5,
-        Token: 0.5,
+        call_not_interested: 0.5,
+        meeting: 0.5,
+        meeting_visited: 0.5,
+        meeting_expected_conversion: 0.5,
+        meeting_deal_signed: 0.5,
+        Token: 1,
+        payment: 1,
         closed: 1,
-        open: 0
     },
     lead: {
         "added_by_armsroleid": 12,
@@ -443,6 +446,12 @@ export default StaticData = {
         "updatedAt": "2020-04-18T08:53:57.794Z",
         "wanted_id": null,
         "zone_id": null,
-    }
+    },
+    sortData: [
+        { name: 'Newest First', value: '&order=Desc&field=createdAt' },
+        { name: 'Newest Last', value: '&order=Asc&field=createdAt' },
+        { name: 'Recently Modified First', value: '&order=Desc&field=updatedAt' },
+        { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
+    ],
 }
 

@@ -128,7 +128,7 @@ class AddInventory extends Component {
             // console.log(this.state.formData);
             this.selectSubtype(property.type);
             this.getAreas(property.city_id);
-            this.setImagesForEditMode();
+            this.state.formData.imageIds.length>0 && this.setImagesForEditMode();
         })
     }
 

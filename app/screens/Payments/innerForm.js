@@ -161,7 +161,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
               <Text style={[AppStyles.blackInputText]}>REMAINING PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} value={formatPrice(remainingPayment.toString())} editable={false} />
+                <TextInput style={[AppStyles.blackInput]} value={remainingPayment === 'no' ? '' : formatPrice(remainingPayment.toString())} editable={false} />
               </View>
             </View>
           </View>

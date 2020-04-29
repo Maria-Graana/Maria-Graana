@@ -19,7 +19,7 @@ class AddViewing extends React.Component {
     }
 
     render() {
-        const { isVisible, onPress, date, time, handleForm, openModal, checkValidation, viewing } = this.props;
+        const { isVisible, onPress, date, time, handleForm, openModal, checkValidation, viewing, update } = this.props;
 
         return (
             <Modal
@@ -30,13 +30,12 @@ class AddViewing extends React.Component {
                 <SafeAreaView style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}>
                     <AntDesign style={styles.closeStyle} onPress={openModal} name="close" size={26} color={AppStyles.colors.textColor} />
                     <View style={[styles.viewContainer]}>
-
-                        <DateComponent date={date} mode='date' placeholder='Select Date' onDateChange={(date) => handleForm(date, 'date')} />
+                        <DateComponent date={viewing.date} mode='date' placeholder='Select Date' onDateChange={(date) => handleForm(date, 'date')} />
                         {
 							checkValidation === true && viewing.date === '' && <ErrorMessage errorMessage={'Required'} />
 						}
                         <View style={{marginVertical: 10}}/>
-                        <DateComponent date={time} mode='time' placeholder='Select Time' onTimeChange={(value) => handleForm(value, 'time')} />
+                        <DateComponent date={viewing.time} mode='time' placeholder='Select Time' onTimeChange={(value) => handleForm(value, 'time')} />
                         {
 							checkValidation === true && viewing.time === '' && <ErrorMessage errorMessage={'Required'} />
 						}
@@ -45,7 +44,7 @@ class AddViewing extends React.Component {
                         <View style={[AppStyles.mainInputWrap]}>
                             <Button
                                 style={[AppStyles.formBtn, { marginTop: 10 }]} onPress={onPress}>
-                                <Text style={AppStyles.btnText}>BOOK VIEWING</Text>
+                                <Text style={AppStyles.btnText}>{update ? 'UPDATE VIEWING' : 'BOOK VIEWING'}</Text>
                             </Button>
                         </View>
 

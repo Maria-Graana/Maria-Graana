@@ -70,10 +70,10 @@ class CMLeadFrom extends Component {
           </View>
         </View>
 
-        <View style={AppStyles.multiFormInput}>
+        {/* <View style={AppStyles.multiFormInput}> */}
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
+          <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <TextInput
                 onChangeText={(text) => { handleForm(text, 'minPrice') }}
@@ -82,14 +82,11 @@ class CMLeadFrom extends Component {
                 keyboardType={'numeric'}
               />
               <Text style={[AppStyles.countPrice]}>{formatPrice(minPrice)}</Text>
-              {
-                checkValidation === true && formData.minPrice === '' && <ErrorMessage errorMessage={'Required'} />
-              }
             </View>
           </View>
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
+          <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <TextInput
                 onChangeText={(text) => { handleForm(text, 'maxPrice') }}
@@ -98,13 +95,10 @@ class CMLeadFrom extends Component {
                 keyboardType={'numeric'}
               />
               <Text style={[AppStyles.countPrice]}>{formatPrice(formData.maxPrice)}</Text>
-              {
-                checkValidation === true && formData.maxPrice === '' && <ErrorMessage errorMessage={'Required'} />
-              }
             </View>
           </View>
 
-        </View>
+        {/* </View> */}
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

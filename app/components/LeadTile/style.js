@@ -31,11 +31,14 @@ export default styles = StyleSheet.create({
   topIcons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
   contentMainWrap: {
     position: 'relative',
     flexDirection: 'row',
-    marginTop: 15,
+    marginTop: 5,
   },
   leftContent:{
     width: '90%',

@@ -234,14 +234,24 @@ class DetailForm extends Component {
                             {/* **************************************** */}
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                                 <View style={[AppStyles.inputWrap]}>
-                                    <PickerComponent onValueChange={handleForm} data={size} selectedItem={formData.bed} name={'bed'} placeholder='Bed' />
+                                    <TextInput onChangeText={(text) => { handleForm(text, 'bed') }}
+                                        alue={formData.bed}
+                                        keyboardType='numeric'
+                                        style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                        name={'bed'}
+                                        placeholder={'Bed'} />
                                 </View>
                             </View>
 
                             {/* **************************************** */}
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
                                 <View style={[AppStyles.inputWrap]}>
-                                    <PickerComponent onValueChange={handleForm} data={size} selectedItem={formData.bath} name={'bath'} placeholder='Bath' />
+                                    <TextInput onChangeText={(text) => { handleForm(text, 'bath') }}
+                                        value={formData.bath}
+                                        keyboardType='numeric'
+                                        style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                        name={'bath'}
+                                        placeholder={'Bath'} />
                                 </View>
                             </View>
 
@@ -276,7 +286,7 @@ class DetailForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={getClients} selectedItem={formData.customer_id } name={'customer_id'} placeholder='Client' />
+                        <PickerComponent onValueChange={handleForm} data={getClients} selectedItem={formData.customer_id} name={'customer_id'} placeholder='Client' />
                         {
                             checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
                         }

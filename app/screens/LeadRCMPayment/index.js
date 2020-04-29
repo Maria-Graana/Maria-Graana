@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './styles'
-import { View, Text, FlatList, Image, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableHighlightBase } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
@@ -14,12 +14,12 @@ import BuyPaymentView from './buyPaymentView';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import _ from 'underscore';
 import StaticData from '../../StaticData';
+import helper from '../../helper';
 import { formatPrice } from '../../PriceFormate'
 import { setlead } from '../../actions/lead';
 import RentPaymentView from './rentPaymentView';
 import { FAB } from 'react-native-paper';
 import { ProgressBar, Colors } from 'react-native-paper';
-import helper from '../../helper.js'
 
 class LeadRCMPayment extends React.Component {
     constructor(props) {
@@ -65,7 +65,7 @@ class LeadRCMPayment extends React.Component {
     getSelectedProperty = (lead) => {
         const { dispatch } = this.props;
         const { rcmProgressBar } = StaticData
-        let properties = []
+        let properties = [];
         this.setState({ loading: true });
         axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
             dispatch(setlead(response.data));
@@ -94,7 +94,7 @@ class LeadRCMPayment extends React.Component {
                     contract_months: lead.contract_months ? String(lead.contract_months) : '',
                     security: lead.security ? String(lead.security) : '',
                     advance: lead.advance ? String(lead.advance) : '',
-                    monthlyRent: lead.monthlyRent ? String(tmonthlyRent) : ''
+                    monthlyRent: lead.monthlyRent ? String(lead.monthlyRent) : ''
                 }
             }, () => {
                 this.checkCommissionPayment(response.data);
@@ -109,7 +109,7 @@ class LeadRCMPayment extends React.Component {
     }
 
     getShortlistedProperties = (lead) => {
-        let matches = [];
+        let matches = []
         axios.get(`/api/leads/${lead.id}/shortlist`)
             .then((res) => {
                 matches = helper.propertyCheck(res.data.rows)
@@ -196,10 +196,19 @@ class LeadRCMPayment extends React.Component {
         })
     }
 
+
+    showConfirmationDialog(item) {
+        Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
+            { text: 'No', style: 'cancel' },
+            { text: 'Yes', onPress: () => this.selectDifferentProperty() },
+        ],
+            { cancelable: false })
+    }
+
     renderSelectPaymentView = (item) => {
         const { lead } = this.state;
         return (
-            <TouchableOpacity key={item.id.toString()} onPress={lead.shortlist_id === null ? () => this.selectForPayment(item) : () => this.selectDifferentProperty()} style={styles.viewButtonStyle} activeOpacity={0.7}>
+            <TouchableOpacity key={item.id.toString()} onPress={lead.shortlist_id === null ? () => this.selectForPayment(item) : () => this.showConfirmationDialog()} style={styles.viewButtonStyle} activeOpacity={0.7}>
                 <Text style={styles.buttonTextStyle}>
                     {
                         lead.shortlist_id === null ?
@@ -399,7 +408,7 @@ class LeadRCMPayment extends React.Component {
         return (
             !loading ?
                 <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
-                    <ProgressBar progress={progressValue} color={'#0277FD'} />
+                    <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
                     <LeadRCMPaymentPopup
                         reasons={reasons}
                         selectedReason={selectedReason}

@@ -6,10 +6,15 @@ import helper from '../../helper'
 import { Ionicons, FontAwesome, Entypo, Feather } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { CheckBox } from 'native-base';
+import { Menu } from 'react-native-paper';
+
 
 class InventoryTile extends React.Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			menuShow: false
+		}
 	}
 
 	_renderItem = (item) => {
@@ -18,21 +23,29 @@ class InventoryTile extends React.Component {
 		)
 	}
 
+	toggleMenu = (val) => {
+		this.setState({ menuShow: val })
+	}
+
 	render() {
-		const { data, menuShow, showCheckBoxes, organization } = this.props
+		const { data, isMenuVisible, showCheckBoxes } = this.props
+		const { menuShow } = this.state
 		let imagesList = []
-		let showLable = menuShow || false
+		let show = isMenuVisible
 		let phoneNumber = null
-		if ('armsPropertyImages' in data && data.armsPropertyImages!==undefined) {
-			if (data.armsPropertyImages.length > 0) {
-				imagesList = data.armsPropertyImages.map((item) => {
-					return item.url
-				})
+		
+		if (data.images.length > 0) {
+			imagesList = data.images.map((item) => {
+				return item.url
+			})
+		}
+		if (isMenuVisible) {
+			if (data.diaries && data.diaries.length) {
+				if (data.diaries[0].status === 'completed') show = false
 			}
 		}
-
-		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
-		else phoneNumber = data.user.phoneNumber
+		if (data.graana_id) phoneNumber = data.user ? data.user.phone : null
+		else phoneNumber = data.user && data.user.phoneNumber ? data.user.phoneNumber : null
 
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row', marginVertical: 2 }}
@@ -88,28 +101,41 @@ class InventoryTile extends React.Component {
 					</View>
 					<View style={styles.phoneIcon}>
 						{
-							showLable ?
-								<TouchableOpacity
-									style={{ justifyContent: "center", borderRadius: 10, borderColor: AppStyles.colors.primaryColor, borderWidth: 1, }}
-									onPress={() => { this.props.doneViewing(data) }}>
-									<Text style={{ color: AppStyles.colors.primaryColor, fontSize: 10, padding: 2 }}> Done </Text>
-								</TouchableOpacity>
+							show ?
+								<Menu
+									visible={menuShow}
+									onDismiss={() => this.toggleMenu(false)}
+									anchor={
+										<Entypo onPress={() => this.toggleMenu(true)} name='dots-three-vertical' size={20} />
+									}
+								>
+									{
+										data.diaries && data.diaries.length && data.diaries[0].status === 'pending' ?
+											<View>
+												<Menu.Item onPress={() => { this.props.doneViewing(data) }} title="Viewing done" />
+												<Menu.Item onPress={() => { this.props.cancelViewing(data) }} title="Cancel Viewing" />
+											</View>
+											:
+											<Menu.Item onPress={() => { this.props.deleteProperty(data) }} title="Remove from the list" />
+									}
+								</Menu>
+								:
+								null
+						}
+						{
+							showCheckBoxes ?
+								<View style={{ marginRight: 15, marginTop: 5 }}>
+									<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
+								</View>
 								:
 								<View />
 						}
 						<View style={{ flexDirection: 'row-reverse' }}>
-							<FontAwesome onPress={() => { helper.callNumber(phoneNumber) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+							<FontAwesome onPress={() => { helper.callNumber(`tel:${phoneNumber}`) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 						</View>
 					</View>
 				</View>
-				{
-					showCheckBoxes ?
-						<View style={{ marginRight: 5, marginTop: 5 }}>
-							<CheckBox onPress={() => { this.props.addProperty(data) }} color={AppStyles.colors.primaryColor} checked={data.checkBox} />
-						</View>
-						:
-						null
-				}
+
 			</TouchableOpacity>
 		)
 	}

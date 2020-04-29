@@ -152,8 +152,8 @@ class AddRCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            if (RCMFormData.min_price > RCMFormData.max_price) {
-                helper.errorToast('Min Price Greater Than Max Price')
+            if (RCMFormData.min_price > RCMFormData.max_price || RCMFormData.min_price == RCMFormData.max_price) {
+                helper.errorToast('Max Price cannot be less than Min Price')
             } else {
                 let payLoad = {
                     purpose: formType,
@@ -165,7 +165,7 @@ class AddRCMLead extends Component {
                     leadAreas: RCMFormData.leadAreas,
                     customerId: RCMFormData.customerId,
                     city_id: RCMFormData.city_id,
-                    size_unit: RCMFormData.size_unit,
+                    size_unit: parseInt(RCMFormData.size_unit),
                     price: RCMFormData.max_price,
                     min_price: RCMFormData.min_price,
                 }

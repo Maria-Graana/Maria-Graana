@@ -93,13 +93,13 @@ class AddCMLead extends Component {
 
     formSubmit = () => {
         const { formData } = this.state
-        if (!formData.customerId || !formData.projectId || !formData.projectType || !formData.minPrice || !formData.maxPrice) {
+        if (!formData.customerId || !formData.projectId || !formData.projectType) {
             this.setState({
                 checkValidation: true
             })
         } else {
-            if (formData.minPrice > formData.maxPrice) {
-                helper.errorToast('Min Price Greater Than Max Price')
+            if (formData.minPrice > formData.maxPrice || formData.minPrice == formData.maxPrice) {
+                helper.errorToast('Max Price cannot be less than Min Price')
             } else {
                 let body = {
                     ...formData,

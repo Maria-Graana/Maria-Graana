@@ -3,7 +3,6 @@ import styles from './styles'
 import { View, Text, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import * as DocumentPicker from 'expo-document-picker';
-import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import AppStyles from '../../AppStyles'
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
@@ -13,8 +12,9 @@ import PropsurePackagePopup from '../../components/PropsurePackagePopup/index'
 import PropsureDocumentPopup from '../../components/PropsureDocumentPopup/index'
 import _ from 'underscore';
 import StaticData from '../../StaticData';
+import helper from '../../helper';
 import { FAB } from 'react-native-paper';
-import { ProgressBar, Colors } from 'react-native-paper';
+import { ProgressBar } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 
 class LeadPropsure extends React.Component {
@@ -22,7 +22,7 @@ class LeadPropsure extends React.Component {
         super(props)
         this.state = {
             loading: true,
-            open:false,
+            open: false,
             isVisible: false,
             documentModalVisible: false,
             checkValidation: false,
@@ -51,14 +51,14 @@ class LeadPropsure extends React.Component {
     fetchProperties = () => {
         const { lead } = this.props
         const { rcmProgressBar } = StaticData
-
+        let matches = []
         this.setState({ loading: true }, () => {
             axios.get(`/api/leads/${lead.id}/shortlist`)
                 .then((res) => {
-                    //console.log(res.data.rows);
+                    matches = helper.propertyCheck(res.data.rows)
                     this.setState({
                         loading: false,
-                        matchData: res.data.rows,
+                        matchData: matches,
                         selectedPropertyId: null,
                         selctedPropsureId: null,
                         selectedPackage: '',
@@ -79,30 +79,30 @@ class LeadPropsure extends React.Component {
     }
 
     fetchLead = () => {
-		const { lead } = this.props
-		axios.get(`api/leads/byid?id=${lead.id}`)
-			.then((res) => {
-				this.props.dispatch(setlead(res.data))
-			})
-			.catch((error) => {
-				console.log(error)
-			})
-	}
+        const { lead } = this.props
+        axios.get(`api/leads/byid?id=${lead.id}`)
+            .then((res) => {
+                this.props.dispatch(setlead(res.data))
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
 
     displayChecks = () => { }
 
     addProperty = () => { }
 
-	ownProperty = (property) => {
-		const { user } = this.props
-		const { organization } = this.state
-		if (property.assigned_to_armsuser_id) {
-			return user.id === property.assigned_to_armsuser_id
-		}
-		else {
-			return false
-		}
-	}
+    ownProperty = (property) => {
+        const { user } = this.props
+        const { organization } = this.state
+        if (property.assigned_to_armsuser_id) {
+            return user.id === property.assigned_to_armsuser_id
+        }
+        else {
+            return false
+        }
+    }
 
     closeModal = () => {
         this.setState({ isVisible: false })
@@ -209,7 +209,7 @@ class LeadPropsure extends React.Component {
     renderPropsureVerificationView = (item) => {
         return (
             <TouchableOpacity key={item.id.toString()} onPress={() => this.showPackageModal(item.id)}
-                style={[styles.viewButtonStyle,{backgroundColor:AppStyles.bgcWhite.backgroundColor}]} activeOpacity={0.7}>
+                style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]} activeOpacity={0.7}>
                 <Text style={styles.propsureVerificationTextStyle}>
                     PROPSURE VERIFICATION
                 </Text>
@@ -235,7 +235,7 @@ class LeadPropsure extends React.Component {
     }
 
     goToDiaryForm = () => {
-        const { lead, navigation,user } = this.props
+        const { lead, navigation, user } = this.props
         navigation.navigate('AddDiary', {
             update: false,
             rcmLeadId: lead.id,
@@ -254,11 +254,11 @@ class LeadPropsure extends React.Component {
     }
 
     render() {
-        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation,open, progressValue } = this.state;
+        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, open, progressValue } = this.state;
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
-                    <ProgressBar progress={progressValue} color={'#0277FD'} />
+                    <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
                     <PropsurePackagePopup
                         packages={packages}
                         selectedPackage={selectedPackage}
@@ -318,17 +318,17 @@ class LeadPropsure extends React.Component {
                         }
                     </View>
                     <FAB.Group
-						open={open}
-						icon="plus"
-						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-						color={AppStyles.bgcWhite.backgroundColor}
-						actions={[
-							{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-							{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-							{ icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-						]}
-						onStateChange={({ open }) => this.setState({ open })}
-					/>
+                        open={open}
+                        icon="plus"
+                        fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+                        color={AppStyles.bgcWhite.backgroundColor}
+                        actions={[
+                            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+                            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+                            { icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+                        ]}
+                        onStateChange={({ open }) => this.setState({ open })}
+                    />
                 </View>
                 :
                 <Loader loading={loading} />

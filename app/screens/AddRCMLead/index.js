@@ -65,7 +65,15 @@ class AddRCMLead extends Component {
         axios.get(`/api/customer/find?userId=${id}`)
             .then((res) => {
                 let clientsArray = [];
-                res && res.data.rows.map((item, index) => { return (clientsArray.push({ value: item.id, name: item.firstName })) })
+                res && res.data.rows.map((item, index) => {
+                    return (
+                        clientsArray.push(
+                            {
+                                value: item.id, name: item.firstName === '' || item.firstName === null ? item.contact1 : item.firstName + ' ' + item.lastName
+                            }
+                        )
+                    )
+                })
                 this.setState({
                     getClients: clientsArray
                 })
@@ -136,7 +144,7 @@ class AddRCMLead extends Component {
         if (
             !RCMFormData.customerId ||
             !RCMFormData.city_id ||
-            !RCMFormData.leadAreas||
+            !RCMFormData.leadAreas ||
             !RCMFormData.type ||
             !RCMFormData.subtype
         ) {
@@ -144,8 +152,8 @@ class AddRCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            if (RCMFormData.min_price > RCMFormData.max_price) {
-                helper.errorToast('Min Price Greater Than Max Price')
+            if (RCMFormData.min_price > RCMFormData.max_price || RCMFormData.min_price == RCMFormData.max_price) {
+                helper.errorToast('Max Price cannot be less than Min Price')
             } else {
                 let payLoad = {
                     purpose: formType,
@@ -157,7 +165,7 @@ class AddRCMLead extends Component {
                     leadAreas: RCMFormData.leadAreas,
                     customerId: RCMFormData.customerId,
                     city_id: RCMFormData.city_id,
-                    size_unit: RCMFormData.size_unit,
+                    size_unit: parseInt(RCMFormData.size_unit),
                     price: RCMFormData.max_price,
                     min_price: RCMFormData.min_price,
                 }

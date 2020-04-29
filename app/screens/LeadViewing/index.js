@@ -30,7 +30,10 @@ class LeadViewing extends React.Component {
 			},
 			checkValidation: false,
 			currentProperty: {},
-			progressValue: 0
+			progressValue: 0,
+			menuShow: false,
+			updateViewing: false,
+			isMenuVisible: true
 		}
 	}
 
@@ -44,11 +47,13 @@ class LeadViewing extends React.Component {
 	fetchProperties = () => {
 		const { lead } = this.props
 		const { rcmProgressBar } = StaticData
+		let matches = []
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
+				matches = helper.propertyCheck(res.data.rows)
 				this.setState({
 					loading: false,
-					matchData: res.data.rows,
+					matchData: matches,
 					progressValue: rcmProgressBar[lead.status]
 				})
 			})
@@ -113,7 +118,31 @@ class LeadViewing extends React.Component {
 	}
 
 	setProperty = (property) => {
-		this.setState({ currentProperty: property })
+		this.setState({ currentProperty: property, updateViewing: false })
+	}
+
+	updateProperty = (property) => {
+		if (property.diaries.length) {
+			if (property.diaries[0].status === 'pending') {
+				let diary = property.diaries[0]
+				let startReplace = ''
+				if (diary.start) {
+					startReplace = diary.start.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
+				}
+				else {
+					startReplace = diary.time.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
+				}
+				let date = moment(diary.date).utcOffset(diary.date).format('YYYY-MM-DD')
+				this.setState({
+					currentProperty: property,
+					viewing: {
+						date: date,
+						time: startReplace
+					},
+					updateViewing: true
+				})
+			}
+		}
 	}
 
 	handleForm = (value, name) => {
@@ -123,24 +152,67 @@ class LeadViewing extends React.Component {
 	}
 
 	submitViewing = () => {
-		const { viewing } = this.state
+		const { viewing, updateViewing } = this.state
 		if (!viewing.time || !viewing.date) {
 			this.setState({
 				checkValidation: true
 			})
 		} else {
-			this.createViewing()
+			if (updateViewing) this.updateViewing()
+			else this.createViewing()
+		}
+	}
+
+	updateViewing = () => {
+		const { viewing, currentProperty } = this.state
+		const { lead } = this.props
+		if (currentProperty.diaries.length) {
+			let diary = currentProperty.diaries[0]
+			let start = moment(viewing.date + viewing.time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+			let end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss')
+			let body = {
+				date: viewing.date,
+				time: viewing.time,
+				start: start,
+				end: end,
+				subject: diary.subject
+			}
+			axios.patch(`/api/diary/update?id=${diary.id}`, body)
+				.then((res) => {
+					this.setState({
+						isVisible: false,
+						loading: true
+					})
+					let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
+					let start = helper.convertTimeZone(res.data.start)
+					let end = helper.convertTimeZone(res.data.end)
+					let data = {
+						title: res.data.subject,
+						body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+					}
+					TimerNotification(data, timeStamp)
+					this.fetchLead()
+					this.fetchProperties()
+				})
+				.catch((error) => {
+					console.log(error)
+				})
 		}
 	}
 
 	createViewing = () => {
 		const { viewing, currentProperty } = this.state
 		const { lead } = this.props
+		let customer = lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName) || ''
+		let areaName = currentProperty.area && currentProperty.area.name && currentProperty.area.name || ''
+		let customerId = lead.customer && lead.customer.id
 		let body = {
 			date: viewing.date,
 			time: viewing.time,
 			propertyId: currentProperty.id,
-			leadId: lead.id
+			leadId: lead.id,
+			subject: "Viewing with " + customer + " at " + areaName,
+			customerId: customerId
 		}
 		axios.post(`/api/leads/viewing`, body)
 			.then((res) => {
@@ -192,6 +264,7 @@ class LeadViewing extends React.Component {
 							justifyContent: "center",
 							alignItems: "center"
 						}}
+						onPress={() => { this.openModal(); this.updateProperty(property) }}
 					>
 						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Viewing at <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>{moment(helper.convertTimeZone(property.diaries[0].start)).format('LLL')}</Text></Text>
 					</TouchableOpacity >
@@ -235,17 +308,44 @@ class LeadViewing extends React.Component {
 		}
 	}
 
+	cancelViewing = (property) => {
+		if (property.diaries.length) {
+			if (property.diaries[0].status === 'pending') {
+				axios.delete(`/api/diary/delete?id=${property.diaries[0].id}`)
+					.then((res) => {
+						this.setState({ loading: true })
+						this.fetchProperties()
+					})
+					.catch((error) => {
+						console.log(error)
+					})
+			}
+		}
+	}
+
+	deleteProperty = (property) => {
+		axios.delete(`/api/leads/shortlisted?id=${property.id}`)
+			.then((res) => {
+				this.setState({ loading: true })
+				this.fetchProperties()
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+	}
+
 	render() {
-		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue } = this.state
+		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue, menuShow, updateViewing, isMenuVisible } = this.state
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
 					<View>
-						<ProgressBar progress={progressValue} color={'#0277FD'} />
+						<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					</View>
 					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
 						<View style={{ flex: 1 }}>
 							<AddViewing
+								update={updateViewing}
 								onPress={this.submitViewing}
 								handleForm={this.handleForm}
 								openModal={this.openModal}
@@ -261,8 +361,10 @@ class LeadViewing extends React.Component {
 												{
 													this.ownProperty(item.item) ?
 														<MatchTile
+															deleteProperty={this.deleteProperty}
+															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
-															menuShow={true}
+															isMenuVisible={isMenuVisible}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}
@@ -271,8 +373,10 @@ class LeadViewing extends React.Component {
 														/>
 														:
 														<AgentTile
+															deleteProperty={this.deleteProperty}
+															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
-															menuShow={true}
+															isMenuVisible={isMenuVisible}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}

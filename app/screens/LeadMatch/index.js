@@ -1,14 +1,12 @@
 import * as React from 'react';
 import styles from './style'
-import { View, Text, FlatList, Image } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
-import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons';
 import Ability from '../../hoc/Ability';
 import { CheckBox } from 'native-base';
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import Loader from '../../components/loader';
 import FilterModal from '../../components/FilterModal/index';
@@ -18,7 +16,7 @@ import { setlead } from '../../actions/lead';
 import { FAB } from 'react-native-paper';
 import StaticData from '../../StaticData';
 import { ProgressBar, Colors } from 'react-native-paper';
-import { widthPercentageToDP } from 'react-native-responsive-screen';
+import { widthPercentageToDP, heightPercentageToDP } from 'react-native-responsive-screen';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -66,7 +64,9 @@ class LeadMatch extends React.Component {
             cities: [],
             areas: [],
             subTypVal: [],
-            progressValue: 0
+            progressValue: 0,
+            filterColor: false,
+            maxCheck: false
         }
     }
 
@@ -85,24 +85,43 @@ class LeadMatch extends React.Component {
         })
     }
 
-
-
     filterModal = () => {
         const { showFilter } = this.state
         this.setState({
+            filterColor: false,
             showFilter: !showFilter,
             matchesBol: false,
         })
     }
 
     submitFilter = (formData) => {
-        this.setState({
-            formData: formData,
-            showFilter: false,
-            loading: true,
-        }, () => {
-            this.fetchMatches()
-        })
+        if (formData.maxPrice && formData.maxPrice !== '' && formData.minPrice && formData.minPrice !== '') {
+            if (Number(formData.maxPrice) >= Number(formData.minPrice)) {
+                this.setState({
+                    formData: formData,
+                    showFilter: false,
+                    loading: true,
+                    filterColor: true,
+                    maxCheck: false
+                }, () => {
+                    this.fetchMatches()
+                })
+            } else {
+                this.setState({
+                    maxCheck: true
+                })
+            }
+        } else {
+            this.setState({
+                formData: formData,
+                showFilter: false,
+                loading: true,
+                filterColor: true,
+                maxCheck: false
+            }, () => {
+                this.fetchMatches()
+            })
+        }
     }
 
     canCallApi = () => {
@@ -139,6 +158,7 @@ class LeadMatch extends React.Component {
                 })
             }
         }
+        if (!lead.size_unit) lead.size_unit = 'marla'
         this.setState({
             formData: {
                 cityId: cityId,
@@ -154,14 +174,15 @@ class LeadMatch extends React.Component {
                 purpose: lead.purpose,
             },
             showFilter: false,
-            loading: true
+            loading: true,
+            filterColor: false
         }, () => {
             this.fetchMatches()
         })
     }
 
     fetchMatches = () => {
-        const { organization, matchesBol, formData, showCheckBoxes } = this.state
+        const { organization, formData, showCheckBoxes } = this.state
         const { route } = this.props
         const { lead } = route.params
         const { rcmProgressBar } = StaticData
@@ -190,16 +211,7 @@ class LeadMatch extends React.Component {
                     params: params
                 })
                 .then((res) => {
-                    res.data.rows.map((item, index) => {
-                        if ('armsuser' in item) {
-                            item.user = item.armsuser
-                            item.checkBox = false
-                            return (matches.push(item))
-                        } else {
-                            item.checkBox = false
-                            return (matches.push(item))
-                        }
-                    })
+                    matches = helper.propertyCheck(res.data.rows)
                     this.setState({
                         matchData: {
                             type: organization,
@@ -359,7 +371,6 @@ class LeadMatch extends React.Component {
                     },
                     selectedProperties: [],
                     checkCount: checkCount,
-                    showCheckBoxes: false,
                     checkAllBoolean: false,
                     showCheckBoxes: false,
                     displayButton: false
@@ -373,13 +384,12 @@ class LeadMatch extends React.Component {
         const { lead } = this.props.route.params
         axios.post(`/api/leads/${lead.id}/shortlist`, selectedProperties)
             .then((res) => {
-                helper.successToast('PROPERTIES SAVED!')
                 this.unSelectAll()
                 this.props.navigation.navigate('Viewing', { lead: lead })
             })
             .catch((error) => {
                 console.log(error)
-                helper.errorToast('ERROR: SAVING PROPERTIES!')
+                helper.errorToast('ERROR: SHORTLISTING PROPERTIES!')
             })
     }
 
@@ -409,12 +419,12 @@ class LeadMatch extends React.Component {
 
     render() {
         // const { user } = this.props
-        const { progressValue, areas, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, subTypVal, formData, displayButton, open } = this.state
+        const { maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, open } = this.state
 
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
-                    <ProgressBar progress={progressValue} color={'#0277FD'} />
+                    <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
@@ -427,20 +437,34 @@ class LeadMatch extends React.Component {
                                 <Text style={[(organization === 'agency21') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Agency21 </Text>
                             </TouchableOpacity>
                         </View>
-                        <FilterModal resetFilter={this.resetFilter} formData={formData} openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter} />
-                        <View style={{ flexDirection: "row", paddingTop: 5, paddingLeft: 15 }}>
-                            <View style={{ marginRight: 15 }}>
-                                <CheckBox onPress={() => { this.unSelectAll() }} color={AppStyles.colors.primaryColor} checked={checkAllBoolean} />
-                            </View>
-                            <View style={{ marginRight: 5 }}>
+                        <FilterModal maxCheck={maxCheck} resetFilter={this.resetFilter} formData={formData} openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter} />
+                        <View style={[{
+                            flexDirection: "row", paddingTop: 10, paddingLeft: 15, paddingBottom: 10, elevation: 10,
+                            zIndex: 15,
+                            shadowOffset: { width: 5, height: 5 },
+                            shadowColor: 'lightgrey',
+                            shadowOpacity: 1,
+                            backgroundColor: AppStyles.colors.backgroundColor
+                        }]}>
+                            {
+                                selectedProperties.length ?
+                                    <View style={{ marginRight: 15, justifyContent: 'center' }}>
+                                        <CheckBox onPress={() => { this.unSelectAll() }} color={AppStyles.colors.primaryColor} checked={checkAllBoolean} />
+                                    </View>
+                                    :
+                                    null
+                            }
+                            <View style={{ justifyContent: 'center', marginRight: 5 }}>
                                 <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}>{selectedProperties.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Selected</Text></Text>
                             </View>
-                            <View style={{ borderLeftWidth: 1, height: 15, marginTop: 5 }} />
-                            <View style={{ marginRight: 5 }}>
+                            <View style={{ borderLeftWidth: 1, height: heightPercentageToDP('1.5%'), marginTop: 5, justifyContent: 'center' }} />
+                            <View style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}> {matchData.data.length} <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Matched</Text></Text>
                             </View>
-                            <View style={{ marginLeft: 155 }}>
-                                <AntDesign onPress={() => { this.filterModal() }} name="filter" size={25} color={AppStyles.colors.subTextColor} />
+                            <View style={{ position: 'absolute', right: 15, alignSelf: 'center' }}>
+                                <TouchableOpacity onPress={() => { this.filterModal() }} >
+                                    <Image source={require('../../../assets/img/filter.png')} style={{ width: 20, height: 20, tintColor: filterColor ? AppStyles.colors.primaryColor : AppStyles.colors.subTextColor }} />
+                                </TouchableOpacity>
                             </View>
                         </View>
                         {

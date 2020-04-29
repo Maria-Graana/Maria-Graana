@@ -7,11 +7,11 @@
       "ios",
       "android"
     ],
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/img/arms1024.png",
+    "icon": "./assets/img/ICON1024.png",
     "splash": {
-      "image": "./assets/img/splash-beta.png",
+      "image": "./assets/img/Splash.png",
       "resizeMode": "cover"
     },
     "updates": {

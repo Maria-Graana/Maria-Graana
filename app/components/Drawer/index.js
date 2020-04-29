@@ -59,7 +59,10 @@ class CustomDrawerContent extends React.Component {
                     {Ability.canView(role, 'CreateUser') && <DrawerItem screen={'Create User'} navigateTo={() => { this.navigateTo('CreateUser') }} />}
                     <View style={styles.underLine} />
                     <DrawerItem screen={'Change Password'} navigateTo={() => { this.navigateTo('ChangePassword') }} />
-                    <DrawerItem screen={'Logout'} navigateTo={this.signOut} />
+                    <DrawerItem screen={'Logout'} navigateTo={() => {
+                        this.props.navigation.closeDrawer()
+                        setTimeout(() => this.signOut(), 0)
+                    }} />
                 </ScrollView>
             </SafeAreaView>
         )

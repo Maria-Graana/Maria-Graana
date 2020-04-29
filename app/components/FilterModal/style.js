@@ -20,4 +20,11 @@ export default styles = StyleSheet.create({
         overflow: 'hidden',
         borderBottomWidth: 0,
     },
+    backImg: {
+        width: 30,
+        height: 30,
+        marginTop: 5,
+        resizeMode: 'contain',
+        alignSelf: 'center',
+    },
 });

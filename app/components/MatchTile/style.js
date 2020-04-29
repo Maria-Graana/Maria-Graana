@@ -41,7 +41,6 @@ export default styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    paddingTop: 15
   },
   textStyle: {
     fontSize: 12,
@@ -65,7 +64,8 @@ export default styles = StyleSheet.create({
   },
   phoneIcon: {
     justifyContent: "space-between",
-    padding: 10
+    padding: 10,
+    paddingBottom: 0
   },
   imageCountViewStyle: {
     position: 'absolute',

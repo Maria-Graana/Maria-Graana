@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
-import { View, Vibration, Alert } from 'react-native';
+import { View, Alert, Platform } from 'react-native';
 import axios from 'axios';
 import * as Sentry from 'sentry-expo';
 
@@ -46,7 +46,6 @@ class PushNotifications extends React.Component {
                 })
             }
 
-            Sentry.captureException(`Before Function Start:`)
             let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
             Sentry.captureException(`After Function End: ${JSON.stringify(fcmPushToken)}`)
 

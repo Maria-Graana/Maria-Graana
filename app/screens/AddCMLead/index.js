@@ -44,7 +44,15 @@ class AddCMLead extends Component {
         axios.get(`/api/customer/find?userId=${id}`)
             .then((res) => {
                 let clientsArray = [];
-                res && res.data.rows.map((item, index) => { return (clientsArray.push({ value: item.id, name: item.firstName })) })
+                res && res.data.rows.map((item, index) => {
+                    return (
+                        clientsArray.push(
+                            {
+                                value: item.id, name: item.firstName === '' || item.firstName === null ? item.contact1 : item.firstName + ' ' + item.lastName
+                            }
+                        )
+                    )
+                })
                 this.setState({
                     getClients: clientsArray
                 })
@@ -85,21 +93,34 @@ class AddCMLead extends Component {
 
     formSubmit = () => {
         const { formData } = this.state
-        if (!formData.customerId || !formData.projectId || !formData.projectType || !formData.minPrice || !formData.maxPrice) {
+        if (!formData.customerId || !formData.projectId) {
             this.setState({
                 checkValidation: true
             })
         } else {
-            if (formData.minPrice > formData.maxPrice) {
-                helper.errorToast('Min Price Greater Than Max Price')
-            } else {
-                let body = {
-                    ...formData,
+            let body = {
+                ...formData,
+            }
+            if (body.maxPrice === '') body.maxPrice = null
+            if (body.minPrice === '') body.minPrice = null
+            if (body.maxPrice && body.maxPrice !== '' && body.minPrice && body.minPrice !== '') {
+                if (Number(body.maxPrice) >= Number(body.minPrice)) {
+                    axios.post(`/api/leads/project`, body)
+                        .then((res) => {
+                            helper.successToast(res.data)
+                            RootNavigation.navigate('Lead')
+                        })
+                } else {
+                    helper.errorToast('Max Price cannot be less than Min Price')
                 }
+            } else {
                 axios.post(`/api/leads/project`, body)
                     .then((res) => {
                         helper.successToast(res.data)
                         RootNavigation.navigate('Lead')
+                    })
+                    .catch((error) => {
+                        console.log(error)
                     })
             }
 

@@ -30,7 +30,7 @@ class DetailForm extends Component {
                 style={styles.backGroundImg}
                 source={{ uri: item.uri }}
                 borderRadius={5}>
-                    <AntDesign style={styles.close} name="closecircle" size={20} onPress={(e) => deleteImage(item)}  />
+                <AntDesign style={styles.close} name="closecircle" size={20} onPress={(e) => deleteImage(item)} />
             </ImageBackground>
         )
     }
@@ -60,13 +60,13 @@ class DetailForm extends Component {
             showImages,
             imagesData,
             longitude,
+            getClients,
             latitude,
             buttonText,
             buttonDisabled
         } = this.props
 
-        const { size_unit} = this.props.formData;
-
+        const { size_unit } = this.props.formData;
         return (
 
             <View>
@@ -117,8 +117,8 @@ class DetailForm extends Component {
 
                 <View style={AppStyles.multiFormInput}>
 
-                       {/* **************************************** */}
-                       <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
+                    {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                         <View style={[AppStyles.inputWrap]}>
                             <TextInput onChangeText={(text) => { handleForm(text, 'size') }} value={formData.size} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
                             {
@@ -128,16 +128,16 @@ class DetailForm extends Component {
                     </View>
 
                     {/* **************************************** */}
-                    <View style={[AppStyles.mainInputWrap, AppStyles.flexOne,AppStyles.flexMarginRight]}>
+                    <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <PickerComponent onValueChange={handleForm} name={'size_unit'} selectedItem={size_unit} data={sizeUnit}  placeholder='Size Unit' />
+                            <PickerComponent onValueChange={handleForm} name={'size_unit'} selectedItem={size_unit} data={sizeUnit} placeholder='Size Unit' />
                             {
                                 checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                     </View>
 
-                 
+
 
                 </View>
 
@@ -169,7 +169,7 @@ class DetailForm extends Component {
                     </View>
                     {/* **************************************** */}
 
-                    <Text style={[styles.countPrice,{textAlignVertical:'center'}]}>{formatPrice(price)}</Text>
+                    <Text style={[styles.countPrice, { textAlignVertical: 'center' }]}>{formatPrice(price)}</Text>
 
 
                 </View>
@@ -234,14 +234,24 @@ class DetailForm extends Component {
                             {/* **************************************** */}
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                                 <View style={[AppStyles.inputWrap]}>
-                                    <PickerComponent onValueChange={handleForm} data={size} selectedItem={formData.bed} name={'bed'} placeholder='Bed' />
+                                    <TextInput onChangeText={(text) => { handleForm(text, 'bed') }}
+                                        alue={formData.bed}
+                                        keyboardType='numeric'
+                                        style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                        name={'bed'}
+                                        placeholder={'Bed'} />
                                 </View>
                             </View>
 
                             {/* **************************************** */}
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
                                 <View style={[AppStyles.inputWrap]}>
-                                    <PickerComponent onValueChange={handleForm} data={size} selectedItem={formData.bath} name={'bath'} placeholder='Bath' />
+                                    <TextInput onChangeText={(text) => { handleForm(text, 'bath') }}
+                                        value={formData.bath}
+                                        keyboardType='numeric'
+                                        style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                        name={'bath'}
+                                        placeholder={'Bath'} />
                                 </View>
                             </View>
 
@@ -276,23 +286,13 @@ class DetailForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput onChangeText={(text) => { handleForm(text, 'ownerName') }} value={formData.ownerName} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Name'} />
+                        <PickerComponent onValueChange={handleForm} data={getClients} selectedItem={formData.customer_id} name={'customer_id'} placeholder='Client' />
+                        {
+                            checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
+                        }
                     </View>
                 </View>
 
-                {/* **************************************** */}
-                <View style={[AppStyles.mainInputWrap]}>
-                    <View style={[AppStyles.inputWrap]}>
-                        <TextInput onChangeText={(text) => { handleForm(text, 'phone') }} value={formData.phone} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Number'} />
-                    </View>
-                </View>
-
-                {/* **************************************** */}
-                <View style={[AppStyles.mainInputWrap]}>
-                    <View style={[AppStyles.inputWrap]}>
-                        <TextInput onChangeText={(text) => { handleForm(text, 'address') }} value={formData.address} style={[AppStyles.formControl, AppStyles.inputPadLeft]} placeholder={'Owner Address'} />
-                    </View>
-                </View>
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>

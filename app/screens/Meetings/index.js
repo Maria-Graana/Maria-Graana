@@ -72,6 +72,15 @@ class Meetings extends Component {
     this.setState({ formData })
   }
 
+  getMeetingLead = () => {
+    const { formData } = this.state
+    const { lead } = this.props
+    axios.get(`/api/diary/all?leadId=${lead.id}`)
+      .then((res) => {
+        this.setState({ meetings: res.data })
+      })
+  }
+
   //  ************ Form submit Function  ************ 
   formSubmit = (id) => {
     const { formData, editMeeting, meetingId } = this.state
@@ -83,9 +92,11 @@ class Meetings extends Component {
           .then((res) => {
             helper.successToast(`Meeting Updated`)
             this.getMeetingLead();
+            formData['time'] = ''
+            formData['date'] = ''
             this.setState({
               active: false,
-              formData: { time: '', date: '' },
+              formData,
               editMeeting: false,
             })
           }).catch(() => {
@@ -94,11 +105,13 @@ class Meetings extends Component {
       } else {
         axios.post(`api/leads/project/meeting`, formData)
           .then((res) => {
+            formData['time'] = ''
+            formData['date'] = ''
             helper.successToast(`Meeting Added`)
             this.getMeetingLead();
             this.setState({
               active: false,
-              formData: { time: '', date: '' }
+              formData,
             })
           }).catch(() => {
             helper.errorToast(`Some thing went wrong!!!`)
@@ -106,15 +119,6 @@ class Meetings extends Component {
       }
 
     }
-  }
-
-  getMeetingLead = () => {
-    const { formData } = this.state
-    const { lead } = this.props
-    axios.get(`/api/diary/all?leadId=${lead.id}`)
-      .then((res) => {
-        this.setState({ meetings: res.data })
-      })
   }
 
   openStatus = (data) => {
@@ -182,8 +186,6 @@ class Meetings extends Component {
       Linking.canOpenURL(url)
         .then(supported => {
           if (!supported) {
-            this.sendCallStatus()
-
             console.log("Can't handle url: " + url);
           } else {
             this.sendCallStatus()
@@ -233,7 +235,7 @@ class Meetings extends Component {
     let leadData = this.props.route.params.lead
     return (
       <View style={styles.mainWrapCon}>
-        <ProgressBar progress={progressValue} color={'#0277FD'} />
+        <ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
 
         {/* ************Fab For Open Modal************ */}
         <View style={[styles.meetingConteiner]}>
@@ -257,6 +259,20 @@ class Meetings extends Component {
             </View>
           </ScrollView>
 
+          <FAB.Group
+          open={open}
+          icon="plus"
+          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+          color={AppStyles.bgcWhite.backgroundColor}
+          actions={[
+            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+            { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+
+          ]}
+          onStateChange={({ open }) => this.setState({ open })}
+        />
+
         </View>
 
         <View style={[styles.callMeetingBtn]}>
@@ -272,19 +288,7 @@ class Meetings extends Component {
           </View>
         </View>
 
-        <FAB.Group
-          open={open}
-          icon="plus"
-          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-          color={AppStyles.bgcWhite.backgroundColor}
-          actions={[
-            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-            { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-
-          ]}
-          onStateChange={({ open }) => this.setState({ open })}
-        />
+        
 
         {/* ************Modal Component************ */}
         <MeetingModal

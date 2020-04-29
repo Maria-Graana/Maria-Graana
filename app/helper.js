@@ -2,6 +2,8 @@ import { Linking } from 'react-native';
 import { Toast } from 'native-base';
 import moment from 'moment-timezone';
 import * as Network from 'expo-network';
+import NetInfo from '@react-native-community/netinfo';
+import AppStyles from './AppStyles'
 
 const helper = {
 	successToast(message) {
@@ -28,8 +30,8 @@ const helper = {
 	internetToast(message) {
 		Toast.show({
 			text: message,
-			duration: 30000,
-			type: 'danger'
+			duration: 3000,
+			type: 'warning'
 		})
 	},
 	normalizeCnic(value) {
@@ -67,7 +69,7 @@ const helper = {
 			Linking.canOpenURL(url)
 				.then(supported => {
 					if (!supported) {
-						helper.errorToast(`No Phone Number`)
+						helper.errorToast(`No application available to dial phone number`)
 						console.log("Can't handle url: " + url);
 					} else {
 						return Linking.openURL(url)
@@ -95,14 +97,67 @@ const helper = {
 		var sub = moment(paktz, _format).subtract(duration).format();
 		return sub
 	},
-	checkInternet(){
-		Network.getNetworkStateAsync()
-			.then((res) => {
-				if (res.type === 'NONE') {
-					helper.internetToast('No Internet Connection!')
+	propertyCheck(data) {
+		let matches = []
+		if (data.length) {
+			data.map((item, index) => {
+				if (item.graana_id) {
+					item.images = item.property_images || []
+				} else {
+					item.images = item.armsPropertyImages || []
+				}
+				if ('armsuser' in item) {
+					item.user = item.armsuser
+					item.checkBox = false
+					return (matches.push(item))
+				} else {
+					item.checkBox = false
+					return (matches.push(item))
 				}
 			})
-	}
+			return matches
+		} else return []
+	},
+	setStatusText(val,todayDate) {
+		let taskDate = moment(val.date).format('L')
+		if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+			return 'To-do'
+		}
+		else if (taskDate < todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+			return 'Overdue';
+		}
+		else if (val.status === 'inProgress') {
+			return 'In Progress';
+		}
+		else if (val.status === 'completed') {
+			return 'Completed';
+		}
+		else if (val.status === 'pending') {
+			return 'To-do';
+		}
+	},
+	checkStatusColor(val,todayDate){
+		let taskDate = moment(val.date).format('L')
+		if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+		  return 'red'
+		}
+		if (taskDate < todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+		  return AppStyles.colors.subTextColor;
+		}
+		else if (val.status === 'inProgress') {
+		  return '#FDD835';
+		}
+		else if (val.status === 'completed') {
+		  return 'green';
+		}
+		else if (val.status === 'pending') {
+		  return 'red';
+		}
+		else {
+		  return 'black';
+		}
+	
+	},
 }
 
 

@@ -27,53 +27,63 @@ class LeadTile extends React.Component {
                   {data.status.split('_').join(' ').toUpperCase()}
                 </Text>
               </View>
-              <View>
+              {/* <View>
                 <TouchableOpacity style={styles.actionBtn} onPress={() => { callNumber(`tel:${data.customer && data.customer.phone}`) }}>
                   <Image
                     style={[styles.fireIcon, AppStyles.mlFive]}
                     source={phone}
                   />
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
 
             <View style={[styles.contentMainWrap]}>
-              {/* ****** Name Wrap */}
-              <View style={[styles.contentMain, AppStyles.mbTen]}>
-                <Text style={[styles.largeText, AppStyles.darkColor]}>
-                  {data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)}
-                </Text>
-              </View>
+              <View style={styles.leftContent}>
+                {/* ****** Name Wrap */}
+                <View style={[styles.contentMain, AppStyles.mbTen]}>
+                  <Text style={[styles.largeText, AppStyles.darkColor]}>
+                    {data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)}
+                  </Text>
+                </View>
 
-              {/* ****** Price Wrap */}
-              <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                <Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor, AppStyles.mrTen]}>
-                  PKR
+                {/* ****** Price Wrap */}
+                <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                  <Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor, AppStyles.mrTen]}>
+                    PKR
             	 	</Text>
-                <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
-                  {!data.projectId && data.min_price && formatPrice(data.price === null ? 0 : data.min_price) + ' - '} {!data.projectId && formatPrice(data.price === null ? 0 : data.price)}  {data.projectId && data.minPrice && formatPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && formatPrice(data.maxPrice)}
-                </Text>
-              </View>
+                  <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
+                    {!data.projectId && data.min_price && formatPrice(data.price === null ? 0 : data.min_price) + ' - '} {!data.projectId && formatPrice(data.price === null ? 0 : data.price)}  {data.projectId && data.minPrice && formatPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && formatPrice(data.maxPrice)}
+                  </Text>
+                </View>
 
-              {/* ****** Address Wrap */}
-              <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                {
-                  data.size != null && !data.projectId ?
-                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                      {data.size} {data.size_unit} {data.subtype} {data.purpose != null && 'for'} {data.purpose}
-                    </Text>
-                    :
-                    <Text style={[AppStyles.darkColor]}>
-                      {`${helper.capitalize(data.subtype)}${helper.capitalize(data.projectType)}`}
-                    </Text>
-                }
-              </View>
+                {/* ****** Address Wrap */}
+                <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                  {
+                    data.size != null && !data.projectId ?
+                      <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                        {data.size} {data.size_unit} {data.subtype} {data.purpose != null && 'for'} {data.purpose}
+                      </Text>
+                      :
+                      <Text style={[AppStyles.darkColor]}>
+                        {`${helper.capitalize(data.subtype)}${helper.capitalize(data.projectType)}`}
+                      </Text>
+                  }
+                </View>
 
-              {/* ****** Location Wrap */}
-              <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                  {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length && data.armsLeadAreas[0].area && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
-                </Text>
+                {/* ****** Location Wrap */}
+                <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                  <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                    {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.phoneMain}>
+                <TouchableOpacity style={styles.actionBtn} onPress={() => { callNumber(`tel:${data.customer && data.customer.phone}`) }}>
+                  <Image
+                    style={[styles.fireIcon, AppStyles.mlFive]}
+                    source={phone}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           </View>

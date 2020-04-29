@@ -98,16 +98,29 @@ class AddCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            if (formData.minPrice > formData.maxPrice || formData.minPrice == formData.maxPrice) {
-                helper.errorToast('Max Price cannot be less than Min Price')
-            } else {
-                let body = {
-                    ...formData,
+            let body = {
+                ...formData,
+            }
+            if (body.maxPrice === '') body.maxPrice = null
+            if (body.minPrice === '') body.minPrice = null
+            if (body.maxPrice && body.maxPrice !== '' && body.minPrice && body.minPrice !== '') {
+                if (Number(body.maxPrice) >= Number(body.minPrice)) {
+                    axios.post(`/api/leads/project`, body)
+                        .then((res) => {
+                            helper.successToast(res.data)
+                            RootNavigation.navigate('Lead')
+                        })
+                } else {
+                    helper.errorToast('Max Price cannot be less than Min Price')
                 }
+            } else {
                 axios.post(`/api/leads/project`, body)
                     .then((res) => {
                         helper.successToast(res.data)
                         RootNavigation.navigate('Lead')
+                    })
+                    .catch((error) => {
+                        console.log(error)
                     })
             }
 

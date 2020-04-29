@@ -64,12 +64,12 @@ export default styles = StyleSheet.create({
     top: 10,
   },
   tickImageStyle: {
-    width: 13,
-    height: 13,
+    width: 10,
+    height: 10,
     marginTop: 3,
     resizeMode: 'contain',
     position: 'relative',
-    top: 2,
+    top: 1,
 },
 textColorBlue:{
   color: '#0E73EE'

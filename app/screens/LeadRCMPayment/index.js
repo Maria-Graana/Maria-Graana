@@ -19,6 +19,7 @@ import { setlead } from '../../actions/lead';
 import RentPaymentView from './rentPaymentView';
 import { FAB } from 'react-native-paper';
 import { ProgressBar, Colors } from 'react-native-paper';
+import helper from '../../helper.js'
 
 class LeadRCMPayment extends React.Component {
     constructor(props) {
@@ -64,7 +65,7 @@ class LeadRCMPayment extends React.Component {
     getSelectedProperty = (lead) => {
         const { dispatch } = this.props;
         const { rcmProgressBar } = StaticData
-        let properties = [];
+        let properties = []
         this.setState({ loading: true });
         axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
             dispatch(setlead(response.data));
@@ -80,6 +81,7 @@ class LeadRCMPayment extends React.Component {
                     alert('Something went wrong...')
                 }
             }
+            properties = helper.propertyCheck(properties)
             this.setState({
                 loading: false,
                 allProperties: properties.length > 0 && properties,
@@ -107,11 +109,12 @@ class LeadRCMPayment extends React.Component {
     }
 
     getShortlistedProperties = (lead) => {
+        let matches = [];
         axios.get(`/api/leads/${lead.id}/shortlist`)
             .then((res) => {
-                //console.log('response=>', res.data.rows);
+                matches = helper.propertyCheck(res.data.rows)
                 this.setState({
-                    allProperties: res.data.rows,
+                    allProperties: matches,
                     loading: false,
                     selectedReason: '',
                     checkReasonValidation: '',
@@ -187,7 +190,7 @@ class LeadRCMPayment extends React.Component {
                 this.getSelectedProperty(response.data);
 
             });
-          
+
         }).catch(error => {
             console.log('errorr', error);
         })
@@ -211,31 +214,18 @@ class LeadRCMPayment extends React.Component {
     }
 
     handleAgreedAmountChange = (agreedAmount) => {
-        if (agreedAmount === '') {
-            this.setState({ showAgreedAmountArrow: false, agreedAmount: '' });
-        }
-        else {
-            this.setState({ agreedAmount, showAgreedAmountArrow: true });
-        }
+        if (agreedAmount === '') { this.setState({ agreedAmount: '' }) }
+        else if (agreedAmount !== '') { this.setState({ agreedAmount, showAgreedAmountArrow: true }) }
     }
 
     handleTokenAmountChange = (token) => {
-        if (token === '') {
-            this.setState({ showTokenAmountArrow: false, token: '' });
-        }
-        else {
-            this.setState({ token, showTokenAmountArrow: true });
-
-        }
+        if (token === '') { this.setState({ token: '' }) }
+        else if (token !== '') { this.setState({ token, showTokenAmountArrow: true }) }
     }
 
     handleCommissionAmountChange = (commissionPayment) => {
-        if (commissionPayment === '') {
-            this.setState({ showCommissionAmountArrow: false, commissionPayment: '' });
-        }
-        else {
-            this.setState({ commissionPayment, showCommissionAmountArrow: true })
-        }
+        if (commissionPayment === '') { this.setState({ commissionPayment: '' }) }
+        if (commissionPayment !== '') { this.setState({ commissionPayment, showCommissionAmountArrow: true }) }
     }
 
     convertToInteger = (val) => {
@@ -251,11 +241,11 @@ class LeadRCMPayment extends React.Component {
         const { token } = this.state;
         const { lead } = this.state
         const { allProperties } = this.state;
-        const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.shortlist_id = selectedProperty.id;
         payload.token = this.convertToInteger(token);
+        console.log(payload);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
+            console.log('response=>', response.data);
             this.props.dispatch(setlead(response.data));
             this.setState({ showTokenAmountArrow: false, lead: response.data })
         }).catch(error => {
@@ -267,9 +257,7 @@ class LeadRCMPayment extends React.Component {
         const { agreedAmount } = this.state;
         const { lead } = this.state
         const { allProperties } = this.state;
-        const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.shortlist_id = selectedProperty.id;
         payload.payment = this.convertToInteger(agreedAmount);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
@@ -284,9 +272,7 @@ class LeadRCMPayment extends React.Component {
         const { commissionPayment } = this.state;
         const { lead } = this.state
         const { allProperties } = this.state;
-        const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.shortlist_id = selectedProperty.id;
         payload.commissionPayment = this.convertToInteger(commissionPayment);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
@@ -301,9 +287,7 @@ class LeadRCMPayment extends React.Component {
         const { monthlyRent } = formData;
         const { lead } = this.state
         const { allProperties } = this.state;
-        const selectedProperty = allProperties[0];
         let payload = Object.create({});
-        payload.shortlist_id = selectedProperty.id;
         payload.monthlyRent = this.convertToInteger(monthlyRent);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));

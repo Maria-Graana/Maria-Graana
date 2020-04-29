@@ -56,7 +56,6 @@ export default styles = StyleSheet.create({
     letterSpacing: 0.5,
     color:AppStyles.colors.textColor,
     fontFamily: AppStyles.fonts.defaultFont,
-    
   },
   timesBtn: {
     position: 'absolute',

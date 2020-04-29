@@ -11,6 +11,7 @@ import { Button, } from 'native-base';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import styles from './style'
 import moment from 'moment';
+import helper from '../../helper.js'
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles';
 import Ability from '../../hoc/Ability';
@@ -52,34 +53,16 @@ class DairyPopup extends React.Component {
         this.closePopup();
     }
 
-    setStatusText = (val) => {
-        let taskDate = moment(val.date).format('L')
-        if (taskDate > this.state.todayDate) {
-            return 'To-do'
-        }
-        if (taskDate != this.state.todayDate && val.status !== 'completed') {
-            return 'Overdue';
-        }
-        else if (val.status === 'inProgress') {
-            return 'In Progress';
-        }
-        else if (val.status === 'completed') {
-            return 'Completed';
-        }
-        else if (val.status === 'pending') {
-            return 'To-do';
-        }
-    }
-
     render() {
         const {
             data,
             openPopup,
             screenName,
             user,
-            onLeadLinkClicked
+            onLeadLinkClicked,
         } = this.props;
         let checkTaskType = null;
+        const {todayDate} = this.state;
 
         if (data.taskType === 'Daily Task' || data.taskType === 'Weekly Task') {
             checkTaskType = false;
@@ -121,7 +104,7 @@ class DairyPopup extends React.Component {
                                     :
                                     null
                             }
-                            <Text style={[styles.statusText, { color: data.statusColor, borderColor: data.statusColor }]}>{this.setStatusText(data)}</Text>
+                            <Text style={[styles.statusText, { color: data.statusColor, borderColor: data.statusColor }]}>{helper.setStatusText(data,todayDate)}</Text>
 
                         </View>
 

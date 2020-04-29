@@ -17,7 +17,8 @@ class LeadDetail extends React.Component {
         super(props)
         this.state = {
             type: '',
-            lead: []
+            lead: [],
+            customerName: ''
         }
     }
 
@@ -52,10 +53,13 @@ class LeadDetail extends React.Component {
     fetchLead = (url) => {
         const { route } = this.props
         const { lead } = route.params
+        const that = this;
         axios.get(`${url}?id=${lead.id}`)
             .then((res) => {
                 this.props.dispatch(setlead(res.data))
-                this.setState({ lead: res.data })
+                this.setState({ lead: res.data }, () => {
+                    that.checkCustomerName(res.data);
+                })
             })
             .catch((error) => {
                 console.log(error)
@@ -78,9 +82,18 @@ class LeadDetail extends React.Component {
         }
     }
 
+    checkCustomerName = (lead) => {
+        if (lead.customer)
+        // for  CM LEAD
+            this.setState({ customerName: helper.capitalize(lead.customer.customerName) })
+        else 
+        // FOR RCM LEAD
+            this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
+    }
+
     render() {
-        const { type, lead } = this.state
-        
+        const { type, lead, customerName } = this.state
+
         return (
             <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
@@ -88,7 +101,7 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}>Lead Type</Text>
                         <Text style={styles.labelText}>{type} </Text>
                         <Text style={styles.headingText}>Client Name </Text>
-                        <Text style={styles.labelText}>{lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName)}</Text>
+                        <Text style={styles.labelText}>{customerName}</Text>
                         <Text style={styles.headingText}>Requirement </Text>
                         <Text style={styles.labelText}>{!lead.projectId && lead.size && lead.size + ' '}{!lead.projectId && lead.size_unit && lead.size_unit + ' '}{!lead.projectId && helper.capitalize(lead.subtype)}{lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}</Text>
                         <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>

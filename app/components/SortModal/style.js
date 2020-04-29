@@ -40,20 +40,23 @@ export default styles = StyleSheet.create({
     borderColor: '#ebebeb',
     borderRadius: 4,
     padding: 10,
-    paddingTop: 30,
+    // paddingTop: 30,
   },
   doneBtnBottom: {
-    paddingTop: 0,
-    paddingLeft: 10,
+    paddingTop: 8,
+    paddingBottom: 8,
     marginBottom: 7,
     marginTop: 7,
+    alignItems: 'center',
+    width: '100%'
   },
   textStyle: {
     fontSize: AppStyles.fontSize.medium,
-    marginHorizontal: 10,
+    marginHorizontal: 5,
     letterSpacing: 0.5,
     color:AppStyles.colors.textColor,
-    fontFamily: AppStyles.fonts.defaultFont
+    fontFamily: AppStyles.fonts.defaultFont,
+    
   },
   timesBtn: {
     position: 'absolute',
@@ -61,10 +64,15 @@ export default styles = StyleSheet.create({
     top: 10,
   },
   tickImageStyle: {
-    width: 20,
-    height: 20,
+    width: 13,
+    height: 13,
     marginTop: 3,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
+    position: 'relative',
+    top: 2,
+},
+textColorBlue:{
+  color: '#0E73EE'
 },
   timesImg: {
     width: 20,

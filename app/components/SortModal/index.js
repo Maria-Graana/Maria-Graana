@@ -31,16 +31,16 @@ class SortModal extends React.Component {
       >
         <View style={[styles.dotsWrap]}>
           <View style={[styles.dropDownMain]}>
-            <TouchableOpacity style={styles.timesBtn} onPress={() => { openStatus('') }}>
+            {/* <TouchableOpacity style={styles.timesBtn} onPress={() => { openStatus('') }}>
               <Image source={times} style={styles.timesImg} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             {
               data.map((item, key) => {
                 return (
 
                   <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { sendStatus(item.value) }} key={key}>
                     <View style={AppStyles.flexDirectionRow}>
-                      <Text style={styles.textStyle}>
+                      <Text style={[styles.textStyle, sort === item.value && styles.textColorBlue]}>
                         {item.name}
                       </Text>
                       {sort === item.value && <Image source={require('../../../assets/img/tick.png')} style={styles.tickImageStyle} />}

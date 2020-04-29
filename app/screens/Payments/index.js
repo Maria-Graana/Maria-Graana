@@ -171,9 +171,9 @@ class Payments extends Component {
 		const { totalInstalments } = this.state
 		const { lead } = this.props
 		let array = []
-		console.log(lead.cmInstallments.length)
-		for (var i = 1; i <= value; i++) {
-			array.push({ installmentAmount: lead.cmInstallments.length >= i ? lead.cmInstallments[i].installmentAmount : '' })
+		console.log(value,'props', lead.cmInstallments)
+		for (var i = 0; i < value; i++) {
+			array.push({ installmentAmount: lead.cmInstallments.length > i ? lead.cmInstallments[i].installmentAmount : '' })
 		}
 		this.setState({
 			totalInstalments: array,
@@ -330,6 +330,7 @@ class Payments extends Component {
 		if (name === 'installments') {
 			body = { installments: totalInstalments }
 		}
+		console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				console.log(res.data)

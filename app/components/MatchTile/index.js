@@ -28,23 +28,25 @@ class InventoryTile extends React.Component {
 	}
 
 	render() {
-		const { data, isMenuVisible, showCheckBoxes, organization } = this.props
+		const { data, isMenuVisible, showCheckBoxes } = this.props
 		const { menuShow } = this.state
 		let imagesList = []
+		let show = isMenuVisible
 		let phoneNumber = null
+
 		if (data.images.length > 0) {
-			imagesList = data.armsPropertyImages.map((item) => {
+			imagesList = data.images.map((item) => {
 				return item.url
 			})
 		}
-		let show = isMenuVisible
 		if (isMenuVisible) {
 			if (data.diaries && data.diaries.length) {
 				if (data.diaries[0].status === 'completed') show = false
 			}
 		}
 		if (data.graana_id) phoneNumber = data.user ? data.user.phone : null
-		else phoneNumber = data.user.phoneNumber
+		else phoneNumber = data.user && data.user.phoneNumber ? data.user.phoneNumber : null
+		
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row', marginVertical: 2 }}
 				onLongPress={() => {

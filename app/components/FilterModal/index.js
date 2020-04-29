@@ -52,6 +52,7 @@ class FilterModal extends React.Component {
 
     handleForm = (value, name) => {
         const { formData } = this.state
+        if (name === 'cityId') { formData.leadAreas = []; this.areaPicker.emptyList() }
         formData[name] = value
         this.setState({ formData })
     }
@@ -95,7 +96,7 @@ class FilterModal extends React.Component {
                 let areas = [];
                 res && res.data.items.map((item, index) => { return (areas.push({ value: item.id, name: item.name })) })
                 this.setState({
-                    areas: areas
+                    areas: areas,
                 })
             })
     }
@@ -142,7 +143,7 @@ class FilterModal extends React.Component {
                                 <Text style={{ paddingRight: 30, fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16 }}>SEARCH FILTERS</Text>
                             </View>
                         </View>
-                        <AreaPicker handleForm={this.handleForm} openModal={this.openModal} selectedAreaIds={formData.leadAreas} editable={false} isVisible={showAreaPicker} cityId={formData.cityId} areas={areas} />
+                        <AreaPicker onRef={ref => (this.areaPicker = ref)} handleForm={this.handleForm} openModal={this.openModal} selectedAreaIds={formData.leadAreas} editable={false} isVisible={showAreaPicker} cityId={formData.cityId} areas={areas} />
                         <View style={[{ padding: 15 }]}>
                             <PickerComponent selectedItem={formData.cityId} onValueChange={(text) => {
                                 this.handleForm(text, 'cityId')
@@ -181,7 +182,7 @@ class FilterModal extends React.Component {
                         {
                             maxCheck ?
                                 <View style={{ flexDirection: "row", paddingRight: 15, paddingLeft: 15 }}>
-                                    <ErrorMessage errorMessage={'Max value cannot be less than Min value!'}/>
+                                    <ErrorMessage errorMessage={'Max value cannot be less than Min value!'} />
                                 </View>
                                 :
                                 null

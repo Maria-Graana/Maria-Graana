@@ -23,9 +23,19 @@ class AreaPicker extends React.Component {
     }
 
     componentDidMount() {
+        this.props.onRef(this)
+        this.updateSelectedAreas()
+    }
+
+    updateSelectedAreas = () => {
         const { selectedAreaIds } = this.props
         this.areaIds = [...selectedAreaIds]
         this.setState({ selectedAreaIds: [...selectedAreaIds] })
+    }
+
+    emptyList = () => {
+        this.areaIds = []
+        this.setState({ selectedAreaIds: [] })
     }
 
     setSelectedArea = (obj) => {

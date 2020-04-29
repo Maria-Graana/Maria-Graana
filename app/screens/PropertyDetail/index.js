@@ -36,7 +36,6 @@ class PropertyDetail extends React.Component {
     render() {
         const { route } = this.props;
         const property = route.params.property;
-        console.log(property);
         const type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1);
         const subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1);
         const areaName = property && property.area.name;

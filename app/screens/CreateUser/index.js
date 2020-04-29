@@ -16,7 +16,7 @@ class CreateUser extends Component {
         this.state = {
             checkValidation: false,
             cities: [],
-            getRoles: [],
+            getRoles: {},
             organization: [{ value: user.organizationId, name: user.organizationName }],
             emailValidate: true,
             phoneValidate: false,

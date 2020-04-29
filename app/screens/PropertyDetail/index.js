@@ -18,10 +18,25 @@ class PropertyDetail extends React.Component {
         navigation.navigate('AddInventory', { property: route.params.property, update: route.params.update })
     }
 
+    checkUserName = (property) => {
+        if (property.customer) {
+            if (property.customer.first_name) {
+                return property.customer.first_name
+            }
+            else if (property.customer.first_name && property.customer.last_name) {
+                return property.customer.first_name + ' ' + property.customer.last_name
+            }
+        }
+        else{
+            return '';
+        }
+    }
+
 
     render() {
         const { route } = this.props;
         const property = route.params.property;
+        console.log(property);
         const type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1);
         const subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1);
         const areaName = property && property.area.name;
@@ -33,7 +48,7 @@ class PropertyDetail extends React.Component {
         const grade = property.grade === null ? '' : property.grade;
         const lattitude = property.lat === null ? ' ' : property.lat + '/';
         const longitude = property.lng === null ? ' ' : property.lng;
-        const ownerName = property.customer && property.customer.first_name + ' ' + property.customer.last_name;
+        const ownerName = this.checkUserName(property);
         const ownerPhoneNumber = property.customer && property.customer.phone.trim();
         const address = property.customer.address && property.customer.address;
         const status = property.status === 'pending' ? 'Open' : property.status;

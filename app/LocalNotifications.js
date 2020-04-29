@@ -3,25 +3,25 @@ import { Keyboard } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
-
-const localNotification = {
-    title: 'Meeting',
-    body: 'Meeting!',
-    android: {
-        sound: true,
-    },
-    ios: {
-        sound: true,
-    }
-};
+import { Platform } from 'react-native';
 
 const submitNotification = (body, date) => {
     Keyboard.dismiss();
     const schedulingOptions = {
         time: date
     };
-    localNotification.title = body.title
-    localNotification.body = body.body
+    let localNotification = {
+        title: body.title,
+        body: body.body,
+        android: {
+            sound: true,
+            priority: 'max',
+            vibrate: [0, 250, 250, 250],
+          },
+        ios: {
+            sound: true,
+        }
+    }
     console.log(' <<<<<<<<< Local Notification >>>>>>>>>>>')
     console.log(localNotification)
     console.log(schedulingOptions)

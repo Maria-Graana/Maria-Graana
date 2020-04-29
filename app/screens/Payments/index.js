@@ -16,13 +16,14 @@ import { FAB } from 'react-native-paper';
 class Payments extends Component {
 	constructor(props) {
 		super(props)
+		const { lead } = this.props
 
 		this.state = {
 			getProject: [],
 			checkValidation: false,
 			getUnit: [],
 			getFloors: [],
-			totalInstalments: [],
+			totalInstalments: lead.cmInstallments.length > 0 ? lead.cmInstallments : [],
 			units: [],
 			remainingPayment: 'no',
 			readOnly: {
@@ -31,15 +32,15 @@ class Payments extends Component {
 				totalPrice: '',
 			},
 			formData: {
-				projectId: '',
-				floorId: '',
-				unitId: '',
-				token: '',
-				discount: '',
+				projectId: lead.projectId ? lead.projectId : '',
+				floorId: lead.floorId ? lead.floorId : '',
+				unitId: lead.unitId ? lead.unitId : '',
+				token: lead.token ? lead.token : '',
+				discount: lead.discount ? lead.discount : '',
 				commisionPayment: '',
-				downPayment: '',
+				downPayment: lead.downPayment ? lead.downPayment : '',
 			},
-			instalments: [],
+			instalments: lead.no_of_installments ? lead.no_of_installments : '',
 			reasons: [],
 			isVisible: false,
 			selectedReason: '',
@@ -52,6 +53,62 @@ class Payments extends Component {
 	componentDidMount() {
 		this.fetchLead()
 		this.getAllProjects();
+		this.setFields();
+		// console.log('Lead props', this.props.lead)
+	}
+
+	setFields = () => {
+		const { formData } = this.state
+		const { lead } = this.props
+		let data = lead
+		this.setState({
+			readOnly: {
+				totalSize: '',
+				rate: '',
+				totalPrice: '',
+			},
+			totalInstalments: data.cmInstallments.length > 0 ? data.cmInstallments : [],
+			formData: {
+				projectId: data.projectId ? data.projectId : '',
+				floorId: data.floorId ? data.floorId : '',
+				unitId: data.unitId ? data.unitId : '',
+				token: data.token ? data.token : '',
+				discount: data.discount ? data.discount : '',
+				commisionPayment: '',
+				downPayment: data.downPayment ? data.downPayment : '',
+			},
+			instalments: data.no_of_installments ? data.no_of_installments : '',
+		}, () => {
+			if (data.projectId != null) {
+				this.getFloors(data.projectId)
+				this.discountPayment()
+			}
+			if (data.floorId != null) {
+				this.getUnits(data.projectId, data.floorId)
+				this.discountPayment()
+			}
+			if (data.unitId != null) {
+				this.readOnly(data.unitId)
+				this.discountPayment()
+			}
+			if (data.discount != null) {
+				this.discountPayment(formData)
+				this.discountPayment()
+			}
+			if (data.token != null) {
+				this.discountPayment(formData)
+				this.discountPayment()
+			}
+			if (data.downPayment != null) {
+				this.discountPayment(formData)
+				this.discountPayment()
+			}
+			if (data.no_of_installments != null) {
+				this.instalmentsField(data.no_of_installments)
+				this.discountPayment()
+			}
+
+		})
 	}
 
 	getAllProjects = () => {
@@ -62,6 +119,8 @@ class Payments extends Component {
 				this.setState({
 					getProject: projectArray
 				})
+			}).catch((error) => {
+				console.log('project')
 			})
 	}
 
@@ -92,6 +151,7 @@ class Payments extends Component {
 	}
 
 	getUnits = (projectId, floorId) => {
+		const { lead } = this.props
 		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}`)
 			.then((res) => {
 				let array = [];
@@ -99,17 +159,27 @@ class Payments extends Component {
 				this.setState({
 					getUnit: array,
 					units: res.data.rows
+				}, () => {
+					if (lead.unitId != null) {
+						this.readOnly(lead.unitId)
+					}
 				})
 			})
 	}
 
 	instalmentsField = (value) => {
+		const { totalInstalments } = this.state
+		const { lead } = this.props
 		let array = []
+		console.log(lead.cmInstallments.length)
 		for (var i = 1; i <= value; i++) {
-			array.push({ installmentAmount: '' })
+			array.push({ installmentAmount: lead.cmInstallments.length >= i ? lead.cmInstallments[i].installmentAmount : '' })
 		}
 		this.setState({
-			totalInstalments: array
+			totalInstalments: array,
+			instalments: value
+		}, () => {
+			this.submitValues('no_installments')
 		})
 	}
 
@@ -117,19 +187,24 @@ class Payments extends Component {
 		const { units } = this.state
 		let array = {};
 		array = units && units.filter((item) => { return item.id === unitId && item })
-		let data = array[0]
-		this.setState({
-			readOnly: {
-				totalSize: data.area + ' ' + data.area_unit,
-				rate: data.pricePerSqFt,
-				totalPrice: data.area * data.pricePerSqFt,
-			},
-			remainingPayment: data.area * data.pricePerSqFt,
-		})
+		let data = array.length ? array[0] : ''
+		if (unitId != null || units.length > 0) {
+			this.setState({
+				readOnly: {
+					totalSize: data.area + ' ' + data.area_unit,
+					rate: data.pricePerSqFt,
+					totalPrice: data.area * data.pricePerSqFt,
+				},
+				remainingPayment: data.area * data.pricePerSqFt,
+			},() => {
+				this.discountPayment()
+			})
+		}
 	}
 
 	discountPayment = () => {
 		const { readOnly, formData, totalInstalments } = this.state
+		// console.log('readOnly', readOnly)
 		let totalPrice = readOnly.totalPrice
 		let totalInstallments = 0
 		totalInstalments.map((item, index) => {
@@ -138,7 +213,6 @@ class Payments extends Component {
 			}
 		})
 		let remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - totalInstallments
-
 		this.setState({ remainingPayment: remaining })
 	}
 
@@ -164,12 +238,15 @@ class Payments extends Component {
 		this.setState({ formData: newFormData }, () => {
 			if (name === 'projectId' && value != '') {
 				this.getFloors(newFormData.projectId)
+				this.submitValues('projectId')
 			}
 			if (name === 'floorId' && value != '') {
 				this.getUnits(newFormData.projectId, newFormData.floorId)
+				this.submitValues('floorId')
 			}
 			if (name === 'unitId' && value != '') {
 				this.readOnly(value)
+				this.submitValues('unitId')
 			}
 			if (name === 'discount') {
 				this.discountPayment(newFormData)
@@ -219,6 +296,43 @@ class Payments extends Component {
 				} else {
 					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 				}
+			}).catch(() => {
+				console.log('Some thing went wrong!!')
+			})
+	}
+
+	submitValues = (name) => {
+		const { formData, instalments, totalInstalments } = this.state
+		const { lead } = this.props
+		formData[name] = formData[name]
+		let body = {};
+		if (name === 'projectId') {
+			body = { projectId: formData[name] }
+		}
+		if (name === 'floorId') {
+			body = { floorId: formData[name] }
+		}
+		if (name === 'unitId') {
+			body = { unitId: formData[name] }
+		}
+		if (name === 'discount') {
+			body = { discount: formData[name] }
+		}
+		if (name === 'token') {
+			body = { token: formData[name] }
+		}
+		if (name === 'downPayment') {
+			body = { downPayment: formData[name] }
+		}
+		if (name === 'no_installments') {
+			body = { no_of_installments: instalments }
+		}
+		if (name === 'installments') {
+			body = { installments: totalInstalments }
+		}
+		axios.patch(`/api/leads/project?id=${lead.id}`, body)
+			.then((res) => {
+				console.log(res.data)
 			}).catch(() => {
 				console.log('Some thing went wrong!!')
 			})
@@ -285,13 +399,14 @@ class Payments extends Component {
 			readOnly,
 			downPayment,
 			tokenDate,
+			instalments,
 			progressValue,
 			open,
 		} = this.state
-
+		// console.log('totalInstalments', totalInstalments)
 		return (
 			<View>
-				<ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
+				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 				<ScrollView>
 
 					<View style={[AppStyles.container]}>
@@ -311,6 +426,7 @@ class Payments extends Component {
 							getProject={getProject}
 							getInstallments={StaticData.getInstallments}
 							totalInstalments={totalInstalments}
+							instalments={instalments}
 							checkValidation={checkValidation}
 							handleInstalments={this.handleInstalments}
 							handleForm={this.handleForm}
@@ -320,6 +436,7 @@ class Payments extends Component {
 							formData={formData}
 							tokenDate={tokenDate}
 							downPayment={downPayment}
+							submitValues={this.submitValues}
 						/>
 					</View>
 				</ScrollView>

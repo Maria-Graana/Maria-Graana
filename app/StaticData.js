@@ -314,7 +314,7 @@ export default StaticData = {
         { value: 'call_details_sent', name: 'Call: Details Sent' },
         { value: 'call_expected_visit', name: 'Call: Expected Visit' },
         { value: 'call_not_interested', name: 'Call: Not Interested' },
-        { value: 'meeting_planned', name: 'Meeting' },
+        { value: 'meeting', name: 'Meeting' },
         // { value: 'meeting_closed', name: 'Meeting: Closed' },
         { value: 'meeting_visited', name: 'Meeting: Visited' },
         { value: 'meeting_expected_conversion', name: 'Meeting: Expected Conversion' },

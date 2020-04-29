@@ -33,7 +33,7 @@ class InventoryTile extends React.Component {
 		let imagesList = []
 		let show = isMenuVisible
 		let phoneNumber = null
-
+		
 		if (data.images.length > 0) {
 			imagesList = data.images.map((item) => {
 				return item.url
@@ -46,7 +46,7 @@ class InventoryTile extends React.Component {
 		}
 		if (data.graana_id) phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user && data.user.phoneNumber ? data.user.phoneNumber : null
-		
+
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row', marginVertical: 2 }}
 				onLongPress={() => {

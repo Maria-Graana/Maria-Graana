@@ -14,6 +14,7 @@ import BuyPaymentView from './buyPaymentView';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import _ from 'underscore';
 import StaticData from '../../StaticData';
+import helper from '../../helper';
 import { formatPrice } from '../../PriceFormate'
 import { setlead } from '../../actions/lead';
 import RentPaymentView from './rentPaymentView';
@@ -64,6 +65,7 @@ class LeadRCMPayment extends React.Component {
     getSelectedProperty = (lead) => {
         const { dispatch } = this.props;
         const { rcmProgressBar } = StaticData
+        let matches = []
         let properties = [];
         this.setState({ loading: true });
         axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
@@ -80,6 +82,7 @@ class LeadRCMPayment extends React.Component {
                     alert('Something went wrong...')
                 }
             }
+            matches = helper.propertyCheck(properties)
             this.setState({
                 loading: false,
                 allProperties: properties.length > 0 && properties,
@@ -188,13 +191,13 @@ class LeadRCMPayment extends React.Component {
                 this.getSelectedProperty(response.data);
 
             });
-          
+
         }).catch(error => {
             console.log('errorr', error);
         })
     }
 
-    
+
     showConfirmationDialog(item) {
         Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
             { text: 'No', style: 'cancel' },
@@ -425,7 +428,7 @@ class LeadRCMPayment extends React.Component {
         return (
             !loading ?
                 <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
-                    <ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
+                    <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
                     <LeadRCMPaymentPopup
                         reasons={reasons}
                         selectedReason={selectedReason}

@@ -10,6 +10,7 @@ import ListItem from "../ListItem/index";
 import styles from './style';
 import AppStyles from '../../AppStyles'
 import moment from 'moment';
+import helper from '../../helper'
 
 
 class DiaryTile extends React.Component {
@@ -35,24 +36,7 @@ class DiaryTile extends React.Component {
         this.props.showPopup(val)
     }
 
-    setStatusText = (val) => {
-        let taskDate = moment(val.date).format('L')
-        if (taskDate > this.state.todayDate) {
-            return 'To-do'
-        }
-        else if (taskDate != this.state.todayDate && val.status !== 'completed') {
-            return 'Overdue';
-        }
-        else if (val.status === 'inProgress') {
-            return 'In Progress';
-        }
-        else if (val.status === 'completed') {
-            return 'Completed';
-        }
-        else if (val.status === 'pending') {
-            return 'To-do';
-        }
-    }
+   
 
     handleLongPress = (val) => {
         this.props.onLongPress(val);
@@ -62,8 +46,9 @@ class DiaryTile extends React.Component {
     render() {
         const {
             data,
-            onLeadLinkPressed
+            onLeadLinkPressed,
         } = this.props;
+        const {todayDate} = this.state;
         return (
             <View style={AppStyles.mb1}>
                 <FlatList
@@ -89,7 +74,7 @@ class DiaryTile extends React.Component {
                                                     >
                                                         <View style={styles.innerTile}>
                                                             <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - {moment.utc(val.end).format("hh:mm a")} </Text>
-                                                            <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{this.setStatusText(val)}</Text>
+                                                            <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{helper.setStatusText(val,todayDate)}</Text>
                                                         </View>
                                                         <Text style={styles.meetingText}>{val.subject}</Text>
                                                         <View style={styles.innerTile}>

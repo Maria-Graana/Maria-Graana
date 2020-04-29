@@ -3,6 +3,7 @@ import { Toast } from 'native-base';
 import moment from 'moment-timezone';
 import * as Network from 'expo-network';
 import NetInfo from '@react-native-community/netinfo';
+import AppStyles from './AppStyles'
 
 const helper = {
 	successToast(message) {
@@ -116,7 +117,47 @@ const helper = {
 			})
 			return matches
 		} else return []
-	}
+	},
+	setStatusText(val,todayDate) {
+		let taskDate = moment(val.date).format('L')
+		if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+			return 'To-do'
+		}
+		else if (taskDate < todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+			return 'Overdue';
+		}
+		else if (val.status === 'inProgress') {
+			return 'In Progress';
+		}
+		else if (val.status === 'completed') {
+			return 'Completed';
+		}
+		else if (val.status === 'pending') {
+			return 'To-do';
+		}
+	},
+	checkStatusColor(val,todayDate){
+		let taskDate = moment(val.date).format('L')
+		if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+		  return 'red'
+		}
+		if (taskDate < todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+		  return AppStyles.colors.subTextColor;
+		}
+		else if (val.status === 'inProgress') {
+		  return '#FDD835';
+		}
+		else if (val.status === 'completed') {
+		  return 'green';
+		}
+		else if (val.status === 'pending') {
+		  return 'red';
+		}
+		else {
+		  return 'black';
+		}
+	
+	},
 }
 
 

@@ -113,34 +113,16 @@ class Diary extends React.Component {
 
   }
 
-  checkStatus = (val) => {
-    let taskDate = moment(val.date).format('L')
-    let checkForCDate = taskDate == this.state.todayDate
-    if (val.status == 'inProgress' && taskDate == this.state.todayDate) {
-      return '#FDD835'
-    }
-    else if (taskDate > this.state.todayDate) {
-      return 'red'
-    }
-    else if (checkForCDate && val.status === 'pending') {
-      return 'red'
-    }
-    else if (val.status == 'completed') {
-      return 'green'
-    }
-    else {
-      return AppStyles.colors.subTextColor;
-    }
-  }
+  
 
 
 
   showTime = () => {
-    const { diaryData, calendarList } = this.state;
+    const { diaryData, calendarList,todayDate } = this.state;
     let calendarData = null;
     if (diaryData.length) {
       let groupedData = diaryData.map((item, index) => {
-        item.statusColor = this.checkStatus(item)
+        item.statusColor = helper.checkStatusColor(item,todayDate)
         if (item.hour) {
           return item;
         } else {
@@ -202,7 +184,7 @@ class Diary extends React.Component {
   }
 
   showPopup = (val) => {
-    if(val.taskType!=='viewing' && val.taskType !=='called'){
+    if (val.taskType !== 'viewing' && val.taskType !== 'called') {
       this.setState({
         openPopup: true,
         selectedDiary: val

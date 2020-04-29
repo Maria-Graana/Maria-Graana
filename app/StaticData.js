@@ -450,8 +450,8 @@ export default StaticData = {
     },
     sortData: [
         { name: 'Newest First', value: '&order=Desc&field=createdAt' },
-        { name: 'Recently Modified First', value: '&order=Desc&field=updatedAt' },
         { name: 'Newest Last', value: '&order=Asc&field=createdAt' },
+        { name: 'Recently Modified First', value: '&order=Desc&field=updatedAt' },
         { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
     ],
 }

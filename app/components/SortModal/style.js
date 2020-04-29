@@ -57,8 +57,8 @@ export default styles = StyleSheet.create({
     top: 10,
   },
   timesImg: {
-    width: 15,
-    height: 15,
+    width: 20,
+    height: 20,
     resizeMode: 'contain',
   },
 });

@@ -95,8 +95,8 @@ class LeadMatch extends React.Component {
     }
 
     submitFilter = (formData) => {
-        if (formData.maxPrice && formData.maxPrice !== '') {
-            if (Number(formData.maxPrice) > Number(formData.minPrice)) {
+        if (formData.maxPrice && formData.maxPrice !== '' && formData.minPrice && formData.minPrice !== '') {
+            if (Number(formData.maxPrice) >= Number(formData.minPrice)) {
                 this.setState({
                     formData: formData,
                     showFilter: false,
@@ -113,7 +113,13 @@ class LeadMatch extends React.Component {
             }
         } else {
             this.setState({
-                maxCheck: true
+                formData: formData,
+                showFilter: false,
+                loading: true,
+                filterColor: true,
+                maxCheck: false
+            }, () => {
+                this.fetchMatches()
             })
         }
     }

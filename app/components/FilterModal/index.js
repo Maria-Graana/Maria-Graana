@@ -181,7 +181,7 @@ class FilterModal extends React.Component {
                         {
                             maxCheck ?
                                 <View style={{ flexDirection: "row", paddingRight: 15, paddingLeft: 15 }}>
-                                    <ErrorMessage errorMessage={'Max Price must be greater than Min Price!'}/>
+                                    <ErrorMessage errorMessage={'Max value cannot be less than Min value!'}/>
                                 </View>
                                 :
                                 null

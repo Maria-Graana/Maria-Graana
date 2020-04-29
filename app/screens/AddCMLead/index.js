@@ -98,7 +98,7 @@ class AddCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            if (formData.minPrice > formData.maxPrice) {
+            if (formData.minPrice > formData.maxPrice || formData.minPrice == formData.maxPrice) {
                 helper.errorToast('Max Price cannot be less than Min Price')
             } else {
                 let body = {

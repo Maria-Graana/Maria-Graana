@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, Image, TouchableOpacity, TextInput, TouchableWithoutFeedback } from 'react-native'
 import { Button, } from 'native-base';
 import styles from './style'
 import AppStyles from '../../AppStyles'
@@ -22,7 +22,13 @@ class SortModal extends React.Component {
       sort,
     } = this.props
     return (
-      <Modal isVisible={doneStatus}>
+      <Modal isVisible={doneStatus}
+        customBackdrop={
+          <TouchableWithoutFeedback onPress={() => { openStatus('') }}>
+            <View style={{ flex: 1, backgroundColor: '#3f3f3f' }} />
+          </TouchableWithoutFeedback>
+        }
+      >
         <View style={[styles.dotsWrap]}>
           <View style={[styles.dropDownMain]}>
             <TouchableOpacity style={styles.timesBtn} onPress={() => { openStatus('') }}>
@@ -31,8 +37,14 @@ class SortModal extends React.Component {
             {
               data.map((item, key) => {
                 return (
+
                   <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { sendStatus(item.value) }} key={key}>
-                    <Text style={styles.blueColor}>{item.name} {sort === item.value && '(active Filter)'}</Text>
+                    <View style={AppStyles.flexDirectionRow}>
+                      <Text style={styles.textStyle}>
+                        {item.name}
+                      </Text>
+                      {sort === item.value && <Image source={require('../../../assets/img/tick.png')} style={styles.tickImageStyle} />}
+                    </View>
                   </TouchableOpacity>
                 )
               })

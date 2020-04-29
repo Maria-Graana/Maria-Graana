@@ -28,6 +28,8 @@ class InnerForm extends Component {
       cnicValidate,
       phoneValidate,
     } = this.props
+
+    let getRole = getRoles && getRoles.subRole && getRoles.subRole.replace(/\_/g, ' ')
     
     return (
       <View>
@@ -137,7 +139,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput style={[AppStyles.formControl, styles.padLeft]} value={getRoles && getRoles.subRole && getRoles.subRole.replace(/\_/g, ' ')} editable={false} />
+            <TextInput style={[AppStyles.formControl, styles.padLeft]} value={getRole} editable={false} />
           </View>
         </View>
 

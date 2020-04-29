@@ -252,9 +252,7 @@ class LeadRCMPayment extends React.Component {
         const { allProperties } = this.state;
         let payload = Object.create({});
         payload.token = this.convertToInteger(token);
-        console.log(payload);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
-            console.log('response=>', response.data);
             this.props.dispatch(setlead(response.data));
             this.setState({ showTokenAmountArrow: false, lead: response.data })
         }).catch(error => {

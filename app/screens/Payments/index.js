@@ -23,6 +23,8 @@ class Payments extends Component {
 			checkValidation: false,
 			getUnit: [],
 			getFloors: [],
+			tokenDate: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
+			downPaymentTime: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
 			totalInstalments: lead.cmInstallments.length > 0 ? lead.cmInstallments : [],
 			units: [],
 			remainingPayment: 'no',
@@ -54,7 +56,6 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
-		// console.log('Lead props', this.props.lead)
 	}
 
 	setFields = () => {
@@ -171,15 +172,18 @@ class Payments extends Component {
 		const { totalInstalments } = this.state
 		const { lead } = this.props
 		let array = []
-		console.log(value,'props', lead.cmInstallments)
 		for (var i = 0; i < value; i++) {
-			array.push({ installmentAmount: lead.cmInstallments.length > i ? lead.cmInstallments[i].installmentAmount : '' })
+			array.push({
+				installmentAmount: lead.cmInstallments.length > i ? lead.cmInstallments[i].installmentAmount : '',
+				installmentAmountDate: lead.cmInstallments.length > i ? lead.cmInstallments[i].createdAt : ''
+			})
 		}
 		this.setState({
 			totalInstalments: array,
 			instalments: value
 		}, () => {
 			this.submitValues('no_installments')
+			this.discountPayment();
 		})
 	}
 
@@ -196,7 +200,7 @@ class Payments extends Component {
 					totalPrice: data.area * data.pricePerSqFt,
 				},
 				remainingPayment: data.area * data.pricePerSqFt,
-			},() => {
+			}, () => {
 				this.discountPayment()
 			})
 		}
@@ -204,15 +208,14 @@ class Payments extends Component {
 
 	discountPayment = () => {
 		const { readOnly, formData, totalInstalments } = this.state
-		// console.log('readOnly', readOnly)
 		let totalPrice = readOnly.totalPrice
 		let totalInstallments = 0
 		totalInstalments.map((item, index) => {
 			if (item.installmentAmount) {
-				totalInstallments = totalInstallments + item.installmentAmount
+				totalInstallments = Number(totalInstallments) + Number(item.installmentAmount)
 			}
 		})
-		let remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - totalInstallments
+		let remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - Number(totalInstallments)
 		this.setState({ remainingPayment: remaining })
 	}
 
@@ -220,7 +223,7 @@ class Payments extends Component {
 		var date = new Date()
 		if (name === 'downPayment') {
 			this.setState({
-				downPayment: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+				downPaymentTime: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
 			})
 		}
 
@@ -302,7 +305,7 @@ class Payments extends Component {
 	}
 
 	submitValues = (name) => {
-		const { formData, instalments, totalInstalments } = this.state
+		const { formData, instalments, totalInstalments, tokenDate } = this.state
 		const { lead } = this.props
 		formData[name] = formData[name]
 		let body = {};
@@ -319,10 +322,12 @@ class Payments extends Component {
 			body = { discount: formData[name] }
 		}
 		if (name === 'token') {
-			body = { token: formData[name] }
+			body = { token: formData[name], tokenPaymentTime: tokenDate }
+			this.currentDate(name)
 		}
 		if (name === 'downPayment') {
 			body = { downPayment: formData[name] }
+			this.currentDate(name)
 		}
 		if (name === 'no_installments') {
 			body = { no_of_installments: instalments }
@@ -330,10 +335,9 @@ class Payments extends Component {
 		if (name === 'installments') {
 			body = { installments: totalInstalments }
 		}
-		console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				console.log(res.data)
+				// console.log(res.data)
 			}).catch(() => {
 				console.log('Some thing went wrong!!')
 			})
@@ -398,7 +402,7 @@ class Payments extends Component {
 			isVisible,
 			remainingPayment,
 			readOnly,
-			downPayment,
+			downPaymentTime,
 			tokenDate,
 			instalments,
 			progressValue,
@@ -436,7 +440,7 @@ class Payments extends Component {
 							remainingPayment={remainingPayment}
 							formData={formData}
 							tokenDate={tokenDate}
-							downPayment={downPayment}
+							downPaymentTime={downPaymentTime}
 							submitValues={this.submitValues}
 						/>
 					</View>

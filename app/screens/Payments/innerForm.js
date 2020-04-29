@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import { formatPrice } from '../../PriceFormate'
 import targetArrow from '../../../assets/img/targetArrow.png'
+import moment from 'moment'
 
 class InnerForm extends Component {
   constructor(props) {
@@ -28,7 +29,7 @@ class InnerForm extends Component {
       formSubmit,
       readOnly,
       remainingPayment,
-      downPayment,
+      downPaymentTime,
       instalments,
       submitValues,
       tokenDate,
@@ -149,7 +150,7 @@ class InnerForm extends Component {
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
-              <Text style={AppStyles.dateText}>{downPayment}</Text>
+              <Text style={AppStyles.dateText}>{downPaymentTime}</Text>
             </View>
           </View>
 
@@ -161,10 +162,10 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          {console.log(totalInstalments)}
           {
             totalInstalments != '' && totalInstalments.map((item, key) => {
               let amount = item.installmentAmount && item.installmentAmount.toString()
+              let installmentDate = totalInstalments[key].installmentAmountDate === '' ? item.installmentDate : totalInstalments[key].installmentAmountDate
               return (
                 <View style={[AppStyles.mainBlackWrap]} key={key}>
                   <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
@@ -182,7 +183,7 @@ class InnerForm extends Component {
                   </View>
 
                   <View style={[AppStyles.blackInputdate]}>
-                    <Text style={AppStyles.dateText}>{totalInstalments[key].installmentDate === '' ? item.installmentDate : totalInstalments[key].installmentDate}</Text>
+                    <Text style={AppStyles.dateText}>{moment(installmentDate).format('hh:mm a') + ' ' + moment(installmentDate).format('MMM DD')}</Text>
                   </View>
                 </View>
               )

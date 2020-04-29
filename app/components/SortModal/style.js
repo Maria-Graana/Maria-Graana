@@ -48,14 +48,24 @@ export default styles = StyleSheet.create({
     marginBottom: 7,
     marginTop: 7,
   },
-  blueColor: {
-    color: '#333',
+  textStyle: {
+    fontSize: AppStyles.fontSize.medium,
+    marginHorizontal: 10,
+    letterSpacing: 0.5,
+    color:AppStyles.colors.textColor,
+    fontFamily: AppStyles.fonts.defaultFont
   },
   timesBtn: {
     position: 'absolute',
     right: 10,
     top: 10,
   },
+  tickImageStyle: {
+    width: 20,
+    height: 20,
+    marginTop: 3,
+    resizeMode: 'contain'
+},
   timesImg: {
     width: 20,
     height: 20,

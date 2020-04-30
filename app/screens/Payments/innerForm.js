@@ -55,7 +55,7 @@ class InnerForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={getFloor} name={'floorId'} placeholder='Floors' selectedItem={formData.floorId} />
+              <PickerComponent onValueChange={handleForm} data={getFloor} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} />
             </View>
           </View>
 
@@ -71,7 +71,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL SIZE</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} placeholder={'10 SQFT'} value={totalSize} editable={false} />
+                <TextInput style={[AppStyles.blackInput]} placeholder={'Total Size'} value={totalSize} editable={false} />
               </View>
             </View>
           </View>
@@ -82,7 +82,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>RATE</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} value={formatPrice(rate)} editable={false} />
+                <TextInput style={[AppStyles.blackInput]} placeholder={'Rate'} value={formatPrice(rate)} editable={false} />
               </View>
             </View>
           </View>
@@ -92,7 +92,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL PRICE</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} placeholder={'10 LAC'} value={formatPrice(totalPrice)} editable={false} />
+                <TextInput style={[AppStyles.blackInput]} placeholder={'Total Price'} value={formatPrice(totalPrice)} editable={false} />
               </View>
             </View>
           </View>
@@ -100,9 +100,9 @@ class InnerForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.fullWidthPad, styles.blackBorder]}>
-              <Text style={[AppStyles.blackInputText]}>PROMOTIONAL OFFER</Text>
+              <Text style={[AppStyles.blackInputText]}>PROMOTIONAL OFFER </Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} value={formData.discount} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'discount') }} keyboardType={'numeric'} />
+                <TextInput style={[AppStyles.blackInput]} value={formData.discount} placeholder={'Enter Promotional Offer Amount'} onChangeText={(text) => { handleForm(text, 'discount') }} keyboardType={'numeric'} />
                 {
                   formData.discount != '' && arrowCheck.discount === true &&
                   <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('discount') }}>
@@ -119,7 +119,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOKEN</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} value={formData.token} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'token') }} keyboardType={'numeric'} />
+                <TextInput style={[AppStyles.blackInput]} value={formData.token} placeholder={'Enter Token Amount'} onChangeText={(text) => { handleForm(text, 'token') }} keyboardType={'numeric'} />
                 {
                   formData.token != '' && arrowCheck.token === true ?
                   <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('token') }}>
@@ -141,7 +141,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>DOWN PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} value={formData.downPayment} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'downPayment') }} keyboardType={'numeric'} />
+                <TextInput style={[AppStyles.blackInput]} value={formData.downPayment} placeholder={'Enter Down Payment'} onChangeText={(text) => { handleForm(text, 'downPayment') }} keyboardType={'numeric'} />
                 {
                   formData.downPayment != '' && arrowCheck.downPayment === true &&
                   <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('downPayment') }}>
@@ -172,9 +172,9 @@ class InnerForm extends Component {
               return (
                 <View style={[AppStyles.mainBlackWrap]} key={key}>
                   <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
-                    <Text style={[AppStyles.blackInputText]}>INSTALLMENTS {key + 1}</Text>
+                    <Text style={[AppStyles.blackInputText]}>INSTALLMENT {key + 1}</Text>
                     <View style={[AppStyles.blackInput]}>
-                      <TextInput style={[AppStyles.blackInput]} value={amount} placeholder={'10 LAC'} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
+                      <TextInput style={[AppStyles.blackInput]} value={amount} placeholder={`Enter Installment ${key + 1}`} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
                       {
                         totalInstalments[key].installmentAmount != '' && arrowCheck.installments === true &&
                         <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>

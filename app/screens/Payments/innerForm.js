@@ -175,8 +175,7 @@ class InnerForm extends Component {
                     <Text style={[AppStyles.blackInputText]}>INSTALLMENT {key + 1}</Text>
                     <View style={[AppStyles.blackInput]}>
                       <TextInput style={[AppStyles.blackInput]} value={amount} placeholder={`Enter Installment ${key + 1}`} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
-
-                      <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount)}</Text>
+                      <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount > 0 ? totalInstalments[key].installmentAmount : '')}</Text>
                     </View>
                   </View>
 

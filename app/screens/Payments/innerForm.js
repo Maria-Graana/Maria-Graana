@@ -181,7 +181,7 @@ class InnerForm extends Component {
                   </View>
 
                   <View style={[AppStyles.blackInputdate]}>
-                    <Text style={AppStyles.dateText}>{moment(installmentDate).format('hh:mm a') + ' ' + moment(installmentDate).format('MMM DD')}</Text>
+                    <Text style={AppStyles.dateText}>{installmentDate}</Text>
                     {
                       arrowCheck.installments === true &&
                       <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>

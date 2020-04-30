@@ -194,7 +194,9 @@ class Payments extends Component {
 		for (var i = 0; i < value; i++) {
 			array.push({
 				installmentAmount: lead.cmInstallments.length > i ? lead.cmInstallments[i].installmentAmount : '',
-				installmentAmountDate: lead.cmInstallments.length > i ? lead.cmInstallments[i].createdAt : ''
+				installmentAmountDate: lead.cmInstallments.length > i ?
+					moment(lead.cmInstallments[i].createdAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].createdAt).format('MMM DD')
+					: ''
 			})
 		}
 		this.setState({

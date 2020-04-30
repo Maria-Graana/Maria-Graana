@@ -228,13 +228,16 @@ class Payments extends Component {
 	discountPayment = () => {
 		const { readOnly, formData, totalInstalments } = this.state
 		let totalPrice = readOnly.totalPrice
-		let totalInstallments = 0
+		let totalInstallments = ''
 		totalInstalments.map((item, index) => {
 			if (item.installmentAmount) {
 				totalInstallments = Number(totalInstallments) + Number(item.installmentAmount)
 			}
 		})
-		let remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - Number(totalInstallments)
+		let remaining = ''
+		if (readOnly.totalPrice != '') {
+			remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - Number(totalInstallments)
+		}
 		this.setState({ remainingPayment: remaining })
 	}
 
@@ -315,7 +318,7 @@ class Payments extends Component {
 
 	formSubmit = () => {
 		const { lead } = this.props
-		const { formData, totalInstalments, remainingPayment } = this.state
+		const { formData, totalInstalments, remainingPayment, readOnly } = this.state
 		let body = {
 			discount: formData.discount ? parseInt(formData.discount) : null,
 			downPayment: formData.downPayment ? parseInt(formData.downPayment) : null,
@@ -327,7 +330,7 @@ class Payments extends Component {
 		}
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				if (remainingPayment <= 0 && remainingPayment != 'no') {
+				if (remainingPayment <= 0 && remainingPayment != 'no' && readOnly.totalPrice != '') {
 					this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 				} else {
 					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })

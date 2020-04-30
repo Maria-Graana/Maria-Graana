@@ -23,10 +23,10 @@ class Payments extends Component {
 			checkValidation: false,
 			getUnit: [],
 			arrowCheck: {
-				discount: true,
-				token: true,
-				downPayment: true,
-				installments: true,
+				discount: false,
+				token: false,
+				downPayment: false,
+				installments: false,
 			},
 			getFloors: [],
 			tokenDate: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
@@ -356,16 +356,16 @@ class Payments extends Component {
 			body = { unitId: formData[name] }
 		}
 		if (name === 'discount') {
-			body = { discount: formData[name] }
+			body = { discount: formData[name] ? formData[name] : null }
 			newArrowCheck[name] = false
 		}
 		if (name === 'token') {
-			body = { token: formData[name], tokenPaymentTime: tokenDate }
+			body = { token: formData[name] ? formData[name] : null, tokenPaymentTime: tokenDate }
 			this.currentDate(name)
 			newArrowCheck[name] = false
 		}
 		if (name === 'downPayment') {
-			body = { downPayment: formData[name] }
+			body = { downPayment: formData[name] ? formData[name] : null }
 			this.currentDate(name)
 			newArrowCheck[name] = false
 		}
@@ -373,14 +373,14 @@ class Payments extends Component {
 			body = { no_of_installments: instalments }
 		}
 		if (name === 'installments') {
-			body = { installments: totalInstalments }
+			body = { installments: totalInstalments ? totalInstalments : null }
 			newArrowCheck[name] = false
 		}
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				this.setState({ arrowCheck: newArrowCheck })
-			}).catch(() => {
-				console.log('Some thing went wrong!!')
+			}).catch((error) => {
+				console.log('Some thing went wrong!!!', error)
 			})
 	}
 
@@ -450,7 +450,6 @@ class Payments extends Component {
 			open,
 			arrowCheck,
 		} = this.state
-
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />

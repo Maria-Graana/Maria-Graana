@@ -2,9 +2,12 @@ import { StyleSheet } from 'react-native'
 
 export default styles = StyleSheet.create({
   customTop: {
-    top: 8,
+    top: 1,
     right: 30,
     width: 100,
+  },
+  customRight: {
+    right: 60,
   },
   paymentLine: {
     width: '100%',
@@ -17,7 +20,10 @@ export default styles = StyleSheet.create({
   checkBtnMain: {
     position: 'absolute',
     right: 15,
-    top: 0,
+    top: -3,
     zIndex: 2,
+  },
+  customArrowRight: {
+    right: 10,
   },
 });

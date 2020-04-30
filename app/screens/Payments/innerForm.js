@@ -104,12 +104,12 @@ class InnerForm extends Component {
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} value={formData.discount} placeholder={'Enter Promotional Offer Amount'} onChangeText={(text) => { handleForm(text, 'discount') }} keyboardType={'numeric'} />
                 {
-                  formData.discount != '' && arrowCheck.discount === true &&
-                  <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('discount') }}>
+                  arrowCheck.discount === true &&
+                  <TouchableOpacity style={[styles.checkBtnMain, styles.customArrowRight]} onPress={() => { submitValues('discount') }}>
                     <Image source={targetArrow} style={styles.arrowImg} />
                   </TouchableOpacity>
                 }
-                <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.discount != null ? formData.discount : '')}</Text>
+                <Text style={[AppStyles.countPrice, styles.customTop, styles.customRight]}>{formatPrice(formData.discount != null ? formData.discount : '')}</Text>
               </View>
             </View>
           </View>
@@ -120,19 +120,19 @@ class InnerForm extends Component {
               <Text style={[AppStyles.blackInputText]}>TOKEN</Text>
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} value={formData.token} placeholder={'Enter Token Amount'} onChangeText={(text) => { handleForm(text, 'token') }} keyboardType={'numeric'} />
-                {
-                  formData.token != '' && arrowCheck.token === true ?
-                  <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('token') }}>
-                    <Image source={targetArrow} style={styles.arrowImg} />
-                  </TouchableOpacity>
-                  : null
-                }
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.token != null ? formData.token : '')}</Text>
               </View>
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
               <Text style={AppStyles.dateText}>{tokenDate}</Text>
+              {
+                arrowCheck.token === true ?
+                  <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('token') }}>
+                    <Image source={targetArrow} style={styles.arrowImg} />
+                  </TouchableOpacity>
+                  : null
+              }
             </View>
           </View>
 
@@ -142,18 +142,18 @@ class InnerForm extends Component {
               <Text style={[AppStyles.blackInputText]}>DOWN PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} value={formData.downPayment} placeholder={'Enter Down Payment'} onChangeText={(text) => { handleForm(text, 'downPayment') }} keyboardType={'numeric'} />
-                {
-                  formData.downPayment != '' && arrowCheck.downPayment === true &&
-                  <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('downPayment') }}>
-                    <Image source={targetArrow} style={styles.arrowImg} />
-                  </TouchableOpacity>
-                }
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.downPayment != null ? formData.downPayment : '')}</Text>
               </View>
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
               <Text style={AppStyles.dateText}>{downPaymentTime}</Text>
+              {
+                arrowCheck.downPayment === true &&
+                <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('downPayment') }}>
+                  <Image source={targetArrow} style={styles.arrowImg} />
+                </TouchableOpacity>
+              }
             </View>
           </View>
 
@@ -175,18 +175,19 @@ class InnerForm extends Component {
                     <Text style={[AppStyles.blackInputText]}>INSTALLMENT {key + 1}</Text>
                     <View style={[AppStyles.blackInput]}>
                       <TextInput style={[AppStyles.blackInput]} value={amount} placeholder={`Enter Installment ${key + 1}`} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
-                      {
-                        totalInstalments[key].installmentAmount != '' && arrowCheck.installments === true &&
-                        <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>
-                          <Image source={targetArrow} style={styles.arrowImg} />
-                        </TouchableOpacity>
-                      }
+
                       <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount)}</Text>
                     </View>
                   </View>
 
                   <View style={[AppStyles.blackInputdate]}>
                     <Text style={AppStyles.dateText}>{moment(installmentDate).format('hh:mm a') + ' ' + moment(installmentDate).format('MMM DD')}</Text>
+                    {
+                      arrowCheck.installments === true &&
+                      <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>
+                        <Image source={targetArrow} style={styles.arrowImg} />
+                      </TouchableOpacity>
+                    }
                   </View>
                 </View>
               )

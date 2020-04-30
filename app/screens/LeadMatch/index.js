@@ -95,6 +95,7 @@ class LeadMatch extends React.Component {
     }
 
     submitFilter = (formData) => {
+        if (formData.size === '' || formData.size === 0) formData.size = null
         if (formData.maxPrice && formData.maxPrice !== '' && formData.minPrice && formData.minPrice !== '') {
             if (Number(formData.maxPrice) >= Number(formData.minPrice)) {
                 this.setState({
@@ -159,6 +160,7 @@ class LeadMatch extends React.Component {
             }
         }
         if (!lead.size_unit) lead.size_unit = 'marla'
+        if (lead.size === '' || lead.size === 0) lead.size = null
         this.setState({
             formData: {
                 cityId: cityId,
@@ -202,7 +204,6 @@ class LeadMatch extends React.Component {
             size: formData.size,
             unit: formData.sizeUnit
         }
-
         let callApi = this.canCallApi()
         let matches = []
         if (callApi || !showCheckBoxes) {

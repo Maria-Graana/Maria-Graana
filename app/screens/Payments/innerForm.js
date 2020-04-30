@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import { formatPrice } from '../../PriceFormate'
 import targetArrow from '../../../assets/img/targetArrow.png'
+import moment from 'moment'
 
 class InnerForm extends Component {
   constructor(props) {
@@ -28,16 +29,18 @@ class InnerForm extends Component {
       formSubmit,
       readOnly,
       remainingPayment,
-      downPayment,
+      downPaymentTime,
       instalments,
       submitValues,
       tokenDate,
+      arrowCheck,
     } = this.props
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
     let totalSize = readOnly.totalSize && readOnly.totalSize
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
+
     return (
       <View style={[AppStyles.modalMain]}>
         <View style={[AppStyles.formMain]}>
@@ -101,7 +104,7 @@ class InnerForm extends Component {
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} value={formData.discount} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'discount') }} keyboardType={'numeric'} />
                 {
-                  formData.discount != '' &&
+                  formData.discount != '' && arrowCheck.discount === true &&
                   <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('discount') }}>
                     <Image source={targetArrow} style={styles.arrowImg} />
                   </TouchableOpacity>
@@ -118,10 +121,11 @@ class InnerForm extends Component {
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} value={formData.token} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'token') }} keyboardType={'numeric'} />
                 {
-                  formData.token != '' &&
+                  formData.token != '' && arrowCheck.token === true ?
                   <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('token') }}>
                     <Image source={targetArrow} style={styles.arrowImg} />
                   </TouchableOpacity>
+                  : null
                 }
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.token != null ? formData.token : '')}</Text>
               </View>
@@ -139,7 +143,7 @@ class InnerForm extends Component {
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} value={formData.downPayment} placeholder={'10 LAC'} onChangeText={(text) => { handleForm(text, 'downPayment') }} keyboardType={'numeric'} />
                 {
-                  formData.downPayment != '' &&
+                  formData.downPayment != '' && arrowCheck.downPayment === true &&
                   <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('downPayment') }}>
                     <Image source={targetArrow} style={styles.arrowImg} />
                   </TouchableOpacity>
@@ -149,7 +153,7 @@ class InnerForm extends Component {
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
-              <Text style={AppStyles.dateText}>{downPayment}</Text>
+              <Text style={AppStyles.dateText}>{downPaymentTime}</Text>
             </View>
           </View>
 
@@ -161,10 +165,10 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          {console.log(totalInstalments)}
           {
             totalInstalments != '' && totalInstalments.map((item, key) => {
               let amount = item.installmentAmount && item.installmentAmount.toString()
+              let installmentDate = totalInstalments[key].installmentAmountDate === '' ? item.installmentDate : totalInstalments[key].installmentAmountDate
               return (
                 <View style={[AppStyles.mainBlackWrap]} key={key}>
                   <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
@@ -172,7 +176,7 @@ class InnerForm extends Component {
                     <View style={[AppStyles.blackInput]}>
                       <TextInput style={[AppStyles.blackInput]} value={amount} placeholder={'10 LAC'} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
                       {
-                        totalInstalments[key].installmentAmount != '' &&
+                        totalInstalments[key].installmentAmount != '' && arrowCheck.installments === true &&
                         <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>
                           <Image source={targetArrow} style={styles.arrowImg} />
                         </TouchableOpacity>
@@ -182,7 +186,7 @@ class InnerForm extends Component {
                   </View>
 
                   <View style={[AppStyles.blackInputdate]}>
-                    <Text style={AppStyles.dateText}>{totalInstalments[key].installmentDate === '' ? item.installmentDate : totalInstalments[key].installmentDate}</Text>
+                    <Text style={AppStyles.dateText}>{moment(installmentDate).format('hh:mm a') + ' ' + moment(installmentDate).format('MMM DD')}</Text>
                   </View>
                 </View>
               )

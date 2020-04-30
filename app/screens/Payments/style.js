@@ -18,5 +18,6 @@ export default styles = StyleSheet.create({
     position: 'absolute',
     right: 15,
     top: 0,
+    zIndex: 2,
   },
 });

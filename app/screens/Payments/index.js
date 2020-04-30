@@ -22,7 +22,15 @@ class Payments extends Component {
 			getProject: [],
 			checkValidation: false,
 			getUnit: [],
+			arrowCheck: {
+				discount: true,
+				token: true,
+				downPayment: true,
+				installments: true,
+			},
 			getFloors: [],
+			tokenDate: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
+			downPaymentTime: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
 			totalInstalments: lead.cmInstallments.length > 0 ? lead.cmInstallments : [],
 			units: [],
 			remainingPayment: 'no',
@@ -54,11 +62,10 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
-		// console.log('Lead props', this.props.lead)
 	}
 
 	setFields = () => {
-		const { formData } = this.state
+		const { formData, arrowCheck } = this.state
 		const { lead } = this.props
 		let data = lead
 		this.setState({
@@ -79,6 +86,7 @@ class Payments extends Component {
 			},
 			instalments: data.no_of_installments ? data.no_of_installments : '',
 		}, () => {
+			let name = ''
 			if (data.projectId != null) {
 				this.getFloors(data.projectId)
 				this.discountPayment()
@@ -94,19 +102,31 @@ class Payments extends Component {
 			if (data.discount != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
+				name = 'discount'
+				arrowCheck[name] = false
 			}
 			if (data.token != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
+				name = 'token'
+				arrowCheck[name] = false
 			}
 			if (data.downPayment != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
+				name = 'downPayment'
+				arrowCheck[name] = false
 			}
 			if (data.no_of_installments != null) {
 				this.instalmentsField(data.no_of_installments)
 				this.discountPayment()
 			}
+			if (data.cmInstallments.length) {
+				name = 'installments'
+				arrowCheck[name] = false
+			}
+
+			this.setState({ arrowCheck })
 
 		})
 	}
@@ -171,15 +191,18 @@ class Payments extends Component {
 		const { totalInstalments } = this.state
 		const { lead } = this.props
 		let array = []
-		console.log(value,'props', lead.cmInstallments)
 		for (var i = 0; i < value; i++) {
-			array.push({ installmentAmount: lead.cmInstallments.length > i ? lead.cmInstallments[i].installmentAmount : '' })
+			array.push({
+				installmentAmount: lead.cmInstallments.length > i ? lead.cmInstallments[i].installmentAmount : '',
+				installmentAmountDate: lead.cmInstallments.length > i ? lead.cmInstallments[i].createdAt : ''
+			})
 		}
 		this.setState({
 			totalInstalments: array,
 			instalments: value
 		}, () => {
 			this.submitValues('no_installments')
+			this.discountPayment();
 		})
 	}
 
@@ -196,7 +219,7 @@ class Payments extends Component {
 					totalPrice: data.area * data.pricePerSqFt,
 				},
 				remainingPayment: data.area * data.pricePerSqFt,
-			},() => {
+			}, () => {
 				this.discountPayment()
 			})
 		}
@@ -204,15 +227,14 @@ class Payments extends Component {
 
 	discountPayment = () => {
 		const { readOnly, formData, totalInstalments } = this.state
-		// console.log('readOnly', readOnly)
 		let totalPrice = readOnly.totalPrice
 		let totalInstallments = 0
 		totalInstalments.map((item, index) => {
 			if (item.installmentAmount) {
-				totalInstallments = totalInstallments + item.installmentAmount
+				totalInstallments = Number(totalInstallments) + Number(item.installmentAmount)
 			}
 		})
-		let remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - totalInstallments
+		let remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - Number(totalInstallments)
 		this.setState({ remainingPayment: remaining })
 	}
 
@@ -220,7 +242,7 @@ class Payments extends Component {
 		var date = new Date()
 		if (name === 'downPayment') {
 			this.setState({
-				downPayment: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+				downPaymentTime: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
 			})
 		}
 
@@ -232,10 +254,22 @@ class Payments extends Component {
 	}
 
 	handleForm = (value, name) => {
-		const { formData } = this.state
+		const { formData, arrowCheck } = this.state
 		let newFormData = { ...formData }
 		newFormData[name] = value
-		this.setState({ formData: newFormData }, () => {
+
+		if (name === 'discount') {
+			arrowCheck[name] = true
+		}
+		if (name == 'token') {
+			arrowCheck[name] = true
+		}
+		if (name === 'downPayment') {
+			arrowCheck[name] = true
+		}
+
+
+		this.setState({ formData: newFormData, arrowCheck }, () => {
 			if (name === 'projectId' && value != '') {
 				this.getFloors(newFormData.projectId)
 				this.submitValues('projectId')
@@ -266,14 +300,16 @@ class Payments extends Component {
 	}
 
 	handleInstalments = (value, index) => {
-		const { totalInstalments } = this.state
+		const { totalInstalments, arrowCheck } = this.state
 		var date = new Date()
+		arrowCheck['installments'] = true
 		let newInstallments = [...totalInstalments]
 		newInstallments[index].installmentAmount = parseInt(value)
 		newInstallments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
-		this.setState({ totalInstalments: newInstallments }, () => {
+		this.setState({ totalInstalments: newInstallments, arrowCheck }, () => {
 			this.discountPayment()
 		})
+
 
 	}
 
@@ -302,10 +338,11 @@ class Payments extends Component {
 	}
 
 	submitValues = (name) => {
-		const { formData, instalments, totalInstalments } = this.state
+		const { formData, instalments, totalInstalments, tokenDate, arrowCheck } = this.state
 		const { lead } = this.props
 		formData[name] = formData[name]
 		let body = {};
+		let newArrowCheck = { ...arrowCheck }
 		if (name === 'projectId') {
 			body = { projectId: formData[name] }
 		}
@@ -317,23 +354,28 @@ class Payments extends Component {
 		}
 		if (name === 'discount') {
 			body = { discount: formData[name] }
+			newArrowCheck[name] = false
 		}
 		if (name === 'token') {
-			body = { token: formData[name] }
+			body = { token: formData[name], tokenPaymentTime: tokenDate }
+			this.currentDate(name)
+			newArrowCheck[name] = false
 		}
 		if (name === 'downPayment') {
 			body = { downPayment: formData[name] }
+			this.currentDate(name)
+			newArrowCheck[name] = false
 		}
 		if (name === 'no_installments') {
 			body = { no_of_installments: instalments }
 		}
 		if (name === 'installments') {
 			body = { installments: totalInstalments }
+			newArrowCheck[name] = false
 		}
-		console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				console.log(res.data)
+				this.setState({ arrowCheck: newArrowCheck })
 			}).catch(() => {
 				console.log('Some thing went wrong!!')
 			})
@@ -398,13 +440,14 @@ class Payments extends Component {
 			isVisible,
 			remainingPayment,
 			readOnly,
-			downPayment,
+			downPaymentTime,
 			tokenDate,
 			instalments,
 			progressValue,
 			open,
+			arrowCheck,
 		} = this.state
-		// console.log('totalInstalments', totalInstalments)
+
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -436,8 +479,9 @@ class Payments extends Component {
 							remainingPayment={remainingPayment}
 							formData={formData}
 							tokenDate={tokenDate}
-							downPayment={downPayment}
+							downPaymentTime={downPaymentTime}
 							submitValues={this.submitValues}
+							arrowCheck={arrowCheck}
 						/>
 					</View>
 				</ScrollView>

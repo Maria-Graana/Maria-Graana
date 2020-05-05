@@ -119,7 +119,7 @@ class FilterModal extends React.Component {
                         </View>
                         {
                             maxCheck ?
-                                <View style={style.errorView}>
+                                <View style={styles.errorView}>
                                     <ErrorMessage errorMessage={'Max value cannot be less than Min value!'} />
                                 </View>
                                 :

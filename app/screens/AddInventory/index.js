@@ -196,7 +196,8 @@ class AddInventory extends Component {
             !formData.purpose ||
             !formData.area_id ||
             !formData.size_unit ||
-            !formData.size
+            !formData.size ||
+            !formData.customer_id
         ) {
             this.setState({
                 checkValidation: true

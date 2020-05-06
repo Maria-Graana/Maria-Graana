@@ -288,7 +288,7 @@ class DetailForm extends Component {
                     <View style={[AppStyles.inputWrap]}>
                         <PickerComponent onValueChange={handleForm} data={getClients} selectedItem={formData.customer_id} name={'customer_id'} placeholder='Client' />
                         {
-                            checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
+                            checkValidation === true && formData.customer_id === '' && <ErrorMessage errorMessage={'Required'} />
                         }
                     </View>
                 </View>

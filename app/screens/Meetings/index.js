@@ -25,6 +25,7 @@ class Meetings extends Component {
         time: '',
         date: '',
         leadId: this.props.route.params.lead.id,
+        subject: this.props.route.params.lead.customer ? `Meeting with ${this.props.route.params.lead.customer.customerName}` : null
       },
       meetings: [],
       checkValidation: false,

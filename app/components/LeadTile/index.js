@@ -16,10 +16,11 @@ class LeadTile extends React.Component {
 
   render() {
     const { selectInventory, data, selectedInventory, unSelectInventory, navigateTo, callNumber } = this.props
+    console.log(data)
     return (
-      <TouchableOpacity onPress={() => { navigateTo(data) }} onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
+      <TouchableOpacity onPress={() => { navigateTo(data) }}>
 
-        <View style={[styles.tileMainWrap, selectedInventory.includes(data.id) && styles.selectedInventory]}>
+        <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
               <View>

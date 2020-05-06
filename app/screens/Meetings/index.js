@@ -89,7 +89,12 @@ class Meetings extends Component {
       this.setState({ checkValidation: true })
     } else {
       if (editMeeting === true) {
-        axios.patch(`/api/diary/update?id=${meetingId}`, formData)
+        let body = {
+          ...formData,
+          start: moment(formData.date+ formData.time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss'),
+          end: moment(formData.date+ formData.time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss'),
+        }
+        axios.patch(`/api/diary/update?id=${meetingId}`, body)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
             this.getMeetingLead();

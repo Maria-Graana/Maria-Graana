@@ -85,21 +85,27 @@ class Meetings extends Component {
   //  ************ Form submit Function  ************ 
   formSubmit = (id) => {
     const { formData, editMeeting, meetingId } = this.state
+    console.log('formData', formData)
     if (!formData.time || !formData.date) {
       this.setState({ checkValidation: true })
     } else {
       if (editMeeting === true) {
+        let startTime = moment(formData.time, 'LT').format('HH:mm:ss')
+        let startDate = moment(formData.date, 'YYYY-MM-DDLT').format('YYYY-MM-DD')
         let body = {
-          ...formData,
-          start: moment(formData.date+ formData.time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss'),
-          end: moment(formData.date+ formData.time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss'),
+          date: startDate + 'T' + startTime,
+          time: formData.time,
+          leadId: formData.leadId,
+          start: startDate + 'T' + startTime,
+          end: startDate + 'T' + startTime,
         }
+        console.log(body)
         axios.patch(`/api/diary/update?id=${meetingId}`, body)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
             this.getMeetingLead();
-            formData['time'] = ''
-            formData['date'] = ''
+            // formData['time'] = ''
+            // formData['date'] = ''
             this.setState({
               active: false,
               formData,
@@ -241,7 +247,7 @@ class Meetings extends Component {
     let leadData = this.props.route.params.lead
     return (
       <View style={styles.mainWrapCon}>
-        <ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
+        <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 
         {/* ************Fab For Open Modal************ */}
         <View style={[styles.meetingConteiner]}>
@@ -266,18 +272,18 @@ class Meetings extends Component {
           </ScrollView>
 
           <FAB.Group
-          open={open}
-          icon="plus"
-          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-          color={AppStyles.bgcWhite.backgroundColor}
-          actions={[
-            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-            { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+            open={open}
+            icon="plus"
+            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+            color={AppStyles.bgcWhite.backgroundColor}
+            actions={[
+              { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+              { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+              { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
 
-          ]}
-          onStateChange={({ open }) => this.setState({ open })}
-        />
+            ]}
+            onStateChange={({ open }) => this.setState({ open })}
+          />
 
         </View>
 
@@ -294,7 +300,7 @@ class Meetings extends Component {
           </View>
         </View>
 
-        
+
 
         {/* ************Modal Component************ */}
         <MeetingModal

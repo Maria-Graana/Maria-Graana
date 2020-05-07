@@ -16,7 +16,6 @@ class LeadTile extends React.Component {
 
   render() {
     const { selectInventory, data, selectedInventory, unSelectInventory, navigateTo, callNumber } = this.props
-    console.log(data)
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
 

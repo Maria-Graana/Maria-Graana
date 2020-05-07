@@ -85,7 +85,6 @@ class Meetings extends Component {
   //  ************ Form submit Function  ************ 
   formSubmit = (id) => {
     const { formData, editMeeting, meetingId } = this.state
-    console.log('formData', formData)
     if (!formData.time || !formData.date) {
       this.setState({ checkValidation: true })
     } else {
@@ -99,13 +98,12 @@ class Meetings extends Component {
           start: startDate + 'T' + startTime,
           end: startDate + 'T' + startTime,
         }
-        console.log(body)
         axios.patch(`/api/diary/update?id=${meetingId}`, body)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
             this.getMeetingLead();
-            // formData['time'] = ''
-            // formData['date'] = ''
+            formData['time'] = ''
+            formData['date'] = ''
             this.setState({
               active: false,
               formData,

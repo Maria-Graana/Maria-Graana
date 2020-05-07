@@ -228,7 +228,6 @@ class AddInventory extends Component {
             axios.patch(`/api/inventory/${property.id}`, formData)
                 .then((res) => {
                     if (res.status === 200) {
-                        console.log(res.data);
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         navigation.navigate('Inventory', { update: false })
                     }

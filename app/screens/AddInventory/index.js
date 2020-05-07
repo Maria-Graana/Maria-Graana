@@ -128,7 +128,7 @@ class AddInventory extends Component {
             // console.log(this.state.formData);
             this.selectSubtype(property.type);
             this.getAreas(property.city_id);
-            this.state.formData.imageIds.length>0 && this.setImagesForEditMode();
+            this.state.formData.imageIds.length > 0 && this.setImagesForEditMode();
         })
     }
 
@@ -183,6 +183,10 @@ class AddInventory extends Component {
         })
         if (formData.type != '') { this.selectSubtype(formData.type) }
         if (formData.city_id != '') { this.getAreas(formData.city_id) }
+        if (formData.size === '') {
+            formData.size = null;
+            this.setState({ formData })
+        }
     }
 
     // ********* On form Submit Function
@@ -224,6 +228,7 @@ class AddInventory extends Component {
             axios.patch(`/api/inventory/${property.id}`, formData)
                 .then((res) => {
                     if (res.status === 200) {
+                        console.log(res.data);
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         navigation.navigate('Inventory', { update: false })
                     }

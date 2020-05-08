@@ -159,6 +159,9 @@ const helper = {
 						break;
 				}
 			}
+			else{
+				return 'To-do'
+			}
 		}
 
 	},
@@ -197,6 +200,9 @@ const helper = {
 					default:
 						break;
 				}
+			}
+			else{
+				return 'red';
 			}
 		}
 

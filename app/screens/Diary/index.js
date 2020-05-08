@@ -184,7 +184,7 @@ class Diary extends React.Component {
   }
 
   showPopup = (val) => {
-    if (val.taskType !== 'viewing' && val.taskType !== 'called') {
+    if (val.taskType !== 'viewing' && val.taskType !== 'called' && val.armsProjectLeadId === null) {
       this.setState({
         openPopup: true,
         selectedDiary: val
@@ -287,7 +287,7 @@ class Diary extends React.Component {
   handleLeadLinkPress = (diaryObject) => {
     let url = diaryObject.armsLeadId ? `/api/leads/byId?id=${diaryObject.armsLeadId}` :
       `/api/leads/project/byId?id=${diaryObject.armsProjectLeadId}`
-      
+
     axios.get(url).then(response => {
       this.setState({ openPopup: false })
       this.props.navigation.navigate('LeadDetail', { lead: response.data, purposeTab: response.data.purpose ? response.data.purpose : 'invest' })

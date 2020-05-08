@@ -118,45 +118,89 @@ const helper = {
 			return matches
 		} else return []
 	},
-	setStatusText(val,todayDate) {
+	setStatusText(val, todayDate) {
 		let taskDate = moment(val.date).format('L')
-		if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
-			return 'To-do'
+		if (val.armsProjectLeadId === null && val.taskType !== 'viewing') {
+			if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+				return 'To-do'
+			}
+			else if (taskDate < todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+				return 'Overdue';
+			}
+			else if (val.status === 'inProgress') {
+				return 'In Progress';
+			}
+			else if (val.status === 'completed') {
+				return 'Completed';
+			}
+			else if (val.status === 'pending') {
+				return 'To-do';
+			}
 		}
-		else if (taskDate < todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
-			return 'Overdue';
-		}
-		else if (val.status === 'inProgress') {
-			return 'In Progress';
-		}
-		else if (val.status === 'completed') {
-			return 'Completed';
-		}
-		else if (val.status === 'pending') {
-			return 'To-do';
-		}
-	},
-	checkStatusColor(val,todayDate){
-		let taskDate = moment(val.date).format('L')
-		if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
-		  return 'red'
-		}
-		if (taskDate < todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
-		  return AppStyles.colors.subTextColor;
-		}
-		else if (val.status === 'inProgress') {
-		  return '#FDD835';
-		}
-		else if (val.status === 'completed') {
-		  return 'green';
-		}
-		else if (val.status === 'pending') {
-		  return 'red';
+		else if (val.taskType === 'viewing') {
+			if (val.status === 'completed') {
+				return 'Viewing Done';
+			}
+			else{
+				return 'Viewing Pending'
+			}
 		}
 		else {
-		  return 'black';
+			// THIS IS DONE SPECIFICALLY FOR MEETING ADDED FROM INVESTMENT LEAD
+			if (val.response) {
+				switch (val.response) {
+					case 'visited':
+						return 'Visited'
+					case 'expected_conversion':
+						return 'Meeting Expected Conversion'
+					case 'deal_signed':
+						return 'Meeting Deal Signed'
+					default:
+						break;
+				}
+			}
 		}
-	
+
+	},
+	checkStatusColor(val, todayDate) {
+		let taskDate = moment(val.date).format('L')
+		if (val.armsProjectLeadId === null) {
+			if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+				return 'red'
+			}
+			if (taskDate < todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
+				return AppStyles.colors.subTextColor;
+			}
+			else if (val.status === 'inProgress') {
+				return '#FDD835';
+			}
+			else if (val.status === 'completed') {
+				return 'green';
+			}
+			else if (val.status === 'pending') {
+				return 'red';
+			}
+			else {
+				return 'black';
+			}
+		}
+		else {
+			// THIS IS DONE SPECIFICALLY FOR MEETING ADDED FROM INVESTMENT LEAD
+			if (val.response) {
+				switch (val.response) {
+					case 'visited':
+						return 'green'
+					case 'expected_conversion':
+						return '#FDD835'
+					case 'deal_signed':
+						return 'green'
+					default:
+						break;
+				}
+			}
+		}
+
+
 	},
 }
 

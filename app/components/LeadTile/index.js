@@ -1,7 +1,7 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 
 import AppStyles from '../../AppStyles'
-import PropertyImg from '../../../assets/img/property.jpg'
+import moment from 'moment'
 import React from 'react'
 import phone from '../../../assets/img/phone2.png'
 import styles from './style'
@@ -74,6 +74,13 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
                     {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
+                  </Text>
+                </View>
+
+                {/* ****** Location Wrap */}
+                <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                  <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                    {moment(data.createdAt).format("MMM DD YYYY")}
                   </Text>
                 </View>
               </View>

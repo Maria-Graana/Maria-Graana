@@ -152,7 +152,7 @@ class AddRCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            if (RCMFormData.min_price > RCMFormData.max_price || RCMFormData.min_price == RCMFormData.max_price) {
+            if (RCMFormData.min_price && Number(RCMFormData.min_price) > Number(RCMFormData.max_price) || RCMFormData.min_price && Number(RCMFormData.min_price) === Number(RCMFormData.max_price)) {
                 helper.errorToast('Max Price cannot be less than Min Price')
             } else {
                 if (RCMFormData.size === '') RCMFormData.size = null

@@ -128,7 +128,7 @@ class AddInventory extends Component {
             // console.log(this.state.formData);
             this.selectSubtype(property.type);
             this.getAreas(property.city_id);
-            this.state.formData.imageIds.length>0 && this.setImagesForEditMode();
+            this.state.formData.imageIds.length > 0 && this.setImagesForEditMode();
         })
     }
 
@@ -183,6 +183,10 @@ class AddInventory extends Component {
         })
         if (formData.type != '') { this.selectSubtype(formData.type) }
         if (formData.city_id != '') { this.getAreas(formData.city_id) }
+        if (formData.size === '') {
+            formData.size = null;
+            this.setState({ formData })
+        }
     }
 
     // ********* On form Submit Function
@@ -196,7 +200,8 @@ class AddInventory extends Component {
             !formData.purpose ||
             !formData.area_id ||
             !formData.size_unit ||
-            !formData.size
+            !formData.size ||
+            !formData.customer_id
         ) {
             this.setState({
                 checkValidation: true

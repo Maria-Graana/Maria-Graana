@@ -5,6 +5,9 @@ export default styles = StyleSheet.create({
     btn1: {
         marginBottom: 40,
     },
+    container: {
+        backgroundColor: '#e7ecf0'
+    },
     textCeformControlMultinter: {
         textAlign: "center",
         fontSize: 16,
@@ -27,4 +30,46 @@ export default styles = StyleSheet.create({
         resizeMode: 'contain',
         alignSelf: 'center',
     },
-});
+    topHeader: {
+        flexDirection: 'row',
+        marginHorizontal: 15
+    },
+    header: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: "center"
+    },
+    headerText: {
+        paddingRight: 30,
+        fontFamily: AppStyles.fonts.semiBoldFont,
+        fontSize: 16
+    },
+    pickerView: {
+        padding: 15
+    },
+    resetText: {
+        color: AppStyles.colors.primaryColor,
+        fontSize: 18,
+        paddingLeft: 15
+    },
+    matchBtn: {
+        padding: 15,
+        paddingBottom: 0
+    },
+    textView: {
+        paddingRight: 10,
+        flex: 1,
+    },
+    textInputView: {
+        flexDirection: "row",
+        padding: 15
+    },
+    btnMargin: {
+        marginHorizontal: 15
+    },
+    errorView: {
+        flexDirection: "row",
+        paddingRight: 15,
+        paddingLeft: 15
+    }
+})

@@ -36,7 +36,7 @@ class DiaryTile extends React.Component {
         this.props.showPopup(val)
     }
 
-   
+
 
     handleLongPress = (val) => {
         this.props.onLongPress(val);
@@ -48,7 +48,7 @@ class DiaryTile extends React.Component {
             data,
             onLeadLinkPressed,
         } = this.props;
-        const {todayDate} = this.state;
+        const { todayDate } = this.state;
         return (
             <View style={AppStyles.mb1}>
                 <FlatList
@@ -74,14 +74,14 @@ class DiaryTile extends React.Component {
                                                     >
                                                         <View style={styles.innerTile}>
                                                             <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - {moment.utc(val.end).format("hh:mm a")} </Text>
-                                                            <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{helper.setStatusText(val,todayDate)}</Text>
+                                                            <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{helper.setStatusText(val, todayDate)}</Text>
                                                         </View>
                                                         <Text style={styles.meetingText}>{val.subject}</Text>
                                                         <View style={styles.innerTile}>
                                                             <Text style={styles.meetingText}>{val.taskType.charAt(0).toUpperCase() + val.taskType.slice(1)}</Text>
                                                             {
-                                                                val.armsLeadId !== null ?
-                                                                    <TouchableOpacity style={styles.lead} onPress={() => onLeadLinkPressed(val.armsLeadId)}  >
+                                                                val.armsLeadId !== null || val.armsProjectLeadId!==null ?
+                                                                    <TouchableOpacity style={styles.lead} onPress={() => onLeadLinkPressed(val)}  >
                                                                         <Text style={styles.leadText} >
                                                                             Lead Link
                                                                              </Text>

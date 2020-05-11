@@ -100,12 +100,13 @@ export default AppStyles = {
     },
     countPrice: {
         position: 'absolute',
-        right: 5,
+        right: 0,
         top: 16,
         color: '#0f73ee',
         fontWeight: 'bold',
         fontSize: 12,
-        width: 70,
+        width: 60,
+        textAlign: 'right'
     },
     minMaxPrice: {
         paddingRight: 90,
@@ -214,8 +215,9 @@ export default AppStyles = {
         overflow: 'hidden'
     },
     blackInputWrap: {
-        width: '60%',
+        width: '55%',
         padding: 5,
+        paddingRight: 0,
         position: 'relative'
     },
     fullWidth: {
@@ -241,7 +243,7 @@ export default AppStyles = {
     blackInputdate: {
         position: 'relative',
         top: 20,
-        marginLeft: 15,
+        width: '45%',
     },
     dateText: {
         letterSpacing: 2,

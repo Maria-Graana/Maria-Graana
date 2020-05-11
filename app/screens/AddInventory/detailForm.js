@@ -132,7 +132,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.inputWrap]}>
                             <PickerComponent onValueChange={handleForm} name={'size_unit'} selectedItem={size_unit} data={sizeUnit} placeholder='Size Unit' />
                             {
-                                checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
+                                checkValidation === true && formData.size_unit === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                     </View>
@@ -235,7 +235,7 @@ class DetailForm extends Component {
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                                 <View style={[AppStyles.inputWrap]}>
                                     <TextInput onChangeText={(text) => { handleForm(text, 'bed') }}
-                                        alue={formData.bed}
+                                        value={formData.bed}
                                         keyboardType='numeric'
                                         style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                                         name={'bed'}
@@ -288,7 +288,7 @@ class DetailForm extends Component {
                     <View style={[AppStyles.inputWrap]}>
                         <PickerComponent onValueChange={handleForm} data={getClients} selectedItem={formData.customer_id} name={'customer_id'} placeholder='Client' />
                         {
-                            checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
+                            checkValidation === true && formData.customer_id === '' && <ErrorMessage errorMessage={'Required'} />
                         }
                     </View>
                 </View>

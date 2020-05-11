@@ -14,7 +14,7 @@ class MeetingModal extends React.Component {
   }
 
   render() {
-    const { openModal, active, handleForm, formSubmit, formData, checkValidation } = this.props
+    const { openModal, active, handleForm, formSubmit, formData, checkValidation,editMeeting } = this.props
     return (
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
@@ -49,7 +49,7 @@ class MeetingModal extends React.Component {
               <Button
                 onPress={() => { formSubmit() }}
                 style={[AppStyles.formBtn, styles.addInvenBtn]}>
-                <Text style={AppStyles.btnText}>ADD MEETING</Text>
+                <Text style={AppStyles.btnText}>{editMeeting ? 'UPDATE MEETING' : 'ADD MEETING'}</Text>
               </Button>
             </View>
 

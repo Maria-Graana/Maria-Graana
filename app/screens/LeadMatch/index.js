@@ -3,7 +3,6 @@ import styles from './style'
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
-import Ability from '../../hoc/Ability';
 import { CheckBox } from 'native-base';
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
@@ -15,8 +14,8 @@ import helper from '../../helper';
 import { setlead } from '../../actions/lead';
 import { FAB } from 'react-native-paper';
 import StaticData from '../../StaticData';
-import { ProgressBar, Colors } from 'react-native-paper';
-import { widthPercentageToDP, heightPercentageToDP } from 'react-native-responsive-screen';
+import { ProgressBar } from 'react-native-paper';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -66,13 +65,16 @@ class LeadMatch extends React.Component {
             subTypVal: [],
             progressValue: 0,
             filterColor: false,
-            maxCheck: false
+            maxCheck: false,
+            cities: [],
+            areas: []
         }
     }
 
     componentDidMount() {
         const { lead } = this.props.route.params
         this.props.dispatch(setlead(lead))
+        this.getCities()
         this.resetFilter()
     }
 
@@ -85,6 +87,42 @@ class LeadMatch extends React.Component {
         })
     }
 
+    getCities = () => {
+        axios.get(`/api/cities`)
+            .then((res) => {
+                let citiesArray = [];
+                res && res.data.map((item, index) => { return (citiesArray.push({ value: item.id, name: item.name })) })
+                this.setState({
+                    cities: citiesArray
+                })
+            })
+    }
+
+    getAreas = (cityId) => {
+        axios.get(`/api/areas?city_id=${cityId}&&all=${true}`)
+            .then((res) => {
+                let areas = [];
+                res && res.data.items.map((item, index) => { return (areas.push({ value: item.id, name: item.name })) })
+                this.setState({
+                    areas: areas,
+                })
+            })
+    }
+
+    handleForm = (value, name) => {
+        const { formData } = this.state
+        if (name === 'cityId') formData.leadAreas = []
+        formData[name] = value
+        this.setState({ formData })
+    }
+
+    getSubType = (text) => {
+        const { subType } = StaticData
+        this.setState({
+            subTypVal: subType[text]
+        })
+    }
+
     filterModal = () => {
         const { showFilter } = this.state
         this.setState({
@@ -94,7 +132,9 @@ class LeadMatch extends React.Component {
         })
     }
 
-    submitFilter = (formData) => {
+    submitFilter = () => {
+        const { formData } = this.state
+
         if (formData.maxPrice && formData.maxPrice !== '' && formData.minPrice && formData.minPrice !== '') {
             if (Number(formData.maxPrice) >= Number(formData.minPrice)) {
                 this.setState({
@@ -124,30 +164,14 @@ class LeadMatch extends React.Component {
         }
     }
 
-    canCallApi = () => {
-        const { organization, armsBol, graanaBol, agency21Bol } = this.state
-
-        if (organization === 'arms') {
-            if (armsBol) return false
-            else return true
-        } else if (organization === 'graana') {
-            if (graanaBol) return false
-            else return true
-        } else if (organization === 'agency21') {
-            if (agency21Bol) return false
-            else return true
-        } else {
-            return false
-        }
-    }
-
     resetFilter = () => {
         const { lead } = this.props
         let cityId = ''
-        let areaId = ''
         let areas = []
+
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
+            this.getAreas(cityId)
         }
 
         if ('armsLeadAreas' in lead) {
@@ -159,6 +183,8 @@ class LeadMatch extends React.Component {
             }
         }
         if (!lead.size_unit) lead.size_unit = 'marla'
+        if (lead.type) this.getSubType(lead.type)
+
         this.setState({
             formData: {
                 cityId: cityId,
@@ -181,13 +207,28 @@ class LeadMatch extends React.Component {
         })
     }
 
-    fetchMatches = () => {
-        const { organization, formData, showCheckBoxes } = this.state
+    canCallApi = () => {
+        const { organization, armsBol, graanaBol, agency21Bol } = this.state
+
+        if (organization === 'arms') {
+            if (armsBol) return false
+            else return true
+        } else if (organization === 'graana') {
+            if (graanaBol) return false
+            else return true
+        } else if (organization === 'agency21') {
+            if (agency21Bol) return false
+            else return true
+        } else {
+            return false
+        }
+    }
+
+    setParams = () => {
+        const { organization, formData } = this.state
         const { route } = this.props
         const { lead } = route.params
-        const { rcmProgressBar } = StaticData
-
-        const params = {
+        let params = {
             leadId: lead.id,
             organization: organization,
             type: formData.propertyType,
@@ -200,11 +241,28 @@ class LeadMatch extends React.Component {
             bed: formData.bed,
             bath: formData.bath,
             size: formData.size,
-            unit: formData.sizeUnit
+            unit: formData.sizeUnit,
+            all: true
         }
 
-        let callApi = this.canCallApi()
+        for (let key in params) {
+            if (params[key] === "" || !params[key]) {
+                delete params[key]
+            }
+        }
+        return params
+    }
+
+    fetchMatches = () => {
+        const { organization, showCheckBoxes } = this.state
+        const { route } = this.props
+        const { lead } = route.params
+        const { rcmProgressBar } = StaticData
         let matches = []
+
+        let params = this.setParams()
+        let callApi = this.canCallApi()
+
         if (callApi || !showCheckBoxes) {
             axios.get(`/api/leads/matches`,
                 {
@@ -231,14 +289,14 @@ class LeadMatch extends React.Component {
     }
 
     loadData = () => {
-        const { organization, matchData } = this.state
+        const { matchData } = this.state
         if (matchData.type === 'arms') { this.setState({ armsData: matchData.data, loading: false, }) }
         else if (matchData.type === 'graana') { this.setState({ graanaData: matchData.data, loading: false, }) }
         else { this.setState({ agency21Data: matchData.data, loading: false, }) }
     }
 
     changeComBool = () => {
-        const { organization, matchData, armsBol, graanaBol, agency21Bol } = this.state
+        const { organization, matchData } = this.state
 
         if (organization === 'arms') { this.setState({ armsData: matchData.data, armsBol: true }) }
         else if (organization === 'graana') { this.setState({ graanaData: matchData.data, graanaBol: true }) }
@@ -419,7 +477,7 @@ class LeadMatch extends React.Component {
 
     render() {
         // const { user } = this.props
-        const { maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, open } = this.state
+        const { subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, open } = this.state
 
         return (
             !loading ?
@@ -437,7 +495,19 @@ class LeadMatch extends React.Component {
                                 <Text style={[(organization === 'agency21') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Agency21 </Text>
                             </TouchableOpacity>
                         </View>
-                        <FilterModal maxCheck={maxCheck} resetFilter={this.resetFilter} formData={formData} openPopup={showFilter} filterModal={this.filterModal} submitFilter={this.submitFilter} />
+                        <FilterModal
+                            getAreas={this.getAreas}
+                            subTypVal={subTypVal}
+                            handleForm={this.handleForm}
+                            areas={_.clone(areas)}
+                            cities={cities}
+                            maxCheck={maxCheck}
+                            resetFilter={this.resetFilter}
+                            formData={_.clone(formData)}
+                            openPopup={showFilter}
+                            getSubType={this.getSubType}
+                            filterModal={this.filterModal}
+                            submitFilter={this.submitFilter} />
                         <View style={[{
                             flexDirection: "row", paddingTop: 10, paddingLeft: 15, paddingBottom: 10, elevation: 10,
                             zIndex: 15,

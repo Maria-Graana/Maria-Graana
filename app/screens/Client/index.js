@@ -78,11 +78,17 @@ class Client extends React.Component {
         endPoint = `api/customer/remove?id=${val.id}`
         axios.delete(endPoint).then(function (response) {
             if (response.status === 200) {
-                helper.successToast('CLIENT DELETED SUCCESSFULLY!')
-                that.fetchCustomer();
+                if(response.data.message){
+                    helper.errorToast(response.data.message)
+                }
+                else{
+                    helper.successToast('CLIENT DELETED SUCCESSFULLY!')
+                    that.fetchCustomer();
+                }
+               
             }
         }).catch(function (error) {
-            helper.successToast(error.message)
+            helper.errorToast(error.message)
         })
     }
 

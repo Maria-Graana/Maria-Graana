@@ -35,7 +35,7 @@ class Meetings extends Component {
       meetingId: '',
       modalStatus: 'dropdown',
       open: false,
-      progressValue: 0
+      progressValue: 0,
     }
   }
 
@@ -90,13 +90,14 @@ class Meetings extends Component {
     } else {
       if (editMeeting === true) {
         let startTime = moment(formData.time, 'LT').format('HH:mm:ss')
+        let endTime = moment(startTime,'LT').add(1, 'hours').format('HH:mm:ss')
         let startDate = moment(formData.date, 'YYYY-MM-DDLT').format('YYYY-MM-DD')
         let body = {
           date: startDate + 'T' + startTime,
           time: formData.time,
           leadId: formData.leadId,
           start: startDate + 'T' + startTime,
-          end: startDate + 'T' + startTime,
+          end: startDate + 'T' + endTime,
         }
         axios.patch(`/api/diary/update?id=${meetingId}`, body)
           .then((res) => {
@@ -241,7 +242,7 @@ class Meetings extends Component {
     });
   }
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue } = this.state
+    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue,editMeeting } = this.state
     let leadData = this.props.route.params.lead
     return (
       <View style={styles.mainWrapCon}>
@@ -308,6 +309,7 @@ class Meetings extends Component {
           openModal={this.openModal}
           handleForm={this.handleForm}
           formSubmit={this.formSubmit}
+          editMeeting = {editMeeting}
         />
 
         <MeetingStatusModal

@@ -80,7 +80,7 @@ class LeadTile extends React.Component {
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                    {moment(data.createdAt).format("MMM DD YYYY hh:mm A")}
+                    {moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}
                   </Text>
                 </View>
               </View>

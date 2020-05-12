@@ -80,7 +80,7 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-            <Stack.Screen name='Lead' component={Lead}
+            <Stack.Screen name='Leads' component={Lead}
                 options={({ navigation, route }) => ({
                     title: 'LEADS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,

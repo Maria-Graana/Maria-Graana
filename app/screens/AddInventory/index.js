@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, Alert, Modal } from 'react-native';
 import { StyleProvider } from 'native-base';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -13,6 +13,7 @@ import AppStyles from '../../AppStyles';
 import helper from '../../helper';
 import { connect } from 'react-redux';
 import _ from 'underscore';
+import { ImageBrowser } from 'expo-multiple-media-imagepicker';
 
 
 class AddInventory extends Component {
@@ -33,6 +34,7 @@ class AddInventory extends Component {
             buttonText: 'ADD PROPERTY',
             buttonDisabled: false,
             getClients: [],
+            isModalOpen: false,
             formData: {
                 type: '',
                 subtype: '',
@@ -392,6 +394,13 @@ class AddInventory extends Component {
             })
     }
 
+    imageBrowserCallback = (mediaAssets) => {
+        mediaAssets.then(result => {
+            console.log('@@@', result)
+        })
+        this.setState({ isModalOpen: false })
+    }
+
     _getLocationAsync = async () => {
         let { status } = await Permissions.askAsync(Permissions.LOCATION);
         if (status !== 'granted') {
@@ -462,11 +471,34 @@ class AddInventory extends Component {
             buttonText,
             buttonDisabled,
             getClients,
-            sizeUnit
+            sizeUnit,
+            isModalOpen,
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
                 <KeyboardAvoidingView behavior="padding" enabled>
+                    <Modal
+                      animated={true}
+                      ref={ref => (this._modal = ref)}
+                      animationType="slide"
+                      // transparent={true}
+                      visible={isModalOpen}
+                      onRequestClose={() => this.setState({ isModalOpen: false })}
+                    >
+                        <View style={{ flex: 1 }}>
+                            <ImageBrowser
+                              max={100} // Maximum number of pickable image. default is None
+                              // headerCloseText={'キャンセル'} // Close button text on header. default is 'Close'.
+                              // headerDoneText={'　　完了'} // Done button text on header. default is 'Done'.
+                              // headerButtonColor={'#E31676'} // Button color on header.
+                              // headerSelectText={'枚の画像を選択中'} // Word when picking.  default is 'n selected'.
+                              // mediaSubtype={'screenshot'} // Only iOS, Filter by MediaSubtype. default is display all.
+                              // badgeColor={'#E31676'} // Badge color when picking.
+                              // emptyText={'選択できる画像がありません'} // Empty Text
+                              callback={this.imageBrowserCallback} // Callback functinon on press Done or Cancel Button. Argument is Asset Infomartion of the picked images wrapping by the Promise.
+                            />
+                        </View>
+                    </Modal>
                     <ScrollView>
                         {/* ********* Form Component */}
                         <View style={AppStyles.container}>
@@ -481,7 +513,7 @@ class AddInventory extends Component {
                                 buttonText={buttonText}
                                 propertyType={StaticData.type}
                                 getCurrentLocation={this._getLocationAsync}
-                                getImages={this.getImages}
+                                getImages={() => this.setState({ isModalOpen: true })}
                                 selectSubType={selectSubType}
                                 sizeUnit={sizeUnit}
                                 selectedGrade={formData.grade}

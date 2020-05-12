@@ -20,6 +20,7 @@
     "expo-document-picker": "~8.0.0",
     "expo-file-system": "~8.0.0",
     "expo-image-picker": "~8.0.1",
+    "expo-multiple-media-imagepicker": "^1.2.1",
     "expo-permissions": "~8.0.0",
     "firebase": "7.9.0",
     "fuzzy": "^0.1.3",

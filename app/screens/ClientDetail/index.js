@@ -27,7 +27,7 @@ class ClientDetail extends React.Component {
     render() {
         const { route, user } = this.props;
         const { client } = route.params
-        
+
         return (
             <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
@@ -38,8 +38,16 @@ class ClientDetail extends React.Component {
                         <Text style={styles.labelText}>{client.lastName} </Text>
                         <Text style={styles.headingText}>Contact Number </Text>
                         <Text style={styles.labelText}>{client.contact1} </Text>
-                        <Text style={styles.headingText}>Email </Text>
-                        <Text style={styles.labelText}>{client.email} </Text>
+                        {
+                            client.email ?
+                                <View>
+                                    <Text style={styles.headingText}>Email </Text>
+                                    <Text style={styles.labelText}>{client.email} </Text>
+                                </View>
+                                :
+                                null
+                        }
+
                         {
                             client.cnic ?
                                 <View>
@@ -49,10 +57,24 @@ class ClientDetail extends React.Component {
                                 :
                                 null
                         }
-                        <Text style={styles.headingText}>Address </Text>
-                        <Text style={styles.labelText}>{client.address} </Text>
-                        <Text style={styles.headingText}>Secondary Address</Text>
-                        <Text style={styles.labelText}>{client.secondary_address} </Text>
+                        {
+                            client.address ?
+                                <View>
+                                    <Text style={styles.headingText}>Address </Text>
+                                    <Text style={styles.labelText}>{client.address} </Text>
+                                </View>
+                                :
+                                null
+                        }
+                        {
+                            client.secondary_address ?
+                                <View>
+                                    <Text style={styles.headingText}>Secondary Address</Text>
+                                    <Text style={styles.labelText}>{client.secondary_address} </Text>
+                                </View>
+                                : null
+                        }
+
                     </View>
                     <View style={styles.pad}>
                         {

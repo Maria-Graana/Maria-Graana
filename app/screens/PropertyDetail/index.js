@@ -49,7 +49,7 @@ class PropertyDetail extends React.Component {
         const longitude = property.lng === null ? '' : property.lng;
         const ownerName = this.checkUserName(property);
         const ownerPhoneNumber = property.customer && property.customer.phone.trim();
-        const address = property.customer.address && property.customer.address;
+        const address = property.customer && property.customer.address && property.customer.address;
         const status = property.status === 'pending' ? 'Open' : property.status;
         const images = property && property.armsPropertyImages;
 

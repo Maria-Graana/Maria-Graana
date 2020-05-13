@@ -2,10 +2,10 @@ import { Linking } from 'react-native';
 import { Toast } from 'native-base';
 import moment from 'moment-timezone';
 import AppStyles from './AppStyles'
-import DiaryImg from '../assets/img/Diary.png'
+import DiaryImg from '../assets/img/diary.png'
 import InventoryImg from '../assets/img/Properties.png'
 import TeamDiaryImg from '../assets/img/TeamDiary.png'
-import LeadsImg from '../assets/img/Leads.png'
+import LeadsImg from '../assets/img/leads.png'
 import DashboardImg from '../assets/img/Dashboard.png'
 import TargetsImg from '../assets/img/Targets.png'
 import ClientsImg from '../assets/img/Clients.png'

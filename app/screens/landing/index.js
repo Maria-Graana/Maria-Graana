@@ -16,7 +16,7 @@ class Landing extends React.Component {
 		this.state = {
 			tiles: [],
 			maxTiles: 3,
-			tileNames: ['TeamDiary', 'Diary', 'Leads', 'Inventory', 'Client', 'Targets']
+			tileNames: ['Team Diary', 'Diary', 'Leads', 'Inventory', 'Client', 'Targets']
 		}
 	}
 
@@ -36,16 +36,21 @@ class Landing extends React.Component {
 
 	fetchTiles = () => {
 		const { user, count } = this.props
-		const { tiles, maxTiles, tileNames } = this.state
+		const { maxTiles, tileNames } = this.state
 		let counter = 0
 		let tileData = []
 
 		for (let tile of tileNames) {
+			let label = tile
+			tile = tile.replace(/ /g, "")
+			console.log(tile)
 			if (Ability.canView(user.role, tile)) {
 				if (counter < maxTiles) {
+					console.log(tile)
+					console.log(label)
 					let oneTile = {
 						id: counter,
-						label: tile.toUpperCase(),
+						label: label.toUpperCase(),
 						pagePath: tile,
 						buttonImg: helper.tileImage(tile),
 						screenName: tile

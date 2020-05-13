@@ -255,5 +255,18 @@ export default AppStyles = {
         left: 0,
         height: 2,
         backgroundColor: '#333',
-    }
+    },
+    formBtnWithWhiteBg: {
+        justifyContent: 'center',
+        minHeight: 55,
+        borderRadius: 4,
+        backgroundColor: '#fff',
+        padding: 15,
+    },
+    btnTextBlue: {
+        color: '#0f73ee',
+        fontSize: 18,
+        fontFamily: 'OpenSans_bold',
+        letterSpacing: 0.6,
+    },
 }

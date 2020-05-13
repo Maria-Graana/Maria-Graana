@@ -245,7 +245,7 @@ class InnerForm extends Component {
 
 
                 <TouchableOpacity onPress={() => addFullpaymentFields()}>
-                  <Text>Add More</Text>
+                  <Text style={styles.addMore}>Add More</Text>
                 </TouchableOpacity>
               </View>
           }

@@ -214,6 +214,10 @@ class InnerForm extends Component {
                 {/* **************************************** */}
                 {
                   paymentFiledsArray && paymentFiledsArray.map((item, index) => {
+                    let itemDate = item && item.createdAt ?
+                      moment(item.createdAt).format('hh:mm a') + ' ' + moment(item.createdAt).format('MMM DD')
+                      :
+                      item.installmentDate
                     return (
                       <View style={[AppStyles.mainBlackWrap]}>
                         <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
@@ -225,7 +229,7 @@ class InnerForm extends Component {
                         </View>
 
                         <View style={[AppStyles.blackInputdate]}>
-                          <Text style={AppStyles.dateText}>{item.installmentDate}</Text>
+                          <Text style={AppStyles.dateText}>{itemDate}</Text>
                           {
                             arrowCheck.payments === true ?
                               <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('payments') }}>

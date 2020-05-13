@@ -70,7 +70,7 @@ class Payments extends Component {
 		this.getAllProjects();
 		this.setFields();
 		// console.log(this.state.paymentFiledsArray)
-		console.log(this.props.lead.payment)
+		// console.log(this.props.lead.payment)
 	}
 
 	setFields = () => {
@@ -143,7 +143,6 @@ class Payments extends Component {
 
 			if (data.payment.length) {
 				name = 'payments'
-				// this.addPaymentFileds(data.payment.length)
 				arrowCheck[name] = false
 				this.setState({
 					formData: {
@@ -230,7 +229,6 @@ class Payments extends Component {
 			totalInstalments: array,
 			instalments: value
 		}, () => {
-			console.log(array)
 			this.submitValues('no_installments')
 			this.discountPayment();
 		})
@@ -314,7 +312,6 @@ class Payments extends Component {
 		}
 		if (name === 'payment') {
 			arrowCheck[name] = true
-			this.addPaymentFileds(this.state.fullPaymentCount)
 		}
 		if (name === 'paymentType') {
 			this.addFullpaymentFields()
@@ -348,9 +345,6 @@ class Payments extends Component {
 			if (name === 'instalments') {
 				this.instalmentsField(value)
 			}
-			if (name === 'paymentType') {
-				this.paymentType(value)
-			}
 			if (name === 'payment') {
 				this.currentDate(name)
 				this.submitValues('payment')
@@ -359,9 +353,6 @@ class Payments extends Component {
 		})
 	}
 
-	paymentType = (val) => {
-		console.log(val)
-	}
 
 	handleInstalments = (value, index) => {
 		const { totalInstalments, arrowCheck } = this.state
@@ -451,7 +442,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null }
 			newArrowCheck[name] = false
 		}
-		console.log('Payload => ',body)
+		// console.log('Payload => ',body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				this.setState({ arrowCheck: newArrowCheck })
@@ -495,30 +486,6 @@ class Payments extends Component {
 
 		this.setState({
 			paymentFiledsArray: array
-		}, () => {
-			// this.addPaymentFileds(this.state.fullPaymentCount)
-		})
-	}
-
-	addPaymentFileds = (val) => {
-		const { lead } = this.props
-		const { paymentFiledsArray } = this.state
-		let array = [...paymentFiledsArray]
-		array.push({installmentAmount: '', type: 'payment', installmentDate: '' })
-		// for (var i = 0; i < val; i++) {
-			
-		// 	array.push({
-		// 		installmentAmount: lead.payment.length > i ? lead.payment[i].installmentAmount : '',
-		// 		installmentDate: lead.payment.length > i ?
-		// 			moment(lead.payment[i].createdAt).format('hh:mm a') + ' ' + moment(lead.payment[i].createdAt).format('MMM DD')
-		// 			: '',
-		// 		type: 'payment'
-		// 	})
-		// }
-		
-		
-		this.setState({ paymentFiledsArray: array }, () => {
-			console.log('loop',array)
 		})
 	}
 

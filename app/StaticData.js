@@ -163,16 +163,11 @@ export default StaticData = {
         }
     ],
     getInstallments: [
-        { value: '1', name: '01' },
-        { value: '2', name: '02' },
-        { value: '3', name: '03' },
-        { value: '4', name: '04' },
-        { value: '5', name: '05' },
-        { value: '6', name: '06' },
-        { value: '7', name: '07' },
-        { value: '8', name: '08' },
-        { value: '9', name: '09' },
-        { value: '10', name: '10' },
+        { value: '4', name: '1 Year' },
+        { value: '8', name: '2 Years' },
+        { value: '12', name: '3 Years' },
+        { value: '16', name: '4 Years' },
+        { value: '20', name: '5 Years' },
     ],
     propsurePackages: [
         {
@@ -453,5 +448,9 @@ export default StaticData = {
         { name: 'Recently Modified First', value: '&order=Desc&field=updatedAt' },
         { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
     ],
+    paymentOptions: [
+        { value: 'full_payment', name: 'Full Payment' },
+        { value: 'installments', name: 'Installments' }
+    ]
 }
 

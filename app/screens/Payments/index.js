@@ -27,8 +27,10 @@ class Payments extends Component {
 				token: false,
 				downPayment: false,
 				installments: false,
+				payments: false,
 			},
 			getFloors: [],
+			paymentDate: '',
 			tokenDate: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
 			downPaymentTime: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
 			totalInstalments: lead.cmInstallments.length > 0 ? lead.cmInstallments : [],
@@ -47,13 +49,18 @@ class Payments extends Component {
 				discount: lead.discount ? lead.discount : '',
 				commisionPayment: '',
 				downPayment: lead.downPayment ? lead.downPayment : '',
+				paymentType: '',
+				payment: '',
 			},
 			instalments: lead.no_of_installments ? lead.no_of_installments : '',
 			reasons: [],
 			isVisible: false,
 			selectedReason: '',
 			checkReasonValidation: false,
-			progressValue: 0
+			progressValue: 0,
+			fullPaymentCount: 1,
+			// paymentFiledsArray: lead.payment.length > 0 ? lead.payment : [{ installmentAmount: '', type: 'payment', installmentDate: '' }],
+			paymentFiledsArray: lead.payment.length > 0 ? lead.payment : [] ,
 		}
 
 	}
@@ -62,6 +69,8 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
+		console.log(this.state.paymentFiledsArray)
+		console.log(this.props.lead)
 	}
 
 	setFields = () => {
@@ -124,6 +133,24 @@ class Payments extends Component {
 			if (data.cmInstallments.length) {
 				name = 'installments'
 				arrowCheck[name] = false
+				this.setState({
+					formData: {
+						...formData,
+						paymentType: 'installments'
+					}
+				})
+			}
+
+			if (data.payment.length) {
+				name = 'payments'
+				// this.addPaymentFileds(data.payment.length)
+				arrowCheck[name] = false
+				this.setState({
+					formData: {
+						...formData,
+						paymentType: 'full_payment'
+					}
+				})
 			}
 
 			this.setState({ arrowCheck })
@@ -203,6 +230,7 @@ class Payments extends Component {
 			totalInstalments: array,
 			instalments: value
 		}, () => {
+			console.log(array)
 			this.submitValues('no_installments')
 			this.discountPayment();
 		})
@@ -228,17 +256,23 @@ class Payments extends Component {
 	}
 
 	discountPayment = () => {
-		const { readOnly, formData, totalInstalments } = this.state
+		const { readOnly, formData, totalInstalments, paymentFiledsArray } = this.state
 		let totalPrice = readOnly.totalPrice
 		let totalInstallments = ''
+		let totalPayment = ''
 		totalInstalments.map((item, index) => {
 			if (item.installmentAmount) {
 				totalInstallments = Number(totalInstallments) + Number(item.installmentAmount)
 			}
 		})
+		paymentFiledsArray.map((item, index) => {
+			if (item.installmentAmount) {
+				totalPayment = Number(totalPayment) + Number(item.installmentAmount)
+			}
+		})
 		let remaining = ''
 		if (readOnly.totalPrice != '') {
-			remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - Number(totalInstallments)
+			remaining = totalPrice - formData['discount'] - formData['downPayment'] - formData['token'] - Number(totalInstallments) - Number(totalPayment)
 		}
 		this.setState({ remainingPayment: remaining })
 	}
@@ -256,6 +290,12 @@ class Payments extends Component {
 				tokenDate: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
 			})
 		}
+
+		if (name === 'payment') {
+			this.setState({
+				paymentDate: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+			})
+		}
 	}
 
 	handleForm = (value, name) => {
@@ -271,6 +311,10 @@ class Payments extends Component {
 		}
 		if (name === 'downPayment') {
 			arrowCheck[name] = true
+		}
+		if (name === 'payment') {
+			arrowCheck[name] = true
+			this.addPaymentFileds(this.state.fullPaymentCount)
 		}
 
 
@@ -301,7 +345,19 @@ class Payments extends Component {
 			if (name === 'instalments') {
 				this.instalmentsField(value)
 			}
+			if (name === 'paymentType') {
+				this.paymentType(value)
+			}
+			if (name === 'payment') {
+				this.currentDate(name)
+				this.submitValues('payment')
+				// this.discountPayment(newFormData)
+			}
 		})
+	}
+
+	paymentType = (val) => {
+		console.log(val)
 	}
 
 	handleInstalments = (value, index) => {
@@ -314,8 +370,19 @@ class Payments extends Component {
 		this.setState({ totalInstalments: newInstallments, arrowCheck }, () => {
 			this.discountPayment()
 		})
+	}
 
-
+	handlePayments = (value, index) => {
+		const { paymentFiledsArray, arrowCheck } = this.state
+		var date = new Date()
+		arrowCheck['payments'] = true
+		let newPayments = [...paymentFiledsArray]
+		newPayments[index].installmentAmount = parseInt(value)
+		newPayments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+		this.setState({ paymentFiledsArray: newPayments, arrowCheck }, () => {
+			this.discountPayment()
+			console.log('hello',paymentFiledsArray)
+		})
 	}
 
 	formSubmit = () => {
@@ -343,7 +410,7 @@ class Payments extends Component {
 	}
 
 	submitValues = (name) => {
-		const { formData, instalments, totalInstalments, tokenDate, arrowCheck } = this.state
+		const { formData, instalments, totalInstalments, tokenDate, arrowCheck, paymentFiledsArray } = this.state
 		const { lead } = this.props
 		formData[name] = formData[name]
 		let body = {};
@@ -374,10 +441,15 @@ class Payments extends Component {
 		if (name === 'no_installments') {
 			body = { no_of_installments: instalments }
 		}
+		if (name === 'payments') {
+			body = { installments: paymentFiledsArray ? paymentFiledsArray : null }
+			newArrowCheck[name] = false
+		}
 		if (name === 'installments') {
 			body = { installments: totalInstalments ? totalInstalments : null }
 			newArrowCheck[name] = false
 		}
+		console.log('Payload => ',body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				this.setState({ arrowCheck: newArrowCheck })
@@ -410,6 +482,42 @@ class Payments extends Component {
 				console.log(error);
 			})
 		}
+	}
+
+	addFullpaymentFields = () => {
+		const { lead } = this.props
+		const { paymentFiledsArray } = this.state
+		let array = [...paymentFiledsArray]
+		array.push({installmentAmount: '', type: 'payment', installmentDate: '' })
+
+
+		this.setState({
+			paymentFiledsArray: array
+		}, () => {
+			// this.addPaymentFileds(this.state.fullPaymentCount)
+		})
+	}
+
+	addPaymentFileds = (val) => {
+		const { lead } = this.props
+		const { paymentFiledsArray } = this.state
+		let array = [...paymentFiledsArray]
+		array.push({installmentAmount: '', type: 'payment', installmentDate: '' })
+		// for (var i = 0; i < val; i++) {
+			
+		// 	array.push({
+		// 		installmentAmount: lead.payment.length > i ? lead.payment[i].installmentAmount : '',
+		// 		installmentDate: lead.payment.length > i ?
+		// 			moment(lead.payment[i].createdAt).format('hh:mm a') + ' ' + moment(lead.payment[i].createdAt).format('MMM DD')
+		// 			: '',
+		// 		type: 'payment'
+		// 	})
+		// }
+		
+		
+		this.setState({ paymentFiledsArray: array }, () => {
+			console.log('loop',array)
+		})
 	}
 
 	goToComments = () => {
@@ -451,6 +559,9 @@ class Payments extends Component {
 			progressValue,
 			open,
 			arrowCheck,
+			paymentDate,
+			paymentFiledsArray,
+			fullPaymentCount,
 		} = this.state
 		return (
 			<View>
@@ -486,6 +597,12 @@ class Payments extends Component {
 							downPaymentTime={downPaymentTime}
 							submitValues={this.submitValues}
 							arrowCheck={arrowCheck}
+							paymentOptions={StaticData.paymentOptions}
+							paymentDate={paymentDate}
+							fullPaymentCount={fullPaymentCount}
+							addFullpaymentFields={this.addFullpaymentFields}
+							paymentFiledsArray={paymentFiledsArray}
+							handlePayments={this.handlePayments}
 						/>
 					</View>
 				</ScrollView>

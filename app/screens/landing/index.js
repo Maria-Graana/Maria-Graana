@@ -43,11 +43,8 @@ class Landing extends React.Component {
 		for (let tile of tileNames) {
 			let label = tile
 			tile = tile.replace(/ /g, "")
-			console.log(tile)
 			if (Ability.canView(user.role, tile)) {
 				if (counter < maxTiles) {
-					console.log(tile)
-					console.log(label)
 					let oneTile = {
 						id: counter,
 						label: label.toUpperCase(),

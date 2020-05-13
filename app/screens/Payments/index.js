@@ -69,8 +69,8 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
-		console.log(this.state.paymentFiledsArray)
-		// console.log(this.props.lead)
+		// console.log(this.state.paymentFiledsArray)
+		console.log(this.props.lead.payment)
 	}
 
 	setFields = () => {
@@ -316,6 +316,9 @@ class Payments extends Component {
 			arrowCheck[name] = true
 			this.addPaymentFileds(this.state.fullPaymentCount)
 		}
+		if (name === 'paymentType') {
+			this.addFullpaymentFields()
+		}
 
 
 		this.setState({ formData: newFormData, arrowCheck }, () => {
@@ -381,7 +384,6 @@ class Payments extends Component {
 		newPayments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
 		this.setState({ paymentFiledsArray: newPayments, arrowCheck }, () => {
 			this.discountPayment()
-			console.log('hello',paymentFiledsArray)
 		})
 	}
 

@@ -72,5 +72,9 @@ export default styles = StyleSheet.create({
         fontSize: 12,
         fontFamily: AppStyles.fonts.defaultFont,
         color: AppStyles.colors.primaryColor
+    },
+    assignButtonView:{
+        marginTop:5,
+        marginBottom:5
     }
 });

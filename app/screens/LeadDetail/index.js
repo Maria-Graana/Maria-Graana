@@ -9,6 +9,7 @@ import moment from 'moment';
 import { setlead } from '../../actions/lead';
 import styles from './style'
 import axios from 'axios';
+import Ability from '../../hoc/Ability'
 
 const _format = 'YYYY-MM-DD';
 
@@ -82,17 +83,24 @@ class LeadDetail extends React.Component {
         }
     }
 
+    navigateToAssignLead= () => {
+        const { navigation } = this.props
+        const { lead } = this.state
+        navigation.navigate('AssignLead', { leadId: lead.id, screen: 'LeadDetail' })
+    }
+
     checkCustomerName = (lead) => {
         if (lead.customer)
-        // for  CM LEAD
+            // for  CM LEAD
             this.setState({ customerName: helper.capitalize(lead.customer.customerName) })
-        else 
-        // FOR RCM LEAD
+        else
+            // FOR RCM LEAD
             this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
     }
 
     render() {
         const { type, lead, customerName } = this.state
+        const { user } = this.props;
 
         return (
             <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
@@ -127,7 +135,18 @@ class LeadDetail extends React.Component {
                         </View>
                     </View>
                 </View>
-                <View style={[AppStyles.mainInputWrap]}>
+                {
+                    //  Ability.canAdd(user.role, 'AssignLead') &&
+                    <View style={styles.assignButtonView}>
+                        <Button
+                            onPress={() => { this.navigateToAssignLead() }}
+                            style={[AppStyles.formBtnWithWhiteBg, { marginBottom: 30 }]}>
+                            <Text style={AppStyles.btnTextBlue}>ASSIGN TO TEAM MEMBER</Text>
+                        </Button>
+                    </View>
+                }
+
+                <View style={[AppStyles.assignButtonView]}>
                     <Button
                         onPress={() => { this.navigateTo() }}
                         style={[AppStyles.formBtn, styles.btn1]}>

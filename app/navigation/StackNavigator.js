@@ -28,6 +28,7 @@ import TeamTargets from '../screens/TeamTargets';
 import CreateUser from '../screens/CreateUser';
 import ChangePassword from '../screens/ChangePassword';
 import AreaPickerScreen from '../screens/AreaPickerScreen';
+import AssignLead from '../screens/AssignLead';
 
 const Stack = createStackNavigator();
 
@@ -230,7 +231,16 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
+            <Stack.Screen name='AssignLead' component={AssignLead}
+                options={({ navigation, route }) => ({
+                    title: 'SELECT A TEAM MEMBER',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
         </Stack.Navigator>
+
+
     );
 }
 

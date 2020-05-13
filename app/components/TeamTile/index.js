@@ -8,29 +8,30 @@ class TeamTile extends React.Component {
         super(props)
     }
     render() {
-        const {item}= this.props.data
+        const { selected, data, selectedId } = this.props;
+        const { item } = data;
 
         return (
-            <TouchableOpacity 
-            activeOpacity={.7}
-            onPress = { () => { this.props.onPressItem(item) }}
+            <TouchableOpacity
+                activeOpacity={.7}
+                onPress={() => { this.props.onPressItem(item) }}
             >
-                <View style= {{flexDirection: 'row', marginVertical: 15}}>
-                    <View style={{paddingRight: 10,}}>
-                        <Avatar data={item}/>
+                <View style={selected && item.id === selectedId ? styles.selectedStyle : styles.simpleStyle}>
+                    <View style={{ paddingRight: 10, }}>
+                        <Avatar data={item} />
                     </View>
-                    <View style= {{flexDirection: 'column'}}>
-                        <View style={{paddingTop: 5}}>
-                            <Text style={[styles.textFont, {fontSize: 15}]}>
+                    <View style={{ flexDirection: 'column' }}>
+                        <View style={{ paddingTop: 5 }}>
+                            <Text style={[styles.textFont, { fontSize: 15 }]}>
                                 {item.firstName} {item.lastName}
                             </Text>
                         </View>
-                        <View style={{paddingTop: 5}}>
-                            <Text style={[styles.textFont, {fontSize: 12, color: AppStyles.colors.subTextColor}]}>
+                        <View style={{ paddingTop: 5 }}>
+                            <Text style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
                                 {item.armsUserRole && item.armsUserRole.subRole}
                             </Text>
                         </View>
-                    </View> 
+                    </View>
                 </View>
                 <View style={styles.underLine}
                 />
@@ -40,13 +41,16 @@ class TeamTile extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    listItem: {
-        width: "100%",
-        marginVertical: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        flexDirection: "row",
-        alignItems: "center"
+    simpleStyle: {
+        flexDirection: 'row',
+        paddingVertical:10,
+        paddingHorizontal:5
+    },
+    selectedStyle: {
+        flexDirection: 'row',
+        paddingVertical:10,
+        paddingHorizontal:5,
+        backgroundColor: AppStyles.colors.backgroundColor
     },
     textFont: {
         fontFamily: AppStyles.fonts.defaultFont

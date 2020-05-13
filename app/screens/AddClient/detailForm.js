@@ -54,7 +54,7 @@ class DetailForm extends Component {
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput maxLength={11} value={formData.contactNumber} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number*'} />
+						<TextInput maxLength={12} value={formData.contactNumber} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number*'} />
 						{
 							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}

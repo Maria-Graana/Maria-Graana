@@ -44,11 +44,18 @@ class AssignLead extends React.Component {
         let body = {
             userId: selectedId
         }
+
         axios.patch(`/api/leads/assign/${leadId}`, body)
             .then(response => {
-                   console.log(response.data);
-                   navigation.navigate('Leads');
-            }).catch(error=>{
+                if(response.status===200){
+                    helper.successToast('LEAD ASSIGNED SUCCESSFULLY');
+                    navigation.navigate('Leads');
+                }
+                else{
+                    helper.errorToast('SOMETHING WENT WRONG');
+                }
+                
+            }).catch(error => {
                 console.log(error);
                 helper.errorToast(error.message);
             })
@@ -91,11 +98,11 @@ class AssignLead extends React.Component {
                             :
                             <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                     }
-                    <TouchableOpacity 
-                    disabled={!selected}
-                    onPress={() => this.assignLeadToSelectedMember()}
+                    <TouchableOpacity
+                        disabled={!selected}
+                        onPress={() => this.assignLeadToSelectedMember()}
                         style={styles.assignButtonStyle}>
-                        <Text style={{ color: 'white' }}> ASSIGN LEAD </Text>
+                        <Text style={AppStyles.btnText}> ASSIGN LEAD </Text>
                     </TouchableOpacity>
                 </View>
                 :

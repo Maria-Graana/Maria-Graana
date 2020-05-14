@@ -23,12 +23,18 @@ class Landing extends React.Component {
 	componentDidMount() {
 		const { navigation, dispatch } = this.props;
 		this._unsubscribe = navigation.addListener('focus', () => {
-			this.fetchTiles()
 			setTimeout(function () {
 				dispatch(getListingsCount())
 			}, 2000)
 		});
 	}
+
+
+	componentDidUpdate(prevProps) {
+		if (prevProps.count !== this.props.count) {
+			this.fetchTiles()
+		}
+	  }
 
 	componentWillUnmount() {
 		this._unsubscribe();

@@ -28,6 +28,9 @@ import TeamTargets from '../screens/TeamTargets';
 import CreateUser from '../screens/CreateUser';
 import ChangePassword from '../screens/ChangePassword';
 import AreaPickerScreen from '../screens/AreaPickerScreen';
+import Dashboard from '../screens/Dashboard';
+import CMReport from '../screens/CMReport';
+import RCMReport from '../screens/RCMReport';
 
 const Stack = createStackNavigator();
 
@@ -227,6 +230,30 @@ function MainStack() {
                             Done
                         </Text>
                     </TouchableOpacity>,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='Dashboard' component={Dashboard}
+                options={({ navigation, route }) => ({
+                    title: 'DASHBOARDS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='CMReport' component={CMReport}
+                options={({ navigation, route }) => ({
+                    title: 'INVESTMENT REPORT',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='RCMReport' component={RCMReport}
+                options={({ navigation, route }) => ({
+                    title: 'BUY/RENT REPORT',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
                 })}
             />

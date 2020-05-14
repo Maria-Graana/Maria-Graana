@@ -136,7 +136,7 @@ class LeadDetail extends React.Component {
                     </View>
                 </View>
                 {
-                    //  Ability.canAdd(user.role, 'AssignLead') &&
+                    Ability.canAdd(user.role, 'AssignLead') &&
                     <View style={styles.assignButtonView}>
                         <Button
                             onPress={() => { this.navigateToAssignLead() }}

@@ -15,7 +15,7 @@ import StaticData from '../../StaticData'
 import { FAB } from 'react-native-paper';
 import SortModal from '../../components/SortModal'
 
-class Inventory extends React.Component {
+class Leads extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -129,6 +129,7 @@ class Inventory extends React.Component {
 
 	render() {
 		const { selectInventory, dropDownId, purposeTab, leadsData, open, statusFilter, loading, activeSortModal, sort } = this.state
+		const {user} = this.props;
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
 			<View>
@@ -179,6 +180,7 @@ class Inventory extends React.Component {
 									leadsData.rows.map((item, key) => {
 										return (
 											<LeadTile
+												user = {user}
 												key={key}
 												showDropdown={this.showDropdown}
 												dotsDropDown={this.state.dotsDropDown}
@@ -230,4 +232,4 @@ mapStateToProps = (store) => {
 		user: store.user.user
 	}
 }
-export default connect(mapStateToProps)(Inventory)
+export default connect(mapStateToProps)(Leads)

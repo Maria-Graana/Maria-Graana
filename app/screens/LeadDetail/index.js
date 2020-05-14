@@ -19,7 +19,8 @@ class LeadDetail extends React.Component {
         this.state = {
             type: '',
             lead: [],
-            customerName: ''
+            customerName: '',
+            showAssignToButton: false
         }
     }
 
@@ -60,6 +61,7 @@ class LeadDetail extends React.Component {
                 this.props.dispatch(setlead(res.data))
                 this.setState({ lead: res.data }, () => {
                     that.checkCustomerName(res.data);
+                    that.checkAssignedLead(res.data);
                 })
             })
             .catch((error) => {
@@ -89,6 +91,21 @@ class LeadDetail extends React.Component {
         navigation.navigate('AssignLead', { leadId: lead.id, screen: 'LeadDetail' })
     }
 
+    checkAssignedLead = (lead) => {
+        const { user } = this.props;
+        // Show assign lead button only if loggedIn user is subadmin 1
+        if(Ability.canAdd(user.role, 'AssignLead')){
+            // Lead can only be assigned to someone else if it is assigned to no one or to current user 
+            if (lead.assigned_to_armsuser_id===null || user.id === lead.assigned_to_armsuser_id) {
+                this.setState({ showAssignToButton: true })
+            }
+            else {
+                // Lead is already assigned to some other user (any sub_admin 2 user)
+                this.setState({ showAssignToButton: false })
+            }
+        }
+    }
+
     checkCustomerName = (lead) => {
         if (lead.customer)
             // for  CM LEAD
@@ -99,7 +116,7 @@ class LeadDetail extends React.Component {
     }
 
     render() {
-        const { type, lead, customerName } = this.state
+        const { type, lead, customerName, showAssignToButton } = this.state
         const { user } = this.props;
 
         return (
@@ -142,8 +159,8 @@ class LeadDetail extends React.Component {
                     </View>
                 </View>
                 {
-                    Ability.canAdd(user.role, 'AssignLead') &&
-                    <View style={styles.assignButtonView}>
+                    showAssignToButton &&
+                    < View style={styles.assignButtonView}>
                         <Button
                             onPress={() => { this.navigateToAssignLead() }}
                             style={[AppStyles.formBtnWithWhiteBg, { marginBottom: 30 }]}>
@@ -159,7 +176,7 @@ class LeadDetail extends React.Component {
                         <Text style={AppStyles.btnText}>OPEN LEAD WORKFLOW</Text>
                     </Button>
                 </View>
-            </ScrollView>
+            </ScrollView >
         )
     }
 }

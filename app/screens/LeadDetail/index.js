@@ -83,7 +83,7 @@ class LeadDetail extends React.Component {
         }
     }
 
-    navigateToAssignLead= () => {
+    navigateToAssignLead = () => {
         const { navigation } = this.props
         const { lead } = this.state
         navigation.navigate('AssignLead', { leadId: lead.id, screen: 'LeadDetail' })
@@ -130,7 +130,12 @@ class LeadDetail extends React.Component {
                         <Text style={[styles.headingText, styles.padLeft, { paddingLeft: 0 }]}>Status</Text>
                         <View style={styles.mainView}>
                             <Text style={styles.textStyle}>
-                                {lead.status && lead.status.split('_').join(' ').toUpperCase()}
+                                {
+                                    lead.status && lead.status === 'token' ?
+                                        <Text>DEAL SIGEND - TOKEN</Text>
+                                        :
+                                        lead.status && lead.status.split('_').join(' ').toUpperCase()
+                                }
                             </Text>
                         </View>
                     </View>

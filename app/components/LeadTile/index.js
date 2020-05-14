@@ -24,7 +24,12 @@ class LeadTile extends React.Component {
             <View style={styles.topIcons}>
               <View>
                 <Text style={[styles.tokenLabel, AppStyles.mrFive]}>
-                  {data.status.split('_').join(' ').toUpperCase()}
+                  {
+                    data.status === 'token' ?
+                      <Text>DEAL SIGEND - TOKEN</Text>
+                      :
+                      data.status.split('_').join(' ').toUpperCase()
+                  }
                 </Text>
               </View>
               {/* <View>

@@ -221,7 +221,7 @@ class InnerForm extends Component {
                     return (
                       <View style={[AppStyles.mainBlackWrap]}>
                         <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
-                          <Text style={[AppStyles.blackInputText]}>Payment</Text>
+                          <Text style={[AppStyles.blackInputText]}>Payment {index + 1}</Text>
                           <View style={[AppStyles.blackInput]}>
                             <TextInput style={[AppStyles.blackInput]} value={item.installmentAmount} placeholder={'Enter Payment'} onChangeText={(text) => { handlePayments(text, index) }} keyboardType={'numeric'} />
                             <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(item.installmentAmount != null ? item.installmentAmount : '')}</Text>

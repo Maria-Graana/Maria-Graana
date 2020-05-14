@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Alert, ScrollView, Modal, Text, TouchableHighlight } from 'react-native';
 import axios from 'axios'
 import styles from './style'
 import AppStyles from '../../AppStyles'
@@ -12,6 +12,7 @@ import { ProgressBar, Colors } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 import helper from '../../helper';
 import { FAB } from 'react-native-paper';
+import MeetingModal from '../../components/MeetingModal'
 
 class Payments extends Component {
 	constructor(props) {
@@ -59,8 +60,8 @@ class Payments extends Component {
 			checkReasonValidation: false,
 			progressValue: 0,
 			fullPaymentCount: 1,
-			// paymentFiledsArray: lead.payment.length > 0 ? lead.payment : [{ installmentAmount: '', type: 'payment', installmentDate: '' }],
-			paymentFiledsArray: lead.payment.length > 0 ? lead.payment : [] ,
+			paymentFiledsArray: lead.payment.length > 0 ? lead.payment : [],
+			// checkPaymentTypeValue: ''
 		}
 
 	}
@@ -70,7 +71,7 @@ class Payments extends Component {
 		this.getAllProjects();
 		this.setFields();
 		// console.log(this.state.paymentFiledsArray)
-		console.log(this.props.lead.payment)
+		// console.log(this.props.lead)
 	}
 
 	setFields = () => {
@@ -297,7 +298,7 @@ class Payments extends Component {
 	}
 
 	handleForm = (value, name) => {
-		const { formData, arrowCheck } = this.state
+		const { formData, arrowCheck, paymentFiledsArray, modalVisible, totalInstalments } = this.state
 		let newFormData = { ...formData }
 		newFormData[name] = value
 
@@ -314,7 +315,20 @@ class Payments extends Component {
 			arrowCheck[name] = true
 		}
 		if (name === 'paymentType') {
-			this.addFullpaymentFields()
+			console.log('handle ', value)
+			if (value === 'installments' && paymentFiledsArray.length > 0) {
+				this.setState({
+					modalVisible: !modalVisible
+				})
+			}
+
+			if (value === 'full_payment' && totalInstalments.length > 0) {
+				this.setState({
+					modalVisible: !modalVisible,
+					checkPaymentTypeValue: value,
+				})
+			}
+			// this.addFullpaymentFields()
 		}
 
 
@@ -435,14 +449,14 @@ class Payments extends Component {
 			body = { no_of_installments: instalments }
 		}
 		if (name === 'payments') {
-			body = { installments: paymentFiledsArray ? paymentFiledsArray : null }
+			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null }
 			newArrowCheck[name] = false
 		}
 		if (name === 'installments') {
 			body = { installments: totalInstalments ? totalInstalments : null }
 			newArrowCheck[name] = false
 		}
-		console.log('Payload => ',body)
+		console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				this.setState({ arrowCheck: newArrowCheck })
@@ -481,12 +495,56 @@ class Payments extends Component {
 		const { lead } = this.props
 		const { paymentFiledsArray } = this.state
 		let array = [...paymentFiledsArray]
-		array.push({installmentAmount: '', type: 'payment', installmentDate: '' })
+		array.push({ installmentAmount: '', type: 'payment', installmentDate: '' })
 
 
 		this.setState({
 			paymentFiledsArray: array
 		})
+	}
+
+	openModal = () => {
+		this.setState({
+			modalVisible: !this.state.modalVisible
+		})
+	}
+
+	cancelDeletePayments = (checkPaymentTypeValue) => {
+		// this.handleForm('full_payment', 'paymentType')
+		console.log(checkPaymentTypeValue)
+		if (checkPaymentTypeValue == 'installments') {
+			this.handleForm('full_payment', 'paymentType')
+		}
+		if (checkPaymentTypeValue == 'full_payment') {
+			this.handleForm('installments', 'paymentType')
+		}
+		this.setState({
+			modalVisible: !this.state.modalVisible
+		})
+	}
+
+	deletePayments = (checkPaymentTypeValue) => {
+		console.log('hello', checkPaymentTypeValue)
+		if (checkPaymentTypeValue === 'installments') {
+			this.handleForm('installments', 'paymentType')
+			this.setState({
+				modalVisible: false,
+				totalInstalments: [],
+				instalments: '',
+			}, () => {
+				this.submitValues('installments')
+			})
+		}
+		if (checkPaymentTypeValue === 'full_payment') {
+			this.handleForm('full_payment', 'paymentType')
+			this.setState({
+				modalVisible: false,
+				paymentFiledsArray: [],
+			}, () => {
+				this.submitValues('payments')
+			})
+		}
+
 	}
 
 	goToComments = () => {
@@ -531,6 +589,8 @@ class Payments extends Component {
 			paymentDate,
 			paymentFiledsArray,
 			fullPaymentCount,
+			modalVisible,
+			checkPaymentTypeValue,
 		} = this.state
 		return (
 			<View>
@@ -588,6 +648,16 @@ class Payments extends Component {
 					]}
 					onStateChange={({ open }) => this.setState({ open })}
 				/>
+				{
+					modalVisible &&
+					<MeetingModal
+						active={modalVisible}
+						openModal={this.openModal}
+						deletePayments={this.deletePayments}
+						cancelDeletePayments={this.cancelDeletePayments}
+						checkPaymentTypeValue={checkPaymentTypeValue}
+					/>
+				}
 			</View>
 		)
 	}

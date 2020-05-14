@@ -70,7 +70,7 @@ class Payments extends Component {
 		this.getAllProjects();
 		this.setFields();
 		// console.log(this.state.paymentFiledsArray)
-		// console.log(this.props.lead.payment)
+		console.log(this.props.lead.payment)
 	}
 
 	setFields = () => {
@@ -442,7 +442,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null }
 			newArrowCheck[name] = false
 		}
-		// console.log('Payload => ',body)
+		console.log('Payload => ',body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				this.setState({ arrowCheck: newArrowCheck })

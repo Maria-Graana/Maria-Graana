@@ -134,7 +134,8 @@ class LeadDetail extends React.Component {
                                     lead.status && lead.status === 'token' ?
                                         <Text>DEAL SIGEND - TOKEN</Text>
                                         :
-                                        lead.status && lead.status.split('_').join(' ').toUpperCase()
+                                        lead.status &&
+                                        lead.status.split('_').join(' ').toUpperCase()
                                 }
                             </Text>
                         </View>

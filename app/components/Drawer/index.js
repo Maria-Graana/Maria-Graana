@@ -50,6 +50,7 @@ class CustomDrawerContent extends React.Component {
                         </View>
                     </View>
                     <View style={styles.underLine} />
+                    {Ability.canView(role, 'Dashboard') && <DrawerItem screen={'Dashboard'} navigateTo={() => { this.navigateTo('Dashboard') }} />}
                     {Ability.canView(role, 'Diary') && <DrawerIconItem screen={'Diary'} badges={count.diary} navigateTo={() => { this.navigateTo('Diary') }} />}
                     {Ability.canView(role, 'TeamDiary') && <DrawerItem screen={'Team Diary'} navigateTo={() => { this.navigateTo('TeamDiary') }} />}
                     {Ability.canView(role, 'Lead') && <DrawerIconItem screen={'Leads'} badges={count.leads} navigateTo={() => { this.navigateTo('Lead') }} />}

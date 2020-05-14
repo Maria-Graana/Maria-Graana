@@ -262,6 +262,8 @@ export default AppStyles = {
         borderRadius: 4,
         backgroundColor: '#fff',
         padding: 15,
+        borderWidth:1,
+        borderColor:'#0f73ee'
     },
     btnTextBlue: {
         color: '#0f73ee',

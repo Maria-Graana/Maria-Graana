@@ -110,8 +110,14 @@ class AddClient extends Component {
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
                             if (res.status === 200) {
-                                RootNavigation.navigate('Client')
-                                helper.successToast('CLIENT CREATED')
+                                if(res.data.message){
+                                    helper.errorToast(res.data.message)
+                                }
+                                else{
+                                    RootNavigation.navigate('Client')
+                                    helper.successToast('CLIENT CREATED')
+                                }
+                               
                             }
                         })
                         .catch((error) => {

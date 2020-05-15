@@ -9,6 +9,7 @@ import moment from 'moment';
 import { setlead } from '../../actions/lead';
 import styles from './style'
 import axios from 'axios';
+import Ability from '../../hoc/Ability'
 
 const _format = 'YYYY-MM-DD';
 
@@ -18,7 +19,8 @@ class LeadDetail extends React.Component {
         this.state = {
             type: '',
             lead: [],
-            customerName: ''
+            customerName: '',
+            showAssignToButton: false
         }
     }
 
@@ -59,6 +61,7 @@ class LeadDetail extends React.Component {
                 this.props.dispatch(setlead(res.data))
                 this.setState({ lead: res.data }, () => {
                     that.checkCustomerName(res.data);
+                    that.checkAssignedLead(res.data);
                 })
             })
             .catch((error) => {
@@ -82,17 +85,39 @@ class LeadDetail extends React.Component {
         }
     }
 
+    navigateToAssignLead = () => {
+        const { navigation } = this.props
+        const { lead } = this.state
+        navigation.navigate('AssignLead', { leadId: lead.id, screen: 'LeadDetail' })
+    }
+
+    checkAssignedLead = (lead) => {
+        const { user } = this.props;
+        // Show assign lead button only if loggedIn user is subadmin 1
+        if(Ability.canAdd(user.role, 'AssignLead')){
+            // Lead can only be assigned to someone else if it is assigned to no one or to current user 
+            if (lead.assigned_to_armsuser_id===null || user.id === lead.assigned_to_armsuser_id) {
+                this.setState({ showAssignToButton: true })
+            }
+            else {
+                // Lead is already assigned to some other user (any sub_admin 2 user)
+                this.setState({ showAssignToButton: false })
+            }
+        }
+    }
+
     checkCustomerName = (lead) => {
         if (lead.customer)
-        // for  CM LEAD
+            // for  CM LEAD
             this.setState({ customerName: helper.capitalize(lead.customer.customerName) })
-        else 
-        // FOR RCM LEAD
+        else
+            // FOR RCM LEAD
             this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
     }
 
     render() {
-        const { type, lead, customerName } = this.state
+        const { type, lead, customerName, showAssignToButton } = this.state
+        const { user } = this.props;
 
         return (
             <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
@@ -122,19 +147,36 @@ class LeadDetail extends React.Component {
                         <Text style={[styles.headingText, styles.padLeft, { paddingLeft: 0 }]}>Status</Text>
                         <View style={styles.mainView}>
                             <Text style={styles.textStyle}>
-                                {lead.status && lead.status.split('_').join(' ').toUpperCase()}
+                                {
+                                    lead.status && lead.status === 'token' ?
+                                        <Text>DEAL SIGNED - TOKEN</Text>
+                                        :
+                                        lead.status &&
+                                        lead.status.split('_').join(' ').toUpperCase()
+                                }
                             </Text>
                         </View>
                     </View>
                 </View>
-                <View style={[AppStyles.mainInputWrap]}>
+                {
+                    showAssignToButton &&
+                    < View style={styles.assignButtonView}>
+                        <Button
+                            onPress={() => { this.navigateToAssignLead() }}
+                            style={[AppStyles.formBtnWithWhiteBg, { marginBottom: 30 }]}>
+                            <Text style={AppStyles.btnTextBlue}>ASSIGN TO TEAM MEMBER</Text>
+                        </Button>
+                    </View>
+                }
+
+                <View style={[AppStyles.assignButtonView]}>
                     <Button
                         onPress={() => { this.navigateTo() }}
                         style={[AppStyles.formBtn, styles.btn1]}>
                         <Text style={AppStyles.btnText}>OPEN LEAD WORKFLOW</Text>
                     </Button>
                 </View>
-            </ScrollView>
+            </ScrollView >
         )
     }
 }

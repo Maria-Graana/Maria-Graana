@@ -44,6 +44,11 @@ const role = {
         roles: [
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true } },
         ],
+    },
+    AssignLead: {
+        roles: [
+            { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true } },
+        ],
     }
 }
 

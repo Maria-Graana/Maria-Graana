@@ -326,8 +326,15 @@ class LeadViewing extends React.Component {
 	deleteProperty = (property) => {
 		axios.delete(`/api/leads/shortlisted?id=${property.id}`)
 			.then((res) => {
-				this.setState({ loading: true })
-				this.fetchProperties()
+				if(res.status===200){
+					if(res.data.message){
+						helper.errorToast(res.data.message)
+					}
+					else{
+						this.setState({ loading: true })
+						this.fetchProperties()
+					}
+				}
 			})
 			.catch((error) => {
 				console.log(error)

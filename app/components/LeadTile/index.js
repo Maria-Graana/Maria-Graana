@@ -13,18 +13,22 @@ class LeadTile extends React.Component {
   }
 
 
-
   render() {
-    const { selectInventory, data, selectedInventory, unSelectInventory, navigateTo, callNumber } = this.props
+    const { data, navigateTo, callNumber, user } = this.props
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
 
-        <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
+        <View style={[styles.tileMainWrap, data.readAt === null && user.id === data.assigned_to_armsuser_id && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
               <View>
                 <Text style={[styles.tokenLabel, AppStyles.mrFive]}>
-                  {data.status.split('_').join(' ').toUpperCase()}
+                  {
+                    data.status === 'token' ?
+                      <Text>DEAL SIGNED - TOKEN</Text>
+                      :
+                      data.status.split('_').join(' ').toUpperCase()
+                  }
                 </Text>
               </View>
               {/* <View>
@@ -80,7 +84,7 @@ class LeadTile extends React.Component {
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                    {moment(data.createdAt).format("MMM DD YYYY")}
+                    {moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}
                   </Text>
                 </View>
               </View>

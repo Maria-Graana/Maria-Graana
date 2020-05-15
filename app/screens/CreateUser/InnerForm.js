@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, Image } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity } from 'react-native';
 import { Button } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import styles from './style';
@@ -7,6 +7,7 @@ import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
 import mobileIcon from '../../../assets/img/mobile.png'
+
 
 class InnerForm extends Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class InnerForm extends Component {
       organization,
       cnicValidate,
       phoneValidate,
+      handleAreaClick
     } = this.props
 
     let getRole = getRoles && getRoles.subRole && getRoles.subRole.replace(/\_/g, ' ')
@@ -142,6 +144,15 @@ class InnerForm extends Component {
             <TextInput style={[AppStyles.formControl, styles.padLeft]} value={getRole} editable={false} />
           </View>
         </View>
+
+        {/* **************************************** */}
+        <TouchableOpacity onPress={() => handleAreaClick()}  >
+          <View style={[AppStyles.mainInputWrap, AppStyles.inputPadLeft, AppStyles.formControl, { justifyContent: 'center' }]} >
+            <Text style={[AppStyles.formFontSettings, { color: formData.leadAreas.length > 0 ? AppStyles.colors.textColor : AppStyles.colors.subTextColor }]} >
+              {formData.leadAreas.length > 0 ? `${formData.leadAreas.length} Areas Selected` : 'Select Areas'}
+            </Text>
+          </View>
+        </TouchableOpacity>
 
 
         {/* **************************************** */}

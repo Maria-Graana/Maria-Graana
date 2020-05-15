@@ -34,6 +34,7 @@ class CreateUser extends Component {
                 zoneId: user.zoneId,
                 cityId: '',
                 managerId: user.id,
+                leadAreas: [],
             }
         }
     }
@@ -42,6 +43,7 @@ class CreateUser extends Component {
         const { user } = this.props
         this.getCities();
         this.getRoles(user.organizationId)
+        this.getAreas()
     }
 
     getCities = () => {
@@ -53,6 +55,32 @@ class CreateUser extends Component {
                     cities: citiesArray
                 })
             })
+    }
+
+    getAreas = () => {
+        const { user } = this.props
+        console.log(user)
+        axios.get(`/api/areas?zone_id=${user.zoneId}&roleId=${user.armsUserRole.id}&all=true`)
+            .then((res) => {
+                let areaArray = [];
+                res && res.data.items.map((item, index) => { return (areaArray.push({ value: item.id, name: item.name })) })
+                console.log(areaArray)
+            })
+    }
+
+    handleAreaClick = () => {
+        const { RCMFormData } = this.state;
+        const { city_id, leadAreas } = RCMFormData;
+        const { navigation } = this.props;
+
+        const isEditMode = `${leadAreas.length > 0 ? true : false}`
+
+        if (city_id !== '' && city_id !== undefined) {
+            navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode });
+        }
+        else {
+            alert('Please select city first!')
+        }
     }
 
     getRoles = (id) => {
@@ -152,6 +180,7 @@ class CreateUser extends Component {
                             <View>
                                 <InnerForm
                                     formSubmit={this.formSubmit}
+                                    handleAreaClick={this.handleAreaClick}
                                     checkValidation={checkValidation}
                                     handleForm={this.handleForm}
                                     formData={formData}

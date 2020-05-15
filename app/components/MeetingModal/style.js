@@ -6,8 +6,8 @@ export default styles = StyleSheet.create({
     backgroundColor: '#E8EDF0',
     borderRadius: 10,
     padding: 15,
-    paddingTop: 50,
-    paddingBottom: 50,
+    paddingTop: 20,
+    paddingBottom: 20,
     zIndex: 5,
     position: 'relative',
     elevation: 5,
@@ -27,5 +27,20 @@ export default styles = StyleSheet.create({
     width: 20,
     height: 20,
     resizeMode: 'contain',
+  },
+  mainViewBtn: {
+    marginTop: 15,
+    flexDirection: 'row'
+  },
+  mainBtnAction:{
+    padding: 8,
+    marginRight: 10,
+    backgroundColor: '#0f73ee',
+    borderRadius: 4,
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  whiteColor: {
+    color: '#fff'
   },
 });

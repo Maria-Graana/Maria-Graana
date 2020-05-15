@@ -318,7 +318,8 @@ class Payments extends Component {
 			console.log('handle ', value)
 			if (value === 'installments' && paymentFiledsArray.length > 0) {
 				this.setState({
-					modalVisible: !modalVisible
+					modalVisible: !modalVisible,
+					checkPaymentTypeValue: value,
 				})
 			}
 
@@ -524,7 +525,6 @@ class Payments extends Component {
 	}
 
 	deletePayments = (checkPaymentTypeValue) => {
-		console.log('hello', checkPaymentTypeValue)
 		if (checkPaymentTypeValue === 'installments') {
 			this.handleForm('installments', 'paymentType')
 			this.setState({
@@ -532,7 +532,8 @@ class Payments extends Component {
 				totalInstalments: [],
 				instalments: '',
 			}, () => {
-				this.submitValues('installments')
+				this.submitValues('installments');
+				this.discountPayment()
 			})
 		}
 		if (checkPaymentTypeValue === 'full_payment') {
@@ -542,6 +543,7 @@ class Payments extends Component {
 				paymentFiledsArray: [],
 			}, () => {
 				this.submitValues('payments')
+				this.discountPayment()
 			})
 		}
 

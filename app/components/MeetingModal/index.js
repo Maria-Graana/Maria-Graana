@@ -15,22 +15,19 @@ class PaymentAlert extends React.Component {
 
   render() {
     const { openModal, active, deletePayments, cancelDeletePayments, checkPaymentTypeValue } = this.props
-    console.log('props',checkPaymentTypeValue)
+    console.log('props', checkPaymentTypeValue)
     return (
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
-          <TouchableOpacity style={styles.timesBtn} onPress={() => { openModal() }}>
-            <Image source={times} style={styles.timesImg} />
-          </TouchableOpacity>
           <Text>
-            Are you sure you want to delete this Payments?
+            Are you sure you want to delete this {checkPaymentTypeValue === 'installments' ? 'payments' : 'installments'}?
           </Text>
-          <View>
-            <TouchableOpacity onPress={() => { deletePayments(checkPaymentTypeValue) }}>
-              <Text>Delete</Text>
+          <View style={styles.mainViewBtn}>
+            <TouchableOpacity style={styles.mainBtnAction} onPress={() => { deletePayments(checkPaymentTypeValue) }}>
+              <Text style={styles.whiteColor}>Delete</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => { cancelDeletePayments(checkPaymentTypeValue) }}>
-              <Text>Cancel</Text>
+            <TouchableOpacity style={styles.mainBtnAction} onPress={() => { cancelDeletePayments(checkPaymentTypeValue) }}>
+              <Text style={styles.whiteColor}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -315,7 +315,6 @@ class Payments extends Component {
 			arrowCheck[name] = true
 		}
 		if (name === 'paymentType') {
-			console.log('handle ', value)
 			if (value === 'installments' && paymentFiledsArray.length > 0) {
 				this.setState({
 					modalVisible: !modalVisible,
@@ -457,7 +456,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null }
 			newArrowCheck[name] = false
 		}
-		console.log('Payload => ', body)
+		// console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				this.setState({ arrowCheck: newArrowCheck })
@@ -511,8 +510,6 @@ class Payments extends Component {
 	}
 
 	cancelDeletePayments = (checkPaymentTypeValue) => {
-		// this.handleForm('full_payment', 'paymentType')
-		console.log(checkPaymentTypeValue)
 		if (checkPaymentTypeValue == 'installments') {
 			this.handleForm('full_payment', 'paymentType')
 		}
@@ -529,8 +526,7 @@ class Payments extends Component {
 			this.handleForm('installments', 'paymentType')
 			this.setState({
 				modalVisible: false,
-				totalInstalments: [],
-				instalments: '',
+				paymentFiledsArray: [],
 			}, () => {
 				this.submitValues('installments');
 				this.discountPayment()
@@ -540,7 +536,8 @@ class Payments extends Component {
 			this.handleForm('full_payment', 'paymentType')
 			this.setState({
 				modalVisible: false,
-				paymentFiledsArray: [],
+				totalInstalments: [],
+				instalments: '',
 			}, () => {
 				this.submitValues('payments')
 				this.discountPayment()

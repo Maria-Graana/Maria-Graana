@@ -15,7 +15,6 @@ class PaymentAlert extends React.Component {
 
   render() {
     const { openModal, active, deletePayments, cancelDeletePayments, checkPaymentTypeValue } = this.props
-    console.log('props', checkPaymentTypeValue)
     return (
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>

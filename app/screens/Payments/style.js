@@ -30,7 +30,7 @@ export default styles = StyleSheet.create({
     backgroundColor: '#0f73ee',
     marginTop: 5,
     marginBottom: 5,
-    width: 100,
+    width: 150,
     color: '#fff',
     textAlign: 'center',
     padding: 8,

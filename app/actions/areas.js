@@ -20,7 +20,6 @@ export function getAreas(cityId) {
 export function getAreasByZone() {
     return (dispatch, getsState) => {
         const user = getsState().user.user;
-        console.log(user);
         axios.get(`/api/areas?zone_id=${user.zoneId}&roleId=${user.armsUserRole.id}&all=true`)
             .then((res) => {
                 let areaArray = [];
@@ -30,7 +29,9 @@ export function getAreasByZone() {
                     payload: areaArray,
                 })
                 dispatch(setAreaLoader(false))
-            });
+            }).catch(error => {
+                console.log(error)
+            })
     }
 }
 

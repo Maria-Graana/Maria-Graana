@@ -394,14 +394,14 @@ class Payments extends Component {
 
 	formSubmit = () => {
 		const { lead } = this.props
-		const { formData, totalInstalments, remainingPayment, readOnly } = this.state
+		const { formData, totalInstalments, remainingPayment, readOnly, paymentFiledsArray } = this.state
 		let body = {
 			discount: formData.discount ? parseInt(formData.discount) : null,
 			downPayment: formData.downPayment ? parseInt(formData.downPayment) : null,
 			floorId: formData.floorId ? formData.floorId : null,
 			token: formData.token ? parseInt(formData.token) : null,
 			unitId: formData.unitId ? formData.unitId : null,
-			installments: totalInstalments ? totalInstalments : null,
+			installments: totalInstalments.length > 0 ? totalInstalments : paymentFiledsArray.length > 0 ? paymentFiledsArray : null,
 			no_of_installments: totalInstalments.length ? totalInstalments.length : null,
 		}
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
@@ -483,7 +483,7 @@ class Payments extends Component {
 			axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
 				this.setState({ isVisible: false }, () => {
 					helper.successToast(`Lead Closed`)
-					navigation.navigate('Lead');
+					navigation.navigate('Leads');
 				});
 			}).catch(error => {
 				console.log(error);
@@ -522,6 +522,8 @@ class Payments extends Component {
 	}
 
 	deletePayments = (checkPaymentTypeValue) => {
+		const { lead } = this.props
+
 		if (checkPaymentTypeValue === 'installments') {
 			this.handleForm('installments', 'paymentType')
 			this.setState({
@@ -543,6 +545,11 @@ class Payments extends Component {
 				this.discountPayment()
 			})
 		}
+
+		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
+		.then((res) => {
+			console.log(res.data)
+		})
 
 	}
 

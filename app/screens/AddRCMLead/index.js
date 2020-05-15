@@ -128,7 +128,7 @@ class AddRCMLead extends Component {
         const isEditMode = `${leadAreas.length > 0 ? true : false}`
 
         if (city_id !== '' && city_id !== undefined) {
-            navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode });
+            navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode,screenName:'AddRCMLead' });
         }
         else {
             alert('Please select city first!')

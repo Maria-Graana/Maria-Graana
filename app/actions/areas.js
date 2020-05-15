@@ -6,7 +6,7 @@ export function getAreas(cityId) {
         axios.get(`/api/areas?city_id=${cityId}&all=true`)
             .then((res) => {
                 let areas = [];
-                res && res.data.items.map((item, index) => { return areas.push({ value: item.id, name: item.name })})
+                res && res.data.items.map((item, index) => { return areas.push({ value: item.id, name: item.name }) })
                 dispatch({
                     type: types.GET_AREAS,
                     payload: areas,
@@ -17,6 +17,23 @@ export function getAreas(cityId) {
             })
     }
 }
+export function getAreasByZone() {
+    return (dispatch, getsState) => {
+        const user = getsState().user.user;
+        console.log(user);
+        axios.get(`/api/areas?zone_id=${user.zoneId}&roleId=${user.armsUserRole.id}&all=true`)
+            .then((res) => {
+                let areaArray = [];
+                res && res.data.items.map((item, index) => { return (areaArray.push({ value: item.id, name: item.name })) })
+                dispatch({
+                    type: types.GET_AREAS,
+                    payload: areaArray,
+                })
+                dispatch(setAreaLoader(false))
+            });
+    }
+}
+
 
 export function setSelectedAreas(areas) {
     return {

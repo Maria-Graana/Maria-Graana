@@ -8,6 +8,7 @@ import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import helper from '../../helper'
+import { setSelectedAreas } from "../../actions/areas";
 
 class CreateUser extends Component {
     constructor(props) {
@@ -34,16 +35,31 @@ class CreateUser extends Component {
                 zoneId: user.zoneId,
                 cityId: '',
                 managerId: user.id,
-                leadAreas: [],
+                areas: [],
             }
         }
     }
 
     componentDidMount() {
-        const { user } = this.props
+        const { user,navigation } = this.props
+        navigation.addListener('focus', () => {
+            setTimeout(() => {
+                // When screen is focused again the areas should be updated...
+                const { selectedAreasIds } = this.props;
+                const { formData } = this.state;
+                let copyObject = Object.assign({}, formData);
+                copyObject.areas = selectedAreasIds;
+                this.setState({ formData: copyObject })
+            }, 1000)
+        })
         this.getCities();
         this.getRoles(user.organizationId)
-        this.getAreas()
+    }
+
+    componentWillUnmount() {
+        const { dispatch } = this.props;
+        // selected Areas should be cleared to be used anywhere else
+        dispatch(setSelectedAreas([]));
     }
 
     getCities = () => {
@@ -57,30 +73,15 @@ class CreateUser extends Component {
             })
     }
 
-    getAreas = () => {
-        const { user } = this.props
-        console.log(user)
-        axios.get(`/api/areas?zone_id=${user.zoneId}&roleId=${user.armsUserRole.id}&all=true`)
-            .then((res) => {
-                let areaArray = [];
-                res && res.data.items.map((item, index) => { return (areaArray.push({ value: item.id, name: item.name })) })
-                console.log(areaArray)
-            })
-    }
+   
 
     handleAreaClick = () => {
-        const { RCMFormData } = this.state;
-        const { city_id, leadAreas } = RCMFormData;
+        const { formData } = this.state;
+        const { areas } = formData;
         const { navigation } = this.props;
 
-        const isEditMode = `${leadAreas.length > 0 ? true : false}`
-
-        if (city_id !== '' && city_id !== undefined) {
-            navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode });
-        }
-        else {
-            alert('Please select city first!')
-        }
+        const isEditMode = `${areas.length > 0 ? true : false}`
+        navigation.navigate('AreaPickerScreen', { isEditMode: isEditMode, screenName: 'CreateUser' });
     }
 
     getRoles = (id) => {
@@ -204,6 +205,7 @@ class CreateUser extends Component {
 mapStateToProps = (store) => {
     return {
         user: store.user.user,
+        selectedAreasIds: store.areasReducer.selectedAreas,
     }
 }
 

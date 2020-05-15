@@ -148,8 +148,8 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <TouchableOpacity onPress={() => handleAreaClick()}  >
           <View style={[AppStyles.mainInputWrap, AppStyles.inputPadLeft, AppStyles.formControl, { justifyContent: 'center' }]} >
-            <Text style={[AppStyles.formFontSettings, { color: formData.leadAreas.length > 0 ? AppStyles.colors.textColor : AppStyles.colors.subTextColor }]} >
-              {formData.leadAreas.length > 0 ? `${formData.leadAreas.length} Areas Selected` : 'Select Areas'}
+            <Text style={[AppStyles.formFontSettings, { color: formData.areas.length > 0 ? AppStyles.colors.textColor : AppStyles.colors.subTextColor }]} >
+              {formData.areas.length > 0 ? `${formData.areas.length} Areas Selected` : 'Select Areas'}
             </Text>
           </View>
         </TouchableOpacity>

@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Fab, ActionSheet } from 'native-base';
 import helper from '../../helper';
 import Loader from '../../components/loader';
+import NoResultsComponent from '../../components/NoResultsComponent';
 
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
@@ -125,6 +126,7 @@ class Client extends React.Component {
                     renderItem={(item, index) => (
                         <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
                     )}
+                    ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
                     keyExtractor={(item, index) => item.id.toString()}
                 />
             </View>

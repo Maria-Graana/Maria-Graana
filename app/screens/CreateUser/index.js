@@ -8,6 +8,7 @@ import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import helper from '../../helper'
+import { setSelectedAreas } from "../../actions/areas";
 
 class CreateUser extends Component {
     constructor(props) {
@@ -34,14 +35,31 @@ class CreateUser extends Component {
                 zoneId: user.zoneId,
                 cityId: '',
                 managerId: user.id,
+                areas: [],
             }
         }
     }
 
     componentDidMount() {
-        const { user } = this.props
+        const { user,navigation } = this.props
+        navigation.addListener('focus', () => {
+            setTimeout(() => {
+                // When screen is focused again the areas should be updated...
+                const { selectedAreasIds } = this.props;
+                const { formData } = this.state;
+                let copyObject = Object.assign({}, formData);
+                copyObject.areas = selectedAreasIds;
+                this.setState({ formData: copyObject })
+            }, 1000)
+        })
         this.getCities();
         this.getRoles(user.organizationId)
+    }
+
+    componentWillUnmount() {
+        const { dispatch } = this.props;
+        // selected Areas should be cleared to be used anywhere else
+        dispatch(setSelectedAreas([]));
     }
 
     getCities = () => {
@@ -53,6 +71,17 @@ class CreateUser extends Component {
                     cities: citiesArray
                 })
             })
+    }
+
+   
+
+    handleAreaClick = () => {
+        const { formData } = this.state;
+        const { areas } = formData;
+        const { navigation } = this.props;
+
+        const isEditMode = `${areas.length > 0 ? true : false}`
+        navigation.navigate('AreaPickerScreen', { isEditMode: isEditMode, screenName: 'CreateUser' });
     }
 
     getRoles = (id) => {
@@ -152,6 +181,7 @@ class CreateUser extends Component {
                             <View>
                                 <InnerForm
                                     formSubmit={this.formSubmit}
+                                    handleAreaClick={this.handleAreaClick}
                                     checkValidation={checkValidation}
                                     handleForm={this.handleForm}
                                     formData={formData}
@@ -175,6 +205,7 @@ class CreateUser extends Component {
 mapStateToProps = (store) => {
     return {
         user: store.user.user,
+        selectedAreasIds: store.areasReducer.selectedAreas,
     }
 }
 

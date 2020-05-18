@@ -40,9 +40,10 @@ class AssignLead extends React.Component {
     assignLeadToSelectedMember = () => {
         const { navigation, route } = this.props;
         const { selectedId } = this.state;
-        const { leadId } = route.params;
+        const { leadId,type } = route.params;
         let body = {
-            userId: selectedId
+            userId: selectedId,
+            type: type ? type.toLowerCase() : ''
         }
 
         axios.patch(`/api/leads/assign/${leadId}`, body)

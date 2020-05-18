@@ -87,8 +87,8 @@ class LeadDetail extends React.Component {
 
     navigateToAssignLead = () => {
         const { navigation } = this.props
-        const { lead } = this.state
-        navigation.navigate('AssignLead', { leadId: lead.id, screen: 'LeadDetail' })
+        const { lead,type } = this.state
+        navigation.navigate('AssignLead', { leadId: lead.id, type:type, screen: 'LeadDetail' })
     }
 
     checkAssignedLead = (lead) => {

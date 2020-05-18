@@ -18,19 +18,19 @@ class ReportFooter extends React.Component {
         return (
             <Footer>
                 <FooterTab>
-                    <Button style={label === 'Agent' ? styles.selectedButton : {}} vertical onPress={() => this.props.selectedFooterButton('Agent')}>
+                    <Button style={label === 'Agent' ? styles.selectedButton : { backgroundColor: '#ffffff' }} vertical onPress={() => this.props.selectedFooterButton('Agent')}>
                         <Image source={AgentImg} style={label === 'Agent' ? styles.selectedImg : styles.imgStyle} />
                         <Text style={label === 'Agent' ? styles.selectedText : styles.textStyle}>Agent</Text>
                     </Button>
-                    <Button style={label === 'Team' ? styles.selectedButton : {}} vertica onPress={() => this.props.selectedFooterButton('Team')}>
+                    <Button style={label === 'Team' ? styles.selectedButton : { backgroundColor: '#ffffff' }} vertical onPress={() => this.props.selectedFooterButton('Team')}>
                         <Image source={TeamImg} style={label === 'Team' ? styles.selectedImg : styles.imgStyle} />
                         <Text style={label === 'Team' ? styles.selectedText : styles.textStyle}>Team</Text>
                     </Button>
-                    <Button style={label === 'Region' ? styles.selectedButton : {}} vertical onPress={() => this.props.selectedFooterButton('Region')}>
+                    <Button style={label === 'Region' ? styles.selectedButton : { backgroundColor: '#ffffff' }} vertical onPress={() => this.props.selectedFooterButton('Region')}>
                         <Image source={RegionImg} style={label === 'Region' ? styles.selectedImg : styles.imgStyle} />
                         <Text style={label === 'Region' ? styles.selectedText : styles.textStyle}>Region</Text>
                     </Button>
-                    <Button style={label === 'Organization' ? styles.selectedButton : {}} vertical onPress={() => this.props.selectedFooterButton('Organization')}>
+                    <Button style={label === 'Organization' ? styles.selectedButton : { backgroundColor: '#ffffff' }} vertical onPress={() => this.props.selectedFooterButton('Organization')}>
                         <Image source={OragnizationImg} style={label === 'Organization' ? styles.selectedImg : styles.imgStyle} />
                         <Text style={label === 'Organization' ? styles.selectedText : styles.textStyle}>Organization</Text>
                     </Button>

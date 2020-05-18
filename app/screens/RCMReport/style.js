@@ -43,7 +43,8 @@ export default styles = StyleSheet.create({
         marginRight: 10,
     },
     scrollContainer: {
-        marginHorizontal: 10
+        marginHorizontal: 10,
+        marginVertical: 5
     },
     selectedBtn: {
         backgroundColor: AppStyles.colors.primaryColor,
@@ -52,5 +53,50 @@ export default styles = StyleSheet.create({
     btnView: {
         flexDirection: "row",
         justifyContent: "space-evenly"
+    },
+    inputView: {
+        flexDirection: "row",
+        height: 50,
+        padding: 10
+    },
+    regionStyle: {
+        flex: 1.5,
+        borderWidth: 1,
+        marginRight: 10,
+        borderRadius: 5,
+        borderColor: AppStyles.colors.subTextColor,
+        flexDirection: "row"
+    },
+    textView: {
+        flex: 1,
+        padding: 5,
+        borderRightWidth: 0.5,
+        borderColor: AppStyles.colors.subTextColor
+    },
+    regionImg: {
+        resizeMode: 'contain',
+        width: 14,
+        height: 14,
+        marginVertical: 6
+    },
+    inputBtn: {
+        paddingHorizontal: 10
+    },
+    textStyle: {
+        fontSize: 12,
+        fontFamily: AppStyles.fonts.defaultFont
+    },
+    dateView: {
+        flex: 1,
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: AppStyles.colors.subTextColor,
+        flexDirection: "row"
+    },
+    calendarImg: {
+        resizeMode: 'contain',
+        width: 20,
+        height: 20,
+        marginVertical: 3
     }
 });

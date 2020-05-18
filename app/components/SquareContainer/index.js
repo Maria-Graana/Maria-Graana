@@ -46,17 +46,15 @@ const styles = StyleSheet.create({
     },
     containerImg: {
         marginHorizontal: 15,
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
         resizeMode: 'contain'
     },
     squareContainer: {
         flex: 1,
-        borderWidth: 1,
         height: 160,
         borderRadius: 20,
         justifyContent: "space-around",
-        borderColor: AppStyles.colors.primaryColor
     },
     headingText: {
         color: '#ffffff',

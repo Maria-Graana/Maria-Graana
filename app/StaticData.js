@@ -362,35 +362,33 @@ export default StaticData = {
         { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
     ],
     barCharData: {
-        labels: ['Open', 'Call', 'Meeting', 'Payments', 'Won', 'Lost'],
+        labels: ['Open', 'Call', 'Meeting', 'Payment', 'Won', 'Lost'],
         datasets: [{
             data: [
-                50,
-                20,
-                2,
-                86,
-                71,
-                100
+                21,
+                25,
+                100,
+                80,
+                21,
+                22
             ],
             color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})` // optional
-        }, {
+        }]
+    },
+    rcmBarCharData: {
+        labels: ['Open', 'Call', 'Meeting', 'Payment', 'Won', 'Lost', 'offer', 'prop'],
+        datasets: [{
             data: [
-                20,
-                10,
-                4,
-                56,
-                87,
-                90
-            ]
-        }, {
-            data: [
-                30,
-                90,
-                67,
-                54,
-                10,
-                2
-            ]
+                21,
+                25,
+                100,
+                80,
+                21,
+                22,
+                75,
+                30
+            ],
+            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})` // optional
         }]
     },
     pieCharData: [

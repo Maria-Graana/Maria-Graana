@@ -84,12 +84,10 @@ const styles = StyleSheet.create({
     reactangle: {
         // justifyContent: 'space-between',
         flex: 1,
-        borderWidth: 1,
         height: 160,
         borderRadius: 20,
         marginVertical: 5,
         flexDirection: "row",
-        borderColor: AppStyles.colors.primaryColor
     },
     containerImg: {
         marginHorizontal: 15,

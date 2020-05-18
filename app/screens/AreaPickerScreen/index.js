@@ -10,8 +10,7 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import fuzzy from 'fuzzy'
 import AppStyles from '../../AppStyles';
 import Loader from '../../components/loader';
-import { getAreas, clearAreas, setAreaLoader, setSelectedAreas } from "../../actions/areas";
-import { RotationGestureHandler } from 'react-native-gesture-handler';
+import { getAreas, clearAreas, setAreaLoader, setSelectedAreas,getAreasByZone } from "../../actions/areas";
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
@@ -27,9 +26,16 @@ class AreaPickerScreen extends React.Component {
 
     componentDidMount() {
         const { route, dispatch, selectedAreaIds } = this.props;
-        const { cityId } = route.params;
+        const { cityId,screenName } = route.params;
         dispatch(setAreaLoader(true))
-        dispatch(getAreas(cityId));
+        if(screenName==='CreateUser'){
+        // FROM CREATE USER SCREEN THE AREA ASSIGNMENT FLOW IS DIFFERENT SO HANDLING IT DIFFERENTLY
+          dispatch(getAreasByZone())
+        }
+        else{
+            dispatch(getAreas(cityId));
+        }
+      
         if (route.params.isEditMode) {
             this.areaIds = [...selectedAreaIds];
             this.setState({ selectedAreaIds: this.areaIds });

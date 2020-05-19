@@ -19,11 +19,13 @@ class PaymentAlert extends React.Component {
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
           <Text>
-            Are you sure you want to delete this {checkPaymentTypeValue === 'installments' ? 'payments' : 'installments'}?
+            Changing payment plan will remove previously added
+            {checkPaymentTypeValue === 'installments' ? ' payments' : ' installments'}.
+            Are you sure you want to continue?
           </Text>
           <View style={styles.mainViewBtn}>
             <TouchableOpacity style={styles.mainBtnAction} onPress={() => { deletePayments(checkPaymentTypeValue) }}>
-              <Text style={styles.whiteColor}>Delete</Text>
+              <Text style={styles.whiteColor}>Continue</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.mainBtnAction} onPress={() => { cancelDeletePayments(checkPaymentTypeValue) }}>
               <Text style={styles.whiteColor}>Cancel</Text>

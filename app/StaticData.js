@@ -358,7 +358,7 @@ export default StaticData = {
     ],
     paymentOptions: [
         { value: 'full_payment', name: 'Full Payment' },
-        { value: 'installments', name: 'Installments' }
+        { value: 'installments', name: 'Installment Plan' }
     ]
 }
 

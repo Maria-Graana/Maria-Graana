@@ -22,6 +22,7 @@ class CreateUser extends Component {
             emailValidate: true,
             phoneValidate: false,
             cnicValidate: false,
+            showAreaDropdown: user.subRole === 'zonal_manager' || user.subRole === 'branch_manager' ? true : false,
             formData: {
                 email: '',
                 password: '',
@@ -172,6 +173,7 @@ class CreateUser extends Component {
             emailValidate,
             phoneValidate,
             cnicValidate,
+            showAreaDropdown,
         } = this.state
         return (
             <View style={[AppStyles.container]}>
@@ -191,6 +193,7 @@ class CreateUser extends Component {
                                     emailValidate={emailValidate}
                                     phoneValidate={phoneValidate}
                                     cnicValidate={cnicValidate}
+                                    showAreaDropdown={showAreaDropdown}
                                 />
                             </View>
                         </ScrollView>

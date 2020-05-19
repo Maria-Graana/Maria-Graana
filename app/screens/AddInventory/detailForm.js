@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, ImageBackground, FlatList, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, ImageBackground, FlatList, Dimensions, ActivityIndicator } from 'react-native';
 import { Button } from 'native-base';
 import { AntDesign } from '@expo/vector-icons';
 import PickerComponent from '../../components/Picker/index';
@@ -12,7 +12,6 @@ import RadioComponent from '../../components/RadioButton/index';
 import { formatPrice } from '../../PriceFormate'
 import { connect } from 'react-redux';
 import { YellowBox } from 'react-native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 const { width } = Dimensions.get('window')
 
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
@@ -23,14 +22,14 @@ class DetailForm extends Component {
     }
 
 
-    renderImageTile = ({ item }) => {
+    renderImageTile = (item) => {
         const { deleteImage } = this.props;
         return (
             <ImageBackground
                 style={styles.backGroundImg}
                 source={{ uri: item.uri }}
                 borderRadius={5}>
-                <AntDesign style={styles.close} name="closecircle" size={20} onPress={(e) => deleteImage(item)} />
+                <AntDesign style={styles.close} name="closecircle" size={20} onPress={(e) => deleteImage(item.id)} />
             </ImageBackground>
         )
     }
@@ -54,16 +53,14 @@ class DetailForm extends Component {
             sizeUnit,
             selectedGrade,
             purpose,
-            size,
             getCurrentLocation,
             getImages,
-            showImages,
-            imagesData,
             longitude,
             getClients,
             latitude,
             buttonText,
-            buttonDisabled
+            images,
+            imageLoading
         } = this.props
 
         const { size_unit } = this.props.formData;
@@ -180,18 +177,26 @@ class DetailForm extends Component {
                 <View style={[AppStyles.mainInputWrap]}>
 
                     {
-                        showImages === true ?
+                        images.length > 0 ?
                             <View style={styles.imageContainerStyle}>
                                 <FlatList
-                                    data={imagesData}
+                                    data={images}
                                     numColumns={2}
-                                    renderItem={this.renderImageTile}
-                                    keyExtractor={(index) => index}
+                                    renderItem={({ item }) => this.renderImageTile(item)}
+                                    keyExtractor={(element, index) => index.toString()}
                                     getItemLayout={this.getItemLayout}
                                 />
-                                <TouchableOpacity style={styles.addMoreImg} onPress={getImages}>
-                                    <Text style={styles.uploadImageText}>Add More</Text>
-                                </TouchableOpacity>
+                                {
+                                    imageLoading ?
+                                        <View style={styles.addMoreImg}>
+                                            <ActivityIndicator  size="large" color={AppStyles.colors.primaryColor} />
+                                        </View>
+                                        :
+                                        <TouchableOpacity style={styles.addMoreImg} onPress={getImages}>
+                                            <Text style={styles.uploadImageText}>Add More</Text>
+                                        </TouchableOpacity>
+                                }
+
 
                             </View>
                             :
@@ -235,7 +240,7 @@ class DetailForm extends Component {
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                                 <View style={[AppStyles.inputWrap]}>
                                     <TextInput onChangeText={(text) => { handleForm(text, 'bed') }}
-                                        value={formData.bed}
+                                        value={formData.bed === 0 ? '' : String(formData.bed)}
                                         keyboardType='numeric'
                                         style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                                         name={'bed'}
@@ -247,7 +252,7 @@ class DetailForm extends Component {
                             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
                                 <View style={[AppStyles.inputWrap]}>
                                     <TextInput onChangeText={(text) => { handleForm(text, 'bath') }}
-                                        value={formData.bath}
+                                        value={formData.bath === 0 ? '' : String(formData.bath)}
                                         keyboardType='numeric'
                                         style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                                         name={'bath'}
@@ -297,7 +302,7 @@ class DetailForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <Button
-                        disabled={buttonDisabled}
+                        disabled={imageLoading}
                         style={[AppStyles.formBtn, styles.addInvenBtn]} onPress={() => { formSubmit() }}>
                         <Text style={AppStyles.btnText}>{buttonText}</Text>
                     </Button>
@@ -311,6 +316,8 @@ class DetailForm extends Component {
 mapStateToProps = (store) => {
     return {
         user: store.user.user,
+        images: store.property.images,
+        imageLoading: store.property.imageLoader,
     }
 }
 

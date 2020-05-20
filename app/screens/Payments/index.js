@@ -329,7 +329,9 @@ class Payments extends Component {
 					checkPaymentTypeValue: value,
 				})
 			}
-			// this.addFullpaymentFields()
+			if (paymentFiledsArray.length === 0) {
+				this.addFullpaymentFields()
+			}
 		}
 
 
@@ -548,9 +550,9 @@ class Payments extends Component {
 		}
 
 		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
-		.then((res) => {
-			console.log(res.data)
-		})
+			.then((res) => {
+				// console.log(res.data)
+			})
 
 	}
 

@@ -23,7 +23,7 @@ class Client extends React.Component {
             totalCustomers: 0,
             loading: true,
             page: 1,
-            pageSize: 10,
+            pageSize: 20,
             onEndReachedLoader: false,
         }
     }

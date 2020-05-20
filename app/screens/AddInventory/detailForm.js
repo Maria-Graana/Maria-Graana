@@ -25,12 +25,10 @@ class DetailForm extends Component {
     renderImageTile = (item) => {
         const { deleteImage } = this.props;
         return (
-            <ImageBackground
-                style={styles.backGroundImg}
-                source={{ uri: item.uri }}
-                borderRadius={5}>
-                <AntDesign style={styles.close} name="closecircle" size={20} onPress={(e) => deleteImage(item.id)} />
-            </ImageBackground>
+            <View style={styles.backGroundImg}>
+                <AntDesign style={styles.close} name="closecircle" size={26} onPress={(e) => deleteImage(item.id)} />
+                <Image source={{ uri: item.uri }} style={{ width: 120, height: 120 }} borderRadius={5} />
+            </View>
         )
     }
 
@@ -189,7 +187,7 @@ class DetailForm extends Component {
                                 {
                                     imageLoading ?
                                         <View style={styles.addMoreImg}>
-                                            <ActivityIndicator  size="large" color={AppStyles.colors.primaryColor} />
+                                            <ActivityIndicator size="large" color={AppStyles.colors.primaryColor} />
                                         </View>
                                         :
                                         <TouchableOpacity style={styles.addMoreImg} onPress={getImages}>

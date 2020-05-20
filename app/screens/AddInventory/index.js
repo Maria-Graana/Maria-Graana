@@ -289,6 +289,7 @@ class AddInventory extends Component {
     }
 
     imageBrowserCallback = mediaAssets => {
+       const {dispatch} = this.props;
         mediaAssets
             .then(photos => {
                 this.setState(
@@ -297,7 +298,14 @@ class AddInventory extends Component {
                     },
                     () => {
                         // console.log('@@@', photos)
-                        this._uploadMultipleImages(photos);
+                        if(photos.length>0){
+                            dispatch((setImageLoading(true)));
+                            this._uploadMultipleImages(photos);
+                        }
+                        else{
+                            helper.errorToast('No pictures selected');
+                        }
+                       
                     }
                 );
             })
@@ -305,8 +313,6 @@ class AddInventory extends Component {
     };
 
     _uploadMultipleImages(response) {
-       const {dispatch} = this.props;
-       dispatch((setImageLoading(true)));
         // response contains the array of photos
         response.map(object => {
             // map each photo and upload them one at a time
@@ -335,6 +341,7 @@ class AddInventory extends Component {
 
 
     deleteImage = (imageId) => {
+        console.log(imageId);
         const { dispatch } = this.props;
         if (imageId) {
             dispatch(removeImage(imageId)).then((response) => {

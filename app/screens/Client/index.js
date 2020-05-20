@@ -19,7 +19,12 @@ class Client extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            loading: true
+            customers: [],
+            totalCustomers: 0,
+            loading: true,
+            page: 1,
+            pageSize: 10,
+            onEndReachedLoader: false,
         }
     }
 
@@ -31,17 +36,30 @@ class Client extends React.Component {
     }
 
     componentWillUnmount() {
+        this.clearStateValues();
         this._unsubscribe();
     }
 
+    clearStateValues = () => {
+        this.setState({
+            page: 1,
+            totalCustomers: 0,
+        })
+    }
+
     fetchCustomer = () => {
-        const { user } = this.props
-        axios.get(`/api/customer/find?userId=${user.id}`)
+        // const { user } = this.props
+        const { customers, page, pageSize } = this.state;
+        const url = `/api/customer/find?pageSize=${pageSize}&page=${page}`
+        console.log(url);
+        axios.get(url)
             .then((res) => {
                 this.setState({
-                    customers: res.data.rows,
+                    customers: page === 1 ? res.data.rows : [...customers, ...res.data.rows],
+                    totalCustomers: res.data.count,
+                    onEndReachedLoader: false,
                     loading: false
-                })
+                });
             })
             .catch((error) => {
                 console.log(error)
@@ -79,14 +97,14 @@ class Client extends React.Component {
         endPoint = `api/customer/remove?id=${val.id}`
         axios.delete(endPoint).then(function (response) {
             if (response.status === 200) {
-                if(response.data.message){
+                if (response.data.message) {
                     helper.errorToast(response.data.message)
                 }
-                else{
+                else {
                     helper.successToast('CLIENT DELETED SUCCESSFULLY!')
                     that.fetchCustomer();
                 }
-               
+
             }
         }).catch(function (error) {
             helper.errorToast(error.message)
@@ -102,36 +120,53 @@ class Client extends React.Component {
     }
 
     render() {
-        const { customers, loading } = this.state
+        const { customers, loading, totalCustomers, onEndReachedLoader } = this.state
         const { user } = this.props
         return (
             !loading ?
-            <View style={[AppStyles.container, styles.container]}>
-                {
-                    Ability.canAdd(user.role, 'Client') ?
-                    <Fab
-                        active='true'
-                        containerStyle={{ zIndex: 20 }}
-                        style={{ backgroundColor: AppStyles.colors.primaryColor }}
-                        position="bottomRight"
-                        onPress={this.addClient}
-                    >
-                        <Ionicons name="md-add" color="#ffffff" />
-                    </Fab>
-                    :
-                    null
-                }
-                <FlatList
-                    data={customers}
-                    renderItem={(item, index) => (
-                        <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
-                    )}
-                    ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
-                    keyExtractor={(item, index) => item.id.toString()}
-                />
-            </View>
-            :
-            <Loader loading={loading} />
+                <View style={[AppStyles.container, styles.container]}>
+                    {
+                        Ability.canAdd(user.role, 'Client') ?
+                            <Fab
+                                active='true'
+                                containerStyle={{ zIndex: 20 }}
+                                style={{ backgroundColor: AppStyles.colors.primaryColor }}
+                                position="bottomRight"
+                                onPress={this.addClient}
+                            >
+                                <Ionicons name="md-add" color="#ffffff" />
+                            </Fab>
+                            :
+                            null
+                    }
+                    <FlatList
+                        data={customers}
+                        renderItem={(item, index) => (
+                            <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
+                        )}
+                        ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
+                        onEndReached={() => {
+                            if (customers.length < totalCustomers) {
+                                this.setState({
+                                    page: this.state.page + 1,
+                                    onEndReachedLoader: true
+                                }, () => {
+                                    this.fetchCustomer();
+                                });
+                            }
+                            else {
+                                helper.errorToast('No more properties available to show');
+                            }
+                        }}
+                        onEndReachedThreshold={0.5}
+                        keyExtractor={(item, index) => item.id.toString()}
+                    />
+                    {
+                        onEndReachedLoader ? <Loader loading={onEndReachedLoader} /> : null
+                    }
+                </View>
+                :
+                <Loader loading={loading} />
         )
     }
 }

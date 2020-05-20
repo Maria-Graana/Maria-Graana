@@ -25,7 +25,11 @@ class Inventory extends React.Component {
 		super(props)
 		this.state = {
 			propertiesList: [],
+			totalProperties: 0,
 			loading: true,
+			page: 1,
+			pageSize: 10,
+			onEndReachedLoader: false,
 		}
 
 
@@ -40,15 +44,26 @@ class Inventory extends React.Component {
 
 
 	componentWillUnmount() {
+        this.clearStateValues();
 		this._unsubscribe();
 	}
 
+	clearStateValues=()=>{
+		this.setState({
+			page:1,
+			totalProperties:0,
+		})
+	}
+
 	getPropertyListing = () => {
-		this.setState({ loading: true })
-		axios.get(`/api/inventory/all`).then((response) => {
+		const { propertiesList, page, pageSize } = this.state;
+		const url = `/api/inventory/all?pageSize=${pageSize}&page=${page}`
+		axios.get(url).then((response) => {
 			if (response.status == 200) {
 				this.setState({
-					propertiesList: response.data.rows,
+					propertiesList: page === 1 ? response.data.rows : [...propertiesList, ...response.data.rows],
+					totalProperties: response.data.count,
+					onEndReachedLoader: false,
 					loading: false,
 				});
 			}
@@ -113,9 +128,13 @@ class Inventory extends React.Component {
 		helper.callNumber(url);
 	}
 
+	setKey =(index)=>{
+	   return String(index);
+	}
+
 
 	render() {
-		const { propertiesList, loading } = this.state;
+		const { propertiesList, loading, totalProperties, onEndReachedLoader } = this.state;
 		const { user, route } = this.props;
 		return (
 			!loading ?
@@ -141,7 +160,7 @@ class Inventory extends React.Component {
 					< FlatList
 						contentContainerStyle={{ paddingHorizontal: wp('2%') }}
 						data={propertiesList}
-						renderItem={({ item  }) => (
+						renderItem={({ item }) => (
 							<PropertyTile
 								data={item}
 								onPress={(data) => this.onHandlePress(data)}
@@ -150,8 +169,25 @@ class Inventory extends React.Component {
 							/>
 						)}
 						ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
-						keyExtractor={item => String(item.id)}
+						onEndReached={() => {
+							if (propertiesList.length < totalProperties) {
+								this.setState({
+									page: this.state.page + 1,
+									onEndReachedLoader: true
+								}, () => {
+									this.getPropertyListing();
+								});
+							}
+							else {
+								helper.errorToast('No more properties available to show');
+							}
+						}}
+						onEndReachedThreshold={0.5}
+						keyExtractor={(item,index)=> this.setKey(index)}
 					/>
+					{
+						onEndReachedLoader ? <Loader loading={onEndReachedLoader} /> : null
+					}
 				</View>
 				:
 				<Loader loading={loading} />

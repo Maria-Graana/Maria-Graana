@@ -58,11 +58,12 @@ export default styles = StyleSheet.create({
         color: '#5297F4'
     },
     close: {
-        // margin: 5,
-        position: "absolute",
-        top: -15,
-        right: -10,
-        color: "grey"
+        top: 4,
+        elevation: 5,
+        zIndex: 5,
+        color: "grey",
+        alignSelf: 'flex-end',
+
     },
     backGroundImg: {
         resizeMode: "contain",
@@ -70,7 +71,7 @@ export default styles = StyleSheet.create({
         height: 130,
         marginHorizontal: 10,
         marginTop: 25,
-        marginBottom:20,
+        marginBottom: 20,
         // marginBottom: 5
     },
     addInvenBtn: {
@@ -93,7 +94,7 @@ export default styles = StyleSheet.create({
         height: '100%',
         width: '30%',
         alignItems: 'center',
-        justifyContent:'center',
+        justifyContent: 'center',
         borderLeftWidth: 1,
         backgroundColor: '#fafafa',
         borderColor: '#EAEEF1',

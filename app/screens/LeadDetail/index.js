@@ -118,7 +118,6 @@ class LeadDetail extends React.Component {
     render() {
         const { type, lead, customerName, showAssignToButton } = this.state
         const { user } = this.props;
-
         return (
             <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
@@ -140,6 +139,8 @@ class LeadDetail extends React.Component {
                         <Text style={styles.labelText}>{moment(lead.updatedAt).format("MMM DD YYYY, hh:mm A")} </Text>
                         <Text style={styles.headingText}>Lead Source </Text>
                         <Text style={styles.labelText}>{lead.origin ? (lead.origin.split('_').join(' ')).toLocaleUpperCase() : null} </Text>
+                        <Text style={styles.headingText}>Assigned To </Text>
+                        <Text style={styles.labelText}>{(lead.armsuser && lead.armsuser.firstName) ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName : '-'}</Text>
                         <Text style={styles.headingText}>Additional Information </Text>
                         <Text style={styles.labelText}>{lead.category ? lead.category : 'NA'} </Text>
                     </View>

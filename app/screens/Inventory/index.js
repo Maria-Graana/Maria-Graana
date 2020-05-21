@@ -178,9 +178,6 @@ class Inventory extends React.Component {
 									this.getPropertyListing();
 								});
 							}
-							else {
-								helper.errorToast('No more properties available to show');
-							}
 						}}
 						onEndReachedThreshold={0.5}
 						keyExtractor={(item,index)=> this.setKey(index)}

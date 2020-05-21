@@ -223,9 +223,6 @@ class BuyLeads extends React.Component {
 												this.fetchLeads(statusFilter);
 											});
 										}
-										else {
-											helper.errorToast('No more leads available to show');
-										}
 									}}
 									onEndReachedThreshold={0.5}
 									keyExtractor={(item, index) => this.setKey(index)}

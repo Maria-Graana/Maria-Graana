@@ -153,9 +153,6 @@ class Client extends React.Component {
                                     this.fetchCustomer();
                                 });
                             }
-                            else {
-                                helper.errorToast('No more clients available to show');
-                            }
                         }}
                         onEndReachedThreshold={0.5}
                         keyExtractor={(item, index) => item.id.toString()}

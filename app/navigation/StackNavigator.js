@@ -7,7 +7,7 @@ import Inventory from '../screens/Inventory/index';
 import AddDiary from '../screens/AddDiary';
 import TeamDiary from '../screens/TeamDiary';
 import moment from 'moment';
-import Lead from '../screens/Lead/index';
+import Lead from './LeadsNavigator';
 import HeaderRight from '../components/HeaderRight/index';
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index';
 import AddInventory from '../screens/AddInventory/index'

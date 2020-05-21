@@ -119,7 +119,7 @@ class InvestLeads extends React.Component {
 
 	navigateTo = (data) => {
 		const { purposeTab } = this.state
-		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: purposeTab })
+		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'invest' })
 	}
 
 	callNumber = (url) => {

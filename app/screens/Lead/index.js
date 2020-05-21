@@ -120,7 +120,7 @@ class Leads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(this.state.purposeTab, 'all'); })
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(this.state.purposeTab, this.state.statusFilter); })
 	}
 
 	openStatus = () => {

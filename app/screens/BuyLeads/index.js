@@ -16,7 +16,7 @@ import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 
-class Leads extends React.Component {
+class BuyLeads extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -40,9 +40,9 @@ class Leads extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads('invest', 'all');
+		this.fetchLeads('all');
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads(this.state.purposeTab, 'all');
+			this.fetchLeads('all');
 		})
 	}
 
@@ -57,15 +57,11 @@ class Leads extends React.Component {
 		})
 	}
 
-	fetchLeads = (purposeTab, statusFilter) => {
+	fetchLeads = (statusFilter) => {
 		const { sort, pageSize, page, leadsData } = this.state
 		this.setState({ loading: true })
 		let query = ``
-		if (purposeTab === 'invest') {
-			query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
-		} else {
-			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
-		}
+		query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({
@@ -109,20 +105,21 @@ class Leads extends React.Component {
 			statusFilter: 'all',
 			sort: '&order=Desc&field=createdAt'
 		}, () => {
-			this.fetchLeads(status, 'all');
+			this.fetchLeads('all');
 		})
 
 	}
 
 	changeStatus = (status) => {
-		this.setState({ statusFilter: status }, () => {
-			this.fetchLeads(this.state.purposeTab, status);
+		this.clearStateValues()
+		this.setState({ statusFilter: status, leadsData: [] }, () => {
+			this.fetchLeads(status);
 		})
 	}
 
 	navigateTo = (data) => {
 		const { purposeTab } = this.state
-		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: purposeTab })
+		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
 	}
 
 	callNumber = (url) => {
@@ -141,7 +138,7 @@ class Leads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(this.state.purposeTab, this.state.statusFilter); })
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads('all'); })
 	}
 
 	openStatus = () => {
@@ -170,26 +167,7 @@ class Leads extends React.Component {
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
 			<View>
-				{/* ******************* TAb BUTTON VIEW ******* */}
-				<View style={styles.mainTopTabs}>
 
-					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'invest' && styles.activeTab]} onPress={() => { this.changeTab('invest') }}>
-							<Text style={AppStyles.textCenter}>INVEST</Text>
-						</TouchableOpacity>
-					</View>
-
-					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('sale') }}>
-							<Text style={AppStyles.textCenter}>BUY</Text>
-						</TouchableOpacity>
-					</View>
-					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'rent' && styles.activeTab]} onPress={() => { this.changeTab('rent') }}>
-							<Text style={AppStyles.textCenter}>RENT</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>
 					<View style={styles.pickerMain}>
@@ -242,11 +220,11 @@ class Leads extends React.Component {
 												page: this.state.page + 1,
 												onEndReachedLoader: true
 											}, () => {
-												this.fetchLeads(purposeTab, statusFilter);
+												this.fetchLeads(statusFilter);
 											});
 										}
 										else {
-											helper.errorToast('No more properties available to show');
+											helper.errorToast('No more leads available to show');
 										}
 									}}
 									onEndReachedThreshold={0.5}
@@ -292,4 +270,4 @@ mapStateToProps = (store) => {
 		user: store.user.user
 	}
 }
-export default connect(mapStateToProps)(Leads)
+export default connect(mapStateToProps)(BuyLeads)

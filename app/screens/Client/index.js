@@ -51,7 +51,6 @@ class Client extends React.Component {
         // const { user } = this.props
         const { customers, page, pageSize } = this.state;
         const url = `/api/customer/find?pageSize=${pageSize}&page=${page}`
-        console.log(url);
         axios.get(url)
             .then((res) => {
                 this.setState({

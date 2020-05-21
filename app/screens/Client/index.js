@@ -154,7 +154,7 @@ class Client extends React.Component {
                                 });
                             }
                             else {
-                                helper.errorToast('No more properties available to show');
+                                helper.errorToast('No more clients available to show');
                             }
                         }}
                         onEndReachedThreshold={0.5}

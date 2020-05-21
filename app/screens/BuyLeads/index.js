@@ -166,7 +166,7 @@ class BuyLeads extends React.Component {
 		const { user } = this.props;
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
-			<View>
+			<View style={{flex:1}}>
 
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>

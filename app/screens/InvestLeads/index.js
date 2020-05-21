@@ -15,6 +15,7 @@ import StaticData from '../../StaticData'
 import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
+import { widthPercentageToDP } from 'react-native-responsive-screen';
 
 class InvestLeads extends React.Component {
 	constructor(props) {
@@ -166,7 +167,7 @@ class InvestLeads extends React.Component {
 		const { user } = this.props;
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
-			<View>
+			<View style={{flex:1}}>
 
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>
@@ -194,7 +195,7 @@ class InvestLeads extends React.Component {
 							leadsData && leadsData && leadsData.length > 0 ?
 
 								< FlatList
-									// contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+								  contentContainerStyle={{ paddingHorizontal: widthPercentageToDP('2%') }}
 									data={leadsData}
 									renderItem={({ item }) => (
 

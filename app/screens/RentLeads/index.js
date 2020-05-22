@@ -140,7 +140,7 @@ class RentLeads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads('all'); })
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(this.state.statusFilter); })
 	}
 
 	openStatus = () => {

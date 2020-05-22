@@ -34,6 +34,11 @@ class InnerForm extends Component {
       submitValues,
       tokenDate,
       arrowCheck,
+      paymentOptions,
+      paymentDate,
+      handlePayments,
+      paymentFiledsArray,
+      addFullpaymentFields,
     } = this.props
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
@@ -160,37 +165,89 @@ class InnerForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={getInstallments} name={'instalments'} placeholder='Installments' selectedItem={no_installments} />
+              <PickerComponent onValueChange={handleForm} data={paymentOptions} name={'paymentType'} placeholder='Select Payment Type' selectedItem={formData.paymentType} />
             </View>
           </View>
 
-          {/* **************************************** */}
           {
-            totalInstalments != '' && totalInstalments.map((item, key) => {
-              let amount = item.installmentAmount && item.installmentAmount.toString()
-              let installmentDate = totalInstalments[key].installmentAmountDate === '' ? item.installmentDate : totalInstalments[key].installmentAmountDate
-              return (
-                <View style={[AppStyles.mainBlackWrap]} key={key}>
-                  <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
-                    <Text style={[AppStyles.blackInputText]}>INSTALLMENT {key + 1}</Text>
-                    <View style={[AppStyles.blackInput]}>
-                      <TextInput style={[AppStyles.blackInput]} value={amount} placeholder={`Enter Installment ${key + 1}`} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
-                      <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount > 0 ? totalInstalments[key].installmentAmount : '')}</Text>
-                    </View>
-                  </View>
-
-                  <View style={[AppStyles.blackInputdate]}>
-                    <Text style={AppStyles.dateText}>{installmentDate}</Text>
-                    {
-                      arrowCheck.installments === true &&
-                      <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>
-                        <Image source={targetArrow} style={styles.arrowImg} />
-                      </TouchableOpacity>
-                    }
+            formData.paymentType === 'installments' ?
+              <View>
+                {/* **************************************** */}
+                <View style={[AppStyles.mainInputWrap]}>
+                  <View style={[AppStyles.inputWrap]}>
+                    <PickerComponent onValueChange={handleForm} data={getInstallments} name={'instalments'} placeholder='Installment Plan' selectedItem={no_installments} />
                   </View>
                 </View>
-              )
-            })
+
+                {/* **************************************** */}
+                {
+                  totalInstalments != '' && totalInstalments.map((item, key) => {
+                    let amount = item.installmentAmount && item.installmentAmount.toString()
+                    let installmentDate = totalInstalments[key].installmentAmountDate === '' ? item.installmentDate : totalInstalments[key].installmentAmountDate
+                    return (
+                      <View style={[AppStyles.mainBlackWrap]} key={key}>
+                        <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+                          <Text style={[AppStyles.blackInputText]}>INSTALLMENT {key + 1}</Text>
+                          <View style={[AppStyles.blackInput]}>
+                            <TextInput style={[AppStyles.blackInput]} value={amount} placeholder={`Enter Installment ${key + 1}`} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
+                            <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount > 0 ? totalInstalments[key].installmentAmount : '')}</Text>
+                          </View>
+                        </View>
+
+                        <View style={[AppStyles.blackInputdate]}>
+                          <Text style={AppStyles.dateText}>{installmentDate}</Text>
+                          {
+                            arrowCheck.installments === true &&
+                            <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>
+                              <Image source={targetArrow} style={styles.arrowImg} />
+                            </TouchableOpacity>
+                          }
+                        </View>
+                      </View>
+                    )
+                  })
+                }
+              </View>
+              :
+              formData.paymentType === 'full_payment' &&
+              <View>
+                {/* **************************************** */}
+                {
+                  paymentFiledsArray && paymentFiledsArray.map((item, index) => {
+                    let itemDate = item && item.createdAt ?
+                      moment(item.createdAt).format('hh:mm a') + ' ' + moment(item.createdAt).format('MMM DD')
+                      :
+                      item.installmentDate
+                    return (
+                      <View style={[AppStyles.mainBlackWrap]}>
+                        <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+                          <Text style={[AppStyles.blackInputText]}>Payment {index + 1}</Text>
+                          <View style={[AppStyles.blackInput]}>
+                            <TextInput style={[AppStyles.blackInput]} value={item.installmentAmount} placeholder={'Enter Payment'} onChangeText={(text) => { handlePayments(text, index) }} keyboardType={'numeric'} />
+                            <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(item.installmentAmount != null ? item.installmentAmount : '')}</Text>
+                          </View>
+                        </View>
+
+                        <View style={[AppStyles.blackInputdate]}>
+                          <Text style={AppStyles.dateText}>{itemDate}</Text>
+                          {
+                            arrowCheck.payments === true ?
+                              <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('payments') }}>
+                                <Image source={targetArrow} style={styles.arrowImg} />
+                              </TouchableOpacity>
+                              : null
+                          }
+                        </View>
+                      </View>
+                    )
+                  })
+                }
+
+
+                <TouchableOpacity onPress={() => addFullpaymentFields()}>
+                  <Text style={styles.addMore}>Add More Payments</Text>
+                </TouchableOpacity>
+              </View>
           }
 
           {/* **************************************** */}

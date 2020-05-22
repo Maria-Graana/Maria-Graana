@@ -33,7 +33,7 @@ const role = {
             { role: 'sub_admin 2', access: { v: true, a: false, e: false, d: false } },
         ],
     },
-    Lead: {
+    Leads: {
         roles: [
             { role: 'admin 3', access: { v: true, a: true, e: true, d: true } },
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true } },
@@ -41,6 +41,11 @@ const role = {
         ],
     },
     CreateUser: {
+        roles: [
+            { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true } },
+        ],
+    },
+    AssignLead: {
         roles: [
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true } },
         ],

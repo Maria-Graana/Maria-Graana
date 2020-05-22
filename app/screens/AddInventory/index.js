@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, Alert, Modal } from 'react-native';
 import { StyleProvider } from 'native-base';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -13,11 +13,12 @@ import AppStyles from '../../AppStyles';
 import helper from '../../helper';
 import { connect } from 'react-redux';
 import _ from 'underscore';
+import { ImageBrowser } from 'expo-multiple-media-imagepicker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { uploadImage, addImage, flushImages, removeImage, setImageLoading } from '../../actions/property'
 
 
 class AddInventory extends Component {
-
-    img = [];
 
     constructor(props) {
         super(props)
@@ -26,13 +27,11 @@ class AddInventory extends Component {
             cities: [],
             areas: [],
             selectSubType: [],
-            images: [],
-            showImages: false,
             selectedGrade: '',
             sizeUnit: StaticData.sizeUnit,
             buttonText: 'ADD PROPERTY',
-            buttonDisabled: false,
             getClients: [],
+            isModalOpen: false,
             formData: {
                 type: '',
                 subtype: '',
@@ -71,6 +70,11 @@ class AddInventory extends Component {
         this.getClients(user.id);
     }
 
+    componentWillUnmount() {
+        this.props.dispatch(flushImages());
+        this.props.dispatch((setImageLoading(false)));
+    }
+
     getClients = (id) => {
         axios.get(`/api/customer/find?userId=${id}`)
             .then((res) => {
@@ -99,8 +103,8 @@ class AddInventory extends Component {
                 type: property.type,
                 subtype: property.subtype,
                 purpose: property.purpose,
-                bed: property.bed != 0 ? String(property.bed) : '',
-                bath: property.bath != 0 ? String(property.bath) : '',
+                bed: property.bed ? String(property.bed) : '',
+                bath: property.bath ? String(property.bath) : '',
                 size_unit: property.size_unit,
                 size: String(property.size),
                 city_id: property.city_id,
@@ -133,21 +137,17 @@ class AddInventory extends Component {
     }
 
     setImagesForEditMode = () => {
+        const {dispatch} = this.props;
         const { formData } = this.state;
         const { imageIds } = formData;
         imageIds.map(image => {
-            this.img.push({
+            dispatch(addImage({
                 id: image.id,
                 uri: image.url,
-                filename: '',
-                filepath: '',
                 filetype: image.type,
-            })
+            }))
         })
-        // console.log(this.img);
-        this.setState({ images: this.img, showImages: true });
     }
-
 
     getCities = () => {
         axios.get(`/api/cities`)
@@ -213,9 +213,9 @@ class AddInventory extends Component {
     }
 
     createOrEditProperty = (formData) => {
-        const { navigation, route } = this.props;
+        const { navigation, route, dispatch } = this.props;
         const { property } = route.params;
-        const { images } = this.state;
+        const { images } = this.props;
         formData.lat = this.convertLatitude(formData.lat);
         formData.lng = this.convertLongitude(formData.lng);
         formData.size = this.convertToInteger(formData.size)
@@ -229,6 +229,7 @@ class AddInventory extends Component {
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
+                        dispatch(flushImages());
                         navigation.navigate('Inventory', { update: false })
                     }
                     else {
@@ -247,6 +248,7 @@ class AddInventory extends Component {
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
+                        dispatch(flushImages());
                         navigation.goBack();
                     }
                     else {
@@ -262,8 +264,6 @@ class AddInventory extends Component {
 
     }
 
-
-
     getPermissionAsync = async () => {
         let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA_ROLL);
         if (camStatus !== 'granted') {
@@ -278,119 +278,81 @@ class AddInventory extends Component {
     };
 
     getImages = () => {
-        const { buttonDisabled } = this.state;
         this.getPermissionAsync().then(result => {
             if (result === true) {
-                if (buttonDisabled) {
-                    alert('Please wait while images are processing')
-                }
-                else {
-                    this._pickImage()
-                }
-
+                this.setState({ isModalOpen: true })
             }
             else {
                 // Perimission denied, perform action or display alert
-                Alert.alert('Permission Required !', 'Please provide permission to access gallery!');
             }
         });
     }
 
-    _pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 0.5,
-            allowsMultipleSelection: true,
-            base64: true
-        });
-        if (!result.cancelled) {
-
-            let filename = result.uri.split('/').pop();
-            let match = /\.(\w+)$/.exec(filename);
-            let type = match ? `image/${match[1]}` : `image`;
-            let ext = result.uri.split('.').pop()
-
-            let image = {
-                name: filename,
-                type: type,
-                uri: result.uri
-            }
-
-
-            this.img.push({
-                uri: `data:image/${ext};base64,` + result.base64,
-                filename,
-                filepath: filename,
-                filetype: type,
-            });
-
-            this.setState({
-                images: this.img,
-                showImages: true,
-                buttonDisabled: true
-            }, () => {
-                this.uploadImage(image);
+    imageBrowserCallback = mediaAssets => {
+       const {dispatch} = this.props;
+        mediaAssets
+            .then(photos => {
+                this.setState(
+                    {
+                        isModalOpen: false,
+                    },
+                    () => {
+                        // console.log('@@@', photos)
+                        if(photos.length>0){
+                            dispatch((setImageLoading(true)));
+                            this._uploadMultipleImages(photos);
+                        }
+                        else{
+                            helper.errorToast('No pictures selected');
+                        }
+                       
+                    }
+                );
             })
-
-        }
+            .catch(e => console.log(e));
     };
 
-    uploadImage(image) {
-        const { images } = this.state;
-        let fd = new FormData()
-        fd.append('image', image);
-
-        axios.post(`/api/inventory/image`, fd)
-            .then((res) => {
-                let newImages = images.map(value => {
-                    if ('id' in value) {
-                        return value;
-                    }
-                    else {
-                        value.id = res.data.id;
-                        return value;
-                    }
-                })
-
-                this.setState({ images: newImages, buttonDisabled: false });
-
-            })
-            .catch((error) => {
-                console.log('error', error.message)
-            })
+    _uploadMultipleImages(response) {
+        // response contains the array of photos
+        response.map(object => {
+            // map each photo and upload them one at a time
+            //Compress the image so that it can be uploaded to the server
+            this._compressImageAndUpload(object.uri, object);
+        });
     }
 
-    deleteImage = (image) => {
-        const { images, buttonDisabled } = this.state;
-        if (buttonDisabled) {
-            alert('Please wait while images are processing')
+    //Image Compression and image size reduction...
+    _compressImageAndUpload = async (uri, object) => {
+        const { dispatch } = this.props;
+        const manipResult = await ImageManipulator.manipulateAsync(uri, [], {
+            compress: 0.48,
+        });
+        let filename = manipResult.uri.split('/').pop();
+        let match = /\.(\w+)$/.exec(filename);
+        let type = match ? `image/${match[1]}` : `image`;
+
+        let image = {
+            name: filename,
+            type: type,
+            uri: manipResult.uri
+        }
+        dispatch(uploadImage(image));
+    };
+
+
+    deleteImage = (imageId) => {
+        console.log(imageId);
+        const { dispatch } = this.props;
+        if (imageId) {
+            dispatch(removeImage(imageId)).then((response) => {
+                helper.successToast(response);
+            });
         }
         else {
-            this.img = _.without(images, image);
-            // console.log(this.img);
-            this.setState({
-                images: this.img,
-            }, () => {
-                // show images false if no images exists
-                if (this.state.images.length === 0) {
-                    this.setState({ showImages: false })
-                }
-            })
-            this.deleteImageFromServer(image.id);
+            alert('Please wait while images are processing')
         }
-
     }
 
-    deleteImageFromServer(id) {
-        // console.log(id);
-        axios.delete(`/api/inventory/image/${id}`)
-            .then((res) => {
-                // console.log('response', res.status);
-            })
-            .catch((error) => {
-                console.log('error', error.message)
-            })
-    }
 
     _getLocationAsync = async () => {
         let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -457,16 +419,29 @@ class AddInventory extends Component {
             areas,
             selectSubType,
             checkValidation,
-            showImages,
-            images,
             buttonText,
             buttonDisabled,
             getClients,
-            sizeUnit
+            sizeUnit,
+            isModalOpen,
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
                 <KeyboardAvoidingView behavior="padding" enabled>
+                    <Modal
+                        animated={true}
+                        ref={ref => (this._modal = ref)}
+                        animationType="slide"
+                        visible={isModalOpen}
+                        onRequestClose={() => this.setState({ isModalOpen: false })}
+                    >
+                        <View style={{ flex: 1 }}>
+                            <ImageBrowser
+                                max={10} // Maximum number of pickable image. default is None
+                                callback={this.imageBrowserCallback} // Callback functinon on press Done or Cancel Button. Argument is Asset Infomartion of the picked images wrapping by the Promise.
+                            />
+                        </View>
+                    </Modal>
                     <ScrollView>
                         {/* ********* Form Component */}
                         <View style={AppStyles.container}>
@@ -481,7 +456,7 @@ class AddInventory extends Component {
                                 buttonText={buttonText}
                                 propertyType={StaticData.type}
                                 getCurrentLocation={this._getLocationAsync}
-                                getImages={this.getImages}
+                                getImages={() => this.getImages()}
                                 selectSubType={selectSubType}
                                 sizeUnit={sizeUnit}
                                 selectedGrade={formData.grade}
@@ -489,10 +464,8 @@ class AddInventory extends Component {
                                 latitude={formData.lat}
                                 longitude={formData.lng}
                                 price={formData.price}
-                                showImages={showImages}
                                 getClients={getClients}
-                                imagesData={images}
-                                deleteImage={(image) => this.deleteImage(image)}
+                                deleteImage={(image, index) => this.deleteImage(image, index)}
                                 buttonDisabled={buttonDisabled}
                             />
                         </View>
@@ -506,6 +479,7 @@ class AddInventory extends Component {
 mapStateToProps = (store) => {
     return {
         user: store.user.user,
+        images: store.property.images,
     }
 }
 

@@ -196,7 +196,6 @@ class RentLeads extends React.Component {
 							leadsData && leadsData && leadsData.length > 0 ?
 
 								< FlatList
-									 contentContainerStyle={{ paddingHorizontal: widthPercentageToDP('2%') }}
 									data={leadsData}
 									renderItem={({ item }) => (
 

@@ -8,6 +8,7 @@ import { Fab, Button, Icon } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import SortImg from '../../../assets/img/sort.png'
 import LoadingNoResult from '../../components/LoadingNoResult'
+import OnLoadMoreComponent from "../../components/OnLoadMoreComponent";
 import LeadTile from '../../components/LeadTile'
 import axios from 'axios';
 import helper from '../../helper'
@@ -166,7 +167,7 @@ class BuyLeads extends React.Component {
 		const { user } = this.props;
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
-			<View style={{flex:1}}>
+			<View style={{ flex: 1 }}>
 
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>
@@ -230,10 +231,7 @@ class BuyLeads extends React.Component {
 								:
 								<LoadingNoResult loading={loading} />
 						}
-
-						{
-							onEndReachedLoader ? <Loader loading={onEndReachedLoader} /> : null
-						}
+						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
 
 					</View>
 					<FAB.Group

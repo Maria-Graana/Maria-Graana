@@ -8,6 +8,7 @@ import { Fab, Button, Icon } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import SortImg from '../../../assets/img/sort.png'
 import LoadingNoResult from '../../components/LoadingNoResult'
+import OnLoadMoreComponent from "../../components/OnLoadMoreComponent";
 import LeadTile from '../../components/LeadTile'
 import axios from 'axios';
 import helper from '../../helper'
@@ -15,6 +16,7 @@ import StaticData from '../../StaticData'
 import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
+import { widthPercentageToDP } from 'react-native-responsive-screen';
 
 class RentLeads extends React.Component {
 	constructor(props) {
@@ -166,7 +168,7 @@ class RentLeads extends React.Component {
 		const { user } = this.props;
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
-			<View style={{flex:1}}>
+			<View style={{ flex: 1 }}>
 
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>
@@ -194,7 +196,7 @@ class RentLeads extends React.Component {
 							leadsData && leadsData && leadsData.length > 0 ?
 
 								< FlatList
-									// contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+									 contentContainerStyle={{ paddingHorizontal: widthPercentageToDP('2%') }}
 									data={leadsData}
 									renderItem={({ item }) => (
 
@@ -230,11 +232,7 @@ class RentLeads extends React.Component {
 								:
 								<LoadingNoResult loading={loading} />
 						}
-
-						{
-							onEndReachedLoader ? <Loader loading={onEndReachedLoader} /> : null
-						}
-
+						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
 					</View>
 					<FAB.Group
 						open={open}

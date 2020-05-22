@@ -11,6 +11,7 @@ import { Fab, ActionSheet } from 'native-base';
 import helper from '../../helper';
 import Loader from '../../components/loader';
 import NoResultsComponent from '../../components/NoResultsComponent';
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
 
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
@@ -157,9 +158,7 @@ class Client extends React.Component {
                         onEndReachedThreshold={0.5}
                         keyExtractor={(item, index) => item.id.toString()}
                     />
-                    {
-                        onEndReachedLoader ? <Loader loading={onEndReachedLoader} /> : null
-                    }
+                    <OnLoadMoreComponent style={{backgroundColor:'white'}} onEndReached= {onEndReachedLoader}/>
                 </View>
                 :
                 <Loader loading={loading} />

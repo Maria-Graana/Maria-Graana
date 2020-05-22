@@ -15,7 +15,8 @@ class RectangleContainer extends React.Component {
     }
 
     render() {
-        const { targetPercent, targetNumber, totalTarget } = this.props
+        const { targetNumber, totalTarget } = this.props
+        let targetPercent = parseInt(((targetNumber ? targetNumber : 0) / (totalTarget ? totalTarget : 0)) * 100)
         return (
             <LinearGradient
                 start={start} end={end}
@@ -23,18 +24,18 @@ class RectangleContainer extends React.Component {
                 locations={locations}
                 style={styles.reactangle}>
                 <View style={styles.viewContainer}>
-                    <Text style={styles.percentNumber}>{targetPercent}<Text style={styles.percent}>%</Text></Text>
+                    <Text style={styles.percentNumber}>{targetPercent ? targetPercent : 0}<Text style={styles.percent}>%</Text></Text>
                     <Text style={[styles.headingText, { paddingHorizontal: 15 }]}>Target Achieved</Text>
                 </View>
                 <View style={styles.verticalLine} />
                 <View style={AppStyles.mb1}>
                     <View style={styles.achievedView}>
-                        <Text style={[styles.headingText]}>Target Achieved</Text>
-                        <Text style={styles.headingNumber}>{targetNumber}</Text>
+                        <Text style={[styles.headingText]}>Revenue</Text>
+                        <Text style={styles.headingNumber}>{targetNumber ? targetNumber : 0}</Text>
                     </View>
                     <View style={styles.totalView}>
-                        <Text style={[styles.headingText]}>Total Target</Text>
-                        <Text style={styles.headingNumber}>{totalTarget}</Text>
+                        <Text style={[styles.headingText]}>Target</Text>
+                        <Text style={styles.headingNumber}>{totalTarget ? totalTarget : 0}</Text>
                     </View>
                 </View>
             </LinearGradient>
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     },
     percentNumber: {
         color: '#ffffff',
-        fontSize: 50,
+        fontSize: 42,
         fontFamily: AppStyles.fonts.boldFont,
         paddingHorizontal: 15
     },

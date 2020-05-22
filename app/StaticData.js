@@ -365,28 +365,28 @@ export default StaticData = {
         labels: ['Open', 'Call', 'Meeting', 'Payment', 'Won', 'Lost'],
         datasets: [{
             data: [
-                21,
-                25,
-                100,
-                80,
-                21,
-                22
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
             ],
             color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})` // optional
         }]
     },
     rcmBarCharData: {
-        labels: ['Open', 'Call', 'Meeting', 'Payment', 'Won', 'Lost', 'offer', 'prop'],
+        labels: ['Open', 'Viewing', 'Offer', 'Propsure', 'Token', 'Payment', 'Won', 'Lost'],
         datasets: [{
             data: [
-                21,
-                25,
-                100,
-                80,
-                21,
-                22,
-                75,
-                30
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
             ],
             color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})` // optional
         }]

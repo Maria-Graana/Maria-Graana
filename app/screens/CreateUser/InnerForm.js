@@ -28,11 +28,12 @@ class InnerForm extends Component {
       organization,
       cnicValidate,
       phoneValidate,
-      handleAreaClick
+      handleAreaClick,
+      showAreaDropdown,
     } = this.props
 
     let getRole = getRoles && getRoles.subRole && getRoles.subRole.replace(/\_/g, ' ')
-    
+
     return (
       <View>
 
@@ -62,8 +63,8 @@ class InnerForm extends Component {
           <View style={[AppStyles.inputWrap]}>
             <TextInput onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Email*'} />
             {
-							emailValidate == false && <ErrorMessage errorMessage={'Enter a Valid Email Address'} />
-						}
+              emailValidate == false && <ErrorMessage errorMessage={'Enter a Valid Email Address'} />
+            }
             {
               checkValidation === true && formData.email === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -98,13 +99,13 @@ class InnerForm extends Component {
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
             <Image source={mobileIcon} style={styles.mobileIcon} />
-            <TextInput onChangeText={(text) => { handleForm(text, 'phoneNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Contact Number*'} keyboardType={'number-pad'} maxLength={11} autoCompleteType='cc-number'/>
+            <TextInput onChangeText={(text) => { handleForm(text, 'phoneNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Contact Number*'} keyboardType={'number-pad'} maxLength={11} autoCompleteType='cc-number' />
             {
               checkValidation === true && formData.phoneNumber === '' && <ErrorMessage errorMessage={'Required'} />
             }
             {
-							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
-						}
+              phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+            }
           </View>
         </View>
 
@@ -116,8 +117,8 @@ class InnerForm extends Component {
               checkValidation === true && formData.cnic === '' && <ErrorMessage errorMessage={'Required'} />
             }
             {
-							cnicValidate == true && <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
-						}
+              cnicValidate == true && <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+            }
           </View>
         </View>
 
@@ -145,14 +146,19 @@ class InnerForm extends Component {
           </View>
         </View>
 
-        {/* **************************************** */}
-        <TouchableOpacity onPress={() => handleAreaClick()}  >
-          <View style={[AppStyles.mainInputWrap, AppStyles.inputPadLeft, AppStyles.formControl, { justifyContent: 'center' }]} >
-            <Text style={[AppStyles.formFontSettings, { color: formData.areas.length > 0 ? AppStyles.colors.textColor : AppStyles.colors.subTextColor }]} >
-              {formData.areas.length > 0 ? `${formData.areas.length} Areas Selected` : 'Select Areas'}
-            </Text>
-          </View>
-        </TouchableOpacity>
+
+        {
+          showAreaDropdown === true &&
+          // {/* **************************************** */ }
+          < TouchableOpacity onPress={() => handleAreaClick()}  >
+            <View style={[AppStyles.mainInputWrap, AppStyles.inputPadLeft, AppStyles.formControl, { justifyContent: 'center' }]} >
+              <Text style={[AppStyles.formFontSettings, { color: formData.areas.length > 0 ? AppStyles.colors.textColor : AppStyles.colors.subTextColor }]} >
+                {formData.areas.length > 0 ? `${formData.areas.length} Areas Selected` : 'Select Areas'}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        }
+
 
 
         {/* **************************************** */}
@@ -163,7 +169,7 @@ class InnerForm extends Component {
             <Text style={AppStyles.btnText}>CREATE USER</Text>
           </Button>
         </View>
-      </View>
+      </View >
     )
   }
 }

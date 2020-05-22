@@ -13,6 +13,7 @@ import { setlead } from '../../actions/lead';
 import helper from '../../helper';
 import { FAB } from 'react-native-paper';
 import MeetingModal from '../../components/MeetingModal'
+import PaymentAlert from '../../components/PaymentAlert'
 
 class Payments extends Component {
 	constructor(props) {
@@ -328,7 +329,9 @@ class Payments extends Component {
 					checkPaymentTypeValue: value,
 				})
 			}
-			// this.addFullpaymentFields()
+			if (paymentFiledsArray.length === 0) {
+				this.addFullpaymentFields()
+			}
 		}
 
 
@@ -547,9 +550,9 @@ class Payments extends Component {
 		}
 
 		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
-		.then((res) => {
-			console.log(res.data)
-		})
+			.then((res) => {
+				// console.log(res.data)
+			})
 
 	}
 
@@ -656,7 +659,7 @@ class Payments extends Component {
 				/>
 				{
 					modalVisible &&
-					<MeetingModal
+					<PaymentAlert
 						active={modalVisible}
 						openModal={this.openModal}
 						deletePayments={this.deletePayments}

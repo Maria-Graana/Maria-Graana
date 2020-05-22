@@ -128,7 +128,7 @@ class AddRCMLead extends Component {
         const isEditMode = `${leadAreas.length > 0 ? true : false}`
 
         if (city_id !== '' && city_id !== undefined) {
-            navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode });
+            navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode,screenName:'AddRCMLead' });
         }
         else {
             alert('Please select city first!')
@@ -152,7 +152,7 @@ class AddRCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            if (RCMFormData.min_price > RCMFormData.max_price || RCMFormData.min_price == RCMFormData.max_price) {
+            if (RCMFormData.min_price && Number(RCMFormData.min_price) > Number(RCMFormData.max_price) || RCMFormData.min_price && Number(RCMFormData.min_price) === Number(RCMFormData.max_price)) {
                 helper.errorToast('Max Price cannot be less than Min Price')
             } else {
                 if (RCMFormData.size === '') RCMFormData.size = null
@@ -174,7 +174,7 @@ class AddRCMLead extends Component {
                 axios.post(`/api/leads`, payLoad)
                     .then((res) => {
                         helper.successToast(res.data)
-                        RootNavigation.navigate('Lead')
+                        RootNavigation.navigate('Leads')
                     })
             }
 

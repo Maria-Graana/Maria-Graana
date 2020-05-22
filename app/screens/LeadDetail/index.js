@@ -9,6 +9,7 @@ import moment from 'moment';
 import { setlead } from '../../actions/lead';
 import styles from './style'
 import axios from 'axios';
+import Ability from '../../hoc/Ability'
 
 const _format = 'YYYY-MM-DD';
 
@@ -18,7 +19,8 @@ class LeadDetail extends React.Component {
         this.state = {
             type: '',
             lead: [],
-            customerName: ''
+            customerName: '',
+            showAssignToButton: false
         }
     }
 
@@ -59,6 +61,7 @@ class LeadDetail extends React.Component {
                 this.props.dispatch(setlead(res.data))
                 this.setState({ lead: res.data }, () => {
                     that.checkCustomerName(res.data);
+                    that.checkAssignedLead(res.data);
                 })
             })
             .catch((error) => {
@@ -82,18 +85,39 @@ class LeadDetail extends React.Component {
         }
     }
 
+    navigateToAssignLead = () => {
+        const { navigation } = this.props
+        const { lead,type } = this.state
+        navigation.navigate('AssignLead', { leadId: lead.id, type:type, screen: 'LeadDetail' })
+    }
+
+    checkAssignedLead = (lead) => {
+        const { user } = this.props;
+        // Show assign lead button only if loggedIn user is subadmin 1
+        if(Ability.canAdd(user.role, 'AssignLead')){
+            // Lead can only be assigned to someone else if it is assigned to no one or to current user 
+            if (lead.assigned_to_armsuser_id===null || user.id === lead.assigned_to_armsuser_id) {
+                this.setState({ showAssignToButton: true })
+            }
+            else {
+                // Lead is already assigned to some other user (any sub_admin 2 user)
+                this.setState({ showAssignToButton: false })
+            }
+        }
+    }
+
     checkCustomerName = (lead) => {
         if (lead.customer)
-        // for  CM LEAD
+            // for  CM LEAD
             this.setState({ customerName: helper.capitalize(lead.customer.customerName) })
-        else 
-        // FOR RCM LEAD
+        else
+            // FOR RCM LEAD
             this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
     }
 
     render() {
-        const { type, lead, customerName } = this.state
-
+        const { type, lead, customerName, showAssignToButton } = this.state
+        const { user } = this.props;
         return (
             <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>
@@ -110,11 +134,13 @@ class LeadDetail extends React.Component {
                         <Text style={styles.labelText}>PKR {!lead.projectId && lead.price} {lead.projectId && lead.minPrice && lead.minPrice + ' - '} {lead.projectId && lead.maxPrice && lead.maxPrice}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Created Date </Text>
-                        <Text style={styles.labelText}>{moment(lead.createdAt).format('LL')} </Text>
+                        <Text style={styles.labelText}>{moment(lead.createdAt).format("MMM DD YYYY, hh:mm A")} </Text>
                         <Text style={styles.headingText}>Modified Date </Text>
-                        <Text style={styles.labelText}>{moment(lead.updatedAt).format('LL')} </Text>
+                        <Text style={styles.labelText}>{moment(lead.updatedAt).format("MMM DD YYYY, hh:mm A")} </Text>
                         <Text style={styles.headingText}>Lead Source </Text>
                         <Text style={styles.labelText}>{lead.origin ? (lead.origin.split('_').join(' ')).toLocaleUpperCase() : null} </Text>
+                        <Text style={styles.headingText}>Assigned To </Text>
+                        <Text style={styles.labelText}>{(lead.armsuser && lead.armsuser.firstName) ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName : '-'}</Text>
                         <Text style={styles.headingText}>Additional Information </Text>
                         <Text style={styles.labelText}>{lead.category ? lead.category : 'NA'} </Text>
                     </View>
@@ -122,19 +148,36 @@ class LeadDetail extends React.Component {
                         <Text style={[styles.headingText, styles.padLeft, { paddingLeft: 0 }]}>Status</Text>
                         <View style={styles.mainView}>
                             <Text style={styles.textStyle}>
-                                {lead.status && lead.status.split('_').join(' ').toUpperCase()}
+                                {
+                                    lead.status && lead.status === 'token' ?
+                                        <Text>DEAL SIGNED - TOKEN</Text>
+                                        :
+                                        lead.status &&
+                                        lead.status.split('_').join(' ').toUpperCase()
+                                }
                             </Text>
                         </View>
                     </View>
                 </View>
-                <View style={[AppStyles.mainInputWrap]}>
+                {
+                    showAssignToButton &&
+                    < View style={styles.assignButtonView}>
+                        <Button
+                            onPress={() => { this.navigateToAssignLead() }}
+                            style={[AppStyles.formBtnWithWhiteBg, { marginBottom: 30 }]}>
+                            <Text style={AppStyles.btnTextBlue}>ASSIGN TO TEAM MEMBER</Text>
+                        </Button>
+                    </View>
+                }
+
+                <View style={[AppStyles.assignButtonView]}>
                     <Button
                         onPress={() => { this.navigateTo() }}
                         style={[AppStyles.formBtn, styles.btn1]}>
                         <Text style={AppStyles.btnText}>OPEN LEAD WORKFLOW</Text>
                     </Button>
                 </View>
-            </ScrollView>
+            </ScrollView >
         )
     }
 }

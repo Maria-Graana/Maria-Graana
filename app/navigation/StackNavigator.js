@@ -7,7 +7,7 @@ import Inventory from '../screens/Inventory/index';
 import AddDiary from '../screens/AddDiary';
 import TeamDiary from '../screens/TeamDiary';
 import moment from 'moment';
-import Lead from '../screens/Lead/index';
+import Lead from './LeadsNavigator';
 import HeaderRight from '../components/HeaderRight/index';
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index';
 import AddInventory from '../screens/AddInventory/index'
@@ -31,6 +31,7 @@ import AreaPickerScreen from '../screens/AreaPickerScreen';
 import Dashboard from '../screens/Dashboard';
 import CMReport from '../screens/CMReport';
 import RCMReport from '../screens/RCMReport';
+import AssignLead from '../screens/AssignLead';
 
 const Stack = createStackNavigator();
 
@@ -83,7 +84,7 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-            <Stack.Screen name='Lead' component={Lead}
+            <Stack.Screen name='Leads' component={Lead}
                 options={({ navigation, route }) => ({
                     title: 'LEADS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
@@ -254,10 +255,16 @@ function MainStack() {
                     title: 'BUY/RENT REPORT',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
+            <Stack.Screen name='AssignLead' component={AssignLead}
+                options={({ navigation, route }) => ({
+                    title: 'SELECT TEAM MEMBER',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}
             />
         </Stack.Navigator>
+
+
     );
 }
 

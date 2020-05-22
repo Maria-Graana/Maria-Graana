@@ -27,7 +27,7 @@ class PropertyDetail extends React.Component {
                 return property.customer.first_name + ' ' + property.customer.last_name
             }
         }
-        else{
+        else {
             return '';
         }
     }
@@ -44,12 +44,12 @@ class PropertyDetail extends React.Component {
         const sizeUnit = property && property.size_unit.charAt(0).toUpperCase() + property.size_unit.slice(1);
         const purpose = property && property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1);;
         const demandPrice = property.price === null ? '0' : formatPrice(property.price);
-        const grade = property.grade === null ? '' : property.grade;
-        const lattitude = property.lat === null ? ' ' : property.lat + '/';
-        const longitude = property.lng === null ? ' ' : property.lng;
+        const grade = property.grade === null || property.grade === '' ? '' : property.grade;
+        const lattitude = property.lat === null ? '' : property.lat + '/';
+        const longitude = property.lng === null ? '' : property.lng;
         const ownerName = this.checkUserName(property);
         const ownerPhoneNumber = property.customer && property.customer.phone.trim();
-        const address = property.customer.address && property.customer.address;
+        const address = property.customer && property.customer.address && property.customer.address;
         const status = property.status === 'pending' ? 'Open' : property.status;
         const images = property && property.armsPropertyImages;
 
@@ -86,8 +86,15 @@ class PropertyDetail extends React.Component {
 
                         </View>
 
-                        <Text style={styles.headingText}> Grade </Text>
-                        <Text style={styles.labelText}> {grade} </Text>
+                        {
+                            grade ?
+                                <View>
+                                    <Text style={styles.headingText}> Grade </Text>
+                                    <Text style={styles.labelText}> {grade} </Text>
+                                </View>
+                                : null
+                        }
+
 
                         {type === 'Residential' &&
                             <View>
@@ -98,15 +105,38 @@ class PropertyDetail extends React.Component {
                             </View>
                         }
 
-
-                        <Text style={styles.headingText}> Lattitude/Longitude </Text>
-                        <Text style={styles.labelText}> {lattitude + longitude} </Text>
-                        <Text style={styles.headingText}> Owner Name </Text>
-                        <Text style={styles.labelText}> {ownerName} </Text>
-                        <Text style={styles.headingText}> Owner Number </Text>
-                        <Text style={styles.labelText}> {ownerPhoneNumber}</Text>
-                        <Text style={styles.headingText}> Owner Address </Text>
-                        <Text style={styles.labelText}> {address}</Text>
+                        {
+                            (lattitude || longitude) ?
+                                <View>
+                                    <Text style={styles.headingText}> Lattitude/Longitude </Text>
+                                    <Text style={styles.labelText}> {lattitude + longitude} </Text>
+                                </View>
+                                : null
+                        }
+                        {
+                            ownerName ?
+                                <View>
+                                    <Text style={styles.headingText}> Owner Name </Text>
+                                    <Text style={styles.labelText}> {ownerName} </Text>
+                                </View>
+                                : null
+                        }
+                        {
+                            ownerPhoneNumber ?
+                                <View>
+                                    <Text style={styles.headingText}> Owner Number </Text>
+                                    <Text style={styles.labelText}> {ownerPhoneNumber}</Text>
+                                </View>
+                                : null
+                        }
+                        {
+                            address ?
+                                <View>
+                                    <Text style={styles.headingText}> Owner Address </Text>
+                                    <Text style={styles.labelText}> {address}</Text>
+                                </View> :
+                                null
+                        }
 
                     </View>
                     <View style={styles.pad}>

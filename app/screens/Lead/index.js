@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, Text, TouchableOpacity, Image, ScrollView, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, Linking, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import PickerComponent from '../../components/Picker/index';
@@ -13,9 +13,10 @@ import axios from 'axios';
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import { FAB } from 'react-native-paper';
+import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 
-class Inventory extends React.Component {
+class Leads extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -31,6 +32,10 @@ class Inventory extends React.Component {
 			sort: '&order=Desc&field=createdAt',
 			loading: false,
 			activeSortModal: false,
+			totalLeads: 0,
+			page: 1,
+			pageSize: 20,
+			onEndReachedLoader: false,
 		}
 	}
 
@@ -41,18 +46,34 @@ class Inventory extends React.Component {
 		})
 	}
 
+	componentWillUnmount() {
+		this.clearStateValues();
+	}
+
+	clearStateValues = () => {
+		this.setState({
+			page: 1,
+			totalProperties: 0,
+		})
+	}
+
 	fetchLeads = (purposeTab, statusFilter) => {
-		const { sort } = this.state
-		this.setState({ loading: true, leadsData: [], })
+		const { sort, pageSize, page, leadsData } = this.state
+		this.setState({ loading: true })
 		let query = ``
 		if (purposeTab === 'invest') {
-			query = `/api/leads/projects?all=${true}&status=${statusFilter}${sort}`
+			query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		} else {
-			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}${sort}`
+			query = `/api/leads?purpose=${purposeTab}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		}
 		axios.get(`${query}`)
 			.then((res) => {
-				this.setState({ leadsData: res.data, loading: false })
+				this.setState({
+					leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+					loading: false,
+					onEndReachedLoader: false,
+					totalLeads: res.data.count
+				})
 			})
 	}
 
@@ -120,15 +141,32 @@ class Inventory extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(this.state.purposeTab, 'all'); })
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(this.state.purposeTab, this.state.statusFilter); })
 	}
 
 	openStatus = () => {
 		this.setState({ activeSortModal: !this.state.activeSortModal })
 	}
 
+	setKey = (index) => {
+		return String(index);
+	}
+
 	render() {
-		const { selectInventory, dropDownId, purposeTab, leadsData, open, statusFilter, loading, activeSortModal, sort } = this.state
+		const {
+			selectInventory,
+			dropDownId,
+			purposeTab,
+			leadsData,
+			open,
+			statusFilter,
+			loading,
+			activeSortModal,
+			sort,
+			totalLeads,
+			onEndReachedLoader,
+		} = this.state
+		const { user } = this.props;
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
 			<View>
@@ -173,30 +211,54 @@ class Inventory extends React.Component {
 				</View>
 				<View style={[AppStyles.container, styles.minHeight]}>
 					<View style={[styles.mainInventoryTile,]}>
-						<ScrollView>
-							{
-								leadsData && leadsData.rows && leadsData.rows.length > 0 ?
-									leadsData.rows.map((item, key) => {
-										return (
-											<LeadTile
-												key={key}
-												showDropdown={this.showDropdown}
-												dotsDropDown={this.state.dotsDropDown}
-												selectInventory={this.selectInventory}
-												selectedInventory={selectInventory}
-												data={item}
-												dropDownId={dropDownId}
-												unSelectInventory={this.unSelectInventory}
-												goToInventoryForm={this.goToInventoryForm}
-												navigateTo={this.navigateTo}
-												callNumber={this.callNumber}
-											/>
-										)
-									})
-									:
-									<LoadingNoResult loading={loading} />
-							}
-						</ScrollView>
+
+						{
+							leadsData && leadsData && leadsData.length > 0 ?
+
+								< FlatList
+									// contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+									data={leadsData}
+									renderItem={({ item }) => (
+
+										<LeadTile
+											user={user}
+											// key={key}
+											showDropdown={this.showDropdown}
+											dotsDropDown={this.state.dotsDropDown}
+											selectInventory={this.selectInventory}
+											selectedInventory={selectInventory}
+											data={item}
+											dropDownId={dropDownId}
+											unSelectInventory={this.unSelectInventory}
+											goToInventoryForm={this.goToInventoryForm}
+											navigateTo={this.navigateTo}
+											callNumber={this.callNumber}
+										/>
+									)}
+									// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
+									onEndReached={() => {
+										if (leadsData.length < totalLeads) {
+											this.setState({
+												page: this.state.page + 1,
+												onEndReachedLoader: true
+											}, () => {
+												this.fetchLeads(purposeTab, statusFilter);
+											});
+										}
+										else {
+											helper.errorToast('No more properties available to show');
+										}
+									}}
+									onEndReachedThreshold={0.5}
+									keyExtractor={(item, index) => this.setKey(index)}
+								/>
+								:
+								<LoadingNoResult loading={loading} />
+						}
+
+						{
+							onEndReachedLoader ? <Loader loading={onEndReachedLoader} /> : null
+						}
 
 					</View>
 					<FAB.Group
@@ -230,4 +292,4 @@ mapStateToProps = (store) => {
 		user: store.user.user
 	}
 }
-export default connect(mapStateToProps)(Inventory)
+export default connect(mapStateToProps)(Leads)

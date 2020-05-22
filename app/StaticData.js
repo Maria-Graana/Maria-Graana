@@ -163,16 +163,11 @@ export default StaticData = {
         }
     ],
     getInstallments: [
-        { value: '1', name: '01' },
-        { value: '2', name: '02' },
-        { value: '3', name: '03' },
-        { value: '4', name: '04' },
-        { value: '5', name: '05' },
-        { value: '6', name: '06' },
-        { value: '7', name: '07' },
-        { value: '8', name: '08' },
-        { value: '9', name: '09' },
-        { value: '10', name: '10' },
+        { value: '4', name: '1 Year' },
+        { value: '8', name: '2 Years' },
+        { value: '12', name: '3 Years' },
+        { value: '16', name: '4 Years' },
+        { value: '20', name: '5 Years' },
     ],
     propsurePackages: [
         {
@@ -298,7 +293,7 @@ export default StaticData = {
         { value: 'viewing', name: 'Viewing' },
         { value: 'offer', name: 'Offer' },
         { value: 'propsure', name: 'Propsure' },
-        { value: 'token', name: 'Token' },
+        { value: 'token', name: 'Deal Signed - Token' },
         { value: 'payments', name: 'Payments' },
         { value: 'closed', name: 'Closed' },
     ],
@@ -318,7 +313,7 @@ export default StaticData = {
         { value: 'meeting_visited', name: 'Meeting: Visited' },
         { value: 'meeting_expected_conversion', name: 'Meeting: Expected Conversion' },
         { value: 'meeting_deal_signed', name: 'Meeting: Deal Signed' },
-        { value: 'token', name: 'Token' },
+        { value: 'token', name: 'Deal Signed - Token' },
         { value: 'payment', name: 'Payment' },
         { value: 'closed', name: 'Closed' },
     ],
@@ -391,14 +386,9 @@ export default StaticData = {
             color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})` // optional
         }]
     },
-    pieCharData: [
-        { name: 'Open', population: 21500000, color: 'rgba(131, 167, 234, 1)', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-        { name: 'Viewings', population: 2800000, color: '#F00', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-        { name: 'Offer', population: 527612, color: 'yellow', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-        { name: 'Propsure', population: 8538000, color: '#ffffff', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-        { name: 'Payments', population: 11920000, color: 'green', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-        { name: 'Closed Won', population: 11920000, color: 'blue', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-        { name: 'Closed Lost', population: 11920000, color: 'rgb(0, 0, 255)', legendFontColor: '#7F7F7F', legendFontSize: 15 }
+    paymentOptions: [
+        { value: 'full_payment', name: 'Full Payment' },
+        { value: 'installments', name: 'Installments' }
     ]
 }
 

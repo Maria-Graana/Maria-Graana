@@ -10,6 +10,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Fab, ActionSheet } from 'native-base';
 import helper from '../../helper';
 import Loader from '../../components/loader';
+import NoResultsComponent from '../../components/NoResultsComponent';
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
 
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
@@ -18,7 +20,12 @@ class Client extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            loading: true
+            customers: [],
+            totalCustomers: 0,
+            loading: true,
+            page: 1,
+            pageSize: 20,
+            onEndReachedLoader: false,
         }
     }
 
@@ -30,17 +37,29 @@ class Client extends React.Component {
     }
 
     componentWillUnmount() {
+        this.clearStateValues();
         this._unsubscribe();
     }
 
+    clearStateValues = () => {
+        this.setState({
+            page: 1,
+            totalCustomers: 0,
+        })
+    }
+
     fetchCustomer = () => {
-        const { user } = this.props
-        axios.get(`/api/customer/find?userId=${user.id}`)
+        // const { user } = this.props
+        const { customers, page, pageSize } = this.state;
+        const url = `/api/customer/find?pageSize=${pageSize}&page=${page}`
+        axios.get(url)
             .then((res) => {
                 this.setState({
-                    customers: res.data.rows,
+                    customers: page === 1 ? res.data.rows : [...customers, ...res.data.rows],
+                    totalCustomers: res.data.count,
+                    onEndReachedLoader: false,
                     loading: false
-                })
+                });
             })
             .catch((error) => {
                 console.log(error)
@@ -78,11 +97,17 @@ class Client extends React.Component {
         endPoint = `api/customer/remove?id=${val.id}`
         axios.delete(endPoint).then(function (response) {
             if (response.status === 200) {
-                helper.successToast('CLIENT DELETED SUCCESSFULLY!')
-                that.fetchCustomer();
+                if (response.data.message) {
+                    helper.errorToast(response.data.message)
+                }
+                else {
+                    helper.successToast('CLIENT DELETED SUCCESSFULLY!')
+                    that.fetchCustomer();
+                }
+
             }
         }).catch(function (error) {
-            helper.successToast(error.message)
+            helper.errorToast(error.message)
         })
     }
 
@@ -95,35 +120,48 @@ class Client extends React.Component {
     }
 
     render() {
-        const { customers, loading } = this.state
+        const { customers, loading, totalCustomers, onEndReachedLoader } = this.state
         const { user } = this.props
         return (
             !loading ?
-            <View style={[AppStyles.container, styles.container]}>
-                {
-                    Ability.canAdd(user.role, 'Client') ?
-                    <Fab
-                        active='true'
-                        containerStyle={{ zIndex: 20 }}
-                        style={{ backgroundColor: AppStyles.colors.primaryColor }}
-                        position="bottomRight"
-                        onPress={this.addClient}
-                    >
-                        <Ionicons name="md-add" color="#ffffff" />
-                    </Fab>
-                    :
-                    null
-                }
-                <FlatList
-                    data={customers}
-                    renderItem={(item, index) => (
-                        <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
-                    )}
-                    keyExtractor={(item, index) => item.id.toString()}
-                />
-            </View>
-            :
-            <Loader loading={loading} />
+                <View style={[AppStyles.container, styles.container]}>
+                    {
+                        Ability.canAdd(user.role, 'Client') ?
+                            <Fab
+                                active='true'
+                                containerStyle={{ zIndex: 20 }}
+                                style={{ backgroundColor: AppStyles.colors.primaryColor }}
+                                position="bottomRight"
+                                onPress={this.addClient}
+                            >
+                                <Ionicons name="md-add" color="#ffffff" />
+                            </Fab>
+                            :
+                            null
+                    }
+                    <FlatList
+                        data={customers}
+                        renderItem={(item, index) => (
+                            <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
+                        )}
+                        ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
+                        onEndReached={() => {
+                            if (customers.length < totalCustomers) {
+                                this.setState({
+                                    page: this.state.page + 1,
+                                    onEndReachedLoader: true
+                                }, () => {
+                                    this.fetchCustomer();
+                                });
+                            }
+                        }}
+                        onEndReachedThreshold={0.5}
+                        keyExtractor={(item, index) => item.id.toString()}
+                    />
+                    <OnLoadMoreComponent style={{backgroundColor:'white'}} onEndReached= {onEndReachedLoader}/>
+                </View>
+                :
+                <Loader loading={loading} />
         )
     }
 }

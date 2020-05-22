@@ -108,7 +108,7 @@ class AddCMLead extends Component {
                     axios.post(`/api/leads/project`, body)
                         .then((res) => {
                             helper.successToast(res.data)
-                            RootNavigation.navigate('Lead')
+                            RootNavigation.navigate('Leads')
                         })
                 } else {
                     helper.errorToast('Max Price cannot be less than Min Price')
@@ -117,7 +117,7 @@ class AddCMLead extends Component {
                 axios.post(`/api/leads/project`, body)
                     .then((res) => {
                         helper.successToast(res.data)
-                        RootNavigation.navigate('Lead')
+                        RootNavigation.navigate('Leads')
                     })
                     .catch((error) => {
                         console.log(error)

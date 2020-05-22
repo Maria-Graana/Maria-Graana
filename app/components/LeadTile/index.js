@@ -1,7 +1,7 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 
 import AppStyles from '../../AppStyles'
-import PropertyImg from '../../../assets/img/property.jpg'
+import moment from 'moment'
 import React from 'react'
 import phone from '../../../assets/img/phone2.png'
 import styles from './style'
@@ -13,18 +13,22 @@ class LeadTile extends React.Component {
   }
 
 
-
   render() {
-    const { selectInventory, data, selectedInventory, unSelectInventory, navigateTo, callNumber } = this.props
+    const { data, navigateTo, callNumber, user } = this.props
     return (
-      <TouchableOpacity onPress={() => { navigateTo(data) }} onLongPress={() => !selectedInventory.includes(data.id) ? selectInventory(data.id) : unSelectInventory(data.id)}>
+      <TouchableOpacity onPress={() => { navigateTo(data) }}>
 
-        <View style={[styles.tileMainWrap, selectedInventory.includes(data.id) && styles.selectedInventory]}>
+        <View style={[styles.tileMainWrap, data.readAt === null && user.id === data.assigned_to_armsuser_id && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
               <View>
                 <Text style={[styles.tokenLabel, AppStyles.mrFive]}>
-                  {data.status.split('_').join(' ').toUpperCase()}
+                  {
+                    data.status === 'token' ?
+                      <Text>DEAL SIGNED - TOKEN</Text>
+                      :
+                      data.status.split('_').join(' ').toUpperCase()
+                  }
                 </Text>
               </View>
               {/* <View>
@@ -74,6 +78,13 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
                     {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
+                  </Text>
+                </View>
+
+                {/* ****** Location Wrap */}
+                <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                  <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                    {moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}
                   </Text>
                 </View>
               </View>

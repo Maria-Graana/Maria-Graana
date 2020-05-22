@@ -25,6 +25,7 @@ class Meetings extends Component {
         time: '',
         date: '',
         leadId: this.props.route.params.lead.id,
+        subject: this.props.route.params.lead.customer ? `Meeting with ${this.props.route.params.lead.customer.customerName}` : null
       },
       meetings: [],
       checkValidation: false,
@@ -34,7 +35,7 @@ class Meetings extends Component {
       meetingId: '',
       modalStatus: 'dropdown',
       open: false,
-      progressValue: 0
+      progressValue: 0,
     }
   }
 
@@ -88,7 +89,17 @@ class Meetings extends Component {
       this.setState({ checkValidation: true })
     } else {
       if (editMeeting === true) {
-        axios.patch(`/api/diary/update?id=${meetingId}`, formData)
+        let startTime = moment(formData.time, 'LT').format('HH:mm:ss')
+        let endTime = moment(startTime,'LT').add(1, 'hours').format('HH:mm:ss')
+        let startDate = moment(formData.date, 'YYYY-MM-DDLT').format('YYYY-MM-DD')
+        let body = {
+          date: startDate + 'T' + startTime,
+          time: formData.time,
+          leadId: formData.leadId,
+          start: startDate + 'T' + startTime,
+          end: startDate + 'T' + endTime,
+        }
+        axios.patch(`/api/diary/update?id=${meetingId}`, body)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
             this.getMeetingLead();
@@ -231,11 +242,11 @@ class Meetings extends Component {
     });
   }
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue } = this.state
+    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue,editMeeting } = this.state
     let leadData = this.props.route.params.lead
     return (
       <View style={styles.mainWrapCon}>
-        <ProgressBar style={{backgroundColor: "ffffff"}} progress={progressValue} color={'#0277FD'} />
+        <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 
         {/* ************Fab For Open Modal************ */}
         <View style={[styles.meetingConteiner]}>
@@ -260,18 +271,18 @@ class Meetings extends Component {
           </ScrollView>
 
           <FAB.Group
-          open={open}
-          icon="plus"
-          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-          color={AppStyles.bgcWhite.backgroundColor}
-          actions={[
-            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-            { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+            open={open}
+            icon="plus"
+            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+            color={AppStyles.bgcWhite.backgroundColor}
+            actions={[
+              { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
+              { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
+              { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
 
-          ]}
-          onStateChange={({ open }) => this.setState({ open })}
-        />
+            ]}
+            onStateChange={({ open }) => this.setState({ open })}
+          />
 
         </View>
 
@@ -288,7 +299,7 @@ class Meetings extends Component {
           </View>
         </View>
 
-        
+
 
         {/* ************Modal Component************ */}
         <MeetingModal
@@ -298,6 +309,7 @@ class Meetings extends Component {
           openModal={this.openModal}
           handleForm={this.handleForm}
           formSubmit={this.formSubmit}
+          editMeeting = {editMeeting}
         />
 
         <MeetingStatusModal

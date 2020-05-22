@@ -16,6 +16,8 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import helper from '../../helper';
 import styles from './style'
+import { ActivityIndicator } from 'react-native-paper';
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
 
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
@@ -183,7 +185,7 @@ class Inventory extends React.Component {
 						keyExtractor={(item,index)=> this.setKey(index)}
 					/>
 					{
-						onEndReachedLoader ? <Loader loading={onEndReachedLoader} /> : null
+					   <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
 					}
 				</View>
 				:

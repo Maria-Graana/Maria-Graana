@@ -45,11 +45,19 @@ const role = {
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true } },
         ],
     },
+    Dashboard: {
+        roles: [
+            { role: 'admin 1', access: { v: true, a: false, e: false, d: false } },
+            { role: 'admin 2', access: { v: true, a: false, e: false, d: false } },
+            { role: 'admin 3', access: { v: true, a: false, e: false, d: false } },
+            { role: 'sub_admin 1', access: { v: true, a: false, e: false, d: false } },
+          ]
+    },
     AssignLead: {
         roles: [
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true } },
-        ],
-    }
+        ]
+    },
 }
 
 module.exports = role;

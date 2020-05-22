@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, Text, TouchableOpacity, Image, ScrollView, Linking, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, Image, SafeAreaView, Linking, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import PickerComponent from '../../components/Picker/index';
@@ -168,8 +168,7 @@ class InvestLeads extends React.Component {
 		const { user } = this.props;
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
-			<View>
-
+			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>
 					<View style={styles.pickerMain}>
@@ -190,7 +189,7 @@ class InvestLeads extends React.Component {
 					</View>
 				</View>
 				<View style={[AppStyles.container, styles.minHeight]}>
-					<View style={[styles.mainInventoryTile,]}>
+					<View style={[styles.mainInventoryTile]}>
 
 						{
 							leadsData && leadsData && leadsData.length > 0 ?

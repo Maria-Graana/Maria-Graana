@@ -74,7 +74,6 @@ class CMReport extends React.Component {
             regions: [],
             zones: [],
             agents: [],
-            organizations: [{ value: 'Graana', name: 'Graana' }, { value: 'Agency21', name: 'Agency21' }],
             regionFormData: {
                 organization: '',
                 region: ''
@@ -90,13 +89,18 @@ class CMReport extends React.Component {
                 region: '',
                 zone: '',
             },
+            organizationFormData: {
+                organization: '',
+            },
             fromDate: moment(_today).format(_format),
-            toDate: moment(_today).format(_format)
+            toDate: moment(_today).format(_format),
+            organizations: []
         }
     }
 
     componentDidMount() {
         this.fetchRegions()
+        this.fetchOrganizations()
         this.checkDate()
     }
 
@@ -111,6 +115,18 @@ class CMReport extends React.Component {
     }
 
     // <<<<<<<<<<<<<<<<<<<<<<< Fetch API's >>>>>>>>>>>>>>>>>>>>>>>>>
+
+    fetchOrganizations = () => {
+        axios.get('/api/user/organizations?limit=2')
+            .then((res) => {
+                let organizations = []
+                res && res.data.rows.length && res.data.rows.map((item, index) => { return (organizations.push({ value: item.id, name: item.name })) })
+                this.setState({ organizations })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
 
     fetchReport = (url) => {
         this.setState({ loading: true })
@@ -386,12 +402,24 @@ class CMReport extends React.Component {
 
     // *********************** Organization ******************************
 
-    submitOrganization = (value) => {
-        const { organizationValues } = this.state
-        if (value) {
-            this.setState({ regionText: organizationValues[value], showOrganizationFilter: false, selectedOrganization: value }
+    openOrganizationFilter = () => { this.setState({ showOrganizationFilter: true }) }
+
+    handleOrganizationForm = (value, name) => {
+        const { organizationFormData } = this.state
+        organizationFormData[name] = value
+
+        this.setState({ organizationFormData })
+    }
+
+    submitOrganizationFilter = () => {
+        const { organizationFormData, organizationValues } = this.state
+
+        if (!organizationFormData.organization) { this.setState({ checkValidation: true }) }
+        else {
+            let value = organizationFormData.organization
+            this.setState({ backCheck: true, regionText: organizationValues[value], showOrganizationFilter: false, selectedOrganization: value }
                 , () => {
-                    this.organizationUrl(value)
+                    this.organizationUrl()
                 })
         }
     }
@@ -517,7 +545,7 @@ class CMReport extends React.Component {
     }
 
     render() {
-        const { loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
+        const { organizationFormData, loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
         const width = Dimensions.get('window').width - 5
         const height = 220
         let chartConfig = {
@@ -558,21 +586,16 @@ class CMReport extends React.Component {
                 <RegionFilter regions={regions} checkValidation={checkValidation} submitRegionFilter={this.submitRegionFilter} handleRegionForm={this.handleRegionForm} formData={_.clone(regionFormData)} organizations={organizations} openPopup={showRegionFilter} closeFilters={this.closeFilters} />
                 <AgentFilter agents={agents} fetchAgents={this.fetchAgents} zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitAgentFilter={this.submitAgentFilter} handleAgentForm={this.handleAgentForm} formData={_.clone(agentFormData)} organizations={organizations} openPopup={showAgentFilter} closeFilters={this.closeFilters} />
                 <ZoneFilter zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitZoneFilter={this.submitZoneFilter} handleZoneForm={this.handleZoneForm} formData={_.clone(zoneFormData)} organizations={organizations} openPopup={showZoneFilter} closeFilters={this.closeFilters} />
+                <OrganizationFilter organizations={organizations} checkValidation={checkValidation} submitOrganizationFilter={this.submitOrganizationFilter} handleOrganizationForm={this.handleOrganizationForm} formData={_.clone(organizationFormData)} openPopup={showOrganizationFilter} closeFilters={this.closeFilters} />
 
                 <View style={styles.inputView}>
                     <View style={styles.regionStyle}>
                         <View style={styles.textView}>
                             <Text numberOfLines={1} style={styles.textStyle}>{regionText}</Text>
                         </View>
-                        {
-                            footerLabel !== 'Organization' ?
-                                <TouchableOpacity style={styles.inputBtn} onPress={() => { this.openFilter() }}>
-                                    <Image source={listIconImg} style={styles.regionImg} />
-                                </TouchableOpacity>
-                                :
-                                <OrganizationFilter visible={showOrganizationFilter} submitOrganization={this.submitOrganization} openFilter={this.openFilter} closeFilters={this.closeFilters} />
-                        }
-
+                        <TouchableOpacity style={styles.inputBtn} onPress={() => { this.openFilter() }}>
+                            <Image source={listIconImg} style={styles.regionImg} />
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.dateView}>
                         <View style={styles.textView}>

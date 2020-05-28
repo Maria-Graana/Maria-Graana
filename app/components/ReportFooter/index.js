@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
         fontFamily: AppStyles.fonts.defaultFont
     },
     selectedButton: {
+        borderRadius: 0,
         backgroundColor: AppStyles.colors.primaryColor
     },
     selectedText: {

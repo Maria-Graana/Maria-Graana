@@ -44,11 +44,7 @@ export default styles = StyleSheet.create({
         marginRight: 10,
     },
     scrollContainer: {
-        zIndex: 15,
-        shadowOffset: { width: 5, height: 5 },
-        shadowColor: 'lightgrey',
-        shadowOpacity: 1,
-        elevation: 10,
+
     },
     selectedBtn: {
         backgroundColor: AppStyles.colors.primaryColor,
@@ -61,7 +57,13 @@ export default styles = StyleSheet.create({
     inputView: {
         flexDirection: "row",
         height: 50,
-        padding: 10
+        padding: 10,
+        zIndex: 15,
+        shadowOffset: { width: 5, height: 5 },
+        shadowColor: 'lightgrey',
+        shadowOpacity: 1,
+        elevation: 10,
+        backgroundColor: 'white'
     },
     regionStyle: {
         flex: 1.5,

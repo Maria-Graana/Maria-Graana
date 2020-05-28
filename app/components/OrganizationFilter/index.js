@@ -1,53 +1,70 @@
-import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, Image } from 'react-native';
-import listIconImg from '../../../assets/img/list-icon.png';
-import { Menu } from 'react-native-paper';
+import React from 'react'
+import {
+    View,
+    Modal,
+    SafeAreaView,
+    Text,
+    TouchableOpacity,
+    Image,
+    ScrollView
+} from 'react-native'
+import backArrow from '../../../assets/img/backArrow.png'
+import { connect } from 'react-redux';
+import AppStyles from '../../AppStyles';
+import PickerComponent from '../Picker/index';
+import styles from './style';
+import { Button } from 'native-base';
+import ErrorMessage from '../ErrorMessage/index';
 
-
-class OrganizationFilter extends Component {
-
+class OrganizationFilter extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
         }
     }
 
-
-
     render() {
-        const { visible, submitOrganization, openFilter, closeFilters } = this.props;
-
+        const { openPopup, closeFilters, formData, handleOrganizationForm, submitOrganizationFilter, organizations, checkValidation } = this.props;
         return (
-            <Menu
-                visible={visible}
-                onDismiss={closeFilters}
-                style={{ marginTop: 30 }}
-                contentStyle={{ width: 150 }}
-                anchor={
-                    <TouchableOpacity style={styles.inputBtn} onPress={() => { openFilter() }}>
-                        <Image source={listIconImg} style={styles.regionImg} />
-                    </TouchableOpacity>
-                }
+            <Modal visible={openPopup}
+                animationType="slide"
+                onRequestClose={closeFilters}
             >
-                <Menu.Item onPress={() => { submitOrganization('2') }} title="Graana" />
-                <Menu.Item onPress={() => { submitOrganization('1') }} title="Agency21" />
-            </Menu>
+                <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
+                    <ScrollView>
+                        <View style={styles.headerView}>
+                            <TouchableOpacity
+                                onPress={() => { closeFilters() }}>
+                                <Image source={backArrow} style={[styles.backImg]} />
+                            </TouchableOpacity>
+                            <View style={styles.headerStyle}>
+                                <Text style={styles.headerText}>SELECT ORGANIZATION</Text>
+                            </View>
+                        </View>
+                        <View style={styles.pad5}>
+                            <PickerComponent selectedItem={formData.organization} onValueChange={(text) => { handleOrganizationForm(text, 'organization') }} data={organizations} placeholder='Organization' />
+                            {
+                                checkValidation === true && formData.organization === '' && <ErrorMessage errorMessage={'Required'} />
+                            }
+                        </View>
+                        <View style={[AppStyles.mainInputWrap, styles.btnWrap]}>
+                            <Button
+                                onPress={() => { submitOrganizationFilter() }}
+                                style={[AppStyles.formBtn, styles.btn1]}>
+                                <Text style={AppStyles.btnText}>VIEW DASHBOARD</Text>
+                            </Button>
+                        </View>
+                    </ScrollView>
+                </SafeAreaView>
+            </Modal>
         )
     }
 }
 
-const styles = StyleSheet.create({
-    inputBtn: {
-        paddingHorizontal: 10
-    },
-    regionImg: {
-        resizeMode: 'contain',
-        width: 14,
-        height: 14,
-        marginVertical: 6
+mapStateToProps = (store) => {
+    return {
+        user: store.user.user,
     }
-})
+}
 
-export default OrganizationFilter;
-
-
+export default connect(mapStateToProps)(OrganizationFilter)

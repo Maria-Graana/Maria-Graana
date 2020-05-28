@@ -11,6 +11,7 @@ import SquareContainer from '../../components/SquareContainer';
 import RegionFilter from '../../components/RegionFilter';
 import AgentFilter from '../../components/AgentFilter';
 import ZoneFilter from '../../components/ZoneFilter';
+import OrganizationFilter from '../../components/OrganizationFilter';
 import clientAddedImg from '../../../assets/img/client-added.png';
 import leadsAssignedImg from '../../../assets/img/leads-assigned.png';
 import leadsCreatedImg from '../../../assets/img/leads-created.png';
@@ -73,7 +74,6 @@ class RCMReport extends React.Component {
             regions: [],
             zones: [],
             agents: [],
-            organizations: [{ value: 'Graana', name: 'Graana' }, { value: 'Agency21', name: 'Agency21' }],
             regionFormData: {
                 organization: '',
                 region: ''
@@ -89,13 +89,18 @@ class RCMReport extends React.Component {
                 region: '',
                 zone: '',
             },
+            organizationFormData: {
+                organization: '',
+            },
             fromDate: moment(_today).format(_format),
-            toDate: moment(_today).format(_format)
+            toDate: moment(_today).format(_format),
+            organizations: []
         }
     }
 
     componentDidMount() {
         this.fetchRegions()
+        this.fetchOrganizations()
         this.checkDate()
     }
 
@@ -112,6 +117,18 @@ class RCMReport extends React.Component {
     }
 
     // <<<<<<<<<<<<<<<<<<<<<<< Fetch API's >>>>>>>>>>>>>>>>>>>>>>>>>
+
+    fetchOrganizations = () => {
+        axios.get('/api/user/organizations?limit=2')
+            .then((res) => {
+                let organizations = []
+                res && res.data.rows.length && res.data.rows.map((item, index) => { return (organizations.push({ value: item.id, name: item.name })) })
+                this.setState({ organizations })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
 
     fetchReport = (url) => {
         this.setState({ loading: true })
@@ -387,12 +404,24 @@ class RCMReport extends React.Component {
 
     // *********************** Organization ******************************
 
-    submitOrganization = (value) => {
-        const { organizationValues } = this.state
-        if (value) {
-            this.setState({ regionText: organizationValues[value], showOrganizationFilter: false, selectedOrganization: value }
+    openOrganizationFilter = () => { this.setState({ showOrganizationFilter: true }) }
+
+    handleOrganizationForm = (value, name) => {
+        const { organizationFormData } = this.state
+        organizationFormData[name] = value
+
+        this.setState({ organizationFormData })
+    }
+
+    submitOrganizationFilter = () => {
+        const { organizationFormData, organizationValues } = this.state
+
+        if (!organizationFormData.organization) { this.setState({ checkValidation: true }) }
+        else {
+            let value = organizationFormData.organization
+            this.setState({ backCheck: true, regionText: organizationValues[value], showOrganizationFilter: false, selectedOrganization: value }
                 , () => {
-                    this.organizationUrl(value)
+                    this.organizationUrl()
                 })
         }
     }
@@ -401,15 +430,15 @@ class RCMReport extends React.Component {
         const { selectedOrganization, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
 
-        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
-        if (filterLabel === 'Daily') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
-        if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
-        if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
+        if (filterLabel === 'Monthly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
+        if (filterLabel === 'Daily') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+        if (filterLabel === 'Yearly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
+        if (filterLabel === 'Weekly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
         if (filterLabel === 'Quarterly') {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
             this.setState({ selectedDate: quarter.name + ', ' + selectedYear, selectedQuarter: newQaurter })
-            url = `/api/leads/reports?scope=&q=organization${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
+            url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
         }
 
         this.fetchReport(url)
@@ -518,7 +547,7 @@ class RCMReport extends React.Component {
     }
 
     render() {
-        const { loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
+        const { organizationFormData, loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
         const width = Dimensions.get('window').width - 25
         const height = 220
         let chartConfig = {
@@ -565,26 +594,16 @@ class RCMReport extends React.Component {
                 <RegionFilter regions={regions} checkValidation={checkValidation} submitRegionFilter={this.submitRegionFilter} handleRegionForm={this.handleRegionForm} formData={_.clone(regionFormData)} organizations={organizations} openPopup={showRegionFilter} closeFilters={this.closeFilters} />
                 <AgentFilter agents={agents} fetchAgents={this.fetchAgents} zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitAgentFilter={this.submitAgentFilter} handleAgentForm={this.handleAgentForm} formData={_.clone(agentFormData)} organizations={organizations} openPopup={showAgentFilter} closeFilters={this.closeFilters} />
                 <ZoneFilter zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitZoneFilter={this.submitZoneFilter} handleZoneForm={this.handleZoneForm} formData={_.clone(zoneFormData)} organizations={organizations} openPopup={showZoneFilter} closeFilters={this.closeFilters} />
+                <OrganizationFilter organizations={organizations} checkValidation={checkValidation} submitOrganizationFilter={this.submitOrganizationFilter} handleOrganizationForm={this.handleOrganizationForm} formData={_.clone(organizationFormData)} openPopup={showOrganizationFilter} closeFilters={this.closeFilters} />
 
                 <View style={styles.inputView}>
                     <View style={styles.regionStyle}>
                         <View style={styles.textView}>
                             <Text numberOfLines={1} style={styles.textStyle}>{regionText}</Text>
                         </View>
-                        <Menu
-                            visible={this.state.fiddu}
-                            onDismiss={this.setfiddu}
-                            style={{ marginTop: 30 }}
-                            contentStyle={{ width: 150 }}
-                            anchor={
-                                <TouchableOpacity style={styles.inputBtn} onPress={() => { this.openFilter() }}>
-                                    <Image source={listIconImg} style={styles.regionImg} />
-                                </TouchableOpacity>
-                            }
-                        >
-                            <Menu.Item onPress={() => { }} title="Graana" />
-                            <Menu.Item onPress={() => { }} title="Agency21" />
-                        </Menu>
+                        <TouchableOpacity style={styles.inputBtn} onPress={() => { this.openFilter() }}>
+                            <Image source={listIconImg} style={styles.regionImg} />
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.dateView}>
                         <View style={styles.textView}>

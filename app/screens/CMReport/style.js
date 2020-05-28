@@ -21,7 +21,8 @@ export default styles = StyleSheet.create({
         flex: 1,
         justifyContent: "space-between",
         flexDirection: "row",
-        marginVertical: 5
+        marginVertical: 5,
+        marginHorizontal: 10,
     },
     reactangle: {
         // justifyContent: 'space-between',
@@ -43,8 +44,11 @@ export default styles = StyleSheet.create({
         marginRight: 10,
     },
     scrollContainer: {
-        marginHorizontal: 10,
-        marginVertical: 5
+        zIndex: 15,
+        shadowOffset: { width: 5, height: 5 },
+        shadowColor: 'lightgrey',
+        shadowOpacity: 1,
+        elevation: 10,
     },
     selectedBtn: {
         backgroundColor: AppStyles.colors.primaryColor,

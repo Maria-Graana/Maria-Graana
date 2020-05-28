@@ -38,6 +38,7 @@ class RCMReport extends React.Component {
         const date = new Date();
         super(props)
         this.state = {
+            backCheck: false,
             loading: true,
             // graph: _.clone(StaticData.rcmBarCharData),
             dashBoardData: {
@@ -114,7 +115,7 @@ class RCMReport extends React.Component {
 
     fetchReport = (url) => {
         this.setState({ loading: true })
-        console.log(url)
+
         axios.get(url)
             .then((res) => {
                 this.graphData(res.data)
@@ -146,7 +147,7 @@ class RCMReport extends React.Component {
                 let zones = []
                 zoneFormData.zone = ''
                 zoneFormData.agent = ''
-                // console.log(res.data)
+
                 res && res.data.items.length && res.data.items.map((item, index) => { return (zones.push({ value: item.id, name: item.zone_name })) })
                 this.setState({ zones, agents: [], zoneFormData })
             })
@@ -194,7 +195,7 @@ class RCMReport extends React.Component {
         let newDate = moment(dateString).format(_format)
 
         this.setState({
-            selectedDate: moment(newDate).startOf('isoWeek').format('YYYY-MM-DD') + ' - ' + moment(newDate).endOf('isoWeek').format('YYYY-MM-DD'),
+            selectedDate: moment(newDate).startOf('isoWeek').format('LL') + ' - ' + moment(newDate).endOf('isoWeek').format('LL'),
             startWeek: moment(newDate).startOf('isoWeek').format('YYYY-MM-DD'),
             endWeek: moment(newDate).endOf('isoWeek').format('YYYY-MM-DD'),
             showCalendar: false
@@ -239,7 +240,7 @@ class RCMReport extends React.Component {
         const { selectedQuarter } = this.state
         const date = new Date()
         let newQaurter = selectedQuarter
-        console.log(selectedQuarter)
+
         if (newQaurter === 0) {
             if (date.getMonth() > 3) return 2
             if (date.getMonth() > 6) return 3
@@ -283,7 +284,7 @@ class RCMReport extends React.Component {
             let zone = _.find(zones, function (item) { return item.value === agentFormData.zone })
             let agent = _.find(agents, function (item) { return item.value === agentFormData.agent })
 
-            this.setState({ showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + agentFormData.organization })
+            this.setState({ backCheck: true, showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + agentFormData.organization })
             this.agentUrl()
         }
     }
@@ -323,7 +324,7 @@ class RCMReport extends React.Component {
             let region = _.find(regions, function (item) { return item.value === zoneFormData.region })
             let zone = _.find(zones, function (item) { return item.value === zoneFormData.zone })
 
-            this.setState({ showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + zoneFormData.organization })
+            this.setState({ backCheck: true, showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + zoneFormData.organization })
             this.teamUrl()
         }
     }
@@ -361,7 +362,7 @@ class RCMReport extends React.Component {
         if (!regionFormData.organization || !regionFormData.region) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === regionFormData.region })
-            this.setState({ showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + regionFormData.organization })
+            this.setState({ backCheck: true, showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + regionFormData.organization })
             this.regionUrl()
         }
     }
@@ -399,7 +400,7 @@ class RCMReport extends React.Component {
     organizationUrl = () => {
         const { selectedOrganization, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-        console.log(selectedDate)
+
         if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
         if (filterLabel === 'Daily') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
@@ -416,7 +417,7 @@ class RCMReport extends React.Component {
 
     // *********************** Footer Checks ******************************
 
-    selectedFooterButton = (label) => { this.setState({ footerLabel: label, regionText: '' }, () => { this.emptyFilters(); this.defaultDates(), this.openFilter() }) }
+    selectedFooterButton = (label) => { this.setState({ footerLabel: label, regionText: '', backCheck: false }, () => { this.emptyFilters(); this.defaultDates(), this.openFilter() }) }
 
     // <<<<<<<<<<<<<<<<<<<<<<< Date Checks >>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -470,7 +471,32 @@ class RCMReport extends React.Component {
         if (footerLabel === 'Organization') this.organizationUrl()
     }
 
-    closeFilters = () => { this.setState({ showRegionFilter: false, showAgentFilter: false, showZoneFilter: false, regionText: 'Graana', showOrganizationFilter: false, footerLabel: 'Organization' }); this.emptyFilters() }
+    closeFilters = () => {
+        const { backCheck } = this.state
+
+        if (backCheck) {
+            this.setState({
+                showRegionFilter: false,
+                showAgentFilter: false,
+                showZoneFilter: false,
+                showOrganizationFilter: false,
+            })
+        }
+        else {
+            this.setState({
+                showRegionFilter: false,
+                showAgentFilter: false,
+                showZoneFilter: false,
+                regionText: 'Graana',
+                showOrganizationFilter: false,
+                footerLabel: 'Organization',
+                selectedOrganization: 2
+            }, () => {
+                this.emptyFilters()
+                this.callReportApi()
+            })
+        }
+    }
 
     emptyFilters = () => {
         this.setState({
@@ -484,7 +510,7 @@ class RCMReport extends React.Component {
 
     openFilter = () => {
         const { footerLabel } = this.state
-        console.log('footerLabel: ', footerLabel)
+
         if (footerLabel === 'Region') this.openRegionFilter()
         else if (footerLabel === 'Agent') this.openAgentFilter()
         else if (footerLabel === 'Team') this.openZoneFilter()
@@ -505,7 +531,7 @@ class RCMReport extends React.Component {
             style: {
                 backgroundGradientFrom: "#fb8c00",
                 borderRadius: 16,
-                borderWidth: 0.5,
+                borderWidth: 0,
                 borderColor: AppStyles.colors.subTextColor
             },
             propsForLabels: {
@@ -543,7 +569,7 @@ class RCMReport extends React.Component {
                 <View style={styles.inputView}>
                     <View style={styles.regionStyle}>
                         <View style={styles.textView}>
-                            <Text style={styles.textStyle}>{regionText}</Text>
+                            <Text numberOfLines={1} style={styles.textStyle}>{regionText}</Text>
                         </View>
                         <Menu
                             visible={this.state.fiddu}
@@ -562,7 +588,7 @@ class RCMReport extends React.Component {
                     </View>
                     <View style={styles.dateView}>
                         <View style={styles.textView}>
-                            <Text style={styles.textStyle}>{selectedDate}</Text>
+                            <Text numberOfLines={1} style={styles.textStyle}>{selectedDate}</Text>
                         </View>
                         <TouchableOpacity style={styles.inputBtn} onPress={() => this.showDate()}>
                             <Image source={calendarImg} style={styles.calendarImg} />
@@ -583,34 +609,38 @@ class RCMReport extends React.Component {
                 {
                     !loading ?
                         <ScrollView style={styles.scrollContainer}>
-                            <View style={styles.sqaureView}>
-                                <SquareContainer containerStyle={styles.squareRight} imagePath={comissionRevenueImg} label={'Comission Revenue'} total={dashBoardData.totalRevenue} />
-                                <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                            <View style={{
+                            }}>
+                                <View style={styles.sqaureView}>
+                                    <SquareContainer containerStyle={styles.squareRight} imagePath={comissionRevenueImg} label={'Comission Revenue'} total={dashBoardData.totalRevenue} />
+                                    <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                                </View>
+                                <View style={styles.sqaureView}>
+                                    <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
+                                    <SquareContainer imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
+                                </View>
+                                <View style={styles.sqaureView}>
+                                    <SquareContainer containerStyle={styles.squareRight} imagePath={viewingConductedImg} label={'Viewings Conducted'} total={dashBoardData.viewingConducted} />
+                                    <SquareContainer imagePath={viewingOverdueImg} label={'Viewings Overdue'} total={dashBoardData.viewingOverdue} />
+                                </View>
+                                <BarChart
+                                    decimalPlaces={0.1}
+                                    verticalLabelRotation={30}
+                                    showValuesOnTopOfBars={true}
+                                    useShadowColorFromDataset={true}
+                                    withInnerLines={false}
+                                    withDots={false}
+                                    fromZero={true}
+                                    withHorizontalLabels={true}
+                                    showBarTops={true}
+                                    width={width}
+                                    height={height}
+                                    data={StaticData.rcmBarCharData}
+                                    chartConfig={chartConfig}
+                                    style={graphStyle}
+                                />
+
                             </View>
-                            <View style={styles.sqaureView}>
-                                <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
-                                <SquareContainer imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
-                            </View>
-                            <View style={styles.sqaureView}>
-                                <SquareContainer containerStyle={styles.squareRight} imagePath={viewingConductedImg} label={'Viewings Conducted'} total={dashBoardData.viewingConducted} />
-                                <SquareContainer imagePath={viewingOverdueImg} label={'Viewings Overdue'} total={dashBoardData.viewingOverdue} />
-                            </View>
-                            <BarChart
-                                decimalPlaces={0.1}
-                                verticalLabelRotation={30}
-                                showValuesOnTopOfBars={true}
-                                useShadowColorFromDataset={true}
-                                withInnerLines={false}
-                                withDots={false}
-                                fromZero={true}
-                                withHorizontalLabels={true}
-                                showBarTops={true}
-                                width={width}
-                                height={height}
-                                data={StaticData.rcmBarCharData}
-                                chartConfig={chartConfig}
-                                style={graphStyle}
-                            />
                         </ScrollView>
                         :
                         <Loader loading={loading} />

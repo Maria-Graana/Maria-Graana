@@ -252,9 +252,12 @@ function MainStack() {
             />
             <Stack.Screen name='RCMReport' component={RCMReport}
                 options={({ navigation, route }) => ({
-                    title: 'BUY/RENT REPORT',
+                    title: 'INVESTMENT REPORT',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
             <Stack.Screen name='AssignLead' component={AssignLead}
                 options={({ navigation, route }) => ({
                     title: 'SELECT TEAM MEMBER',

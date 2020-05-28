@@ -39,6 +39,7 @@ class CMReport extends React.Component {
         const date = new Date();
         super(props)
         this.state = {
+            backCheck: false,
             loading: true,
             graph: StaticData.barCharData,
             dashBoardData: {
@@ -116,7 +117,6 @@ class CMReport extends React.Component {
         console.log(url)
         axios.get(url)
             .then((res) => {
-                console.log(res.data)
                 this.graphData(res.data)
                 this.setState({ dashBoardData: res.data, loading: false })
             })
@@ -146,7 +146,7 @@ class CMReport extends React.Component {
                 let zones = []
                 zoneFormData.zone = ''
                 zoneFormData.agent = ''
-                // console.log(res.data)
+
                 res && res.data.items.length && res.data.items.map((item, index) => { return (zones.push({ value: item.id, name: item.zone_name })) })
                 this.setState({ zones, agents: [], zoneFormData })
             })
@@ -194,7 +194,7 @@ class CMReport extends React.Component {
         let newDate = moment(dateString).format(_format)
 
         this.setState({
-            selectedDate: moment(newDate).startOf('isoWeek').format('YYYY-MM-DD') + ' - ' + moment(newDate).endOf('isoWeek').format('YYYY-MM-DD'),
+            selectedDate: moment(newDate).startOf('isoWeek').format('LL') + ' - ' + moment(newDate).endOf('isoWeek').format('LL'),
             startWeek: moment(newDate).startOf('isoWeek').format('YYYY-MM-DD'),
             endWeek: moment(newDate).endOf('isoWeek').format('YYYY-MM-DD'),
             showCalendar: false
@@ -239,7 +239,7 @@ class CMReport extends React.Component {
         const { selectedQuarter } = this.state
         const date = new Date()
         let newQaurter = selectedQuarter
-        console.log(selectedQuarter)
+
         if (newQaurter === 0) {
             if (date.getMonth() > 3) return 2
             if (date.getMonth() > 6) return 3
@@ -283,7 +283,7 @@ class CMReport extends React.Component {
             let zone = _.find(zones, function (item) { return item.value === agentFormData.zone })
             let agent = _.find(agents, function (item) { return item.value === agentFormData.agent })
 
-            this.setState({ showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + agentFormData.organization })
+            this.setState({ backCheck: true, showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + agentFormData.organization })
             this.agentUrl()
         }
     }
@@ -323,7 +323,7 @@ class CMReport extends React.Component {
             let region = _.find(regions, function (item) { return item.value === zoneFormData.region })
             let zone = _.find(zones, function (item) { return item.value === zoneFormData.zone })
 
-            this.setState({ showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + zoneFormData.organization })
+            this.setState({ backCheck: true, showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + zoneFormData.organization })
             this.teamUrl()
         }
     }
@@ -353,7 +353,6 @@ class CMReport extends React.Component {
     handleRegionForm = (value, name) => {
         const { regionFormData } = this.state
         regionFormData[name] = value
-        console.log(regionFormData)
         this.setState({ regionFormData })
     }
 
@@ -362,7 +361,7 @@ class CMReport extends React.Component {
         if (!regionFormData.organization || !regionFormData.region) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === regionFormData.region })
-            this.setState({ showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + regionFormData.organization })
+            this.setState({ backCheck: true, showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + regionFormData.organization })
             this.regionUrl()
         }
     }
@@ -400,7 +399,7 @@ class CMReport extends React.Component {
     organizationUrl = () => {
         const { selectedOrganization, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-        console.log(selectedDate)
+
         if (filterLabel === 'Monthly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
         if (filterLabel === 'Daily') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
@@ -409,7 +408,7 @@ class CMReport extends React.Component {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
             this.setState({ selectedDate: quarter.name + ', ' + selectedYear, selectedQuarter: newQaurter })
-            url = `/api/leads/project/report?scope=&q=organization${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
+            url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
         }
 
         this.fetchReport(url)
@@ -417,7 +416,7 @@ class CMReport extends React.Component {
 
     // *********************** Footer Checks ******************************
 
-    selectedFooterButton = (label) => { this.setState({ footerLabel: label, regionText: '' }, () => { this.emptyFilters(); this.defaultDates(), this.openFilter() }) }
+    selectedFooterButton = (label) => { this.setState({ footerLabel: label, regionText: '', backCheck: false }, () => { this.emptyFilters(); this.defaultDates(), this.openFilter() }) }
 
     // <<<<<<<<<<<<<<<<<<<<<<< Date Checks >>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -448,8 +447,8 @@ class CMReport extends React.Component {
     checkDate = () => {
         const { filterLabel, selectedYear, selectedMonth, months, quarters } = this.state
 
-        if (filterLabel === 'Daily') this.setState({ selectedDate: moment(_today).format(_format) }, () => { this.callReportApi() })
-        if (filterLabel === 'Weekly') this.setState({ selectedDate: moment(_today).startOf('isoWeek').format('YYYY-MM-DD') + ' - ' + moment(_today).endOf('isoWeek').format('YYYY-MM-DD') }, () => { this.callReportApi() })
+        if (filterLabel === 'Daily') this.setState({ selectedDate: moment(_today).format('LL') }, () => { this.callReportApi() })
+        if (filterLabel === 'Weekly') this.setState({ selectedDate: moment(_today).startOf('isoWeek').format('LL') + ' - ' + moment(_today).endOf('isoWeek').format('YYYY-MM-DD') }, () => { this.callReportApi() })
         if (filterLabel === 'Monthly') this.setState({ selectedDate: months[selectedMonth - 1] + ' ' + selectedYear }, () => { this.callReportApi() })
         if (filterLabel === 'Yearly') this.setState({ selectedDate: selectedYear }, () => { this.callReportApi() })
         if (filterLabel === 'Quarterly') {
@@ -472,18 +471,30 @@ class CMReport extends React.Component {
     }
 
     closeFilters = () => {
-        this.setState({
-            showRegionFilter: false,
-            showAgentFilter: false,
-            showZoneFilter: false,
-            regionText: 'Graana',
-            showOrganizationFilter: false,
-            footerLabel: 'Organization',
-            selectedOrganization: 2
-        }, () => {
-            this.emptyFilters()
-            this.callReportApi()
-        })
+        const { backCheck } = this.state
+
+        if (backCheck) {
+            this.setState({
+                showRegionFilter: false,
+                showAgentFilter: false,
+                showZoneFilter: false,
+                showOrganizationFilter: false,
+            })
+        }
+        else {
+            this.setState({
+                showRegionFilter: false,
+                showAgentFilter: false,
+                showZoneFilter: false,
+                regionText: 'Graana',
+                showOrganizationFilter: false,
+                footerLabel: 'Organization',
+                selectedOrganization: 2
+            }, () => {
+                this.emptyFilters()
+                this.callReportApi()
+            })
+        }
     }
 
     emptyFilters = () => {
@@ -498,7 +509,7 @@ class CMReport extends React.Component {
 
     openFilter = () => {
         const { footerLabel, showOrganizationFilter } = this.state
-        console.log('footerLabel: ', footerLabel)
+
         if (footerLabel === 'Region') this.openRegionFilter()
         else if (footerLabel === 'Agent') this.openAgentFilter()
         else if (footerLabel === 'Team') this.openZoneFilter()
@@ -507,7 +518,7 @@ class CMReport extends React.Component {
 
     render() {
         const { loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
-        const width = Dimensions.get('window').width - 25
+        const width = Dimensions.get('window').width - 5
         const height = 220
         let chartConfig = {
             backgroundColor: "white",
@@ -518,7 +529,7 @@ class CMReport extends React.Component {
             labelColor: (opacity = 1) => `black`,
             style: {
                 borderRadius: 16,
-                borderWidth: 0.5,
+                borderWidth: 0,
                 borderColor: AppStyles.colors.subTextColor
             },
             propsForDots: {
@@ -551,7 +562,7 @@ class CMReport extends React.Component {
                 <View style={styles.inputView}>
                     <View style={styles.regionStyle}>
                         <View style={styles.textView}>
-                            <Text style={styles.textStyle}>{regionText}</Text>
+                            <Text numberOfLines={1} style={styles.textStyle}>{regionText}</Text>
                         </View>
                         {
                             footerLabel !== 'Organization' ?
@@ -565,7 +576,7 @@ class CMReport extends React.Component {
                     </View>
                     <View style={styles.dateView}>
                         <View style={styles.textView}>
-                            <Text style={styles.textStyle}>{selectedDate}</Text>
+                            <Text numberOfLines={1} style={styles.textStyle}>{selectedDate}</Text>
                         </View>
                         <TouchableOpacity style={styles.inputBtn} onPress={() => this.showDate()}>
                             <Image source={calendarImg} style={styles.calendarImg} />
@@ -586,33 +597,40 @@ class CMReport extends React.Component {
                 {
                     !loading ?
                         <ScrollView style={styles.scrollContainer}>
-                            {
-                                filterLabel === 'Daily' ?
-                                    <RectangleDaily targetNumber={dashBoardData.revenue}/>
-                                    :
-                                    <RectangleContainer targetPercent={60} targetNumber={dashBoardData.revenue} totalTarget={dashBoardData.totalTarget} />
-                            }
-                            <View style={styles.sqaureView}>
-                                <SquareContainer containerStyle={styles.squareRight} imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
-                                <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                            <View style={{
+                            }}>
+
+
+                                {
+                                    filterLabel === 'Daily' ?
+                                        <RectangleDaily targetNumber={dashBoardData.revenue} />
+                                        :
+                                        <RectangleContainer targetPercent={60} targetNumber={dashBoardData.revenue} totalTarget={dashBoardData.totalTarget} />
+                                }
+                                <View style={styles.sqaureView}>
+                                    <SquareContainer containerStyle={styles.squareRight} imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
+                                    <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                                </View>
+                                <View style={styles.sqaureView}>
+                                    <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
+                                    <SquareContainer imagePath={amountPendingImg} label={'Amount Pending'} total={dashBoardData.pendingAmount} />
+                                </View>
+                                <View style={{}}>
+                                    <BarChart
+                                        useShadowColorFromDataset={true}
+                                        withInnerLines={false}
+                                        withDots={false}
+                                        fromZero={true}
+                                        withHorizontalLabels={true}
+                                        showBarTops={true}
+                                        width={width}
+                                        height={height}
+                                        data={graph}
+                                        chartConfig={chartConfig}
+                                        style={graphStyle}
+                                    />
+                                </View>
                             </View>
-                            <View style={styles.sqaureView}>
-                                <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
-                                <SquareContainer imagePath={amountPendingImg} label={'Amount Pending'} total={dashBoardData.pendingAmount} />
-                            </View>
-                            <BarChart
-                                useShadowColorFromDataset={true}
-                                withInnerLines={false}
-                                withDots={false}
-                                fromZero={true}
-                                withHorizontalLabels={true}
-                                showBarTops={true}
-                                width={width}
-                                height={height}
-                                data={graph}
-                                chartConfig={chartConfig}
-                                style={graphStyle}
-                            />
                         </ScrollView>
                         :
                         <Loader loading={loading} />

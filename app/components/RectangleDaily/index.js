@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
         resizeMode: 'contain'
     },
     squareContainer: {
+        marginHorizontal: 10,
         flex: 1,
         height: 160,
         borderRadius: 20,

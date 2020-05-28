@@ -3,6 +3,7 @@ import { Image, Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import AppStyles from '../../AppStyles';
 import { LinearGradient } from 'expo-linear-gradient';
+import { formatPrice } from '../../PriceFormate'
 
 let start = { x: 0, y: 1 }
 let end = { x: 1, y: 0 }
@@ -26,7 +27,7 @@ class SqaureContainer extends React.Component {
                     <Image source={imagePath} style={styles.containerImg} />
                 </View>
                 <View style={styles.headView}>
-                    <Text style={styles.totalText}>{total ? total : 0}</Text>
+                    <Text style={styles.totalText}>{total ? formatPrice(total) : formatPrice(0)}</Text>
                     <Text style={styles.headingText}>{label}</Text>
                 </View>
             </LinearGradient>

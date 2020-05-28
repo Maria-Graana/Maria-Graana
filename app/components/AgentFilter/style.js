@@ -15,6 +15,7 @@ export default styles = StyleSheet.create({
     headerView: {
         flexDirection: 'row',
         marginHorizontal: 15,
+        marginVertical: Platform.OS === 'android' ? 15 : 0
     },
     headerStyle: {
         flex: 1,

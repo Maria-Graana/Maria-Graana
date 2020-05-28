@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import AppStyles from '../../AppStyles';
 import { LinearGradient } from 'expo-linear-gradient';
+import { formatPrice } from '../../PriceFormate'
 
 let start = { x: 0, y: 1 }
 let end = { x: 1, y: 0 }
@@ -31,11 +32,11 @@ class RectangleContainer extends React.Component {
                 <View style={AppStyles.mb1}>
                     <View style={styles.achievedView}>
                         <Text style={[styles.headingText]}>Revenue</Text>
-                        <Text style={styles.headingNumber}>{targetNumber ? targetNumber : 0}</Text>
+                        <Text style={styles.headingNumber}>{targetNumber ? formatPrice(targetNumber) : formatPrice(0)}</Text>
                     </View>
                     <View style={styles.totalView}>
                         <Text style={[styles.headingText]}>Target</Text>
-                        <Text style={styles.headingNumber}>{totalTarget ? totalTarget : 0}</Text>
+                        <Text style={styles.headingNumber}>{totalTarget ? formatPrice(totalTarget) : formatPrice(0)}</Text>
                     </View>
                 </View>
             </LinearGradient>
@@ -89,6 +90,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginVertical: 5,
         flexDirection: "row",
+        marginHorizontal: 10,
     },
     containerImg: {
         marginHorizontal: 15,

@@ -38,7 +38,7 @@ class ZoneFilter extends React.Component {
                                 <Image source={backArrow} style={[styles.backImg]} />
                             </TouchableOpacity>
                             <View style={styles.headerStyle}>
-                                <Text style={styles.headerText}>SELECT ZONE</Text>
+                                <Text style={styles.headerText}>SELECT ZONE/BRANCH</Text>
                             </View>
                         </View>
                         <View style={styles.pad5}>

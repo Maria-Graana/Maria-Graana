@@ -41,7 +41,7 @@ class RCMReport extends React.Component {
         this.state = {
             backCheck: false,
             loading: true,
-            // graph: _.clone(StaticData.rcmBarCharData),
+            lastLabel: 'Organization',
             dashBoardData: {
                 clientsAdded: 0,
                 totalLeadsAdded: 0,
@@ -150,7 +150,6 @@ class RCMReport extends React.Component {
 
     fetchReport = (url) => {
         this.setState({ loading: true })
-        console.log(url)
         axios.get(url)
             .then((res) => {
                 this.graphData(res.data)
@@ -305,10 +304,14 @@ class RCMReport extends React.Component {
 
     handleAgentForm = (value, name) => {
         const { agentFormData } = this.state
-        let x = _.clone(agentFormData)
-        x[name] = value
-        agentFormData[name] = value
-        this.setState({ agentFormData: x })
+        let agentData = _.clone(agentFormData)
+        if (name === 'organization') {
+            agentData.region = ''
+            agentData.zone = ''
+            agentData.agent = ''
+        }
+        agentData[name] = value
+        this.setState({ agentFormData: agentData })
     }
 
     submitAgentFilter = () => {
@@ -348,6 +351,10 @@ class RCMReport extends React.Component {
     handleZoneForm = (value, name) => {
         const { zoneFormData } = this.state
         zoneFormData[name] = value
+        if (name === 'organization') {
+            zoneFormData.region = ''
+            zoneFormData.zone = ''
+        }
         if (name === 'region') zoneFormData.zone = '';
         this.setState({ zoneFormData })
     }
@@ -389,6 +396,7 @@ class RCMReport extends React.Component {
     handleRegionForm = (value, name) => {
         const { regionFormData } = this.state
         regionFormData[name] = value
+        if (name === 'organization') regionFormData.region = ''
         this.setState({ regionFormData })
     }
 
@@ -464,7 +472,7 @@ class RCMReport extends React.Component {
 
     // *********************** Footer Checks ******************************
 
-    selectedFooterButton = (label) => { this.setState({ footerLabel: label, regionText: '', backCheck: false }, () => { this.emptyFilters(); this.defaultDates(), this.openFilter() }) }
+    selectedFooterButton = (label) => { this.setState({ lastLabel: this.state.footerLabel, footerLabel: label, backCheck: false }, () => { this.openFilter() }) }
 
     // <<<<<<<<<<<<<<<<<<<<<<< Date Checks >>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -519,7 +527,7 @@ class RCMReport extends React.Component {
     }
 
     closeFilters = () => {
-        const { backCheck } = this.state
+        const { backCheck, lastLabel, regionText } = this.state
 
         if (backCheck) {
             this.setState({
@@ -534,9 +542,9 @@ class RCMReport extends React.Component {
                 showRegionFilter: false,
                 showAgentFilter: false,
                 showZoneFilter: false,
-                regionText: 'Graana',
+                regionText: regionText,
+                footerLabel: lastLabel,
                 showOrganizationFilter: false,
-                footerLabel: 'Organization',
                 selectedOrganization: 2
             }, () => {
                 this.emptyFilters()

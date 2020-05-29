@@ -236,7 +236,7 @@ function MainStack() {
             />
             <Stack.Screen name='Dashboard' component={Dashboard}
                 options={({ navigation, route }) => ({
-                    title: 'DASHBOARDS',
+                    title: 'DASHBOARD',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

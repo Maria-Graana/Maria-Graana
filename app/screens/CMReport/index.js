@@ -41,6 +41,7 @@ class CMReport extends React.Component {
         this.state = {
             backCheck: false,
             loading: true,
+            lastLabel: 'Organization',
             graph: StaticData.barCharData,
             dashBoardData: {
                 clientsAdded: 0,
@@ -49,7 +50,7 @@ class CMReport extends React.Component {
                 pendingAmount: 0,
                 leadSigned: []
             },
-            graphLabels: ['open', 'called', 'meeting', 'payment', 'closed_won', 'closed_lost'],
+            graphLabels: ['open', 'called', 'meeting', 'token', 'payment', 'closed_won', 'closed_lost'],
             organizationValues: { 1: 'Agency21', 2: 'Graana' },
             showOrganizationFilter: false,
             quarters: [{ value: 1, name: 'Q1', fromDate: '01-01', toDate: '03-31' }, { value: 2, name: 'Q2', fromDate: '04-01', toDate: '06-30' }, { value: 3, name: 'Q3', fromDate: '07-01', toDate: '09-30' }, { value: 4, name: 'Q4', fromDate: '09-01', toDate: '12-31' }],
@@ -129,7 +130,7 @@ class CMReport extends React.Component {
             this.setState({ graph })
         }
         else {
-            graph.datasets[0].data = [0, 0, 0, 0, 0, 0]
+            graph.datasets[0].data = [0, 0, 0, 0, 0, 0, 0]
             this.setState({ graph: _.clone(StaticData.barCharData) })
         }
     }
@@ -150,7 +151,6 @@ class CMReport extends React.Component {
 
     fetchReport = (url) => {
         this.setState({ loading: true })
-        console.log(url)
         axios.get(url)
             .then((res) => {
                 this.graphData(res.data)
@@ -306,10 +306,14 @@ class CMReport extends React.Component {
 
     handleAgentForm = (value, name) => {
         const { agentFormData } = this.state
-        let x = _.clone(agentFormData)
-        x[name] = value
-        agentFormData[name] = value
-        this.setState({ agentFormData: x })
+        let agentData = _.clone(agentFormData)
+        if (name === 'organization') {
+            agentData.region = ''
+            agentData.zone = ''
+            agentData.agent = ''
+        }
+        agentData[name] = value
+        this.setState({ agentFormData: agentData })
     }
 
     submitAgentFilter = () => {
@@ -349,7 +353,11 @@ class CMReport extends React.Component {
     handleZoneForm = (value, name) => {
         const { zoneFormData } = this.state
         zoneFormData[name] = value
-        if (name === 'region') zoneFormData.zone = '';
+        if (name === 'organization') {
+            zoneFormData.region = ''
+            zoneFormData.zone = ''
+        }
+        if (name === 'region') zoneFormData.zone = ''
         this.setState({ zoneFormData })
     }
 
@@ -390,6 +398,7 @@ class CMReport extends React.Component {
     handleRegionForm = (value, name) => {
         const { regionFormData } = this.state
         regionFormData[name] = value
+        if (name === 'organization') regionFormData.region = ''
         this.setState({ regionFormData })
     }
 
@@ -465,7 +474,7 @@ class CMReport extends React.Component {
 
     // *********************** Footer Checks ******************************
 
-    selectedFooterButton = (label) => { this.setState({ footerLabel: label, regionText: '', backCheck: false }, () => { this.emptyFilters(); this.defaultDates(), this.openFilter() }) }
+    selectedFooterButton = (label) => { this.setState({ lastLabel: this.state.footerLabel, footerLabel: label, backCheck: false, checkValidation: false }, () => { this.openFilter() }) }
 
     // <<<<<<<<<<<<<<<<<<<<<<< Date Checks >>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -520,7 +529,7 @@ class CMReport extends React.Component {
     }
 
     closeFilters = () => {
-        const { backCheck } = this.state
+        const { backCheck, lastLabel, regionText } = this.state
 
         if (backCheck) {
             this.setState({
@@ -535,12 +544,11 @@ class CMReport extends React.Component {
                 showRegionFilter: false,
                 showAgentFilter: false,
                 showZoneFilter: false,
-                regionText: 'Graana',
                 showOrganizationFilter: false,
-                footerLabel: 'Organization',
+                regionText: regionText,
+                footerLabel: lastLabel,
                 selectedOrganization: 2
             }, () => {
-                this.emptyFilters()
                 this.callReportApi()
             })
         }

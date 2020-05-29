@@ -357,9 +357,10 @@ export default StaticData = {
         { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
     ],
     barCharData: {
-        labels: ['Open', 'Call', 'Meeting', 'Payment', 'Won', 'Lost'],
+        labels: ['Open', 'Call', 'Meeting', 'Token', 'Payment', 'Won', 'Lost'],
         datasets: [{
             data: [
+                0,
                 0,
                 0,
                 0,

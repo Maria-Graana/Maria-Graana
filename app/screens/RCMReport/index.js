@@ -94,7 +94,8 @@ class RCMReport extends React.Component {
             },
             fromDate: moment(_today).format(_format),
             toDate: moment(_today).format(_format),
-            organizations: []
+            organizations: [],
+            graphLabels: ['open', 'viewing', 'offer', 'propsure', 'token', 'payment', 'closed_won', 'closed_lost']
         }
     }
 
@@ -105,15 +106,32 @@ class RCMReport extends React.Component {
     }
 
     graphData = (data) => {
-        // let graph = StaticData.rcmBarCharData
-        // console.log('StaticData.rcmBarCharData: ', StaticData.rcmBarCharData)
-        // let leadSigned = data.leadSigned || []
-        // console.log('leadSigned.length: ', leadSigned.length)
-        // if (leadSigned.length) {
-        //     // graph.datasets[0].data = [leadSigned[2].totalDeals, leadSigned[0].totalDeals, leadSigned[4].totalDeals, 0, leadSigned[6].totalDeals, leadSigned[5].totalDeals,]
-        //     // this.setState({ graph })
-        // }
-        // else this.setState({ graph })
+        const { graphLabels } = this.state
+        let graph = _.clone(StaticData.rcmBarCharData)
+        let leadSigned = data.leadSigned || []
+        let dataSets = []
+        let labelCheck = false
+        if (leadSigned.length) {
+            for (let label of graphLabels) {
+                labelCheck = false
+                for (let item of leadSigned) {
+                    if (item.status === label) {
+                        labelCheck = true
+                        dataSets.push(item.totalDeals)
+                        break
+                    }
+                }
+                if (!labelCheck) {
+                    dataSets.push(0)
+                }
+            }
+            graph.datasets[0].data = dataSets
+            this.setState({ graph })
+        }
+        else {
+            graph.datasets[0].data = [0, 0, 0, 0, 0, 0, 0, 0]
+            this.setState({ graph })
+        }
     }
 
     // <<<<<<<<<<<<<<<<<<<<<<< Fetch API's >>>>>>>>>>>>>>>>>>>>>>>>>
@@ -132,7 +150,7 @@ class RCMReport extends React.Component {
 
     fetchReport = (url) => {
         this.setState({ loading: true })
-
+        console.log(url)
         axios.get(url)
             .then((res) => {
                 this.graphData(res.data)
@@ -294,14 +312,14 @@ class RCMReport extends React.Component {
     }
 
     submitAgentFilter = () => {
-        const { agentFormData, regions, zones, agents } = this.state
+        const { agentFormData, regions, zones, agents, organizationValues } = this.state
         if (!agentFormData.organization || !agentFormData.region || !agentFormData.zone || !agentFormData.agent) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === agentFormData.region })
             let zone = _.find(zones, function (item) { return item.value === agentFormData.zone })
             let agent = _.find(agents, function (item) { return item.value === agentFormData.agent })
 
-            this.setState({ backCheck: true, showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + agentFormData.organization })
+            this.setState({ backCheck: true, showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + organizationValues[agentFormData.organization] })
             this.agentUrl()
         }
     }
@@ -335,13 +353,13 @@ class RCMReport extends React.Component {
     }
 
     submitZoneFilter = () => {
-        const { zoneFormData, regions, zones } = this.state
+        const { zoneFormData, regions, zones, organizationValues } = this.state
         if (!zoneFormData.organization || !zoneFormData.region || !zoneFormData.zone) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === zoneFormData.region })
             let zone = _.find(zones, function (item) { return item.value === zoneFormData.zone })
 
-            this.setState({ backCheck: true, showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + zoneFormData.organization })
+            this.setState({ backCheck: true, showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + organizationValues[zoneFormData.organization] })
             this.teamUrl()
         }
     }
@@ -375,11 +393,11 @@ class RCMReport extends React.Component {
     }
 
     submitRegionFilter = () => {
-        const { regionFormData, regions } = this.state
+        const { regionFormData, regions, organizationValues } = this.state
         if (!regionFormData.organization || !regionFormData.region) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === regionFormData.region })
-            this.setState({ backCheck: true, showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + regionFormData.organization })
+            this.setState({ backCheck: true, showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + organizationValues[regionFormData.organization] })
             this.regionUrl()
         }
     }
@@ -430,15 +448,15 @@ class RCMReport extends React.Component {
         const { selectedOrganization, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
 
-        if (filterLabel === 'Monthly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
-        if (filterLabel === 'Daily') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
-        if (filterLabel === 'Yearly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
-        if (filterLabel === 'Weekly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
+        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
+        if (filterLabel === 'Daily') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+        if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
+        if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
         if (filterLabel === 'Quarterly') {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
             this.setState({ selectedDate: quarter.name + ', ' + selectedYear, selectedQuarter: newQaurter })
-            url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
+            url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
         }
 
         this.fetchReport(url)
@@ -548,8 +566,8 @@ class RCMReport extends React.Component {
 
     render() {
         const { organizationFormData, loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
-        const width = Dimensions.get('window').width - 25
-        const height = 220
+        const width = 500
+        const height = 250
         let chartConfig = {
             backgroundColor: "white",
             backgroundGradientFrom: "white",
@@ -561,12 +579,12 @@ class RCMReport extends React.Component {
                 backgroundGradientFrom: "#fb8c00",
                 borderRadius: 16,
                 borderWidth: 0,
-                borderColor: AppStyles.colors.subTextColor
+                borderColor: AppStyles.colors.subTextColor,
             },
             propsForLabels: {
                 fontSize: "11",
-                paddingRight: 10,
-                marginRight: 10
+                // paddingRight: 10,
+                // marginRight: 10
             },
             propsForDots: {
                 r: "0",
@@ -642,23 +660,27 @@ class RCMReport extends React.Component {
                                     <SquareContainer containerStyle={styles.squareRight} imagePath={viewingConductedImg} label={'Viewings Conducted'} total={dashBoardData.viewingConducted} />
                                     <SquareContainer imagePath={viewingOverdueImg} label={'Viewings Overdue'} total={dashBoardData.viewingOverdue} />
                                 </View>
-                                <BarChart
-                                    decimalPlaces={0.1}
-                                    verticalLabelRotation={30}
-                                    showValuesOnTopOfBars={true}
-                                    useShadowColorFromDataset={true}
-                                    withInnerLines={false}
-                                    withDots={false}
-                                    fromZero={true}
-                                    withHorizontalLabels={true}
-                                    showBarTops={true}
-                                    width={width}
-                                    height={height}
-                                    data={StaticData.rcmBarCharData}
-                                    chartConfig={chartConfig}
-                                    style={graphStyle}
-                                />
-
+                                <View style={styles.graphContainer}>
+                                    <Text style={styles.labelStyle}>Total Leads</Text>
+                                    <ScrollView horizontal={true}>
+                                        <BarChart
+                                            decimalPlaces={0.1}
+                                            verticalLabelRotation={30}
+                                            showValuesOnTopOfBars={true}
+                                            useShadowColorFromDataset={true}
+                                            withInnerLines={false}
+                                            withDots={false}
+                                            fromZero={true}
+                                            withHorizontalLabels={true}
+                                            showBarTops={true}
+                                            width={width}
+                                            height={height}
+                                            data={graph}
+                                            chartConfig={chartConfig}
+                                            style={graphStyle}
+                                        />
+                                    </ScrollView>
+                                </View>
                             </View>
                         </ScrollView>
                         :

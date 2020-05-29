@@ -49,6 +49,7 @@ class CMReport extends React.Component {
                 pendingAmount: 0,
                 leadSigned: []
             },
+            graphLabels: ['open', 'called', 'meeting', 'payment', 'closed_won', 'closed_lost'],
             organizationValues: { 1: 'Agency21', 2: 'Graana' },
             showOrganizationFilter: false,
             quarters: [{ value: 1, name: 'Q1', fromDate: '01-01', toDate: '03-31' }, { value: 2, name: 'Q2', fromDate: '04-01', toDate: '06-30' }, { value: 3, name: 'Q3', fromDate: '07-01', toDate: '09-30' }, { value: 4, name: 'Q4', fromDate: '09-01', toDate: '12-31' }],
@@ -105,13 +106,32 @@ class CMReport extends React.Component {
     }
 
     graphData = (data) => {
-        let graph = StaticData.barCharData
+        const { graphLabels } = this.state
+        let graph = _.clone(StaticData.barCharData)
         let leadSigned = data.leadSigned || []
+        let dataSets = []
+        let labelCheck = false
         if (leadSigned.length) {
-            graph.datasets[0].data = [leadSigned[4].totalDeals, leadSigned[5].totalDeals, leadSigned[6].totalDeals, leadSigned[3].totalDeals, leadSigned[2].totalDeals, leadSigned[0].totalDeals]
+            for (let label of graphLabels) {
+                labelCheck = false
+                for (let item of leadSigned) {
+                    if (item.status === label) {
+                        labelCheck = true
+                        dataSets.push(item.totalDeals)
+                        break
+                    }
+                }
+                if (!labelCheck) {
+                    dataSets.push(0)
+                }
+            }
+            graph.datasets[0].data = dataSets
             this.setState({ graph })
         }
-        else this.setState({ graph })
+        else {
+            graph.datasets[0].data = [0, 0, 0, 0, 0, 0]
+            this.setState({ graph: _.clone(StaticData.barCharData) })
+        }
     }
 
     // <<<<<<<<<<<<<<<<<<<<<<< Fetch API's >>>>>>>>>>>>>>>>>>>>>>>>>
@@ -156,13 +176,14 @@ class CMReport extends React.Component {
     fetchZones = (value) => {
         const { zoneFormData, agentFormData } = this.state
         let armsZone = false
-        if (zoneFormData.organization === 'Agency21') armsZone = true
-        axios.get(`/api/areas/zones?status=active&armsZone=true&all=true&regionId=${value}`)
+        if (zoneFormData.organization === 1) armsZone = true
+        if (agentFormData.organization === 1) armsZone = true
+
+        axios.get(`/api/areas/zones?status=active&armsZone=${armsZone}&all=true&regionId=${value}`)
             .then((res) => {
                 let zones = []
                 zoneFormData.zone = ''
                 zoneFormData.agent = ''
-
                 res && res.data.items.length && res.data.items.map((item, index) => { return (zones.push({ value: item.id, name: item.zone_name })) })
                 this.setState({ zones, agents: [], zoneFormData })
             })
@@ -292,14 +313,14 @@ class CMReport extends React.Component {
     }
 
     submitAgentFilter = () => {
-        const { agentFormData, regions, zones, agents } = this.state
+        const { agentFormData, regions, zones, agents, organizationValues } = this.state
         if (!agentFormData.organization || !agentFormData.region || !agentFormData.zone || !agentFormData.agent) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === agentFormData.region })
             let zone = _.find(zones, function (item) { return item.value === agentFormData.zone })
             let agent = _.find(agents, function (item) { return item.value === agentFormData.agent })
 
-            this.setState({ backCheck: true, showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + agentFormData.organization })
+            this.setState({ backCheck: true, showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + organizationValues[agentFormData.organization] })
             this.agentUrl()
         }
     }
@@ -333,13 +354,13 @@ class CMReport extends React.Component {
     }
 
     submitZoneFilter = () => {
-        const { zoneFormData, regions, zones } = this.state
+        const { zoneFormData, regions, zones, organizationValues } = this.state
         if (!zoneFormData.organization || !zoneFormData.region || !zoneFormData.zone) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === zoneFormData.region })
             let zone = _.find(zones, function (item) { return item.value === zoneFormData.zone })
 
-            this.setState({ backCheck: true, showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + zoneFormData.organization })
+            this.setState({ backCheck: true, showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + organizationValues[zoneFormData.organization] })
             this.teamUrl()
         }
     }
@@ -373,11 +394,11 @@ class CMReport extends React.Component {
     }
 
     submitRegionFilter = () => {
-        const { regionFormData, regions } = this.state
+        const { regionFormData, regions, organizationValues } = this.state
         if (!regionFormData.organization || !regionFormData.region) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === regionFormData.region })
-            this.setState({ backCheck: true, showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + regionFormData.organization })
+            this.setState({ backCheck: true, showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + organizationValues[regionFormData.organization] })
             this.regionUrl()
         }
     }
@@ -638,20 +659,23 @@ class CMReport extends React.Component {
                                     <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
                                     <SquareContainer imagePath={amountPendingImg} label={'Amount Pending'} total={dashBoardData.pendingAmount} />
                                 </View>
-                                <View style={{}}>
-                                    <BarChart
-                                        useShadowColorFromDataset={true}
-                                        withInnerLines={false}
-                                        withDots={false}
-                                        fromZero={true}
-                                        withHorizontalLabels={true}
-                                        showBarTops={true}
-                                        width={width}
-                                        height={height}
-                                        data={graph}
-                                        chartConfig={chartConfig}
-                                        style={graphStyle}
-                                    />
+                                <View style={styles.graphContainer}>
+                                    <Text style={styles.labelStyle}>Total Leads</Text>
+                                    <ScrollView horizontal={true}>
+                                        <BarChart
+                                            useShadowColorFromDataset={true}
+                                            withInnerLines={false}
+                                            withDots={false}
+                                            fromZero={true}
+                                            withHorizontalLabels={true}
+                                            showBarTops={true}
+                                            width={width}
+                                            height={height}
+                                            data={graph}
+                                            chartConfig={chartConfig}
+                                            style={graphStyle}
+                                        />
+                                    </ScrollView>
                                 </View>
                             </View>
                         </ScrollView>

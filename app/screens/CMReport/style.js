@@ -59,6 +59,7 @@ export default styles = StyleSheet.create({
         height: 50,
         padding: 10,
         zIndex: 15,
+        marginVertical: 5,
         shadowOffset: { width: 5, height: 5 },
         shadowColor: 'lightgrey',
         shadowOpacity: 1,
@@ -104,5 +105,17 @@ export default styles = StyleSheet.create({
         width: 20,
         height: 20,
         marginVertical: 3
+    },
+    graphContainer: {
+        borderWidth: 1,
+        marginHorizontal: 10,
+        borderRadius: 10,
+        borderColor: AppStyles.colors.subTextColor,
+        marginVertical: 5
+    },
+    labelStyle: {
+        marginHorizontal: 10,
+        fontFamily: AppStyles.fonts.semiBoldFont,
+        fontSize: 14
     }
 });

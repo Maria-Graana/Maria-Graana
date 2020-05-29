@@ -22,7 +22,7 @@
     ],
     "ios": {
       "bundleIdentifier": "com.agency21.realtor",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false

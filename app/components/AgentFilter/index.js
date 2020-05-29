@@ -15,6 +15,7 @@ import PickerComponent from '../Picker/index';
 import styles from './style';
 import { Button } from 'native-base';
 import ErrorMessage from '../ErrorMessage/index';
+import _ from 'underscore'
 
 class AgentFilter extends React.Component {
     constructor(props) {
@@ -43,25 +44,25 @@ class AgentFilter extends React.Component {
                             </View>
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent selectedItem={formData.organization} onValueChange={(text) => { handleAgentForm(text, 'organization') }} data={organizations} placeholder='Organization' />
+                            <PickerComponent clearOnChange={true} selectedItem={formData.organization} onValueChange={(text) => { handleAgentForm(text, 'organization') }} data={organizations} placeholder='Organization' />
                             {
                                 checkValidation === true && formData.organization === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent selectedItem={formData.region} onValueChange={(text) => { handleAgentForm(text, 'region'); fetchZones(text) }} data={regions} placeholder='Region' />
+                            <PickerComponent clearOnChange={true} selectedItem={_.clone(formData.region)} onValueChange={(text) => { handleAgentForm(text, 'region'); fetchZones(text) }} data={regions} placeholder='Region' />
                             {
                                 checkValidation === true && formData.region === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent selectedItem={formData.zone} onValueChange={(text) => { handleAgentForm(text, 'zone'); fetchAgents(text) }} data={zones} placeholder='Zone/Branch' />
+                            <PickerComponent clearOnChange={true} selectedItem={formData.zone} onValueChange={(text) => { handleAgentForm(text, 'zone'); fetchAgents(text) }} data={zones} placeholder='Zone/Branch' />
                             {
                                 checkValidation === true && formData.zone === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent selectedItem={formData.agent} onValueChange={(text) => { handleAgentForm(text, 'agent') }} data={agents} placeholder='Agents' />
+                            <PickerComponent clearOnChange={true} selectedItem={formData.agent} onValueChange={(text) => { handleAgentForm(text, 'agent') }} data={agents} placeholder='Agents' />
                             {
                                 checkValidation === true && formData.agent === '' && <ErrorMessage errorMessage={'Required'} />
                             }

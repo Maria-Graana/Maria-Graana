@@ -42,19 +42,19 @@ class ZoneFilter extends React.Component {
                             </View>
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent selectedItem={formData.organization} onValueChange={(text) => { handleZoneForm(text, 'organization') }} data={organizations} placeholder='Organization' />
+                            <PickerComponent clearOnChange={true} selectedItem={formData.organization} onValueChange={(text) => { handleZoneForm(text, 'organization') }} data={organizations} placeholder='Organization' />
                             {
                                 checkValidation === true && formData.organization === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent selectedItem={formData.region} onValueChange={(text) => { handleZoneForm(text, 'region'); fetchZones(text) }} data={regions} placeholder='Region' />
+                            <PickerComponent clearOnChange={true} selectedItem={formData.region} onValueChange={(text) => { handleZoneForm(text, 'region'); fetchZones(text) }} data={regions} placeholder='Region' />
                             {
                                 checkValidation === true && formData.region === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent selectedItem={formData.zone} onValueChange={(text) => { handleZoneForm(text, 'zone') }} data={zones} placeholder='Zone/Branch' />
+                            <PickerComponent clearOnChange={true} selectedItem={formData.zone} onValueChange={(text) => { handleZoneForm(text, 'zone') }} data={zones} placeholder='Zone/Branch' />
                             {
                                 checkValidation === true && formData.zone === '' && <ErrorMessage errorMessage={'Required'} />
                             }

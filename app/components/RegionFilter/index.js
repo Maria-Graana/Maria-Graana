@@ -42,13 +42,13 @@ class RegionFilter extends React.Component {
                             </View>
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent selectedItem={formData.organization} onValueChange={(text) => { handleRegionForm(text, 'organization') }} data={organizations} placeholder='Organization' />
+                            <PickerComponent clearOnChange={true} selectedItem={formData.organization} onValueChange={(text) => { handleRegionForm(text, 'organization') }} data={organizations} placeholder='Organization' />
                             {
                                 checkValidation === true && formData.organization === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent selectedItem={formData.region} onValueChange={(text) => { handleRegionForm(text, 'region') }} data={regions} placeholder='Region' />
+                            <PickerComponent clearOnChange={true} selectedItem={formData.region} onValueChange={(text) => { handleRegionForm(text, 'region') }} data={regions} placeholder='Region' />
                             {
                                 checkValidation === true && formData.region === '' && <ErrorMessage errorMessage={'Required'} />
                             }

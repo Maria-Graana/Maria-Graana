@@ -175,13 +175,12 @@ class RCMReport extends React.Component {
     fetchZones = (value) => {
         const { zoneFormData, agentFormData } = this.state
         let armsZone = false
-        if (zoneFormData.organization === 'Agency21') armsZone = true
-        axios.get(`/api/areas/zones?status=active&armsZone=true&all=true&regionId=${value}`)
+        if (zoneFormData.organization === 1) armsZone = true
+        if (agentFormData.organization === 1) armsZone = true
+
+        axios.get(`/api/areas/zones?status=active&armsZone=${armsZone}&all=true&regionId=${value}`)
             .then((res) => {
                 let zones = []
-                zoneFormData.zone = ''
-                zoneFormData.agent = ''
-
                 res && res.data.items.length && res.data.items.map((item, index) => { return (zones.push({ value: item.id, name: item.zone_name })) })
                 this.setState({ zones, agents: [], zoneFormData })
             })
@@ -191,13 +190,11 @@ class RCMReport extends React.Component {
     }
 
     fetchAgents = (zone) => {
-        const { agentFormData } = this.state
         axios.get(`/api/user/agents?zoneId=${zone}`)
             .then((res) => {
                 let agents = []
-                agentFormData.agent = ''
                 res && res.data.length && res.data.map((item, index) => { return (agents.push({ value: item.id, name: item.firstName + ' ' + item.lastName })) })
-                this.setState({ agents, agentFormData })
+                this.setState({ agents })
             })
             .catch((error) => {
                 console.log(error)
@@ -304,14 +301,13 @@ class RCMReport extends React.Component {
 
     handleAgentForm = (value, name) => {
         const { agentFormData } = this.state
-        let agentData = _.clone(agentFormData)
         if (name === 'organization') {
-            agentData.region = ''
-            agentData.zone = ''
-            agentData.agent = ''
+            agentFormData.region = ''
+            agentFormData.zone = ''
+            agentFormData.agent = ''
         }
-        agentData[name] = value
-        this.setState({ agentFormData: agentData })
+        agentFormData[name] = value
+        this.setState({ agentFormData })
     }
 
     submitAgentFilter = () => {

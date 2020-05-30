@@ -49,7 +49,6 @@ class RCMReport extends React.Component {
                 pendingAmount: 0,
                 leadSigned: []
             },
-            organizationValues: { 1: 'Agency21', 2: 'Graana' },
             showOrganizationFilter: false,
             quarters: [{ value: 1, name: 'Q1', fromDate: '01-01', toDate: '03-31' }, { value: 2, name: 'Q2', fromDate: '04-01', toDate: '06-30' }, { value: 3, name: 'Q3', fromDate: '07-01', toDate: '09-30' }, { value: 4, name: 'Q4', fromDate: '09-01', toDate: '12-31' }],
             months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
@@ -172,11 +171,14 @@ class RCMReport extends React.Component {
             })
     }
 
-    fetchZones = (value) => {
+    fetchZones = (value, check) => {
         const { zoneFormData, agentFormData } = this.state
         let armsZone = false
-        if (zoneFormData.organization === 1) armsZone = true
-        if (agentFormData.organization === 1) armsZone = true
+        let org = {}
+
+        if (check === 'zone') org = this.organizationName(zoneFormData.organization)
+        if (check === 'agent') org = this.organizationName(agentFormData.organization)
+        if (org.name === 'Agency21') armsZone = true
 
         axios.get(`/api/areas/zones?status=active&armsZone=${armsZone}&all=true&regionId=${value}`)
             .then((res) => {
@@ -311,14 +313,14 @@ class RCMReport extends React.Component {
     }
 
     submitAgentFilter = () => {
-        const { agentFormData, regions, zones, agents, organizationValues } = this.state
+        const { agentFormData, regions, zones, agents } = this.state
         if (!agentFormData.organization || !agentFormData.region || !agentFormData.zone || !agentFormData.agent) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === agentFormData.region })
             let zone = _.find(zones, function (item) { return item.value === agentFormData.zone })
             let agent = _.find(agents, function (item) { return item.value === agentFormData.agent })
-
-            this.setState({ backCheck: true, showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + organizationValues[agentFormData.organization] })
+            let org = this.organizationName(agentFormData.organization)
+            this.setState({ backCheck: true, showAgentFilter: false, checkValidation: false, regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + org.name })
             this.agentUrl()
         }
     }
@@ -356,13 +358,13 @@ class RCMReport extends React.Component {
     }
 
     submitZoneFilter = () => {
-        const { zoneFormData, regions, zones, organizationValues } = this.state
+        const { zoneFormData, regions, zones } = this.state
         if (!zoneFormData.organization || !zoneFormData.region || !zoneFormData.zone) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === zoneFormData.region })
             let zone = _.find(zones, function (item) { return item.value === zoneFormData.zone })
-
-            this.setState({ backCheck: true, showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + organizationValues[zoneFormData.organization] })
+            let org = this.organizationName(zoneFormData.organization)
+            this.setState({ backCheck: true, showZoneFilter: false, checkValidation: false, regionText: zone.name + ', ' + region.name + ', ' + org.name })
             this.teamUrl()
         }
     }
@@ -397,11 +399,12 @@ class RCMReport extends React.Component {
     }
 
     submitRegionFilter = () => {
-        const { regionFormData, regions, organizationValues } = this.state
+        const { regionFormData, regions } = this.state
         if (!regionFormData.organization || !regionFormData.region) { this.setState({ checkValidation: true }) }
         else {
             let region = _.find(regions, function (item) { return item.value === regionFormData.region })
-            this.setState({ backCheck: true, showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + organizationValues[regionFormData.organization] })
+            let org = this.organizationName(regionFormData.organization)
+            this.setState({ backCheck: true, showRegionFilter: false, checkValidation: false, regionText: region.name + ', ' + org.name })
             this.regionUrl()
         }
     }
@@ -428,6 +431,8 @@ class RCMReport extends React.Component {
 
     openOrganizationFilter = () => { this.setState({ showOrganizationFilter: true }) }
 
+    organizationName = (value) => { return _.find(this.state.organizations, function (item) { return item.value === value }) }
+
     handleOrganizationForm = (value, name) => {
         const { organizationFormData } = this.state
         organizationFormData[name] = value
@@ -436,12 +441,13 @@ class RCMReport extends React.Component {
     }
 
     submitOrganizationFilter = () => {
-        const { organizationFormData, organizationValues } = this.state
+        const { organizationFormData } = this.state
 
         if (!organizationFormData.organization) { this.setState({ checkValidation: true }) }
         else {
             let value = organizationFormData.organization
-            this.setState({ backCheck: true, regionText: organizationValues[value], showOrganizationFilter: false, selectedOrganization: value }
+            let org = this.organizationName(value)
+            this.setState({ backCheck: true, regionText: org.name, showOrganizationFilter: false, selectedOrganization: value }
                 , () => {
                     this.organizationUrl()
                 })
@@ -499,8 +505,8 @@ class RCMReport extends React.Component {
     checkDate = () => {
         const { filterLabel, selectedYear, selectedMonth, months, quarters } = this.state
 
-        if (filterLabel === 'Daily') this.setState({ selectedDate: moment(_today).format(_format) }, () => { this.callReportApi() })
-        if (filterLabel === 'Weekly') this.setState({ selectedDate: moment(_today).startOf('isoWeek').format('YYYY-MM-DD') + ' - ' + moment(_today).endOf('isoWeek').format('YYYY-MM-DD') }, () => { this.callReportApi() })
+        if (filterLabel === 'Daily') this.setState({ selectedDate: moment(_today).format('LL') }, () => { this.callReportApi() })
+        if (filterLabel === 'Weekly') this.setState({ selectedDate: moment(_today).startOf('isoWeek').format('LL') + ' - ' + moment(_today).endOf('isoWeek').format('LL') }, () => { this.callReportApi() })
         if (filterLabel === 'Monthly') this.setState({ selectedDate: months[selectedMonth - 1] + ' ' + selectedYear }, () => { this.callReportApi() })
         if (filterLabel === 'Yearly') this.setState({ selectedDate: selectedYear }, () => { this.callReportApi() })
         if (filterLabel === 'Quarterly') {
@@ -653,7 +659,7 @@ class RCMReport extends React.Component {
                             <View style={{
                             }}>
                                 <View style={styles.sqaureView}>
-                                    <SquareContainer containerStyle={styles.squareRight} imagePath={comissionRevenueImg} label={'Comission Revenue'} total={dashBoardData.totalRevenue} />
+                                    <SquareContainer containerStyle={styles.squareRight} imagePath={comissionRevenueImg} label={'Commission Revenue'} total={dashBoardData.totalRevenue} />
                                     <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
                                 </View>
                                 <View style={styles.sqaureView}>

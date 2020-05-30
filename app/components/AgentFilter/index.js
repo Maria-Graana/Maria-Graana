@@ -50,7 +50,7 @@ class AgentFilter extends React.Component {
                             }
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent clearOnChange={true} selectedItem={_.clone(formData.region)} onValueChange={(text) => { handleAgentForm(text, 'region'); fetchZones(text) }} data={regions} placeholder='Region' />
+                            <PickerComponent clearOnChange={true} selectedItem={_.clone(formData.region)} onValueChange={(text) => { handleAgentForm(text, 'region'); fetchZones(text, 'agent') }} data={regions} placeholder='Region' />
                             {
                                 checkValidation === true && formData.region === '' && <ErrorMessage errorMessage={'Required'} />
                             }

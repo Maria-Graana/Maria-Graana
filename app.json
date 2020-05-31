@@ -29,7 +29,7 @@
       }
     },
     "android": {
-      "package": "com.agency21.realtor",
+      "package": "com.agency21.arms",
       "versionCode": 1,
       "googleServicesFile": "./google-services.json"
     },

@@ -3,6 +3,7 @@ const role = {
         roles: [
             { role: 'sub_admin 1', access: { v: true, a: true, e: true, d: true } },
             { role: 'sub_admin 2', access: { v: true, a: true, e: true, d: true } },
+            { role: 'admin 3', access: { v: true, a: true, e: true, d: true } },
         ],
     },
     Inventory: {

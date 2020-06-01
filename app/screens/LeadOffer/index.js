@@ -203,53 +203,72 @@ class LeadOffer extends React.Component {
 	}
 
 	checkStatus = (property) => {
-		if (property.agreedOffer.length) {
-			return (
-				<TouchableOpacity
-					style={{
-						backgroundColor: AppStyles.colors.primaryColor,
-						height: 30,
-						borderBottomEndRadius: 10,
-						borderBottomLeftRadius: 10,
-						justifyContent: "center",
-						alignItems: "center"
-					}}
-				>
-					<Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>Agreed Amount: <Text style={{ fontFamily: AppStyles.fonts.defaultFont }}>{property.agreedOffer[0].offer}</Text></Text>
-				</TouchableOpacity >
-			)
-		} else if (property.leadOffers.length) {
-			return (
-				<TouchableOpacity
-					style={{
-						backgroundColor: 'white',
-						height: 30,
-						borderBottomEndRadius: 10,
-						borderBottomLeftRadius: 10,
-						justifyContent: "center",
-						alignItems: "center"
-					}}
-					onPress={() => { this.openChatModal(); this.setProperty(property) }}
-				>
-					<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>View <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>Offers</Text></Text>
-				</TouchableOpacity >
-			)
-		} else {
-			return (
-				<TouchableOpacity
-					style={{
-						backgroundColor: 'white',
-						height: 30,
-						borderBottomEndRadius: 10,
-						borderBottomLeftRadius: 10,
-						justifyContent: "center",
-						alignItems: "center"
-					}}
-					onPress={() => { this.openChatModal(); this.setProperty(property) }}
-				>
-					<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}> PLACE OFFER</Text>
-				</TouchableOpacity >
-			)
+		const {lead} = this.props;
+			if (property.agreedOffer.length) {
+				return (
+					<TouchableOpacity
+						style={{
+							backgroundColor: AppStyles.colors.primaryColor,
+							height: 30,
+							borderBottomEndRadius: 10,
+							borderBottomLeftRadius: 10,
+							justifyContent: "center",
+							alignItems: "center"
+						}}
+					>
+						<Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>Agreed Amount: <Text style={{ fontFamily: AppStyles.fonts.defaultFont }}>{property.agreedOffer[0].offer}</Text></Text>
+					</TouchableOpacity >
+				)
+			} else if (property.leadOffers.length) {
+				return (
+					<TouchableOpacity
+						style={{
+							backgroundColor: 'white',
+							height: 30,
+							borderBottomEndRadius: 10,
+							borderBottomLeftRadius: 10,
+							justifyContent: "center",
+							alignItems: "center"
+						}}
+						onPress={() =>
+							 { 
+								if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
+									helper.leadClosedToast();
+								 }
+								 else{
+									this.openChatModal();
+									this.setProperty(property) 
+								 }
+							
+							}}
+					>
+						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>View <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>Offers</Text></Text>
+					</TouchableOpacity >
+				)
+			} else {
+				return (
+					<TouchableOpacity
+						style={{
+							backgroundColor: 'white',
+							height: 30,
+							borderBottomEndRadius: 10,
+							borderBottomLeftRadius: 10,
+							justifyContent: "center",
+							alignItems: "center"
+						}}
+						onPress={() => {
+							if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
+								helper.leadClosedToast();
+							}
+							else{
+								this.openChatModal(); 
+								this.setProperty(property) 
+							}
+							}}
+					>
+						<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}> PLACE OFFER</Text>
+					</TouchableOpacity >
+				)
 		}
 	}
 

@@ -351,66 +351,79 @@ class LeadMatch extends React.Component {
 
     displayChecks = () => {
         const { showCheckBoxes } = this.state
-        if (showCheckBoxes) {
-            this.unSelectAll()
-        } else {
-            this.setState({
-                armsBol: false,
-                graanaBol: false,
-                agency21Bol: false
-            })
+        const { lead } = this.props.route.params
+        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
+            helper.leadClosedToast();
         }
-        this.setState({ showCheckBoxes: !showCheckBoxes })
+        else {
+            if (showCheckBoxes) {
+                this.unSelectAll()
+            } else {
+                this.setState({
+                    armsBol: false,
+                    graanaBol: false,
+                    agency21Bol: false
+                })
+            }
+            this.setState({ showCheckBoxes: !showCheckBoxes })
+        }
     }
 
     addProperty = (property) => {
         const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-        if (showCheckBoxes) {
-            if (showCheckBoxes) this.changeComBool()
-            let properties = matchData.data.map((item) => {
-                if (item.id === property.id) {
-                    item.checkBox = !item.checkBox
-                    if (item.checkBox) {
-                        this.setState(prevState => ({ selectedProperties: [...prevState.selectedProperties, item] }))
-                    } else {
-                        let propValues = selectedProperties.filter((value) => {
-                            if (value.id === item.id) {
-                                return false
-                            } else {
-                                return true
-                            }
-                        })
-                        this.setState(({ selectedProperties: [...propValues] }))
+        const { lead } = this.props.route.params
+        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
+            helper.leadClosedToast();
+        }
+        else {
+            if (showCheckBoxes) {
+                if (showCheckBoxes) this.changeComBool()
+                let properties = matchData.data.map((item) => {
+                    if (item.id === property.id) {
+                        item.checkBox = !item.checkBox
+                        if (item.checkBox) {
+                            this.setState(prevState => ({ selectedProperties: [...prevState.selectedProperties, item] }))
+                        } else {
+                            let propValues = selectedProperties.filter((value) => {
+                                if (value.id === item.id) {
+                                    return false
+                                } else {
+                                    return true
+                                }
+                            })
+                            this.setState(({ selectedProperties: [...propValues] }))
+                        }
+                        return item
                     }
-                    return item
-                }
-                else {
-                    return item
-                }
-            })
-            let checkCount = _.countBy(properties, function (num) { return num.checkBox ? true : false })
-            if (checkCount.true) {
-                this.setState({
-                    matchData: {
-                        type: organization,
-                        data: properties
-                    },
-                    checkCount: checkCount,
-                    checkAllBoolean: true,
-                    displayButton: true
+                    else {
+                        return item
+                    }
                 })
-            } else {
-                this.setState({
-                    matchData: {
-                        type: organization,
-                        data: properties
-                    },
-                    checkCount: checkCount,
-                    checkAllBoolean: false,
-                    displayButton: false
-                })
+                let checkCount = _.countBy(properties, function (num) { return num.checkBox ? true : false })
+                if (checkCount.true) {
+                    this.setState({
+                        matchData: {
+                            type: organization,
+                            data: properties
+                        },
+                        checkCount: checkCount,
+                        checkAllBoolean: true,
+                        displayButton: true
+                    })
+                } else {
+                    this.setState({
+                        matchData: {
+                            type: organization,
+                            data: properties
+                        },
+                        checkCount: checkCount,
+                        checkAllBoolean: false,
+                        displayButton: false
+                    })
+                }
             }
         }
+
     }
 
     unSelectAll = () => {
@@ -476,7 +489,7 @@ class LeadMatch extends React.Component {
     _onStateChange = ({ open }) => this.setState({ open });
 
     render() {
-        // const { user } = this.props
+        const { lead } = this.props
         const { subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, open } = this.state
 
         return (

@@ -21,7 +21,7 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.agency21.realtor",
+      "bundleIdentifier": "com.agency21.arms",
       "buildNumber": "2",
       "supportsTablet": true,
       "config": {

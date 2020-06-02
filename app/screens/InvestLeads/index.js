@@ -60,7 +60,7 @@ class InvestLeads extends React.Component {
 		})
 	}
 
-	fetchLeads = ( statusFilter) => {
+	fetchLeads = (statusFilter) => {
 
 		const { sort, pageSize, page, leadsData } = this.state
 		this.setState({ loading: true })
@@ -117,7 +117,7 @@ class InvestLeads extends React.Component {
 	changeStatus = (status) => {
 		this.clearStateValues()
 		this.setState({ statusFilter: status, leadsData: [] }, () => {
-		this.fetchLeads(this.state.statusFilter);
+			this.fetchLeads(this.state.statusFilter);
 		})
 	}
 
@@ -196,44 +196,47 @@ class InvestLeads extends React.Component {
 
 						{
 							leadsData && leadsData && leadsData.length > 0 ?
+								<View>
+									<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
+									< FlatList
+										data={leadsData}
+										renderItem={({ item }) => (
 
-								< FlatList
-									data={leadsData}
-									renderItem={({ item }) => (
+											<LeadTile
+												user={user}
+												// key={key}
+												showDropdown={this.showDropdown}
+												dotsDropDown={this.state.dotsDropDown}
+												selectInventory={this.selectInventory}
+												selectedInventory={selectInventory}
+												data={item}
+												dropDownId={dropDownId}
+												unSelectInventory={this.unSelectInventory}
+												goToInventoryForm={this.goToInventoryForm}
+												navigateTo={this.navigateTo}
+												callNumber={this.callNumber}
+											/>
+										)}
+										// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
+										onEndReached={() => {
+											if (leadsData.length < totalLeads) {
+												this.setState({
+													page: this.state.page + 1,
+													onEndReachedLoader: true
+												}, () => {
+													this.fetchLeads(statusFilter);
+												});
+											}
+										}}
+										onEndReachedThreshold={0.5}
+										keyExtractor={(item, index) => this.setKey(index)}
+									/>
+								</View>
 
-										<LeadTile
-											user={user}
-											// key={key}
-											showDropdown={this.showDropdown}
-											dotsDropDown={this.state.dotsDropDown}
-											selectInventory={this.selectInventory}
-											selectedInventory={selectInventory}
-											data={item}
-											dropDownId={dropDownId}
-											unSelectInventory={this.unSelectInventory}
-											goToInventoryForm={this.goToInventoryForm}
-											navigateTo={this.navigateTo}
-											callNumber={this.callNumber}
-										/>
-									)}
-									// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
-									onEndReached={() => {
-										if (leadsData.length < totalLeads) {
-											this.setState({
-												page: this.state.page + 1,
-												onEndReachedLoader: true
-											}, () => {
-												this.fetchLeads(statusFilter);
-											});
-										}
-									}}
-									onEndReachedThreshold={0.5}
-									keyExtractor={(item, index) => this.setKey(index)}
-								/>
 								:
 								<LoadingNoResult loading={loading} />
 						}
-                    <OnLoadMoreComponent onEndReached= {onEndReachedLoader}/>
+
 					</View>
 					<FAB.Group
 						open={open}

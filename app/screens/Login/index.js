@@ -1,7 +1,6 @@
 import { Image, Keyboard, KeyboardAvoidingView, SafeAreaView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { Input, Item, Label } from 'native-base';
 import React, { Component } from 'react';
-
 import AppJson from '../../../app.json';
 import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
@@ -9,6 +8,7 @@ import TouchableButton from '../../components/TouchableButton/index';
 import { connect } from 'react-redux';
 import { setuser } from '../../actions/user';
 import styles from './style';
+import config from '../../config';
 
 class Login extends Component {
 
@@ -69,7 +69,7 @@ class Login extends Component {
 
     render() {
         const { checkValidation, formData, checkLogin,showError } = this.state
-
+        let label = config.channel === 'development' ? 'Dev ' : ''
         return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -120,7 +120,7 @@ class Login extends Component {
                             />
                         </View>
                         <View style={{ alignSelf: 'center', alignItems: 'center' }}>
-                            <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
+                            <Text style={AppStyles.blackInputText}>{label}v{AppJson.expo.version}</Text>
                         </View>
                     </View>
 

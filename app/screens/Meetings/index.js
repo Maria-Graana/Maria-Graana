@@ -90,7 +90,7 @@ class Meetings extends Component {
     } else {
       if (editMeeting === true) {
         let startTime = moment(formData.time, 'LT').format('HH:mm:ss')
-        let endTime = moment(startTime,'LT').add(1, 'hours').format('HH:mm:ss')
+        let endTime = moment(startTime, 'LT').add(1, 'hours').format('HH:mm:ss')
         let startDate = moment(formData.date, 'YYYY-MM-DDLT').format('YYYY-MM-DD')
         let body = {
           date: startDate + 'T' + startTime,
@@ -242,8 +242,9 @@ class Meetings extends Component {
     });
   }
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue,editMeeting } = this.state
+    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue, editMeeting } = this.state
     let leadData = this.props.route.params.lead
+    let leadClosedCheck = this.props.lead.status != 'closed_won'
     return (
       <View style={styles.mainWrapCon}>
         <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -263,6 +264,7 @@ class Meetings extends Component {
                       doneStatus={doneStatus}
                       doneStatusId={doneStatusId}
                       editFunction={this.editFunction}
+                      leadClosedCheck={leadClosedCheck}
                     />
                   )
                 })
@@ -285,19 +287,22 @@ class Meetings extends Component {
           />
 
         </View>
+        {
+          leadClosedCheck &&
+          <View style={[styles.callMeetingBtn]}>
+            <View style={[styles.btnsMainWrap]}>
+              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
+                <Text style={styles.alignCenter}>CALL</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={[styles.btnsMainWrap]}>
+              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
+                <Text style={styles.alignCenter}>ADD MEETING</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        }
 
-        <View style={[styles.callMeetingBtn]}>
-          <View style={[styles.btnsMainWrap]}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
-              <Text style={styles.alignCenter}>CALL</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={[styles.btnsMainWrap]}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
-              <Text style={styles.alignCenter}>ADD MEETING</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
 
 
 
@@ -309,7 +314,7 @@ class Meetings extends Component {
           openModal={this.openModal}
           handleForm={this.handleForm}
           formSubmit={this.formSubmit}
-          editMeeting = {editMeeting}
+          editMeeting={editMeeting}
         />
 
         <MeetingStatusModal

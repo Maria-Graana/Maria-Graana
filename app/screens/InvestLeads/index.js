@@ -65,7 +65,7 @@ class InvestLeads extends React.Component {
 		const { sort, pageSize, page, leadsData } = this.state
 		this.setState({ loading: true })
 		let query = ``
-		query = `/api/leads/projects?status=${this.statestatusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		query = `/api/leads/projects?status=${this.state.statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({

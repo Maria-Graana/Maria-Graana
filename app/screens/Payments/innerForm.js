@@ -61,7 +61,7 @@ class InnerForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={getFloor} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={closedLeadEdit}/>
+              <PickerComponent onValueChange={handleForm} data={getFloor} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={closedLeadEdit} />
             </View>
           </View>
 
@@ -166,7 +166,7 @@ class InnerForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={paymentOptions} name={'paymentType'}  enabled={closedLeadEdit} placeholder='Select Payment Type' selectedItem={formData.paymentType} />
+              <PickerComponent onValueChange={handleForm} data={paymentOptions} name={'paymentType'} enabled={closedLeadEdit} placeholder='Select Payment Type' selectedItem={formData.paymentType} />
             </View>
           </View>
 
@@ -176,7 +176,7 @@ class InnerForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                   <View style={[AppStyles.inputWrap]}>
-                    <PickerComponent onValueChange={handleForm} data={getInstallments}  enabled={closedLeadEdit} name={'instalments'} placeholder='Installment Plan' selectedItem={no_installments} />
+                    <PickerComponent onValueChange={handleForm} data={getInstallments} enabled={closedLeadEdit} name={'instalments'} placeholder='Installment Plan' selectedItem={no_installments} />
                   </View>
                 </View>
 
@@ -245,7 +245,7 @@ class InnerForm extends Component {
                 }
 
 
-                <TouchableOpacity onPress={() => addFullpaymentFields()}>
+                <TouchableOpacity onPress={() => closedLeadEdit == true && addFullpaymentFields()}>
                   <Text style={styles.addMore}>Add More Payments</Text>
                 </TouchableOpacity>
               </View>
@@ -262,17 +262,13 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          {
-            closedLeadEdit == true &&
-            <View style={[AppStyles.mainInputWrap]}>
-              <Button
-                onPress={() => { formSubmit() }}
-                style={[AppStyles.formBtn, styles.addInvenBtn]}>
-                <Text style={AppStyles.btnText}>CLOSE LEAD</Text>
-              </Button>
-            </View>
-          }
-
+          <View style={[AppStyles.mainInputWrap]}>
+            <Button
+              onPress={() => { closedLeadEdit == true && formSubmit() }}
+              style={[AppStyles.formBtn, styles.addInvenBtn]}>
+              <Text style={AppStyles.btnText}>CLOSE LEAD</Text>
+            </Button>
+          </View>
 
         </View>
       </View >

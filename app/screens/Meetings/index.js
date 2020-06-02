@@ -244,7 +244,7 @@ class Meetings extends Component {
   render() {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue, editMeeting } = this.state
     let leadData = this.props.route.params.lead
-    let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won || this.props.lead.status != StaticData.Constants.lead_closed_lost
+    let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     return (
       <View style={styles.mainWrapCon}>
         <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -288,7 +288,7 @@ class Meetings extends Component {
 
         </View>
         {
-          leadClosedCheck &&
+          leadClosedCheck == true &&
           <View style={[styles.callMeetingBtn]}>
             <View style={[styles.btnsMainWrap]}>
               <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>

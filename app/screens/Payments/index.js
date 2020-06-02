@@ -63,12 +63,13 @@ class Payments extends Component {
 			fullPaymentCount: 1,
 			paymentFiledsArray: lead.payment.length > 0 ? lead.payment : [],
 			// checkPaymentTypeValue: ''
-			closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won || this.props.lead.status != StaticData.Constants.lead_closed_lost
+			closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
 		}
 
 	}
 
 	componentDidMount() {
+		console.log(this.state.closedLeadEdit)
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();

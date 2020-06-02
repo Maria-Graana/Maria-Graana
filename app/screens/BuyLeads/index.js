@@ -41,9 +41,9 @@ class BuyLeads extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads('all');
+		this.fetchLeads(this.state.statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads('all');
+			this.fetchLeads(this.state.statusFilter);
 		})
 	}
 
@@ -62,7 +62,7 @@ class BuyLeads extends React.Component {
 		const { sort, pageSize, page, leadsData } = this.state
 		this.setState({ loading: true })
 		let query = ``
-		query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		query = `/api/leads?purpose=sale&status=${this.state.statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({

@@ -356,9 +356,44 @@ export default StaticData = {
         { name: 'Recently Modified First', value: '&order=Desc&field=updatedAt' },
         { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
     ],
+    barCharData: {
+        labels: ['Open', 'Call', 'Meeting', 'Token', 'Payment', 'Won', 'Lost'],
+        datasets: [{
+            data: [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})` // optional
+        }]
+    },
+    rcmBarCharData: {
+        labels: ['Open', 'Viewing', 'Offer', 'Propsure', 'Token', 'Payment', 'Won', 'Lost'],
+        datasets: [{
+            data: [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})` // optional
+        }]
+    },
     paymentOptions: [
         { value: 'full_payment', name: 'Full Payment' },
         { value: 'installments', name: 'Installments' }
-    ]
+    ],
+    Constants:{
+        lead_closed_won: 'closed_won',
+        lead_closed_lost:'closed_lost'
+    }
 }
 

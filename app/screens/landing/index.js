@@ -16,14 +16,14 @@ class Landing extends React.Component {
 		this.state = {
 			tiles: [],
 			maxTiles: 3,
-			tileNames: ['Team Diary', 'Diary', 'Leads', 'Inventory', 'Client', 'Targets']
+			tileNames: ['Dashboard', 'Team Diary', 'Diary', 'Leads', 'Inventory', 'Client', 'Targets']
 		}
 	}
 
 	componentDidMount() {
 		const { navigation, dispatch } = this.props;
 		this._unsubscribe = navigation.addListener('focus', () => {
-				dispatch(getListingsCount())
+			dispatch(getListingsCount())
 		});
 	}
 
@@ -32,10 +32,10 @@ class Landing extends React.Component {
 			this.fetchTiles()
 		}
 	}
-		
-		componentWillUnmount(){
-			this._unsubscribe();
-		}
+
+	componentWillUnmount() {
+		this._unsubscribe();
+	}
 
 	fetchTiles = () => {
 		const { user, count } = this.props

@@ -42,9 +42,10 @@ class InvestLeads extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads( 'all');
+		const { statusFilter } = this.state
+		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads('all');
+			this.fetchLeads(statusFilter);
 		})
 	}
 
@@ -60,10 +61,11 @@ class InvestLeads extends React.Component {
 	}
 
 	fetchLeads = ( statusFilter) => {
+
 		const { sort, pageSize, page, leadsData } = this.state
 		this.setState({ loading: true })
 		let query = ``
-		query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		query = `/api/leads/projects?status=${this.statestatusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({
@@ -115,7 +117,7 @@ class InvestLeads extends React.Component {
 	changeStatus = (status) => {
 		this.clearStateValues()
 		this.setState({ statusFilter: status, leadsData: [] }, () => {
-			this.fetchLeads(status);
+		this.fetchLeads(this.state.statusFilter);
 		})
 	}
 
@@ -166,6 +168,7 @@ class InvestLeads extends React.Component {
 			onEndReachedLoader,
 		} = this.state
 		const { user } = this.props;
+
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>

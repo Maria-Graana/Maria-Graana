@@ -109,7 +109,13 @@ class LeadPropsure extends React.Component {
     }
 
     showPackageModal = (propertyId) => {
-        this.setState({ isVisible: true, selectedPropertyId: propertyId, checkPackageValidation: false });
+        const { lead } = this.props
+        if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
+            helper.leadClosedToast();
+        }
+        else{
+            this.setState({ isVisible: true, selectedPropertyId: propertyId, checkPackageValidation: false });
+        }
     }
 
 
@@ -128,7 +134,6 @@ class LeadPropsure extends React.Component {
                 packageName: selectedPackage,
                 propertyId: selectedPropertyId
             }
-
             axios.post(`api/leads/propsure/${lead.id}`, body).then(response => {
                 this.fetchLead()
                 this.fetchProperties();
@@ -146,7 +151,13 @@ class LeadPropsure extends React.Component {
     }
 
     showDocumentModal = (propsureId) => {
-        this.setState({ documentModalVisible: true, selectedPropsureId: propsureId, checkValidation: false });
+        const { lead } = this.props
+        if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
+            helper.leadClosedToast();
+        }
+        else{
+            this.setState({ documentModalVisible: true, selectedPropsureId: propsureId, checkValidation: false });
+        }
     }
 
     closeDocumentModal = () => {

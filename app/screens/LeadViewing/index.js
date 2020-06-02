@@ -237,6 +237,7 @@ class LeadViewing extends React.Component {
 	}
 
 	checkStatus = (property) => {
+		const {lead} = this.props;
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'completed') {
 				return (
@@ -264,7 +265,15 @@ class LeadViewing extends React.Component {
 							justifyContent: "center",
 							alignItems: "center"
 						}}
-						onPress={() => { this.openModal(); this.updateProperty(property) }}
+						onPress={() => { 
+							if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
+								helper.leadClosedToast();
+							}
+							else{
+								this.openModal(); 
+								this.updateProperty(property) 
+							}
+						}}
 					>
 						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Viewing at <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>{moment(helper.convertTimeZone(property.diaries[0].start)).format('LLL')}</Text></Text>
 					</TouchableOpacity >
@@ -281,7 +290,18 @@ class LeadViewing extends React.Component {
 						justifyContent: "center",
 						alignItems: "center"
 					}}
-					onPress={() => { this.openModal(); this.setProperty(property) }}
+					onPress={() =>
+						 { 
+							if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
+								helper.leadClosedToast();
+
+							}
+							else{
+								this.openModal();
+								this.setProperty(property)
+							}
+					
+					 }}
 				>
 					<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>BOOK VIEWING</Text>
 				</TouchableOpacity >
@@ -343,6 +363,7 @@ class LeadViewing extends React.Component {
 
 	render() {
 		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue, menuShow, updateViewing, isMenuVisible } = this.state
+		const {lead} = this.props;
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
@@ -371,7 +392,7 @@ class LeadViewing extends React.Component {
 															deleteProperty={this.deleteProperty}
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
-															isMenuVisible={isMenuVisible}
+															isMenuVisible={!lead.status=== 'closed_won' && isMenuVisible}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}
@@ -383,7 +404,7 @@ class LeadViewing extends React.Component {
 															deleteProperty={this.deleteProperty}
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
-															isMenuVisible={isMenuVisible}
+															isMenuVisible={!lead.status=== 'closed_won' && isMenuVisible}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}

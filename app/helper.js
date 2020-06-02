@@ -234,6 +234,13 @@ const helper = {
 					break;
 			}
 		}
+	},
+	leadClosedToast(){
+		Toast.show({
+			text: 'Lead is already closed',
+			duration: 3000,
+			type: 'danger'
+		})
 	}
 }
 

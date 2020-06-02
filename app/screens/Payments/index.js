@@ -72,7 +72,7 @@ class Payments extends Component {
 		this.getAllProjects();
 		this.setFields();
 		// console.log(this.state.paymentFiledsArray)
-		// console.log(this.props.lead)
+		console.log(this.props.lead)
 	}
 
 	setFields = () => {

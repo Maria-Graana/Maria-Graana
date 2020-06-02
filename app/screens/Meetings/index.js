@@ -250,7 +250,7 @@ class Meetings extends Component {
         <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 
         {/* ************Fab For Open Modal************ */}
-        <View style={[styles.meetingConteiner]}>
+        <View style={[styles.meetingConteiner, leadClosedCheck === true ? styles.openLeadHeight : styles.closeLeadHeight]}>
           <ScrollView>
             <View style={styles.paddBottom}>
               {

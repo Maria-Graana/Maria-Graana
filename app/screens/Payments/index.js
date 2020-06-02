@@ -495,6 +495,10 @@ class Payments extends Component {
 		}
 	}
 
+	closedLead = () => {
+		helper.leadClosedToast()
+	}
+
 	addFullpaymentFields = () => {
 		const { lead } = this.props
 		const { paymentFiledsArray } = this.state
@@ -644,6 +648,7 @@ class Payments extends Component {
 							paymentFiledsArray={paymentFiledsArray}
 							handlePayments={this.handlePayments}
 							closedLeadEdit={closedLeadEdit}
+							closedLead={this.closedLead}
 						/>
 					</View>
 				</ScrollView>

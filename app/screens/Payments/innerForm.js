@@ -40,6 +40,7 @@ class InnerForm extends Component {
       paymentFiledsArray,
       addFullpaymentFields,
       closedLeadEdit,
+      closedLead,
     } = this.props
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
@@ -245,7 +246,7 @@ class InnerForm extends Component {
                 }
 
 
-                <TouchableOpacity onPress={() => closedLeadEdit == true && addFullpaymentFields()}>
+                <TouchableOpacity onPress={() => closedLeadEdit == true ? addFullpaymentFields() : closedLead()}>
                   <Text style={styles.addMore}>Add More Payments</Text>
                 </TouchableOpacity>
               </View>
@@ -264,7 +265,7 @@ class InnerForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <Button
-              onPress={() => { closedLeadEdit == true && formSubmit() }}
+              onPress={() => { closedLeadEdit == true ? formSubmit() : closedLead() }}
               style={[AppStyles.formBtn, styles.addInvenBtn]}>
               <Text style={AppStyles.btnText}>CLOSE LEAD</Text>
             </Button>

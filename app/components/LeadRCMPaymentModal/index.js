@@ -57,7 +57,7 @@ const LeadRCMPaymentModal = (props) => {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <Button
-                        style={[AppStyles.formBtn, { marginTop: 10, marginHorizontal: 25 }]} onPress={onPress}>
+                        style={[AppStyles.formBtn, { marginTop: 10, marginHorizontal: 25 }]} onPress={()=>onPress()}>
                         <Text style={AppStyles.btnText}>CLOSE LEAD</Text>
                     </Button>
                 </View>

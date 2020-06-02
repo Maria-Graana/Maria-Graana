@@ -6,16 +6,18 @@ import styles from './styles'
 import { Ionicons } from '@expo/vector-icons';
 import { formatPrice } from '../../PriceFormate'
 import moment from 'moment';
+import StaticData from '../../StaticData';
 
 const BuyPaymentView = (props) => {
     const { agreedAmount, token, commissionPayment, handleAgreedAmountChange, handleTokenAmountChange, handleCommissionAmountChange, showAgreedAmountArrow, showTokenAmountArrow, showCommissionAmountArrow, handleAgreedAmountPress, handleTokenAmountPress, handleCommissionAmountPress, lead } = props;
+    const isLeadClosed = lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won;
     return (
         <View>
 
             <View style={[styles.mainBlackWrap]}>
                 <View style={{ width: "50%", justifyContent: "center" }}>
                     <Text style={[styles.blackInputText]}>AGREED AMOUNT</Text>
-                    <TextInput style={[styles.blackInput]} placeholder={'Enter Agreed Amount'} value={agreedAmount} keyboardType={'number-pad'} onChangeText={(text) => handleAgreedAmountChange(text)} />
+                    <TextInput style={[styles.blackInput]} editable={!isLeadClosed} placeholder={'Enter Agreed Amount'} value={agreedAmount} keyboardType={'number-pad'} onChangeText={(text) => handleAgreedAmountChange(text)} />
                 </View>
                 <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(agreedAmount)} PKR`}</Text>
                 {
@@ -31,7 +33,7 @@ const BuyPaymentView = (props) => {
             <View style={[styles.mainBlackWrap]}>
                 <View style={{ width: "50%" }}>
                     <Text style={[styles.blackInputText]}>TOKEN</Text>
-                    <TextInput style={[styles.blackInput]} placeholder={'Enter Token Amount'} value={(token)} keyboardType={'number-pad'} onChangeText={(text) => handleTokenAmountChange(text)} />
+                    <TextInput style={[styles.blackInput]} editable={!isLeadClosed} placeholder={'Enter Token Amount'} value={(token)} keyboardType={'number-pad'} onChangeText={(text) => handleTokenAmountChange(text)} />
                 </View>
                 <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(token)} PKR`}</Text>
                 {
@@ -58,7 +60,7 @@ const BuyPaymentView = (props) => {
             <View style={[styles.mainBlackWrap]}>
                 <View style={{ width: "50%" }}>
                     <Text style={[styles.blackInputText]}>COMMISSION PAYMENT</Text>
-                    <TextInput style={[styles.blackInput]} keyboardType={'number-pad'} value={(commissionPayment)} onChangeText={(text) => handleCommissionAmountChange(text)} />
+                    <TextInput style={[styles.blackInput]} editable={!isLeadClosed} keyboardType={'number-pad'} value={(commissionPayment)} onChangeText={(text) => handleCommissionAmountChange(text)} />
                 </View>
                 <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(commissionPayment)} PKR`}</Text>
                 {

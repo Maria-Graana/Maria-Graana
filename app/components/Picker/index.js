@@ -33,7 +33,8 @@ class PickerComponent extends React.Component {
             name,
             customStyle,
             customIconStyle,
-            clearOnChange
+            clearOnChange,
+            enabled = true,
         } = this.props;
         const items = data || [];
         let pickerItems = []
@@ -62,6 +63,7 @@ class PickerComponent extends React.Component {
                     headerTitleStyle={{ color: "#fff" }}
                     textStyle={[AppStyles.formFontSettings]}
                     mode="dropdown"
+                    enabled={enabled}
                     style={[AppStyles.formControlForPicker, customStyle]}
                     placeholder={placeholderLabel}
                     selectedValue={this.state.selectedTask != '' && selectedValue}

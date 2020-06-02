@@ -177,7 +177,14 @@ class LeadRCMPayment extends React.Component {
     }
 
     showLeadPaymentModal = () => {
-        this.setState({ isVisible: true })
+        const { lead } = this.state;
+        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
+            helper.leadClosedToast();
+        }
+        else{
+            this.setState({ isVisible: true })
+
+        }
     }
 
 
@@ -210,12 +217,19 @@ class LeadRCMPayment extends React.Component {
     }
 
 
-    showConfirmationDialog(item) {
-        Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
-            { text: 'No', style: 'cancel' },
-            { text: 'Yes', onPress: () => this.selectDifferentProperty() },
-        ],
-            { cancelable: false })
+    showConfirmationDialog = (item) => {
+        const { lead } = this.state;
+        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
+            helper.leadClosedToast()
+        }
+        else {
+            Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
+                { text: 'No', style: 'cancel' },
+                { text: 'Yes', onPress: () => this.selectDifferentProperty() },
+            ],
+                { cancelable: false })
+        }
+
     }
 
     renderSelectPaymentView = (item) => {
@@ -293,7 +307,7 @@ class LeadRCMPayment extends React.Component {
         payload.commissionPayment = this.convertToInteger(commissionPayment);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
-            this.setState({ showCommissionAmountArrow: false, lead: response.data },()=>  this.checkCommissionPayment(response.data))
+            this.setState({ showCommissionAmountArrow: false, lead: response.data }, () => this.checkCommissionPayment(response.data))
         }).catch(error => {
             console.log(error);
         })
@@ -313,15 +327,14 @@ class LeadRCMPayment extends React.Component {
         })
     }
 
-    onHandleCloseLead = (reason) => {
+    onHandleCloseLead = () => {
         const { navigation } = this.props
-        const { lead } = this.state;
+        const { lead, selectedReason } = this.state;
         let payload = Object.create({});
-        payload.reasons = reason;
-
+        payload.reasons = selectedReason;
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.setState({ isVisible: false }, () => {
-                navigation.navigate('Lead');
+                navigation.navigate('Leads');
             });
         }).catch(error => {
             console.log(error);
@@ -419,11 +432,11 @@ class LeadRCMPayment extends React.Component {
                     <LeadRCMPaymentPopup
                         reasons={reasons}
                         selectedReason={selectedReason}
-                        changeReason={this.handleReasonChange}
+                        changeReason={(value) => this.handleReasonChange(value)}
                         checkValidation={checkReasonValidation}
                         isVisible={isVisible}
                         closeModal={() => this.closeModal()}
-                        onPress={this.onHandleCloseLead}
+                        onPress={() => this.onHandleCloseLead()}
                     />
                     <View style={{ flex: 1 }}>
                         {

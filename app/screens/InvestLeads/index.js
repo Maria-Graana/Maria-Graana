@@ -45,7 +45,7 @@ class InvestLeads extends React.Component {
 		const { statusFilter } = this.state
 		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads(statusFilter);
+				this.fetchLeads(statusFilter);
 		})
 	}
 
@@ -61,16 +61,16 @@ class InvestLeads extends React.Component {
 	}
 
 	fetchLeads = (statusFilter) => {
-
 		const { sort, pageSize, page, leadsData } = this.state
 		this.setState({ loading: true })
 		let query = ``
-		query = `/api/leads/projects?status=${this.state.statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({
 					leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
 					loading: false,
+					statusFilter: statusFilter,
 					onEndReachedLoader: false,
 					totalLeads: res.data.count
 				})
@@ -197,25 +197,27 @@ class InvestLeads extends React.Component {
 						{
 							leadsData && leadsData && leadsData.length > 0 ?
 								<View>
-									<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
+
 									< FlatList
 										data={leadsData}
 										renderItem={({ item }) => (
+											<View>
+												<LeadTile
+													user={user}
+													// key={key}
+													showDropdown={this.showDropdown}
+													dotsDropDown={this.state.dotsDropDown}
+													selectInventory={this.selectInventory}
+													selectedInventory={selectInventory}
+													data={item}
+													dropDownId={dropDownId}
+													unSelectInventory={this.unSelectInventory}
+													goToInventoryForm={this.goToInventoryForm}
+													navigateTo={this.navigateTo}
+													callNumber={this.callNumber}
+												/>
+											</View>
 
-											<LeadTile
-												user={user}
-												// key={key}
-												showDropdown={this.showDropdown}
-												dotsDropDown={this.state.dotsDropDown}
-												selectInventory={this.selectInventory}
-												selectedInventory={selectInventory}
-												data={item}
-												dropDownId={dropDownId}
-												unSelectInventory={this.unSelectInventory}
-												goToInventoryForm={this.goToInventoryForm}
-												navigateTo={this.navigateTo}
-												callNumber={this.callNumber}
-											/>
 										)}
 										// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
 										onEndReached={() => {
@@ -236,6 +238,7 @@ class InvestLeads extends React.Component {
 								:
 								<LoadingNoResult loading={loading} />
 						}
+						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
 
 					</View>
 					<FAB.Group

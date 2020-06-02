@@ -43,8 +43,10 @@ class InvestLeads extends React.Component {
 
 	componentDidMount() {
 		const { statusFilter } = this.state
+		
 		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
+			console.log(statusFilter)
 				this.fetchLeads(statusFilter);
 		})
 	}

@@ -41,9 +41,10 @@ class BuyLeads extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads(this.state.statusFilter);
+		const { statusFilter } = this.state
+		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads(this.state.statusFilter);
+			this.fetchLeads(statusFilter);
 		})
 	}
 
@@ -62,14 +63,15 @@ class BuyLeads extends React.Component {
 		const { sort, pageSize, page, leadsData } = this.state
 		this.setState({ loading: true })
 		let query = ``
-		query = `/api/leads?purpose=sale&status=${this.state.statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({
 					leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
 					loading: false,
 					onEndReachedLoader: false,
-					totalLeads: res.data.count
+					totalLeads: res.data.count,
+					statusFilter: statusFilter,
 				})
 			})
 	}

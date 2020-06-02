@@ -42,9 +42,11 @@ class RentLeads extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads(this.state.statusFilter);
+		const { statusFilter } = this.state
+
+		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads(this.state.statusFilter);
+			this.fetchLeads(statusFilter);
 		})
 	}
 
@@ -63,12 +65,13 @@ class RentLeads extends React.Component {
 		const { sort, pageSize, page, leadsData } = this.state
 		this.setState({ loading: true })
 		let query = ``
-		query = `/api/leads?purpose=rent&status=${this.state.statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		query = `/api/leads?purpose=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({
 					leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
 					loading: false,
+					statusFilter: statusFilter,
 					onEndReachedLoader: false,
 					totalLeads: res.data.count
 				})
@@ -115,7 +118,7 @@ class RentLeads extends React.Component {
 	changeStatus = (status) => {
 		this.clearStateValues()
 		this.setState({ statusFilter: status, leadsData: [] }, () => {
-			this.fetchLeads(status);
+			this.fetchLeads(this.state.statusFilter);
 		})
 	}
 

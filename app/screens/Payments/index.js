@@ -69,7 +69,6 @@ class Payments extends Component {
 	}
 
 	componentDidMount() {
-		console.log(this.state.closedLeadEdit)
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();

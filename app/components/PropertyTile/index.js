@@ -8,6 +8,7 @@ import React from 'react'
 import _ from 'underscore';
 import { formatPrice } from '../../PriceFormate'
 import styles from './style'
+import helper from '../../helper'
 
 class InventoryTile extends React.Component {
   constructor(props) {
@@ -29,10 +30,20 @@ class InventoryTile extends React.Component {
     )
   }
 
+  checkCustomerName = (data) => {
+    if (data.customer)
+    {
+       return helper.capitalize(data.customer.first_name) + ' ' + helper.capitalize(data.customer.last_name);
+     }
+     else{
+       return '';
+   }
+  }
+
   render() {
     const { data, onCall } = this.props;
     const imagesList = data.armsPropertyImages;
-    //console.log(data);
+    const ownerName = this.checkCustomerName(data);
     return (
       <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => this.onLongPress(data.id)} activeOpacity={0.7}>
         <View>
@@ -75,6 +86,8 @@ class InventoryTile extends React.Component {
           <Text style={styles.textControlStyle} numberOfLines={1}>
             {`${data.size} ${data.size_unit.charAt(0).toUpperCase() + data.size_unit.slice(1)} ${data.subtype.charAt(0).toUpperCase() + data.subtype.slice(1)} for ${data.purpose.charAt(0).toUpperCase() + data.purpose.slice(1)}`}
           </Text>
+
+          <Text style={[styles.textControlStyle,{paddingTop: 2}]} numberOfLines={1}>{ownerName}</Text>
 
           <Text style={[styles.textControlStyle, { fontFamily: AppStyles.fonts.lightFont }]} numberOfLines={1}>
             {`${data.area.name}, ${data.city.name}`}

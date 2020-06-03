@@ -73,6 +73,10 @@ class BuyLeads extends React.Component {
 					totalLeads: res.data.count,
 					statusFilter: statusFilter,
 				})
+			}).catch((res) => {
+				this.setState({
+					loading: false,
+				})
 			})
 	}
 
@@ -167,7 +171,7 @@ class BuyLeads extends React.Component {
 			onEndReachedLoader,
 		} = this.state
 		const { user } = this.props;
-		let leadStatus =  StaticData.buyRentFilter
+		let leadStatus = StaticData.buyRentFilter
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 

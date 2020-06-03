@@ -76,6 +76,10 @@ class InvestLeads extends React.Component {
 					onEndReachedLoader: false,
 					totalLeads: res.data.count
 				})
+			}).catch((res) => {
+				this.setState({
+					loading: false,
+				})
 			})
 	}
 

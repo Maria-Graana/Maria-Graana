@@ -167,7 +167,7 @@ class BuyLeads extends React.Component {
 			onEndReachedLoader,
 		} = this.state
 		const { user } = this.props;
-		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
+		let leadStatus =  StaticData.buyRentFilter
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 

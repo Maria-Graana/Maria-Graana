@@ -43,7 +43,6 @@ class RentLeads extends React.Component {
 
 	componentDidMount() {
 		const { statusFilter } = this.state
-
 		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.fetchLeads(statusFilter);
@@ -169,7 +168,7 @@ class RentLeads extends React.Component {
 			onEndReachedLoader,
 		} = this.state
 		const { user } = this.props;
-		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
+		let leadStatus = StaticData.buyRentFilter
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}

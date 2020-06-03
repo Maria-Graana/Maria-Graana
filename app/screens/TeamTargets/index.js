@@ -6,7 +6,6 @@ import { Button, } from 'native-base';
 import TargetTile from '../../components/TargetTile'
 import { connect } from 'react-redux';
 import MonthPicker from '../../components/MonthPicker'
-import NoResultsComponent from '../../components/NoResultsComponent';
 import { formatPrice } from '../../PriceFormate'
 import Loader from '../../components/loader'
 import axios from 'axios'

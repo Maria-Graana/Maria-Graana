@@ -364,6 +364,7 @@ class LeadViewing extends React.Component {
 	render() {
 		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue, menuShow, updateViewing, isMenuVisible } = this.state
 		const {lead} = this.props;
+		const showMenuItem = (lead.status=== StaticData.Constants.lead_closed_won  || lead.status ===StaticData.Constants.lead_closed_lost) ? false : true;
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
@@ -392,7 +393,7 @@ class LeadViewing extends React.Component {
 															deleteProperty={this.deleteProperty}
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
-															isMenuVisible={!lead.status=== 'closed_won' && isMenuVisible}
+															isMenuVisible={showMenuItem && isMenuVisible}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}
@@ -404,7 +405,7 @@ class LeadViewing extends React.Component {
 															deleteProperty={this.deleteProperty}
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
-															isMenuVisible={!lead.status=== 'closed_won' && isMenuVisible}
+															isMenuVisible={showMenuItem && isMenuVisible}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}

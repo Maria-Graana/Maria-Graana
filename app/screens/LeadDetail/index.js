@@ -110,9 +110,11 @@ class LeadDetail extends React.Component {
         if (lead.customer)
             // for  CM LEAD
             this.setState({ customerName: helper.capitalize(lead.customer.customerName) })
-        else
-            // FOR RCM LEAD
-            this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
+        else{
+               // FOR RCM LEAD
+               this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
+        }
+         
     }
 
     render() {
@@ -133,11 +135,11 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}>Price Range </Text>
                         <Text style={styles.labelText}>PKR {!lead.projectId && lead.price} {lead.projectId && lead.minPrice && lead.minPrice + ' - '} {lead.projectId && lead.maxPrice && lead.maxPrice}</Text>
                         <View style={styles.underLine} />
-                        <Text style={styles.headingText}>Assigned At </Text>
+                        <Text style={styles.headingText}>Assigned</Text>
                         <Text style={styles.labelText}>{lead.assigned_at ? moment(lead.assigned_at).format("MMM DD YYYY, hh:mm A") : '-'} </Text>
-                        <Text style={styles.headingText}>Created Date </Text>
+                        <Text style={styles.headingText}>Created </Text>
                         <Text style={styles.labelText}>{moment(lead.createdAt).format("MMM DD YYYY, hh:mm A")} </Text>
-                        <Text style={styles.headingText}>Modified Date </Text>
+                        <Text style={styles.headingText}>Modified</Text>
                         <Text style={styles.labelText}>{moment(lead.updatedAt).format("MMM DD YYYY, hh:mm A")} </Text>
                         <Text style={styles.headingText}>Lead Source </Text>
                         <Text style={styles.labelText}>{lead.origin ? (lead.origin.split('_').join(' ')).toLocaleUpperCase() : null} </Text>

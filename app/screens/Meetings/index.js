@@ -63,6 +63,8 @@ class Meetings extends Component {
   openModal = () => {
     this.setState({
       active: !this.state.active,
+      formData: {},
+      editMeeting: false,
     })
   }
 

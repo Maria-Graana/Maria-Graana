@@ -213,7 +213,6 @@ class BuyLeads extends React.Component {
 											callNumber={this.callNumber}
 										/>
 									)}
-									// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
 									onEndReached={() => {
 										if (leadsData.length < totalLeads) {
 											this.setState({

@@ -3,9 +3,11 @@ import Constants from 'expo-constants';
 const config = {
   development: {
     apiPath: 'https://api.realtor.agency21.rocks',
+    channel: 'development'
   },
   production: {
     apiPath: 'https://apiarmsm.agency21.com.pk',
+    channel: 'production'
   },
 };
 

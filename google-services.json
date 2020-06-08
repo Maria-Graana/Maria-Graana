@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "489504599221",
-    "firebase_url": "https://graana-push-notifications-prod.firebaseio.com",
-    "project_id": "graana-push-notifications-prod",
-    "storage_bucket": "graana-push-notifications-prod.appspot.com"
+    "project_number": "372529293613",
+    "firebase_url": "https://graana-push-notification-e4375.firebaseio.com",
+    "project_id": "graana-push-notification-e4375",
+    "storage_bucket": "graana-push-notification-e4375.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:489504599221:android:23e74a23442a5d5c49e2fc",
+        "mobilesdk_app_id": "1:372529293613:android:bfef441253d13a95c74ba4",
         "android_client_info": {
-          "package_name": "com.agency21.arms"
+          "package_name": "com.agency21.realtor"
         }
       },
       "oauth_client": [
         {
-          "client_id": "489504599221-c8rg6r5pq721p4u6j8rdvj3vd8nji05q.apps.googleusercontent.com",
+          "client_id": "372529293613-1rbpp26999bc71ub26dpq8conru5pfrn.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDrO-_6YWPDYlUSv8YLXzGXmsXHHq-QpTU"
+          "current_key": "AIzaSyBUn48Pp1tf9qh5QMZA_3SEUCbJ0v6DPAs"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "489504599221-c8rg6r5pq721p4u6j8rdvj3vd8nji05q.apps.googleusercontent.com",
+              "client_id": "372529293613-1rbpp26999bc71ub26dpq8conru5pfrn.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -139,26 +139,31 @@ class Client extends React.Component {
                             :
                             null
                     }
-                    <FlatList
-                        data={customers}
-                        renderItem={(item, index) => (
-                            <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
-                        )}
-                        ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
-                        onEndReached={() => {
-                            if (customers.length < totalCustomers) {
-                                this.setState({
-                                    page: this.state.page + 1,
-                                    onEndReachedLoader: true
-                                }, () => {
-                                    this.fetchCustomer();
-                                });
-                            }
-                        }}
-                        onEndReachedThreshold={0.5}
-                        keyExtractor={(item, index) => item.id.toString()}
-                    />
-                    <OnLoadMoreComponent style={{backgroundColor:'white'}} onEndReached= {onEndReachedLoader}/>
+                    {
+                        customers && customers.length > 0 ?
+                            <FlatList
+                                data={customers}
+                                renderItem={(item, index) => (
+                                    <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
+                                )}
+                                onEndReached={() => {
+                                    if (customers.length < totalCustomers) {
+                                        this.setState({
+                                            page: this.state.page + 1,
+                                            onEndReachedLoader: true
+                                        }, () => {
+                                            this.fetchCustomer();
+                                        });
+                                    }
+                                }}
+                                onEndReachedThreshold={0.5}
+                                keyExtractor={(item, index) => item.id.toString()}
+                            />
+                            :
+                            <NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />
+                    }
+
+                    <OnLoadMoreComponent style={{ backgroundColor: 'white' }} onEndReached={onEndReachedLoader} />
                 </View>
                 :
                 <Loader loading={loading} />

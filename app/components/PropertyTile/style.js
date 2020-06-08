@@ -59,7 +59,7 @@ imageStyle: {
     letterSpacing: 0.6,
   },
   textControlStyle: {
-    paddingTop: hp('1%'),
+    paddingTop: hp('0.3%'),
     fontSize: AppStyles.fontSize.medium,
     fontFamily: AppStyles.fonts.defaultFont,
     width: wp('51%'),

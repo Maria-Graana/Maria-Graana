@@ -167,14 +167,14 @@ class Diary extends React.Component {
     const { diaryData, calendarList, selectedDate } = this.state;
     let selectedObject = {};
     let calendarData = {};
-    const allDiaryDates = _.keys(diaryData);
-    for (let i = 0; i < allDiaryDates.length; i++) {
+    const allDiaryDates = _.keys(diaryData);         // Get all dates 
+    for (let i = 0; i < allDiaryDates.length; i++) {     // map all dates on selected dates
       if (allDiaryDates[i].match(selectedDate)) {
         selectedObject = diaryData[selectedDate];
       }
     }
-    if (!_.isEmpty(selectedObject)) {
-      if (selectedObject.dayTasks.length) {
+    if (!_.isEmpty(selectedObject)) { 
+      if (selectedObject.dayTasks.length) { // Do manipulation on mapped dates
         let groupTasksByTime = _.map(selectedObject.dayTasks, (item) => {
           item.statusColor = helper.checkStatusColor(item, _today); // check status color for example todo task is indicated with red color
         })

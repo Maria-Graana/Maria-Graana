@@ -15,8 +15,8 @@ export default styles = {
         monthTextColor: 'white',
         arrowColor: 'white',
         dayTextColor: 'white',
-        dotColor: 'white',
-        selectedDotColor: '#0f73ee',
+        dotColor: '#FF0000',
+        selectedDotColor: '#FF0000',
         textSectionTitleColor: 'white'
     },
     buttonShadowView: {

@@ -56,14 +56,14 @@ class DiaryTile extends React.Component {
                     renderItem={(item, index) => (
                         <View>
                             {
-                                item.item.diary && item.item.diary.length ?
+                                item.item.task && item.item.task.length ?
                                     <View style={styles.container}>
                                         {/* <View key={index} styles={{}}> */}
                                         <View style={styles.timeWrap}>
                                             <Text style={styles.timeText}>{item.item.time}</Text>
                                         </View>
                                         {
-                                            item.item.diary.map((val, index) => {
+                                            item.item.task.map((val, index) => {
                                                 return (
                                                     <TouchableOpacity
                                                         onPress={() => this.showPopup(val)}

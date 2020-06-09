@@ -124,7 +124,7 @@ const helper = {
 		} else return []
 	},
 	setStatusText(val, todayDate) {
-		let taskDate = moment(val.date).format('L')
+		let taskDate = moment(val.date).format('YYYY-MM-DD')
 		if (val.armsProjectLeadId === null && val.taskType !== 'viewing') {
 			if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
 				return 'To-do'
@@ -171,7 +171,7 @@ const helper = {
 
 	},
 	checkStatusColor(val, todayDate) {
-		let taskDate = moment(val.date).format('L')
+		let taskDate = moment(val.date).format('YYYY-MM-DD')
 		if (val.armsProjectLeadId === null) {
 			if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
 				return 'red'

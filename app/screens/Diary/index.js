@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
-import { ActionSheet } from 'native-base';
+import { ActionSheet, Footer } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import DiaryTile from '../../components/DiaryTile'
 import Loader from '../../components/loader'
@@ -17,7 +17,9 @@ import { connect } from 'react-redux';
 import helper from '../../helper';
 
 const _format = 'YYYY-MM-DD';
-const _today = moment(new Date().dateString).format(_format);
+const startOfMonth = moment().startOf('month').format(_format);
+const endOfMonth = moment().endOf('month').format(_format);
+const _today = moment(new Date()).format(_format);
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
 
@@ -27,14 +29,18 @@ class Diary extends React.Component {
     this.state = {
       showCalendar: false,
       calendarList: [],
-      startDate: moment(_today).format(_format),
-      todayDate: moment(new Date()).format('L'),
-      newDiaryData: [],
-      diaryData: [],
+      startDate: _today,
+      startMonthDate: startOfMonth,
+      endMonthDate: endOfMonth,
+      diaryData: {},
       loading: true,
       agentId: '',
       openPopup: false,
-      selectedDiary: {}
+      selectedDiary: {},
+      selectedDate: _today,
+      newDiaryData: [],
+      selectedMonth: moment(_today).format('MM'),
+      selectedYear: moment().year(),
     }
   }
 
@@ -90,18 +96,62 @@ class Diary extends React.Component {
     })
   }
 
+  getSelectedYear = () => {
+    const { selectedYear } = this.state;
+    return selectedYear;
+  }
+
+  getSelectedMonth = () => {
+    const { selectedMonth } = this.state;
+    //console.log(selectedMonth);
+    return selectedMonth;
+  }
+
+  getDays = () => {
+    const { startMonthDate, endMonthDate } = this.state;
+    const days = []
+    const dateStart = moment(startMonthDate);
+    const dateEnd = moment(endMonthDate).add(dateEnd, 'days');
+    while (dateEnd.diff(dateStart, 'days') >= 0) {
+      days.push(dateStart.format('DD'))
+      dateStart.add(1, 'days')
+    }
+    return days
+  }
+
+  getAllDates = () => {
+    const days = this.getDays();
+    const year = this.getSelectedYear();
+    const month = this.getSelectedMonth();
+    return days.map(day => {
+      return `${year}-${month}-${day}`
+    })
+  }
+
   diaryMain = () => {
-    const { agentId } = this.state;
+    const { agentId, startMonthDate, endMonthDate, selectedDate } = this.state;
     let endPoint = ``
     this.setState({ loading: true }, () => {
-      let date = moment(this.state.startDate).format('YYYY-MM-DD')
-      endPoint = `/api/diary/all?fromDate=${date}&toDate=${date}&agentId=${agentId}`
+      endPoint = `/api/diary/all?fromDate=${startMonthDate}&toDate=${endMonthDate}&agentId=${agentId}`
       axios.get(`${endPoint}`)
         .then((res) => {
+          const currentMonthDates = this.getAllDates();  //Get All dates of selected month in 'YYYY-MM-DD format
+          const datesFromServer = _.pluck(res.data.rows, 'date'); // get array of dates by using 'date' as key from list of array of objects
+          const formatedDates = _.map(datesFromServer, function (item) { return moment(item).format('YYYY-MM-DD') }); // convert it to our used format of dates
+          const uniqueDates = _.uniq(formatedDates); // Get only uniquely identified dates
+          let diaryTasks = _.reduce(currentMonthDates, (previousValue, currentValue) => Object.assign(previousValue,     // this function converts array to object because calendar component require object
+            {
+              [currentValue]:
+              {
+                selected: currentValue === selectedDate, // only selected if the date is today's date
+                marked: _.contains(uniqueDates, currentValue),  // unique date format is 2020-08-01 so we check the array if it contains the date that that came from server
+                dayTasks: _.contains(uniqueDates, currentValue) ? _.filter(res.data.rows, (item) => moment(item.date).format('YYYY-MM-DD') === currentValue) : [], // if date is similar put data object in the selected date else put empty object
+              }
+            }), {});
           this.setState({
-            diaryData: res.data.rows,
+            diaryData: diaryTasks,
           }, () => {
-            this.showTime()
+            this.showTime();
           })
         }).catch((error) => {
           console.log(error)
@@ -113,65 +163,92 @@ class Diary extends React.Component {
 
   }
 
-
-
-
-
   showTime = () => {
-    const { diaryData, calendarList, todayDate } = this.state;
-    let calendarData = null;
-    if (diaryData.length) {
-      let groupedData = diaryData.map((item, index) => {
-        item.statusColor = helper.checkStatusColor(item, todayDate)
-        if (item.hour) {
-          return item;
-        } else {
-          return item
-        }
-      })
-      groupedData = _.groupBy(diaryData, 'hour')
-      calendarData = calendarList.map((item, index) => {
-        if (groupedData[item]) {
-          return {
-            time: item,
-            diary: _.sortBy(groupedData[item], 'time')
+    const { diaryData, calendarList, selectedDate } = this.state;
+    let selectedObject = {};
+    let calendarData = {};
+    const allDiaryDates = _.keys(diaryData);
+    for (let i = 0; i < allDiaryDates.length; i++) {
+      if (allDiaryDates[i].match(selectedDate)) {
+        selectedObject = diaryData[selectedDate];
+      }
+    }
+    if (!_.isEmpty(selectedObject)) {
+      if (selectedObject.dayTasks.length) {
+        let groupTasksByTime = _.map(selectedObject.dayTasks, (item) => {
+          item.statusColor = helper.checkStatusColor(item, _today); // check status color for example todo task is indicated with red color
+        })
+        groupTasksByTime = (_.groupBy(selectedObject.dayTasks, 'hour')); // group tasks in a day by hour
+        calendarData = calendarList.map((item, index) => {
+          if (groupTasksByTime[item]) {
+            return {
+              time: item,
+              task: _.sortBy(groupTasksByTime[item], 'time') // sort day tasks by time
+            }
+          } else {
+            return {
+              time: item,   // if day tasks does not contain any task on that particular time, this block is executed
+              task: []
+            }
           }
-        } else {
+        })
+        this.setState({
+          newDiaryData: calendarData,
+          loading: false
+        })
+      }
+      else {
+        calendarData = calendarList.map((item, index) => {
           return {
-            time: item,
+            time: item,   // no day tasks are present, show only empty time list e.g 10AM,11AM 
             diary: []
           }
-        }
-      })
-      this.setState({
-        newDiaryData: calendarData,
-        loading: false
-      })
-    }
-    else {
-      calendarData = calendarList.map((item, index) => {
-        return {
-          time: item,
-          diary: []
-        }
-      })
-      this.setState({
-        newDiaryData: calendarData,
-        loading: false
-      })
+        })
+        this.setState({
+          newDiaryData: calendarData,
+          loading: false
+        })
+      }
     }
   }
 
   updateDay = (day) => {
     const { navigation } = this.props;
+    const { diaryData } = this.state;
+    const newDiaryData = Object.assign({}, diaryData); // creating new object because state cannot be changed directly
     const { dateString } = day
-    let newDate = moment(dateString).format(_format)
+    const diaryDataKeys = _.keys(newDiaryData); // contains all the date keys as [2020-06-01,2020-06-02,.....]
+    for (let i = 0; i < diaryDataKeys.length; i++) {
+      if (diaryDataKeys[i].match(dateString)) {
+        newDiaryData[dateString].selected = true    // update the selected value in object with the current selected date
+      }
+      else {
+        newDiaryData[diaryDataKeys[i]].selected = false;     // set selected of all other values as false
+      }
+    }
     navigation.setOptions({ title: moment(dateString).format('DD MMMM YYYY') })
     this.setState({
-      startDate: newDate,
-      showCalendar: false
+      showCalendar: false,
+      diaryData: newDiaryData,
+      selectedDate: dateString,
     }, () => {
-      this.diaryMain()
+      this.showTime();
+    });
+  }
+
+  updateMonth = (value) => {
+    const { navigation } = this.props;
+    const { dateString } = value;
+    const startOfMonth = moment(dateString).startOf('month').format(_format);
+    const endOfMonth = moment(dateString).endOf('month').format(_format);
+    navigation.setOptions({ title: moment(dateString).format('DD MMMM YYYY') })
+    this.setState({
+      startMonthDate: startOfMonth,
+      endMonthDate: endOfMonth,
+      selectedMonth: moment(dateString).format('MM'),
+      selectedDate: dateString,
+    }, () => {
+      this.diaryMain();
     })
   }
 
@@ -220,7 +297,7 @@ class Diary extends React.Component {
     axios.delete(endPoint).then(function (response) {
       if (response.status === 200) {
         helper.successToast('TASK DELETED SUCCESSFULLY!')
-        that.diaryMain();
+         that.diaryMain();
       }
 
     }).catch(function (error) {
@@ -298,7 +375,7 @@ class Diary extends React.Component {
   }
 
   render() {
-    const { showCalendar, startDate, newDiaryData, loading, selectedDiary } = this.state;
+    const { showCalendar, startDate, loading, selectedDiary, newDiaryData, diaryData, selectedDate } = this.state;
     const { user, route } = this.props;
     const { name } = route.params;
     return (
@@ -355,7 +432,12 @@ class Diary extends React.Component {
                 />
               </TouchableOpacity>
               :
-              <CalendarComponent startDate={startDate} updateDay={this.updateDay} onPress={this._toggleShow} />
+              <CalendarComponent startDate={startDate}
+                diaryData={diaryData}
+                updateMonth={(value) => this.updateMonth(value)}
+                updateDay={(value) => this.updateDay(value)}
+                selectedDate={selectedDate}
+                onPress={this._toggleShow} />
           }
 
 

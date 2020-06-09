@@ -22,7 +22,7 @@ class DateComponent extends React.Component {
   }
 
   onChange = (date, mode) => {
-    console.log(date);
+    //console.log(date);
     if (mode == 'time') {
       this.props.onTimeChange(date)
     } else {

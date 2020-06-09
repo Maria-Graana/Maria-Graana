@@ -315,7 +315,8 @@ export default StaticData = {
         { value: 'meeting_deal_signed', name: 'Meeting: Deal Signed' },
         { value: 'token', name: 'Deal Signed - Token' },
         { value: 'payment', name: 'Payment' },
-        { value: 'closed', name: 'Closed' },
+        { value: 'closed_won', name: 'Closed Won' },
+        { value: 'closed_lost', name: 'Closed Lost' },
     ],
     cmLeadBtnOption: [
         { value: 'attachment', name: 'Attachment' },

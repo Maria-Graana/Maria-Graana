@@ -174,7 +174,7 @@ function MainStack() {
             />
             <Stack.Screen name='CMLeadTabs' component={CMLeadTabs}
                 options={({ navigation, route }) => ({
-                    title: 'Calls/Meetings',
+                    title: 'LEAD WORKFLOW',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

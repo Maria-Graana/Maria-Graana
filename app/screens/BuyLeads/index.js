@@ -41,9 +41,10 @@ class BuyLeads extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads('all');
+		const { statusFilter } = this.state
+		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads('all');
+			this.fetchLeads(statusFilter);
 		})
 	}
 
@@ -69,7 +70,12 @@ class BuyLeads extends React.Component {
 					leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
 					loading: false,
 					onEndReachedLoader: false,
-					totalLeads: res.data.count
+					totalLeads: res.data.count,
+					statusFilter: statusFilter,
+				})
+			}).catch((res) => {
+				this.setState({
+					loading: false,
 				})
 			})
 	}
@@ -165,7 +171,7 @@ class BuyLeads extends React.Component {
 			onEndReachedLoader,
 		} = this.state
 		const { user } = this.props;
-		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
+		let leadStatus = StaticData.buyRentFilter
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 
@@ -213,7 +219,6 @@ class BuyLeads extends React.Component {
 											callNumber={this.callNumber}
 										/>
 									)}
-									// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
 									onEndReached={() => {
 										if (leadsData.length < totalLeads) {
 											this.setState({

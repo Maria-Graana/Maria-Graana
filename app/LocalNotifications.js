@@ -14,10 +14,8 @@ const submitNotification = (body, date) => {
         title: body.title,
         body: body.body,
         android: {
-            sound: true,
-            priority: 'max',
-            vibrate: [0, 250, 250, 250],
-          },
+            channelId: 'reminder',
+        },
         ios: {
             sound: true,
         }

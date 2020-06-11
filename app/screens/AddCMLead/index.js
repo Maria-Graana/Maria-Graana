@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
 import helper from '../../helper';
+import { formatPrice } from '../../PriceFormate'
 
 class AddCMLead extends Component {
     constructor(props) {
@@ -27,8 +28,8 @@ class AddCMLead extends Component {
                 cityId: '',
                 projectId: '',
                 projectType: '',
-                minPrice: '',
-                maxPrice: '',
+                minPrice: StaticData.PricesProject[0],
+                maxPrice: StaticData.PricesProject[StaticData.PricesProject.length - 1],
             }
         }
     }
@@ -133,6 +134,14 @@ class AddCMLead extends Component {
         })
     }
 
+    onSliderValueChange = (values) => {
+        const { formData } = this.state;
+        const prices = StaticData.PricesProject;
+        formData['minPrice'] = prices[values[0]];
+        formData['maxPrice'] = prices[values[values.length - 1]];
+        this.setState({ formData });
+    }
+
     render() {
         const {
             formData,
@@ -156,6 +165,7 @@ class AddCMLead extends Component {
                                     cities={cities}
                                     getClients={getClients}
                                     getProject={getProject}
+                                    onSliderValueChange={(values) => this.onSliderValueChange(values)}
                                 />
 
                             </View>

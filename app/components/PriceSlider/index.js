@@ -43,8 +43,6 @@ const styles = StyleSheet.create({
         width: 30,
         borderRadius: 32,
         borderWidth: 1.5,
-        alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: AppStyles.whiteColor.color,
         borderColor: AppStyles.colors.primaryColor
     }

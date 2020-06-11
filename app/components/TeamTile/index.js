@@ -4,6 +4,21 @@ import AppStyles from '../../AppStyles';
 import Avatar from '../../components/Avatar/index';
 import helper from '../../helper'
 
+const checkZoneName = (item) => {
+    if (item.zone && item.region) {
+        return `${helper.capitalize(item.zone.zone_name)}, ${item.region.name}`
+    }
+    else if (item.zone) {
+        return item.zone && helper.capitalize(item.zone.zone_name)
+    }
+    else if (item.region) {
+        return item.region.name
+    }
+    else {
+        return '';
+    }
+}
+
 class TeamTile extends React.Component {
     constructor(props) {
         super(props)
@@ -12,7 +27,8 @@ class TeamTile extends React.Component {
         const { selected, data, selectedId } = this.props;
         const { item } = data;
         const organizationName = item.organization && item.organization.name ? item.organization.name : '';
-        console.log(item);
+        let zoneAndRegion = checkZoneName(item);
+
         return (
             <TouchableOpacity
                 activeOpacity={.7}
@@ -35,14 +51,14 @@ class TeamTile extends React.Component {
                             {
                                 organizationName !== '' ? <Text style={[styles.textFont, {
                                     fontSize: 18, color: organizationName ===
-                                        'Graana' ? 'red' : 'green' , width: '20%', textAlign: 'right'
+                                        'Graana' ? 'red' : 'green', width: '20%', textAlign: 'right'
                                 }]}>
                                     {organizationName !== '' ? organizationName === 'Graana' ? 'G' : 'A' : ''}
                                 </Text> : null}
 
                         </View>
-                        {item.zone && <Text style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
-                            {item.zone.zone_name ? helper.capitalize(item.zone.zone_name) : ''}
+                        {zoneAndRegion !== '' && <Text style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
+                            {zoneAndRegion}
                         </Text>}
 
                     </View>

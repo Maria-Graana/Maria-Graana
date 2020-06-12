@@ -30,8 +30,6 @@ class CMLeadFrom extends Component {
       onSliderValueChange
     } = this.props
 
-    let minPrice = formData.minPrice
-
     return (
       <View>
 

@@ -137,8 +137,8 @@ class AddCMLead extends Component {
     onSliderValueChange = (values) => {
         const { formData } = this.state;
         const prices = StaticData.PricesProject;
-        formData['minPrice'] = prices[values[0]];
-        formData['maxPrice'] = prices[values[values.length - 1]];
+        formData.minPrice = prices[values[0]];
+        formData.maxPrice = prices[values[values.length - 1]];
         this.setState({ formData });
     }
 

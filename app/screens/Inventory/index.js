@@ -163,7 +163,7 @@ class Inventory extends React.Component {
 					{
 						propertiesList && propertiesList.length > 0 ?
 							< FlatList
-								contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+								//contentContainerStyle={{ paddingHorizontal: wp('2%') }}
 								data={propertiesList}
 								renderItem={({ item }) => (
 									<PropertyTile

@@ -109,6 +109,14 @@ class LeadMatch extends React.Component {
             })
     }
 
+    onSliderValueChange = (values) => {
+        const { formData } = this.state;
+        const prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
+        formData.minPrice = prices[values[0]].toString()
+        formData.maxPrice = prices[values[values.length - 1]].toString()
+        this.setState({ formData });
+    }
+
     handleForm = (value, name) => {
         const { formData } = this.state
         if (name === 'cityId') formData.leadAreas = []
@@ -509,6 +517,7 @@ class LeadMatch extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <FilterModal
+                            onSliderValueChange={this.onSliderValueChange}
                             getAreas={this.getAreas}
                             subTypVal={subTypVal}
                             handleForm={this.handleForm}

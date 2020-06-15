@@ -23,6 +23,16 @@ export default styles = StyleSheet.create({
         overflow: 'hidden',
         borderBottomWidth: 0,
     },
+    priceStyle:{
+        width: '45%', 
+        textAlign: 'center'
+    },
+    toText:{
+        fontFamily: AppStyles.fonts.defaultFont, 
+        color: AppStyles.colors.textColor,
+        textAlign:'center',
+        width:'10%',
+    },
     backImg: {
         width: 30,
         height: 30,

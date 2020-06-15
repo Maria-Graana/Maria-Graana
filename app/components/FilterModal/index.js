@@ -14,10 +14,12 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles';
 import PickerComponent from '../Picker/index';
 import styles from './style';
+import PriceSlider from '../PriceSlider/index';
 import { Button } from 'native-base';
 import StaticData from '../../StaticData';
 import AreaPicker from '../AreaPicker/index';
 import ErrorMessage from '../ErrorMessage/index';
+import { formatPrice } from '../../PriceFormate'
 import _ from 'underscore';
 
 class FilterModal extends React.Component {
@@ -50,11 +52,13 @@ class FilterModal extends React.Component {
             getSubType,
             subTypVal,
             submitFilter,
-            getAreas
+            getAreas,
+            onSliderValueChange
         } = this.props;
         const { showAreaPicker } = this.state
         const { sizeUnit, type } = StaticData
-        
+        let prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
+
         return (
             <Modal visible={openPopup}
                 animationType="slide"
@@ -125,14 +129,23 @@ class FilterModal extends React.Component {
                                 :
                                 null
                         }
-                        <View style={styles.textInputView}>
-                            <View style={styles.textView}>
-                                <TextInput min={formData.maxPrice ? formData.maxPrice : 0} keyboardType={'numeric'} value={formData.minPrice} onChangeText={(text) => { handleForm(text, 'minPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'minPrince'} placeholder={'Min Price'} />
-                            </View>
-                            <View style={AppStyles.mb1}>
-                                <TextInput keyboardType={'numeric'} value={formData.maxPrice} onChangeText={(text) => { handleForm(text, 'maxPrice') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'maxPrince'} placeholder={'Max Price'} />
-                            </View>
+                        <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15 }]}>
+
+                            <TextInput placeholder='Price Min'
+                                value={formatPrice(formData.minPrice)}
+                                style={[AppStyles.formControl, styles.priceStyle]}
+                                editable={false}
+                            />
+                            <Text style={styles.toText}>to</Text>
+                            <TextInput placeholder='Price Max'
+                                value={formatPrice(formData.maxPrice)}
+                                style={[AppStyles.formControl, styles.priceStyle]}
+                                editable={false}
+                            />
                         </View>
+
+                        <PriceSlider priceValues={prices} initialValue={prices.indexOf(Number(formData.minPrice))} finalValue={prices.indexOf(Number(formData.maxPrice))} onSliderValueChange={(values) => onSliderValueChange(values)} />
+
                         <View style={styles.textInputView}>
                             <View style={styles.textView}>
                                 <TextInput keyboardType={'numeric'} value={formData.bed ? String(formData.bed) : ''} onChangeText={(text) => { handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />

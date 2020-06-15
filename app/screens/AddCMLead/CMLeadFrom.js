@@ -84,7 +84,7 @@ class CMLeadFrom extends Component {
           />
         </View>
 
-        <PriceSlider priceValues={StaticData.PricesProject} onSliderValueChange={(values)=> onSliderValueChange(values)}/>
+        <PriceSlider priceValues={StaticData.PricesProject} initialValue={0} finalValue={StaticData.PricesProject.length - 1} onSliderValueChange={(values)=> onSliderValueChange(values)}/>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

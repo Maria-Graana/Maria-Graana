@@ -10,13 +10,13 @@ const CustomMarker = () => {
      );
 };
 
-const PriceSlider = ({ priceValues, onSliderValueChange }) => {
+const PriceSlider = ({ priceValues, onSliderValueChange, initialValue, finalValue}) => {
     return (
         <View style={styles.container}>
             <MultiSlider
                 trackStyle={styles.trackStyle}
                 customMarker={CustomMarker}
-                values={[0, priceValues.length - 1]}
+                values={[initialValue, finalValue]}
                 onValuesChange={onSliderValueChange}
                 min={0}
                 max={priceValues.length - 1}

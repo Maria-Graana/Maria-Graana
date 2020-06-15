@@ -162,7 +162,7 @@ class InnerRCMForm extends Component {
           />
         </View>
 
-        <PriceSlider priceValues={priceList} onSliderValueChange={(values) => onSliderValueChange(values)} />
+        <PriceSlider priceValues={priceList} initialValue={0} finalValue={priceList.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} />
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

@@ -38,9 +38,9 @@ class TeamTile extends React.Component {
                     <View style={{ paddingRight: 10, }}>
                         <Avatar data={item} />
                     </View>
-                    <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'center' }}>
-                        <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5, alignItems: 'center' }}>
-                            <View style={{ flexDirection: 'row', width: '80%', alignItems: 'center' }}>
+                    <View style={styles.mainRowContainer}>
+                        <View style={styles.horizontalRowContainer}>
+                            <View style={styles.titleSubtitleContainer}>
                                 <Text style={[styles.textFont, { fontSize: 15, marginRight: 10 }]}>
                                     {item.firstName} {item.lastName}
                                 </Text>
@@ -91,6 +91,22 @@ const styles = StyleSheet.create({
         height: 1,
         width: "100%",
         backgroundColor: "#f5f5f6",
+    },
+    mainRowContainer:{
+        flexDirection: 'column', 
+        flex: 1, 
+        justifyContent: 'center' 
+    },
+    horizontalRowContainer: {
+        flexDirection: 'row', 
+        width: '100%', 
+        marginBottom: 5, 
+        alignItems: 'center'
+    },
+    titleSubtitleContainer: {
+        flexDirection: 'row', 
+        width: '80%', 
+        alignItems: 'center'
     }
 });
 

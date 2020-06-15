@@ -5,16 +5,17 @@ import AppStyles from '../../AppStyles';
 
 
 const CustomMarker = () => {
-     return (
-         <View style={styles.customMarkerStyle}/>
-     );
+    return (
+        <View style={styles.customMarkerStyle} />
+    );
 };
 
-const PriceSlider = ({ priceValues, onSliderValueChange, initialValue, finalValue}) => {
+const PriceSlider = ({ priceValues, onSliderValueChange, initialValue, finalValue }) => {
     return (
         <View style={styles.container}>
             <MultiSlider
                 trackStyle={styles.trackStyle}
+                selectedStyle={styles.selectedStyle}
                 customMarker={CustomMarker}
                 values={[initialValue, finalValue]}
                 onValuesChange={onSliderValueChange}
@@ -35,10 +36,12 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     trackStyle: {
-        height: 3,
-        color: AppStyles.colors.primaryColor
+        height: 5
     },
-    customMarkerStyle:{
+    selectedStyle:{
+        backgroundColor: AppStyles.colors.primaryColor
+    },
+    customMarkerStyle: {
         height: 30,
         width: 30,
         borderRadius: 32,

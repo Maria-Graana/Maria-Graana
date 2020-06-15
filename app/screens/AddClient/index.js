@@ -98,8 +98,8 @@ class AddClient extends Component {
             if (emailValidate && !phoneValidate && !cnicValidate) {
                 if (formData.cnic === '') formData.cnic = null
                 let body = {
-                    first_name: formData.firstName,
-                    last_name: formData.lastName,
+                    first_name: helper.capitalize(formData.firstName),
+                    last_name: helper.capitalize(formData.lastName),
                     email: formData.email,
                     cnic: formData.cnic,
                     phone: formData.contactNumber,

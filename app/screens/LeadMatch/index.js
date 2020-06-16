@@ -72,7 +72,7 @@ class LeadMatch extends React.Component {
     }
 
     componentDidMount() {
-        const { lead } = this.props.route.params
+        const { lead } = this.props
         this.props.dispatch(setlead(lead))
         this.getCities()
         this.resetFilter()
@@ -226,8 +226,8 @@ class LeadMatch extends React.Component {
 
     setParams = () => {
         const { organization, formData } = this.state
-        const { route } = this.props
-        const { lead } = route.params
+        const { lead } = this.props
+
         let params = {
             leadId: lead.id,
             organization: organization,
@@ -255,8 +255,7 @@ class LeadMatch extends React.Component {
 
     fetchMatches = () => {
         const { organization, showCheckBoxes } = this.state
-        const { route } = this.props
-        const { lead } = route.params
+        const { lead } = this.props
         const { rcmProgressBar } = StaticData
         let matches = []
 
@@ -351,7 +350,7 @@ class LeadMatch extends React.Component {
 
     displayChecks = () => {
         const { showCheckBoxes } = this.state
-        const { lead } = this.props.route.params
+        const { lead } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
@@ -371,7 +370,7 @@ class LeadMatch extends React.Component {
 
     addProperty = (property) => {
         const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-        const { lead } = this.props.route.params
+        const { lead } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
@@ -452,7 +451,7 @@ class LeadMatch extends React.Component {
 
     sendProperties = () => {
         const { selectedProperties } = this.state
-        const { lead } = this.props.route.params
+        const { lead } = this.props
         axios.post(`/api/leads/${lead.id}/shortlist`, selectedProperties)
             .then((res) => {
                 this.unSelectAll()
@@ -465,8 +464,7 @@ class LeadMatch extends React.Component {
     }
 
     goToDiaryForm = () => {
-        const { navigation, route, user } = this.props;
-        const { lead } = route.params;
+        const { navigation, lead, user } = this.props;
         navigation.navigate('AddDiary', {
             update: false,
             rcmLeadId: lead.id,
@@ -475,14 +473,12 @@ class LeadMatch extends React.Component {
     }
 
     goToAttachments = () => {
-        const { navigation, route } = this.props;
-        const { lead } = route.params;
+        const { navigation, lead } = this.props;
         navigation.navigate('Attachments', { rcmLeadId: lead.id });
     }
 
     goToComments = () => {
-        const { navigation, route } = this.props;
-        const { lead } = route.params;
+        const { navigation, lead } = this.props;
         navigation.navigate('Comments', { rcmLeadId: lead.id });
     }
 

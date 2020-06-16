@@ -94,7 +94,7 @@ class LeadDetail extends React.Component {
     checkAssignedLead = (lead) => {
         const { user } = this.props;
         // Show assign lead button only if loggedIn user is subadmin 1
-        if(Ability.canAdd(user.role, 'AssignLead')){
+        if(Ability.canAdd(user.subRole, 'AssignLead')){
             // Lead can only be assigned to someone else if it is assigned to no one or to current user 
             if (lead.assigned_to_armsuser_id===null || user.id === lead.assigned_to_armsuser_id) {
                 this.setState({ showAssignToButton: true })

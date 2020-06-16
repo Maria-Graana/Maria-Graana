@@ -38,7 +38,7 @@ class AddDiary extends Component {
 
     generatePayload = (data) => {
         const { route } = this.props;
-        const { rcmLeadId, cmLeadId } = route.params;
+        const { rcmLeadId, cmLeadId, managerId, addedBy } = route.params;
         let payload = null;
         let start = moment(data.date + data.startTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
         let end = data.endTime !== '' ? 
@@ -84,10 +84,11 @@ class AddDiary extends Component {
             else if (cmLeadId) {
                 payload.cmLeadId = cmLeadId
             }
-
+            payload.addedBy = addedBy;
+            payload.managerId = managerId;
+             console.log(payload);
             delete payload.startTime
             delete payload.endTime
-
             return payload;
         }
 

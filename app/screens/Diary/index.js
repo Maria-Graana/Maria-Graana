@@ -173,7 +173,7 @@ class Diary extends React.Component {
         selectedObject = diaryData[selectedDate];
       }
     }
-    if (!_.isEmpty(selectedObject)) { 
+    if (!_.isEmpty(selectedObject)) {
       if (selectedObject.dayTasks.length) { // Do manipulation on mapped dates
         let groupTasksByTime = _.map(selectedObject.dayTasks, (item) => {
           item.statusColor = helper.checkStatusColor(item, _today); // check status color for example todo task is indicated with red color
@@ -253,10 +253,13 @@ class Diary extends React.Component {
   }
 
   goToDiaryForm = () => {
-    const { navigation } = this.props;
+    const { navigation, route } = this.props;
     const { agentId } = this.state;
+    const { screen, managerId } = route.params;
     navigation.navigate('AddDiary', {
-      'agentId': agentId
+      'agentId': agentId,
+      addedBy: screen === 'TeamDiary' ? 'manager' : 'self',
+      managerId: managerId ? managerId : null,
     });
   }
 
@@ -297,7 +300,7 @@ class Diary extends React.Component {
     axios.delete(endPoint).then(function (response) {
       if (response.status === 200) {
         helper.successToast('TASK DELETED SUCCESSFULLY!')
-         that.diaryMain();
+        that.diaryMain();
       }
 
     }).catch(function (error) {
@@ -337,19 +340,29 @@ class Diary extends React.Component {
   }
 
   handleLongPress = (val) => {
-    ActionSheet.show(
-      {
-        options: BUTTONS,
-        cancelButtonIndex: CANCEL_INDEX,
-        title: 'Select an Option',
-      },
-      buttonIndex => {
-        if (buttonIndex === 0) {
-          //Delete
-          this.showDeleteDialog(val);
+    const { user } = this.props;
+    let isManager = false;
+    const managerId = val.managerId ? val.managerId : null;
+    isManager = managerId ? user.id == managerId ? true : false : false;
+    if ((val.addedBy === 'self' || isManager)) {
+      ActionSheet.show(
+        {
+          options: BUTTONS,
+          cancelButtonIndex: CANCEL_INDEX,
+          title: 'Select an Option',
+        },
+        buttonIndex => {
+          if (buttonIndex === 0) {
+            //Delete
+            this.showDeleteDialog(val);
+          }
         }
-      }
-    );
+      );
+    }
+    else {
+      helper.errorToast('Sorry, you are not authorized to delete this task.')
+    }
+
 
   }
 
@@ -386,7 +399,6 @@ class Diary extends React.Component {
             screenName={route.params.screen}
             data={selectedDiary}
             updateDiary={this.updateDiary}
-            deleteDiary={this.deleteDiary}
             openPopup={this.state.openPopup}
             closePopup={this.closePopup}
             onLeadLinkClicked={this.handleLeadLinkPress}

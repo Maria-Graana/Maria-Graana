@@ -62,7 +62,8 @@ class DairyPopup extends React.Component {
             onLeadLinkClicked,
         } = this.props;
         let checkTaskType = null;
-        const {todayDate} = this.state;
+        const { todayDate } = this.state;
+        let isManager = false;
 
         if (data.taskType === 'Daily Task' || data.taskType === 'Weekly Task') {
             checkTaskType = false;
@@ -70,7 +71,8 @@ class DairyPopup extends React.Component {
         else {
             checkTaskType = true
         }
-
+        const managerId = data.managerId ? data.managerId : null;
+        isManager = managerId ? user.id == managerId ? true : false : false;
         return (
             <Modal visible={openPopup}
                 animationType="slide"
@@ -82,8 +84,8 @@ class DairyPopup extends React.Component {
                         <View style={styles.horizontalWrapStyle}>
                             <Text style={styles.textStyle}>{data.subject} </Text>
                             {
-                                checkTaskType &&  (data.status === 'pending' || data.status === 'inProgress') &&
-                                    Ability.canEdit(user.role, screenName)?
+                                (data.addedBy === 'self' || isManager) && checkTaskType && (data.status === 'pending' || data.status === 'inProgress') &&
+                                    Ability.canEdit(user.role, screenName) ?
                                     < MaterialCommunityIcons onPress={() => this.updateDiary(data)} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                                     : null
                             }
@@ -95,7 +97,7 @@ class DairyPopup extends React.Component {
                         <View style={styles.horizontalWrapStyle}>
                             <Text style={styles.textStyle}>{moment.utc(data.start).format('hh:mm a')} - {moment.utc(data.end).format("hh:mm a")} </Text>
                             {
-                                 data.armsLeadId !== null || data.armsProjectLeadId!==null ?
+                                data.armsLeadId !== null || data.armsProjectLeadId !== null ?
                                     <TouchableOpacity style={styles.lead} onPress={() => onLeadLinkClicked(data)} >
                                         <Text style={styles.leadText} >
                                             Lead Link
@@ -104,7 +106,7 @@ class DairyPopup extends React.Component {
                                     :
                                     null
                             }
-                            <Text style={[styles.statusText, { color: data.statusColor, borderColor: data.statusColor }]}>{helper.setStatusText(data,todayDate)}</Text>
+                            <Text style={[styles.statusText, { color: data.statusColor, borderColor: data.statusColor }]}>{helper.setStatusText(data, todayDate)}</Text>
 
                         </View>
 

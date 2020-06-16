@@ -81,7 +81,6 @@ class LeadDetail extends React.Component {
             }else{
                 page = 'Meetings'
             }
-            console.log(lead)
             navigation.navigate('CMLeadTabs', {
                 screen: page,
                 params: { lead: lead },
@@ -89,6 +88,18 @@ class LeadDetail extends React.Component {
         } else {
             if (status === "viewing") {
                 page = 'Viewing'
+            }
+            if (status === "offer") {
+                page = 'Offer'
+            }
+            if (status === "propsure") {
+                page = 'Propsure'
+            }
+            if (status === "payment") {
+                page = 'Payment'
+            }
+            if (status === "payment" || status === 'closed_won' || status === 'closed_lost') {
+                page = 'Payment'
             }
             navigation.navigate('RCMLeadTabs', {
                 screen: page,
@@ -132,7 +143,6 @@ class LeadDetail extends React.Component {
     render() {
         const { type, lead, customerName, showAssignToButton } = this.state
         const { user } = this.props;
-        console.log(lead.status)
         return (
             <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
                 <View style={styles.outerContainer}>

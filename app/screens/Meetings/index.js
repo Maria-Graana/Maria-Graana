@@ -40,6 +40,7 @@ class Meetings extends Component {
   }
 
   componentDidMount() {
+    console.log('meeting page')
     this.fetchLead()
     this.getMeetingLead()
   }

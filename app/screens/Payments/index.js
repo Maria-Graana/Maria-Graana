@@ -69,11 +69,12 @@ class Payments extends Component {
 	}
 
 	componentDidMount() {
+		console.log('Payment page')
+		console.log(this.props.lead)
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
 		// console.log(this.state.paymentFiledsArray)
-		// console.log(this.props.lead)
 	}
 
 	setFields = () => {

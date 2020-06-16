@@ -69,12 +69,9 @@ class Payments extends Component {
 	}
 
 	componentDidMount() {
-		console.log('Payment page')
-		console.log(this.props.lead)
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
-		// console.log(this.state.paymentFiledsArray)
 	}
 
 	setFields = () => {
@@ -563,17 +560,17 @@ class Payments extends Component {
 	}
 
 	goToComments = () => {
-		const { navigation, route } = this.props;
+		const { navigation } = this.props;
 		navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
 	}
 
 	goToAttachments = () => {
-		const { navigation, route } = this.props;
+		const { navigation } = this.props;
 		navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
 	}
 
 	goToDiaryForm = () => {
-		const { navigation, route, user } = this.props;
+		const { navigation, user } = this.props;
 		navigation.navigate('AddDiary', {
 			update: false,
 			cmLeadId: this.props.lead.id,

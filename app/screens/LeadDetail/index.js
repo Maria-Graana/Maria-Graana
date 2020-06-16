@@ -87,11 +87,11 @@ class LeadDetail extends React.Component {
                 params: { lead: lead },
             })
         } else {
-            // if (status === "open") {
-            //     console.log('RCM Open Lead')
-            // }
+            if (status === "viewing") {
+                page = 'Viewing'
+            }
             navigation.navigate('RCMLeadTabs', {
-                screen: 'Match',
+                screen: page,
                 params: { lead: lead },
             })
         }

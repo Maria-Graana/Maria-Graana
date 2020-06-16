@@ -150,13 +150,13 @@ class InnerRCMForm extends Component {
         <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
 
           <TextInput placeholder='Price Min'
-            value={formatPrice(formData.minPrice)}
+            value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice)}
             style={[AppStyles.formControl, styles.priceStyle]}
             editable={false}
           />
           <Text style={styles.toText}>to</Text>
           <TextInput placeholder='Price Max'
-            value={formatPrice(formData.maxPrice)}
+            value={formData.maxPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice)}
             style={[AppStyles.formControl, styles.priceStyle]}
             editable={false}
           />

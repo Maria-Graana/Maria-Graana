@@ -24,8 +24,8 @@ class Meetings extends Component {
       formData: {
         time: '',
         date: '',
-        leadId: this.props.route.params.lead.id,
-        subject: this.props.route.params.lead.customer ? `Meeting with ${this.props.route.params.lead.customer.customerName}` : null
+        leadId: this.props.lead.id,
+        subject: this.props.lead.customer ? `Meeting with ${this.props.lead.customer.customerName}` : null
       },
       meetings: [],
       checkValidation: false,
@@ -72,6 +72,7 @@ class Meetings extends Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
+    formData['leadId'] = this.props.lead.id
     this.setState({ formData })
   }
 
@@ -184,9 +185,9 @@ class Meetings extends Component {
       date: a,
       taskType: 'called',
       response: 'Called',
-      subject: 'Call to client ' + this.props.route.params.lead.customer.customerName,
-      cutomerId: this.props.route.params.lead.customer.id,
-      leadId: this.props.route.params.lead.id,
+      subject: 'Call to client ' + this.props.lead.customer.customerName,
+      cutomerId: this.props.lead.customer.id,
+      leadId: this.props.lead.id,
     }
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
@@ -218,7 +219,7 @@ class Meetings extends Component {
       formData: {
         date: filter[0].date,
         time: filter[0].time,
-        leadId: this.props.route.params.lead.id,
+        leadId: this.props.lead.id,
       },
       editMeeting: true,
       meetingId: id,
@@ -227,25 +228,25 @@ class Meetings extends Component {
 
   goToComments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Comments', { cmLeadId: route.params.lead.id });
+    navigation.navigate('Comments', { cmLeadId: lead.id });
   }
 
   goToAttachments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Attachments', { cmLeadId: route.params.lead.id });
+    navigation.navigate('Attachments', { cmLeadId: lead.id });
   }
 
   goToDiaryForm = () => {
     const { navigation, route, user } = this.props;
     navigation.navigate('AddDiary', {
       update: false,
-      cmLeadId: route.params.lead.id,
+      cmLeadId: lead.id,
       agentId: user.id
     });
   }
   render() {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue, editMeeting } = this.state
-    let leadData = this.props.route.params.lead
+    let leadData = this.props.lead
     let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     return (
       <View style={styles.mainWrapCon}>

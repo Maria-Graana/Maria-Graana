@@ -8,6 +8,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "@react-native-community/datetimepicker": "2.1.0",
     "@react-native-community/masked-view": "0.1.5",
     "@react-native-community/netinfo": "4.6.0",
@@ -48,6 +49,7 @@
     "react-native-screens": "2.0.0-alpha.12",
     "react-native-select-input-ios": "^2.0.4",
     "react-native-snap-carousel": "^3.8.4",
+    "react-native-svg": "9.13.3",
     "react-native-tab-view": "^2.13.0",
     "react-native-user-avatar": "^1.0.4",
     "react-native-web": "~0.11.7",
@@ -56,8 +58,7 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
     "sentry-expo": "^2.0.3",
-    "underscore": "^1.9.2",
-    "react-native-svg": "9.13.3"
+    "underscore": "^1.9.2"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.0.0",

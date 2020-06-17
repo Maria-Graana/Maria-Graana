@@ -125,7 +125,7 @@ class DairyPopup extends React.Component {
 
                         <View style={styles.btnWrap}>
                             {
-                                Ability.canEdit(user.role, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
+                                Ability.canEdit(user.subRole, screenName) && data.status === 'pending' || data.status === 'inProgress' ?
                                     <Button bordered
                                         onPress={() => { this.inProgress(data, 'inProgress') }}
                                         style={data.status == 'inProgress' ? styles.disabledBtnStyle : [AppStyles.formBtn, { width: 150 }]}
@@ -139,7 +139,7 @@ class DairyPopup extends React.Component {
 
 
                             {
-                                Ability.canEdit(user.role, screenName) && data.status !== 'completed' ?
+                                Ability.canEdit(user.subRole, screenName) && data.status !== 'completed' ?
                                     <Button onPress={() => { this.markDone(data, 'completed') }}
                                         style={[AppStyles.formBtn, { width: 150 }]}>
                                         <Text style={[AppStyles.btnText, { fontFamily: AppStyles.fonts.semiBoldFont }]}>Done</Text>

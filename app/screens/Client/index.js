@@ -126,7 +126,7 @@ class Client extends React.Component {
             !loading ?
                 <View style={[AppStyles.container, styles.container]}>
                     {
-                        Ability.canAdd(user.role, 'Client') ?
+                        Ability.canAdd(user.subRole, 'Client') ?
                             <Fab
                                 active='true'
                                 containerStyle={{ zIndex: 20 }}

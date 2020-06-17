@@ -22,6 +22,7 @@ class AddRCMLead extends Component {
             getClients: [],
             getProject: [],
             formType: 'sale',
+            priceList: [],
             selectSubType: [],
             RCMFormData: {
                 type: "",
@@ -33,8 +34,8 @@ class AddRCMLead extends Component {
                 customerId: '',
                 city_id: '',
                 size_unit: null,
-                max_price: null,
-                min_price: null,
+                minPrice: null,
+                maxPrice: null,
             }
         }
     }
@@ -53,12 +54,27 @@ class AddRCMLead extends Component {
         this.getCities();
         this.getAllProjects();
         this.getClients(user.id);
+        this.setPriceList()
     }
 
     componentWillUnmount() {
         const { dispatch } = this.props;
         // selected Areas should be cleared to be used anywhere else
         dispatch(setSelectedAreas([]));
+    }
+
+    setPriceList = () => {
+        const { formType, RCMFormData } = this.state;
+        if (formType === 'sale') {
+            RCMFormData.minPrice = StaticData.PricesBuy[0];
+            RCMFormData.maxPrice = StaticData.PricesBuy[StaticData.PricesBuy.length - 1];
+            this.setState({ RCMFormData, priceList: StaticData.PricesBuy })
+        }
+        else {
+            RCMFormData.minPrice = StaticData.PricesRent[0];
+            RCMFormData.maxPrice = StaticData.PricesRent[StaticData.PricesRent.length - 1];
+            this.setState({ RCMFormData, priceList: StaticData.PricesRent })
+        }
     }
 
     getClients = (id) => {
@@ -128,7 +144,7 @@ class AddRCMLead extends Component {
         const isEditMode = `${leadAreas.length > 0 ? true : false}`
 
         if (city_id !== '' && city_id !== undefined) {
-            navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode,screenName:'AddRCMLead' });
+            navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode, screenName: 'AddRCMLead' });
         }
         else {
             alert('Please select city first!')
@@ -152,39 +168,44 @@ class AddRCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            if (RCMFormData.min_price && Number(RCMFormData.min_price) > Number(RCMFormData.max_price) || RCMFormData.min_price && Number(RCMFormData.min_price) === Number(RCMFormData.max_price)) {
-                helper.errorToast('Max Price cannot be less than Min Price')
-            } else {
-                if (RCMFormData.size === '') RCMFormData.size = null
-                else RCMFormData.size = Number(RCMFormData.size)
-                let payLoad = {
-                    purpose: formType,
-                    type: RCMFormData.type,
-                    subtype: RCMFormData.subtype,
-                    bed: RCMFormData.bed,
-                    bath: RCMFormData.bath,
-                    size: RCMFormData.size,
-                    leadAreas: RCMFormData.leadAreas,
-                    customerId: RCMFormData.customerId,
-                    city_id: RCMFormData.city_id,
-                    size_unit: RCMFormData.size_unit,
-                    price: RCMFormData.max_price,
-                    min_price: RCMFormData.min_price,
-                }
-                axios.post(`/api/leads`, payLoad)
-                    .then((res) => {
-                        helper.successToast(res.data)
-                        RootNavigation.navigate('Leads')
-                    })
+            if (RCMFormData.size === '') RCMFormData.size = null
+            else RCMFormData.size = Number(RCMFormData.size)
+            let payLoad = {
+                purpose: formType,
+                type: RCMFormData.type,
+                subtype: RCMFormData.subtype,
+                bed: RCMFormData.bed,
+                bath: RCMFormData.bath,
+                size: RCMFormData.size,
+                leadAreas: RCMFormData.leadAreas,
+                customerId: RCMFormData.customerId,
+                city_id: RCMFormData.city_id,
+                size_unit: RCMFormData.size_unit,
+                price: RCMFormData.maxPrice,
+                min_price: RCMFormData.minPrice,
             }
-
+            axios.post(`/api/leads`, payLoad)
+                .then((res) => {
+                    helper.successToast(res.data)
+                    RootNavigation.navigate('Leads')
+                })
         }
     }
 
     changeStatus = (status) => {
         this.setState({
             formType: status,
+        }, () => {
+            this.setPriceList();
         })
+    }
+
+    onSliderValueChange = (values) => {
+        const { RCMFormData, priceList } = this.state;
+        const copyObject = { ...RCMFormData };
+        copyObject.minPrice = priceList[values[0]];
+        copyObject.maxPrice = priceList[values[values.length - 1]];
+        this.setState({ RCMFormData: copyObject });
     }
 
     render() {
@@ -195,6 +216,7 @@ class AddRCMLead extends Component {
             RCMFormData,
             selectSubType,
             checkValidation,
+            priceList,
         } = this.state
         const { route } = this.props
         return (
@@ -217,6 +239,8 @@ class AddRCMLead extends Component {
                                     formType={formType}
                                     subType={selectSubType}
                                     handleAreaClick={this.handleAreaClick}
+                                    priceList={priceList}
+                                    onSliderValueChange={(values) => this.onSliderValueChange(values)}
                                 />
                             </View>
                         </ScrollView>

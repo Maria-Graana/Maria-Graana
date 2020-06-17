@@ -102,8 +102,9 @@ class CMReport extends React.Component {
 
     checkRole = () => {
         const { user } = this.props
+
         let { regionFormData, agentFormData, zoneFormData } = this.state
-        if (user.role === 'admin 3') {
+        if (user.subRole === 'regional_head') {
             regionFormData = {
                 organization: user.organizationId,
                 region: user.region.id,
@@ -116,7 +117,8 @@ class CMReport extends React.Component {
                 regionText: user.region.name + ', ' + user.organizationName,
                 regions: [{ value: user.region.id, name: user.region.name }]
             }, () => { this.checkDate() })
-        } else if (user.role === 'sub_admin 1') {
+        }
+        if (user.subRole === 'zonal_manager' || user.subRole === 'branch_manager' || user.subRole === 'business_centre_manager' || user.subRole === 'call_centre_manager') {
             let organizations = [{ value: user.organizationId, name: user.organizationName }]
             zoneFormData = {
                 organization: user.organizationId,
@@ -134,8 +136,8 @@ class CMReport extends React.Component {
                 regions: [{ value: user.region.id, name: user.region.name }],
                 zones: [{ value: user.zone.id, name: user.zone.zone_name }]
             }, () => { this.checkDate() })
-        } else {
-            this.fetchRegions()
+        }
+        if (user.subRole === 'country_head' || user.subRole === 'group_head' || user.subRole === 'group_management') {
             this.fetchOrganizations()
             this.checkDate()
         }
@@ -202,10 +204,11 @@ class CMReport extends React.Component {
             })
     }
 
-    fetchRegions = () => {
+    fetchRegions = (value) => {
         const { user } = this.props
-        if (user.role !== 'admin 3' && user.role !== 'sub_admin 1') {
-            axios.get('/api/cities/regions?active=true')
+        let org = this.organizationName(value)
+        if (user.subRole !== 'regional_head' && user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager') {
+            axios.get(`/api/cities/regions?organization=${org.name.toLocaleLowerCase()}&active=true`)
                 .then((res) => {
                     let regions = []
                     res && res.data.items.length && res.data.items.map((item, index) => { return (regions.push({ value: item.id, name: item.name })) })
@@ -226,11 +229,11 @@ class CMReport extends React.Component {
         if (check === 'zone') org = this.organizationName(zoneFormData.organization)
         if (check === 'agent') org = this.organizationName(agentFormData.organization)
         if (org.name === 'Agency21') armsZone = true
-        if (user.role !== 'sub_admin 1') {
-            axios.get(`/api/areas/zones?status=active&armsZone=${armsZone}&all=true&regionId=${value}`)
+        if (user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager') {
+            axios.get(`/api/user/teams?status=true&organizationId=${org.value}&all=true&regionId=${value}`)
                 .then((res) => {
                     let zones = []
-                    res && res.data.items.length && res.data.items.map((item, index) => { return (zones.push({ value: item.id, name: item.zone_name })) })
+                    res && res.data.rows.length && res.data.rows.map((item, index) => { return (zones.push({ value: item.id, name: item.zone_name })) })
                     this.setState({ zones, agents: [], zoneFormData })
                 })
                 .catch((error) => {
@@ -356,6 +359,7 @@ class CMReport extends React.Component {
             agentFormData.region = ''
             agentFormData.zone = ''
             agentFormData.agent = ''
+            this.fetchRegions(value)
         }
         agentFormData[name] = value
         this.setState({ agentFormData })
@@ -401,6 +405,7 @@ class CMReport extends React.Component {
         if (name === 'organization') {
             zoneFormData.region = ''
             zoneFormData.zone = ''
+            this.fetchRegions(value)
         }
         if (name === 'region') zoneFormData.zone = ''
         this.setState({ zoneFormData })
@@ -443,7 +448,10 @@ class CMReport extends React.Component {
     handleRegionForm = (value, name) => {
         const { regionFormData } = this.state
         regionFormData[name] = value
-        if (name === 'organization') regionFormData.region = ''
+        if (name === 'organization') {
+            regionFormData.region = ''
+            this.fetchRegions(value)
+        }
         this.setState({ regionFormData })
     }
 

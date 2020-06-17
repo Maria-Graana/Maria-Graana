@@ -5,7 +5,7 @@ const NoResultsComponent = (props) => {
     const { imageSource } = props;
     return (
         <Image source={imageSource}
-            style={{ flex: 1, alignSelf: 'center', resizeMode: 'center', width: 300, height: 300 }} />
+            style={{ flex: 1, alignSelf: 'center', resizeMode: 'contain', width: 300, height: 300 }} />
     )
 }
 

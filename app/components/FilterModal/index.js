@@ -132,19 +132,20 @@ class FilterModal extends React.Component {
                         <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15 }]}>
 
                             <TextInput placeholder='Price Min'
-                                value={formatPrice(formData.minPrice)}
+                                value={formData.minPrice == StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice || 0)}
                                 style={[AppStyles.formControl, styles.priceStyle]}
                                 editable={false}
                             />
                             <Text style={styles.toText}>to</Text>
                             <TextInput placeholder='Price Max'
-                                value={formatPrice(formData.maxPrice)}
+                                value={formData.maxPrice == StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice || 0)}
+                                style={[AppStyles.formControl, styles.priceStyle]}
                                 style={[AppStyles.formControl, styles.priceStyle]}
                                 editable={false}
                             />
                         </View>
 
-                        <PriceSlider priceValues={prices} initialValue={prices.indexOf(Number(formData.minPrice))} finalValue={prices.indexOf(Number(formData.maxPrice))} onSliderValueChange={(values) => onSliderValueChange(values)} />
+                        <PriceSlider priceValues={prices} initialValue={prices.indexOf(Number(formData.minPrice)  || 0)} finalValue={prices.indexOf(Number(formData.maxPrice)  || 0)} onSliderValueChange={(values) => onSliderValueChange(values)} />
 
                         <View style={styles.textInputView}>
                             <View style={styles.textView}>

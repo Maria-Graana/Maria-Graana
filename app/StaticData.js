@@ -394,7 +394,8 @@ export default StaticData = {
     ],
     Constants:{
         lead_closed_won: 'closed_won',
-        lead_closed_lost:'closed_lost'
+        lead_closed_lost:'closed_lost',
+         any_value:  10000000000,
     },
     PricesProject: [
         500000,
@@ -418,6 +419,7 @@ export default StaticData = {
         250000000,
         500000000,
         1000000000,
+        10000000000,
     ],
     PricesBuy:[
           0,
@@ -441,6 +443,7 @@ export default StaticData = {
           250000000,
           500000000,
           1000000000,
+          10000000000,
     ],
     PricesRent: [
         0,
@@ -467,6 +470,7 @@ export default StaticData = {
         400000,
         500000,
         1000000,
+        10000000000,
         
     ]
 }

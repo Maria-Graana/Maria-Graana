@@ -37,7 +37,8 @@ class TeamDiary extends React.Component {
     }
 
     navigateTo = (data) => {
-        this.props.navigation.navigate('Diary', { agentId: data.id, screen: 'TeamDiary', name: `${data.firstName} ${data.lastName}'s` })
+        const {user} = this.props;
+        this.props.navigation.navigate('Diary', { agentId: data.id, screen: 'TeamDiary', managerId: user.id , name: `${data.firstName} ${data.lastName}'s` })
     }
 
     render() {

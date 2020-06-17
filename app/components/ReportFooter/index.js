@@ -28,7 +28,7 @@ class ReportFooter extends React.Component {
                         <Text style={label === 'Team' ? styles.selectedText : styles.textStyle}>Team</Text>
                     </Button>
                     {
-                        user.role !== 'sub_admin 1' ?
+                        user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager' ?
                             <Button disabled={label === 'Region' ? true : false} style={label === 'Region' ? styles.selectedButton : styles.unSelectedButton} vertical onPress={() => this.props.selectedFooterButton('Region')}>
                                 <Image source={RegionImg} style={label === 'Region' ? styles.selectedImg : styles.imgStyle} />
                                 <Text style={label === 'Region' ? styles.selectedText : styles.textStyle}>Region</Text>
@@ -37,7 +37,7 @@ class ReportFooter extends React.Component {
                             null
                     }
                     {
-                        user.role !== 'admin 3' && user.role !== 'sub_admin 1' ?
+                        user.subRole !== 'regional_head' && user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager' ?
                             <Button disabled={label === 'Organization' ? true : false} style={label === 'Organization' ? styles.selectedButton : styles.unSelectedButton} vertical onPress={() => this.props.selectedFooterButton('Organization')}>
                                 <Image source={OragnizationImg} style={label === 'Organization' ? styles.selectedImg : styles.imgStyle} />
                                 <Text style={label === 'Organization' ? styles.selectedText : styles.textStyle}>Organization</Text>

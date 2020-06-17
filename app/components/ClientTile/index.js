@@ -32,7 +32,7 @@ class CustomerTile extends React.Component {
                 activeOpacity={.7}
                 onPress={() => { this.props.onPress(item) }}
                 onLongPress={(val) => {
-                    if (Ability.canDelete(user.role, 'Client')) this.props.handleLongPress(item)
+                    if (Ability.canDelete(user.subRole, 'Client')) this.props.handleLongPress(item)
                 }}
             >
                 <View style={{ flexDirection: 'row', marginVertical: 15 }}>

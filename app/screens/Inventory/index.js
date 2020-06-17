@@ -144,7 +144,7 @@ class Inventory extends React.Component {
 
 
 					{
-						Ability.canAdd(user.role, route.params.screen) ?
+						Ability.canAdd(user.subRole, route.params.screen) ?
 							<Fab
 								active='true'
 								containerStyle={{ zIndex: 20 }}

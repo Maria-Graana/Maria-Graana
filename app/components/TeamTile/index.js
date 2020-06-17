@@ -4,12 +4,12 @@ import AppStyles from '../../AppStyles';
 import Avatar from '../../components/Avatar/index';
 import helper from '../../helper'
 
-const checkZoneName = (item) => {
-    if (item.zone && item.region) {
-        return `${helper.capitalize(item.zone.zone_name)}, ${item.region.name}`
+const checkTeamNameAndRegion = (item) => {
+    if (item.armsTeam && item.region) {
+        return `${helper.capitalize(item.armsTeam.teamName)}, ${item.region.name}`
     }
-    else if (item.zone) {
-        return item.zone && helper.capitalize(item.zone.zone_name)
+    else if (item.armsTeam) {
+        return helper.capitalize(item.armsTeam.teamName)
     }
     else if (item.region) {
         return item.region.name
@@ -27,7 +27,7 @@ class TeamTile extends React.Component {
         const { selected, data, selectedId } = this.props;
         const { item } = data;
         const organizationName = item.organization && item.organization.name ? item.organization.name : '';
-        let zoneAndRegion = checkZoneName(item);
+        let teamNameAndRegion = checkTeamNameAndRegion(item);
 
         return (
             <TouchableOpacity
@@ -57,8 +57,8 @@ class TeamTile extends React.Component {
                                 </Text> : null}
 
                         </View>
-                        {zoneAndRegion !== '' && <Text style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
-                            {zoneAndRegion}
+                        {teamNameAndRegion !== '' && <Text style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
+                            {teamNameAndRegion}
                         </Text>}
 
                     </View>

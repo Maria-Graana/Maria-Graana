@@ -28,7 +28,6 @@ class TeamTile extends React.Component {
         const { item } = data;
         const organizationName = item.organization && item.organization.name ? item.organization.name : '';
         let teamNameAndRegion = checkTeamNameAndRegion(item);
-
         return (
             <TouchableOpacity
                 activeOpacity={.7}
@@ -45,7 +44,7 @@ class TeamTile extends React.Component {
                                     {item.firstName} {item.lastName}
                                 </Text>
                                 <Text style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
-                                    {item.armsUserRole && item.armsUserRole.subRole}
+                                    {item.title && helper.capitalize(item.title)}
                                 </Text>
                             </View>
                             {

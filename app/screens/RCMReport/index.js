@@ -122,7 +122,7 @@ class RCMReport extends React.Component {
             zoneFormData = {
                 organization: user.organizationId,
                 region: user.region.id,
-                zone: user.zone.id,
+                zone: user.armsTeam.id,
             }
             this.setState({
                 lastLabel: 'Team',
@@ -131,9 +131,9 @@ class RCMReport extends React.Component {
                 regionFormData,
                 agentFormData,
                 zoneFormData,
-                regionText: user.zone.zone_name + ', ' + user.region.name + ', ' + user.organizationName,
+                regionText: user.armsTeam.teamName + ', ' + user.region.name + ', ' + user.organizationName,
                 regions: [{ value: user.region.id, name: user.region.name }],
-                zones: [{ value: user.zone.id, name: user.zone.zone_name }]
+                zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }]
             }, () => { this.checkDate() })
         }
         if (user.subRole === 'country_head' || user.subRole === 'group_head' || user.subRole === 'group_management') {

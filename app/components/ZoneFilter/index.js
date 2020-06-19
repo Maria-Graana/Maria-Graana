@@ -38,7 +38,7 @@ class ZoneFilter extends React.Component {
                                 <Image source={backArrow} style={[styles.backImg]} />
                             </TouchableOpacity>
                             <View style={styles.headerStyle}>
-                                <Text style={styles.headerText}>SELECT ZONE/BRANCH</Text>
+                                <Text style={styles.headerText}>SELECT TEAM</Text>
                             </View>
                         </View>
                         <View style={styles.pad5}>
@@ -54,7 +54,7 @@ class ZoneFilter extends React.Component {
                             }
                         </View>
                         <View style={styles.pad5}>
-                            <PickerComponent clearOnChange={true} selectedItem={formData.zone} onValueChange={(text) => { handleZoneForm(text, 'zone') }} data={zones} placeholder='Zone/Branch' />
+                            <PickerComponent clearOnChange={true} selectedItem={formData.zone} onValueChange={(text) => { handleZoneForm(text, 'zone') }} data={zones} placeholder='Team' />
                             {
                                 checkValidation === true && formData.zone === '' && <ErrorMessage errorMessage={'Required'} />
                             }

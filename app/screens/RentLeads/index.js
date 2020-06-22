@@ -176,7 +176,7 @@ class RentLeads extends React.Component {
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
-				<View style={[styles.mainFilter]}>
+				<View style={[styles.mainFilter, {marginBottom: 15}]}>
 					<View style={styles.pickerMain}>
 						<PickerComponent
 							placeholder={'Lead Status'}
@@ -194,9 +194,6 @@ class RentLeads extends React.Component {
 						</TouchableOpacity>
 					</View>
 				</View>
-				<View style={[AppStyles.container, styles.minHeight]}>
-					<View style={[styles.mainInventoryTile,]}>
-
 						{
 							leadsData && leadsData && leadsData.length > 0 ?
 
@@ -236,7 +233,6 @@ class RentLeads extends React.Component {
 								<LoadingNoResult loading={loading} />
 						}
 						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-					</View>
 					<FAB.Group
 						open={open}
 						icon="plus"
@@ -250,7 +246,6 @@ class RentLeads extends React.Component {
 						]}
 						onStateChange={({ open }) => this.setState({ open })}
 					/>
-				</View>
 				<SortModal
 					sendStatus={this.sendStatus}
 					openStatus={this.openStatus}

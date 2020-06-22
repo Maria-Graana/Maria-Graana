@@ -15,6 +15,7 @@ import StaticData from '../../StaticData'
 import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
 
 class Leads extends React.Component {
 	constructor(props) {
@@ -170,26 +171,6 @@ class Leads extends React.Component {
 		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
 			<View>
-				{/* ******************* TAb BUTTON VIEW ******* */}
-				<View style={styles.mainTopTabs}>
-
-					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'invest' && styles.activeTab]} onPress={() => { this.changeTab('invest') }}>
-							<Text style={AppStyles.textCenter}>INVEST</Text>
-						</TouchableOpacity>
-					</View>
-
-					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'sale' && styles.activeTab]} onPress={() => { this.changeTab('sale') }}>
-							<Text style={AppStyles.textCenter}>BUY</Text>
-						</TouchableOpacity>
-					</View>
-					<View style={styles.mainTabs}>
-						<TouchableOpacity style={[styles.tabBtnStyle, purposeTab === 'rent' && styles.activeTab]} onPress={() => { this.changeTab('rent') }}>
-							<Text style={AppStyles.textCenter}>RENT</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
 				<View style={[styles.mainFilter]}>
 					<View style={styles.pickerMain}>
@@ -209,57 +190,51 @@ class Leads extends React.Component {
 						</TouchableOpacity>
 					</View>
 				</View>
-				<View style={[AppStyles.container, styles.minHeight]}>
-					<View style={[styles.mainInventoryTile,]}>
+					{
+						leadsData && leadsData && leadsData.length > 0 ?
 
-						{
-							leadsData && leadsData && leadsData.length > 0 ?
+							< FlatList
+								// contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+								data={leadsData}
+								renderItem={({ item }) => (
 
-								< FlatList
-									// contentContainerStyle={{ paddingHorizontal: wp('2%') }}
-									data={leadsData}
-									renderItem={({ item }) => (
-
-										<LeadTile
-											user={user}
-											// key={key}
-											showDropdown={this.showDropdown}
-											dotsDropDown={this.state.dotsDropDown}
-											selectInventory={this.selectInventory}
-											selectedInventory={selectInventory}
-											data={item}
-											dropDownId={dropDownId}
-											unSelectInventory={this.unSelectInventory}
-											goToInventoryForm={this.goToInventoryForm}
-											navigateTo={this.navigateTo}
-											callNumber={this.callNumber}
-										/>
-									)}
-									onEndReached={() => {
-										if (leadsData.length < totalLeads) {
-											this.setState({
-												page: this.state.page + 1,
-												onEndReachedLoader: true
-											}, () => {
-												this.fetchLeads(purposeTab, statusFilter);
-											});
-										}
-										else {
-											helper.errorToast('No more properties available to show');
-										}
-									}}
-									onEndReachedThreshold={0.5}
-									keyExtractor={(item, index) => this.setKey(index)}
-								/>
-								:
-								<LoadingNoResult loading={loading} />
-						}
-
-						{
-							onEndReachedLoader ? <Loader loading={onEndReachedLoader} /> : null
-						}
-
-					</View>
+									<LeadTile
+										user={user}
+										// key={key}
+										showDropdown={this.showDropdown}
+										dotsDropDown={this.state.dotsDropDown}
+										selectInventory={this.selectInventory}
+										selectedInventory={selectInventory}
+										data={item}
+										dropDownId={dropDownId}
+										unSelectInventory={this.unSelectInventory}
+										goToInventoryForm={this.goToInventoryForm}
+										navigateTo={this.navigateTo}
+										callNumber={this.callNumber}
+									/>
+								)}
+								onEndReached={() => {
+									if (leadsData.length < totalLeads) {
+										this.setState({
+											page: this.state.page + 1,
+											onEndReachedLoader: true
+										}, () => {
+											this.fetchLeads(purposeTab, statusFilter);
+										});
+									}
+									else {
+										helper.errorToast('No more properties available to show');
+									}
+								}}
+								onEndReachedThreshold={0.5}
+								keyExtractor={(item, index) => this.setKey(index)}
+							/>
+							:
+							<LoadingNoResult loading={loading} />
+					}
+					{
+						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
+					}
 					<FAB.Group
 						open={open}
 						icon="plus"
@@ -273,7 +248,6 @@ class Leads extends React.Component {
 						]}
 						onStateChange={({ open }) => this.setState({ open })}
 					/>
-				</View>
 				<SortModal
 					sendStatus={this.sendStatus}
 					openStatus={this.openStatus}

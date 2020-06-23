@@ -76,6 +76,12 @@ class PushNotifications extends React.Component {
                 priority: 'max',
                 vibrate: [0, 250, 250, 250],
             });
+            Notifications.createChannelAndroidAsync('reminder', {
+                name: 'reminder',
+                sound: true,
+                priority: 'max',
+                vibrate: [0, 250, 250, 250],
+            });
         }
     }
 

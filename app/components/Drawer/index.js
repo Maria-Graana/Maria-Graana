@@ -32,7 +32,7 @@ class CustomDrawerContent extends React.Component {
 
     render() {
         const { user, count } = this.props
-        const { role } = user
+        const { subRole } = user
         return (
             <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
                 <ScrollView style={[styles.scrollContainer, { width: '100%', }]}>
@@ -58,6 +58,7 @@ class CustomDrawerContent extends React.Component {
                     {Ability.canView(role, 'Client') && <DrawerItem screen={'Clients'} navigateTo={() => { this.navigateTo('Client') }} />}
                     {Ability.canView(role, 'Targets') && <DrawerItem screen={'Targets'} navigateTo={() => { this.navigateTo('Targets', { screen: 'Targets' }) }} />}
                     {/* {Ability.canView(role, 'CreateUser') && <DrawerItem screen={'Create User'} navigateTo={() => { this.navigateTo('CreateUser') }} />} */}
+
                     <View style={styles.underLine} />
                     <DrawerItem screen={'Change Password'} navigateTo={() => { this.navigateTo('ChangePassword') }} />
                     <DrawerItem screen={'Logout'} navigateTo={() => {

@@ -240,8 +240,6 @@ class InvestLeads extends React.Component {
 										keyExtractor={(item, index) => this.setKey(index)}
 									/>
 								</View>
-
-
 								:
 								<LoadingNoResult loading={loading} />
 						}

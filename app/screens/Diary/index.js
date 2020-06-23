@@ -344,7 +344,7 @@ class Diary extends React.Component {
     let isManager = false;
     const managerId = val.managerId ? val.managerId : null;
     isManager = managerId ? user.id == managerId ? true : false : false;
-    if ((val.addedBy === 'self' || isManager)) {
+    if ((val.taskType !== 'Daily Task' && val.taskType !== 'Weekly Task') && (val.addedBy === 'self' || isManager) ) {
       ActionSheet.show(
         {
           options: BUTTONS,
@@ -390,6 +390,7 @@ class Diary extends React.Component {
   render() {
     const { showCalendar, startDate, loading, selectedDiary, newDiaryData, diaryData, selectedDate } = this.state;
     const { user, route } = this.props;
+    //console.log(user.subRole);
     const { name } = route.params;
     return (
       !loading ?

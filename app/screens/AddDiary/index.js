@@ -86,7 +86,6 @@ class AddDiary extends Component {
             }
             payload.addedBy = addedBy;
             payload.managerId = managerId;
-             console.log(payload);
             delete payload.startTime
             delete payload.endTime
             return payload;

@@ -179,7 +179,7 @@ class InvestLeads extends React.Component {
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
-				<View style={[styles.mainFilter]}>
+				<View style={[styles.mainFilter, {marginBottom: 15}]}>
 					<View style={styles.pickerMain}>
 						<PickerComponent
 							placeholder={'Lead Status'}
@@ -197,17 +197,11 @@ class InvestLeads extends React.Component {
 						</TouchableOpacity>
 					</View>
 				</View>
-				<View style={[AppStyles.container, styles.minHeight]}>
-					<View style={[styles.mainInventoryTile]}>
-
 						{
 							leadsData && leadsData && leadsData.length > 0 ?
-								<View>
-
 									< FlatList
 										data={leadsData}
 										renderItem={({ item }) => (
-											<View>
 												<LeadTile
 													user={user}
 													// key={key}
@@ -222,8 +216,6 @@ class InvestLeads extends React.Component {
 													navigateTo={this.navigateTo}
 													callNumber={this.callNumber}
 												/>
-											</View>
-
 										)}
 										// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
 										onEndReached={() => {
@@ -239,13 +231,10 @@ class InvestLeads extends React.Component {
 										onEndReachedThreshold={0.5}
 										keyExtractor={(item, index) => this.setKey(index)}
 									/>
-								</View>
 								:
 								<LoadingNoResult loading={loading} />
 						}
 						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-
-					</View>
 					<FAB.Group
 						open={open}
 						icon="plus"
@@ -259,7 +248,6 @@ class InvestLeads extends React.Component {
 						]}
 						onStateChange={({ open }) => this.setState({ open })}
 					/>
-				</View>
 				<SortModal
 					sendStatus={this.sendStatus}
 					openStatus={this.openStatus}

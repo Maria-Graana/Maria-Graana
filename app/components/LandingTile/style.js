@@ -21,11 +21,12 @@ export default styles = StyleSheet.create({
         resizeMode: 'contain'
     },
     squareContainer: {
-        height: 100,
+        height: 90,
         width: (windowWidth / 2) - 20,
         borderRadius: 10,
         backgroundColor: 'white', 
         margin: 10,
+        paddingVertical: 10,
         justifyContent: "space-around",
     },
     headingText: {

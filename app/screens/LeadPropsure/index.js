@@ -250,7 +250,8 @@ class LeadPropsure extends React.Component {
         navigation.navigate('AddDiary', {
             update: false,
             rcmLeadId: lead.id,
-            agentId: user.id
+            agentId: user.id,
+            addedBy: 'self'
         });
     }
 

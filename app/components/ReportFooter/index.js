@@ -7,6 +7,7 @@ import AgentImg from '../../../assets/img/agent.png';
 import RegionImg from '../../../assets/img/region.png';
 import TeamImg from '../../../assets/img/team.png';
 import OragnizationImg from '../../../assets/img/oragnization.png';
+import { connect } from 'react-redux';
 
 class ReportFooter extends React.Component {
     constructor(props) {
@@ -14,7 +15,7 @@ class ReportFooter extends React.Component {
     }
 
     render() {
-        const { label } = this.props
+        const { label, user } = this.props
         return (
             <Footer>
                 <FooterTab>
@@ -26,14 +27,24 @@ class ReportFooter extends React.Component {
                         <Image source={TeamImg} style={label === 'Team' ? styles.selectedImg : styles.imgStyle} />
                         <Text style={label === 'Team' ? styles.selectedText : styles.textStyle}>Team</Text>
                     </Button>
-                    <Button disabled={label === 'Region' ? true : false} style={label === 'Region' ? styles.selectedButton : styles.unSelectedButton} vertical onPress={() => this.props.selectedFooterButton('Region')}>
-                        <Image source={RegionImg} style={label === 'Region' ? styles.selectedImg : styles.imgStyle} />
-                        <Text style={label === 'Region' ? styles.selectedText : styles.textStyle}>Region</Text>
-                    </Button>
-                    <Button disabled={label === 'Organization' ? true : false} style={label === 'Organization' ? styles.selectedButton : styles.unSelectedButton} vertical onPress={() => this.props.selectedFooterButton('Organization')}>
-                        <Image source={OragnizationImg} style={label === 'Organization' ? styles.selectedImg : styles.imgStyle} />
-                        <Text style={label === 'Organization' ? styles.selectedText : styles.textStyle}>Organization</Text>
-                    </Button>
+                    {
+                        user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager' ?
+                            <Button disabled={label === 'Region' ? true : false} style={label === 'Region' ? styles.selectedButton : styles.unSelectedButton} vertical onPress={() => this.props.selectedFooterButton('Region')}>
+                                <Image source={RegionImg} style={label === 'Region' ? styles.selectedImg : styles.imgStyle} />
+                                <Text style={label === 'Region' ? styles.selectedText : styles.textStyle}>Region</Text>
+                            </Button>
+                            :
+                            null
+                    }
+                    {
+                        user.subRole !== 'regional_head' && user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager' ?
+                            <Button disabled={label === 'Organization' ? true : false} style={label === 'Organization' ? styles.selectedButton : styles.unSelectedButton} vertical onPress={() => this.props.selectedFooterButton('Organization')}>
+                                <Image source={OragnizationImg} style={label === 'Organization' ? styles.selectedImg : styles.imgStyle} />
+                                <Text style={label === 'Organization' ? styles.selectedText : styles.textStyle}>Organization</Text>
+                            </Button>
+                            :
+                            null
+                    }
                 </FooterTab>
             </Footer>
         )
@@ -72,4 +83,10 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ReportFooter;
+mapStateToProps = (store) => {
+    return {
+        user: store.user.user
+    }
+}
+
+export default connect(mapStateToProps)(ReportFooter)

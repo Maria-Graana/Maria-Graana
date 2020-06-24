@@ -46,7 +46,7 @@ class Landing extends React.Component {
 		for (let tile of tileNames) {
 			let label = tile
 			tile = tile.replace(/ /g, "")
-			if (Ability.canView(user.role, tile)) {
+			if (Ability.canView(user.subRole, tile)) {
 				if (label === 'Inventory') label = 'Properties'
 				if (counter < maxTiles) {
 					let oneTile = {

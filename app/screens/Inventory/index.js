@@ -144,7 +144,7 @@ class Inventory extends React.Component {
 
 
 					{
-						Ability.canAdd(user.role, route.params.screen) ?
+						Ability.canAdd(user.subRole, route.params.screen) ?
 							<Fab
 								active='true'
 								containerStyle={{ zIndex: 20 }}
@@ -163,7 +163,7 @@ class Inventory extends React.Component {
 					{
 						propertiesList && propertiesList.length > 0 ?
 							< FlatList
-								contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+								//contentContainerStyle={{ paddingHorizontal: wp('2%') }}
 								data={propertiesList}
 								renderItem={({ item }) => (
 									<PropertyTile

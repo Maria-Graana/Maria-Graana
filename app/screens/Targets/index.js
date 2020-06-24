@@ -110,7 +110,7 @@ class Targets extends Component {
                             </View>
 
                             {
-                                Ability.canAdd(user.role, route.params.screen) && Ability.canView(user.role, route.params.screen) ?
+                                Ability.canAdd(user.subRole, route.params.screen) && Ability.canView(user.subRole, route.params.screen) ?
                                     < View style={[AppStyles.mainInputWrap]}>
                                         <Button
                                             style={[AppStyles.formBtn, styles.addInvenBtn]}

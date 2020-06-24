@@ -78,7 +78,7 @@ class ClientDetail extends React.Component {
                     </View>
                     <View style={styles.pad}>
                         {
-                            Ability.canEdit(user.role, 'Client') && <MaterialCommunityIcons onPress={() => { this.navigateTo() }} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
+                            Ability.canEdit(user.subRole, 'Client') && <MaterialCommunityIcons onPress={() => { this.navigateTo() }} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                         }
                     </View>
                 </View>

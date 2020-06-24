@@ -6,10 +6,23 @@ import React from 'react'
 import phone from '../../../assets/img/phone2.png'
 import styles from './style'
 import helper from '../../helper';
+import StaticData from '../../StaticData';
 import { formatPrice } from '../../PriceFormate'
 class LeadTile extends React.Component {
   constructor(props) {
     super(props)
+  }
+
+  checkPrice  = (price) => {
+        if(price===null){
+          return '0';
+        }
+        else if(price == StaticData.Constants.any_value){
+          return 'Any'
+        }
+        else{
+           return formatPrice(price);
+        }
   }
 
 
@@ -56,7 +69,7 @@ class LeadTile extends React.Component {
                     PKR
             	 	</Text>
                   <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
-                    {!data.projectId && data.min_price && formatPrice(data.price === null ? 0 : data.min_price) + ' - '} {!data.projectId && formatPrice(data.price === null ? 0 : data.price)}  {data.projectId && data.minPrice && formatPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && formatPrice(data.maxPrice)}
+                    {!data.projectId && data.min_price && this.checkPrice(data.min_price) + ' - '} {!data.projectId && data.price && this.checkPrice(data.price)}  {data.projectId && data.minPrice && this.checkPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && this.checkPrice(data.maxPrice)}
                   </Text>
                 </View>
 

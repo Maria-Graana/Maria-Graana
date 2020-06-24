@@ -9,6 +9,8 @@ import TeamDiary from '../screens/TeamDiary';
 import moment from 'moment';
 import Lead from './LeadsNavigator';
 import HeaderRight from '../components/HeaderRight/index';
+import WhiteMenu from '../components/WhiteMenu/index';
+import WhiteLogo from '../components/WhiteLogo/index';
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index';
 import AddInventory from '../screens/AddInventory/index'
 import AddCMLead from '../screens/AddCMLead';
@@ -44,7 +46,15 @@ const headerStyle = {
         elevation: 0,
         shadowOpacity: 0,
         backgroundColor: AppStyles.colors.backgroundColor
-    }
+    },
+}
+const landingHeader = {
+    headerStyle: {
+        borderBottomWidth: 0,
+        elevation: 0,
+        shadowOpacity: 0,
+        backgroundColor: AppStyles.colors.primaryColor
+    },
 }
 
 function MainStack() {
@@ -53,10 +63,10 @@ function MainStack() {
         >
             <Stack.Screen name="Landing" component={Landing}
                 options={({ navigation, route }) => ({
-                    ...headerStyle,
+                    ...landingHeader,
                     title: '',
-                    headerLeft: props => <HeaderLeftLogo navigation={navigation} />,
-                    headerRight: props => <HeaderRight navigation={navigation} />,
+                    headerLeft: props => <WhiteLogo />,
+                    headerRight: props => <WhiteMenu navigation={navigation} />,
                     headerTitleAlign: 'center',
                 })}
             />

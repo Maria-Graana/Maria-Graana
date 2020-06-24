@@ -16,18 +16,38 @@ export default styles = StyleSheet.create({
     },
     containerImg: {
         marginHorizontal: 15,
-        width: 30,
-        height: 30,
+        width: 35,
+        height: 35,
         resizeMode: 'contain'
     },
     squareContainer: {
-        flex: 1,
-        height: 160,
-        borderRadius: 20,
+        height: 100,
+        width: (windowWidth / 2) - 20,
+        borderRadius: 10,
+        backgroundColor: 'white', 
+        margin: 10,
         justifyContent: "space-around",
     },
     headingText: {
         fontSize: 16,
-        fontFamily: AppStyles.fonts.defaultFont
+        fontFamily: AppStyles.fonts.boldFont
     },
+    badgeText: {
+        fontFamily: AppStyles.fonts.defaultFont,
+        color: AppStyles.colors.primaryColor
+    },
+    badgeView: {
+        borderColor: AppStyles.colors.primaryColor,
+        borderWidth: 1,
+        borderRadius: 15,
+        height: 25,
+        width: 25,
+        marginRight: 10,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    tileView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    }
 });

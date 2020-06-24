@@ -2,13 +2,13 @@ import { Linking } from 'react-native';
 import { Toast } from 'native-base';
 import moment from 'moment-timezone';
 import AppStyles from './AppStyles'
-import DiaryImg from '../assets/img/diary.png'
-import InventoryImg from '../assets/img/Properties.png'
-import TeamDiaryImg from '../assets/img/TeamDiary.png'
-import LeadsImg from '../assets/img/leads.png'
-import DashboardImg from '../assets/img/Dashboard.png'
-import TargetsImg from '../assets/img/Targets.png'
-import ClientsImg from '../assets/img/Clients.png'
+import DiaryImg from '../assets/img/diary-icon-l.png'
+import InventoryImg from '../assets/img/properties-icon-l.png'
+import TeamDiaryImg from '../assets/img/teams-diary-icon-l.png'
+import LeadsImg from '../assets/img/lead-icon-l.png'
+import DashboardImg from '../assets/img/dashboard-icon-l.png'
+import TargetsImg from '../assets/img/target-icon-l.png'
+import ClientsImg from '../assets/img/clients-icon-l.png'
 
 const helper = {
 	successToast(message) {

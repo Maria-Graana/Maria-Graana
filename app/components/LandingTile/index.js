@@ -1,36 +1,36 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
-import { StyleSheet } from 'react-native';
+import { Image, Text, View, TouchableOpacity } from 'react-native';
 import AppStyles from '../../AppStyles';
 import styles from './style';
-import { LinearGradient } from 'expo-linear-gradient';
-import { formatPrice } from '../../PriceFormate'
 
-let start = { x: 0, y: 1 }
-let end = { x: 1, y: 0 }
-let locations = [0.2, 1.0]
-let colors = ['white', 'white']
-
-class SqaureContainer extends React.Component {
+class LandingTile extends React.Component {
     constructor(props) {
         super(props)
     }
 
     render() {
-        const { imagePath, containerStyle, label, total } = this.props
+        const { imagePath, label, screenName, navigateFunction, pagePath, badges } = this.props
         return (
-            <View
-                style={[styles.squareContainer, containerStyle, {backgroundColor: 'white'}]}>
-                <View>
+            <TouchableOpacity
+                onPress={() => navigateFunction(pagePath, screenName)}
+                style={styles.squareContainer}>
+                <View style={styles.tileView}>
                     <Image source={imagePath} style={styles.containerImg} />
+                    {
+                        badges && badges !== 0 ?
+                            <View style={styles.badgeView}>
+                                <Text style={styles.badgeText}>{badges}</Text>
+                            </View>
+                            :
+                            null
+                    }
                 </View>
                 <View style={styles.headView}>
-                    <Text style={styles.totalText}>{total ? formatPrice(total) : formatPrice(0)}</Text>
                     <Text style={styles.headingText}>{label}</Text>
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
 }
 
-export default SqaureContainer;
+export default LandingTile;

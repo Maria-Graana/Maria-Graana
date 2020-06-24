@@ -50,13 +50,13 @@ class CustomDrawerContent extends React.Component {
                         </View>
                     </View>
                     <View style={styles.underLine} />
-                    {Ability.canView(role, 'Dashboard') && <DrawerItem screen={'Dashboard'} navigateTo={() => { this.navigateTo('Dashboard') }} />}
-                    {Ability.canView(role, 'Diary') && <DrawerIconItem screen={'Diary'} badges={count.diary} navigateTo={() => { this.navigateTo('Diary') }} />}
-                    {Ability.canView(role, 'TeamDiary') && <DrawerItem screen={'Team Diary'} navigateTo={() => { this.navigateTo('TeamDiary') }} />}
-                    {Ability.canView(role, 'Leads') && <DrawerIconItem screen={'Leads'} badges={count.leads} navigateTo={() => { this.navigateTo('Leads') }} />}
-                    {Ability.canView(role, 'Inventory') && <DrawerIconItem screen={'Properties'} badges={count.inventory} navigateTo={() => { this.navigateTo('Inventory') }} />}
-                    {Ability.canView(role, 'Client') && <DrawerItem screen={'Clients'} navigateTo={() => { this.navigateTo('Client') }} />}
-                    {Ability.canView(role, 'Targets') && <DrawerItem screen={'Targets'} navigateTo={() => { this.navigateTo('Targets', { screen: 'Targets' }) }} />}
+                    {Ability.canView(subRole, 'Dashboard') && <DrawerItem screen={'Dashboard'} navigateTo={() => { this.navigateTo('Dashboard') }} />}
+                    {Ability.canView(subRole, 'Diary') && <DrawerIconItem screen={'Diary'} badges={count.diary} navigateTo={() => { this.navigateTo('Diary') }} />}
+                    {Ability.canView(subRole, 'TeamDiary') && <DrawerItem screen={'Team Diary'} navigateTo={() => { this.navigateTo('TeamDiary') }} />}
+                    {Ability.canView(subRole, 'Leads') && <DrawerIconItem screen={'Leads'} badges={count.leads} navigateTo={() => { this.navigateTo('Leads') }} />}
+                    {Ability.canView(subRole, 'Inventory') && <DrawerIconItem screen={'Properties'} badges={count.inventory} navigateTo={() => { this.navigateTo('Inventory') }} />}
+                    {Ability.canView(subRole, 'Client') && <DrawerItem screen={'Clients'} navigateTo={() => { this.navigateTo('Client') }} />}
+                    {Ability.canView(subRole, 'Targets') && <DrawerItem screen={'Targets'} navigateTo={() => { this.navigateTo('Targets', { screen: 'Targets' }) }} />}
                     {/* {Ability.canView(role, 'CreateUser') && <DrawerItem screen={'Create User'} navigateTo={() => { this.navigateTo('CreateUser') }} />} */}
 
                     <View style={styles.underLine} />

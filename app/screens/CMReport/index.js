@@ -233,7 +233,7 @@ class CMReport extends React.Component {
             axios.get(`/api/user/teams?status=true&organizationId=${org.value}&all=true&regionId=${value}`)
                 .then((res) => {
                     let zones = []
-                    res && res.data.rows.length && res.data.rows.map((item, index) => { return (zones.push({ value: item.id, name: item.zone_name })) })
+                    res && res.data.rows.length && res.data.rows.map((item, index) => { return (zones.push({ value: item.id, name: item.teamName })) })
                     this.setState({ zones, agents: [], zoneFormData })
                 })
                 .catch((error) => {

@@ -1,5 +1,4 @@
 import { ScrollView, Text, View } from 'react-native';
-
 import AppStyles from '../../AppStyles'
 import { Button } from 'native-base';
 import React from 'react';
@@ -72,14 +71,38 @@ class LeadDetail extends React.Component {
     navigateTo = () => {
         const { navigation } = this.props
         const { lead, type } = this.state
+        var status = lead.status
+        let page = ''
+
         if (type === 'Investment') {
+
+            if (status === "token" || status === 'payment' || status === 'closed_won' || status === 'closed_lost') {
+                page = 'Payments'
+            }else{
+                page = 'Meetings'
+            }
             navigation.navigate('CMLeadTabs', {
-                screen: 'Meetings',
+                screen: page,
                 params: { lead: lead },
             })
         } else {
+            if (status === "viewing") {
+                page = 'Viewing'
+            }
+            if (status === "offer") {
+                page = 'Offer'
+            }
+            if (status === "propsure") {
+                page = 'Propsure'
+            }
+            if (status === "payment") {
+                page = 'Payment'
+            }
+            if (status === "payment" || status === 'closed_won' || status === 'closed_lost') {
+                page = 'Payment'
+            }
             navigation.navigate('RCMLeadTabs', {
-                screen: 'Match',
+                screen: page,
                 params: { lead: lead },
             })
         }
@@ -87,20 +110,21 @@ class LeadDetail extends React.Component {
 
     navigateToAssignLead = () => {
         const { navigation } = this.props
-        const { lead,type } = this.state
-        navigation.navigate('AssignLead', { leadId: lead.id, type:type, screen: 'LeadDetail' })
+        const { lead, type } = this.state
+        navigation.navigate('AssignLead', { leadId: lead.id, type: type, screen: 'LeadDetail' })
     }
 
     checkAssignedLead = (lead) => {
         const { user } = this.props;
-        // Show assign lead button only if loggedIn user is subadmin 1
-        if(Ability.canAdd(user.subRole, 'AssignLead')){
+        // Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
+        if(Ability.canView(user.subRole, 'AssignLead')){
+
             // Lead can only be assigned to someone else if it is assigned to no one or to current user 
-            if (lead.assigned_to_armsuser_id===null || user.id === lead.assigned_to_armsuser_id) {
+            if (lead.assigned_to_armsuser_id === null || user.id === lead.assigned_to_armsuser_id) {
                 this.setState({ showAssignToButton: true })
             }
             else {
-                // Lead is already assigned to some other user (any sub_admin 2 user)
+                // Lead is already assigned to some other user (any other user)
                 this.setState({ showAssignToButton: false })
             }
         }
@@ -110,11 +134,11 @@ class LeadDetail extends React.Component {
         if (lead.customer)
             // for  CM LEAD
             this.setState({ customerName: helper.capitalize(lead.customer.customerName) })
-        else{
-               // FOR RCM LEAD
-               this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
+        else {
+            // FOR RCM LEAD
+            this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
         }
-         
+
     }
 
     render() {

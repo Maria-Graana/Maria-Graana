@@ -1,22 +1,24 @@
 import { FlatList } from 'react-native';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import Ability from '../../hoc/Ability'
 import AppStyles from '../../AppStyles'
+import styles from './style';
 import helper from '../../helper'
-import LandingButtonTile from '../../components/LandingButtonTile'
+import LandingTile from '../../components/LandingTile'
 import PushNotification from '../../PushNotifications';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from 'react-redux';
 import { getListingsCount } from '../../actions/listings'
+import { View, TouchableOpacity, Text, Image } from 'react-native';
+import addIcon from '../../../assets/img/add-icon-l.png';
+import style from './style';
 
 class Landing extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			tiles: [],
-			maxTiles: 3,
-			tileNames: ['Dashboard', 'Team Diary', 'Diary', 'Leads', 'Inventory', 'Client', 'Targets']
+			tileNames: ['Dashboard', 'Leads', 'Client', 'Inventory', 'Diary', 'Team Diary', 'Targets']
 		}
 	}
 
@@ -39,7 +41,7 @@ class Landing extends React.Component {
 
 	fetchTiles = () => {
 		const { user, count } = this.props
-		const { maxTiles, tileNames } = this.state
+		const { tileNames } = this.state
 		let counter = 0
 		let tileData = []
 
@@ -48,19 +50,18 @@ class Landing extends React.Component {
 			tile = tile.replace(/ /g, "")
 			if (Ability.canView(user.subRole, tile)) {
 				if (label === 'Inventory') label = 'Properties'
-				if (counter < maxTiles) {
-					let oneTile = {
-						id: counter,
-						label: label.toUpperCase(),
-						pagePath: tile,
-						buttonImg: helper.tileImage(tile),
-						screenName: tile
-					}
-					if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
-					else oneTile.badges = 0
-					tileData.push(oneTile)
-					counter++
+				if (label === 'Team Diary') label = 'Team\'s Diary'
+				if (label === 'Client') label = 'Clients'
+				let oneTile = {
+					id: counter,
+					label: label,
+					pagePath: tile,
+					buttonImg: helper.tileImage(tile),
+					screenName: tile
 				}
+				if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+				else oneTile.badges = 0
+				tileData.push(oneTile)
 			}
 		}
 
@@ -77,22 +78,35 @@ class Landing extends React.Component {
 		const { tiles } = this.state
 
 		return (
-			// <ScrollView contentContainerStyle={[AppStyles.container, { paddingLeft: wp('5%'), paddingRight: wp('5%'), justifyContent: 'space-between' }]} >
-			<SafeAreaView style={[AppStyles.container, { paddingLeft: wp('5%'), paddingRight: wp('5%'), justifyContent: 'space-between' }]}>
+			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor }]}>
 				<PushNotification />
 				{
 					tiles.length ?
 						< FlatList
+							numColumns={2}
 							data={tiles}
 							renderItem={(item, index) => (
-								<LandingButtonTile navigateFunction={this.navigateFunction} label={item.item.label} pagePath={item.item.pagePath} screenName={item.item.screenName} buttonImg={item.item.buttonImg} badges={item.item.badges} />
+								<LandingTile navigateFunction={this.navigateFunction} pagePath={item.item.pagePath} screenName={item.item.screenName} badges={item.item.badges} label={item.item.label} imagePath={item.item.buttonImg} />
 							)}
 							keyExtractor={(item, index) => item.id.toString()}
 						/>
 						: null
 				}
-			</SafeAreaView>
-			// </ScrollView>
+				<View style={styles.btnView}>
+					<TouchableOpacity
+						onPress={() => { this.props.navigation.navigate('AddInventory', { update: false }) }}
+						style={styles.btnStyle}>
+						<Image source={addIcon} style={styles.containerImg} />
+						<Text style={styles.font}>Add Property</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => { this.props.navigation.navigate('AddClient', { 'update': false }) }}
+						style={[styles.btnStyle, { marginHorizontal: 0 }]}>
+						<Image source={addIcon} style={styles.containerImg} />
+						<Text style={styles.font}>Add Client</Text>
+					</TouchableOpacity>
+				</View>
+			</SafeAreaView >
 		)
 	}
 }

@@ -85,7 +85,7 @@ class DairyPopup extends React.Component {
                             <Text style={styles.textStyle}>{data.subject} </Text>
                             {
                                 (data.addedBy === 'self' || isManager) && checkTaskType && (data.status === 'pending' || data.status === 'inProgress') &&
-                                    Ability.canEdit(user.role, screenName) ?
+                                    Ability.canEdit(user.subRole, screenName) ?
                                     < MaterialCommunityIcons onPress={() => this.updateDiary(data)} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                                     : null
                             }

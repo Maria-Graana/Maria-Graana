@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, Linking } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text, Linking, Image } from 'react-native';
 import { Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
@@ -228,22 +228,26 @@ class Meetings extends Component {
 
   goToComments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Comments', { cmLeadId: lead.id });
+    navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
   }
 
   goToAttachments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Attachments', { cmLeadId: lead.id });
+    navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
   }
 
   goToDiaryForm = () => {
     const { navigation, route, user } = this.props;
     navigation.navigate('AddDiary', {
       update: false,
-      cmLeadId: lead.id,
+      cmLeadId: this.props.lead.id,
       agentId: user.id
     });
   }
+
+  navigateTo = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+	}
   render() {
     const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue, editMeeting } = this.state
     let leadData = this.props.lead
@@ -275,7 +279,7 @@ class Meetings extends Component {
             </View>
           </ScrollView>
 
-          <FAB.Group
+          {/* <FAB.Group
             open={open}
             icon="plus"
             fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
@@ -287,24 +291,48 @@ class Meetings extends Component {
 
             ]}
             onStateChange={({ open }) => this.setState({ open })}
-          />
+          /> */}
 
         </View>
         {
           leadClosedCheck == true &&
           <View style={[styles.callMeetingBtn]}>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
-                <Text style={styles.alignCenter}>CALL</Text>
+              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
+                <Text style={styles.alignCenter}>Add Meeting</Text>
               </TouchableOpacity>
             </View>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
-                <Text style={styles.alignCenter}>ADD MEETING</Text>
+              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
+                <Text style={styles.alignCenter}>Call</Text>
               </TouchableOpacity>
             </View>
+
           </View>
         }
+
+        <View style={styles.bottomNavMain}>
+          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.navigateTo()}>
+            <Image style={styles.bottomNavImg} source={require('../../../assets/img/details.png')} />
+            <Text style={styles.bottomNavBtnText}>Details</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.goToComments()}>
+            <Image style={styles.bottomNavImg} source={require('../../../assets/img/msg.png')} />
+            <Text style={styles.bottomNavBtnText}>Comments</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.goToAttachments()}>
+            <Image style={styles.bottomNavImg} source={require('../../../assets/img/files.png')} />
+            <Text style={styles.bottomNavBtnText}>Files</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.goToDiaryForm()}>
+            <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundPlus.png')} />
+            <Text style={styles.bottomNavBtnText}>Add Task</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bottomNavBtn}>
+            <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundCheck.png')} />
+            <Text style={styles.bottomNavBtnText}>Close</Text>
+          </TouchableOpacity>
+        </View>
 
 
 

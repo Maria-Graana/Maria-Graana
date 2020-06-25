@@ -157,7 +157,7 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
                         <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{lead.projectId && lead.project && helper.capitalize(lead.project.name)}</Text>
                         <Text style={styles.headingText}>Price Range </Text>
-                        <Text style={styles.labelText}>PKR {!lead.projectId && lead.price} {lead.projectId && lead.minPrice && lead.minPrice + ' - '} {lead.projectId && lead.maxPrice && lead.maxPrice}</Text>
+                        <Text style={styles.labelText}>{!lead.projectId && helper.checkPrice(lead.price, true)} {lead.projectId && lead.minPrice && helper.checkPrice(lead.minPrice, true) + ' - '} {lead.projectId && lead.maxPrice && helper.checkPrice(lead.maxPrice, false)}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Assigned</Text>
                         <Text style={styles.labelText}>{lead.assigned_at ? moment(lead.assigned_at).format("MMM DD YYYY, hh:mm A") : '-'} </Text>

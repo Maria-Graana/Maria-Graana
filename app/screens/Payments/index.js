@@ -578,6 +578,10 @@ class Payments extends Component {
 		});
 	}
 
+	navigateTo = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+	}
+
 	render() {
 		const {
 			getProject,
@@ -647,10 +651,14 @@ class Payments extends Component {
 							handlePayments={this.handlePayments}
 							closedLeadEdit={closedLeadEdit}
 							closedLead={this.closedLead}
+							goToDiaryForm={this.goToDiaryForm}
+							goToAttachments={this.goToAttachments}
+							goToComments={this.goToComments}
+							navigateTo={this.navigateTo}
 						/>
 					</View>
 				</ScrollView>
-				<FAB.Group
+				{/* <FAB.Group
 					open={open}
 					icon="plus"
 					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
@@ -662,7 +670,7 @@ class Payments extends Component {
 
 					]}
 					onStateChange={({ open }) => this.setState({ open })}
-				/>
+				/> */}
 				{
 					modalVisible &&
 					<PaymentAlert

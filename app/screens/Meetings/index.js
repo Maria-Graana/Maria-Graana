@@ -15,6 +15,7 @@ import { ProgressBar, Colors } from 'react-native-paper';
 import { FAB } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 import StaticData from '../../StaticData';
+import CMBottomNav from '../../components/CMBottomNav'
 
 class Meetings extends Component {
   constructor(props) {
@@ -42,6 +43,7 @@ class Meetings extends Component {
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
+    console.log(this.props.lead)
   }
 
   fetchLead = () => {
@@ -311,31 +313,12 @@ class Meetings extends Component {
           </View>
         }
 
-        <View style={styles.bottomNavMain}>
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.navigateTo()}>
-            <Image style={styles.bottomNavImg} source={require('../../../assets/img/details.png')} />
-            <Text style={styles.bottomNavBtnText}>Details</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.goToComments()}>
-            <Image style={styles.bottomNavImg} source={require('../../../assets/img/msg.png')} />
-            <Text style={styles.bottomNavBtnText}>Comments</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.goToAttachments()}>
-            <Image style={styles.bottomNavImg} source={require('../../../assets/img/files.png')} />
-            <Text style={styles.bottomNavBtnText}>Files</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.goToDiaryForm()}>
-            <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundPlus.png')} />
-            <Text style={styles.bottomNavBtnText}>Add Task</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomNavBtn}>
-            <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundCheck.png')} />
-            <Text style={styles.bottomNavBtnText}>Close</Text>
-          </TouchableOpacity>
-        </View>
-
-
-
+        <CMBottomNav
+          goToAttachments={this.goToAttachments}
+          navigateTo={this.navigateTo}
+          goToDiaryForm={this.goToDiaryForm}
+          goToComments={this.goToComments}
+        />
 
         {/* ************Modal Component************ */}
         <MeetingModal

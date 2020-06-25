@@ -29,7 +29,7 @@ export default styles = StyleSheet.create({
   alignCenter: {
     textAlign: 'center',
     color: '#333',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     letterSpacing: 1,
   },
@@ -42,6 +42,10 @@ export default styles = StyleSheet.create({
     marginRight: 1,
     borderRadius: 30,
     marginRight: 10,
+    elevation: -3,
+    shadowOffset: { width: -1, height: -1 },
+    shadowColor: '#33333312',
+    shadowOpacity: 1,
   },
   meetingLine: {
     width: '50%',

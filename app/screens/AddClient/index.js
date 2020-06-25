@@ -34,9 +34,9 @@ class AddClient extends Component {
     }
     componentDidMount() {
         const { route, navigation } = this.props
-        navigation.setParams({ title: 'ADD CLIENT INFO'})
+        navigation.setParams({ title: 'ADD CLIENT INFO' })
         if ('update' in route.params && route.params.update) {
-            navigation.setParams({ title: 'UPDATE CLIENT INFO'})
+            navigation.setParams({ title: 'UPDATE CLIENT INFO' })
             this.updateFields()
         }
     }
@@ -87,7 +87,7 @@ class AddClient extends Component {
 
     formSubmit = () => {
         const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
-        const { route } = this.props
+        const { route, navigation } = this.props
         const { update, client } = route.params
         if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
         if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
@@ -110,14 +110,8 @@ class AddClient extends Component {
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
                             if (res.status === 200) {
-                                if(res.data.message){
-                                    helper.errorToast(res.data.message)
-                                }
-                                else{
-                                    RootNavigation.navigate('Client')
-                                    helper.successToast('CLIENT CREATED')
-                                }
-                               
+                                navigation.goBack()
+                                helper.successToast(res.data.message)
                             }
                         })
                         .catch((error) => {

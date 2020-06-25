@@ -47,7 +47,7 @@ export default styles = StyleSheet.create({
   },
   btnView: {
     position: 'absolute',
-    bottom: 50,
+    bottom: 30,
     right: 0,
     flexDirection: "row",
     marginHorizontal: 10

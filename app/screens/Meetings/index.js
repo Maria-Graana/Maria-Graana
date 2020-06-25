@@ -14,6 +14,7 @@ import AppStyles from '../../AppStyles';
 import { ProgressBar, Colors } from 'react-native-paper';
 import { FAB } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import StaticData from '../../StaticData';
 import CMBottomNav from '../../components/CMBottomNav'
 
@@ -37,6 +38,10 @@ class Meetings extends Component {
       modalStatus: 'dropdown',
       open: false,
       progressValue: 0,
+      reasons: [],
+			isVisible: false,
+			selectedReason: '',
+			checkReasonValidation: false,
     }
   }
 
@@ -248,10 +253,55 @@ class Meetings extends Component {
   }
 
   navigateTo = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+  }
+
+  handleReasonChange = (value) => {
+    this.setState({ selectedReason: value });
+  }
+
+  closeModal = () => {
+    this.setState({ isVisible: false })
+  }
+
+  onHandleCloseLead = (reason) => {
+    const { lead, navigation } = this.props
+    const { selectedReason } = this.state;
+    let body = {
+      reasons: selectedReason
+    }
+    if (selectedReason && selectedReason !== '') {
+      axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
+        this.setState({ isVisible: false }, () => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads');
+        });
+      }).catch(error => {
+        console.log(error);
+      })
+    }
+  }
+
+  closedLead = () => {
+		helper.leadClosedToast()
 	}
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue, editMeeting } = this.state
+    const {
+      active,
+      formData,
+      checkValidation,
+      meetings,
+      doneStatus,
+      doneStatusId,
+      modalStatus,
+      open,
+      progressValue,
+      editMeeting,
+      reasons,
+      selectedReason,
+      checkReasonValidation,
+      isVisible,
+    } = this.state
     let leadData = this.props.lead
     let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     return (
@@ -318,6 +368,7 @@ class Meetings extends Component {
           navigateTo={this.navigateTo}
           goToDiaryForm={this.goToDiaryForm}
           goToComments={this.goToComments}
+          closedLead={this.closedLead}
         />
 
         {/* ************Modal Component************ */}
@@ -340,6 +391,17 @@ class Meetings extends Component {
           goToDiaryForm={this.goToDiaryForm}
           goToAttachments={this.goToAttachments}
           goToComments={this.goToComments}
+        />
+
+        <LeadRCMPaymentPopup
+          reasons={reasons}
+          selectedReason={selectedReason}
+          changeReason={this.handleReasonChange}
+          checkValidation={checkReasonValidation}
+          isVisible={isVisible}
+          closeModal={() => this.closeModal()}
+          onPress={this.onHandleCloseLead}
+          CMlead={true}
         />
 
       </View>

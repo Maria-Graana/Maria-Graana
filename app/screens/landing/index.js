@@ -11,7 +11,6 @@ import { connect } from 'react-redux';
 import { getListingsCount } from '../../actions/listings'
 import { View, TouchableOpacity, Text, Image } from 'react-native';
 import addIcon from '../../../assets/img/add-icon-l.png';
-import style from './style';
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -62,9 +61,9 @@ class Landing extends React.Component {
 				if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
 				else oneTile.badges = 0
 				tileData.push(oneTile)
+				counter++
 			}
 		}
-
 		this.setState({ tiles: tileData })
 	}
 

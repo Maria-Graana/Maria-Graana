@@ -32,7 +32,15 @@ export default styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     alignItems: "center",
     padding: 6,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+        width: 0,
+        height: 4,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
   },
   font: {
     fontFamily: AppStyles.fonts.boldFont

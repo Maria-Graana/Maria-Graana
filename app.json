@@ -26,6 +26,9 @@
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "UIUserInterfaceStyle": "Light"
       }
     },
     "android": {

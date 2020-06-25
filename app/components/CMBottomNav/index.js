@@ -18,8 +18,8 @@ class CMBottomNav extends React.Component {
       goToDiaryForm,
       goToAttachments,
       closedLeadEdit,
-      formSubmit,
-      closedLead
+      closeLead,
+      alreadyClosedLead
     } = this.props
     return (
       <View style={styles.bottomNavMain}>
@@ -39,7 +39,7 @@ class CMBottomNav extends React.Component {
           <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundPlus.png')} />
           <Text style={styles.bottomNavBtnText}>Add Task</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomNavBtn} onPress={() => { closedLeadEdit == true ? formSubmit() : closedLead() }}>
+        <TouchableOpacity style={styles.bottomNavBtn} onPress={() => { closedLeadEdit == true ? closeLead() : alreadyClosedLead() }}>
           <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundCheck.png')} />
           <Text style={styles.bottomNavBtnText}>Close</Text>
         </TouchableOpacity>

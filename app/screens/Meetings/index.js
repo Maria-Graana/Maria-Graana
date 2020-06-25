@@ -39,9 +39,10 @@ class Meetings extends Component {
       open: false,
       progressValue: 0,
       reasons: [],
-			isVisible: false,
-			selectedReason: '',
-			checkReasonValidation: false,
+      isVisible: false,
+      selectedReason: '',
+      checkReasonValidation: false,
+      closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     }
   }
 
@@ -283,8 +284,12 @@ class Meetings extends Component {
   }
 
   closedLead = () => {
-		helper.leadClosedToast()
-	}
+    helper.leadClosedToast()
+  }
+
+  closeLead = () => {
+    this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+  }
   render() {
     const {
       active,
@@ -300,6 +305,7 @@ class Meetings extends Component {
       reasons,
       selectedReason,
       checkReasonValidation,
+      closedLeadEdit,
       isVisible,
     } = this.state
     let leadData = this.props.lead
@@ -368,7 +374,9 @@ class Meetings extends Component {
           navigateTo={this.navigateTo}
           goToDiaryForm={this.goToDiaryForm}
           goToComments={this.goToComments}
-          closedLead={this.closedLead}
+          alreadyClosedLead={this.closedLead}
+          closedLeadEdit={closedLeadEdit}
+          closeLead={this.closeLead}
         />
 
         {/* ************Modal Component************ */}

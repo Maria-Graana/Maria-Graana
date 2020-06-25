@@ -281,8 +281,8 @@ class InnerForm extends Component {
             goToDiaryForm={goToDiaryForm}
             goToComments={goToComments}
             closedLeadEdit={closedLeadEdit}
-            formSubmit={formSubmit}
-            closedLead={closedLead}
+            closeLead={formSubmit}
+            alreadyClosedLead={closedLead}
           />
 
           {/* <View style={styles.bottomNavMain}>

@@ -75,6 +75,7 @@ class Landing extends React.Component {
 
 	render() {
 		const { tiles } = this.state
+		const { user } = this.props
 
 		return (
 			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor }]}>
@@ -92,18 +93,28 @@ class Landing extends React.Component {
 						: null
 				}
 				<View style={styles.btnView}>
-					<TouchableOpacity
-						onPress={() => { this.props.navigation.navigate('AddInventory', { update: false }) }}
-						style={styles.btnStyle}>
-						<Image source={addIcon} style={styles.containerImg} />
-						<Text style={styles.font}>Add Property</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={() => { this.props.navigation.navigate('AddClient', { 'update': false }) }}
-						style={[styles.btnStyle, { marginHorizontal: 0 }]}>
-						<Image source={addIcon} style={styles.containerImg} />
-						<Text style={styles.font}>Add Client</Text>
-					</TouchableOpacity>
+					{
+						Ability.canAdd(user.subRole, 'Inventory') ?
+							<TouchableOpacity
+								onPress={() => { this.props.navigation.navigate('AddInventory', { update: false }) }}
+								style={styles.btnStyle}>
+								<Image source={addIcon} style={styles.containerImg} />
+								<Text style={styles.font}>Add Property</Text>
+							</TouchableOpacity>
+							:
+							null
+					}
+					{
+						Ability.canAdd(user.subRole, 'Client') ?
+							<TouchableOpacity
+								onPress={() => { this.props.navigation.navigate('AddClient', { 'update': false }) }}
+								style={[styles.btnStyle, { marginHorizontal: 0 }]}>
+								<Image source={addIcon} style={styles.containerImg} />
+								<Text style={styles.font}>Add Client</Text>
+							</TouchableOpacity>
+							:
+							null
+					}
 				</View>
 			</SafeAreaView >
 		)

@@ -16,6 +16,7 @@ import { FAB } from 'react-native-paper';
 import StaticData from '../../StaticData';
 import { ProgressBar } from 'react-native-paper';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
+import CMBottomNav from '../../components/CMBottomNav'
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -491,6 +492,10 @@ class LeadMatch extends React.Component {
         navigation.navigate('Comments', { rcmLeadId: lead.id });
     }
 
+    navigateToDetails = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+	}
+
     _onStateChange = ({ open }) => this.setState({ open });
 
     render() {
@@ -609,7 +614,7 @@ class LeadMatch extends React.Component {
                             :
                             null
                     }
-                    <FAB.Group
+                    {/* <FAB.Group
                         open={open}
                         icon="plus"
                         style={{ marginBottom: displayButton ? 70 : 0 }}
@@ -621,6 +626,12 @@ class LeadMatch extends React.Component {
                             { icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
                         ]}
                         onStateChange={({ open }) => this.setState({ open })}
+                    /> */}
+                    <CMBottomNav
+                        goToAttachments={this.goToAttachments}
+                        navigateTo={this.navigateToDetails}
+                        goToDiaryForm={this.goToDiaryForm}
+                        goToComments={this.goToComments}
                     />
 
                 </View>

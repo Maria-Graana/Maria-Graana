@@ -21,7 +21,8 @@ export default styles = StyleSheet.create({
   },
   callMeetingBtn: {
     flexDirection: 'row',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
+    marginBottom: 15,
   },
   // btnsMainWrap: {
   //   width: '50%',

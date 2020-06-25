@@ -6,12 +6,12 @@ import React from 'react'
 import phone from '../../../assets/img/phone2.png'
 import styles from './style'
 import helper from '../../helper';
-import { formatPrice } from '../../PriceFormate'
 class LeadTile extends React.Component {
   constructor(props) {
     super(props)
   }
 
+  
 
   render() {
     const { data, navigateTo, callNumber, user } = this.props
@@ -56,7 +56,7 @@ class LeadTile extends React.Component {
                     PKR
             	 	</Text>
                   <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
-                    {!data.projectId && data.min_price && formatPrice(data.price === null ? 0 : data.min_price) + ' - '} {!data.projectId && formatPrice(data.price === null ? 0 : data.price)}  {data.projectId && data.minPrice && formatPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && formatPrice(data.maxPrice)}
+                    {!data.projectId && data.min_price && helper.checkPrice(data.min_price) + ' - '} {!data.projectId && data.price && helper.checkPrice(data.price)}  {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
                   </Text>
                 </View>
 

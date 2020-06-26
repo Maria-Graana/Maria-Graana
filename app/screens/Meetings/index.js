@@ -288,7 +288,7 @@ class Meetings extends Component {
 
   closeLead = () => {
     var remainingPayment = this.props.lead.remainingPayment
-    if (remainingPayment <= 0) {
+    if (remainingPayment <= 0 && remainingPayment != null) {
       this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
     } else {
       this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })

@@ -126,7 +126,30 @@ class BuyLeads extends React.Component {
 
 	navigateTo = (data) => {
 		const { purposeTab } = this.state
-		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+		let page = ''
+		if (data.status === 'open') {
+			this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+		} else {
+			if (data.status === "viewing") {
+				page = 'Viewing'
+			}
+			if (data.status === "offer") {
+				page = 'Offer'
+			}
+			if (data.status === "propsure") {
+				page = 'Propsure'
+			}
+			if (data.status === "payment") {
+				page = 'Payment'
+			}
+			if (data.status === "payment" || data.status === 'closed_won' || data.status === 'closed_lost') {
+				page = 'Payment'
+			}
+			this.props.navigation.navigate('RCMLeadTabs', {
+				screen: page,
+				params: { lead: data },
+			})
+		}
 	}
 
 	callNumber = (url) => {

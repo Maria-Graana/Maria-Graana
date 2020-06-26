@@ -405,7 +405,9 @@ class Payments extends Component {
 			unitId: formData.unitId ? formData.unitId : null,
 			installments: totalInstalments.length > 0 ? totalInstalments : paymentFiledsArray.length > 0 ? paymentFiledsArray : null,
 			no_of_installments: totalInstalments.length ? totalInstalments.length : null,
+			remainingPayment: remainingPayment,
 		}
+		console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (remainingPayment <= 0 && remainingPayment != 'no' && readOnly.totalPrice != '') {
@@ -419,7 +421,15 @@ class Payments extends Component {
 	}
 
 	submitValues = (name) => {
-		const { formData, instalments, totalInstalments, tokenDate, arrowCheck, paymentFiledsArray } = this.state
+		const {
+			formData,
+			instalments,
+			totalInstalments,
+			tokenDate,
+			arrowCheck,
+			paymentFiledsArray,
+			remainingPayment,
+		} = this.state
 		const { lead } = this.props
 		formData[name] = formData[name]
 		let body = {};
@@ -434,31 +444,31 @@ class Payments extends Component {
 			body = { unitId: formData[name] }
 		}
 		if (name === 'discount') {
-			body = { discount: formData[name] ? formData[name] : null }
+			body = { discount: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
 		if (name === 'token') {
-			body = { token: formData[name] ? formData[name] : null, tokenPaymentTime: tokenDate }
+			body = { token: formData[name] ? formData[name] : null, tokenPaymentTime: tokenDate, remainingPayment: remainingPayment }
 			this.currentDate(name)
 			newArrowCheck[name] = false
 		}
 		if (name === 'downPayment') {
-			body = { downPayment: formData[name] ? formData[name] : null }
+			body = { downPayment: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
 			this.currentDate(name)
 			newArrowCheck[name] = false
 		}
 		if (name === 'no_installments') {
-			body = { no_of_installments: instalments }
+			body = { no_of_installments: instalments, remainingPayment: remainingPayment }
 		}
 		if (name === 'payments') {
-			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null }
+			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
 		if (name === 'installments') {
-			body = { installments: totalInstalments ? totalInstalments : null }
+			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		// console.log('Payload => ', body)
+		console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				this.setState({ arrowCheck: newArrowCheck })
@@ -609,6 +619,7 @@ class Payments extends Component {
 			checkPaymentTypeValue,
 			closedLeadEdit,
 		} = this.state
+		console.log('remainingPayment', remainingPayment)
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />

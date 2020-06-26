@@ -49,7 +49,6 @@ class Meetings extends Component {
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
-    console.log(this.props.lead)
   }
 
   fetchLead = () => {
@@ -288,7 +287,12 @@ class Meetings extends Component {
   }
 
   closeLead = () => {
-    this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+    var remainingPayment = this.props.lead.remainingPayment
+    if (remainingPayment <= 0) {
+      this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+    } else {
+      this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+    }
   }
   render() {
     const {
@@ -336,21 +340,7 @@ class Meetings extends Component {
               }
             </View>
           </ScrollView>
-
-          {/* <FAB.Group
-            open={open}
-            icon="plus"
-            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-            color={AppStyles.bgcWhite.backgroundColor}
-            actions={[
-              { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-              { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-              { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-
-            ]}
-            onStateChange={({ open }) => this.setState({ open })}
-          /> */}
-
+          
         </View>
         {
           leadClosedCheck == true &&
@@ -368,7 +358,6 @@ class Meetings extends Component {
 
           </View>
         }
-
         <CMBottomNav
           goToAttachments={this.goToAttachments}
           navigateTo={this.navigateTo}
@@ -378,6 +367,7 @@ class Meetings extends Component {
           closedLeadEdit={closedLeadEdit}
           closeLead={this.closeLead}
         />
+
 
         {/* ************Modal Component************ */}
         <MeetingModal

@@ -10,8 +10,8 @@ export default styles = StyleSheet.create({
     maxHeight: '79%',
   },
   closeLeadHeight: {
-    minHeight: '97%',
-    maxHeight: '97%',
+    minHeight: '89%',
+    maxHeight: '89%',
   },
   mainWrapCon: {
     minHeight: '100%',

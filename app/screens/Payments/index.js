@@ -407,7 +407,6 @@ class Payments extends Component {
 			no_of_installments: totalInstalments.length ? totalInstalments.length : null,
 			remainingPayment: remainingPayment,
 		}
-		console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (remainingPayment <= 0 && remainingPayment != 'no' && readOnly.totalPrice != '') {
@@ -619,7 +618,6 @@ class Payments extends Component {
 			checkPaymentTypeValue,
 			closedLeadEdit,
 		} = this.state
-		console.log('remainingPayment', remainingPayment)
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />

@@ -10,6 +10,7 @@ import * as RootNavigation from '../../navigation/RootNavigation';
 import { formatPrice } from '../../PriceFormate'
 import targetArrow from '../../../assets/img/targetArrow.png'
 import moment from 'moment'
+import CMBottomNav from '../../components/CMBottomNav'
 
 class InnerForm extends Component {
   constructor(props) {
@@ -35,12 +36,15 @@ class InnerForm extends Component {
       tokenDate,
       arrowCheck,
       paymentOptions,
-      paymentDate,
+      navigateTo,
       handlePayments,
       paymentFiledsArray,
       addFullpaymentFields,
       closedLeadEdit,
       closedLead,
+      goToAttachments,
+      goToComments,
+      goToDiaryForm
     } = this.props
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
@@ -263,13 +267,46 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap]}>
+          {/* <View style={[AppStyles.mainInputWrap]}>
             <Button
               onPress={() => { closedLeadEdit == true ? formSubmit() : closedLead() }}
               style={[AppStyles.formBtn, styles.addInvenBtn]}>
               <Text style={AppStyles.btnText}>CLOSE LEAD</Text>
             </Button>
-          </View>
+          </View> */}
+
+          <CMBottomNav
+            goToAttachments={goToAttachments}
+            navigateTo={navigateTo}
+            goToDiaryForm={goToDiaryForm}
+            goToComments={goToComments}
+            closedLeadEdit={closedLeadEdit}
+            closeLead={formSubmit}
+            alreadyClosedLead={closedLead}
+          />
+
+          {/* <View style={styles.bottomNavMain}>
+            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
+              <Image style={styles.bottomNavImg} source={require('../../../assets/img/details.png')} />
+              <Text style={styles.bottomNavBtnText}>Details</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToComments()}>
+              <Image style={styles.bottomNavImg} source={require('../../../assets/img/msg.png')} />
+              <Text style={styles.bottomNavBtnText}>Comments</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToAttachments()}>
+              <Image style={styles.bottomNavImg} source={require('../../../assets/img/files.png')} />
+              <Text style={styles.bottomNavBtnText}>Files</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToDiaryForm()}>
+              <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundPlus.png')} />
+              <Text style={styles.bottomNavBtnText}>Add Task</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => { closedLeadEdit == true ? formSubmit() : closedLead() }}>
+              <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundCheck.png')} />
+              <Text style={styles.bottomNavBtnText}>Close</Text>
+            </TouchableOpacity>
+          </View> */}
 
         </View>
       </View >

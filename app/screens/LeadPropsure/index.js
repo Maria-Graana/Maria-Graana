@@ -16,6 +16,7 @@ import helper from '../../helper';
 import { FAB } from 'react-native-paper';
 import { ProgressBar } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
+import CMBottomNav from '../../components/CMBottomNav'
 
 class LeadPropsure extends React.Component {
     constructor(props) {
@@ -110,10 +111,10 @@ class LeadPropsure extends React.Component {
 
     showPackageModal = (propertyId) => {
         const { lead } = this.props
-        if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
+        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
-        else{
+        else {
             this.setState({ isVisible: true, selectedPropertyId: propertyId, checkPackageValidation: false });
         }
     }
@@ -152,10 +153,10 @@ class LeadPropsure extends React.Component {
 
     showDocumentModal = (propsureId) => {
         const { lead } = this.props
-        if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
+        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
-        else{
+        else {
             this.setState({ documentModalVisible: true, selectedPropsureId: propsureId, checkValidation: false });
         }
     }
@@ -265,6 +266,10 @@ class LeadPropsure extends React.Component {
         navigation.navigate('Comments', { rcmLeadId: lead.id });
     }
 
+    navigateToDetails = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+	}
+
     render() {
         const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, open, progressValue } = this.state;
         return (
@@ -329,7 +334,7 @@ class LeadPropsure extends React.Component {
                                 <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                         }
                     </View>
-                    <FAB.Group
+                    {/* <FAB.Group
                         open={open}
                         icon="plus"
                         fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
@@ -340,6 +345,12 @@ class LeadPropsure extends React.Component {
                             { icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
                         ]}
                         onStateChange={({ open }) => this.setState({ open })}
+                    /> */}
+                    <CMBottomNav
+                        goToAttachments={this.goToAttachments}
+                        navigateTo={this.navigateToDetails}
+                        goToDiaryForm={this.goToDiaryForm}
+                        goToComments={this.goToComments}
                     />
                 </View>
                 :

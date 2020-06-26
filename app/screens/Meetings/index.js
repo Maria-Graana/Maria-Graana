@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, Linking } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text, Linking, Image } from 'react-native';
 import { Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
@@ -14,7 +14,9 @@ import AppStyles from '../../AppStyles';
 import { ProgressBar, Colors } from 'react-native-paper';
 import { FAB } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import StaticData from '../../StaticData';
+import CMBottomNav from '../../components/CMBottomNav'
 
 class Meetings extends Component {
   constructor(props) {
@@ -36,6 +38,11 @@ class Meetings extends Component {
       modalStatus: 'dropdown',
       open: false,
       progressValue: 0,
+      reasons: [],
+      isVisible: false,
+      selectedReason: '',
+      checkReasonValidation: false,
+      closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     }
   }
 
@@ -228,24 +235,83 @@ class Meetings extends Component {
 
   goToComments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Comments', { cmLeadId: lead.id });
+    navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
   }
 
   goToAttachments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Attachments', { cmLeadId: lead.id });
+    navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
   }
 
   goToDiaryForm = () => {
     const { navigation, route, user } = this.props;
     navigation.navigate('AddDiary', {
       update: false,
-      cmLeadId: lead.id,
+      cmLeadId: this.props.lead.id,
       agentId: user.id
     });
   }
+
+  navigateTo = () => {
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+  }
+
+  handleReasonChange = (value) => {
+    this.setState({ selectedReason: value });
+  }
+
+  closeModal = () => {
+    this.setState({ isVisible: false })
+  }
+
+  onHandleCloseLead = (reason) => {
+    const { lead, navigation } = this.props
+    const { selectedReason } = this.state;
+    let body = {
+      reasons: selectedReason
+    }
+    if (selectedReason && selectedReason !== '') {
+      axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
+        this.setState({ isVisible: false }, () => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads');
+        });
+      }).catch(error => {
+        console.log(error);
+      })
+    }
+  }
+
+  closedLead = () => {
+    helper.leadClosedToast()
+  }
+
+  closeLead = () => {
+    var remainingPayment = this.props.lead.remainingPayment
+    if (remainingPayment <= 0) {
+      this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+    } else {
+      this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+    }
+  }
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue, editMeeting } = this.state
+    const {
+      active,
+      formData,
+      checkValidation,
+      meetings,
+      doneStatus,
+      doneStatusId,
+      modalStatus,
+      open,
+      progressValue,
+      editMeeting,
+      reasons,
+      selectedReason,
+      checkReasonValidation,
+      closedLeadEdit,
+      isVisible,
+    } = this.state
     let leadData = this.props.lead
     let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     return (
@@ -274,39 +340,33 @@ class Meetings extends Component {
               }
             </View>
           </ScrollView>
-
-          <FAB.Group
-            open={open}
-            icon="plus"
-            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-            color={AppStyles.bgcWhite.backgroundColor}
-            actions={[
-              { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-              { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-              { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-
-            ]}
-            onStateChange={({ open }) => this.setState({ open })}
-          />
-
+          
         </View>
         {
           leadClosedCheck == true &&
           <View style={[styles.callMeetingBtn]}>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
-                <Text style={styles.alignCenter}>CALL</Text>
+              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
+                <Text style={styles.alignCenter}>Add Meeting</Text>
               </TouchableOpacity>
             </View>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
-                <Text style={styles.alignCenter}>ADD MEETING</Text>
+              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
+                <Text style={styles.alignCenter}>Call</Text>
               </TouchableOpacity>
             </View>
+
           </View>
         }
-
-
+        <CMBottomNav
+          goToAttachments={this.goToAttachments}
+          navigateTo={this.navigateTo}
+          goToDiaryForm={this.goToDiaryForm}
+          goToComments={this.goToComments}
+          alreadyClosedLead={this.closedLead}
+          closedLeadEdit={closedLeadEdit}
+          closeLead={this.closeLead}
+        />
 
 
         {/* ************Modal Component************ */}
@@ -329,6 +389,17 @@ class Meetings extends Component {
           goToDiaryForm={this.goToDiaryForm}
           goToAttachments={this.goToAttachments}
           goToComments={this.goToComments}
+        />
+
+        <LeadRCMPaymentPopup
+          reasons={reasons}
+          selectedReason={selectedReason}
+          changeReason={this.handleReasonChange}
+          checkValidation={checkReasonValidation}
+          isVisible={isVisible}
+          closeModal={() => this.closeModal()}
+          onPress={this.onHandleCloseLead}
+          CMlead={true}
         />
 
       </View>

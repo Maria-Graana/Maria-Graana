@@ -17,6 +17,7 @@ import StaticData from '../../StaticData';
 import helper from '../../helper';
 import { formatPrice } from '../../PriceFormate'
 import { setlead } from '../../actions/lead';
+import CMBottomNav from '../../components/CMBottomNav'
 import RentPaymentView from './rentPaymentView';
 import { FAB } from 'react-native-paper';
 import { ProgressBar, Colors } from 'react-native-paper';
@@ -181,7 +182,7 @@ class LeadRCMPayment extends React.Component {
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
-        else{
+        else {
             this.setState({ isVisible: true })
 
         }
@@ -403,6 +404,9 @@ class LeadRCMPayment extends React.Component {
         navigation.navigate('Comments', { rcmLeadId: lead.id });
     }
 
+    navigateToDetails = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+	}
 
     render() {
         const { loading,
@@ -528,7 +532,7 @@ class LeadRCMPayment extends React.Component {
                                 <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                         }
 
-                        <FAB.Group
+                        {/* <FAB.Group
                             open={open}
                             icon="plus"
                             fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
@@ -539,7 +543,16 @@ class LeadRCMPayment extends React.Component {
                                 { icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
                             ]}
                             onStateChange={({ open }) => this.setState({ open })}
+                        /> */}
+
+                        <CMBottomNav
+                            goToAttachments={this.goToAttachments}
+                            navigateTo={this.navigateToDetails}
+                            goToDiaryForm={this.goToDiaryForm}
+                            goToComments={this.goToComments}
                         />
+
+
 
                     </View>
 

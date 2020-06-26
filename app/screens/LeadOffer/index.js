@@ -11,6 +11,7 @@ import OfferModal from '../../components/OfferModal'
 import { FAB } from 'react-native-paper';
 import { ProgressBar } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
+import CMBottomNav from '../../components/CMBottomNav'
 import StaticData from '../../StaticData';
 import helper from '../../helper';
 
@@ -272,6 +273,10 @@ class LeadOffer extends React.Component {
 		}
 	}
 
+	navigateToDetails = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+	}
+
 	render() {
 		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton, leadData } = this.state
 		return (
@@ -329,7 +334,7 @@ class LeadOffer extends React.Component {
 									<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
 							}
 						</View>
-						<FAB.Group
+						{/* <FAB.Group
 							open={open}
 							icon="plus"
 							fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
@@ -340,9 +345,16 @@ class LeadOffer extends React.Component {
 								{ icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
 							]}
 							onStateChange={({ open }) => this.setState({ open })}
-						/>
+						/> */}
 
 					</View>
+
+					<CMBottomNav
+          goToAttachments={this.goToAttachments}
+          navigateTo={this.navigateToDetails}
+          goToDiaryForm={this.goToDiaryForm}
+          goToComments={this.goToComments}
+        />
 				</View>
 				:
 				<Loader loading={loading} />

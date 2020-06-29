@@ -108,7 +108,7 @@ class Landing extends React.Component {
 						Ability.canAdd(user.subRole, 'Client') ?
 							<TouchableOpacity
 								onPress={() => { this.props.navigation.navigate('AddClient', { 'update': false }) }}
-								style={[styles.btnStyle, { marginHorizontal: 0 }]}>
+								style={[styles.btnStyle, { marginLeft: 5 }]}>
 								<Image source={addIcon} style={styles.containerImg} />
 								<Text style={styles.font}>Add Client</Text>
 							</TouchableOpacity>

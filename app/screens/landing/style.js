@@ -23,27 +23,30 @@ export default styles = StyleSheet.create({
     resizeMode: 'contain'
   },
   btnStyle: {
+    zIndex: 10,
     borderColor: '#ffffff',
     marginHorizontal: 5,
     flexDirection: "row",
     borderRadius: 20,
-    height: 35,
+    height: 40,
     justifyContent: 'center',
     backgroundColor: '#ffffff',
     alignItems: "center",
     padding: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
+    shadowColor: "#000",
     shadowColor: "#000",
     shadowOffset: {
-        width: 0,
-        height: 4,
+      width: 0,
+      height: 9,
     },
-    shadowOpacity: 0.34,
-    shadowRadius: 6.27,
-    elevation: 10,
+    shadowOpacity: 0.48,
+    shadowRadius: 11.95,
+    elevation: 18
   },
   font: {
-    fontFamily: AppStyles.fonts.boldFont
+    fontFamily: AppStyles.fonts.boldFont,
+    marginRight: 5
   },
   btnView: {
     position: 'absolute',

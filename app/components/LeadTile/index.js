@@ -11,7 +11,7 @@ class LeadTile extends React.Component {
     super(props)
   }
 
-  
+
 
   render() {
     const { data, navigateTo, callNumber, user } = this.props
@@ -65,7 +65,7 @@ class LeadTile extends React.Component {
                   {
                     data.size != null && !data.projectId ?
                       <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                        {data.size} {data.size_unit} {data.subtype} {data.purpose != null && 'for'} {data.purpose}
+                        {data.size !== 0 ? data.size + ' ' : null}{data.size_unit} {data.subtype} {data.purpose != null && 'for'} {data.purpose}
                       </Text>
                       :
                       <Text style={[AppStyles.darkColor]}>

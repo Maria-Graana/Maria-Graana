@@ -61,7 +61,7 @@ class Payments extends Component {
 			checkReasonValidation: false,
 			progressValue: 0,
 			fullPaymentCount: 1,
-			paymentFiledsArray: lead.payment.length > 0 ? lead.payment : [],
+			paymentFiledsArray: lead.payment && lead.payment.length > 0 ? lead.payment : [],
 			// checkPaymentTypeValue: ''
 			closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
 		}
@@ -72,6 +72,7 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
+		console.log('Payment', this.props.lead.id)
 	}
 
 	setFields = () => {
@@ -142,7 +143,7 @@ class Payments extends Component {
 				})
 			}
 
-			if (data.payment.length) {
+			if (data.payment && data.payment.length) {
 				name = 'payments'
 				arrowCheck[name] = false
 				this.setState({

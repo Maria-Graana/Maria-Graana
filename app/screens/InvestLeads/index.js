@@ -17,6 +17,7 @@ import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { widthPercentageToDP } from 'react-native-responsive-screen';
+import { setlead } from '../../actions/lead';
 
 class InvestLeads extends React.Component {
 	constructor(props) {
@@ -128,6 +129,7 @@ class InvestLeads extends React.Component {
 
 	navigateTo = (data) => {
 		const { navigation } = this.props
+		this.props.dispatch(setlead(data))
 		let page = ''
 		if (data.status === 'open') {
 			this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'invest' })
@@ -137,7 +139,7 @@ class InvestLeads extends React.Component {
 			} else {
 				page = 'Meetings'
 			}
-
+			
 			navigation.navigate('CMLeadTabs', {
 				screen: page,
 				params: { lead: data },

@@ -49,6 +49,7 @@ class Meetings extends Component {
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
+    console.log('Meeting', this.props.lead.id)
   }
 
   fetchLead = () => {

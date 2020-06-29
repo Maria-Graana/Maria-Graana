@@ -17,6 +17,7 @@ import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { widthPercentageToDP } from 'react-native-responsive-screen';
+import { setlead } from '../../actions/lead';
 
 class RentLeads extends React.Component {
 	constructor(props) {
@@ -127,7 +128,7 @@ class RentLeads extends React.Component {
 
 	navigateTo = (data) => {
 		const { purposeTab } = this.state
-
+		this.props.dispatch(setlead(data))
 		let page = ''
 		if (data.status === 'open') {
 			this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })

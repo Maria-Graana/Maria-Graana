@@ -49,6 +49,7 @@ class Meetings extends Component {
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
+    
   }
 
   fetchLead = () => {
@@ -253,7 +254,7 @@ class Meetings extends Component {
   }
 
   navigateTo = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
   }
 
   handleReasonChange = (value) => {
@@ -288,7 +289,7 @@ class Meetings extends Component {
 
   closeLead = () => {
     var remainingPayment = this.props.lead.remainingPayment
-    if (remainingPayment <= 0) {
+    if (remainingPayment <= 0 && remainingPayment != null) {
       this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
     } else {
       this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })

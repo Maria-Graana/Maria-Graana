@@ -61,7 +61,7 @@ class Payments extends Component {
 			checkReasonValidation: false,
 			progressValue: 0,
 			fullPaymentCount: 1,
-			paymentFiledsArray: lead.payment.length > 0 ? lead.payment : [],
+			paymentFiledsArray: lead.payment && lead.payment.length > 0 ? lead.payment : [],
 			// checkPaymentTypeValue: ''
 			closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
 		}
@@ -142,7 +142,7 @@ class Payments extends Component {
 				})
 			}
 
-			if (data.payment.length) {
+			if (data.payment && data.payment.length) {
 				name = 'payments'
 				arrowCheck[name] = false
 				this.setState({
@@ -407,7 +407,6 @@ class Payments extends Component {
 			no_of_installments: totalInstalments.length ? totalInstalments.length : null,
 			remainingPayment: remainingPayment,
 		}
-		console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (remainingPayment <= 0 && remainingPayment != 'no' && readOnly.totalPrice != '') {
@@ -589,7 +588,7 @@ class Payments extends Component {
 	}
 
 	navigateTo = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
 	}
 
 	render() {
@@ -619,7 +618,6 @@ class Payments extends Component {
 			checkPaymentTypeValue,
 			closedLeadEdit,
 		} = this.state
-		console.log('remainingPayment', remainingPayment)
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />

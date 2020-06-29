@@ -17,6 +17,7 @@ import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { widthPercentageToDP } from 'react-native-responsive-screen';
+import { setlead } from '../../actions/lead';
 
 class InvestLeads extends React.Component {
 	constructor(props) {
@@ -43,11 +44,10 @@ class InvestLeads extends React.Component {
 
 	componentDidMount() {
 		const { statusFilter } = this.state
-		
+
 		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			console.log(statusFilter)
-				this.fetchLeads(statusFilter);
+			this.fetchLeads(statusFilter);
 		})
 	}
 
@@ -128,8 +128,23 @@ class InvestLeads extends React.Component {
 	}
 
 	navigateTo = (data) => {
-		const { purposeTab } = this.state
-		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'invest' })
+		const { navigation } = this.props
+		this.props.dispatch(setlead(data))
+		let page = ''
+		if (data.status === 'open') {
+			this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'invest' })
+		} else {
+			if (data.status === "token" || data.status === 'payment' || data.status === 'closed_won' || data.status === 'closed_lost') {
+				page = 'Payments'
+			} else {
+				page = 'Meetings'
+			}
+			
+			navigation.navigate('CMLeadTabs', {
+				screen: page,
+				params: { lead: data },
+			})
+		}
 	}
 
 	callNumber = (url) => {
@@ -179,7 +194,7 @@ class InvestLeads extends React.Component {
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
-				<View style={[styles.mainFilter, {marginBottom: 15}]}>
+				<View style={[styles.mainFilter, { marginBottom: 15 }]}>
 					<View style={styles.pickerMain}>
 						<PickerComponent
 							placeholder={'Lead Status'}
@@ -197,57 +212,57 @@ class InvestLeads extends React.Component {
 						</TouchableOpacity>
 					</View>
 				</View>
-						{
-							leadsData && leadsData && leadsData.length > 0 ?
-									< FlatList
-										data={leadsData}
-										renderItem={({ item }) => (
-												<LeadTile
-													user={user}
-													// key={key}
-													showDropdown={this.showDropdown}
-													dotsDropDown={this.state.dotsDropDown}
-													selectInventory={this.selectInventory}
-													selectedInventory={selectInventory}
-													data={item}
-													dropDownId={dropDownId}
-													unSelectInventory={this.unSelectInventory}
-													goToInventoryForm={this.goToInventoryForm}
-													navigateTo={this.navigateTo}
-													callNumber={this.callNumber}
-												/>
-										)}
-										// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
-										onEndReached={() => {
-											if (leadsData.length < totalLeads) {
-												this.setState({
-													page: this.state.page + 1,
-													onEndReachedLoader: true
-												}, () => {
-													this.fetchLeads(statusFilter);
-												});
-											}
-										}}
-										onEndReachedThreshold={0.5}
-										keyExtractor={(item, index) => this.setKey(index)}
-									/>
-								:
-								<LoadingNoResult loading={loading} />
-						}
-						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-					<FAB.Group
-						open={open}
-						icon="plus"
-						style={{ marginBottom: 16 }}
-						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-						color={AppStyles.bgcWhite.backgroundColor}
-						actions={[
-							{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
-							{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
+				{
+					leadsData && leadsData && leadsData.length > 0 ?
+						< FlatList
+							data={leadsData}
+							renderItem={({ item }) => (
+								<LeadTile
+									user={user}
+									// key={key}
+									showDropdown={this.showDropdown}
+									dotsDropDown={this.state.dotsDropDown}
+									selectInventory={this.selectInventory}
+									selectedInventory={selectInventory}
+									data={item}
+									dropDownId={dropDownId}
+									unSelectInventory={this.unSelectInventory}
+									goToInventoryForm={this.goToInventoryForm}
+									navigateTo={this.navigateTo}
+									callNumber={this.callNumber}
+								/>
+							)}
+							// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
+							onEndReached={() => {
+								if (leadsData.length < totalLeads) {
+									this.setState({
+										page: this.state.page + 1,
+										onEndReachedLoader: true
+									}, () => {
+										this.fetchLeads(statusFilter);
+									});
+								}
+							}}
+							onEndReachedThreshold={0.5}
+							keyExtractor={(item, index) => this.setKey(index)}
+						/>
+						:
+						<LoadingNoResult loading={loading} />
+				}
+				<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
+				<FAB.Group
+					open={open}
+					icon="plus"
+					style={{ marginBottom: 16 }}
+					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+					color={AppStyles.bgcWhite.backgroundColor}
+					actions={[
+						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
+						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
 
-						]}
-						onStateChange={({ open }) => this.setState({ open })}
-					/>
+					]}
+					onStateChange={({ open }) => this.setState({ open })}
+				/>
 				<SortModal
 					sendStatus={this.sendStatus}
 					openStatus={this.openStatus}

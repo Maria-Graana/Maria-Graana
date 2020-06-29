@@ -38,10 +38,10 @@ class Targets extends Component {
 
     getMyTarget = () => {
         const { selectedMonth, selectedYear } = this.state;
-        let date = `${selectedYear}-${moment().month(selectedMonth - 1).format('MM')}-${moment().format('D')}`;
+        let date = `${selectedYear}-${moment().month(selectedMonth - 1).format('MM')}`;
         this.setState({ loading: true })
-        axios.get(`/api/user/mytarget?date=${date}`).then(response => {
-            if (response.status === 200 && response.data) {
+        axios.get(`/api/user/getTeamtarget?targetMonth=${date}&mobile=${true}`).then(response => {
+            if (response.status === 200) {
                 this.setState({ data: response.data, loading: false });
             }
         }).catch(error => {
@@ -99,30 +99,15 @@ class Targets extends Component {
                                     </View>
                                 </View>
                             </View>
-                            <View style={[styles.titleMain]}>
-                                <Text style={[styles.labelText]}>YOUR TARGET</Text>
-                                <Text style={[styles.priceText]}>{data.armsUserTarget != null && formatPrice(data.armsUserTarget.targetAmount)}</Text>
-                            </View>
 
                             <View style={[styles.titleMain]}>
-                                <Text style={[styles.labelText]}>TEAM TARGET</Text>
-                                <Text style={[styles.priceText]}>{data.teamTarget && data.teamTarget.teamTarget !== null && formatPrice(data.teamTarget.teamTarget)}</Text>
+                                <Text style={[styles.labelText]}>Projects</Text>
+                                <Text style={[styles.priceText]}>{data && data.targetAmount ? formatPrice(data.targetAmount) : '0'}</Text>
                             </View>
-
-                            {
-                                Ability.canAdd(user.subRole, route.params.screen) && Ability.canView(user.subRole, route.params.screen) ?
-                                    < View style={[AppStyles.mainInputWrap]}>
-                                        <Button
-                                            style={[AppStyles.formBtn, styles.addInvenBtn]}
-                                            onPress={() => { this.navigateFunction('TeamTargets') }}
-                                        >
-                                            <Text style={AppStyles.btnText}>SET TARGETS</Text>
-                                        </Button>
-                                    </View>
-                                    : null
-
-                            }
-
+                            <View style={[styles.titleMain]}>
+                                <Text style={[styles.labelText]}>Real Estate</Text>
+                                <Text style={[styles.priceText]}>{data && data.realEstateAmount ? formatPrice(data.realEstateAmount) : '0' }</Text>
+                            </View>
                         </View>
                     </ScrollView>
                 </View >

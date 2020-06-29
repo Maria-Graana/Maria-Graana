@@ -26,6 +26,7 @@ class Meetings extends Component {
       formData: {
         time: '',
         date: '',
+        addedBy: '',
         leadId: this.props.lead.id,
         subject: this.props.lead.customer ? `Meeting with ${this.props.lead.customer.customerName}` : null
       },
@@ -125,6 +126,7 @@ class Meetings extends Component {
             helper.errorToast(`Some thing went wrong!!!`)
           })
       } else {
+        formData.addedBy = 'self';
         axios.post(`api/leads/project/meeting`, formData)
           .then((res) => {
             formData['time'] = ''

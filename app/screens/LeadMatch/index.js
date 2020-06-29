@@ -16,6 +16,7 @@ import { FAB } from 'react-native-paper';
 import StaticData from '../../StaticData';
 import { ProgressBar } from 'react-native-paper';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import CMBottomNav from '../../components/CMBottomNav'
 
 class LeadMatch extends React.Component {
@@ -68,7 +69,13 @@ class LeadMatch extends React.Component {
             filterColor: false,
             maxCheck: false,
             cities: [],
-            areas: []
+            areas: [],
+            // for the lead close dialog
+            isVisible: false,
+            checkReasonValidation: false,
+            selectedReason: '',
+            reasons: [],
+            closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
         }
     }
 
@@ -458,6 +465,44 @@ class LeadMatch extends React.Component {
         }
     }
 
+    closedLead = () => {
+        helper.leadClosedToast()
+    }
+
+    closeLead = () => {
+        var commissionPayment = this.props.lead.commissionPayment
+        if (commissionPayment !== null) {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible:true, checkReasonValidation:'' })
+        }
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons,isVisible:true, checkReasonValidation:'' })
+        }
+    }
+
+    onHandleCloseLead = () => {
+        const { navigation, lead } = this.props
+        const { selectedReason } = this.state;
+        let payload = Object.create({});
+        payload.reasons = selectedReason;
+        axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
+            this.setState({ isVisible: false }, () => {
+                helper.successToast(`Lead Closed`)
+                navigation.navigate('Leads');
+            });
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+
+    handleReasonChange = (value) => {
+        this.setState({ selectedReason: value });
+    }
+
+
+    closeModal = () => {
+        this.setState({ isVisible: false })
+    }
+
     sendProperties = () => {
         const { selectedProperties } = this.state
         const { lead } = this.props
@@ -493,15 +538,14 @@ class LeadMatch extends React.Component {
     }
 
     navigateToDetails = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
-	}
+        this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+    }
 
     _onStateChange = ({ open }) => this.setState({ open });
 
     render() {
         const { lead } = this.props
-        const { subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, open } = this.state
-
+        const { subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
@@ -614,24 +658,24 @@ class LeadMatch extends React.Component {
                             :
                             null
                     }
-                    {/* <FAB.Group
-                        open={open}
-                        icon="plus"
-                        style={{ marginBottom: displayButton ? 70 : 0 }}
-                        fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-                        color={AppStyles.bgcWhite.backgroundColor}
-                        actions={[
-                            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-                            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-                            { icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-                        ]}
-                        onStateChange={({ open }) => this.setState({ open })}
-                    /> */}
                     <CMBottomNav
                         goToAttachments={this.goToAttachments}
                         navigateTo={this.navigateToDetails}
                         goToDiaryForm={this.goToDiaryForm}
                         goToComments={this.goToComments}
+                        alreadyClosedLead={()=> this.closedLead()}
+                        closeLead={this.closeLead}
+                        closedLeadEdit={closedLeadEdit}
+                    />
+
+                    <LeadRCMPaymentPopup
+                        reasons={reasons}
+                        selectedReason={selectedReason}
+                        changeReason={(value) => this.handleReasonChange(value)}
+                        checkValidation={checkReasonValidation}
+                        isVisible={isVisible}
+                        closeModal={() => this.closeModal()}
+                        onPress={() => this.onHandleCloseLead()}
                     />
 
                 </View>

@@ -184,6 +184,7 @@ class LeadMatch extends React.Component {
         const { lead } = this.props
         let cityId = ''
         let areas = []
+        let prices = lead.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
 
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
@@ -200,6 +201,16 @@ class LeadMatch extends React.Component {
         }
         if (!lead.size_unit) lead.size_unit = 'marla'
         if (lead.type) this.getSubType(lead.type)
+        if (lead.min_price) {
+            if (!_.contains(prices, Number(lead.min_price))) {
+                lead.min_price = 0
+            }
+        }
+        if (lead.price) {
+            if (!_.contains(prices, Number(lead.price))) {
+                lead.price = StaticData.Constants.any_value
+            }
+        }
 
         this.setState({
             formData: {
@@ -472,10 +483,10 @@ class LeadMatch extends React.Component {
     closeLead = () => {
         var commissionPayment = this.props.lead.commissionPayment
         if (commissionPayment !== null) {
-            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible:true, checkReasonValidation:'' })
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
         }
         else {
-            this.setState({ reasons: StaticData.leadCloseReasons,isVisible:true, checkReasonValidation:'' })
+            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
         }
     }
 
@@ -538,8 +549,8 @@ class LeadMatch extends React.Component {
     }
 
     navigateToDetails = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
-	}
+        this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    }
 
 
     _onStateChange = ({ open }) => this.setState({ open });
@@ -664,7 +675,7 @@ class LeadMatch extends React.Component {
                         navigateTo={this.navigateToDetails}
                         goToDiaryForm={this.goToDiaryForm}
                         goToComments={this.goToComments}
-                        alreadyClosedLead={()=> this.closedLead()}
+                        alreadyClosedLead={() => this.closedLead()}
                         closeLead={this.closeLead}
                         closedLeadEdit={closedLeadEdit}
                     />

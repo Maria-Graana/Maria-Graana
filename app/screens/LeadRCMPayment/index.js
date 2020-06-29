@@ -405,7 +405,7 @@ class LeadRCMPayment extends React.Component {
     }
 
     navigateToDetails = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
 	}
 
     render() {

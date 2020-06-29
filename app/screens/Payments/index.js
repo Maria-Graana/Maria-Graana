@@ -72,7 +72,6 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
-		console.log('Payment', this.props.lead.id)
 	}
 
 	setFields = () => {
@@ -589,7 +588,7 @@ class Payments extends Component {
 	}
 
 	navigateTo = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
 	}
 
 	render() {

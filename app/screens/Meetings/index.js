@@ -49,7 +49,7 @@ class Meetings extends Component {
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
-    console.log('Meeting', this.props.lead.id)
+    
   }
 
   fetchLead = () => {
@@ -254,7 +254,7 @@ class Meetings extends Component {
   }
 
   navigateTo = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
   }
 
   handleReasonChange = (value) => {

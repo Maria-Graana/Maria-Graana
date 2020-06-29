@@ -24,7 +24,6 @@ class LeadTile extends React.Component {
             <View style={styles.topIcons}>
               <View>
                 <Text style={[styles.tokenLabel, AppStyles.mrFive]}>
-                  {console.log('Id => ', data.id)}
                   {
                     data.status === 'token' ?
                       <Text>DEAL SIGNED - TOKEN</Text>

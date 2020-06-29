@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native'
 
 export default styles = StyleSheet.create({
   customTop: {
-    top: 1,
+    top: 7,
     right: 30,
     width: 100,
   },
@@ -12,6 +12,10 @@ export default styles = StyleSheet.create({
   paymentLine: {
     width: '100%',
   },
+  dateTextTwo: {
+    position: 'relative',
+    top: 6,
+  },
   arrowImg: {
     width: 20,
     height: 20,
@@ -20,13 +24,13 @@ export default styles = StyleSheet.create({
   checkBtnMain: {
     position: 'absolute',
     right: 15,
-    top: -3,
+    top: 3,
     zIndex: 2,
   },
   customArrowRight: {
     right: 10,
   },
-  addMore:{
+  addMore: {
     backgroundColor: '#0f73ee',
     marginTop: 5,
     marginBottom: 5,
@@ -35,7 +39,7 @@ export default styles = StyleSheet.create({
     textAlign: 'center',
     padding: 8,
   },
-    bottomNavMain: {
+  bottomNavMain: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     paddingBottom: 15,
@@ -60,7 +64,7 @@ export default styles = StyleSheet.create({
     color: '#4E4E4E',
     fontSize: 12,
   },
-  heightContainer:{
+  heightContainer: {
     height: '20%'
   }
 });

@@ -103,7 +103,8 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL PRICE</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} placeholder={'Total Price'} value={formatPrice(totalPrice)} editable={false} />
+                <TextInput style={[AppStyles.blackInput]} placeholder={'Total Price'} value={totalPrice} editable={false} />
+                <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalPrice != null ? totalPrice : '')}</Text>
               </View>
             </View>
           </View>
@@ -136,7 +137,7 @@ class InnerForm extends Component {
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
-              <Text style={AppStyles.dateText}>{tokenDate}</Text>
+              <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{tokenDate}</Text>
               {
                 arrowCheck.token === true ?
                   <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('token') }}>
@@ -158,7 +159,7 @@ class InnerForm extends Component {
             </View>
 
             <View style={[AppStyles.blackInputdate]}>
-              <Text style={AppStyles.dateText}>{downPaymentTime}</Text>
+              <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{downPaymentTime}</Text>
               {
                 arrowCheck.downPayment === true &&
                 <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('downPayment') }}>
@@ -201,7 +202,7 @@ class InnerForm extends Component {
                         </View>
 
                         <View style={[AppStyles.blackInputdate]}>
-                          <Text style={AppStyles.dateText}>{installmentDate}</Text>
+                          <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{installmentDate}</Text>
                           {
                             arrowCheck.installments === true &&
                             <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>
@@ -235,7 +236,7 @@ class InnerForm extends Component {
                         </View>
 
                         <View style={[AppStyles.blackInputdate]}>
-                          <Text style={AppStyles.dateText}>{itemDate}</Text>
+                          <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{itemDate}</Text>
                           {
                             arrowCheck.payments === true ?
                               <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('payments') }}>
@@ -261,19 +262,13 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
               <Text style={[AppStyles.blackInputText]}>REMAINING PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} value={remainingPayment === 'no' ? '' : formatPrice(remainingPay)} editable={false} />
+                <TextInput style={[AppStyles.blackInput]} value={remainingPayment === 'no' ? '' : remainingPay} editable={false} />
+                <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(remainingPay)}</Text>
               </View>
             </View>
           </View>
 
           {/* **************************************** */}
-          {/* <View style={[AppStyles.mainInputWrap]}>
-            <Button
-              onPress={() => { closedLeadEdit == true ? formSubmit() : closedLead() }}
-              style={[AppStyles.formBtn, styles.addInvenBtn]}>
-              <Text style={AppStyles.btnText}>CLOSE LEAD</Text>
-            </Button>
-          </View> */}
 
           <CMBottomNav
             goToAttachments={goToAttachments}
@@ -284,29 +279,6 @@ class InnerForm extends Component {
             closeLead={formSubmit}
             alreadyClosedLead={closedLead}
           />
-
-          {/* <View style={styles.bottomNavMain}>
-            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
-              <Image style={styles.bottomNavImg} source={require('../../../assets/img/details.png')} />
-              <Text style={styles.bottomNavBtnText}>Details</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToComments()}>
-              <Image style={styles.bottomNavImg} source={require('../../../assets/img/msg.png')} />
-              <Text style={styles.bottomNavBtnText}>Comments</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToAttachments()}>
-              <Image style={styles.bottomNavImg} source={require('../../../assets/img/files.png')} />
-              <Text style={styles.bottomNavBtnText}>Files</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToDiaryForm()}>
-              <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundPlus.png')} />
-              <Text style={styles.bottomNavBtnText}>Add Task</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.bottomNavBtn} onPress={() => { closedLeadEdit == true ? formSubmit() : closedLead() }}>
-              <Image style={styles.bottomNavImg} source={require('../../../assets/img/roundCheck.png')} />
-              <Text style={styles.bottomNavBtnText}>Close</Text>
-            </TouchableOpacity>
-          </View> */}
 
         </View>
       </View >

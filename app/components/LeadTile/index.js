@@ -65,9 +65,7 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   {
                     data.size != null && !data.projectId ?
-                      <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                        {data.size !== 0 ? data.size + ' ' : null}{data.size_unit} {data.subtype} {data.purpose != null && 'for'} {data.purpose}
-                      </Text>
+                      <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>{data.size !== 0 ? data.size + ' ' : null}{data.size_unit && data.size_unit !== null ? data.size_unit + ' ' : null}{helper.capitalize(data.subtype)} {data.purpose != null && 'for'} {helper.capitalize(data.purpose)}</Text>
                       :
                       <Text style={[AppStyles.darkColor]}>
                         {`${helper.capitalize(data.subtype)}${helper.capitalize(data.projectType)}`}

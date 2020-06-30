@@ -3,11 +3,11 @@ export default styles = StyleSheet.create({
   meetingConteiner: {
     marginTop: 0,
     padding: 15,
-    paddingBottom: 80,
+    paddingBottom: 15,
   },
   openLeadHeight: {
-    minHeight: '81%',
-    maxHeight: '81%',
+    minHeight: '82.5%',
+    maxHeight: '82.5%',
   },
   closeLeadHeight: {
     minHeight: '100%',

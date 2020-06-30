@@ -184,6 +184,7 @@ class LeadMatch extends React.Component {
         const { lead } = this.props
         let cityId = ''
         let areas = []
+        let prices = lead.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
 
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
@@ -200,6 +201,16 @@ class LeadMatch extends React.Component {
         }
         if (!lead.size_unit) lead.size_unit = 'marla'
         if (lead.type) this.getSubType(lead.type)
+        if (lead.min_price) {
+            if (!_.contains(prices, Number(lead.min_price))) {
+                lead.min_price = 0
+            }
+        }
+        if (lead.price) {
+            if (!_.contains(prices, Number(lead.price))) {
+                lead.price = StaticData.Constants.any_value
+            }
+        }
 
         this.setState({
             formData: {
@@ -670,7 +681,6 @@ class LeadMatch extends React.Component {
                             closedLeadEdit={closedLeadEdit}
                         />
                     </View>
-
                     <LeadRCMPaymentPopup
                         reasons={reasons}
                         selectedReason={selectedReason}

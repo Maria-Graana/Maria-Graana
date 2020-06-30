@@ -22,7 +22,7 @@ class AssignLead extends React.Component {
     }
 
     fetchTeam = () => {
-        axios.get('/api/user/agents')
+        axios.get(`/api/user/agents?leads=${true}`)
             .then((res) => {
                 this.setState({
                     teamMembers: res.data

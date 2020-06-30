@@ -14,6 +14,7 @@ import helper from '../../helper';
 import { FAB } from 'react-native-paper';
 import MeetingModal from '../../components/MeetingModal'
 import PaymentAlert from '../../components/PaymentAlert'
+import CMBottomNav from '../../components/CMBottomNav'
 
 class Payments extends Component {
 	constructor(props) {
@@ -680,6 +681,18 @@ class Payments extends Component {
 					]}
 					onStateChange={({ open }) => this.setState({ open })}
 				/> */}
+
+				<View style={AppStyles.mainCMBottomNav}>
+					<CMBottomNav
+						goToAttachments={this.goToAttachments}
+						navigateTo={this.navigateTo}
+						goToDiaryForm={this.goToDiaryForm}
+						goToComments={this.goToComments}
+						closedLeadEdit={closedLeadEdit}
+						closeLead={this.formSubmit}
+						alreadyClosedLead={this.closedLead}
+					/>
+				</View>
 				{
 					modalVisible &&
 					<PaymentAlert

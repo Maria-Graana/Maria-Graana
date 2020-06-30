@@ -36,11 +36,11 @@ class LeadPropsure extends React.Component {
             file: null,
             progressValue: 0,
             // for the lead close dialog
-			isCloseLeadVisible: false,
-			checkReasonValidation: false,
-			selectedReason: '',
-			reasons: [],
-			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+            isCloseLeadVisible: false,
+            checkReasonValidation: false,
+            selectedReason: '',
+            reasons: [],
+            closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
         }
     }
 
@@ -253,42 +253,42 @@ class LeadPropsure extends React.Component {
     }
 
     closedLead = () => {
-		helper.leadClosedToast()
-	}
+        helper.leadClosedToast()
+    }
 
-	closeLead = () => {
-		var commissionPayment = this.props.lead.commissionPayment
-		if (commissionPayment !== null) {
-			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
-		}
-		else {
-			this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
-		}
-	}
+    closeLead = () => {
+        var commissionPayment = this.props.lead.commissionPayment
+        if (commissionPayment !== null) {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+        }
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+        }
+    }
 
-	onHandleCloseLead = () => {
-		const { navigation, lead } = this.props
-		const { selectedReason } = this.state;
-		let payload = Object.create({});
-		payload.reasons = selectedReason;
-		axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
-			this.setState({ isVisible: false }, () => {
-				helper.successToast(`Lead Closed`)
-				navigation.navigate('Leads');
-			});
-		}).catch(error => {
-			console.log(error);
-		})
-	}
+    onHandleCloseLead = () => {
+        const { navigation, lead } = this.props
+        const { selectedReason } = this.state;
+        let payload = Object.create({});
+        payload.reasons = selectedReason;
+        axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
+            this.setState({ isVisible: false }, () => {
+                helper.successToast(`Lead Closed`)
+                navigation.navigate('Leads');
+            });
+        }).catch(error => {
+            console.log(error);
+        })
+    }
 
-	handleReasonChange = (value) => {
-		this.setState({ selectedReason: value });
-	}
+    handleReasonChange = (value) => {
+        this.setState({ selectedReason: value });
+    }
 
 
-	closeLeadModal = () => {
-		this.setState({ isCloseLeadVisible: false })
-	}
+    closeLeadModal = () => {
+        this.setState({ isCloseLeadVisible: false })
+    }
 
     goToDiaryForm = () => {
         const { lead, navigation, user } = this.props
@@ -311,11 +311,11 @@ class LeadPropsure extends React.Component {
     }
 
     navigateToDetails = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
-	}
+        this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    }
 
     render() {
-        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue,  reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state;
+        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state;
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
@@ -378,25 +378,26 @@ class LeadPropsure extends React.Component {
                                 <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                         }
                     </View>
-                    <CMBottomNav
-						goToAttachments={this.goToAttachments}
-						navigateTo={this.navigateToDetails}
-						goToDiaryForm={this.goToDiaryForm}
-						goToComments={this.goToComments}
-						alreadyClosedLead={() => this.closedLead()}
-						closeLead={this.closeLead}
-						closedLeadEdit={closedLeadEdit}
-					/>
-
-					<LeadRCMPaymentPopup
-						reasons={reasons}
-						selectedReason={selectedReason}
-						changeReason={(value) => this.handleReasonChange(value)}
-						checkValidation={checkReasonValidation}
-						isVisible={isCloseLeadVisible}
-						closeModal={() => this.closeLeadModal()}
-						onPress={() => this.onHandleCloseLead()}
-					/>
+                    <View style={AppStyles.mainCMBottomNav}>
+                        <CMBottomNav
+                            goToAttachments={this.goToAttachments}
+                            navigateTo={this.navigateToDetails}
+                            goToDiaryForm={this.goToDiaryForm}
+                            goToComments={this.goToComments}
+                            alreadyClosedLead={() => this.closedLead()}
+                            closeLead={this.closeLead}
+                            closedLeadEdit={closedLeadEdit}
+                        />
+                    </View>
+                    <LeadRCMPaymentPopup
+                        reasons={reasons}
+                        selectedReason={selectedReason}
+                        changeReason={(value) => this.handleReasonChange(value)}
+                        checkValidation={checkReasonValidation}
+                        isVisible={isCloseLeadVisible}
+                        closeModal={() => this.closeLeadModal()}
+                        onPress={() => this.onHandleCloseLead()}
+                    />
                 </View>
                 :
                 <Loader loading={loading} />

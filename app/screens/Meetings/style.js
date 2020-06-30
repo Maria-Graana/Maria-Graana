@@ -6,12 +6,12 @@ export default styles = StyleSheet.create({
     paddingBottom: 80,
   },
   openLeadHeight: {
-    minHeight: '79%',
-    maxHeight: '79%',
+    minHeight: '81%',
+    maxHeight: '81%',
   },
   closeLeadHeight: {
-    minHeight: '89%',
-    maxHeight: '89%',
+    minHeight: '100%',
+    maxHeight: '100%',
   },
   mainWrapCon: {
     minHeight: '100%',

@@ -175,10 +175,10 @@ class LeadRCMPayment extends React.Component {
     handleReasonChange = (value) => {
         this.setState({ selectedReason: value });
     }
-    
+
     closedLead = () => {
-		helper.leadClosedToast()
-	}
+        helper.leadClosedToast()
+    }
 
     closeModal = () => {
         this.setState({ isVisible: false })
@@ -187,12 +187,12 @@ class LeadRCMPayment extends React.Component {
     showLeadPaymentModal = () => {
         const { lead } = this.state;
         var commissionPayment = lead.commissionPayment
-		if (commissionPayment !== null) {
-			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
-		}
-		else {
-			this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
-		}
+        if (commissionPayment !== null) {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+        }
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+        }
     }
 
 
@@ -412,8 +412,8 @@ class LeadRCMPayment extends React.Component {
     }
 
     navigateToDetails = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
-	}
+        this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    }
 
 
     render() {
@@ -451,7 +451,7 @@ class LeadRCMPayment extends React.Component {
                         closeModal={() => this.closeModal()}
                         onPress={() => this.onHandleCloseLead()}
                     />
-                    <View style={{ flex: 1 }}>
+                    <View style={{ flex: 1, minHeight: '100%' }}>
                         {
                             allProperties.length > 0 ?
                                 <FlatList
@@ -533,16 +533,17 @@ class LeadRCMPayment extends React.Component {
                                 :
                                 <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                         }
-
-                        <CMBottomNav
-                            goToAttachments={this.goToAttachments}
-                            navigateTo={this.navigateToDetails}
-                            goToDiaryForm={this.goToDiaryForm}
-                            goToComments={this.goToComments}
-                            alreadyClosedLead={() => this.closedLead()}
-                            closeLead={this.showLeadPaymentModal}
-                            closedLeadEdit={closedLeadEdit}
-                        />
+                        <View style={AppStyles.mainCMBottomNav}>
+                            <CMBottomNav
+                                goToAttachments={this.goToAttachments}
+                                navigateTo={this.navigateToDetails}
+                                goToDiaryForm={this.goToDiaryForm}
+                                goToComments={this.goToComments}
+                                alreadyClosedLead={() => this.closedLead()}
+                                closeLead={this.showLeadPaymentModal}
+                                closedLeadEdit={closedLeadEdit}
+                            />
+                        </View>
 
                     </View>
 

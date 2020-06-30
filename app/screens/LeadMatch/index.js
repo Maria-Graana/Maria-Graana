@@ -472,10 +472,10 @@ class LeadMatch extends React.Component {
     closeLead = () => {
         var commissionPayment = this.props.lead.commissionPayment
         if (commissionPayment !== null) {
-            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible:true, checkReasonValidation:'' })
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
         }
         else {
-            this.setState({ reasons: StaticData.leadCloseReasons,isVisible:true, checkReasonValidation:'' })
+            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
         }
     }
 
@@ -538,8 +538,8 @@ class LeadMatch extends React.Component {
     }
 
     navigateToDetails = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
-	}
+        this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    }
 
 
     _onStateChange = ({ open }) => this.setState({ open });
@@ -659,15 +659,17 @@ class LeadMatch extends React.Component {
                             :
                             null
                     }
-                    <CMBottomNav
-                        goToAttachments={this.goToAttachments}
-                        navigateTo={this.navigateToDetails}
-                        goToDiaryForm={this.goToDiaryForm}
-                        goToComments={this.goToComments}
-                        alreadyClosedLead={()=> this.closedLead()}
-                        closeLead={this.closeLead}
-                        closedLeadEdit={closedLeadEdit}
-                    />
+                    <View style={AppStyles.mainCMBottomNav}>
+                        <CMBottomNav
+                            goToAttachments={this.goToAttachments}
+                            navigateTo={this.navigateToDetails}
+                            goToDiaryForm={this.goToDiaryForm}
+                            goToComments={this.goToComments}
+                            alreadyClosedLead={() => this.closedLead()}
+                            closeLead={this.closeLead}
+                            closedLeadEdit={closedLeadEdit}
+                        />
+                    </View>
 
                     <LeadRCMPaymentPopup
                         reasons={reasons}

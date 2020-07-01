@@ -5,13 +5,13 @@ import Avatar from '../../components/Avatar/index';
 import helper from '../../helper'
 
 const checkTeamNameAndRegion = (item) => {
-    if (item.armsTeam && item.region) {
+    if (item && item.armsTeam && item.region) {
         return `${helper.capitalize(item.armsTeam.teamName)}, ${item.region.name}`
     }
-    else if (item.armsTeam) {
+    else if (item && item.armsTeam) {
         return helper.capitalize(item.armsTeam.teamName)
     }
-    else if (item.region) {
+    else if (item && item.region) {
         return item.region.name
     }
     else {
@@ -26,25 +26,27 @@ class TeamTile extends React.Component {
     render() {
         const { selected, data, selectedId } = this.props;
         const { item } = data;
-        const organizationName = item.organization && item.organization.name ? item.organization.name : '';
+        const organizationName =  item && item.organization && item.organization.name ? item.organization.name : '';
         let teamNameAndRegion = checkTeamNameAndRegion(item);
         return (
             <TouchableOpacity
                 activeOpacity={.7}
                 onPress={() => { this.props.onPressItem(item) }}
             >
-                <View style={selected && item.id === selectedId ? styles.selectedStyle : styles.simpleStyle}>
+                <View style={selected && item && item.id === selectedId ? styles.selectedStyle : styles.simpleStyle}>
                     <View style={{ paddingRight: 10, }}>
-                        <Avatar data={item} />
+                        {
+                            item &&  <Avatar data={item} />
+                        }
                     </View>
                     <View style={styles.mainRowContainer}>
                         <View style={styles.horizontalRowContainer}>
                             <View style={styles.titleSubtitleContainer}>
                                 <Text style={[styles.textFont, { fontSize: 15, marginRight: 10 }]}>
-                                    {item.firstName} {item.lastName}
+                                    {item && item.firstName ? item.firstName : ''} {item && item.lastName ? item.lastName : ''}
                                 </Text>
                                 <Text style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}>
-                                    {item.title && helper.capitalize(item.title)}
+                                    {item && item.title && helper.capitalize(item.title)}
                                 </Text>
                             </View>
                             {

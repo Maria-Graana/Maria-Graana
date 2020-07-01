@@ -6,8 +6,8 @@ export default styles = StyleSheet.create({
     paddingBottom: 15,
   },
   openLeadHeight: {
-    minHeight: '82.5%',
-    maxHeight: '82.5%',
+    minHeight: '79%',
+    maxHeight: '79%',
   },
   closeLeadHeight: {
     minHeight: '100%',
@@ -23,6 +23,9 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginBottom: 15,
+    position: 'absolute',
+    bottom: 70,
+    right: 10,
   },
   // btnsMainWrap: {
   //   width: '50%',

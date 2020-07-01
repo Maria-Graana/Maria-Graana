@@ -22,7 +22,10 @@ class AssignLead extends React.Component {
     }
 
     fetchTeam = () => {
-        axios.get(`/api/user/agents?leads=${true}`)
+        const {route} = this.props;
+        const {type} = route.params
+        const url = type === 'Investment' ? `/api/user/agents?leads=${true}` : `/api/user/agents?leads=${true}&rcm=${true}`
+        axios.get(url)
             .then((res) => {
                 this.setState({
                     teamMembers: res.data
@@ -94,7 +97,7 @@ class AssignLead extends React.Component {
                                         selectedId={selectedId}
                                     />
                                 )}
-                                keyExtractor={(item, index) => item.id.toString()}
+                                keyExtractor={(item, index) => item ? item.id.toString() : index.toString()}
                             />
                             :
                             <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />

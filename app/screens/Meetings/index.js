@@ -50,7 +50,7 @@ class Meetings extends Component {
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
-    
+
   }
 
   fetchLead = () => {
@@ -343,7 +343,7 @@ class Meetings extends Component {
               }
             </View>
           </ScrollView>
-          
+
         </View>
         {
           leadClosedCheck == true &&
@@ -361,16 +361,17 @@ class Meetings extends Component {
 
           </View>
         }
-        <CMBottomNav
-          goToAttachments={this.goToAttachments}
-          navigateTo={this.navigateTo}
-          goToDiaryForm={this.goToDiaryForm}
-          goToComments={this.goToComments}
-          alreadyClosedLead={this.closedLead}
-          closedLeadEdit={closedLeadEdit}
-          closeLead={this.closeLead}
-        />
-
+        <View style={AppStyles.mainCMBottomNav}>
+          <CMBottomNav
+            goToAttachments={this.goToAttachments}
+            navigateTo={this.navigateTo}
+            goToDiaryForm={this.goToDiaryForm}
+            goToComments={this.goToComments}
+            alreadyClosedLead={this.closedLead}
+            closedLeadEdit={closedLeadEdit}
+            closeLead={this.closeLead}
+          />
+        </View>
 
         {/* ************Modal Component************ */}
         <MeetingModal

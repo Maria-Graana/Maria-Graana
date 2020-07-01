@@ -477,15 +477,18 @@ class LeadViewing extends React.Component {
 							}
 						</View>
 					</View>
-					<CMBottomNav
-						goToAttachments={this.goToAttachments}
-						navigateTo={this.navigateToDetails}
-						goToDiaryForm={this.goToDiaryForm}
-						goToComments={this.goToComments}
-						alreadyClosedLead={() => this.closedLead()}
-						closeLead={this.closeLead}
-						closedLeadEdit={closedLeadEdit}
-					/>
+
+					<View style={AppStyles.mainCMBottomNav}>
+						<CMBottomNav
+							goToAttachments={this.goToAttachments}
+							navigateTo={this.navigateToDetails}
+							goToDiaryForm={this.goToDiaryForm}
+							goToComments={this.goToComments}
+							alreadyClosedLead={() => this.closedLead()}
+							closeLead={this.closeLead}
+							closedLeadEdit={closedLeadEdit}
+						/>
+					</View>
 
 					<LeadRCMPaymentPopup
 						reasons={reasons}

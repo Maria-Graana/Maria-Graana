@@ -66,5 +66,8 @@ export default styles = StyleSheet.create({
   },
   heightContainer: {
     height: '20%'
-  }
+  },
+  marginBottomFrom:{
+    paddingBottom: 80,
+  },
 });

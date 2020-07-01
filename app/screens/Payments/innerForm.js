@@ -10,7 +10,7 @@ import * as RootNavigation from '../../navigation/RootNavigation';
 import { formatPrice } from '../../PriceFormate'
 import targetArrow from '../../../assets/img/targetArrow.png'
 import moment from 'moment'
-import CMBottomNav from '../../components/CMBottomNav'
+
 
 class InnerForm extends Component {
   constructor(props) {
@@ -53,7 +53,7 @@ class InnerForm extends Component {
     let no_installments = instalments.toString()
 
     return (
-      <View style={[AppStyles.modalMain]}>
+      <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
         <View style={[AppStyles.formMain]}>
 
           {/* **************************************** */}
@@ -269,16 +269,7 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-
-          <CMBottomNav
-            goToAttachments={goToAttachments}
-            navigateTo={navigateTo}
-            goToDiaryForm={goToDiaryForm}
-            goToComments={goToComments}
-            closedLeadEdit={closedLeadEdit}
-            closeLead={formSubmit}
-            alreadyClosedLead={closedLead}
-          />
+          
 
         </View>
       </View >

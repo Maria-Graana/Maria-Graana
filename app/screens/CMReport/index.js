@@ -4,7 +4,8 @@ import { View, ScrollView, Text, Image, TouchableOpacity, Dimensions } from 'rea
 import ReportFilterButton from '../../components/ReportFilterButton/index';
 import ReportFooter from '../../components/ReportFooter/index';
 import { connect } from 'react-redux';
-import AppStyles from '../../AppStyles'
+import AppStyles from '../../AppStyles';
+import helper from '../../helper';
 import SquareContainer from '../../components/SquareContainer';
 import RegionFilter from '../../components/RegionFilter';
 import AgentFilter from '../../components/AgentFilter';
@@ -36,6 +37,7 @@ class CMReport extends React.Component {
         const date = new Date();
         super(props)
         this.state = {
+            viewLoader: true,
             backCheck: false,
             loading: true,
             lastLabel: 'Organization',
@@ -102,40 +104,44 @@ class CMReport extends React.Component {
 
     checkRole = () => {
         const { user } = this.props
-
+        
         let { regionFormData, agentFormData, zoneFormData } = this.state
         if (user.subRole === 'regional_head') {
-            regionFormData = {
-                organization: user.organizationId,
-                region: user.region.id,
-            }
-            this.setState({
-                organizations: [{ value: user.organizationId, name: user.organizationName }],
-                regionFormData,
-                lastLabel: 'Region',
-                footerLabel: 'Region',
-                regionText: user.region.name + ', ' + user.organizationName,
-                regions: [{ value: user.region.id, name: user.region.name }]
-            }, () => { this.checkDate() })
+            if ('region' in user && user.region) {
+                regionFormData = {
+                    organization: user.organizationId,
+                    region: user.region.id,
+                }
+                this.setState({
+                    organizations: [{ value: user.organizationId, name: user.organizationName }],
+                    regionFormData,
+                    lastLabel: 'Region',
+                    footerLabel: 'Region',
+                    regionText: user.region.name + ', ' + user.organizationName,
+                    regions: [{ value: user.region.id, name: user.region.name }]
+                }, () => { this.checkDate() })
+            } else helper.errorToast('Error: Displaying Dashboard')
         }
         if (user.subRole === 'zonal_manager' || user.subRole === 'branch_manager' || user.subRole === 'business_centre_manager' || user.subRole === 'call_centre_manager') {
             let organizations = [{ value: user.organizationId, name: user.organizationName }]
-            zoneFormData = {
-                organization: user.organizationId,
-                region: user.region.id,
-                zone: user.armsTeam.id,
-            }
-            this.setState({
-                lastLabel: 'Team',
-                footerLabel: 'Team',
-                organizations,
-                regionFormData,
-                agentFormData,
-                zoneFormData,
-                regionText: user.armsTeam.teamName + ', ' + user.region.name + ', ' + user.organizationName,
-                regions: [{ value: user.region.id, name: user.region.name }],
-                zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }]
-            }, () => { this.checkDate() })
+            if ('region' in user && 'armsTeam' in user && user.armsTeam && user.region) {
+                zoneFormData = {
+                    organization: user.organizationId,
+                    region: user.region.id,
+                    zone: user.armsTeam.id,
+                }
+                this.setState({
+                    lastLabel: 'Team',
+                    footerLabel: 'Team',
+                    organizations,
+                    regionFormData,
+                    agentFormData,
+                    zoneFormData,
+                    regionText: user.armsTeam.teamName + ', ' + user.region.name + ', ' + user.organizationName,
+                    regions: [{ value: user.region.id, name: user.region.name }],
+                    zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }]
+                }, () => { this.checkDate() })
+            } else helper.errorToast('Error: Displaying Dashboard')
         }
         if (user.subRole === 'country_head' || user.subRole === 'group_head' || user.subRole === 'group_management') {
             this.fetchOrganizations()
@@ -197,7 +203,7 @@ class CMReport extends React.Component {
         axios.get(url)
             .then((res) => {
                 this.graphData(res.data)
-                this.setState({ dashBoardData: res.data, loading: false })
+                this.setState({ dashBoardData: res.data, loading: false, viewLoader: false })
             })
             .catch((error) => {
                 console.log(error)
@@ -631,7 +637,7 @@ class CMReport extends React.Component {
     }
 
     render() {
-        const { organizationFormData, loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
+        const { viewLoader, organizationFormData, loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
         const width = Dimensions.get('window').width - 5
         const height = 220
         let chartConfig = {
@@ -658,97 +664,100 @@ class CMReport extends React.Component {
         }
 
         return (
-            <View style={[AppStyles.mb1, { backgroundColor: '#ffffff' }]}>
-                <View style={styles.buttonsContainer}>
-                    <View style={styles.btnView}>
-                        <ReportFilterButton label='Daily' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Daily' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Daily' ? { color: '#ffffff' } : null} />
-                        <ReportFilterButton label='Weekly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Weekly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Weekly' ? { color: '#ffffff' } : null} />
-                        <ReportFilterButton label='Monthly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Monthly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Monthly' ? { color: '#ffffff' } : null} />
-                        <ReportFilterButton label='Quarterly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Quarterly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Quarterly' ? { color: '#ffffff' } : null} />
-                        <ReportFilterButton label='Yearly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Yearly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Yearly' ? { color: '#ffffff' } : null} />
-                    </View>
-                </View>
-
-                <RegionFilter regions={regions} checkValidation={checkValidation} submitRegionFilter={this.submitRegionFilter} handleRegionForm={this.handleRegionForm} formData={_.clone(regionFormData)} organizations={organizations} openPopup={showRegionFilter} closeFilters={this.closeFilters} />
-                <AgentFilter agents={agents} fetchAgents={this.fetchAgents} zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitAgentFilter={this.submitAgentFilter} handleAgentForm={this.handleAgentForm} formData={_.clone(agentFormData)} organizations={organizations} openPopup={showAgentFilter} closeFilters={this.closeFilters} />
-                <ZoneFilter zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitZoneFilter={this.submitZoneFilter} handleZoneForm={this.handleZoneForm} formData={_.clone(zoneFormData)} organizations={organizations} openPopup={showZoneFilter} closeFilters={this.closeFilters} />
-                <OrganizationFilter organizations={organizations} checkValidation={checkValidation} submitOrganizationFilter={this.submitOrganizationFilter} handleOrganizationForm={this.handleOrganizationForm} formData={_.clone(organizationFormData)} openPopup={showOrganizationFilter} closeFilters={this.closeFilters} />
-
-                <View style={styles.inputView}>
-                    <View style={styles.regionStyle}>
-                        <View style={styles.textView}>
-                            <Text numberOfLines={1} style={styles.textStyle}>{regionText}</Text>
+            !viewLoader ?
+                <View style={[AppStyles.mb1, { backgroundColor: '#ffffff' }]}>
+                    <View style={styles.buttonsContainer}>
+                        <View style={styles.btnView}>
+                            <ReportFilterButton label='Daily' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Daily' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Daily' ? { color: '#ffffff' } : null} />
+                            <ReportFilterButton label='Weekly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Weekly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Weekly' ? { color: '#ffffff' } : null} />
+                            <ReportFilterButton label='Monthly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Monthly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Monthly' ? { color: '#ffffff' } : null} />
+                            <ReportFilterButton label='Quarterly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Quarterly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Quarterly' ? { color: '#ffffff' } : null} />
+                            <ReportFilterButton label='Yearly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Yearly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Yearly' ? { color: '#ffffff' } : null} />
                         </View>
-                        <TouchableOpacity style={styles.inputBtn} onPress={() => { this.openFilter() }}>
-                            <Image source={listIconImg} style={styles.regionImg} />
-                        </TouchableOpacity>
                     </View>
-                    <View style={styles.dateView}>
-                        <View style={styles.textView}>
-                            <Text numberOfLines={1} style={styles.textStyle}>{selectedDate}</Text>
-                        </View>
-                        <TouchableOpacity style={styles.inputBtn} onPress={() => this.showDate()}>
-                            <Image source={calendarImg} style={styles.calendarImg} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
 
-                <MonthPicker ref={(picker) => this.picker = picker} />
-                <YearPicker ref={(picker) => this.yearPicker = picker} />
-                <QuarterPicker ref={(picker) => this.quarterPicker = picker} />
+                    <RegionFilter regions={regions} checkValidation={checkValidation} submitRegionFilter={this.submitRegionFilter} handleRegionForm={this.handleRegionForm} formData={_.clone(regionFormData)} organizations={organizations} openPopup={showRegionFilter} closeFilters={this.closeFilters} />
+                    <AgentFilter agents={agents} fetchAgents={this.fetchAgents} zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitAgentFilter={this.submitAgentFilter} handleAgentForm={this.handleAgentForm} formData={_.clone(agentFormData)} organizations={organizations} openPopup={showAgentFilter} closeFilters={this.closeFilters} />
+                    <ZoneFilter zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitZoneFilter={this.submitZoneFilter} handleZoneForm={this.handleZoneForm} formData={_.clone(zoneFormData)} organizations={organizations} openPopup={showZoneFilter} closeFilters={this.closeFilters} />
+                    <OrganizationFilter organizations={organizations} checkValidation={checkValidation} submitOrganizationFilter={this.submitOrganizationFilter} handleOrganizationForm={this.handleOrganizationForm} formData={_.clone(organizationFormData)} openPopup={showOrganizationFilter} closeFilters={this.closeFilters} />
 
-                {
-                    showCalendar ?
-                        < CalendarComponent startDate={selectedDate} updateDay={this.updateDay} onPress={this._toggleShow} />
-                        :
-                        null
-                }
-                {
-                    !loading ?
-                        <ScrollView style={styles.scrollContainer}>
-                            <View style={{
-                            }}>
-
-
-                                {
-                                    filterLabel === 'Daily' ?
-                                        <RectangleDaily targetNumber={dashBoardData.revenue} />
-                                        :
-                                        <RectangleContainer targetPercent={60} targetNumber={dashBoardData.revenue} totalTarget={dashBoardData.totalTarget} />
-                                }
-                                <View style={styles.sqaureView}>
-                                    <SquareContainer containerStyle={styles.squareRight} imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
-                                    <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
-                                </View>
-                                <View style={styles.sqaureView}>
-                                    <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
-                                    <SquareContainer imagePath={amountPendingImg} label={'Amount Pending'} total={dashBoardData.pendingAmount} />
-                                </View>
-                                <View style={styles.graphContainer}>
-                                    <Text style={styles.labelStyle}>Total Leads</Text>
-                                    <ScrollView horizontal={true}>
-                                        <BarChart
-                                            useShadowColorFromDataset={true}
-                                            withInnerLines={false}
-                                            withDots={false}
-                                            fromZero={true}
-                                            withHorizontalLabels={true}
-                                            showBarTops={true}
-                                            width={width}
-                                            height={height}
-                                            data={graph}
-                                            chartConfig={chartConfig}
-                                            style={graphStyle}
-                                        />
-                                    </ScrollView>
-                                </View>
+                    <View style={styles.inputView}>
+                        <View style={styles.regionStyle}>
+                            <View style={styles.textView}>
+                                <Text numberOfLines={1} style={styles.textStyle}>{regionText}</Text>
                             </View>
-                        </ScrollView>
-                        :
-                        <Loader loading={loading} />
-                }
-                <ReportFooter label={footerLabel} selectedFooterButton={this.selectedFooterButton} />
-            </View>
+                            <TouchableOpacity style={styles.inputBtn} onPress={() => { this.openFilter() }}>
+                                <Image source={listIconImg} style={styles.regionImg} />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.dateView}>
+                            <View style={styles.textView}>
+                                <Text numberOfLines={1} style={styles.textStyle}>{selectedDate}</Text>
+                            </View>
+                            <TouchableOpacity style={styles.inputBtn} onPress={() => this.showDate()}>
+                                <Image source={calendarImg} style={styles.calendarImg} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    <MonthPicker ref={(picker) => this.picker = picker} />
+                    <YearPicker ref={(picker) => this.yearPicker = picker} />
+                    <QuarterPicker ref={(picker) => this.quarterPicker = picker} />
+
+                    {
+                        showCalendar ?
+                            < CalendarComponent startDate={selectedDate} updateDay={this.updateDay} onPress={this._toggleShow} />
+                            :
+                            null
+                    }
+                    {
+                        !loading ?
+                            <ScrollView style={styles.scrollContainer}>
+                                <View style={{
+                                }}>
+
+
+                                    {
+                                        filterLabel === 'Daily' ?
+                                            <RectangleDaily targetNumber={dashBoardData.revenue} />
+                                            :
+                                            <RectangleContainer targetPercent={60} targetNumber={dashBoardData.revenue} totalTarget={dashBoardData.totalTarget} />
+                                    }
+                                    <View style={styles.sqaureView}>
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
+                                        <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                                    </View>
+                                    <View style={styles.sqaureView}>
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
+                                        <SquareContainer imagePath={amountPendingImg} label={'Amount Pending'} total={dashBoardData.pendingAmount} />
+                                    </View>
+                                    <View style={styles.graphContainer}>
+                                        <Text style={styles.labelStyle}>Total Leads</Text>
+                                        <ScrollView horizontal={true}>
+                                            <BarChart
+                                                useShadowColorFromDataset={true}
+                                                withInnerLines={false}
+                                                withDots={false}
+                                                fromZero={true}
+                                                withHorizontalLabels={true}
+                                                showBarTops={true}
+                                                width={width}
+                                                height={height}
+                                                data={graph}
+                                                chartConfig={chartConfig}
+                                                style={graphStyle}
+                                            />
+                                        </ScrollView>
+                                    </View>
+                                </View>
+                            </ScrollView>
+                            :
+                            <Loader loading={loading} />
+                    }
+                    <ReportFooter label={footerLabel} selectedFooterButton={this.selectedFooterButton} />
+                </View>
+                :
+                <Loader loading={loading} />
         )
     }
 }

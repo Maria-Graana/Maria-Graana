@@ -84,4 +84,7 @@ export default styles = StyleSheet.create({
         marginHorizontal: 10,
         marginVertical: 20
     },
+    continueBtn:{
+        marginBottom: 100,
+    },
 });

@@ -562,7 +562,7 @@ class LeadMatch extends React.Component {
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
                     <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
-                    <View style={{  minHeight: '82%' }}>
+                    <View style={{  minHeight: '85%' }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
                                 <Text style={[(organization === 'arms') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> ARMS </Text>
@@ -655,15 +655,20 @@ class LeadMatch extends React.Component {
                     {
                         displayButton ?
 
-                            <TouchableOpacity style={styles.continueBtn} onPress={() => this.sendProperties()}
+                            <TouchableOpacity onPress={() => this.sendProperties()}
                                 style={{
-                                    height: 50, alignSelf: 'center', marginBottom: 20, width: '90%',
-                                    opacity: 0.9,
+                                    height: 50,
+                                    alignSelf: 'center',
+                                    marginBottom: 20,
+                                    width: '90%',
+                                    opacity: 1,
                                     backgroundColor: AppStyles.colors.primaryColor,
                                     justifyContent: "center",
                                     alignItems: "center",
                                     padding: 10,
-                                    borderRadius: 5
+                                    borderRadius: 5,
+                                    position: 'absolute',
+                                    bottom: 70,
                                 }}>
                                 <Text style={{ color: 'white' }}> Continue With Selected Properties </Text>
                             </TouchableOpacity>

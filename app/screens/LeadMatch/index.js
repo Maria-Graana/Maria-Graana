@@ -562,7 +562,7 @@ class LeadMatch extends React.Component {
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
                     <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
-                    <View style={{ flex: 1 }}>
+                    <View style={{  minHeight: '82%' }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
                                 <Text style={[(organization === 'arms') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> ARMS </Text>
@@ -655,7 +655,7 @@ class LeadMatch extends React.Component {
                     {
                         displayButton ?
 
-                            <TouchableOpacity onPress={() => this.sendProperties()}
+                            <TouchableOpacity style={styles.continueBtn} onPress={() => this.sendProperties()}
                                 style={{
                                     height: 50, alignSelf: 'center', marginBottom: 20, width: '90%',
                                     opacity: 0.9,

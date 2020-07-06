@@ -14,6 +14,7 @@ import helper from '../../helper';
 import { FAB } from 'react-native-paper';
 import MeetingModal from '../../components/MeetingModal'
 import PaymentAlert from '../../components/PaymentAlert'
+import CMBottomNav from '../../components/CMBottomNav'
 
 class Payments extends Component {
 	constructor(props) {
@@ -61,8 +62,9 @@ class Payments extends Component {
 			checkReasonValidation: false,
 			progressValue: 0,
 			fullPaymentCount: 1,
-			paymentFiledsArray: lead.payment.length > 0 ? lead.payment : [],
+			paymentFiledsArray: lead.payment && lead.payment.length > 0 ? lead.payment : [],
 			// checkPaymentTypeValue: ''
+			closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
 		}
 
 	}
@@ -71,8 +73,6 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
-		// console.log(this.state.paymentFiledsArray)
-		// console.log(this.props.lead)
 	}
 
 	setFields = () => {
@@ -143,7 +143,7 @@ class Payments extends Component {
 				})
 			}
 
-			if (data.payment.length) {
+			if (data.payment && data.payment.length) {
 				name = 'payments'
 				arrowCheck[name] = false
 				this.setState({
@@ -406,6 +406,7 @@ class Payments extends Component {
 			unitId: formData.unitId ? formData.unitId : null,
 			installments: totalInstalments.length > 0 ? totalInstalments : paymentFiledsArray.length > 0 ? paymentFiledsArray : null,
 			no_of_installments: totalInstalments.length ? totalInstalments.length : null,
+			remainingPayment: remainingPayment,
 		}
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
@@ -420,7 +421,15 @@ class Payments extends Component {
 	}
 
 	submitValues = (name) => {
-		const { formData, instalments, totalInstalments, tokenDate, arrowCheck, paymentFiledsArray } = this.state
+		const {
+			formData,
+			instalments,
+			totalInstalments,
+			tokenDate,
+			arrowCheck,
+			paymentFiledsArray,
+			remainingPayment,
+		} = this.state
 		const { lead } = this.props
 		formData[name] = formData[name]
 		let body = {};
@@ -435,28 +444,28 @@ class Payments extends Component {
 			body = { unitId: formData[name] }
 		}
 		if (name === 'discount') {
-			body = { discount: formData[name] ? formData[name] : null }
+			body = { discount: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
 		if (name === 'token') {
-			body = { token: formData[name] ? formData[name] : null, tokenPaymentTime: tokenDate }
+			body = { token: formData[name] ? formData[name] : null, tokenPaymentTime: tokenDate, remainingPayment: remainingPayment }
 			this.currentDate(name)
 			newArrowCheck[name] = false
 		}
 		if (name === 'downPayment') {
-			body = { downPayment: formData[name] ? formData[name] : null }
+			body = { downPayment: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
 			this.currentDate(name)
 			newArrowCheck[name] = false
 		}
 		if (name === 'no_installments') {
-			body = { no_of_installments: instalments }
+			body = { no_of_installments: instalments, remainingPayment: remainingPayment }
 		}
 		if (name === 'payments') {
-			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null }
+			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
 		if (name === 'installments') {
-			body = { installments: totalInstalments ? totalInstalments : null }
+			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
 		// console.log('Payload => ', body)
@@ -492,6 +501,10 @@ class Payments extends Component {
 				console.log(error);
 			})
 		}
+	}
+
+	closedLead = () => {
+		helper.leadClosedToast()
 	}
 
 	addFullpaymentFields = () => {
@@ -557,22 +570,26 @@ class Payments extends Component {
 	}
 
 	goToComments = () => {
-		const { navigation, route } = this.props;
+		const { navigation } = this.props;
 		navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
 	}
 
 	goToAttachments = () => {
-		const { navigation, route } = this.props;
+		const { navigation } = this.props;
 		navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
 	}
 
 	goToDiaryForm = () => {
-		const { navigation, route, user } = this.props;
+		const { navigation, user } = this.props;
 		navigation.navigate('AddDiary', {
 			update: false,
 			cmLeadId: this.props.lead.id,
 			agentId: user.id
 		});
+	}
+
+	navigateTo = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
 	}
 
 	render() {
@@ -600,6 +617,7 @@ class Payments extends Component {
 			fullPaymentCount,
 			modalVisible,
 			checkPaymentTypeValue,
+			closedLeadEdit,
 		} = this.state
 		return (
 			<View>
@@ -641,22 +659,27 @@ class Payments extends Component {
 							addFullpaymentFields={this.addFullpaymentFields}
 							paymentFiledsArray={paymentFiledsArray}
 							handlePayments={this.handlePayments}
+							closedLeadEdit={closedLeadEdit}
+							closedLead={this.closedLead}
+							goToDiaryForm={this.goToDiaryForm}
+							goToAttachments={this.goToAttachments}
+							goToComments={this.goToComments}
+							navigateTo={this.navigateTo}
 						/>
 					</View>
 				</ScrollView>
-				<FAB.Group
-					open={open}
-					icon="plus"
-					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-					color={AppStyles.bgcWhite.backgroundColor}
-					actions={[
-						{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-						{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-						{ icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
 
-					]}
-					onStateChange={({ open }) => this.setState({ open })}
-				/>
+				<View style={AppStyles.mainCMBottomNav}>
+					<CMBottomNav
+						goToAttachments={this.goToAttachments}
+						navigateTo={this.navigateTo}
+						goToDiaryForm={this.goToDiaryForm}
+						goToComments={this.goToComments}
+						closedLeadEdit={closedLeadEdit}
+						closeLead={this.formSubmit}
+						alreadyClosedLead={this.closedLead}
+					/>
+				</View>
 				{
 					modalVisible &&
 					<PaymentAlert

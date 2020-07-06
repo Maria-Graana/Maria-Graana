@@ -12,7 +12,7 @@ class MeetingTile extends React.Component {
   }
 
   render() {
-    const { data, openStatus, editFunction } = this.props
+    const { data, openStatus, editFunction, leadClosedCheck } = this.props
     let taskTypeData = []
     data.taskType === 'meeting' ?
       taskTypeData = StaticData.meetingStatus
@@ -22,7 +22,7 @@ class MeetingTile extends React.Component {
     let response = data && data.response != null && data.response.replace(/_+/g, " ");
 
     return (
-      <TouchableOpacity onPress={() => { data.taskType === 'meeting' && editFunction(data.id) }}>
+      <TouchableOpacity onPress={() => { data.taskType === 'meeting' && leadClosedCheck && editFunction(data.id) }}>
         <View style={[styles.mainTileView,]}>
           <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
             <View style={styles.border}>
@@ -40,9 +40,12 @@ class MeetingTile extends React.Component {
                 data.taskType === 'meeting' &&
                 <Text style={[styles.doneText]}>{data.response != null ? response : 'Meeting'}</Text>
               }
-              <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data) }}>
-                <Image source={dots} style={styles.dotsImg} />
-              </TouchableOpacity>
+              {
+                leadClosedCheck &&
+                <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data) }}>
+                  <Image source={dots} style={styles.dotsImg} />
+                </TouchableOpacity>
+              }
             </View>
           </View>
         </View>

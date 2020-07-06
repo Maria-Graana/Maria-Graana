@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.24",
+    "version": "1.0.46",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "splash": {
@@ -26,6 +26,9 @@
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "UIUserInterfaceStyle": "Light"
       }
     },
     "android": {

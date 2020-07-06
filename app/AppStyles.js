@@ -262,13 +262,20 @@ export default AppStyles = {
         borderRadius: 4,
         backgroundColor: '#fff',
         padding: 15,
-        borderWidth:1,
-        borderColor:'#0f73ee'
+        borderWidth: 1,
+        borderColor: '#0f73ee'
     },
     btnTextBlue: {
         color: '#0f73ee',
         fontSize: 18,
         fontFamily: 'OpenSans_bold',
         letterSpacing: 0.6,
+    },
+    mainCMBottomNav: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        width: '100%',
+        zIndex: 22.
     },
 }

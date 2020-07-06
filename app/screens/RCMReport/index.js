@@ -1,11 +1,10 @@
 import React from 'react';
 import styles from './style'
-import { View, ScrollView, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, ScrollView, Text, Image, TouchableOpacity, } from 'react-native';
 import ReportFilterButton from '../../components/ReportFilterButton/index';
 import ReportFooter from '../../components/ReportFooter/index';
 import { connect } from 'react-redux';
-import AppStyles from '../../AppStyles'
-import Ability from '../../hoc/Ability';
+import AppStyles from '../../AppStyles';
 import helper from '../../helper';
 import SquareContainer from '../../components/SquareContainer';
 import RegionFilter from '../../components/RegionFilter';
@@ -27,7 +26,6 @@ import QuarterPicker from '../../components/QuarterPicker';
 import _ from 'underscore';
 import axios from 'axios';
 import moment from 'moment';
-import { Menu } from 'react-native-paper';
 import { BarChart } from "react-native-chart-kit";
 import Loader from '../../components/loader';
 
@@ -39,6 +37,7 @@ class RCMReport extends React.Component {
         const date = new Date();
         super(props)
         this.state = {
+            viewLoader: true,
             backCheck: false,
             loading: true,
             lastLabel: 'Organization',
@@ -99,9 +98,54 @@ class RCMReport extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchRegions()
-        this.fetchOrganizations()
-        this.checkDate()
+        this.checkRole()
+    }
+
+    checkRole = () => {
+        const { user } = this.props
+
+        let { regionFormData, agentFormData, zoneFormData } = this.state
+        if (user.subRole === 'regional_head') {
+            if ('region' in user && user.region) {
+                regionFormData = {
+                    organization: user.organizationId,
+                    region: user.region.id,
+                }
+                this.setState({
+                    organizations: [{ value: user.organizationId, name: user.organizationName }],
+                    regionFormData,
+                    lastLabel: 'Region',
+                    footerLabel: 'Region',
+                    regionText: user.region.name + ', ' + user.organizationName,
+                    regions: [{ value: user.region.id, name: user.region.name }]
+                }, () => { this.checkDate() })
+            } else helper.errorToast('Error: Displaying Dashboard')
+        }
+        if (user.subRole === 'zonal_manager' || user.subRole === 'branch_manager' || user.subRole === 'business_centre_manager' || user.subRole === 'call_centre_manager') {
+            let organizations = [{ value: user.organizationId, name: user.organizationName }]
+            if ('region' in user && 'armsTeam' in user && user.armsTeam && user.region) {
+                zoneFormData = {
+                    organization: user.organizationId,
+                    region: user.region.id,
+                    zone: user.armsTeam.id,
+                }
+                this.setState({
+                    lastLabel: 'Team',
+                    footerLabel: 'Team',
+                    organizations,
+                    regionFormData,
+                    agentFormData,
+                    zoneFormData,
+                    regionText: user.armsTeam.teamName + ', ' + user.region.name + ', ' + user.organizationName,
+                    regions: [{ value: user.region.id, name: user.region.name }],
+                    zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }]
+                }, () => { this.checkDate() })
+            } else helper.errorToast('Error: Displaying Dashboard')
+        }
+        if (user.subRole === 'country_head' || user.subRole === 'group_head' || user.subRole === 'group_management') {
+            this.fetchOrganizations()
+            this.checkDate()
+        }
     }
 
     graphData = (data) => {
@@ -136,15 +180,21 @@ class RCMReport extends React.Component {
     // <<<<<<<<<<<<<<<<<<<<<<< Fetch API's >>>>>>>>>>>>>>>>>>>>>>>>>
 
     fetchOrganizations = () => {
-        axios.get('/api/user/organizations?limit=2')
-            .then((res) => {
-                let organizations = []
-                res && res.data.rows.length && res.data.rows.map((item, index) => { return (organizations.push({ value: item.id, name: item.name })) })
-                this.setState({ organizations })
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+        const { user } = this.props
+        if (user.organizationName && user.organizationName !== '') {
+            let organizations = [{ value: user.organizationId, name: user.organizationName }]
+            this.setState({ organizations, regionText: organizations[0].name })
+        } else {
+            axios.get('/api/user/organizations?limit=2')
+                .then((res) => {
+                    let organizations = []
+                    res && res.data.rows.length && res.data.rows.map((item, index) => { return (organizations.push({ value: item.id, name: item.name })) })
+                    this.setState({ organizations })
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
     }
 
     fetchReport = (url) => {
@@ -152,47 +202,53 @@ class RCMReport extends React.Component {
         axios.get(url)
             .then((res) => {
                 this.graphData(res.data)
-                this.setState({ dashBoardData: res.data, loading: false })
+                this.setState({ dashBoardData: res.data, loading: false, viewLoader: false })
             })
             .catch((error) => {
                 console.log(error)
             })
     }
 
-    fetchRegions = () => {
-        axios.get('/api/cities/regions?active=true')
-            .then((res) => {
-                let regions = []
-                res && res.data.items.length && res.data.items.map((item, index) => { return (regions.push({ value: item.id, name: item.name })) })
-                this.setState({ regions, zones: [], agents: [] })
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+    fetchRegions = (value) => {
+        const { user } = this.props
+        let org = this.organizationName(value)
+        if (user.subRole !== 'regional_head' && user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager') {
+            axios.get(`/api/cities/regions?organization=${org.name.toLocaleLowerCase()}&active=true`)
+                .then((res) => {
+                    let regions = []
+                    res && res.data.items.length && res.data.items.map((item, index) => { return (regions.push({ value: item.id, name: item.name })) })
+                    this.setState({ regions, zones: [], agents: [] })
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
     }
 
     fetchZones = (value, check) => {
         const { zoneFormData, agentFormData } = this.state
+        const { user } = this.props
         let armsZone = false
         let org = {}
 
         if (check === 'zone') org = this.organizationName(zoneFormData.organization)
         if (check === 'agent') org = this.organizationName(agentFormData.organization)
         if (org.name === 'Agency21') armsZone = true
-
-        axios.get(`/api/areas/zones?status=active&armsZone=${armsZone}&all=true&regionId=${value}`)
-            .then((res) => {
-                let zones = []
-                res && res.data.items.length && res.data.items.map((item, index) => { return (zones.push({ value: item.id, name: item.zone_name })) })
-                this.setState({ zones, agents: [], zoneFormData })
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+        if (user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager') {
+            axios.get(`/api/user/teams?status=true&organizationId=${org.value}&all=true&regionId=${value}`)
+                .then((res) => {
+                    let zones = []
+                    res && res.data.rows.length && res.data.rows.map((item, index) => { return (zones.push({ value: item.id, name: item.teamName })) })
+                    this.setState({ zones, agents: [], zoneFormData })
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
     }
 
     fetchAgents = (zone) => {
-        axios.get(`/api/user/agents?zoneId=${zone}`)
+        axios.get(`/api/user/agents`)
             .then((res) => {
                 let agents = []
                 res && res.data.length && res.data.map((item, index) => { return (agents.push({ value: item.id, name: item.firstName + ' ' + item.lastName })) })
@@ -307,6 +363,7 @@ class RCMReport extends React.Component {
             agentFormData.region = ''
             agentFormData.zone = ''
             agentFormData.agent = ''
+            this.fetchRegions(value)
         }
         agentFormData[name] = value
         this.setState({ agentFormData })
@@ -329,7 +386,7 @@ class RCMReport extends React.Component {
         const { agentFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
 
-        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
+        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
         if (filterLabel === 'Daily') url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
         if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -352,6 +409,7 @@ class RCMReport extends React.Component {
         if (name === 'organization') {
             zoneFormData.region = ''
             zoneFormData.zone = ''
+            this.fetchRegions(value)
         }
         if (name === 'region') zoneFormData.zone = '';
         this.setState({ zoneFormData })
@@ -373,7 +431,7 @@ class RCMReport extends React.Component {
         const { zoneFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
 
-        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
+        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
         if (filterLabel === 'Daily') url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
         if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -394,7 +452,10 @@ class RCMReport extends React.Component {
     handleRegionForm = (value, name) => {
         const { regionFormData } = this.state
         regionFormData[name] = value
-        if (name === 'organization') regionFormData.region = ''
+        if (name === 'organization') {
+            regionFormData.region = ''
+            this.fetchRegions(value)
+        }
         this.setState({ regionFormData })
     }
 
@@ -413,10 +474,10 @@ class RCMReport extends React.Component {
         const { regionFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
 
-        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
-        if (filterLabel === 'Daily') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
-        if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
-        if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
+        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
+        if (filterLabel === 'Daily') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+        if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
+        if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
         if (filterLabel === 'Quarterly') {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
@@ -458,7 +519,7 @@ class RCMReport extends React.Component {
         const { selectedOrganization, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
 
-        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
+        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
         if (filterLabel === 'Daily') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
         if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -566,16 +627,16 @@ class RCMReport extends React.Component {
     }
 
     openFilter = () => {
-        const { footerLabel } = this.state
-
-        if (footerLabel === 'Region') this.openRegionFilter()
-        else if (footerLabel === 'Agent') this.openAgentFilter()
-        else if (footerLabel === 'Team') this.openZoneFilter()
-        else this.setState({ showOrganizationFilter: true })
+        const { footerLabel, showOrganizationFilter } = this.state
+        const { user } = this.props
+        if (footerLabel === 'Region' && user.role !== 'sub_admin 1') this.openRegionFilter()
+        if (footerLabel === 'Agent') this.openAgentFilter()
+        if (footerLabel === 'Team') this.openZoneFilter()
+        if (footerLabel === 'Organization' && user.role !== 'admin 3' && user.role !== 'sub_admin 1') this.setState({ showOrganizationFilter: !showOrganizationFilter })
     }
 
     render() {
-        const { organizationFormData, loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
+        const { viewLoader, organizationFormData, loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
         const width = 500
         const height = 250
         let chartConfig = {
@@ -608,96 +669,99 @@ class RCMReport extends React.Component {
         }
 
         return (
-            <View style={[AppStyles.mb1, { backgroundColor: '#ffffff' }]}>
-                <View style={styles.buttonsContainer}>
-                    <View style={styles.btnView}>
-                        <ReportFilterButton label='Daily' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Daily' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Daily' ? { color: '#ffffff' } : null} />
-                        <ReportFilterButton label='Weekly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Weekly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Weekly' ? { color: '#ffffff' } : null} />
-                        <ReportFilterButton label='Monthly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Monthly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Monthly' ? { color: '#ffffff' } : null} />
-                        <ReportFilterButton label='Quarterly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Quarterly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Quarterly' ? { color: '#ffffff' } : null} />
-                        <ReportFilterButton label='Yearly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Yearly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Yearly' ? { color: '#ffffff' } : null} />
-                    </View>
-                </View>
-
-                <RegionFilter regions={regions} checkValidation={checkValidation} submitRegionFilter={this.submitRegionFilter} handleRegionForm={this.handleRegionForm} formData={_.clone(regionFormData)} organizations={organizations} openPopup={showRegionFilter} closeFilters={this.closeFilters} />
-                <AgentFilter agents={agents} fetchAgents={this.fetchAgents} zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitAgentFilter={this.submitAgentFilter} handleAgentForm={this.handleAgentForm} formData={_.clone(agentFormData)} organizations={organizations} openPopup={showAgentFilter} closeFilters={this.closeFilters} />
-                <ZoneFilter zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitZoneFilter={this.submitZoneFilter} handleZoneForm={this.handleZoneForm} formData={_.clone(zoneFormData)} organizations={organizations} openPopup={showZoneFilter} closeFilters={this.closeFilters} />
-                <OrganizationFilter organizations={organizations} checkValidation={checkValidation} submitOrganizationFilter={this.submitOrganizationFilter} handleOrganizationForm={this.handleOrganizationForm} formData={_.clone(organizationFormData)} openPopup={showOrganizationFilter} closeFilters={this.closeFilters} />
-
-                <View style={styles.inputView}>
-                    <View style={styles.regionStyle}>
-                        <View style={styles.textView}>
-                            <Text numberOfLines={1} style={styles.textStyle}>{regionText}</Text>
+            !viewLoader ?
+                <View style={[AppStyles.mb1, { backgroundColor: '#ffffff' }]}>
+                    <View style={styles.buttonsContainer}>
+                        <View style={styles.btnView}>
+                            <ReportFilterButton label='Daily' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Daily' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Daily' ? { color: '#ffffff' } : null} />
+                            <ReportFilterButton label='Weekly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Weekly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Weekly' ? { color: '#ffffff' } : null} />
+                            <ReportFilterButton label='Monthly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Monthly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Monthly' ? { color: '#ffffff' } : null} />
+                            <ReportFilterButton label='Quarterly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Quarterly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Quarterly' ? { color: '#ffffff' } : null} />
+                            <ReportFilterButton label='Yearly' selectedFilterButton={this.selectedFilterButton} buttonStyle={filterLabel === 'Yearly' ? styles.selectedBtn : null} textPropStyle={filterLabel === 'Yearly' ? { color: '#ffffff' } : null} />
                         </View>
-                        <TouchableOpacity style={styles.inputBtn} onPress={() => { this.openFilter() }}>
-                            <Image source={listIconImg} style={styles.regionImg} />
-                        </TouchableOpacity>
                     </View>
-                    <View style={styles.dateView}>
-                        <View style={styles.textView}>
-                            <Text numberOfLines={1} style={styles.textStyle}>{selectedDate}</Text>
-                        </View>
-                        <TouchableOpacity style={styles.inputBtn} onPress={() => this.showDate()}>
-                            <Image source={calendarImg} style={styles.calendarImg} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
 
-                <MonthPicker ref={(picker) => this.picker = picker} />
-                <YearPicker ref={(picker) => this.yearPicker = picker} />
-                <QuarterPicker ref={(picker) => this.quarterPicker = picker} />
+                    <RegionFilter regions={regions} checkValidation={checkValidation} submitRegionFilter={this.submitRegionFilter} handleRegionForm={this.handleRegionForm} formData={_.clone(regionFormData)} organizations={organizations} openPopup={showRegionFilter} closeFilters={this.closeFilters} />
+                    <AgentFilter agents={agents} fetchAgents={this.fetchAgents} zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitAgentFilter={this.submitAgentFilter} handleAgentForm={this.handleAgentForm} formData={_.clone(agentFormData)} organizations={organizations} openPopup={showAgentFilter} closeFilters={this.closeFilters} />
+                    <ZoneFilter zones={zones} fetchZones={this.fetchZones} regions={regions} checkValidation={checkValidation} submitZoneFilter={this.submitZoneFilter} handleZoneForm={this.handleZoneForm} formData={_.clone(zoneFormData)} organizations={organizations} openPopup={showZoneFilter} closeFilters={this.closeFilters} />
+                    <OrganizationFilter organizations={organizations} checkValidation={checkValidation} submitOrganizationFilter={this.submitOrganizationFilter} handleOrganizationForm={this.handleOrganizationForm} formData={_.clone(organizationFormData)} openPopup={showOrganizationFilter} closeFilters={this.closeFilters} />
 
-                {
-                    showCalendar ?
-                        < CalendarComponent startDate={selectedDate} updateDay={this.updateDay} onPress={this._toggleShow} />
-                        :
-                        null
-                }
-                {
-                    !loading ?
-                        <ScrollView style={styles.scrollContainer}>
-                            <View style={{
-                            }}>
-                                <View style={styles.sqaureView}>
-                                    <SquareContainer containerStyle={styles.squareRight} imagePath={comissionRevenueImg} label={'Commission Revenue'} total={dashBoardData.totalRevenue} />
-                                    <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
-                                </View>
-                                <View style={styles.sqaureView}>
-                                    <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
-                                    <SquareContainer imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
-                                </View>
-                                <View style={styles.sqaureView}>
-                                    <SquareContainer containerStyle={styles.squareRight} imagePath={viewingConductedImg} label={'Viewings Conducted'} total={dashBoardData.viewingConducted} />
-                                    <SquareContainer imagePath={viewingOverdueImg} label={'Viewings Overdue'} total={dashBoardData.viewingOverdue} />
-                                </View>
-                                <View style={styles.graphContainer}>
-                                    <Text style={styles.labelStyle}>Total Leads</Text>
-                                    <ScrollView horizontal={true}>
-                                        <BarChart
-                                            decimalPlaces={0.1}
-                                            verticalLabelRotation={30}
-                                            showValuesOnTopOfBars={true}
-                                            useShadowColorFromDataset={true}
-                                            withInnerLines={false}
-                                            withDots={false}
-                                            fromZero={true}
-                                            withHorizontalLabels={true}
-                                            showBarTops={true}
-                                            width={width}
-                                            height={height}
-                                            data={graph}
-                                            chartConfig={chartConfig}
-                                            style={graphStyle}
-                                        />
-                                    </ScrollView>
-                                </View>
+                    <View style={styles.inputView}>
+                        <View style={styles.regionStyle}>
+                            <View style={styles.textView}>
+                                <Text numberOfLines={1} style={styles.textStyle}>{regionText}</Text>
                             </View>
-                        </ScrollView>
-                        :
-                        <Loader loading={loading} />
-                }
-                <ReportFooter label={footerLabel} selectedFooterButton={this.selectedFooterButton} />
-            </View>
+                            <TouchableOpacity style={styles.inputBtn} onPress={() => { this.openFilter() }}>
+                                <Image source={listIconImg} style={styles.regionImg} />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.dateView}>
+                            <View style={styles.textView}>
+                                <Text numberOfLines={1} style={styles.textStyle}>{selectedDate}</Text>
+                            </View>
+                            <TouchableOpacity style={styles.inputBtn} onPress={() => this.showDate()}>
+                                <Image source={calendarImg} style={styles.calendarImg} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    <MonthPicker ref={(picker) => this.picker = picker} />
+                    <YearPicker ref={(picker) => this.yearPicker = picker} />
+                    <QuarterPicker ref={(picker) => this.quarterPicker = picker} />
+
+                    {
+                        showCalendar ?
+                            < CalendarComponent startDate={selectedDate} updateDay={this.updateDay} onPress={this._toggleShow} />
+                            :
+                            null
+                    }
+                    {
+                        !loading ?
+                            <ScrollView style={styles.scrollContainer}>
+                                <View style={{
+                                }}>
+                                    <View style={styles.sqaureView}>
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={comissionRevenueImg} label={'Commission Revenue'} total={dashBoardData.totalRevenue} />
+                                        <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                                    </View>
+                                    <View style={styles.sqaureView}>
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
+                                        <SquareContainer imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
+                                    </View>
+                                    <View style={styles.sqaureView}>
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={viewingConductedImg} label={'Viewings Conducted'} total={dashBoardData.viewingConducted} />
+                                        <SquareContainer imagePath={viewingOverdueImg} label={'Viewings Overdue'} total={dashBoardData.viewingOverdue} />
+                                    </View>
+                                    <View style={styles.graphContainer}>
+                                        <Text style={styles.labelStyle}>Total Leads</Text>
+                                        <ScrollView horizontal={true}>
+                                            <BarChart
+                                                decimalPlaces={0.1}
+                                                verticalLabelRotation={30}
+                                                showValuesOnTopOfBars={true}
+                                                useShadowColorFromDataset={true}
+                                                withInnerLines={false}
+                                                withDots={false}
+                                                fromZero={true}
+                                                withHorizontalLabels={true}
+                                                showBarTops={true}
+                                                width={width}
+                                                height={height}
+                                                data={graph}
+                                                chartConfig={chartConfig}
+                                                style={graphStyle}
+                                            />
+                                        </ScrollView>
+                                    </View>
+                                </View>
+                            </ScrollView>
+                            :
+                            <Loader loading={loading} />
+                    }
+                    <ReportFooter label={footerLabel} selectedFooterButton={this.selectedFooterButton} />
+                </View>
+                :
+                <Loader loading={loading} />
         )
     }
 }

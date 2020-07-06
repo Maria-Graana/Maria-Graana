@@ -16,6 +16,8 @@ import StaticData from '../../StaticData';
 import { setlead } from '../../actions/lead';
 import helper from '../../helper';
 import TimerNotification from '../../LocalNotifications';
+import CMBottomNav from '../../components/CMBottomNav'
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 
 class LeadViewing extends React.Component {
 	constructor(props) {
@@ -33,7 +35,13 @@ class LeadViewing extends React.Component {
 			progressValue: 0,
 			menuShow: false,
 			updateViewing: false,
-			isMenuVisible: true
+			isMenuVisible: true,
+			// for the lead close dialog
+			isCloseLeadVisible: false,
+			checkReasonValidation: false,
+			selectedReason: '',
+			reasons: [],
+			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
 		}
 	}
 
@@ -98,12 +106,51 @@ class LeadViewing extends React.Component {
 		}
 	}
 
+	closedLead = () => {
+		helper.leadClosedToast()
+	}
+
+	closeLead = () => {
+		var commissionPayment = this.props.lead.commissionPayment
+		if (commissionPayment !== null) {
+			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
+		else {
+			this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
+	}
+
+	onHandleCloseLead = () => {
+		const { navigation, lead } = this.props
+		const { selectedReason } = this.state;
+		let payload = Object.create({});
+		payload.reasons = selectedReason;
+		axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
+			this.setState({ isVisible: false }, () => {
+				helper.successToast(`Lead Closed`)
+				navigation.navigate('Leads');
+			});
+		}).catch(error => {
+			console.log(error);
+		})
+	}
+
+	handleReasonChange = (value) => {
+		this.setState({ selectedReason: value });
+	}
+
+
+	closeModal = () => {
+		this.setState({ isCloseLeadVisible: false })
+	}
+
 	goToDiaryForm = () => {
 		const { lead, navigation, user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
 			rcmLeadId: lead.id,
-			agentId: user.id
+			agentId: user.id,
+			addedBy: 'self'
 		});
 	}
 
@@ -237,7 +284,7 @@ class LeadViewing extends React.Component {
 	}
 
 	checkStatus = (property) => {
-		const {lead} = this.props;
+		const { lead } = this.props;
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'completed') {
 				return (
@@ -265,13 +312,13 @@ class LeadViewing extends React.Component {
 							justifyContent: "center",
 							alignItems: "center"
 						}}
-						onPress={() => { 
-							if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
+						onPress={() => {
+							if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
 								helper.leadClosedToast();
 							}
-							else{
-								this.openModal(); 
-								this.updateProperty(property) 
+							else {
+								this.openModal();
+								this.updateProperty(property)
 							}
 						}}
 					>
@@ -290,18 +337,17 @@ class LeadViewing extends React.Component {
 						justifyContent: "center",
 						alignItems: "center"
 					}}
-					onPress={() =>
-						 { 
-							if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
-								helper.leadClosedToast();
+					onPress={() => {
+						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
+							helper.leadClosedToast();
 
-							}
-							else{
-								this.openModal();
-								this.setProperty(property)
-							}
-					
-					 }}
+						}
+						else {
+							this.openModal();
+							this.setProperty(property)
+						}
+
+					}}
 				>
 					<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>BOOK VIEWING</Text>
 				</TouchableOpacity >
@@ -346,11 +392,11 @@ class LeadViewing extends React.Component {
 	deleteProperty = (property) => {
 		axios.delete(`/api/leads/shortlisted?id=${property.id}`)
 			.then((res) => {
-				if(res.status===200){
-					if(res.data.message){
+				if (res.status === 200) {
+					if (res.data.message) {
 						helper.errorToast(res.data.message)
 					}
-					else{
+					else {
 						this.setState({ loading: true })
 						this.fetchProperties()
 					}
@@ -361,9 +407,14 @@ class LeadViewing extends React.Component {
 			})
 	}
 
+	navigateToDetails = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+	}
+
 	render() {
-		const { loading, matchData, user, isVisible, checkValidation, viewing, open, progressValue, menuShow, updateViewing, isMenuVisible } = this.state
-		const {lead} = this.props;
+		const { loading, matchData, user, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+		const { lead } = this.props;
+		const showMenuItem = (lead.status === StaticData.Constants.lead_closed_won || lead.status === StaticData.Constants.lead_closed_lost) ? false : true;
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
@@ -392,7 +443,7 @@ class LeadViewing extends React.Component {
 															deleteProperty={this.deleteProperty}
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
-															isMenuVisible={!lead.status=== 'closed_won' && isMenuVisible}
+															isMenuVisible={showMenuItem && isMenuVisible}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}
@@ -404,7 +455,7 @@ class LeadViewing extends React.Component {
 															deleteProperty={this.deleteProperty}
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
-															isMenuVisible={!lead.status=== 'closed_won' && isMenuVisible}
+															isMenuVisible={showMenuItem && isMenuVisible}
 															data={item.item}
 															user={user}
 															displayChecks={this.displayChecks}
@@ -425,19 +476,30 @@ class LeadViewing extends React.Component {
 									<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
 							}
 						</View>
-						<FAB.Group
-							open={open}
-							icon="plus"
-							fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-							color={AppStyles.bgcWhite.backgroundColor}
-							actions={[
-								{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-								{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-								{ icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-							]}
-							onStateChange={({ open }) => this.setState({ open })}
+					</View>
+
+					<View style={AppStyles.mainCMBottomNav}>
+						<CMBottomNav
+							goToAttachments={this.goToAttachments}
+							navigateTo={this.navigateToDetails}
+							goToDiaryForm={this.goToDiaryForm}
+							goToComments={this.goToComments}
+							alreadyClosedLead={() => this.closedLead()}
+							closeLead={this.closeLead}
+							closedLeadEdit={closedLeadEdit}
 						/>
 					</View>
+
+					<LeadRCMPaymentPopup
+						reasons={reasons}
+						selectedReason={selectedReason}
+						changeReason={(value) => this.handleReasonChange(value)}
+						checkValidation={checkReasonValidation}
+						isVisible={isCloseLeadVisible}
+						closeModal={() => this.closeModal()}
+						onPress={() => this.onHandleCloseLead()}
+					/>
+
 				</View>
 				:
 				<Loader loading={loading} />

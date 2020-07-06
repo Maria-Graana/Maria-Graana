@@ -33,7 +33,9 @@ class CMLeadFrom extends Component {
       size,
       formSubmit,
       checkValidation,
-      handleAreaClick
+      handleAreaClick,
+      priceList,
+      onSliderValueChange,
     } = this.props
     const checkBuy = formType === 'sale'
     const checkRent = formType === 'rent'
@@ -62,6 +64,8 @@ class CMLeadFrom extends Component {
             formSubmit={formSubmit}
             checkValidation={checkValidation}
             handleAreaClick={handleAreaClick}
+            priceList={priceList}
+            onSliderValueChange={(values)=>onSliderValueChange(values)}
           />
         </View>
       </View>

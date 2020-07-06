@@ -6,8 +6,9 @@ import styles from './style';
 import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
-import MultiSelect from 'react-native-multiple-select';
-import { formatPrice } from '../../PriceFormate'
+import { formatPrice } from '../../PriceFormate';
+import PriceSlider from '../../components/PriceSlider';
+import StaticData from '../../StaticData'
 
 class InnerRCMForm extends Component {
   constructor(props) {
@@ -15,8 +16,6 @@ class InnerRCMForm extends Component {
   }
 
   componentDidMount() { }
-
-
 
   render() {
 
@@ -30,12 +29,12 @@ class InnerRCMForm extends Component {
       propertyType,
       subType,
       sizeUnit,
-      size,
       handleAreaClick,
+      priceList,
+      onSliderValueChange,
     } = this.props
 
     const { leadAreas } = formData;
-
     return (
       <View>
 
@@ -98,19 +97,19 @@ class InnerRCMForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={sizeUnit} name={'size_unit'} placeholder='Unit Size' />
-            </View>
-          </View>
-
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
-            <View style={[AppStyles.inputWrap]}>
               <TextInput onChangeText={(text) => { handleForm(text, 'size') }}
                 value={formData.size ? String(formData.size) : ''}
                 keyboardType='numeric'
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 name={'size'}
                 placeholder={'Size'} />
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne,  AppStyles.flexMarginRight]}>
+            <View style={[AppStyles.inputWrap]}>
+              <PickerComponent onValueChange={handleForm} data={sizeUnit} name={'size_unit'} placeholder='Unit Size' />
             </View>
           </View>
 
@@ -122,24 +121,24 @@ class InnerRCMForm extends Component {
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
               <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'bed') }}
-                value={formData.bed ? String(formData.bed) : ''}
-                keyboardType='numeric'
-                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                name={'bed'}
-                placeholder={'Bed'} />
+                <TextInput onChangeText={(text) => { handleForm(text, 'bed') }}
+                  value={formData.bed ? String(formData.bed) : ''}
+                  keyboardType='numeric'
+                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                  name={'bed'}
+                  placeholder={'Bed'} />
               </View>
             </View>
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
               <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'bath') }}
-                value={formData.bath ? String(formData.bath) : ''}
-                keyboardType='numeric'
-                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                name={'bath'}
-                placeholder={'Bath'} />
+                <TextInput onChangeText={(text) => { handleForm(text, 'bath') }}
+                  value={formData.bath ? String(formData.bath) : ''}
+                  keyboardType='numeric'
+                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                  name={'bath'}
+                  placeholder={'Bath'} />
               </View>
             </View>
 
@@ -147,25 +146,23 @@ class InnerRCMForm extends Component {
         }
 
         {/* **************************************** */}
-        <View>
 
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'min_price') }} keyboardType={'numeric'} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} name={'min_price'} placeholder={'Min Price'} />
-              <Text style={[AppStyles.countPrice]}>{formatPrice(formData.min_price != null ? formData.min_price : '')}</Text>
-            </View>
-          </View>
+        <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
 
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'max_price') }} keyboardType={'numeric'} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]} name={'max_price'} placeholder={'Max Price'} />
-              <Text style={[AppStyles.countPrice]}>{formatPrice(formData.max_price != null ? formData.max_price : '')}</Text>
-            </View>
-          </View>
-
+          <TextInput placeholder='Price Min'
+            value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice)}
+            style={[AppStyles.formControl, styles.priceStyle]}
+            editable={false}
+          />
+          <Text style={styles.toText}>to</Text>
+          <TextInput placeholder='Price Max'
+            value={formData.maxPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice)}
+            style={[AppStyles.formControl, styles.priceStyle]}
+            editable={false}
+          />
         </View>
+
+        <PriceSlider priceValues={priceList} initialValue={0} finalValue={priceList.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} />
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

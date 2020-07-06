@@ -16,6 +16,7 @@ import StaticData from '../../StaticData'
 import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
+import { setlead } from '../../actions/lead';
 
 class BuyLeads extends React.Component {
 	constructor(props) {
@@ -41,9 +42,10 @@ class BuyLeads extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads('all');
+		const { statusFilter } = this.state
+		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads('all');
+			this.fetchLeads(statusFilter);
 		})
 	}
 
@@ -69,7 +71,12 @@ class BuyLeads extends React.Component {
 					leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
 					loading: false,
 					onEndReachedLoader: false,
-					totalLeads: res.data.count
+					totalLeads: res.data.count,
+					statusFilter: statusFilter,
+				})
+			}).catch((res) => {
+				this.setState({
+					loading: false,
 				})
 			})
 	}
@@ -120,7 +127,31 @@ class BuyLeads extends React.Component {
 
 	navigateTo = (data) => {
 		const { purposeTab } = this.state
-		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+		this.props.dispatch(setlead(data))
+		let page = ''
+		if (data.status === 'open') {
+			this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+		} else {
+			if (data.status === "viewing") {
+				page = 'Viewing'
+			}
+			if (data.status === "offer") {
+				page = 'Offer'
+			}
+			if (data.status === "propsure") {
+				page = 'Propsure'
+			}
+			if (data.status === "payment") {
+				page = 'Payment'
+			}
+			if (data.status === "payment" || data.status === 'closed_won' || data.status === 'closed_lost') {
+				page = 'Payment'
+			}
+			this.props.navigation.navigate('RCMLeadTabs', {
+				screen: page,
+				params: { lead: data },
+			})
+		}
 	}
 
 	callNumber = (url) => {
@@ -165,12 +196,12 @@ class BuyLeads extends React.Component {
 			onEndReachedLoader,
 		} = this.state
 		const { user } = this.props;
-		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
+		let leadStatus = StaticData.buyRentFilter
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
-				<View style={[styles.mainFilter]}>
+				<View style={[styles.mainFilter, {marginBottom: 15}]}>
 					<View style={styles.pickerMain}>
 						<PickerComponent
 							placeholder={'Lead Status'}
@@ -188,9 +219,6 @@ class BuyLeads extends React.Component {
 						</TouchableOpacity>
 					</View>
 				</View>
-				<View style={[AppStyles.container, styles.minHeight]}>
-					<View style={[styles.mainInventoryTile,]}>
-
 						{
 							leadsData && leadsData && leadsData.length > 0 ?
 
@@ -213,7 +241,6 @@ class BuyLeads extends React.Component {
 											callNumber={this.callNumber}
 										/>
 									)}
-									// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
 									onEndReached={() => {
 										if (leadsData.length < totalLeads) {
 											this.setState({
@@ -231,8 +258,6 @@ class BuyLeads extends React.Component {
 								<LoadingNoResult loading={loading} />
 						}
 						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-
-					</View>
 					<FAB.Group
 						open={open}
 						icon="plus"
@@ -246,7 +271,6 @@ class BuyLeads extends React.Component {
 						]}
 						onStateChange={({ open }) => this.setState({ open })}
 					/>
-				</View>
 				<SortModal
 					sendStatus={this.sendStatus}
 					openStatus={this.openStatus}

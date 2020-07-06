@@ -8,6 +8,7 @@ import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
 import StaticData from '../../StaticData'
 import { formatPrice } from '../../PriceFormate'
+import PriceSlider from '../../components/PriceSlider';
 
 class CMLeadFrom extends Component {
   constructor(props) {
@@ -26,9 +27,8 @@ class CMLeadFrom extends Component {
       cities,
       getClients,
       getProject,
+      onSliderValueChange
     } = this.props
-
-    let minPrice = formData.minPrice
 
     return (
       <View>
@@ -69,36 +69,22 @@ class CMLeadFrom extends Component {
             } */}
           </View>
         </View>
+        <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
 
-        {/* <View style={AppStyles.multiFormInput}> */}
+          <TextInput placeholder='Price Min'
+            value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice)}
+            style={[AppStyles.formControl, styles.priceStyle]}
+            editable={false}
+          />
+          <Text style={styles.toText}>to</Text>
+          <TextInput placeholder='Price Max'
+             value={formData.maxPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice)}
+            style={[AppStyles.formControl, styles.priceStyle]}
+            editable={false}
+          />
+        </View>
 
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput
-                onChangeText={(text) => { handleForm(text, 'minPrice') }}
-                style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]}
-                placeholder={'Min Investment'}
-                keyboardType={'numeric'}
-              />
-              <Text style={[AppStyles.countPrice]}>{formatPrice(minPrice)}</Text>
-            </View>
-          </View>
-
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput
-                onChangeText={(text) => { handleForm(text, 'maxPrice') }}
-                style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.minMaxPrice]}
-                placeholder={'Max Investment'}
-                keyboardType={'numeric'}
-              />
-              <Text style={[AppStyles.countPrice]}>{formatPrice(formData.maxPrice)}</Text>
-            </View>
-          </View>
-
-        {/* </View> */}
+        <PriceSlider priceValues={StaticData.PricesProject} initialValue={0} finalValue={StaticData.PricesProject.length - 1} onSliderValueChange={(values)=> onSliderValueChange(values)}/>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

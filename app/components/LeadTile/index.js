@@ -6,19 +6,20 @@ import React from 'react'
 import phone from '../../../assets/img/phone2.png'
 import styles from './style'
 import helper from '../../helper';
-import { formatPrice } from '../../PriceFormate'
 class LeadTile extends React.Component {
   constructor(props) {
     super(props)
   }
 
 
+
   render() {
     const { data, navigateTo, callNumber, user } = this.props
+    // console.log(data.readAt === null && user.id === data.assigned_to_armsuser_id && data.readAt)
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
 
-        <View style={[styles.tileMainWrap, data.readAt === null && user.id === data.assigned_to_armsuser_id && styles.selectedInventory]}>
+        <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
               <View>
@@ -56,7 +57,7 @@ class LeadTile extends React.Component {
                     PKR
             	 	</Text>
                   <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
-                    {!data.projectId && data.min_price && formatPrice(data.price === null ? 0 : data.min_price) + ' - '} {!data.projectId && formatPrice(data.price === null ? 0 : data.price)}  {data.projectId && data.minPrice && formatPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && formatPrice(data.maxPrice)}
+                    {!data.projectId && data.min_price && helper.checkPrice(data.min_price) + ' - '} {!data.projectId && data.price && helper.checkPrice(data.price)}  {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
                   </Text>
                 </View>
 
@@ -64,9 +65,7 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   {
                     data.size != null && !data.projectId ?
-                      <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                        {data.size} {data.size_unit} {data.subtype} {data.purpose != null && 'for'} {data.purpose}
-                      </Text>
+                      <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>{data.size !== 0 ? data.size + ' ' : null}{data.size_unit && data.size_unit !== null ? data.size_unit + ' ' : null}{helper.capitalize(data.subtype)} {data.purpose != null && 'for'} {helper.capitalize(data.purpose)}</Text>
                       :
                       <Text style={[AppStyles.darkColor]}>
                         {`${helper.capitalize(data.subtype)}${helper.capitalize(data.projectType)}`}

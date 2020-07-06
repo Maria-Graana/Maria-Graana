@@ -17,6 +17,7 @@ import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { widthPercentageToDP } from 'react-native-responsive-screen';
+import { setlead } from '../../actions/lead';
 
 class RentLeads extends React.Component {
 	constructor(props) {
@@ -42,9 +43,10 @@ class RentLeads extends React.Component {
 	}
 
 	componentDidMount() {
-		this.fetchLeads('all');
+		const { statusFilter } = this.state
+		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads('all');
+			this.fetchLeads(statusFilter);
 		})
 	}
 
@@ -69,8 +71,13 @@ class RentLeads extends React.Component {
 				this.setState({
 					leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
 					loading: false,
+					statusFilter: statusFilter,
 					onEndReachedLoader: false,
 					totalLeads: res.data.count
+				})
+			}).catch((res) => {
+				this.setState({
+					loading: false,
 				})
 			})
 	}
@@ -115,13 +122,38 @@ class RentLeads extends React.Component {
 	changeStatus = (status) => {
 		this.clearStateValues()
 		this.setState({ statusFilter: status, leadsData: [] }, () => {
-			this.fetchLeads(status);
+			this.fetchLeads(this.state.statusFilter);
 		})
 	}
 
 	navigateTo = (data) => {
 		const { purposeTab } = this.state
-		this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
+		this.props.dispatch(setlead(data))
+		let page = ''
+		if (data.status === 'open') {
+			this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
+		} else {
+			if (data.status === "viewing") {
+				page = 'Viewing'
+			}
+			if (data.status === "offer") {
+				page = 'Offer'
+			}
+			if (data.status === "propsure") {
+				page = 'Propsure'
+			}
+			if (data.status === "payment") {
+				page = 'Payment'
+			}
+			if (data.status === "payment" || data.status === 'closed_won' || data.status === 'closed_lost') {
+				page = 'Payment'
+			}
+			this.props.navigation.navigate('RCMLeadTabs', {
+				screen: page,
+				params: { lead: data },
+			})
+		}
+
 	}
 
 	callNumber = (url) => {
@@ -166,11 +198,11 @@ class RentLeads extends React.Component {
 			onEndReachedLoader,
 		} = this.state
 		const { user } = this.props;
-		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
+		let leadStatus = StaticData.buyRentFilter
 		return (
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
-				<View style={[styles.mainFilter]}>
+				<View style={[styles.mainFilter, { marginBottom: 15 }]}>
 					<View style={styles.pickerMain}>
 						<PickerComponent
 							placeholder={'Lead Status'}
@@ -188,64 +220,58 @@ class RentLeads extends React.Component {
 						</TouchableOpacity>
 					</View>
 				</View>
-				<View style={[AppStyles.container, styles.minHeight]}>
-					<View style={[styles.mainInventoryTile,]}>
+				{
+					leadsData && leadsData && leadsData.length > 0 ?
 
-						{
-							leadsData && leadsData && leadsData.length > 0 ?
+						< FlatList
+							data={leadsData}
+							renderItem={({ item }) => (
 
-								< FlatList
-									data={leadsData}
-									renderItem={({ item }) => (
-
-										<LeadTile
-											user={user}
-											// key={key}
-											showDropdown={this.showDropdown}
-											dotsDropDown={this.state.dotsDropDown}
-											selectInventory={this.selectInventory}
-											selectedInventory={selectInventory}
-											data={item}
-											dropDownId={dropDownId}
-											unSelectInventory={this.unSelectInventory}
-											goToInventoryForm={this.goToInventoryForm}
-											navigateTo={this.navigateTo}
-											callNumber={this.callNumber}
-										/>
-									)}
-									// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
-									onEndReached={() => {
-										if (leadsData.length < totalLeads) {
-											this.setState({
-												page: this.state.page + 1,
-												onEndReachedLoader: true
-											}, () => {
-												this.fetchLeads(statusFilter);
-											});
-										}
-									}}
-									onEndReachedThreshold={0.5}
-									keyExtractor={(item, index) => this.setKey(index)}
+								<LeadTile
+									user={user}
+									// key={key}
+									showDropdown={this.showDropdown}
+									dotsDropDown={this.state.dotsDropDown}
+									selectInventory={this.selectInventory}
+									selectedInventory={selectInventory}
+									data={item}
+									dropDownId={dropDownId}
+									unSelectInventory={this.unSelectInventory}
+									goToInventoryForm={this.goToInventoryForm}
+									navigateTo={this.navigateTo}
+									callNumber={this.callNumber}
 								/>
-								:
-								<LoadingNoResult loading={loading} />
-						}
-						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-					</View>
-					<FAB.Group
-						open={open}
-						icon="plus"
-						style={{ marginBottom: 16 }}
-						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-						color={AppStyles.bgcWhite.backgroundColor}
-						actions={[
-							{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
-							{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
+							)}
+							onEndReached={() => {
+								if (leadsData.length < totalLeads) {
+									this.setState({
+										page: this.state.page + 1,
+										onEndReachedLoader: true
+									}, () => {
+										this.fetchLeads(statusFilter);
+									});
+								}
+							}}
+							onEndReachedThreshold={0.5}
+							keyExtractor={(item, index) => this.setKey(index)}
+						/>
+						:
+						<LoadingNoResult loading={loading} />
+				}
+				<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
+				<FAB.Group
+					open={open}
+					icon="plus"
+					style={{ marginBottom: 16 }}
+					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+					color={AppStyles.bgcWhite.backgroundColor}
+					actions={[
+						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
+						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
 
-						]}
-						onStateChange={({ open }) => this.setState({ open })}
-					/>
-				</View>
+					]}
+					onStateChange={({ open }) => this.setState({ open })}
+				/>
 				<SortModal
 					sendStatus={this.sendStatus}
 					openStatus={this.openStatus}

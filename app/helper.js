@@ -1,14 +1,16 @@
 import { Linking } from 'react-native';
 import { Toast } from 'native-base';
 import moment from 'moment-timezone';
+import StaticData from './StaticData';
+import {formatPrice} from './PriceFormate';
 import AppStyles from './AppStyles'
-import DiaryImg from '../assets/img/diary.png'
-import InventoryImg from '../assets/img/Properties.png'
-import TeamDiaryImg from '../assets/img/TeamDiary.png'
-import LeadsImg from '../assets/img/leads.png'
-import DashboardImg from '../assets/img/Dashboard.png'
-import TargetsImg from '../assets/img/Targets.png'
-import ClientsImg from '../assets/img/Clients.png'
+import DiaryImg from '../assets/img/diary-icon-l.png'
+import InventoryImg from '../assets/img/properties-icon-l.png'
+import TeamDiaryImg from '../assets/img/teams-diary-icon-l.png'
+import LeadsImg from '../assets/img/lead-icon-l.png'
+import DashboardImg from '../assets/img/dashboard-icon-l.png'
+import TargetsImg from '../assets/img/target-icon-l.png'
+import ClientsImg from '../assets/img/clients-icon-l.png'
 
 const helper = {
 	successToast(message) {
@@ -124,7 +126,7 @@ const helper = {
 		} else return []
 	},
 	setStatusText(val, todayDate) {
-		let taskDate = moment(val.date).format('L')
+		let taskDate = moment(val.date).format('YYYY-MM-DD')
 		if (val.armsProjectLeadId === null && val.taskType !== 'viewing') {
 			if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
 				return 'To-do'
@@ -171,7 +173,7 @@ const helper = {
 
 	},
 	checkStatusColor(val, todayDate) {
-		let taskDate = moment(val.date).format('L')
+		let taskDate = moment(val.date).format('YYYY-MM-DD')
 		if (val.armsProjectLeadId === null) {
 			if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
 				return 'red'
@@ -241,7 +243,18 @@ const helper = {
 			duration: 3000,
 			type: 'danger'
 		})
-	}
+	},
+	checkPrice(price, showPkr = false){
+        if(price===null){
+          return '0';
+        }
+        else if(Number(price) === StaticData.Constants.any_value){
+          return 'Any'
+        }
+        else{
+           return (showPkr ? 'PKR ' : '') + formatPrice(price);
+        }
+  }
 }
 
 

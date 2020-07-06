@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { AppStyles } from '../../AppStyles';
+import AppStyles from '../../AppStyles';
 
 export default styles = StyleSheet.create({
     addInvenBtn: {
@@ -35,5 +35,15 @@ export default styles = StyleSheet.create({
         minHeight: 45,
         overflow: 'hidden',
         borderBottomWidth: 0,
+    },
+    priceStyle:{
+        width: '45%', 
+        textAlign: 'center'
+    },
+    toText:{
+        fontFamily: AppStyles.defaultFont, 
+        color: AppStyles.colors.textColor,
+        textAlign:'center',
+        width:'10%',
     },
 })

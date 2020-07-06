@@ -22,7 +22,7 @@ class DateComponent extends React.Component {
   }
 
   onChange = (date, mode) => {
-    console.log(date);
+    //console.log(date);
     if (mode == 'time') {
       this.props.onTimeChange(date)
     } else {
@@ -71,11 +71,14 @@ class DateComponent extends React.Component {
         iconComponent={< Image style={{ width: 26, height: 26 }} source={iconSource} />}
         is24Hour={false}
         customStyles={{
-          datePickerCon: { backgroundColor: AppStyles.colors.primaryColor, },
+          datePickerCon: { backgroundColor: '#fff',  },
           placeholderText: {
             alignSelf: 'flex-start',
             fontFamily: AppStyles.fonts.defaultFont,
             padding: Platform.OS === 'android' ? 10 : 15,
+          },
+          datePicker:{
+            backgroundColor: '#fff',
           },
           dateInput: {
             borderWidth: 0
@@ -89,10 +92,10 @@ class DateComponent extends React.Component {
             padding: Platform.OS === 'android' ? 10 : 15,
           },
           btnTextConfirm: {
-            color: '#fff'
+            color: '#000'
           },
           btnTextCancel: {
-            color: '#333'
+            color: '#000'
           },
 
 

@@ -17,9 +17,9 @@ import StaticData from '../../StaticData';
 import helper from '../../helper';
 import { formatPrice } from '../../PriceFormate'
 import { setlead } from '../../actions/lead';
+import CMBottomNav from '../../components/CMBottomNav'
 import RentPaymentView from './rentPaymentView';
-import { FAB } from 'react-native-paper';
-import { ProgressBar, Colors } from 'react-native-paper';
+import { ProgressBar } from 'react-native-paper';
 
 class LeadRCMPayment extends React.Component {
     constructor(props) {
@@ -48,7 +48,12 @@ class LeadRCMPayment extends React.Component {
                 security: null,
                 advance: null
             },
-            progressValue: 0
+            progressValue: 0,
+            // for the lead close dialog
+            checkReasonValidation: false,
+            selectedReason: '',
+            reasons: [],
+            closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
         }
     }
 
@@ -171,6 +176,9 @@ class LeadRCMPayment extends React.Component {
         this.setState({ selectedReason: value });
     }
 
+    closedLead = () => {
+        helper.leadClosedToast()
+    }
 
     closeModal = () => {
         this.setState({ isVisible: false })
@@ -178,12 +186,12 @@ class LeadRCMPayment extends React.Component {
 
     showLeadPaymentModal = () => {
         const { lead } = this.state;
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast();
+        var commissionPayment = lead.commissionPayment
+        if (commissionPayment !== null) {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
         }
-        else{
-            this.setState({ isVisible: true })
-
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
         }
     }
 
@@ -386,7 +394,8 @@ class LeadRCMPayment extends React.Component {
         navigation.navigate('AddDiary', {
             update: false,
             rcmLeadId: lead.id,
-            agentId: user.id
+            agentId: user.id,
+            addedBy: 'self'
         });
     }
 
@@ -402,6 +411,10 @@ class LeadRCMPayment extends React.Component {
         navigation.navigate('Comments', { rcmLeadId: lead.id });
     }
 
+    navigateToDetails = () => {
+        this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    }
+
 
     render() {
         const { loading,
@@ -411,7 +424,6 @@ class LeadRCMPayment extends React.Component {
             checkReasonValidation,
             selectedReason,
             reasons,
-            open,
             agreedAmount,
             showAgreedAmountArrow,
             showTokenAmountArrow,
@@ -421,6 +433,7 @@ class LeadRCMPayment extends React.Component {
             lead,
             pickerData,
             formData,
+            closedLeadEdit,
             showMonthlyRentArrow,
             showCommissionAmountArrow } = this.state;
 
@@ -438,7 +451,7 @@ class LeadRCMPayment extends React.Component {
                         closeModal={() => this.closeModal()}
                         onPress={() => this.onHandleCloseLead()}
                     />
-                    <View style={{ flex: 1 }}>
+                    <View style={{ flex: 1, minHeight: '100%' }}>
                         {
                             allProperties.length > 0 ?
                                 <FlatList
@@ -512,12 +525,6 @@ class LeadRCMPayment extends React.Component {
                                                         />
                                                     : null
                                             }
-                                            <View style={{ marginVertical: 10 }}>
-                                                <Button onPress={this.showLeadPaymentModal}
-                                                    style={[AppStyles.formBtn]}>
-                                                    <Text style={AppStyles.btnText}>CLOSE LEAD</Text>
-                                                </Button>
-                                            </View>
                                         </View>
                                     }
                                     keyExtractor={(item, index) => item.id.toString()}
@@ -526,19 +533,17 @@ class LeadRCMPayment extends React.Component {
                                 :
                                 <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                         }
-
-                        <FAB.Group
-                            open={open}
-                            icon="plus"
-                            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-                            color={AppStyles.bgcWhite.backgroundColor}
-                            actions={[
-                                { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-                                { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-                                { icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-                            ]}
-                            onStateChange={({ open }) => this.setState({ open })}
-                        />
+                        <View style={AppStyles.mainCMBottomNav}>
+                            <CMBottomNav
+                                goToAttachments={this.goToAttachments}
+                                navigateTo={this.navigateToDetails}
+                                goToDiaryForm={this.goToDiaryForm}
+                                goToComments={this.goToComments}
+                                alreadyClosedLead={() => this.closedLead()}
+                                closeLead={this.showLeadPaymentModal}
+                                closedLeadEdit={closedLeadEdit}
+                            />
+                        </View>
 
                     </View>
 

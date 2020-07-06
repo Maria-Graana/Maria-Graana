@@ -46,14 +46,14 @@ class Inventory extends React.Component {
 
 
 	componentWillUnmount() {
-        this.clearStateValues();
+		this.clearStateValues();
 		this._unsubscribe();
 	}
 
-	clearStateValues=()=>{
+	clearStateValues = () => {
 		this.setState({
-			page:1,
-			totalProperties:0,
+			page: 1,
+			totalProperties: 0,
 		})
 	}
 
@@ -130,8 +130,8 @@ class Inventory extends React.Component {
 		helper.callNumber(url);
 	}
 
-	setKey =(index)=>{
-	   return String(index);
+	setKey = (index) => {
+		return String(index);
 	}
 
 
@@ -144,7 +144,7 @@ class Inventory extends React.Component {
 
 
 					{
-						Ability.canAdd(user.role, route.params.screen) ?
+						Ability.canAdd(user.subRole, route.params.screen) ?
 							<Fab
 								active='true'
 								containerStyle={{ zIndex: 20 }}
@@ -159,33 +159,39 @@ class Inventory extends React.Component {
 
 
 					{/* ***** Main Tile Wrap */}
-					< FlatList
-						contentContainerStyle={{ paddingHorizontal: wp('2%') }}
-						data={propertiesList}
-						renderItem={({ item }) => (
-							<PropertyTile
-								data={item}
-								onPress={(data) => this.onHandlePress(data)}
-								onLongPress={(id) => this.onHandleLongPress(id)}
-								onCall={(number) => this.onHandleOnCall(`tel:${number}`)}
-							/>
-						)}
-						ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
-						onEndReached={() => {
-							if (propertiesList.length < totalProperties) {
-								this.setState({
-									page: this.state.page + 1,
-									onEndReachedLoader: true
-								}, () => {
-									this.getPropertyListing();
-								});
-							}
-						}}
-						onEndReachedThreshold={0.5}
-						keyExtractor={(item,index)=> this.setKey(index)}
-					/>
+
 					{
-					   <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
+						propertiesList && propertiesList.length > 0 ?
+							< FlatList
+								//contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+								data={propertiesList}
+								renderItem={({ item }) => (
+									<PropertyTile
+										data={item}
+										onPress={(data) => this.onHandlePress(data)}
+										onLongPress={(id) => this.onHandleLongPress(id)}
+										onCall={(number) => this.onHandleOnCall(`tel:${number}`)}
+									/>
+								)}
+								onEndReached={() => {
+									if (propertiesList.length < totalProperties) {
+										this.setState({
+											page: this.state.page + 1,
+											onEndReachedLoader: true
+										}, () => {
+											this.getPropertyListing();
+										});
+									}
+								}}
+								onEndReachedThreshold={0.5}
+								keyExtractor={(item, index) => this.setKey(index)}
+							/>
+							:
+							<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />
+					}
+
+					{
+						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
 					}
 				</View>
 				:

@@ -11,8 +11,10 @@ import OfferModal from '../../components/OfferModal'
 import { FAB } from 'react-native-paper';
 import { ProgressBar } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
+import CMBottomNav from '../../components/CMBottomNav'
 import StaticData from '../../StaticData';
 import helper from '../../helper';
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 
 class LeadOffer extends React.Component {
 	constructor(props) {
@@ -29,7 +31,13 @@ class LeadOffer extends React.Component {
 			},
 			currentProperty: {},
 			progressValue: 0,
-			disableButton: false
+			disableButton: false,
+			// for the lead close dialog
+			isCloseLeadVisible: false,
+			checkReasonValidation: false,
+			selectedReason: '',
+			reasons: [],
+			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
 		}
 	}
 
@@ -162,14 +170,53 @@ class LeadOffer extends React.Component {
 		}
 	}
 
+	closedLead = () => {
+		helper.leadClosedToast()
+	}
+
+	closeLead = () => {
+		var commissionPayment = this.props.lead.commissionPayment
+		if (commissionPayment !== null) {
+			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
+		else {
+			this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
+	}
+
+	onHandleCloseLead = () => {
+		const { navigation, lead } = this.props
+		const { selectedReason } = this.state;
+		let payload = Object.create({});
+		payload.reasons = selectedReason;
+		axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
+			this.setState({ isVisible: false }, () => {
+				helper.successToast(`Lead Closed`)
+				navigation.navigate('Leads');
+			});
+		}).catch(error => {
+			console.log(error);
+		})
+	}
+
+	handleReasonChange = (value) => {
+		this.setState({ selectedReason: value });
+	}
+
+
+	closeModal = () => {
+		this.setState({ isCloseLeadVisible: false })
+	}
+
+
 
 	goToDiaryForm = () => {
 		const { lead, navigation, user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
 			rcmLeadId: lead.id,
-			agentId: user.id
-
+			agentId: user.id,
+			addedBy: 'self'
 		});
 	}
 
@@ -203,77 +250,80 @@ class LeadOffer extends React.Component {
 	}
 
 	checkStatus = (property) => {
-		const {lead} = this.props;
-			if (property.agreedOffer.length) {
-				return (
-					<TouchableOpacity
-						style={{
-							backgroundColor: AppStyles.colors.primaryColor,
-							height: 30,
-							borderBottomEndRadius: 10,
-							borderBottomLeftRadius: 10,
-							justifyContent: "center",
-							alignItems: "center"
-						}}
-					>
-						<Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>Agreed Amount: <Text style={{ fontFamily: AppStyles.fonts.defaultFont }}>{property.agreedOffer[0].offer}</Text></Text>
-					</TouchableOpacity >
-				)
-			} else if (property.leadOffers.length) {
-				return (
-					<TouchableOpacity
-						style={{
-							backgroundColor: 'white',
-							height: 30,
-							borderBottomEndRadius: 10,
-							borderBottomLeftRadius: 10,
-							justifyContent: "center",
-							alignItems: "center"
-						}}
-						onPress={() =>
-							 { 
-								if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
-									helper.leadClosedToast();
-								 }
-								 else{
-									this.openChatModal();
-									this.setProperty(property) 
-								 }
-							
-							}}
-					>
-						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>View <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>Offers</Text></Text>
-					</TouchableOpacity >
-				)
-			} else {
-				return (
-					<TouchableOpacity
-						style={{
-							backgroundColor: 'white',
-							height: 30,
-							borderBottomEndRadius: 10,
-							borderBottomLeftRadius: 10,
-							justifyContent: "center",
-							alignItems: "center"
-						}}
-						onPress={() => {
-							if(lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won){
-								helper.leadClosedToast();
-							}
-							else{
-								this.openChatModal(); 
-								this.setProperty(property) 
-							}
-							}}
-					>
-						<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}> PLACE OFFER</Text>
-					</TouchableOpacity >
-				)
+		const { lead } = this.props;
+		if (property.agreedOffer.length) {
+			return (
+				<TouchableOpacity
+					style={{
+						backgroundColor: AppStyles.colors.primaryColor,
+						height: 30,
+						borderBottomEndRadius: 10,
+						borderBottomLeftRadius: 10,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
+				>
+					<Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>Agreed Amount: <Text style={{ fontFamily: AppStyles.fonts.defaultFont }}>{property.agreedOffer[0].offer}</Text></Text>
+				</TouchableOpacity >
+			)
+		} else if (property.leadOffers.length) {
+			return (
+				<TouchableOpacity
+					style={{
+						backgroundColor: 'white',
+						height: 30,
+						borderBottomEndRadius: 10,
+						borderBottomLeftRadius: 10,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
+					onPress={() => {
+						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
+							helper.leadClosedToast();
+						}
+						else {
+							this.openChatModal();
+							this.setProperty(property)
+						}
+
+					}}
+				>
+					<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>View <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>Offers</Text></Text>
+				</TouchableOpacity >
+			)
+		} else {
+			return (
+				<TouchableOpacity
+					style={{
+						backgroundColor: 'white',
+						height: 30,
+						borderBottomEndRadius: 10,
+						borderBottomLeftRadius: 10,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
+					onPress={() => {
+						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
+							helper.leadClosedToast();
+						}
+						else {
+							this.openChatModal();
+							this.setProperty(property)
+						}
+					}}
+				>
+					<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}> PLACE OFFER</Text>
+				</TouchableOpacity >
+			)
 		}
 	}
 
+	navigateToDetails = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+	}
+
 	render() {
-		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton, leadData } = this.state
+		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton, leadData, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
@@ -329,20 +379,28 @@ class LeadOffer extends React.Component {
 									<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
 							}
 						</View>
-						<FAB.Group
-							open={open}
-							icon="plus"
-							fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-							color={AppStyles.bgcWhite.backgroundColor}
-							actions={[
-								{ icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-								{ icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-								{ icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-							]}
-							onStateChange={({ open }) => this.setState({ open })}
-						/>
-
 					</View>
+					<View style={AppStyles.mainCMBottomNav}>
+						<CMBottomNav
+							goToAttachments={this.goToAttachments}
+							navigateTo={this.navigateToDetails}
+							goToDiaryForm={this.goToDiaryForm}
+							goToComments={this.goToComments}
+							alreadyClosedLead={() => this.closedLead()}
+							closeLead={this.closeLead}
+							closedLeadEdit={closedLeadEdit}
+						/>
+					</View>
+
+					<LeadRCMPaymentPopup
+						reasons={reasons}
+						selectedReason={selectedReason}
+						changeReason={(value) => this.handleReasonChange(value)}
+						checkValidation={checkReasonValidation}
+						isVisible={isCloseLeadVisible}
+						closeModal={() => this.closeModal()}
+						onPress={() => this.onHandleCloseLead()}
+					/>
 				</View>
 				:
 				<Loader loading={loading} />

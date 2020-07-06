@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, Linking } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text, Linking, Image } from 'react-native';
 import { Fab } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'
@@ -14,7 +14,9 @@ import AppStyles from '../../AppStyles';
 import { ProgressBar, Colors } from 'react-native-paper';
 import { FAB } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import StaticData from '../../StaticData';
+import CMBottomNav from '../../components/CMBottomNav'
 
 class Meetings extends Component {
   constructor(props) {
@@ -24,8 +26,9 @@ class Meetings extends Component {
       formData: {
         time: '',
         date: '',
-        leadId: this.props.route.params.lead.id,
-        subject: this.props.route.params.lead.customer ? `Meeting with ${this.props.route.params.lead.customer.customerName}` : null
+        addedBy: '',
+        leadId: this.props.lead.id,
+        subject: this.props.lead.customer ? `Meeting with ${this.props.lead.customer.customerName}` : null
       },
       meetings: [],
       checkValidation: false,
@@ -36,12 +39,18 @@ class Meetings extends Component {
       modalStatus: 'dropdown',
       open: false,
       progressValue: 0,
+      reasons: [],
+      isVisible: false,
+      selectedReason: '',
+      checkReasonValidation: false,
+      closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     }
   }
 
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
+
   }
 
   fetchLead = () => {
@@ -63,6 +72,8 @@ class Meetings extends Component {
   openModal = () => {
     this.setState({
       active: !this.state.active,
+      formData: {},
+      editMeeting: false,
     })
   }
 
@@ -70,6 +81,7 @@ class Meetings extends Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
+    formData['leadId'] = this.props.lead.id
     this.setState({ formData })
   }
 
@@ -90,7 +102,7 @@ class Meetings extends Component {
     } else {
       if (editMeeting === true) {
         let startTime = moment(formData.time, 'LT').format('HH:mm:ss')
-        let endTime = moment(startTime,'LT').add(1, 'hours').format('HH:mm:ss')
+        let endTime = moment(startTime, 'LT').add(1, 'hours').format('HH:mm:ss')
         let startDate = moment(formData.date, 'YYYY-MM-DDLT').format('YYYY-MM-DD')
         let body = {
           date: startDate + 'T' + startTime,
@@ -114,6 +126,7 @@ class Meetings extends Component {
             helper.errorToast(`Some thing went wrong!!!`)
           })
       } else {
+        formData.addedBy = 'self';
         axios.post(`api/leads/project/meeting`, formData)
           .then((res) => {
             formData['time'] = ''
@@ -182,9 +195,9 @@ class Meetings extends Component {
       date: a,
       taskType: 'called',
       response: 'Called',
-      subject: 'Call to client ' + this.props.route.params.lead.customer.customerName,
-      cutomerId: this.props.route.params.lead.customer.id,
-      leadId: this.props.route.params.lead.id,
+      subject: 'Call to client ' + this.props.lead.customer.customerName,
+      cutomerId: this.props.lead.customer.id,
+      leadId: this.props.lead.id,
     }
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
@@ -216,7 +229,7 @@ class Meetings extends Component {
       formData: {
         date: filter[0].date,
         time: filter[0].time,
-        leadId: this.props.route.params.lead.id,
+        leadId: this.props.lead.id,
       },
       editMeeting: true,
       meetingId: id,
@@ -225,31 +238,91 @@ class Meetings extends Component {
 
   goToComments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Comments', { cmLeadId: route.params.lead.id });
+    navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
   }
 
   goToAttachments = () => {
     const { navigation, route } = this.props;
-    navigation.navigate('Attachments', { cmLeadId: route.params.lead.id });
+    navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
   }
 
   goToDiaryForm = () => {
     const { navigation, route, user } = this.props;
     navigation.navigate('AddDiary', {
       update: false,
-      cmLeadId: route.params.lead.id,
+      cmLeadId: this.props.lead.id,
       agentId: user.id
     });
   }
+
+  navigateTo = () => {
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
+  }
+
+  handleReasonChange = (value) => {
+    this.setState({ selectedReason: value });
+  }
+
+  closeModal = () => {
+    this.setState({ isVisible: false })
+  }
+
+  onHandleCloseLead = (reason) => {
+    const { lead, navigation } = this.props
+    const { selectedReason } = this.state;
+    let body = {
+      reasons: selectedReason
+    }
+    if (selectedReason && selectedReason !== '') {
+      axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
+        this.setState({ isVisible: false }, () => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads');
+        });
+      }).catch(error => {
+        console.log(error);
+      })
+    }
+  }
+
+  closedLead = () => {
+    helper.leadClosedToast()
+  }
+
+  closeLead = () => {
+    var remainingPayment = this.props.lead.remainingPayment
+    if (remainingPayment <= 0 && remainingPayment != null) {
+      this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+    } else {
+      this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+    }
+  }
   render() {
-    const { active, formData, checkValidation, meetings, doneStatus, doneStatusId, modalStatus, open, progressValue,editMeeting } = this.state
-    let leadData = this.props.route.params.lead
+    const {
+      active,
+      formData,
+      checkValidation,
+      meetings,
+      doneStatus,
+      doneStatusId,
+      modalStatus,
+      open,
+      progressValue,
+      editMeeting,
+      reasons,
+      selectedReason,
+      checkReasonValidation,
+      closedLeadEdit,
+      isVisible,
+    } = this.state
+    let leadData = this.props.lead
+    let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     return (
       <View style={styles.mainWrapCon}>
         <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 
         {/* ************Fab For Open Modal************ */}
-        <View style={[styles.meetingConteiner]}>
+        <View style={[styles.meetingConteiner, leadClosedCheck === true ? styles.openLeadHeight : styles.closeLeadHeight]}>
           <ScrollView>
             <View style={styles.paddBottom}>
               {
@@ -263,6 +336,7 @@ class Meetings extends Component {
                       doneStatus={doneStatus}
                       doneStatusId={doneStatusId}
                       editFunction={this.editFunction}
+                      leadClosedCheck={leadClosedCheck}
                     />
                   )
                 })
@@ -270,36 +344,34 @@ class Meetings extends Component {
             </View>
           </ScrollView>
 
-          <FAB.Group
-            open={open}
-            icon="plus"
-            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-            color={AppStyles.bgcWhite.backgroundColor}
-            actions={[
-              { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-              { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-              { icon: 'plus', label: 'Diary Task', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
+        </View>
+        {
+          leadClosedCheck == true &&
+          <View style={[styles.callMeetingBtn]}>
+            <View style={[styles.btnsMainWrap]}>
+              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
+                <Text style={styles.alignCenter}>Add Meeting</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={[styles.btnsMainWrap]}>
+              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
+                <Text style={styles.alignCenter}>Call</Text>
+              </TouchableOpacity>
+            </View>
 
-            ]}
-            onStateChange={({ open }) => this.setState({ open })}
+          </View>
+        }
+        <View style={AppStyles.mainCMBottomNav}>
+          <CMBottomNav
+            goToAttachments={this.goToAttachments}
+            navigateTo={this.navigateTo}
+            goToDiaryForm={this.goToDiaryForm}
+            goToComments={this.goToComments}
+            alreadyClosedLead={this.closedLead}
+            closedLeadEdit={closedLeadEdit}
+            closeLead={this.closeLead}
           />
-
         </View>
-
-        <View style={[styles.callMeetingBtn]}>
-          <View style={[styles.btnsMainWrap]}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
-              <Text style={styles.alignCenter}>CALL</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={[styles.btnsMainWrap]}>
-            <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
-              <Text style={styles.alignCenter}>ADD MEETING</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-
 
         {/* ************Modal Component************ */}
         <MeetingModal
@@ -309,7 +381,7 @@ class Meetings extends Component {
           openModal={this.openModal}
           handleForm={this.handleForm}
           formSubmit={this.formSubmit}
-          editMeeting = {editMeeting}
+          editMeeting={editMeeting}
         />
 
         <MeetingStatusModal
@@ -321,6 +393,17 @@ class Meetings extends Component {
           goToDiaryForm={this.goToDiaryForm}
           goToAttachments={this.goToAttachments}
           goToComments={this.goToComments}
+        />
+
+        <LeadRCMPaymentPopup
+          reasons={reasons}
+          selectedReason={selectedReason}
+          changeReason={this.handleReasonChange}
+          checkValidation={checkReasonValidation}
+          isVisible={isVisible}
+          closeModal={() => this.closeModal()}
+          onPress={this.onHandleCloseLead}
+          CMlead={true}
         />
 
       </View>

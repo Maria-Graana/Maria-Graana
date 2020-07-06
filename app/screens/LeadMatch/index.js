@@ -16,6 +16,8 @@ import { FAB } from 'react-native-paper';
 import StaticData from '../../StaticData';
 import { ProgressBar } from 'react-native-paper';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import CMBottomNav from '../../components/CMBottomNav'
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -67,12 +69,18 @@ class LeadMatch extends React.Component {
             filterColor: false,
             maxCheck: false,
             cities: [],
-            areas: []
+            areas: [],
+            // for the lead close dialog
+            isVisible: false,
+            checkReasonValidation: false,
+            selectedReason: '',
+            reasons: [],
+            closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
         }
     }
 
     componentDidMount() {
-        const { lead } = this.props.route.params
+        const { lead } = this.props
         this.props.dispatch(setlead(lead))
         this.getCities()
         this.resetFilter()
@@ -107,6 +115,14 @@ class LeadMatch extends React.Component {
                     areas: areas,
                 })
             })
+    }
+
+    onSliderValueChange = (values) => {
+        const { formData } = this.state;
+        const prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
+        formData.minPrice = prices[values[0]].toString()
+        formData.maxPrice = prices[values[values.length - 1]].toString()
+        this.setState({ formData });
     }
 
     handleForm = (value, name) => {
@@ -168,6 +184,7 @@ class LeadMatch extends React.Component {
         const { lead } = this.props
         let cityId = ''
         let areas = []
+        let prices = lead.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
 
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
@@ -184,6 +201,16 @@ class LeadMatch extends React.Component {
         }
         if (!lead.size_unit) lead.size_unit = 'marla'
         if (lead.type) this.getSubType(lead.type)
+        if (lead.min_price) {
+            if (!_.contains(prices, Number(lead.min_price))) {
+                lead.min_price = 0
+            }
+        }
+        if (lead.price) {
+            if (!_.contains(prices, Number(lead.price))) {
+                lead.price = StaticData.Constants.any_value
+            }
+        }
 
         this.setState({
             formData: {
@@ -226,8 +253,8 @@ class LeadMatch extends React.Component {
 
     setParams = () => {
         const { organization, formData } = this.state
-        const { route } = this.props
-        const { lead } = route.params
+        const { lead } = this.props
+
         let params = {
             leadId: lead.id,
             organization: organization,
@@ -255,8 +282,7 @@ class LeadMatch extends React.Component {
 
     fetchMatches = () => {
         const { organization, showCheckBoxes } = this.state
-        const { route } = this.props
-        const { lead } = route.params
+        const { lead } = this.props
         const { rcmProgressBar } = StaticData
         let matches = []
 
@@ -351,7 +377,7 @@ class LeadMatch extends React.Component {
 
     displayChecks = () => {
         const { showCheckBoxes } = this.state
-        const { lead } = this.props.route.params
+        const { lead } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
@@ -371,7 +397,7 @@ class LeadMatch extends React.Component {
 
     addProperty = (property) => {
         const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-        const { lead } = this.props.route.params
+        const { lead } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
@@ -450,9 +476,47 @@ class LeadMatch extends React.Component {
         }
     }
 
+    closedLead = () => {
+        helper.leadClosedToast()
+    }
+
+    closeLead = () => {
+        var commissionPayment = this.props.lead.commissionPayment
+        if (commissionPayment !== null) {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+        }
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+        }
+    }
+
+    onHandleCloseLead = () => {
+        const { navigation, lead } = this.props
+        const { selectedReason } = this.state;
+        let payload = Object.create({});
+        payload.reasons = selectedReason;
+        axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
+            this.setState({ isVisible: false }, () => {
+                helper.successToast(`Lead Closed`)
+                navigation.navigate('Leads');
+            });
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+
+    handleReasonChange = (value) => {
+        this.setState({ selectedReason: value });
+    }
+
+
+    closeModal = () => {
+        this.setState({ isVisible: false })
+    }
+
     sendProperties = () => {
         const { selectedProperties } = this.state
-        const { lead } = this.props.route.params
+        const { lead } = this.props
         axios.post(`/api/leads/${lead.id}/shortlist`, selectedProperties)
             .then((res) => {
                 this.unSelectAll()
@@ -465,38 +529,40 @@ class LeadMatch extends React.Component {
     }
 
     goToDiaryForm = () => {
-        const { navigation, route, user } = this.props;
-        const { lead } = route.params;
+        const { navigation, lead, user } = this.props;
         navigation.navigate('AddDiary', {
             update: false,
             rcmLeadId: lead.id,
-            agentId: user.id
+            agentId: user.id,
+            addedBy: 'self'
         });
     }
 
     goToAttachments = () => {
-        const { navigation, route } = this.props;
-        const { lead } = route.params;
+        const { navigation, lead } = this.props;
         navigation.navigate('Attachments', { rcmLeadId: lead.id });
     }
 
     goToComments = () => {
-        const { navigation, route } = this.props;
-        const { lead } = route.params;
+        const { navigation, lead } = this.props;
         navigation.navigate('Comments', { rcmLeadId: lead.id });
     }
+
+    navigateToDetails = () => {
+        this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    }
+
 
     _onStateChange = ({ open }) => this.setState({ open });
 
     render() {
         const { lead } = this.props
-        const { subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, open } = this.state
-
+        const { subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
                     <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
-                    <View style={{ flex: 1 }}>
+                    <View style={{  minHeight: '85%' }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
                                 <Text style={[(organization === 'arms') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> ARMS </Text>
@@ -509,6 +575,7 @@ class LeadMatch extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <FilterModal
+                            onSliderValueChange={this.onSliderValueChange}
                             getAreas={this.getAreas}
                             subTypVal={subTypVal}
                             handleForm={this.handleForm}
@@ -590,31 +657,43 @@ class LeadMatch extends React.Component {
 
                             <TouchableOpacity onPress={() => this.sendProperties()}
                                 style={{
-                                    height: 50, alignSelf: 'center', marginBottom: 20, width: '90%',
-                                    opacity: 0.9,
+                                    height: 50,
+                                    alignSelf: 'center',
+                                    marginBottom: 20,
+                                    width: '90%',
+                                    opacity: 1,
                                     backgroundColor: AppStyles.colors.primaryColor,
                                     justifyContent: "center",
                                     alignItems: "center",
                                     padding: 10,
-                                    borderRadius: 5
+                                    borderRadius: 5,
+                                    position: 'absolute',
+                                    bottom: 70,
                                 }}>
                                 <Text style={{ color: 'white' }}> Continue With Selected Properties </Text>
                             </TouchableOpacity>
                             :
                             null
                     }
-                    <FAB.Group
-                        open={open}
-                        icon="plus"
-                        style={{ marginBottom: displayButton ? 70 : 0 }}
-                        fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-                        color={AppStyles.bgcWhite.backgroundColor}
-                        actions={[
-                            { icon: 'plus', label: 'Comment', color: AppStyles.colors.primaryColor, onPress: () => this.goToComments() },
-                            { icon: 'plus', label: 'Attachment', color: AppStyles.colors.primaryColor, onPress: () => this.goToAttachments() },
-                            { icon: 'plus', label: 'Diary Task ', color: AppStyles.colors.primaryColor, onPress: () => this.goToDiaryForm() },
-                        ]}
-                        onStateChange={({ open }) => this.setState({ open })}
+                    <View style={AppStyles.mainCMBottomNav}>
+                        <CMBottomNav
+                            goToAttachments={this.goToAttachments}
+                            navigateTo={this.navigateToDetails}
+                            goToDiaryForm={this.goToDiaryForm}
+                            goToComments={this.goToComments}
+                            alreadyClosedLead={() => this.closedLead()}
+                            closeLead={this.closeLead}
+                            closedLeadEdit={closedLeadEdit}
+                        />
+                    </View>
+                    <LeadRCMPaymentPopup
+                        reasons={reasons}
+                        selectedReason={selectedReason}
+                        changeReason={(value) => this.handleReasonChange(value)}
+                        checkValidation={checkReasonValidation}
+                        isVisible={isVisible}
+                        closeModal={() => this.closeModal()}
+                        onPress={() => this.onHandleCloseLead()}
                     />
 
                 </View>

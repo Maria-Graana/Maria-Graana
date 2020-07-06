@@ -97,19 +97,19 @@ class InnerRCMForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={sizeUnit} name={'size_unit'} placeholder='Unit Size' />
-            </View>
-          </View>
-
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
-            <View style={[AppStyles.inputWrap]}>
               <TextInput onChangeText={(text) => { handleForm(text, 'size') }}
                 value={formData.size ? String(formData.size) : ''}
                 keyboardType='numeric'
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 name={'size'}
                 placeholder={'Size'} />
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne,  AppStyles.flexMarginRight]}>
+            <View style={[AppStyles.inputWrap]}>
+              <PickerComponent onValueChange={handleForm} data={sizeUnit} name={'size_unit'} placeholder='Unit Size' />
             </View>
           </View>
 

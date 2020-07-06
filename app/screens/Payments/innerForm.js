@@ -10,11 +10,25 @@ import * as RootNavigation from '../../navigation/RootNavigation';
 import { formatPrice } from '../../PriceFormate'
 import targetArrow from '../../../assets/img/targetArrow.png'
 import moment from 'moment'
+import InputField from '../../components/InputField'
 
 
 class InnerForm extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      dummyData: {
+        input: '',
+        input2: '',
+      }
+    }
+  }
+
+  changeValue = (value, name) => {
+    const { dummyData } = this.state
+    var newDummyData = dummyData
+    newDummyData[name] = value
+    this.setState({dummyData: newDummyData})
   }
 
   render() {
@@ -46,6 +60,7 @@ class InnerForm extends Component {
       goToComments,
       goToDiaryForm
     } = this.props
+    const { dummyData } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
     let totalSize = readOnly.totalSize && readOnly.totalSize
@@ -55,6 +70,25 @@ class InnerForm extends Component {
     return (
       <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
         <View style={[AppStyles.formMain]}>
+
+        <InputField
+            label={'INPUT MAIN'}
+            placeholder={'Enter Input Number'}
+            name={'input'}
+            data={'2020-07-06T09:30:27.000Z'}
+            onChange={this.changeValue}
+            priceFormatVal={dummyData.input}
+            keyboardType={'numeric'}
+          />
+
+          <InputField
+            label={'INPUT MAIN 2'}
+            placeholder={'Enter Input Number 2'}
+            name={'input2'}
+            data={'2020-07-06T04:30:27.000Z'}
+            onChange={this.changeValue}
+            priceFormatVal={dummyData.input2}
+          />
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
@@ -269,7 +303,7 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          
+
 
         </View>
       </View >

@@ -20,7 +20,10 @@ class InnerForm extends Component {
       dummyData: {
         input: '',
         input2: '',
-      }
+      },
+      refreshInput: false,
+      showStyling: '',
+      showDate: false,
     }
   }
 
@@ -28,7 +31,46 @@ class InnerForm extends Component {
     const { dummyData } = this.state
     var newDummyData = dummyData
     newDummyData[name] = value
-    this.setState({dummyData: newDummyData})
+    this.setState({ dummyData: newDummyData })
+  }
+
+  showAndHideStyling = (name, clear) => {
+    const { dummyData } = this.state
+    const newDummy = dummyData
+
+    if (clear === true) {
+      newDummy[name] = ''
+    }
+    this.setState({
+      showStyling: clear === false ? name : '',
+      dummyData: newDummy,
+      showDate: false,
+    })
+  }
+
+  submit = (name) => {
+    const { dummyData } = this.state
+    var body = {
+      payment: '',
+      payment2: '',
+    }
+    if (name === 'input') {
+      body = {
+        payment: dummyData.input,
+      }
+    }
+
+    if (name === 'input2') {
+      body = {
+        payment2: dummyData.input2,
+      }
+    }
+
+    console.log(body)
+    this.setState({
+      showStyling: '',
+      showDate: true,
+    })
   }
 
   render() {
@@ -60,7 +102,7 @@ class InnerForm extends Component {
       goToComments,
       goToDiaryForm
     } = this.props
-    const { dummyData } = this.state
+    const { dummyData, showStyling, showDate } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
     let totalSize = readOnly.totalSize && readOnly.totalSize
@@ -71,14 +113,19 @@ class InnerForm extends Component {
       <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
         <View style={[AppStyles.formMain]}>
 
-        <InputField
+          <InputField
             label={'INPUT MAIN'}
             placeholder={'Enter Input Number'}
             name={'input'}
             data={'2020-07-06T09:30:27.000Z'}
             onChange={this.changeValue}
+            showStyling={this.showAndHideStyling}
             priceFormatVal={dummyData.input}
+            value={dummyData.input}
             keyboardType={'numeric'}
+            showStylingState={showStyling}
+            paymentDone={this.submit}
+            showDate={showDate}
           />
 
           <InputField
@@ -87,7 +134,13 @@ class InnerForm extends Component {
             name={'input2'}
             data={'2020-07-06T04:30:27.000Z'}
             onChange={this.changeValue}
+            showStyling={this.showAndHideStyling}
             priceFormatVal={dummyData.input2}
+            value={dummyData.input2}
+            keyboardType={'numeric'}
+            showStylingState={showStyling}
+            paymentDone={this.submit}
+            showDate={showDate}
           />
 
           {/* **************************************** */}

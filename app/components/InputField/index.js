@@ -17,11 +17,7 @@ class InputField extends React.Component {
 
   componentDidMount() { }
 
-  showStyling = (val) => {
-    this.setState({
-      showStyling: val
-    })
-  }
+
 
   render() {
 
@@ -33,9 +29,14 @@ class InputField extends React.Component {
       date,
       priceFormatVal,
       keyboardType,
+      showStyling,
+      showStylingState,
+      value,
+      paymentDone,
+      showDate,
     } = this.props
-    const { showStyling } = this.state
-    console.log(showStyling)
+    let val = ''
+    // val = refreshInput === true ? val = '' : val = value
     return (
       <View style={[styles.mainInputParent]}>
         {/* label */}
@@ -45,14 +46,15 @@ class InputField extends React.Component {
         <View style={[styles.mainInputWrap]}>
 
           {/* Main Input */}
-          <View style={[styles.mainInputView]}>
+          <View style={[styles.mainInputView, showDate === true && styles.inputFullWidth]}>
             <TextInput
-              style={[styles.inputTextStyle, showStyling === name && styles.showInputBorder]}
+              style={[styles.inputTextStyle, showStylingState === name && styles.showInputBorder]}
               placeholder={placeholder}
               name={name}
               onChangeText={(val) => { onChange(val, name) }}
-              onTouchStart={() => { this.showStyling(name) }}
+              onTouchStart={() => { showStyling(name, false) }}
               keyboardType={keyboardType}
+              value={value}
             />
             <Text style={[styles.priceFormat]}>
               {formatPrice(priceFormatVal)}
@@ -61,27 +63,29 @@ class InputField extends React.Component {
 
           {/* Check Button */}
           {
-            showStyling == name ?
-              <TouchableOpacity style={[styles.inputCheckBtn]}>
+            showStylingState == name &&
+              <TouchableOpacity style={[styles.inputCheckBtn]} onPress={() => { paymentDone(name) }}>
                 <Image source={InputCheckImg} style={[styles.inputCheckImg]} />
               </TouchableOpacity>
-              : <Text></Text>
           }
 
 
           {/* Times Button */}
           {
-            showStyling == name &&
+            showStylingState == name &&
             <View style={[styles.timesBtnParent]}>
-              <TouchableOpacity style={[styles.timesBtn]} onPress={() => { this.showStyling('') }}>
+              <TouchableOpacity style={[styles.timesBtn]} onPress={() => { showStyling(name, true) }}>
                 <Image source={inputTimesImg} style={[styles.inputTimesImg]} />
               </TouchableOpacity>
             </View>
           }
+          {
+            showDate === true &&
+            <View style={[styles.dateView]}>
+              <Text style={styles.dateStyle}>{moment(date).format('MMM DD, hh:mm a')}</Text>
+            </View>
+          }
 
-          {/* <View style={[styles.dateView]}>
-            <Text style={styles.dateStyle}>{moment(date).format('MMM DD, hh:mm a')}</Text>
-          </View> */}
 
         </View>
       </View>

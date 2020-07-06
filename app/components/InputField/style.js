@@ -9,10 +9,14 @@ export default styles = StyleSheet.create({
     marginTop: 10,
   },
   labelStyle: {
+    marginBottom: 7,
     color: '#000',
-    marginBottom: 10,
-    fontSize: 11,
-    fontWeight: '600'
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+  },
+  inputFullWidth: {
+    width: '65%',
   },
   mainInputWrap: {
     flexDirection: 'row'
@@ -60,7 +64,10 @@ export default styles = StyleSheet.create({
     height: 24,
     resizeMode: 'contain',
   },
-  dateView: {},
+  dateView: {
+    marginTop: 14,
+    marginLeft: 10,
+  },
   dateStyle: {
     fontSize: 11,
     fontWeight: '600'

@@ -22,6 +22,13 @@ export default styles = StyleSheet.create({
     borderRadius: 4,
     height: 140,
   },
+  blueColor: {
+    color: '#0E73EE',
+    fontWeight: '600'
+  },
+  lightColor: {
+    color: '#9E9EA0'
+  },
   largeText: {
     fontSize: 18,
   },
@@ -40,10 +47,10 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 5,
   },
-  leftContent:{
+  leftContent: {
     width: '90%',
   },
-  phoneMain:{
+  phoneMain: {
     justifyContent: 'flex-end',
     marginBottom: 15,
   },
@@ -53,6 +60,18 @@ export default styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 12,
     color: '#2A7EF0',
+    paddingTop: 3,
+    paddingBottom: 3,
+    paddingLeft: 20,
+    paddingRight: 20,
+    fontSize: 12,
+  },
+  tokenLabelDark: {
+    borderWidth: 1,
+    borderColor: '#5B5B5B',
+    overflow: 'hidden',
+    borderRadius: 12,
+    color: '#5B5B5B',
     paddingTop: 3,
     paddingBottom: 3,
     paddingLeft: 20,

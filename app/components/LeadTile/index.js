@@ -15,7 +15,8 @@ class LeadTile extends React.Component {
 
   render() {
     const { data, navigateTo, callNumber, user } = this.props
-    // console.log(data.readAt === null && user.id === data.assigned_to_armsuser_id && data.readAt)
+    var changeColor = data.assigned_to_armsuser_id != null ? styles.blueColor : AppStyles.darkColor
+    var changeStatusColor = data.assigned_to_armsuser_id != null ? styles.tokenLabel : styles.tokenLabelDark
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
 
@@ -23,7 +24,7 @@ class LeadTile extends React.Component {
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
               <View>
-                <Text style={[styles.tokenLabel, AppStyles.mrFive]}>
+                <Text style={[changeStatusColor, AppStyles.mrFive]}>
                   {
                     data.status === 'token' ?
                       <Text>DEAL SIGNED - TOKEN</Text>
@@ -46,17 +47,17 @@ class LeadTile extends React.Component {
               <View style={styles.leftContent}>
                 {/* ****** Name Wrap */}
                 <View style={[styles.contentMain, AppStyles.mbTen]}>
-                  <Text style={[styles.largeText, AppStyles.darkColor]}>
+                  <Text style={[styles.largeText, changeColor]}>
                     {data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)}
                   </Text>
                 </View>
 
                 {/* ****** Price Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  <Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor, AppStyles.mrTen]}>
+                  <Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor]}>
                     PKR
             	 	</Text>
-                  <Text style={[styles.priceText, styles.multiColumn, styles.priceColor]}>
+                  <Text style={[styles.priceText, styles.multiColumn, changeColor]}>
                     {!data.projectId && data.min_price && helper.checkPrice(data.min_price) + ' - '} {!data.projectId && data.price && helper.checkPrice(data.price)}  {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
                   </Text>
                 </View>
@@ -79,10 +80,10 @@ class LeadTile extends React.Component {
                     {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
                   </Text>
                 </View>
-
+                
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                  <Text style={[styles.normalText, styles.lightColor, AppStyles.mrTen]}>
                     {moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}
                   </Text>
                 </View>

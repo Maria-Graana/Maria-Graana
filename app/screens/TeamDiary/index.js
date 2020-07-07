@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import TeamTile from '../../components/TeamTile'
 import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
-import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import fuzzy from 'fuzzy'
+import Search from '../../components/Search';
 
 class TeamDiary extends React.Component {
     constructor(props) {
@@ -37,8 +37,8 @@ class TeamDiary extends React.Component {
     }
 
     navigateTo = (data) => {
-        const {user} = this.props;
-        this.props.navigation.navigate('Diary', { agentId: data.id, screen: 'TeamDiary', managerId: user.id , name: `${data.firstName} ${data.lastName}'s` })
+        const { user } = this.props;
+        this.props.navigation.navigate('Diary', { agentId: data.id, screen: 'TeamDiary', managerId: user.id, name: `${data.firstName} ${data.lastName}'s` })
     }
 
     render() {
@@ -54,20 +54,9 @@ class TeamDiary extends React.Component {
         return (
             !loading ?
                 <View style={[AppStyles.container, styles.container]}>
-                    <View style={styles.searchMainContainerStyle}>
-                        <View style={styles.searchTextContainerStyle}>
-                            <TextInput
-                                style={styles.searchTextInput}
-                                placeholder='Search agents here... '
-                                value={searchText}
-                                onChangeText={(value) => this.setState({ searchText: value })}
-                            />
-                            <Ionicons name={'ios-search'} size={24} color={'grey'} />
-                        </View>
-                    </View>
-
+                    <Search placeholder='Search agents here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
                     {
-                        teamDiary.length ?
+                        data.length ?
                             <FlatList
                                 data={data}
                                 renderItem={(item, index) => (

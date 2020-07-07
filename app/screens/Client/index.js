@@ -10,6 +10,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Fab, ActionSheet } from 'native-base';
 import helper from '../../helper';
 import Loader from '../../components/loader';
+import fuzzy from 'fuzzy'
+import Search from '../../components/Search';
 import NoResultsComponent from '../../components/NoResultsComponent';
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
 
@@ -26,6 +28,7 @@ class Client extends React.Component {
             page: 1,
             pageSize: 20,
             onEndReachedLoader: false,
+            searchText: '',
         }
     }
 
@@ -120,11 +123,20 @@ class Client extends React.Component {
     }
 
     render() {
-        const { customers, loading, totalCustomers, onEndReachedLoader } = this.state
+        const { customers, loading, totalCustomers, onEndReachedLoader, searchText } = this.state
         const { user } = this.props
+        let data = [];
+        if (searchText !== '' && data.length === 0) {
+            data = fuzzy.filter(searchText, customers, { extract: (e) => (e.firstName + e.lastName) })
+            data = data.map((item) => item.original)
+        }
+        else {
+            data = customers;
+        }
         return (
             !loading ?
                 <View style={[AppStyles.container, styles.container]}>
+                      <Search placeholder='Search clients here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
                     {
                         Ability.canAdd(user.subRole, 'Client') ?
                             <Fab
@@ -140,9 +152,10 @@ class Client extends React.Component {
                             null
                     }
                     {
-                        customers && customers.length > 0 ?
+                        data.length > 0 ?
                             <FlatList
-                                data={customers}
+                                contentContainerStyle={styles.contentContainerStyle}
+                                data={data}
                                 renderItem={(item, index) => (
                                     <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
                                 )}

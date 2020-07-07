@@ -56,7 +56,7 @@ class TeamDiary extends React.Component {
                 <View style={[AppStyles.container, styles.container]}>
                     <Search placeholder='Search agents here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
                     {
-                        teamDiary.length ?
+                        data.length ?
                             <FlatList
                                 data={data}
                                 renderItem={(item, index) => (

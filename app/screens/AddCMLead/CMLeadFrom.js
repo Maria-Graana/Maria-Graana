@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import StaticData from '../../StaticData'
 import { formatPrice } from '../../PriceFormate'
 import PriceSlider from '../../components/PriceSlider';
+import TouchableInput from '../../components/TouchableInput';
 
 class CMLeadFrom extends Component {
   constructor(props) {
@@ -25,7 +26,8 @@ class CMLeadFrom extends Component {
       handleForm,
       formData,
       cities,
-      getClients,
+      clientName,
+      handleClientClick,
       getProject,
       onSliderValueChange
     } = this.props
@@ -33,15 +35,11 @@ class CMLeadFrom extends Component {
     return (
       <View>
 
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={getClients} name={'customerId'} placeholder='Client' />
-            {
-              checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
-            }
-          </View>
-        </View>
+        <TouchableInput placeholder="Client"
+          onPress={() => handleClientClick()}
+          value={clientName}
+          showError={checkValidation === true && formData.customerId === ''}
+          errorMessage="Required" />
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
@@ -78,13 +76,13 @@ class CMLeadFrom extends Component {
           />
           <Text style={styles.toText}>to</Text>
           <TextInput placeholder='Price Max'
-             value={formData.maxPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice)}
+            value={formData.maxPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice)}
             style={[AppStyles.formControl, styles.priceStyle]}
             editable={false}
           />
         </View>
 
-        <PriceSlider priceValues={StaticData.PricesProject} initialValue={0} finalValue={StaticData.PricesProject.length - 1} onSliderValueChange={(values)=> onSliderValueChange(values)}/>
+        <PriceSlider priceValues={StaticData.PricesProject} initialValue={0} finalValue={StaticData.PricesProject.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} />
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

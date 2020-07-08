@@ -46,9 +46,9 @@ class InputField extends React.Component {
     } = this.props
     
     // val = refreshInput === true ? val = '' : val = value
-    var checkForStyling = dateStatus.name === name && dateStatus.status === true ? true : false
+    var checkForStyling = dateStatus.status === true ? true : false
     return (
-      <View style={[styles.mainInputParent]}>
+      <View style={[styles.mainInputParent, showStylingState === name && styles.paddingTopBottom]}>
         {/* label */}
         <Text style={[styles.labelStyle]}>{label}</Text>
 
@@ -93,7 +93,7 @@ class InputField extends React.Component {
           {
             dateStatus && checkForStyling === true &&
             <View style={[styles.dateView]}>
-              <Text style={styles.dateStyle}>{moment(date).format('MMM DD, hh:mm a')}</Text>
+              <Text style={styles.dateStyle}>{date}</Text>
             </View>
           }
 

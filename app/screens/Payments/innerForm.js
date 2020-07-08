@@ -43,7 +43,7 @@ class InnerForm extends Component {
   }
 
   showAndHideStyling = (name, clear) => {
-    const { dummyData, inputDateStatus } = this.state
+    const { dummyData, inputDateStatus, inputDateStatus2 } = this.state
     const newDummy = dummyData
 
     if (clear === true) {
@@ -55,6 +55,11 @@ class InnerForm extends Component {
       inputDateStatus['status'] = false
     }
 
+    if(name === 'input2'){
+      inputDateStatus2['name'] = ''
+      inputDateStatus2['status'] = false
+    }
+
 
 
     this.setState({
@@ -62,11 +67,12 @@ class InnerForm extends Component {
       dummyData: newDummy,
       showDate: false,
       inputDateStatus,
+      inputDateStatus2,
     })
   }
 
   submit = (name) => {
-    const { dummyData, inputDateStatus } = this.state
+    const { dummyData, inputDateStatus, inputDateStatus2 } = this.state
     var body = {
       payment: '',
       payment2: '',
@@ -77,13 +83,14 @@ class InnerForm extends Component {
       }
       inputDateStatus['name'] = name
       inputDateStatus['status'] = true
-      
     }
 
     if (name === 'input2') {
       body = {
         payment2: dummyData.input2,
       }
+      inputDateStatus2['name'] = name
+      inputDateStatus2['status'] = true
     }
 
     console.log(body)
@@ -91,6 +98,7 @@ class InnerForm extends Component {
       showStyling: '',
       showDate: true,
       inputDateStatus,
+      inputDateStatus2,
     })
   }
 
@@ -123,13 +131,15 @@ class InnerForm extends Component {
       goToComments,
       goToDiaryForm,
     } = this.props
-    const { dummyData, showStyling, showDate, inputDateStatus } = this.state
+    const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2 } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
     let totalSize = readOnly.totalSize && readOnly.totalSize
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
     console.log(inputDateStatus)
+
+    var newDate = new Date
     return (
       <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
         <View style={[AppStyles.formMain]}>
@@ -138,7 +148,7 @@ class InnerForm extends Component {
             label={'DOWN PAYMENT'}
             placeholder={'Enter Amount'}
             name={'input'}
-            data={'2020-07-06T09:30:27.000Z'}
+            date={moment(newDate).format('MMM DD, hh:mm a')}
             onChange={this.changeValue}
             showStyling={this.showAndHideStyling}
             priceFormatVal={dummyData.input}
@@ -154,7 +164,7 @@ class InnerForm extends Component {
             label={'INPUT MAIN 2'}
             placeholder={'Enter Input Number 2'}
             name={'input2'}
-            data={'2020-07-06T04:30:27.000Z'}
+            date={moment(newDate).format('MMM DD, hh:mm a')}
             onChange={this.changeValue}
             showStyling={this.showAndHideStyling}
             priceFormatVal={dummyData.input2}
@@ -163,7 +173,7 @@ class InnerForm extends Component {
             showStylingState={showStyling}
             paymentDone={this.submit}
             showDate={true}
-            dateStatus={inputDateStatus}
+            dateStatus={inputDateStatus2}
           />
 
           {/* **************************************** */}

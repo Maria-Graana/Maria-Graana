@@ -8,8 +8,12 @@ export default styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
   },
+  paddingTopBottom: {
+    paddingTop: 15,
+    paddingBottom: 15,
+  },
   labelStyle: {
-    marginBottom: 7,
+    marginBottom: 5,
     color: '#000',
     fontSize: 10,
     fontWeight: 'bold',
@@ -27,11 +31,12 @@ export default styles = StyleSheet.create({
   },
   inputTextStyle: {
     width: '100%',
+    height: 15,
     borderBottomLeftRadius: 6,
     borderTopLeftRadius: 6,
     letterSpacing: 2,
     color: '#0E73EE',
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
   showInputBorder: {
     borderWidth: 1,
@@ -46,7 +51,7 @@ export default styles = StyleSheet.create({
     color: '#959597',
     fontWeight: '600'
   },
-  BottomFormat:{
+  BottomFormat: {
     position: 'absolute',
     right: 11,
     top: 11,
@@ -76,14 +81,15 @@ export default styles = StyleSheet.create({
   },
   dateView: {
     marginTop: 3,
-    marginLeft: 10,
+    marginLeft: 20,
   },
-  bottomDate:{
+  bottomDate: {
     marginTop: 5,
   },
   dateStyle: {
-    fontSize: 11,
-    fontWeight: '600'
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#424249'
   },
   dummy: {},
   dummy: {},

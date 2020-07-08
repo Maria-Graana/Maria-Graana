@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
 import helper from '../../helper';
-import { formatPrice } from '../../PriceFormate'
 
 class AddCMLead extends Component {
     constructor(props) {

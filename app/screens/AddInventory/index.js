@@ -30,7 +30,8 @@ class AddInventory extends Component {
             selectedGrade: '',
             sizeUnit: StaticData.sizeUnit,
             buttonText: 'ADD PROPERTY',
-            getClients: [],
+            clientName: '',
+            selectedClient: null,
             isModalOpen: false,
             formData: {
                 type: '',
@@ -62,36 +63,25 @@ class AddInventory extends Component {
 
     componentDidMount() {
         const { route, navigation, user } = this.props;
+        navigation.addListener('focus', () => {
+            const { client, name } = this.props.route.params;
+            const { formData } = this.state;
+            let copyObject = Object.assign({}, formData);
+            if (client && name) {
+                copyObject.customer_id = client.id;
+                this.setState({ formData: copyObject, clientName: name, selectedClient: client })
+            }
+        })
         if (route.params.update) {
             navigation.setOptions({ title: 'EDIT PROPERTY' })
             this.setEditValues()
         }
         this.getCities();
-        this.getClients(user.id);
     }
 
     componentWillUnmount() {
         this.props.dispatch(flushImages());
         this.props.dispatch((setImageLoading(false)));
-    }
-
-    getClients = (id) => {
-        axios.get(`/api/customer/find?userId=${id}`)
-            .then((res) => {
-                let clientsArray = [];
-                res && res.data.rows.map((item, index) => {
-                    return (
-                        clientsArray.push(
-                            {
-                                value: item.id, name: item.firstName === '' || item.firstName === null ? item.contact1 : item.firstName + ' ' + item.lastName
-                            }
-                        )
-                    )
-                })
-                this.setState({
-                    getClients: clientsArray
-                })
-            })
     }
 
     setEditValues = () => {
@@ -127,6 +117,8 @@ class AddInventory extends Component {
                 show_address: true,
                 video: property.video,
             },
+            selectedClient: property.customer,
+            clientName: property.customer && property.customer.first_name + ' ' + property.customer.last_name,
             buttonText: 'UPDATE PROPERTY'
         }, () => {
             // console.log(this.state.formData);
@@ -137,7 +129,7 @@ class AddInventory extends Component {
     }
 
     setImagesForEditMode = () => {
-        const {dispatch} = this.props;
+        const { dispatch } = this.props;
         const { formData } = this.state;
         const { imageIds } = formData;
         imageIds.map(image => {
@@ -289,7 +281,7 @@ class AddInventory extends Component {
     }
 
     imageBrowserCallback = mediaAssets => {
-       const {dispatch} = this.props;
+        const { dispatch } = this.props;
         mediaAssets
             .then(photos => {
                 this.setState(
@@ -298,14 +290,14 @@ class AddInventory extends Component {
                     },
                     () => {
                         // console.log('@@@', photos)
-                        if(photos.length>0){
+                        if (photos.length > 0) {
                             dispatch((setImageLoading(true)));
                             this._uploadMultipleImages(photos);
                         }
-                        else{
+                        else {
                             helper.errorToast('No pictures selected');
                         }
-                       
+
                     }
                 );
             })
@@ -410,7 +402,11 @@ class AddInventory extends Component {
         }
     }
 
-
+    handleClientClick = () => {
+        const { navigation } = this.props;
+        const { selectedClient } = this.state;
+        navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddInventory' });
+    }
 
     render() {
         const {
@@ -421,8 +417,8 @@ class AddInventory extends Component {
             checkValidation,
             buttonText,
             buttonDisabled,
-            getClients,
             sizeUnit,
+            clientName,
             isModalOpen,
         } = this.state
         return (
@@ -454,6 +450,8 @@ class AddInventory extends Component {
                                 cities={cities}
                                 areas={areas}
                                 buttonText={buttonText}
+                                clientName={clientName}
+                                handleClientClick={this.handleClientClick}
                                 propertyType={StaticData.type}
                                 getCurrentLocation={this._getLocationAsync}
                                 getImages={() => this.getImages()}
@@ -464,7 +462,6 @@ class AddInventory extends Component {
                                 latitude={formData.lat}
                                 longitude={formData.lng}
                                 price={formData.price}
-                                getClients={getClients}
                                 deleteImage={(image, index) => this.deleteImage(image, index)}
                                 buttonDisabled={buttonDisabled}
                             />

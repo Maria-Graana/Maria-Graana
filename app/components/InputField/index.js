@@ -65,6 +65,8 @@ class InputField extends React.Component {
               onTouchStart={() => { showStyling(name, false) }}
               keyboardType={keyboardType}
               value={this.changeFormatToComma(value)}
+              placeholderTextColor="#96999E"
+              placeholderFontWeight="400"
             />
             {console.log(checkForStyling)}
             <Text style={[showStylingState === name ? styles.BottomFormat : styles.priceFormat]}>

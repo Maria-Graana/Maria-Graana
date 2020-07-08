@@ -7,6 +7,10 @@ export default styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 10,
     marginTop: 10,
+    elevation: 5,
+    shadowOffset: { width: 5, height: 5 },
+    shadowColor: '#33333312',
+    shadowOpacity: 0.5,
   },
   paddingTopBottom: {
     paddingTop: 15,
@@ -36,7 +40,7 @@ export default styles = StyleSheet.create({
     borderTopLeftRadius: 6,
     letterSpacing: 2,
     color: '#0E73EE',
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   showInputBorder: {
     borderWidth: 1,
@@ -61,8 +65,8 @@ export default styles = StyleSheet.create({
   inputCheckBtn: {
     backgroundColor: '#0E73EE',
     padding: 10,
-    borderBottomRightRadius: 4,
-    borderTopRightRadius: 4,
+    borderBottomRightRadius: 6,
+    borderTopRightRadius: 6,
   },
   inputCheckImg: {
     width: 20,

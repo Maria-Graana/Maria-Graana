@@ -162,7 +162,7 @@ class InnerForm extends Component {
 
           <InputField
             label={'INPUT MAIN 2'}
-            placeholder={'Enter Input Number 2'}
+            placeholder={'Enter Input'}
             name={'input2'}
             date={moment(newDate).format('MMM DD, hh:mm a')}
             onChange={this.changeValue}

@@ -24,6 +24,14 @@ class InnerForm extends Component {
       refreshInput: false,
       showStyling: '',
       showDate: false,
+      inputDateStatus: {
+        name: '',
+        status: false,
+      },
+      inputDateStatus2: {
+        name: '',
+        status: false,
+      }
     }
   }
 
@@ -35,21 +43,30 @@ class InnerForm extends Component {
   }
 
   showAndHideStyling = (name, clear) => {
-    const { dummyData } = this.state
+    const { dummyData, inputDateStatus } = this.state
     const newDummy = dummyData
 
     if (clear === true) {
       newDummy[name] = ''
     }
+
+    if(name === 'input'){
+      inputDateStatus['name'] = ''
+      inputDateStatus['status'] = false
+    }
+
+
+
     this.setState({
       showStyling: clear === false ? name : '',
       dummyData: newDummy,
       showDate: false,
+      inputDateStatus,
     })
   }
 
   submit = (name) => {
-    const { dummyData } = this.state
+    const { dummyData, inputDateStatus } = this.state
     var body = {
       payment: '',
       payment2: '',
@@ -58,6 +75,9 @@ class InnerForm extends Component {
       body = {
         payment: dummyData.input,
       }
+      inputDateStatus['name'] = name
+      inputDateStatus['status'] = true
+      
     }
 
     if (name === 'input2') {
@@ -70,6 +90,7 @@ class InnerForm extends Component {
     this.setState({
       showStyling: '',
       showDate: true,
+      inputDateStatus,
     })
   }
 
@@ -100,22 +121,22 @@ class InnerForm extends Component {
       closedLead,
       goToAttachments,
       goToComments,
-      goToDiaryForm
+      goToDiaryForm,
     } = this.props
-    const { dummyData, showStyling, showDate } = this.state
+    const { dummyData, showStyling, showDate, inputDateStatus } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
     let totalSize = readOnly.totalSize && readOnly.totalSize
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
-
+    console.log(inputDateStatus)
     return (
       <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
         <View style={[AppStyles.formMain]}>
 
           <InputField
-            label={'INPUT MAIN'}
-            placeholder={'Enter Input Number'}
+            label={'DOWN PAYMENT'}
+            placeholder={'Enter Amount'}
             name={'input'}
             data={'2020-07-06T09:30:27.000Z'}
             onChange={this.changeValue}
@@ -125,7 +146,8 @@ class InnerForm extends Component {
             keyboardType={'numeric'}
             showStylingState={showStyling}
             paymentDone={this.submit}
-            showDate={showDate}
+            showDate={true}
+            dateStatus={inputDateStatus}
           />
 
           <InputField
@@ -140,7 +162,8 @@ class InnerForm extends Component {
             keyboardType={'numeric'}
             showStylingState={showStyling}
             paymentDone={this.submit}
-            showDate={showDate}
+            showDate={true}
+            dateStatus={inputDateStatus}
           />
 
           {/* **************************************** */}

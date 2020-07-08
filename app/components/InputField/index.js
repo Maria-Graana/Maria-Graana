@@ -17,7 +17,15 @@ class InputField extends React.Component {
 
   componentDidMount() { }
 
+  changeFormatToComma = (value) => {
+    let val = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    return val;
+  }
 
+  changeFormatToNormal = (value) => {
+    let val = value.replace(/\D/g, "").replace(/\B(?=(\d{})+(?!\d))/g, ",")
+    return val;
+  }
 
   render() {
 
@@ -34,9 +42,11 @@ class InputField extends React.Component {
       value,
       paymentDone,
       showDate,
+      dateStatus,
     } = this.props
-    let val = ''
+    
     // val = refreshInput === true ? val = '' : val = value
+    var checkForStyling = dateStatus.name === name && dateStatus.status === true ? true : false
     return (
       <View style={[styles.mainInputParent]}>
         {/* label */}
@@ -46,7 +56,7 @@ class InputField extends React.Component {
         <View style={[styles.mainInputWrap]}>
 
           {/* Main Input */}
-          <View style={[styles.mainInputView, showDate === true && styles.inputFullWidth]}>
+          <View style={[styles.mainInputView, checkForStyling === true && styles.inputFullWidth]}>
             <TextInput
               style={[styles.inputTextStyle, showStylingState === name && styles.showInputBorder]}
               placeholder={placeholder}
@@ -54,19 +64,20 @@ class InputField extends React.Component {
               onChangeText={(val) => { onChange(val, name) }}
               onTouchStart={() => { showStyling(name, false) }}
               keyboardType={keyboardType}
-              value={value}
+              value={this.changeFormatToComma(value)}
             />
-            <Text style={[styles.priceFormat]}>
-              {formatPrice(priceFormatVal)}
+            {console.log(checkForStyling)}
+            <Text style={[showStylingState === name ? styles.BottomFormat : styles.priceFormat]}>
+              {formatPrice(this.changeFormatToNormal(priceFormatVal))}
             </Text>
           </View>
 
           {/* Check Button */}
           {
             showStylingState == name &&
-              <TouchableOpacity style={[styles.inputCheckBtn]} onPress={() => { paymentDone(name) }}>
-                <Image source={InputCheckImg} style={[styles.inputCheckImg]} />
-              </TouchableOpacity>
+            <TouchableOpacity style={[styles.inputCheckBtn]} onPress={() => { paymentDone(name) }}>
+              <Image source={InputCheckImg} style={[styles.inputCheckImg]} />
+            </TouchableOpacity>
           }
 
 
@@ -80,7 +91,7 @@ class InputField extends React.Component {
             </View>
           }
           {
-            showDate === true &&
+            dateStatus && checkForStyling === true &&
             <View style={[styles.dateView]}>
               <Text style={styles.dateStyle}>{moment(date).format('MMM DD, hh:mm a')}</Text>
             </View>

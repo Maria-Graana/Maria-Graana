@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native'
 export default styles = StyleSheet.create({
   mainInputParent: {
     backgroundColor: '#fff',
-    padding: 5,
+    padding: 10,
     borderRadius: 4,
     marginBottom: 10,
     marginTop: 10,
@@ -22,21 +22,31 @@ export default styles = StyleSheet.create({
     flexDirection: 'row'
   },
   mainInputView: {
-    width: '80%',
+    width: '75%',
     position: 'relative',
   },
   inputTextStyle: {
     width: '100%',
-    padding: 5,
-    borderBottomLeftRadius: 4,
-    borderTopLeftRadius: 4,
-    minHeight: 40,
+    borderBottomLeftRadius: 6,
+    borderTopLeftRadius: 6,
+    letterSpacing: 2,
+    color: '#0E73EE',
+    fontWeight: '600',
   },
   showInputBorder: {
     borderWidth: 1,
+    padding: 5,
+    minHeight: 40,
     borderColor: '#ebebeb',
   },
   priceFormat: {
+    position: 'absolute',
+    right: 11,
+    top: 0,
+    color: '#959597',
+    fontWeight: '600'
+  },
+  BottomFormat:{
     position: 'absolute',
     right: 11,
     top: 11,
@@ -56,7 +66,7 @@ export default styles = StyleSheet.create({
   },
   timesBtnParent: {},
   timesBtn: {
-    marginLeft: 10,
+    marginLeft: 30,
     marginTop: 6,
   },
   inputTimesImg: {
@@ -65,8 +75,11 @@ export default styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   dateView: {
-    marginTop: 14,
+    marginTop: 3,
     marginLeft: 10,
+  },
+  bottomDate:{
+    marginTop: 5,
   },
   dateStyle: {
     fontSize: 11,

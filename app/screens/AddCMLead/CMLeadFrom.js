@@ -25,8 +25,9 @@ class CMLeadFrom extends Component {
       checkValidation,
       handleForm,
       formData,
-      cities,
       clientName,
+      selectedCity,
+      handleCityClick,
       handleClientClick,
       getProject,
       onSliderValueChange
@@ -41,12 +42,11 @@ class CMLeadFrom extends Component {
           showError={checkValidation === true && formData.customerId === ''}
           errorMessage="Required" />
 
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={cities} name={'cityId'} placeholder='Select City' />
-          </View>
-        </View>
+        <TouchableInput placeholder="Select City"
+          onPress={() => handleCityClick()}
+          value={selectedCity ? selectedCity.name : ''}
+          showError={checkValidation === true && formData.cityId === ''}
+          errorMessage="Required" />
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

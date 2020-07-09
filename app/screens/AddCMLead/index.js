@@ -16,9 +16,9 @@ class AddCMLead extends Component {
         super(props)
         this.state = {
             checkValidation: false,
-            cities: [],
             clientName: '',
             selectedClient: null,
+            selectedCity: null,
             getProject: [],
             formType: 'sale',
             selectSubType: [],
@@ -37,28 +37,21 @@ class AddCMLead extends Component {
     componentDidMount() {
         const {navigation} = this.props;
         navigation.addListener('focus', () => {
-            const { client, name } = this.props.route.params;
+            const { client, name, selectedCity } = this.props.route.params;
             const { formData } = this.state;
             let copyObject = Object.assign({}, formData);
             if (client && name) {
                 copyObject.customerId = client.id;
                 this.setState({ formData: copyObject, clientName: name, selectedClient: client })
             }
+            if(selectedCity){
+                copyObject.cityId = selectedCity.value;
+                this.setState({formData: copyObject, selectedCity})
+            }
         })
-        this.getCities();
         this.getAllProjects();
     }
 
-    getCities = () => {
-        axios.get(`/api/cities`)
-            .then((res) => {
-                let citiesArray = [];
-                res && res.data.map((item, index) => { return (citiesArray.push({ value: item.id, name: item.name })) })
-                this.setState({
-                    cities: citiesArray
-                })
-            })
-    }
 
     getAllProjects = () => {
         axios.get(`/api/project/all`)
@@ -137,12 +130,18 @@ class AddCMLead extends Component {
         navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddCMLead' });
     }
 
+    handleCityClick = () => {
+        const {navigation} = this.props;
+        const {selectedCity} = this.state;
+        navigation.navigate('CityPickerScreen', {screenName:'AddCMLead', selectedCity});
+    }
+
     render() {
         const {
             formData,
-            cities,
             getProject,
             checkValidation,
+            selectedCity,
             clientName
         } = this.state
         const { route } = this.props
@@ -157,9 +156,10 @@ class AddCMLead extends Component {
                                     checkValidation={checkValidation}
                                     handleForm={this.handleForm}
                                     clientName={clientName}
+                                    selectedCity={selectedCity}
+                                    handleCityClick= { this.handleCityClick}
                                     handleClientClick={this.handleClientClick}
                                     formData={formData}
-                                    cities={cities}
                                     getProject={getProject}
                                     onSliderValueChange={(values) => this.onSliderValueChange(values)}
                                 />

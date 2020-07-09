@@ -34,6 +34,7 @@ import Dashboard from '../screens/Dashboard';
 import CMReport from '../screens/CMReport';
 import RCMReport from '../screens/RCMReport';
 import AssignLead from '../screens/AssignLead';
+import CityPickerScreen from '../screens/CityPickerScreen';
 
 const Stack = createStackNavigator();
 
@@ -241,6 +242,13 @@ function MainStack() {
                             Done
                         </Text>
                     </TouchableOpacity>,
+                    headerTitleAlign: 'center',
+                })}
+            />
+            <Stack.Screen name='CityPickerScreen' component={CityPickerScreen}
+                options={({ navigation, route }) => ({
+                    title: 'Select City',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}
             />

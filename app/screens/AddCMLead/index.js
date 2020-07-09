@@ -35,7 +35,7 @@ class AddCMLead extends Component {
     }
 
     componentDidMount() {
-        const {navigation} = this.props;
+        const { navigation } = this.props;
         navigation.addListener('focus', () => {
             const { client, name, selectedCity } = this.props.route.params;
             const { formData } = this.state;
@@ -44,9 +44,9 @@ class AddCMLead extends Component {
                 copyObject.customerId = client.id;
                 this.setState({ formData: copyObject, clientName: name, selectedClient: client })
             }
-            if(selectedCity){
+            if (selectedCity) {
                 copyObject.cityId = selectedCity.value;
-                this.setState({formData: copyObject, selectedCity})
+                this.setState({ formData: copyObject, selectedCity })
             }
         })
         this.getAllProjects();
@@ -60,8 +60,8 @@ class AddCMLead extends Component {
                 res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name })) })
                 this.setState({
                     getProject: projectArray
-                })
-            })
+                });
+            });
     }
 
     handleForm = (value, name) => {
@@ -81,32 +81,14 @@ class AddCMLead extends Component {
                 checkValidation: true
             })
         } else {
-            let body = {
-                ...formData,
-            }
-            if (body.maxPrice === '') body.maxPrice = null
-            if (body.minPrice === '') body.minPrice = null
-            if (body.maxPrice && body.maxPrice !== '' && body.minPrice && body.minPrice !== '') {
-                if (Number(body.maxPrice) >= Number(body.minPrice)) {
-                    axios.post(`/api/leads/project`, body)
-                        .then((res) => {
-                            helper.successToast(res.data)
-                            RootNavigation.navigate('Leads')
-                        })
-                } else {
-                    helper.errorToast('Max Price cannot be less than Min Price')
-                }
-            } else {
-                axios.post(`/api/leads/project`, body)
-                    .then((res) => {
-                        helper.successToast(res.data)
-                        RootNavigation.navigate('Leads')
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
-            }
-
+            axios.post(`/api/leads/project`, formData)
+                .then((res) => {
+                    helper.successToast(res.data)
+                    RootNavigation.navigate('Leads')
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
         }
     }
 
@@ -126,14 +108,14 @@ class AddCMLead extends Component {
 
     handleClientClick = () => {
         const { navigation } = this.props;
-        const {selectedClient} = this.state;
+        const { selectedClient } = this.state;
         navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddCMLead' });
     }
 
     handleCityClick = () => {
-        const {navigation} = this.props;
-        const {selectedCity} = this.state;
-        navigation.navigate('CityPickerScreen', {screenName:'AddCMLead', selectedCity});
+        const { navigation } = this.props;
+        const { selectedCity } = this.state;
+        navigation.navigate('CityPickerScreen', { screenName: 'AddCMLead', selectedCity });
     }
 
     render() {
@@ -157,7 +139,7 @@ class AddCMLead extends Component {
                                     handleForm={this.handleForm}
                                     clientName={clientName}
                                     selectedCity={selectedCity}
-                                    handleCityClick= { this.handleCityClick}
+                                    handleCityClick={this.handleCityClick}
                                     handleClientClick={this.handleClientClick}
                                     formData={formData}
                                     getProject={getProject}

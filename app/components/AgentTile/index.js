@@ -25,11 +25,31 @@ class InventoryTile extends React.Component {
 		this.setState({ menuShow: val })
 	}
 
+	displayName = (organization, data) => {
+       if(organization === 'graana'){
+            if(data.user){
+                return data.user.first_name + ' ' + data.user.last_name;
+			}
+			else{
+                 return '- - -';
+			}
+	   }
+	   else{
+          if(data.user){
+			return data.user.firstName + ' ' + data.user.lastName;
+		  }
+		  else{
+			return '- - -';
+		  }
+	   }
+	}
+
 	render() {
 		const { data, isMenuVisible, showCheckBoxes, organization } = this.props
 		const { menuShow } = this.state
 		let phoneNumber = null
-		if (data.graana_id) phoneNumber = data.user ? data.user.phone : null
+		let agentName = data ? this.displayName(organization, data) : '';
+		if (organization === 'graana') phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user ? data.user.phoneNumber : null
 		let show = isMenuVisible
 		if (isMenuVisible) {
@@ -102,7 +122,7 @@ class InventoryTile extends React.Component {
 						<View style={{ marginTop: 10, height: 125, justifyContent: 'space-between' }}>
 							<View>
 								<Text style={styles.agentText}> Agent Name </Text>
-								<Text numberOfLines={1} style={styles.labelText}>{data.user ? data.user.firstName : '- - -'} {data.user ? data.user.lastName : '- - -'}</Text>
+						<Text numberOfLines={1} style={styles.labelText}>{agentName}</Text>
 							</View>
 							<View style={{ flexDirection: 'row-reverse' }}>
 								{/* <View style={{ flex: 1 }}></View> */}

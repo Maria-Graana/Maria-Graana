@@ -11,6 +11,8 @@ import fuzzy from 'fuzzy'
 import AppStyles from '../../AppStyles';
 import Loader from '../../components/loader';
 import { getAreas, clearAreas, setAreaLoader, setSelectedAreas,getAreasByZone } from "../../actions/areas";
+import styles from './styles';
+import Search from '../../components/Search';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
@@ -74,8 +76,8 @@ class AreaPickerScreen extends React.Component {
         return (
             <TouchableOpacity
                 onPress={() => this.setSelectedArea(item)}>
-                <View style={{ width: wp('100%'), paddingTop: hp('1.5%'), paddingBottom: hp('1.5%'), flexDirection: 'row', alignItems: 'center', borderTopColor: '#ddd', borderTopWidth: 0.5, alignSelf: 'stretch' }}>
-                    <Text style={{ color: AppStyles.colors.textColor, marginLeft: wp('2.5%'), fontSize: 18, width: wp('80%') }}>{item.name}</Text>
+                <View style={styles.rowContainerMultipleStyle}>
+                    <Text style={styles.rowTextStyle}>{item.name}</Text>
                     <Checkbox
                         status={this.setStatus(item)}
                         color={AppStyles.colors.primaryColor}
@@ -102,24 +104,13 @@ class AreaPickerScreen extends React.Component {
         return (
             !loading ?
                 <View style={[AppStyles.container, { paddingHorizontal: 0, backgroundColor: AppStyles.bgcWhite.backgroundColor }]}>
-                    <View style={[AppStyles.formControl, AppStyles.inputPadLeft, {
-                        justifyContent: 'center', marginTop: 15, marginBottom: 15,
-                        borderColor: 'grey',
-                        borderWidth: 0.5,
-                    }]}>
-                        <TextInput
-                            placeholder=' Type to filter '
-                            value={searchText}
-                            onChangeText={(value) => this.setState({ searchText: value })}
-                        />
-                    </View>
+                    <Search placeholder='Search areas...'  searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })}/>
                     <AnimatedFlatList
                         data={
                             data
                         }
                         renderItem={this.renderListWithMultipleSelectOptions}
                         keyExtractor={(item, index) => String(index)}
-                        contentContainerStyle={{ paddingTop: 0 }}
                         scrollIndicatorInsets={{ top: 0 }}
                     />
                 </View>

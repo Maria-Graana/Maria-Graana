@@ -451,7 +451,7 @@ class LeadRCMPayment extends React.Component {
                         closeModal={() => this.closeModal()}
                         onPress={() => this.onHandleCloseLead()}
                     />
-                    <View style={{ flex: 1, minHeight: '100%' }}>
+                    <View style={{ flex: 1, minHeight: '100%', paddingBottom: 100 }}>
                         {
                             allProperties.length > 0 ?
                                 <FlatList

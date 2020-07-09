@@ -18,7 +18,7 @@ export default styles = StyleSheet.create({
   },
   labelStyle: {
     marginBottom: 5,
-    color: '#000',
+    color: '#23232C',
     fontSize: 10,
     fontWeight: 'bold',
     letterSpacing: 2,
@@ -75,7 +75,7 @@ export default styles = StyleSheet.create({
   },
   timesBtnParent: {},
   timesBtn: {
-    marginLeft: 30,
+    marginLeft: 25,
     marginTop: 6,
   },
   inputTimesImg: {
@@ -85,7 +85,7 @@ export default styles = StyleSheet.create({
   },
   dateView: {
     marginTop: 3,
-    marginLeft: 20,
+    marginLeft: 10,
   },
   bottomDate: {
     marginTop: 5,

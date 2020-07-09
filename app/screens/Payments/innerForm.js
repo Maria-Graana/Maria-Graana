@@ -18,7 +18,7 @@ class InnerForm extends Component {
     super(props)
     this.state = {
       dummyData: {
-        input: '',
+        input: '10023123',
         input2: '',
       },
       refreshInput: false,
@@ -137,7 +137,6 @@ class InnerForm extends Component {
     let totalSize = readOnly.totalSize && readOnly.totalSize
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
-    console.log(inputDateStatus)
 
     var newDate = new Date
     return (
@@ -156,20 +155,22 @@ class InnerForm extends Component {
             keyboardType={'numeric'}
             showStylingState={showStyling}
             paymentDone={this.submit}
-            showDate={true}
-            dateStatus={inputDateStatus}
+            showDate={false}
+            dateStatus={{name:'', status: false}}
+            editable={false}
           />
 
           <InputField
             label={'INPUT MAIN 2'}
             placeholder={'Enter Input'}
             name={'input2'}
-            date={moment(newDate).format('MMM DD, hh:mm a')}
-            onChange={this.changeValue}
-            showStyling={this.showAndHideStyling}
-            priceFormatVal={dummyData.input2}
             value={dummyData.input2}
             keyboardType={'numeric'}
+            onChange={this.changeValue}
+            
+            date={moment(newDate).format('MMM DD, hh:mm a')}
+            priceFormatVal={dummyData.input2}
+            showStyling={this.showAndHideStyling}
             showStylingState={showStyling}
             paymentDone={this.submit}
             showDate={true}

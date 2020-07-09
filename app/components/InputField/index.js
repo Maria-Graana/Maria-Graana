@@ -18,7 +18,8 @@ class InputField extends React.Component {
   componentDidMount() { }
 
   changeFormatToComma = (value) => {
-    let val = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    let val = ''
+    val = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     return val;
   }
 
@@ -43,8 +44,9 @@ class InputField extends React.Component {
       paymentDone,
       showDate,
       dateStatus,
+      editable,
     } = this.props
-    
+
     // val = refreshInput === true ? val = '' : val = value
     var checkForStyling = dateStatus.status === true ? true : false
     return (
@@ -56,19 +58,19 @@ class InputField extends React.Component {
         <View style={[styles.mainInputWrap]}>
 
           {/* Main Input */}
-          <View style={[styles.mainInputView, checkForStyling === true && styles.inputFullWidth]}>
+          <View style={[styles.mainInputView, checkForStyling === true && showDate === false && styles.inputFullWidth]}>
             <TextInput
               style={[styles.inputTextStyle, showStylingState === name && styles.showInputBorder]}
               placeholder={placeholder}
               name={name}
-              onChangeText={(val) => { onChange(val, name) }}
-              onTouchStart={() => { showStyling(name, false) }}
               keyboardType={keyboardType}
               value={this.changeFormatToComma(value)}
+              onChangeText={(val) => { onChange(val, name) }}
+              onTouchStart={() => { editable != false && showStyling(name, false) }}
               placeholderTextColor="#96999E"
               placeholderFontWeight="400"
+              editable={editable}
             />
-            {console.log(checkForStyling)}
             <Text style={[showStylingState === name ? styles.BottomFormat : styles.priceFormat]}>
               {formatPrice(this.changeFormatToNormal(priceFormatVal))}
             </Text>

@@ -6,24 +6,35 @@ import Loader from '../../components/loader';
 import Search from '../../components/Search';
 import axios from 'axios';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { getAreas } from '../../actions/areas';
 
-class CityPickerScreen extends Component {
+class SingleSelectionPicker extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             cities: [],
+            areas:[],
             loading: true,
             searchText: '',
         }
     }
 
     componentDidMount() {
-        this.getCities();
+        const {route, dispatch} = this.props;
+        const {mode} = route.params;
+        if(mode === 'city'){
+            this.getCities();
+        }
+        else{
+         // handle area here
+         const {cityId} = route.params;
+         getAreas(1);
+        }
     }
 
     getCities = () => {
-        const { selectedCity } = this.props.route.params;
+        const { selectedCity} = this.props.route.params;
         axios.get(`/api/cities`)
             .then((res) => {
                 let citiesArray = [];
@@ -33,13 +44,32 @@ class CityPickerScreen extends Component {
                     loading: false,
                 }, () => {
                     if (selectedCity) {
-                        this.checkIsSelected(selectedCity);
+                        this.checkIsCitySelected(selectedCity);
                     }
                 })
             })
     }
 
-    checkIsSelected = (selectedCity) => {
+    getAreas = (cityId) => {
+        axios.get(`/api/areas?city_id=${cityId}&all=true`)
+        .then((res) => {
+            let areas = [];
+            res && res.data.items.map((item, index) => { return areas.push({ value: item.id, name: item.name }) })
+            this.setState({
+                areas,
+                loading: false,
+            }, () => {
+                // handle Selection of areas here
+                // if (selectedArea) {
+                //     this.checkIsAreaSelected(selectedArea);
+                // }
+            })
+        }).catch(error => {
+            console.log(error)
+        })
+    }
+
+    checkIsCitySelected = (selectedCity) => {
         const copyCities = [...this.state.cities];
         const allCities = copyCities.map(city => (
             { ...city, isSelected: city.value === selectedCity.value }
@@ -47,11 +77,16 @@ class CityPickerScreen extends Component {
         this.setState({ cities: allCities });
     }
 
-
-    onItemSelected = (item) => {
+    onCitySelected = (item) => {
         const { navigation, route } = this.props;
         const { screenName } = route.params;
         navigation.navigate(screenName, { selectedCity: item })
+    }
+
+    onAreaSelected = (item) => {
+        const { navigation, route } = this.props;
+        const { screenName } = route.params;
+        navigation.navigate(screenName, { selectedArea: item })
     }
 
     renderCityItem = ({ item }) => {
@@ -59,7 +94,7 @@ class CityPickerScreen extends Component {
             <TouchableOpacity
                 style={{ backgroundColor: item.isSelected ? AppStyles.colors.backgroundColor : AppStyles.whiteColor }}
                 activeOpacity={.7}
-                onPress={() => this.onItemSelected(item)}>
+                onPress={() => this.onCitySelected(item)}>
                 <View style={styles.rowContainer}>
                     <Text style={styles.rowText}>{item.name}</Text>
                 </View>
@@ -67,11 +102,25 @@ class CityPickerScreen extends Component {
         );
     }
 
+    renderAreaItem = ({item}) => {
+        return (
+            <TouchableOpacity
+                style={{ backgroundColor: item.isSelected ? AppStyles.colors.backgroundColor : AppStyles.whiteColor }}
+                activeOpacity={.7}
+                onPress={() => this.onAreaSelected(item)}>
+                <View style={styles.rowContainer}>
+                    <Text style={styles.rowText}>{item.name}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+ 
     render() {
-        const { searchText, cities, loading } = this.state;
+        const { searchText, cities,  areas, loading } = this.state;
+        const {mode} = this.props.route.params;
         let data = [];
         if (searchText !== '' && data.length === 0) {
-            data = fuzzy.filter(searchText, cities, { extract: (e) => e.name })
+            data = fuzzy.filter(searchText, mode === 'city' ? cities : areas, { extract: (e) => e.name })
             data = data.map((item) => item.original)
         }
         else {
@@ -80,7 +129,7 @@ class CityPickerScreen extends Component {
 
         return (
             <View style={[AppStyles.container, { paddingHorizontal: 0, backgroundColor: AppStyles.bgcWhite.backgroundColor }]}>
-                <Search placeholder='Search city...' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
+                <Search placeholder={mode === 'city' ? 'Search City...' : 'Search Area...'} searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
                 {
                     !loading && data.length > 0 ?
                         <FlatList
@@ -88,7 +137,7 @@ class CityPickerScreen extends Component {
                                 data
                             }
                             showsVerticalScrollIndicator={false}
-                            renderItem={this.renderCityItem}
+                            renderItem={ mode === 'city' ? this.renderCityItem : this.renderAreaItem}
                             keyExtractor={(item, index) => String(index)}
                             scrollIndicatorInsets={{ top: 0 }}
                         />
@@ -101,7 +150,7 @@ class CityPickerScreen extends Component {
     }
 }
 
-export default CityPickerScreen;
+export default SingleSelectionPicker;
 
 const styles = StyleSheet.create({
     rowContainer: {

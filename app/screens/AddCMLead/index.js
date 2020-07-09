@@ -115,7 +115,7 @@ class AddCMLead extends Component {
     handleCityClick = () => {
         const { navigation } = this.props;
         const { selectedCity } = this.state;
-        navigation.navigate('CityPickerScreen', { screenName: 'AddCMLead', selectedCity });
+        navigation.navigate('SingleSelectionPicker', { screenName: 'AddCMLead', mode:'city', selectedCity });
     }
 
     render() {

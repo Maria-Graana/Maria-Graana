@@ -422,7 +422,7 @@ class LeadViewing extends React.Component {
 						<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					</View>
 					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-						<View style={{ paddingBottom: 80 }}>
+						<View style={{ paddingBottom: 100 }}>
 							<AddViewing
 								update={updateViewing}
 								onPress={this.submitViewing}

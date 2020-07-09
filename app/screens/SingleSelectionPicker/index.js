@@ -6,7 +6,6 @@ import Loader from '../../components/loader';
 import Search from '../../components/Search';
 import axios from 'axios';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { getAreas } from '../../actions/areas';
 
 class SingleSelectionPicker extends Component {
 
@@ -21,15 +20,16 @@ class SingleSelectionPicker extends Component {
     }
 
     componentDidMount() {
-        const {route, dispatch} = this.props;
-        const {mode} = route.params;
+        const {route, dispatch, navigation} = this.props;
+        const {mode, cityId} = route.params;
         if(mode === 'city'){
+            navigation.setOptions({title:'Select City'});
             this.getCities();
         }
         else{
          // handle area here
-         const {cityId} = route.params;
-         getAreas(1);
+         navigation.setOptions({title:'Select Area'});
+         this.getAreas(cityId);
         }
     }
 
@@ -51,6 +51,7 @@ class SingleSelectionPicker extends Component {
     }
 
     getAreas = (cityId) => {
+        const { selectedArea} = this.props.route.params;
         axios.get(`/api/areas?city_id=${cityId}&all=true`)
         .then((res) => {
             let areas = [];
@@ -59,10 +60,10 @@ class SingleSelectionPicker extends Component {
                 areas,
                 loading: false,
             }, () => {
-                // handle Selection of areas here
-                // if (selectedArea) {
-                //     this.checkIsAreaSelected(selectedArea);
-                // }
+               // handle Selection of areas here
+                if (selectedArea) {
+                    this.checkIsAreaSelected(selectedArea);
+                }
             })
         }).catch(error => {
             console.log(error)
@@ -75,6 +76,14 @@ class SingleSelectionPicker extends Component {
             { ...city, isSelected: city.value === selectedCity.value }
         ))
         this.setState({ cities: allCities });
+    }
+
+    checkIsAreaSelected = (selectedArea) => {
+        const copyAreas = [...this.state.areas];
+        const allAreas = copyAreas.map(area => (
+            { ...area, isSelected: area.value === selectedArea.value }
+        ))
+        this.setState({ areas: allAreas });
     }
 
     onCitySelected = (item) => {
@@ -118,13 +127,14 @@ class SingleSelectionPicker extends Component {
     render() {
         const { searchText, cities,  areas, loading } = this.state;
         const {mode} = this.props.route.params;
+
         let data = [];
         if (searchText !== '' && data.length === 0) {
             data = fuzzy.filter(searchText, mode === 'city' ? cities : areas, { extract: (e) => e.name })
             data = data.map((item) => item.original)
         }
         else {
-            data = cities;
+            data =  mode === 'city' ? cities : areas;
         }
 
         return (

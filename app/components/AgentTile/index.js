@@ -26,7 +26,7 @@ class InventoryTile extends React.Component {
 	}
 
 	displayName = (organization, data) => {
-       if(organization === 'graana'){
+       if(organization !== 'arms'){
             if(data.user){
                 return data.user.first_name + ' ' + data.user.last_name;
 			}
@@ -49,7 +49,7 @@ class InventoryTile extends React.Component {
 		const { menuShow } = this.state
 		let phoneNumber = null
 		let agentName = data ? this.displayName(organization, data) : '';
-		if (organization === 'graana') phoneNumber = data.user ? data.user.phone : null
+		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
 		else phoneNumber = data.user ? data.user.phoneNumber : null
 		let show = isMenuVisible
 		if (isMenuVisible) {

@@ -337,7 +337,7 @@ class LeadPropsure extends React.Component {
                         selectedFile={file}
                         checkValidation={checkValidation}
                     />
-                    <View style={{ flex: 1 }}>
+                    <View style={{ paddingBottom: 100 }}>
                         {
                             matchData.length ?
                                 <FlatList

@@ -329,7 +329,7 @@ class LeadOffer extends React.Component {
 				<View style={{ flex: 1 }}>
 					<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-						<View style={{ flex: 1 }}>
+						<View style={{  paddingBottom: 100  }}>
 							{
 								matchData.length ?
 									<View>

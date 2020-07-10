@@ -88,7 +88,8 @@ export default styles = StyleSheet.create({
   },
   priceText: {
     fontSize: 16,
-    fontWeight: '600'
+    fontWeight: '600',
+    paddingLeft: 3
   },
   priceColor: {
     color: '#2A7EF0',

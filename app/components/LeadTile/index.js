@@ -58,7 +58,10 @@ class LeadTile extends React.Component {
                     PKR
             	 	</Text>
                   <Text style={[styles.priceText, styles.multiColumn, changeColor]}>
-                    {` ${!data.projectId && data.min_price && helper.checkPrice(data.min_price) + ' - '}`} {!data.projectId && data.price && helper.checkPrice(data.price)}  {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
+                    {` ${!data.projectId && data.min_price ? helper.checkPrice(data.min_price) + ' - ' : ''}`}
+                    {!data.projectId && data.price ? helper.checkPrice(data.price) : ''}
+                    {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}
+                    {data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
                   </Text>
                 </View>
 
@@ -80,7 +83,7 @@ class LeadTile extends React.Component {
                     {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
                   </Text>
                 </View>
-                
+
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, styles.lightColor, AppStyles.mrTen]}>

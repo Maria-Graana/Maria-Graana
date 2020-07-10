@@ -10,6 +10,7 @@ import LocationImg from '../../../assets/img/location.png'
 import ErrorMessage from '../../components/ErrorMessage'
 import RadioComponent from '../../components/RadioButton/index';
 import { formatPrice } from '../../PriceFormate'
+import TouchableInput from '../../components/TouchableInput';
 import { connect } from 'react-redux';
 import { YellowBox } from 'react-native';
 const { width } = Dimensions.get('window')
@@ -54,11 +55,12 @@ class DetailForm extends Component {
             getCurrentLocation,
             getImages,
             longitude,
-            getClients,
             latitude,
             buttonText,
             images,
-            imageLoading
+            imageLoading,
+            clientName,
+            handleClientClick,
         } = this.props
 
         const { size_unit } = this.props.formData;
@@ -287,14 +289,11 @@ class DetailForm extends Component {
                 </View>
 
                 {/* **************************************** */}
-                <View style={[AppStyles.mainInputWrap]}>
-                    <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={getClients} selectedItem={formData.customer_id} name={'customer_id'} placeholder='Owner Name' />
-                        {
-                            checkValidation === true && formData.customer_id === '' && <ErrorMessage errorMessage={'Required'} />
-                        }
-                    </View>
-                </View>
+                <TouchableInput placeholder="Owner Name"
+                    onPress={() => handleClientClick()}
+                    value={clientName}
+                    showError={checkValidation === true && formData.customerId === ''}
+                    errorMessage="Required" />
 
 
                 {/* **************************************** */}

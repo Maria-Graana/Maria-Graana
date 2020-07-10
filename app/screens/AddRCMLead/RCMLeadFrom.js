@@ -25,7 +25,6 @@ class CMLeadFrom extends Component {
       changeStatus,
       formData,
       handleForm,
-      getClients,
       cities,
       propertyType,
       subType,
@@ -34,6 +33,8 @@ class CMLeadFrom extends Component {
       formSubmit,
       checkValidation,
       handleAreaClick,
+      clientName,
+      handleClientClick,
       priceList,
       onSliderValueChange,
     } = this.props
@@ -53,9 +54,10 @@ class CMLeadFrom extends Component {
         {/* *********** Main Container *********** */}
         <View style={[AppStyles.container]}>
           <InnerRCMForm
+            clientName={clientName}
+            handleClientClick={handleClientClick}
             formData={formData}
             handleForm={handleForm}
-            getClients={getClients}
             cities={cities}
             propertyType={propertyType}
             subType={subType}

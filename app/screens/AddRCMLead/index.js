@@ -19,7 +19,8 @@ class AddRCMLead extends Component {
         this.state = {
             checkValidation: false,
             cities: [],
-            getClients: [],
+            clientName: '',
+            selectedClient: null,
             getProject: [],
             formType: 'sale',
             priceList: [],
@@ -43,17 +44,20 @@ class AddRCMLead extends Component {
     componentDidMount() {
         const { user, navigation } = this.props
         navigation.addListener('focus', () => {
+            const { client, name } = this.props.route.params;
+            const { RCMFormData } = this.state;
+            let copyObject = Object.assign({}, RCMFormData);
+            if (client && name) {
+                copyObject.customerId = client.id;
+                this.setState({ RCMFormData: copyObject, clientName: name, selectedClient: client })
+            }
             setTimeout(() => {
                 const { selectedAreasIds } = this.props;
-                const { RCMFormData } = this.state;
-                let copyObject = Object.assign({}, RCMFormData);
                 copyObject.leadAreas = selectedAreasIds;
                 this.setState({ RCMFormData: copyObject })
             }, 1000)
         })
         this.getCities();
-        this.getAllProjects();
-        this.getClients(user.id);
         this.setPriceList()
     }
 
@@ -77,25 +81,6 @@ class AddRCMLead extends Component {
         }
     }
 
-    getClients = (id) => {
-        axios.get(`/api/customer/find?userId=${id}`)
-            .then((res) => {
-                let clientsArray = [];
-                res && res.data.rows.map((item, index) => {
-                    return (
-                        clientsArray.push(
-                            {
-                                value: item.id, name: item.firstName === '' || item.firstName === null ? item.contact1 : item.firstName + ' ' + item.lastName
-                            }
-                        )
-                    )
-                })
-                this.setState({
-                    getClients: clientsArray
-                })
-            })
-    }
-
     getCities = () => {
         axios.get(`/api/cities`)
             .then((res) => {
@@ -106,18 +91,6 @@ class AddRCMLead extends Component {
                 })
             })
     }
-
-    getAllProjects = () => {
-        axios.get(`/api/project/all`)
-            .then((res) => {
-                let projectArray = [];
-                res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name })) })
-                this.setState({
-                    getProject: projectArray
-                })
-            })
-    }
-
 
     handleRCMForm = (value, name) => {
         const { RCMFormData } = this.state
@@ -149,6 +122,12 @@ class AddRCMLead extends Component {
         else {
             alert('Please select city first!')
         }
+    }
+
+    handleClientClick = () => {
+        const { navigation } = this.props;
+        const {selectedClient} = this.state;
+        navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddRCMLead' });
     }
 
     selectSubtype = (type) => {
@@ -211,7 +190,7 @@ class AddRCMLead extends Component {
     render() {
         const {
             cities,
-            getClients,
+            clientName,
             formType,
             RCMFormData,
             selectSubType,
@@ -226,6 +205,8 @@ class AddRCMLead extends Component {
                         <ScrollView>
                             <View>
                                 <RCMLeadFrom
+                                    handleClientClick={this.handleClientClick}
+                                    clientName={clientName}
                                     formSubmit={this.RCMFormSubmit}
                                     checkValidation={checkValidation}
                                     handleForm={this.handleRCMForm}
@@ -235,7 +216,6 @@ class AddRCMLead extends Component {
                                     propertyType={StaticData.type}
                                     formData={RCMFormData}
                                     cities={cities}
-                                    getClients={getClients}
                                     formType={formType}
                                     subType={selectSubType}
                                     handleAreaClick={this.handleAreaClick}

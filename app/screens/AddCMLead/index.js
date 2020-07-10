@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
 import helper from '../../helper';
-import { formatPrice } from '../../PriceFormate'
 
 class AddCMLead extends Component {
     constructor(props) {
@@ -18,7 +17,8 @@ class AddCMLead extends Component {
         this.state = {
             checkValidation: false,
             cities: [],
-            getClients: [],
+            clientName: '',
+            selectedClient: null,
             getProject: [],
             formType: 'sale',
             selectSubType: [],
@@ -35,29 +35,18 @@ class AddCMLead extends Component {
     }
 
     componentDidMount() {
-        const { user } = this.props
+        const {navigation} = this.props;
+        navigation.addListener('focus', () => {
+            const { client, name } = this.props.route.params;
+            const { formData } = this.state;
+            let copyObject = Object.assign({}, formData);
+            if (client && name) {
+                copyObject.customerId = client.id;
+                this.setState({ formData: copyObject, clientName: name, selectedClient: client })
+            }
+        })
         this.getCities();
         this.getAllProjects();
-        this.getClients(user.id);
-    }
-
-    getClients = (id) => {
-        axios.get(`/api/customer/find?userId=${id}`)
-            .then((res) => {
-                let clientsArray = [];
-                res && res.data.rows.map((item, index) => {
-                    return (
-                        clientsArray.push(
-                            {
-                                value: item.id, name: item.firstName === '' || item.firstName === null ? item.contact1 : item.firstName + ' ' + item.lastName
-                            }
-                        )
-                    )
-                })
-                this.setState({
-                    getClients: clientsArray
-                })
-            })
     }
 
     getCities = () => {
@@ -142,13 +131,19 @@ class AddCMLead extends Component {
         this.setState({ formData });
     }
 
+    handleClientClick = () => {
+        const { navigation } = this.props;
+        const {selectedClient} = this.state;
+        navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddCMLead' });
+    }
+
     render() {
         const {
             formData,
             cities,
-            getClients,
             getProject,
             checkValidation,
+            clientName
         } = this.state
         const { route } = this.props
         return (
@@ -161,9 +156,10 @@ class AddCMLead extends Component {
                                     formSubmit={this.formSubmit}
                                     checkValidation={checkValidation}
                                     handleForm={this.handleForm}
+                                    clientName={clientName}
+                                    handleClientClick={this.handleClientClick}
                                     formData={formData}
                                     cities={cities}
-                                    getClients={getClients}
                                     getProject={getProject}
                                     onSliderValueChange={(values) => this.onSliderValueChange(values)}
                                 />

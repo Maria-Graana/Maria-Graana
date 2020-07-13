@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
 import helper from '../../helper';
+import _ from 'underscore';
 
 class AddCMLead extends Component {
     constructor(props) {
@@ -35,7 +36,7 @@ class AddCMLead extends Component {
     }
 
     componentDidMount() {
-        const {navigation} = this.props;
+        const { navigation } = this.props;
         navigation.addListener('focus', () => {
             const { client, name } = this.props.route.params;
             const { formData } = this.state;
@@ -82,7 +83,7 @@ class AddCMLead extends Component {
     }
 
     formSubmit = () => {
-        const { formData } = this.state
+        const { formData, getProject } = this.state
         if (!formData.customerId || !formData.projectId) {
             this.setState({
                 checkValidation: true
@@ -93,6 +94,10 @@ class AddCMLead extends Component {
             }
             if (body.maxPrice === '') body.maxPrice = null
             if (body.minPrice === '') body.minPrice = null
+            if (body.projectId && body.projectId !== '') {
+                let project = _.find(getProject, function (item) { return item.value === body.projectId })
+                body.projectName = project.name
+            }
             if (body.maxPrice && body.maxPrice !== '' && body.minPrice && body.minPrice !== '') {
                 if (Number(body.maxPrice) >= Number(body.minPrice)) {
                     axios.post(`/api/leads/project`, body)
@@ -133,7 +138,7 @@ class AddCMLead extends Component {
 
     handleClientClick = () => {
         const { navigation } = this.props;
-        const {selectedClient} = this.state;
+        const { selectedClient } = this.state;
         navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddCMLead' });
     }
 

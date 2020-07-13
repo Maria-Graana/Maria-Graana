@@ -244,6 +244,13 @@ const helper = {
 			type: 'danger'
 		})
 	},
+	leadNotAssignedToast(){
+		Toast.show({
+			text: 'Lead is not assigned to you',
+			duration: 3000,
+			type: 'danger'
+		})
+	},
 	checkPrice(price, showPkr = false){
         if(price===null){
           return '0';

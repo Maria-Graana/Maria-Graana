@@ -27,6 +27,19 @@ class InventoryTile extends React.Component {
 		this.setState({ menuShow: val })
 	}
 
+	displayPhoneNumber = (data) => {
+		if (data.armsuser) {
+			return data.armsuser.phoneNumber;
+		}
+		else if (data.user) {
+			return data.user.phone;
+			r
+		}
+		else {
+			return null;
+		}
+	}
+
 	render() {
 		const { data, isMenuVisible, showCheckBoxes } = this.props
 		const { menuShow } = this.state
@@ -44,8 +57,7 @@ class InventoryTile extends React.Component {
 				if (data.diaries[0].status === 'completed') show = false
 			}
 		}
-		if (data.graana_id) phoneNumber = data.user ? data.user.phone : null
-		else phoneNumber = data.user && data.user.phoneNumber ? data.user.phoneNumber : null
+		phoneNumber = this.displayPhoneNumber(data);
 
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row', marginVertical: 2 }}

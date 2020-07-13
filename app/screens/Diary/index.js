@@ -46,16 +46,19 @@ class Diary extends React.Component {
 
   componentDidMount() {
     const { navigation } = this.props;
+    let { selectedDate } = this.state
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route, user } = this.props;
+      if ('openDate' in route.params) selectedDate = moment(openDate).format(_format)
+      else selectedDate = _today
       if (route.params !== undefined && 'agentId' in route.params) {
-        this.setState({ agentId: route.params.agentId }, () => {
+        this.setState({ agentId: route.params.agentId, selectedDate }, () => {
           this.diaryMain();
           this.listData();
         });
       }
       else {
-        this.setState({ agentId: user.id }, () => {
+        this.setState({ agentId: user.id, selectedDate }, () => {
           this.diaryMain();
           this.listData();
         })
@@ -344,7 +347,7 @@ class Diary extends React.Component {
     let isManager = false;
     const managerId = val.managerId ? val.managerId : null;
     isManager = managerId ? user.id == managerId ? true : false : false;
-    if ((val.taskType !== 'Daily Task' && val.taskType !== 'Weekly Task') && (val.addedBy === 'self' || isManager) ) {
+    if ((val.taskType !== 'Daily Task' && val.taskType !== 'Weekly Task') && (val.addedBy === 'self' || isManager)) {
       ActionSheet.show(
         {
           options: BUTTONS,

@@ -146,6 +146,8 @@ class LeadDetail extends React.Component {
     render() {
         const { type, lead, customerName, showAssignToButton, loading } = this.state
         const { user } = this.props;
+        let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
+
         return (
             !loading ?
                 <ScrollView style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
@@ -158,7 +160,7 @@ class LeadDetail extends React.Component {
                             <Text style={styles.headingText}>Requirement </Text>
                             <Text style={styles.labelText}>{!lead.projectId && lead.size && lead.size !== 0 ? lead.size + ' ' : ''}{!lead.projectId && lead.size_unit && lead.size_unit + ' '}{!lead.projectId && helper.capitalize(lead.subtype)}{lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}</Text>
                             <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
-                            <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{lead.projectId && lead.project && helper.capitalize(lead.project.name)}</Text>
+                            <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{lead.projectId && lead.project && projectName}</Text>
                             <Text style={styles.headingText}>Price Range </Text>
                             <Text style={styles.labelText}>{!lead.projectId && helper.checkPrice(lead.price, true)} {lead.projectId && lead.minPrice && helper.checkPrice(lead.minPrice, true) + ' - '} {lead.projectId && lead.maxPrice && helper.checkPrice(lead.maxPrice, false)}</Text>
                             <View style={styles.underLine} />

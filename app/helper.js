@@ -2,7 +2,7 @@ import { Linking } from 'react-native';
 import { Toast } from 'native-base';
 import moment from 'moment-timezone';
 import StaticData from './StaticData';
-import {formatPrice} from './PriceFormate';
+import { formatPrice } from './PriceFormate';
 import AppStyles from './AppStyles'
 import DiaryImg from '../assets/img/diary-icon-l.png'
 import InventoryImg from '../assets/img/properties-icon-l.png'
@@ -237,24 +237,25 @@ const helper = {
 			}
 		}
 	},
-	leadClosedToast(){
+	leadClosedToast() {
 		Toast.show({
 			text: 'Lead is already closed',
 			duration: 3000,
 			type: 'danger'
 		})
 	},
-	checkPrice(price, showPkr = false){
-        if(price===null){
-          return '0';
-        }
-        else if(Number(price) === StaticData.Constants.any_value){
-          return 'Any'
-        }
-        else{
-           return (showPkr ? 'PKR ' : '') + formatPrice(price);
-        }
-  }
+	checkPrice(price, showPkr = false) {
+		console.log('price: ', price)
+		if (price === null) {
+			return '0';
+		}
+		else if (Number(price) === StaticData.Constants.any_value) {
+			return 'Any'
+		}
+		else {
+			return (showPkr ? 'PKR ' : '') + formatPrice(price || 0);
+		}
+	}
 }
 
 

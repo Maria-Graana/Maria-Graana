@@ -145,7 +145,8 @@ class LeadDetail extends React.Component {
 
     render() {
         const { type, lead, customerName, showAssignToButton, loading } = this.state
-        const { user } = this.props;
+        const { user, route } = this.props;
+        const { purposeTab } = route.params
         let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
 
         return (
@@ -165,7 +166,7 @@ class LeadDetail extends React.Component {
                                 {lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}
                             </Text>
                             <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
-                            <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{lead.projectId && lead.project && projectName}</Text>
+                            <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{purposeTab === 'invest' && projectName}</Text>
                             <Text style={styles.headingText}>Price Range </Text>
                             <Text style={styles.labelText}>
                                 {!lead.projectId ? helper.checkPrice(lead.price, true) : ''} {lead.projectId && lead.minPrice ? helper.checkPrice(lead.minPrice, true) + ' - ' : ''} {lead.projectId && lead.maxPrice ? helper.checkPrice(lead.maxPrice, false) : ''}

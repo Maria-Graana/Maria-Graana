@@ -156,7 +156,7 @@ class InnerForm extends Component {
             showStylingState={showStyling}
             paymentDone={this.submit}
             showDate={false}
-            dateStatus={{name:'', status: false}}
+            dateStatus={false}
             editable={false}
           />
 

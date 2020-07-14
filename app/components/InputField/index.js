@@ -28,6 +28,18 @@ class InputField extends React.Component {
     return val;
   }
 
+  currencyConvert = (x) => {
+
+    x = x.toString();
+    var lastThree = x.substring(x.length - 3);
+    var otherNumbers = x.substring(0, x.length - 3);
+    if (otherNumbers != '')
+      lastThree = ',' + lastThree;
+    var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+
+    return res;
+  }
+
   render() {
 
     const {
@@ -46,9 +58,8 @@ class InputField extends React.Component {
       dateStatus,
       editable,
     } = this.props
-
-    // val = refreshInput === true ? val = '' : val = value
-    var checkForStyling = dateStatus.status === true ? true : false
+    var val = this.currencyConvert(value)
+    var checkForStyling = dateStatus && dateStatus != false && dateStatus.status === true ? true : false
     return (
       <View style={[styles.mainInputParent, showStylingState === name && styles.paddingTopBottom]}>
         {/* label */}
@@ -95,7 +106,7 @@ class InputField extends React.Component {
             </View>
           }
           {
-            dateStatus && checkForStyling === true &&
+            checkForStyling === true &&
             <View style={[styles.dateView]}>
               <Text style={styles.dateStyle}>{date}</Text>
             </View>

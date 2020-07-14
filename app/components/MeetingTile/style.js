@@ -61,7 +61,7 @@ export default styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     marginRight: 30,
-    fontSize: 12,
+    fontSize: 11,
     textTransform: 'capitalize'
   },
   dropDownMain: {

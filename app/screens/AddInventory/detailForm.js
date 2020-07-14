@@ -47,8 +47,10 @@ class DetailForm extends Component {
             propertyType,
             selectSubType,
             price,
-            cities,
-            areas,
+            selectedCity,
+            handleCityClick,
+            selectedArea,
+            handleAreaClick,
             sizeUnit,
             selectedGrade,
             purpose,
@@ -90,25 +92,19 @@ class DetailForm extends Component {
 
                 {/* **************************************** */}
 
-                <View style={[AppStyles.mainInputWrap]}>
-                    <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={cities} selectedItem={formData.city_id} name={'city_id'} placeholder='Select City' />
-                        {
-                            checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
-                        }
-                    </View>
-                </View>
-
+                <TouchableInput placeholder="Select City"
+                    onPress={() => handleCityClick()}
+                    value={selectedCity ? selectedCity.name : ''}
+                    showError={checkValidation === true && formData.city_id === ''}
+                    errorMessage="Required" />
                 {/* **************************************** */}
 
-                <View style={[AppStyles.mainInputWrap]}>
-                    <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} name={'area_id'} data={areas} selectedItem={formData.area_id} placeholder='Select Area' />
-                        {
-                            checkValidation === true && formData.area_id === '' && <ErrorMessage errorMessage={'Required'} />
-                        }
-                    </View>
-                </View>
+
+                <TouchableInput placeholder="Select Area"
+                    onPress={() => handleAreaClick()}
+                    value={selectedArea ? selectedArea.name : ''}
+                    showError={checkValidation === true && formData.area_id === ''}
+                    errorMessage="Required" />
 
                 {/* **************************************** */}
 

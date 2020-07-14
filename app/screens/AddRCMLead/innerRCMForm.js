@@ -26,7 +26,8 @@ class InnerRCMForm extends Component {
       checkValidation,
       handleForm,
       formData,
-      cities,
+      handleCityClick,
+      selectedCity,
       propertyType,
       subType,
       sizeUnit,
@@ -63,15 +64,11 @@ class InnerRCMForm extends Component {
           showError={checkValidation === true && formData.customerId === ''}
           errorMessage="Required" />
 
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={cities} name={'city_id'} placeholder='Select City' />
-            {
-              checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
-            }
-          </View>
-        </View>
+        <TouchableInput placeholder="Select City"
+          onPress={() => handleCityClick()}
+          value={selectedCity ? selectedCity.name : ''}
+          showError={checkValidation === true && formData.city_id === ''}
+          errorMessage="Required" />
 
         <TouchableInput onPress={() => handleAreaClick()}
           value={leadAreasLength > 0 ? leadAreasLength + ' Areas Selected' : ''}

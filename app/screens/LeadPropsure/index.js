@@ -116,9 +116,12 @@ class LeadPropsure extends React.Component {
     }
 
     showPackageModal = (propertyId) => {
-        const { lead } = this.props
+        const { lead, user } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
+        }
+        else if(user.id !== lead.assigned_to_armsuser_id){
+            helper.leadNotAssignedToast();
         }
         else {
             this.setState({ isVisible: true, selectedPropertyId: propertyId, checkPackageValidation: false });
@@ -158,9 +161,12 @@ class LeadPropsure extends React.Component {
     }
 
     showDocumentModal = (propsureId) => {
-        const { lead } = this.props
+        const { lead,user } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
+        }
+        else if(user.id !== lead.assigned_to_armsuser_id){
+            helper.leadNotAssignedToast();
         }
         else {
             this.setState({ documentModalVisible: true, selectedPropsureId: propsureId, checkValidation: false });
@@ -257,13 +263,20 @@ class LeadPropsure extends React.Component {
     }
 
     closeLead = () => {
+        const {user, lead} = this.props;
         var commissionPayment = this.props.lead.commissionPayment
-        if (commissionPayment !== null) {
-            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+        if(user.id === lead.assigned_to_armsuser_id){
+            if (commissionPayment !== null) {
+                this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+            }
+            else {
+                this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+            }
         }
-        else {
-            this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+        else{
+            helper.leadNotAssignedToast()
         }
+        
     }
 
     onHandleCloseLead = () => {

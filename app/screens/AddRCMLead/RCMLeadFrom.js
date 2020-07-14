@@ -10,15 +10,10 @@ import _ from 'underscore';
 class CMLeadFrom extends Component {
   constructor(props) {
     super(props)
-
     this.state = {
       formType: 'buy'
     }
   }
-
-  componentDidMount() { }
-
-
 
   render() {
     const {
@@ -26,7 +21,8 @@ class CMLeadFrom extends Component {
       changeStatus,
       formData,
       handleForm,
-      cities,
+      handleCityClick,
+      selectedCity,
       propertyType,
       subType,
       sizeUnit,
@@ -61,7 +57,8 @@ class CMLeadFrom extends Component {
             handleClientClick={handleClientClick}
             formData={formData}
             handleForm={handleForm}
-            cities={cities}
+            selectedCity={selectedCity}
+            handleCityClick={handleCityClick}
             propertyType={propertyType}
             subType={subType}
             sizeUnit={sizeUnit}

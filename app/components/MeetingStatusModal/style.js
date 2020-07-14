@@ -46,7 +46,7 @@ export default styles = StyleSheet.create({
     paddingTop: 0,
     paddingLeft: 10,
     marginBottom: 7,
-    marginTop: 7,
+    marginTop: 20,
   },
   blueColor: {
     color: '#333',

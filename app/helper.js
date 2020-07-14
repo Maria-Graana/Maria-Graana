@@ -244,18 +244,24 @@ const helper = {
 			type: 'danger'
 		})
 	},
-	checkPrice(price, showPkr = false) {
-		console.log('price: ', price)
-		if (price === null) {
-			return '0';
-		}
-		else if (Number(price) === StaticData.Constants.any_value) {
-			return 'Any'
-		}
-		else {
-			return (showPkr ? 'PKR ' : '') + formatPrice(price || 0);
-		}
-	}
+	leadNotAssignedToast(){
+		Toast.show({
+			text: 'Lead is not assigned to you',
+			duration: 3000,
+			type: 'danger'
+		})
+	},
+	checkPrice(price, showPkr = false){
+        if(price===null){
+          return '0';
+        }
+        else if(Number(price) === StaticData.Constants.any_value){
+          return 'Any'
+        }
+        else{
+           return (showPkr ? 'PKR ' : '') + formatPrice(price);
+        }
+  }
 }
 
 

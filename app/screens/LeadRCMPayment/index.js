@@ -186,12 +186,17 @@ class LeadRCMPayment extends React.Component {
 
     showLeadPaymentModal = () => {
         const { lead } = this.state;
+        const {user} = this.props;
         var commissionPayment = lead.commissionPayment
-        if (commissionPayment !== null) {
-            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
-        }
-        else {
-            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+        if (user.id === lead.assigned_to_armsuser_id) {
+            if (commissionPayment !== null) {
+                this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+            }
+            else {
+                this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+            }
+        } else {
+            helper.leadNotAssignedToast()
         }
     }
 
@@ -227,8 +232,12 @@ class LeadRCMPayment extends React.Component {
 
     showConfirmationDialog = (item) => {
         const { lead } = this.state;
+        const {user} = this.props;
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast()
+        }
+        else if(user.id !== lead.assigned_to_armsuser_id){
+            helper.leadNotAssignedToast();
         }
         else {
             Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [

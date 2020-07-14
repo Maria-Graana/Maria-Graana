@@ -25,32 +25,36 @@ class InventoryTile extends React.Component {
 		this.setState({ menuShow: val })
 	}
 
-	displayName = (organization, data) => {
-       if(organization !== 'arms'){
-            if(data.user){
-                return data.user.first_name + ' ' + data.user.last_name;
-			}
-			else{
-                 return '- - -';
-			}
-	   }
-	   else{
-          if(data.user){
-			return data.user.firstName + ' ' + data.user.lastName;
-		  }
-		  else{
+	displayName = (data) => {
+		if (data.armsuser) {
+			return data.armsuser.firstName + ' ' + data.armsuser.lastName;
+		}
+		else if (data.user) {
+			return data.user.first_name + ' ' + data.user.last_name;
+			r
+		}
+		else {
 			return '- - -';
-		  }
-	   }
+		}
+	}
+
+	displayPhoneNumber = (data) => {
+		if (data.armsuser) {
+			return data.armsuser.phoneNumber;
+		}
+		else if (data.user) {
+			return data.user.phone;
+			r
+		}
+		else {
+			return null;
+		}
 	}
 
 	render() {
-		const { data, isMenuVisible, showCheckBoxes, organization } = this.props
+		const { data, isMenuVisible, showCheckBoxes } = this.props
 		const { menuShow } = this.state
-		let phoneNumber = null
-		let agentName = data ? this.displayName(organization, data) : '';
-		if (organization !== 'arms') phoneNumber = data.user ? data.user.phone : null
-		else phoneNumber = data.user ? data.user.phoneNumber : null
+		let agentName = data ? this.displayName(data) : '';
 		let show = isMenuVisible
 		if (isMenuVisible) {
 			if (data.diaries && data.diaries.length) {
@@ -122,11 +126,11 @@ class InventoryTile extends React.Component {
 						<View style={{ marginTop: 10, height: 125, justifyContent: 'space-between' }}>
 							<View>
 								<Text style={styles.agentText}> Agent Name </Text>
-						<Text numberOfLines={1} style={styles.labelText}>{agentName}</Text>
+								<Text numberOfLines={1} style={styles.labelText}>{agentName}</Text>
 							</View>
 							<View style={{ flexDirection: 'row-reverse' }}>
 								{/* <View style={{ flex: 1 }}></View> */}
-								<FontAwesome onPress={() => { helper.callNumber(`tel:${phoneNumber}`) }} style={{ paddingTop: 40, paddingRight: 0 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+								<FontAwesome onPress={() => { helper.callNumber(`tel:${this.displayPhoneNumber(data)}`) }} style={{ paddingTop: 40, paddingRight: 0 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 							</View>
 						</View>
 					</View>

@@ -33,7 +33,6 @@ class LeadMatch extends React.Component {
             checkAllBoolean: false,
             showFilter: false,
             active: false,
-            user: null,
             matchesBol: true,
             showCheckBoxes: false,
             armsBol: false,
@@ -377,10 +376,13 @@ class LeadMatch extends React.Component {
 
     displayChecks = () => {
         const { showCheckBoxes } = this.state
-        const { lead } = this.props
+        const { lead, user } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
+        else if(user.id !== lead.assigned_to_armsuser_id){
+            helper.leadNotAssignedToast()
+         }
         else {
             if (showCheckBoxes) {
                 this.unSelectAll()
@@ -397,9 +399,12 @@ class LeadMatch extends React.Component {
 
     addProperty = (property) => {
         const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-        const { lead } = this.props
+        const { lead, user } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
+        }
+        else if(user.id !== lead.assigned_to_armsuser_id){
+           helper.leadNotAssignedToast()
         }
         else {
             if (showCheckBoxes) {
@@ -481,13 +486,20 @@ class LeadMatch extends React.Component {
     }
 
     closeLead = () => {
+        const {user, lead} = this.props;
         var commissionPayment = this.props.lead.commissionPayment
-        if (commissionPayment !== null) {
-            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+        if(user.id === lead.assigned_to_armsuser_id){
+            if (commissionPayment !== null) {
+                this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+            }
+            else {
+                this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+            }
         }
-        else {
-            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+        else{
+            helper.leadNotAssignedToast()
         }
+        
     }
 
     onHandleCloseLead = () => {
@@ -556,8 +568,8 @@ class LeadMatch extends React.Component {
     _onStateChange = ({ open }) => this.setState({ open });
 
     render() {
-        const { lead } = this.props
-        const { subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, user, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { lead, user } = this.props
+        const { subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>

@@ -17,19 +17,7 @@ class InputField extends React.Component {
 
   componentDidMount() { }
 
-  changeFormatToComma = (value) => {
-    let val = ''
-    val = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    return val;
-  }
-
-  changeFormatToNormal = (value) => {
-    let val = value.replace(/\D/g, "").replace(/\B(?=(\d{})+(?!\d))/g, ",")
-    return val;
-  }
-
   currencyConvert = (x) => {
-
     x = x.toString();
     var lastThree = x.substring(x.length - 3);
     var otherNumbers = x.substring(0, x.length - 3);
@@ -58,7 +46,6 @@ class InputField extends React.Component {
       editable,
       editPriceFormat,
     } = this.props
-    console.log('name====',showStylingState,'fff', name)
     var val = editPriceFormat != false && editPriceFormat.name == name && editPriceFormat.status == true ? this.currencyConvert(value) : value
     var checkForStyling = dateStatus && dateStatus != false && dateStatus.status === true ? true : false
     return (
@@ -84,7 +71,7 @@ class InputField extends React.Component {
               editable={editable}
             />
             <Text style={[showStylingState === name ? styles.BottomFormat : styles.priceFormat]}>
-              {formatPrice(this.changeFormatToNormal(priceFormatVal))}
+              {formatPrice(priceFormatVal != false ? priceFormatVal : '')}
             </Text>
           </View>
 

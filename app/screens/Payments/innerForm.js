@@ -101,7 +101,6 @@ class InnerForm extends Component {
       inputDateStatus2['status'] = true
     }
 
-    console.log(body)
     this.setState({
       showStyling: '',
       showDate: true,
@@ -115,7 +114,7 @@ class InnerForm extends Component {
   }
 
   render() {
-    const { checkValidation,
+    const { 
       handleForm,
       getProject,
       getFloor,
@@ -133,15 +132,11 @@ class InnerForm extends Component {
       tokenDate,
       arrowCheck,
       paymentOptions,
-      navigateTo,
       handlePayments,
       paymentFiledsArray,
       addFullpaymentFields,
       closedLeadEdit,
       closedLead,
-      goToAttachments,
-      goToComments,
-      goToDiaryForm,
     } = this.props
     const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2, editPriceFormat } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
@@ -155,7 +150,7 @@ class InnerForm extends Component {
       <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
         <View style={[AppStyles.formMain]}>
 
-          <InputField
+          {/* <InputField
             label={'DOWN PAYMENT'}
             placeholder={'Enter Amount'}
             name={'input'}
@@ -188,7 +183,7 @@ class InnerForm extends Component {
             paymentDone={this.submit}
             showDate={true}
             dateStatus={inputDateStatus2}
-          />
+          /> */}
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
@@ -212,28 +207,64 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          < View style={[AppStyles.mainBlackWrap]}>
+          <InputField
+            label={'TOTAL SIZE'}
+            placeholder={'Total Size'}
+            name={'totalSize'}
+            priceFormatVal={false}
+            value={totalSize}
+            keyboardType={'numeric'}
+            showDate={false}
+            dateStatus={false}
+            editable={false}
+            editPriceFormat={{status: false, name:'totalSize'}}
+          />
+          {/* < View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL SIZE</Text>
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} placeholder={'Total Size'} value={totalSize} editable={false} />
               </View>
             </View>
-          </View>
+          </View> */}
 
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
+          <InputField
+            label={'RATE'}
+            placeholder={'Rate'}
+            name={'totalRate'}
+            priceFormatVal={false}
+            value={rate != null ? rate : ''}
+            keyboardType={'numeric'}
+            showDate={false}
+            dateStatus={false}
+            editable={false}
+            editPriceFormat={{status: true, name:'totalRate'}}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>RATE</Text>
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} placeholder={'Rate'} value={formatPrice(rate)} editable={false} />
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
+          <InputField
+            label={'TOTAL PRICE'}
+            placeholder={'Total Price'}
+            name={'totalPrice'}
+            priceFormatVal={totalPrice != null ? totalPrice : ''}
+            value={totalPrice != null ? totalPrice : ''}
+            keyboardType={'numeric'}
+            showDate={false}
+            dateStatus={false}
+            editable={false}
+            editPriceFormat={{status: true, name:'totalPrice'}}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL PRICE</Text>
               <View style={[AppStyles.blackInput]}>
@@ -241,7 +272,7 @@ class InnerForm extends Component {
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalPrice != null ? totalPrice : '')}</Text>
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
           <View style={[AppStyles.mainBlackWrap]}>

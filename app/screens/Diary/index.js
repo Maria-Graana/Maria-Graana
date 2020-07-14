@@ -49,7 +49,10 @@ class Diary extends React.Component {
     let { selectedDate } = this.state
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route, user } = this.props;
-      if ('openDate' in route.params) selectedDate = moment(openDate).format(_format)
+      if ('openDate' in route.params) {
+        const { openDate } = route.params
+        selectedDate = moment(openDate).format(_format)
+      }
       else selectedDate = _today
       if (route.params !== undefined && 'agentId' in route.params) {
         this.setState({ agentId: route.params.agentId, selectedDate }, () => {

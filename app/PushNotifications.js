@@ -89,11 +89,11 @@ class PushNotifications extends React.Component {
         const { navigation } = this.props
         let data = notification.data
         if (notification.origin === 'selected') {
-            if (data.type === 'local') navigation.navigate('Diary', { openDate: data.date })
+            if (data.type === 'local') navigation.navigate('Diary', { openDate: data.date, screen: 'Diary' })
             if (data.type === 'investLead') navigation.navigate('Leads', { screen: 'Invest' })
             if (data.type === 'buyLead') navigation.navigate('Leads', { screen: 'Buy' })
             if (data.type === 'rentLead') navigation.navigate('Leads', { screen: 'Rent' })
-            if (data.type === 'diary') navigation.navigate('Diary', { openDate: data.date })
+            if (data.type === 'diary') navigation.navigate('Diary', { openDate: data.date, screen: 'Diary' })
         }
     }
 

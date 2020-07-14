@@ -60,7 +60,7 @@ export default styles = StyleSheet.create({
     paddingBottom: 3,
     paddingLeft: 10,
     paddingRight: 10,
-    marginRight: 10,
+    marginRight: 30,
     fontSize: 12,
     textTransform: 'capitalize'
   },

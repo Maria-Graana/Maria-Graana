@@ -31,7 +31,11 @@ class InnerForm extends Component {
       inputDateStatus2: {
         name: '',
         status: false,
-      }
+      },
+      editPriceFormat: {
+        status: false,
+        name: ''
+      },
     }
   }
 
@@ -68,6 +72,10 @@ class InnerForm extends Component {
       showDate: false,
       inputDateStatus,
       inputDateStatus2,
+      editPriceFormat: {
+        status: false,
+        name: ''
+      },
     })
   }
 
@@ -99,6 +107,10 @@ class InnerForm extends Component {
       showDate: true,
       inputDateStatus,
       inputDateStatus2,
+      editPriceFormat: {
+        status: true,
+        name: name
+      },
     })
   }
 
@@ -131,7 +143,7 @@ class InnerForm extends Component {
       goToComments,
       goToDiaryForm,
     } = this.props
-    const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2 } = this.state
+    const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2, editPriceFormat } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
     let totalSize = readOnly.totalSize && readOnly.totalSize
@@ -158,6 +170,7 @@ class InnerForm extends Component {
             showDate={false}
             dateStatus={false}
             editable={false}
+            editPriceFormat={{status: true, name:'input'}}
           />
 
           <InputField
@@ -167,7 +180,7 @@ class InnerForm extends Component {
             value={dummyData.input2}
             keyboardType={'numeric'}
             onChange={this.changeValue}
-            
+            editPriceFormat={editPriceFormat}
             date={moment(newDate).format('MMM DD, hh:mm a')}
             priceFormatVal={dummyData.input2}
             showStyling={this.showAndHideStyling}

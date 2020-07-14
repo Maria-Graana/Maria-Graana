@@ -36,7 +36,6 @@ class InputField extends React.Component {
     if (otherNumbers != '')
       lastThree = ',' + lastThree;
     var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-
     return res;
   }
 
@@ -57,8 +56,10 @@ class InputField extends React.Component {
       showDate,
       dateStatus,
       editable,
+      editPriceFormat,
     } = this.props
-    var val = this.currencyConvert(value)
+    console.log('name====',showStylingState,'fff', name)
+    var val = editPriceFormat != false && editPriceFormat.name == name && editPriceFormat.status == true ? this.currencyConvert(value) : value
     var checkForStyling = dateStatus && dateStatus != false && dateStatus.status === true ? true : false
     return (
       <View style={[styles.mainInputParent, showStylingState === name && styles.paddingTopBottom]}>
@@ -75,7 +76,7 @@ class InputField extends React.Component {
               placeholder={placeholder}
               name={name}
               keyboardType={keyboardType}
-              value={this.changeFormatToComma(value)}
+              value={val}
               onChangeText={(val) => { onChange(val, name) }}
               onTouchStart={() => { editable != false && showStyling(name, false) }}
               placeholderTextColor="#96999E"

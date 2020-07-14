@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
 import helper from '../../helper';
+import _ from 'underscore';
 
 class AddCMLead extends Component {
     constructor(props) {
@@ -75,12 +76,16 @@ class AddCMLead extends Component {
     }
 
     formSubmit = () => {
-        const { formData } = this.state
+        const { formData, getProject } = this.state
         if (!formData.customerId || !formData.projectId) {
             this.setState({
                 checkValidation: true
             })
         } else {
+          if (formData.projectId && formData.projectId !== '') {
+                let project = _.find(getProject, function (item) { return item.value === formData.projectId })
+                formData.projectName = project.name
+            }
             axios.post(`/api/leads/project`, formData)
                 .then((res) => {
                     helper.successToast(res.data)

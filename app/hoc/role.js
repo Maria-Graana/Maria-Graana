@@ -34,6 +34,9 @@ const role = {
     },
     Client: {
         roles: [
+            { role: 'group_management', access: { v: true, a: true, e: true, d: true } },
+            { role: 'group_head', access: { v: true, a: true, e: true, d: true } },
+            { role: 'country_head', access: { v: true, a: true, e: true, d: true } },
             { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
             { role: 'zonal_manager', access: { v: true, a: true, e: true, d: true } },
             { role: 'branch_manager', access: { v: true, a: true, e: true, d: true } },
@@ -61,6 +64,9 @@ const role = {
     },
     Leads: {
         roles: [
+            { role: 'group_management', access: { v: true, a: true, e: true, d: true } },
+            { role: 'group_head', access: { v: true, a: true, e: true, d: true } },
+            { role: 'country_head', access: { v: true, a: true, e: true, d: true } },
             { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
             { role: 'zonal_manager', access: { v: true, a: true, e: true, d: true } },
             { role: 'branch_manager', access: { v: true, a: true, e: true, d: true } },

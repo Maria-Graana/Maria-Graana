@@ -2,7 +2,7 @@ import { Linking } from 'react-native';
 import { Toast } from 'native-base';
 import moment from 'moment-timezone';
 import StaticData from './StaticData';
-import {formatPrice} from './PriceFormate';
+import { formatPrice } from './PriceFormate';
 import AppStyles from './AppStyles'
 import DiaryImg from '../assets/img/diary-icon-l.png'
 import InventoryImg from '../assets/img/properties-icon-l.png'
@@ -237,9 +237,16 @@ const helper = {
 			}
 		}
 	},
-	leadClosedToast(){
+	leadClosedToast() {
 		Toast.show({
 			text: 'Lead is already closed',
+			duration: 3000,
+			type: 'danger'
+		})
+	},
+	leadNotAssignedToast(){
+		Toast.show({
+			text: 'Lead is not assigned to you',
 			duration: 3000,
 			type: 'danger'
 		})

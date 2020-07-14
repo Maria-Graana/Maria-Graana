@@ -5,6 +5,7 @@ import AppStyles from '../../AppStyles';
 import InnerRCMForm from './innerRCMForm'
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
+import _ from 'underscore';
 
 class CMLeadFrom extends Component {
   constructor(props) {
@@ -33,6 +34,7 @@ class CMLeadFrom extends Component {
       handleClientClick,
       priceList,
       onSliderValueChange,
+      organizations
     } = this.props
     const checkBuy = formType === 'sale'
     const checkRent = formType === 'rent'
@@ -50,6 +52,7 @@ class CMLeadFrom extends Component {
         {/* *********** Main Container *********** */}
         <View style={[AppStyles.container]}>
           <InnerRCMForm
+            organizations={_.clone(organizations)}
             clientName={clientName}
             handleClientClick={handleClientClick}
             formData={formData}
@@ -64,7 +67,7 @@ class CMLeadFrom extends Component {
             checkValidation={checkValidation}
             handleAreaClick={handleAreaClick}
             priceList={priceList}
-            onSliderValueChange={(values)=>onSliderValueChange(values)}
+            onSliderValueChange={(values) => onSliderValueChange(values)}
           />
         </View>
       </View>

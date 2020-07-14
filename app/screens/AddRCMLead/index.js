@@ -11,12 +11,13 @@ import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
 import helper from '../../helper';
 import { setSelectedAreas } from "../../actions/areas";
-
+import _ from 'underscore';
 
 class AddRCMLead extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            organizations: [],
             checkValidation: false,
             clientName: '',
             selectedClient: null,
@@ -37,6 +38,7 @@ class AddRCMLead extends Component {
                 size_unit: null,
                 minPrice: null,
                 maxPrice: null,
+                org: ''
             }
         }
     }
@@ -57,6 +59,7 @@ class AddRCMLead extends Component {
             this.onScreenFocused()
         })
         this.setPriceList()
+        this.fetchOrganizations()
     }
 
     componentWillUnmount() {
@@ -82,6 +85,17 @@ class AddRCMLead extends Component {
             copyObject.leadAreas = selectedAreasIds;
             this.setState({ RCMFormData: copyObject })
         }, 1000)
+
+    fetchOrganizations = () => {
+        axios.get('/api/user/organizations?limit=2')
+            .then((res) => {
+                let organizations = []
+                res && res.data.rows.length && res.data.rows.map((item, index) => { return (organizations.push({ value: item.id, name: item.name })) })
+                this.setState({ organizations })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     setPriceList = () => {
@@ -148,40 +162,64 @@ class AddRCMLead extends Component {
     }
 
     RCMFormSubmit = () => {
-        const { formType, RCMFormData } = this.state
-        if (
-            !RCMFormData.customerId ||
-            !RCMFormData.city_id ||
-            !RCMFormData.leadAreas.length > 0 ||
-            !RCMFormData.type ||
-            !RCMFormData.subtype
-        ) {
-            this.setState({
-                checkValidation: true
-            })
-        } else {
-            if (RCMFormData.size === '') RCMFormData.size = null
-            else RCMFormData.size = Number(RCMFormData.size)
-            let payLoad = {
-                purpose: formType,
-                type: RCMFormData.type,
-                subtype: RCMFormData.subtype,
-                bed: RCMFormData.bed,
-                bath: RCMFormData.bath,
-                size: RCMFormData.size,
-                leadAreas: RCMFormData.leadAreas,
-                customerId: RCMFormData.customerId,
-                city_id: RCMFormData.city_id,
-                size_unit: RCMFormData.size_unit,
-                price: RCMFormData.maxPrice,
-                min_price: RCMFormData.minPrice,
-            }
-            axios.post(`/api/leads`, payLoad)
-                .then((res) => {
-                    helper.successToast(res.data)
-                    RootNavigation.navigate('Leads')
+        const { RCMFormData } = this.state
+        const { user } = this.props
+        if (user.subRole === 'group_management') {
+            if (
+                !RCMFormData.customerId ||
+                !RCMFormData.city_id ||
+                !RCMFormData.leadAreas ||
+                !RCMFormData.type ||
+                !RCMFormData.org ||
+                !RCMFormData.subtype
+
+            ) {
+                this.setState({
+                    checkValidation: true
                 })
+            } else this.sendPayload()
         }
+        else {
+            if (
+                !RCMFormData.customerId ||
+                !RCMFormData.city_id ||
+                !RCMFormData.leadAreas ||
+                !RCMFormData.type ||
+                !RCMFormData.subtype
+            ) {
+                this.setState({
+                    checkValidation: true
+                })
+            } else this.sendPayload()
+        }
+    }
+
+    sendPayload = () => {
+        const { formType, RCMFormData } = this.state
+        const { user } = this.props
+
+        if (RCMFormData.size === '') RCMFormData.size = null
+        else RCMFormData.size = Number(RCMFormData.size)
+        let payLoad = {
+            purpose: formType,
+            type: RCMFormData.type,
+            subtype: RCMFormData.subtype,
+            bed: RCMFormData.bed,
+            bath: RCMFormData.bath,
+            size: RCMFormData.size,
+            leadAreas: RCMFormData.leadAreas,
+            customerId: RCMFormData.customerId,
+            city_id: RCMFormData.city_id,
+            size_unit: RCMFormData.size_unit,
+            price: RCMFormData.maxPrice,
+            min_price: RCMFormData.minPrice,
+        }
+        if (user.subRole === 'group_management') payLoad.org = formData.org
+        axios.post(`/api/leads`, payLoad)
+            .then((res) => {
+                helper.successToast(res.data)
+                RootNavigation.navigate('Leads')
+            })
     }
 
     changeStatus = (status) => {
@@ -202,6 +240,8 @@ class AddRCMLead extends Component {
 
     render() {
         const {
+            organizations,
+            cities,
             clientName,
             formType,
             RCMFormData,
@@ -211,6 +251,7 @@ class AddRCMLead extends Component {
             priceList,
         } = this.state
         const { route } = this.props
+
         return (
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
@@ -218,6 +259,7 @@ class AddRCMLead extends Component {
                         <ScrollView>
                             <View>
                                 <RCMLeadFrom
+                                    organizations={_.clone(organizations)}
                                     handleClientClick={this.handleClientClick}
                                     selectedCity={selectedCity}
                                     handleCityClick={this.handleCityClick}

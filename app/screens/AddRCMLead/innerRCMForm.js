@@ -21,6 +21,7 @@ class InnerRCMForm extends Component {
   render() {
 
     const {
+      user,
       formSubmit,
       checkValidation,
       handleForm,
@@ -35,12 +36,28 @@ class InnerRCMForm extends Component {
       handleClientClick,
       priceList,
       onSliderValueChange,
+      organizations
     } = this.props
 
     const { leadAreas } = formData;
     const leadAreasLength = leadAreas ? leadAreas.length : 0;
     return (
       <View>
+
+        {
+          user.subRole === 'group_management' ?
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent onValueChange={handleForm} data={organizations} name={'org'} placeholder='Organizations' />
+                {
+                  checkValidation === true && formData.org === '' && <ErrorMessage errorMessage={'Required'} />
+                }
+              </View>
+            </View>
+            :
+            null
+        }
+
         <TouchableInput placeholder="Client"
           onPress={() => handleClientClick()}
           value={clientName}

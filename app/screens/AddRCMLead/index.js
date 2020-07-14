@@ -85,6 +85,7 @@ class AddRCMLead extends Component {
             copyObject.leadAreas = selectedAreasIds;
             this.setState({ RCMFormData: copyObject })
         }, 1000)
+    }
 
     fetchOrganizations = () => {
         axios.get('/api/user/organizations?limit=2')

@@ -33,18 +33,24 @@ class MeetingTile extends React.Component {
             <View style={[styles.dotsWrap]}>
               {
                 data.taskType === 'called' && data.response != 'pending' &&
-                <Text style={[styles.doneText]}>{data.response !== null ? response : 'Called'}</Text>
+                <View>
+                  <Text style={[styles.doneText]}>{data.response !== null ? response : 'Called'}</Text>
+                </View>
               }
 
               {
                 data.taskType === 'meeting' &&
-                <Text style={[styles.doneText]}>{data.response != null ? response : 'Meeting'}</Text>
+                <View>
+                  <Text style={[styles.doneText]}>{data.response != null ? response : 'Meeting'}</Text>
+                </View>
               }
               {
                 leadClosedCheck &&
-                <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data) }}>
-                  <Image source={dots} style={styles.dotsImg} />
-                </TouchableOpacity>
+                <View>
+                  <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data) }}>
+                    <Image source={dots} style={styles.dotsImg} />
+                  </TouchableOpacity>
+                </View>
               }
             </View>
           </View>

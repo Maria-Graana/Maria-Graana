@@ -54,12 +54,12 @@ class InnerForm extends Component {
       newDummy[name] = ''
     }
 
-    if(name === 'input'){
+    if (name === 'input') {
       inputDateStatus['name'] = ''
       inputDateStatus['status'] = false
     }
 
-    if(name === 'input2'){
+    if (name === 'input2') {
       inputDateStatus2['name'] = ''
       inputDateStatus2['status'] = false
     }
@@ -114,7 +114,7 @@ class InnerForm extends Component {
   }
 
   render() {
-    const { 
+    const {
       handleForm,
       getProject,
       getFloor,
@@ -137,6 +137,9 @@ class InnerForm extends Component {
       addFullpaymentFields,
       closedLeadEdit,
       closedLead,
+      showAndHideStyling,
+      showStylingState,
+      promotionDiscountFormat,
     } = this.props
     const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2, editPriceFormat } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
@@ -217,7 +220,7 @@ class InnerForm extends Component {
             showDate={false}
             dateStatus={false}
             editable={false}
-            editPriceFormat={{status: false, name:'totalSize'}}
+            editPriceFormat={{ status: false, name: 'totalSize' }}
           />
           {/* < View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
@@ -240,7 +243,7 @@ class InnerForm extends Component {
             showDate={false}
             dateStatus={false}
             editable={false}
-            editPriceFormat={{status: true, name:'totalRate'}}
+            editPriceFormat={{ status: true, name: 'totalRate' }}
           />
           {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
@@ -262,7 +265,7 @@ class InnerForm extends Component {
             showDate={false}
             dateStatus={false}
             editable={false}
-            editPriceFormat={{status: true, name:'totalPrice'}}
+            editPriceFormat={{ status: true, name: 'totalPrice' }}
           />
           {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
@@ -275,6 +278,22 @@ class InnerForm extends Component {
           </View> */}
 
           {/* **************************************** */}
+          <InputField
+            label={'PROMOTIONAL OFFER'}
+            placeholder={'Enter Promotional Offer Amount'}
+            name={'discount'}
+            value={formData.discount}
+            priceFormatVal={formData.discount != null ? formData.discount : ''}
+            keyboardType={'numeric'}
+            onChange={handleForm}
+            paymentDone={submitValues}
+            showStyling={showAndHideStyling}
+            showStylingState={showStylingState}
+            editPriceFormat={{status: promotionDiscountFormat, name: 'discount'}}
+            date={''}
+            showDate={false}
+            dateStatus={false}
+          />
           <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.fullWidthPad, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>PROMOTIONAL OFFER </Text>

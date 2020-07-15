@@ -64,7 +64,10 @@ class Payments extends Component {
 			fullPaymentCount: 1,
 			paymentFiledsArray: lead.payment && lead.payment.length > 0 ? lead.payment : [],
 			// checkPaymentTypeValue: ''
-			closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
+			closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost,
+			showStyling: '',
+			showDate: false,
+			promotionDiscountFormat: false,
 		}
 
 	}
@@ -76,9 +79,10 @@ class Payments extends Component {
 	}
 
 	setFields = () => {
-		const { formData, arrowCheck } = this.state
+		const { formData, arrowCheck, promotionDiscountFormat } = this.state
 		const { lead } = this.props
 		let data = lead
+		let newpromotionDiscountFormat = promotionDiscountFormat
 		this.setState({
 			readOnly: {
 				totalSize: '',
@@ -115,6 +119,7 @@ class Payments extends Component {
 				this.discountPayment()
 				name = 'discount'
 				arrowCheck[name] = false
+				newpromotionDiscountFormat = true
 			}
 			if (data.token != null) {
 				this.discountPayment(formData)
@@ -154,7 +159,10 @@ class Payments extends Component {
 				})
 			}
 
-			this.setState({ arrowCheck })
+			this.setState({ 
+				arrowCheck,
+				promotionDiscountFormat: newpromotionDiscountFormat
+			})
 
 		})
 	}
@@ -471,7 +479,11 @@ class Payments extends Component {
 		// console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				this.setState({ arrowCheck: newArrowCheck })
+				this.setState({ 
+					arrowCheck: newArrowCheck,
+					showStyling: '',
+					promotionDiscountFormat: true,
+				 })
 			}).catch((error) => {
 				console.log('Some thing went wrong!!!', error)
 			})
@@ -592,6 +604,26 @@ class Payments extends Component {
 		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
 	}
 
+	showAndHideStyling = (name, clear) => {
+    const { dummyData, inputDateStatus, formData } = this.state
+    const newDummy = dummyData
+
+    if (clear === true) {
+      formData['discount'] = ''
+    }
+
+    if (name === 'input') {
+      inputDateStatus['name'] = ''
+      inputDateStatus['status'] = false
+    }
+
+    this.setState({
+      showStyling: clear === false ? name : '',
+      showDate: false,
+      promotionDiscountFormat: false,
+    })
+  }
+
 	render() {
 		const {
 			getProject,
@@ -618,6 +650,8 @@ class Payments extends Component {
 			modalVisible,
 			checkPaymentTypeValue,
 			closedLeadEdit,
+			showStyling,
+			promotionDiscountFormat,
 		} = this.state
 		return (
 			<View>
@@ -665,6 +699,10 @@ class Payments extends Component {
 							goToAttachments={this.goToAttachments}
 							goToComments={this.goToComments}
 							navigateTo={this.navigateTo}
+							//Component Props
+							showAndHideStyling={this.showAndHideStyling}
+							showStylingState={showStyling}
+							promotionDiscountFormat={promotionDiscountFormat}
 						/>
 					</View>
 				</ScrollView>

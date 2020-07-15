@@ -35,7 +35,7 @@ class Payments extends Component {
 			getFloors: [],
 			paymentDate: '',
 			tokenDate: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
-			downPaymentTime: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
+			downPaymentTime: lead.paymentTime ? moment(lead.paymentTime).format('hh:mm a') + ' ' + moment(lead.paymentTime).format('MMM DD') : '',
 			totalInstalments: lead.cmInstallments.length > 0 ? lead.cmInstallments : [],
 			units: [],
 			remainingPayment: 'no',
@@ -68,6 +68,10 @@ class Payments extends Component {
 			showStyling: '',
 			showDate: false,
 			promotionDiscountFormat: false,
+			tokenFormat: false,
+			tokenDateStatus: { name: '', status: false },
+			downPaymentDateStatus: { name: '', status: false },
+			downPaymentFormat: false,
 		}
 
 	}
@@ -76,13 +80,23 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
+		// console.log(this.props.lead)
 	}
 
 	setFields = () => {
-		const { formData, arrowCheck, promotionDiscountFormat } = this.state
+		const {
+			formData,
+			arrowCheck,
+			promotionDiscountFormat,
+			tokenFormat,
+			tokenDateStatus,
+			downPaymentDateStatus,
+			downPaymentFormat
+		} = this.state
 		const { lead } = this.props
 		let data = lead
-		let newpromotionDiscountFormat = promotionDiscountFormat
+		let newtokenDateStatus = tokenDateStatus
+		let newdownPaymentDateStatus = downPaymentDateStatus
 		this.setState({
 			readOnly: {
 				totalSize: '',
@@ -119,19 +133,26 @@ class Payments extends Component {
 				this.discountPayment()
 				name = 'discount'
 				arrowCheck[name] = false
-				newpromotionDiscountFormat = true
+				this.formatStatusChange(name, true)
 			}
 			if (data.token != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 				name = 'token'
 				arrowCheck[name] = false
+				this.formatStatusChange(name, true)
+				newtokenDateStatus['name'] = name
+				newtokenDateStatus['status'] = true
 			}
 			if (data.downPayment != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 				name = 'downPayment'
 				arrowCheck[name] = false
+				this.formatStatusChange(name, true)
+				newdownPaymentDateStatus['name'] = name
+				newdownPaymentDateStatus['status'] = true
+
 			}
 			if (data.no_of_installments != null) {
 				this.instalmentsField(data.no_of_installments)
@@ -159,9 +180,10 @@ class Payments extends Component {
 				})
 			}
 
-			this.setState({ 
+			this.setState({
 				arrowCheck,
-				promotionDiscountFormat: newpromotionDiscountFormat
+				tokenDateStatus: newtokenDateStatus,
+				downPaymentDateStatus: newdownPaymentDateStatus
 			})
 
 		})
@@ -437,11 +459,16 @@ class Payments extends Component {
 			arrowCheck,
 			paymentFiledsArray,
 			remainingPayment,
+			tokenDateStatus,
+			downPaymentDateStatus,
 		} = this.state
+
 		const { lead } = this.props
 		formData[name] = formData[name]
 		let body = {};
 		let newArrowCheck = { ...arrowCheck }
+		let newtokenDateStatus = tokenDateStatus
+		let newdownPaymentDateStatus = downPaymentDateStatus
 		if (name === 'projectId') {
 			body = { projectId: formData[name] }
 		}
@@ -454,16 +481,23 @@ class Payments extends Component {
 		if (name === 'discount') {
 			body = { discount: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
+			this.formatStatusChange(name, true)
 		}
 		if (name === 'token') {
 			body = { token: formData[name] ? formData[name] : null, tokenPaymentTime: tokenDate, remainingPayment: remainingPayment }
 			this.currentDate(name)
 			newArrowCheck[name] = false
+			newtokenDateStatus['name'] = name
+			newtokenDateStatus['status'] = true
+			this.formatStatusChange(name, true)
 		}
 		if (name === 'downPayment') {
 			body = { downPayment: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
 			this.currentDate(name)
 			newArrowCheck[name] = false
+			newdownPaymentDateStatus['name'] = name
+			newdownPaymentDateStatus['status'] = true
+			this.formatStatusChange(name, true)
 		}
 		if (name === 'no_installments') {
 			body = { no_of_installments: instalments, remainingPayment: remainingPayment }
@@ -476,14 +510,15 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		// console.log('Payload => ', body)
+		console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				this.setState({ 
+				this.setState({
 					arrowCheck: newArrowCheck,
 					showStyling: '',
-					promotionDiscountFormat: true,
-				 })
+					tokenDateStatus: newtokenDateStatus,
+					downPaymentDateStatus: newdownPaymentDateStatus
+				})
 			}).catch((error) => {
 				console.log('Some thing went wrong!!!', error)
 			})
@@ -605,24 +640,98 @@ class Payments extends Component {
 	}
 
 	showAndHideStyling = (name, clear) => {
-    const { dummyData, inputDateStatus, formData } = this.state
-    const newDummy = dummyData
+		const { tokenDateStatus, formData, tokenDate, downPaymentDateStatus } = this.state
+		let newtokenDateStatus = tokenDateStatus
+		let newdownPaymentDateStatus = downPaymentDateStatus
 
-    if (clear === true) {
-      formData['discount'] = ''
-    }
+		if (clear === true) {
+			this.clearTimes(name, clear)
+		} else {
 
-    if (name === 'input') {
-      inputDateStatus['name'] = ''
-      inputDateStatus['status'] = false
-    }
+			if (name === 'discount') {
+				this.formatStatusChange(name, false);
+			}
 
-    this.setState({
-      showStyling: clear === false ? name : '',
-      showDate: false,
-      promotionDiscountFormat: false,
-    })
-  }
+			if (name != 'discount' && tokenDate != '') {
+				this.formatStatusChange('discount', true)
+			}
+
+			if (name === 'token') {
+				newtokenDateStatus['name'] = ''
+				newtokenDateStatus['status'] = false
+				this.formatStatusChange(name, false);
+			}
+
+			if (name != 'token' && tokenDate != '') {
+				newtokenDateStatus['name'] = 'token'
+				newtokenDateStatus['status'] = true
+				this.formatStatusChange('token', true)
+			}
+
+			if (name === 'downPayment') {
+				newdownPaymentDateStatus['name'] = ''
+				newdownPaymentDateStatus['status'] = false
+				this.formatStatusChange(name, false);
+			}
+
+			if (name != 'downPayment' && tokenDate != '') {
+				newdownPaymentDateStatus['name'] = 'downPayment'
+				newdownPaymentDateStatus['status'] = true
+				this.formatStatusChange('downPayment', true)
+			}
+
+
+
+			this.setState({
+				showStyling: clear === false ? name : '',
+				showDate: false,
+				tokenDateStatus: newtokenDateStatus,
+				downPaymentDateStatus: newdownPaymentDateStatus,
+			})
+		}
+	}
+
+	clearTimes = (name, clear) => {
+		const { formData, tokenDate, downPaymentTime } = this.state
+		let newtokenDate = tokenDate
+		let newdownPaymentTime = downPaymentTime
+		if (name === 'discount') {
+			formData['discount'] = ''
+			this.formatStatusChange(name, false);
+		}
+
+		if (name === 'token') {
+			formData['token'] = ''
+			newtokenDate = ''
+			this.formatStatusChange(name, false);
+		}
+
+		if (name === 'downPayment') {
+			formData['downPayment'] = ''
+			newdownPaymentTime = ''
+			this.formatStatusChange(name, false);
+		}
+
+		this.setState({
+			showStyling: clear === false ? name : '',
+			tokenDate: newtokenDate,
+			downPaymentTime: newdownPaymentTime,
+		})
+	}
+
+	formatStatusChange = (name, status) => {
+		const { tokenDateStatus, formData, promotionDiscountFormat } = this.state
+		if (name === 'discount') {
+			this.setState({ promotionDiscountFormat: status })
+		}
+		if (name === 'token') {
+			this.setState({ tokenFormat: status })
+		}
+		if (name === 'downPayment') {
+			this.setState({ downPaymentFormat: status })
+		}
+
+	}
 
 	render() {
 		const {
@@ -652,6 +761,10 @@ class Payments extends Component {
 			closedLeadEdit,
 			showStyling,
 			promotionDiscountFormat,
+			tokenFormat,
+			tokenDateStatus,
+			downPaymentDateStatus,
+			downPaymentFormat,
 		} = this.state
 		return (
 			<View>
@@ -703,6 +816,10 @@ class Payments extends Component {
 							showAndHideStyling={this.showAndHideStyling}
 							showStylingState={showStyling}
 							promotionDiscountFormat={promotionDiscountFormat}
+							tokenFormat={tokenFormat}
+							tokenDateStatus={tokenDateStatus}
+							downPaymentDateStatus={downPaymentDateStatus}
+							downPaymentFormat={downPaymentFormat}
 						/>
 					</View>
 				</ScrollView>

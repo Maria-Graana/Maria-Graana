@@ -140,6 +140,10 @@ class InnerForm extends Component {
       showAndHideStyling,
       showStylingState,
       promotionDiscountFormat,
+      tokenFormat,
+      tokenDateStatus,
+      downPaymentDateStatus,
+      downPaymentFormat,
     } = this.props
     const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2, editPriceFormat } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
@@ -294,7 +298,7 @@ class InnerForm extends Component {
             showDate={false}
             dateStatus={false}
           />
-          <View style={[AppStyles.mainBlackWrap]}>
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.fullWidthPad, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>PROMOTIONAL OFFER </Text>
               <View style={[AppStyles.blackInput]}>
@@ -308,10 +312,26 @@ class InnerForm extends Component {
                 <Text style={[AppStyles.countPrice, styles.customTop, styles.customRight]}>{formatPrice(formData.discount != null ? formData.discount : '')}</Text>
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
+          <InputField
+            label={'TOKEN'}
+            placeholder={'Enter Token Amount'}
+            name={'token'}
+            value={formData.token}
+            priceFormatVal={formData.token != null ? formData.token : ''}
+            keyboardType={'numeric'}
+            onChange={handleForm}
+            paymentDone={submitValues}
+            showStyling={showAndHideStyling}
+            showStylingState={showStylingState}
+            editPriceFormat={{status: tokenFormat, name: 'token'}}
+            date={tokenDate}
+            showDate={true}
+            dateStatus={tokenDateStatus}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOKEN</Text>
               <View style={[AppStyles.blackInput]}>
@@ -330,10 +350,27 @@ class InnerForm extends Component {
                   : null
               }
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
+          {/* {console.log(downPaymentTime,' ========= ', downPaymentDateStatus)} */}
+          <InputField
+            label={'DOWN PAYMENT'}
+            placeholder={'Enter Down Payment'}
+            name={'downPayment'}
+            value={formData.downPayment != null ? formData.downPayment : ''}
+            priceFormatVal={formData.downPayment != null ? formData.downPayment : ''}
+            keyboardType={'numeric'}
+            onChange={handleForm}
+            paymentDone={submitValues}
+            showStyling={showAndHideStyling}
+            showStylingState={showStylingState}
+            editPriceFormat={{status: downPaymentFormat, name: 'downPayment'}}
+            date={downPaymentTime}
+            showDate={true}
+            dateStatus={downPaymentDateStatus}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>DOWN PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
@@ -351,7 +388,7 @@ class InnerForm extends Component {
                 </TouchableOpacity>
               }
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>

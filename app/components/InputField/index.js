@@ -45,6 +45,8 @@ class InputField extends React.Component {
       dateStatus,
       editable,
       editPriceFormat,
+      typeArray,
+      arrayName,
     } = this.props
     var val = editPriceFormat != false && editPriceFormat.name == name && editPriceFormat.status == true ? this.currencyConvert(value) : value
     var checkForStyling = dateStatus && dateStatus != false && dateStatus.status === true ? true : false
@@ -78,7 +80,7 @@ class InputField extends React.Component {
           {/* Check Button */}
           {
             showStylingState == name &&
-            <TouchableOpacity style={[styles.inputCheckBtn]} onPress={() => { paymentDone(name) }}>
+            <TouchableOpacity style={[styles.inputCheckBtn]} onPress={() => { paymentDone(typeArray != true ? name : arrayName) }}>
               <Image source={InputCheckImg} style={[styles.inputCheckImg]} />
             </TouchableOpacity>
           }

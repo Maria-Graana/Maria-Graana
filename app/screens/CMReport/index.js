@@ -249,12 +249,11 @@ class CMReport extends React.Component {
     }
 
     fetchAgents = (zone) => {
-        const { agentFormData } = this.state
-        axios.get(`/api/user/agents`)
+        axios.get(`/api/user/all?searchBy=armsTeamId&q=${zone}&all=true`)
             .then((res) => {
                 let agents = []
-                res && res.data.length && res.data.map((item, index) => { return (agents.push({ value: item.id, name: item.firstName + ' ' + item.lastName })) })
-                this.setState({ agents, agentFormData })
+                res && res.data.rows.length && res.data.rows.map((item, index) => { return (agents.push({ value: item.id, name: item.firstName + ' ' + item.lastName })) })
+                this.setState({ agents })
             })
             .catch((error) => {
                 console.log(error)

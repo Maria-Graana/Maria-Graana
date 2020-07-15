@@ -196,7 +196,7 @@ class AddRCMLead extends Component {
     }
 
     sendPayload = () => {
-        const { formType, RCMFormData } = this.state
+        const { formType, RCMFormData, formData, organizations } = this.state
         const { user } = this.props
 
         if (RCMFormData.size === '') RCMFormData.size = null
@@ -215,7 +215,10 @@ class AddRCMLead extends Component {
             price: RCMFormData.maxPrice,
             min_price: RCMFormData.minPrice,
         }
-        if (user.subRole === 'group_management') payLoad.org = formData.org
+        if (user.subRole === 'group_management') {
+            let newOrg = _.find(organizations, function (item) { return item.value === formData.org })
+            payLoad.org = newOrg.name.toLowerCase()
+        }
         axios.post(`/api/leads`, payLoad)
             .then((res) => {
                 helper.successToast(res.data)

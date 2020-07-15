@@ -41,6 +41,7 @@ class LeadMatch extends React.Component {
             armsData: [],
             graanaData: [],
             agency21Data: [],
+            selectedCity: {},
             formData: {
                 cityId: '',
                 areaId: '',
@@ -82,7 +83,6 @@ class LeadMatch extends React.Component {
         const { lead } = this.props
         this.props.dispatch(setlead(lead))
         this.getCities()
-        this.resetFilter()
     }
 
     selectedOrganization = (value) => {
@@ -98,10 +98,10 @@ class LeadMatch extends React.Component {
         axios.get(`/api/cities`)
             .then((res) => {
                 let citiesArray = [];
-                res && res.data.map((item, index) => { return (citiesArray.push({ value: item.id, name: item.name })) })
+                res && res.data.map((item, index) => { return (citiesArray.push({ value: item.id, name: item.name, isSelected: false })) })
                 this.setState({
                     cities: citiesArray
-                })
+                }, () => this.resetFilter())
             })
     }
 
@@ -121,14 +121,31 @@ class LeadMatch extends React.Component {
         const prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
         formData.minPrice = prices[values[0]].toString()
         formData.maxPrice = prices[values[values.length - 1]].toString()
-        this.setState({ formData });
+        this.setState({ formData })
     }
 
     handleForm = (value, name) => {
         const { formData } = this.state
-        if (name === 'cityId') formData.leadAreas = []
         formData[name] = value
+        if (name === 'cityId') {
+            this.getAreas(value.value)
+            this.filterModalRef.emptyList()
+            this.handleCity(value)
+            formData.leadAreas = []
+            formData[name] = value.value
+        }
         this.setState({ formData })
+    }
+
+    handleCity = (city) => {
+        let { cities, selectedCity } = this.state
+        selectedCity = _.find(cities, function (item) { return item.value === city.value })
+        let newCities = cities.map((item, index) => {
+            if (item.value === city.value) item.isSelected = true
+            else item.isSelected = false
+            return item
+        })
+        this.setState({ cities: newCities, selectedCity })
     }
 
     getSubType = (text) => {
@@ -188,6 +205,7 @@ class LeadMatch extends React.Component {
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
             this.getAreas(cityId)
+            this.handleCity({ value: cityId })
         }
 
         if ('armsLeadAreas' in lead) {
@@ -380,9 +398,9 @@ class LeadMatch extends React.Component {
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
-        else if(user.id !== lead.assigned_to_armsuser_id){
+        else if (user.id !== lead.assigned_to_armsuser_id) {
             helper.leadNotAssignedToast()
-         }
+        }
         else {
             if (showCheckBoxes) {
                 this.unSelectAll()
@@ -403,8 +421,8 @@ class LeadMatch extends React.Component {
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
-        else if(user.id !== lead.assigned_to_armsuser_id){
-           helper.leadNotAssignedToast()
+        else if (user.id !== lead.assigned_to_armsuser_id) {
+            helper.leadNotAssignedToast()
         }
         else {
             if (showCheckBoxes) {
@@ -486,9 +504,9 @@ class LeadMatch extends React.Component {
     }
 
     closeLead = () => {
-        const {user, lead} = this.props;
+        const { user, lead } = this.props;
         var commissionPayment = this.props.lead.commissionPayment
-        if(user.id === lead.assigned_to_armsuser_id){
+        if (user.id === lead.assigned_to_armsuser_id) {
             if (commissionPayment !== null) {
                 this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
             }
@@ -496,10 +514,10 @@ class LeadMatch extends React.Component {
                 this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
             }
         }
-        else{
+        else {
             helper.leadNotAssignedToast()
         }
-        
+
     }
 
     onHandleCloseLead = () => {
@@ -569,12 +587,12 @@ class LeadMatch extends React.Component {
 
     render() {
         const { lead, user } = this.props
-        const { subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { selectedCity, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
                     <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
-                    <View style={{  minHeight: '85%' }}>
+                    <View style={{ minHeight: '85%' }}>
                         <View style={{ flexDirection: "row", marginLeft: 25 }}>
                             <TouchableOpacity style={{ padding: 10, paddingLeft: 0 }} onPress={() => { this.selectedOrganization('arms') }}>
                                 <Text style={[(organization === 'arms') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> ARMS </Text>
@@ -587,6 +605,8 @@ class LeadMatch extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <FilterModal
+                            onRef={ref => (this.filterModalRef = ref)}
+                            selectedCity={selectedCity}
                             onSliderValueChange={this.onSliderValueChange}
                             getAreas={this.getAreas}
                             subTypVal={subTypVal}

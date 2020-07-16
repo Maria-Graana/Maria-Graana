@@ -215,7 +215,7 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          {/* <InputField
+          <InputField
             label={'TOTAL SIZE'}
             placeholder={'Total Size'}
             name={'totalSize'}
@@ -234,7 +234,7 @@ class InnerForm extends Component {
                 <TextInput style={[AppStyles.blackInput]} placeholder={'Total Size'} value={totalSize} editable={false} />
               </View>
             </View>
-          </View>
+          </View>*/}
 
 
           {/* **************************************** */}
@@ -250,17 +250,17 @@ class InnerForm extends Component {
             editable={false}
             editPriceFormat={{ status: true, name: 'totalRate' }}
           />
-          <View style={[AppStyles.mainBlackWrap]}>
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>RATE</Text>
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} placeholder={'Rate'} value={formatPrice(rate)} editable={false} />
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
-          {/* <InputField
+          <InputField
             label={'TOTAL PRICE'}
             placeholder={'Total Price'}
             name={'totalPrice'}
@@ -272,7 +272,7 @@ class InnerForm extends Component {
             editable={false}
             editPriceFormat={{ status: true, name: 'totalPrice' }}
           />
-          {/* <View style={[AppStyles.mainBlackWrap]}>
+          {/*<View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL PRICE</Text>
               <View style={[AppStyles.blackInput]}>
@@ -280,7 +280,7 @@ class InnerForm extends Component {
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalPrice != null ? totalPrice : '')}</Text>
               </View>
             </View>
-          </View>
+          </View>*/}
 
           {/* **************************************** */}
           <InputField

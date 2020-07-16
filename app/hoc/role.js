@@ -97,6 +97,9 @@ const role = {
     },
     AssignLead: {
         roles: [
+            { role: 'group_management', access: { v: true, a: false, e: false, d: false } },
+            { role: 'group_head', access: { v: true, a: false, e: false, d: false } },
+            { role: 'country_head', access: { v: true, a: false, e: false, d: false } },
             { role: 'regional_head', access: { v: true, a: false, e: false, d: false } },
             { role: 'zonal_manager', access: { v: true, a: false, e: false, d: false } },
             { role: 'branch_manager', access: { v: true, a: false, e: false, d: false } },

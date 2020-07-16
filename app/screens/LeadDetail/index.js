@@ -169,7 +169,10 @@ class LeadDetail extends React.Component {
                             <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{purposeTab === 'invest' && projectName}</Text>
                             <Text style={styles.headingText}>Price Range </Text>
                             <Text style={styles.labelText}>
-                                {!lead.projectId ? helper.checkPrice(lead.price, true) : ''} {lead.projectId && lead.minPrice ? helper.checkPrice(lead.minPrice, true) + ' - ' : ''} {lead.projectId && lead.maxPrice ? helper.checkPrice(lead.maxPrice, false) : ''}
+                                {` ${!lead.projectId && lead.min_price ? helper.checkPrice(lead.min_price, true) + ' - ' : ''}`}
+                                {!lead.projectId && lead.price ? helper.checkPrice(lead.price) : ''}
+                                {lead.projectId && lead.minPrice && helper.checkPrice(lead.minPrice, true) + ' - '}
+                                {lead.projectId && lead.maxPrice && helper.checkPrice(lead.maxPrice)}
                             </Text>
                             <View style={styles.underLine} />
                             <Text style={styles.headingText}>Assigned</Text>

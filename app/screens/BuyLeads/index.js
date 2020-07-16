@@ -201,7 +201,7 @@ class BuyLeads extends React.Component {
 			<View style={[AppStyles.container, { marginBottom: 25 }]}>
 
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
-				<View style={[styles.mainFilter, {marginBottom: 15}]}>
+				<View style={[styles.mainFilter, { marginBottom: 15 }]}>
 					<View style={styles.pickerMain}>
 						<PickerComponent
 							placeholder={'Lead Status'}
@@ -219,58 +219,59 @@ class BuyLeads extends React.Component {
 						</TouchableOpacity>
 					</View>
 				</View>
-						{
-							leadsData && leadsData && leadsData.length > 0 ?
+				{
+					leadsData && leadsData && leadsData.length > 0 ?
 
-								< FlatList
-									data={leadsData}
-									renderItem={({ item }) => (
+						< FlatList
+							data={leadsData}
+							renderItem={({ item }) => (
 
-										<LeadTile
-											user={user}
-											// key={key}
-											showDropdown={this.showDropdown}
-											dotsDropDown={this.state.dotsDropDown}
-											selectInventory={this.selectInventory}
-											selectedInventory={selectInventory}
-											data={item}
-											dropDownId={dropDownId}
-											unSelectInventory={this.unSelectInventory}
-											goToInventoryForm={this.goToInventoryForm}
-											navigateTo={this.navigateTo}
-											callNumber={this.callNumber}
-										/>
-									)}
-									onEndReached={() => {
-										if (leadsData.length < totalLeads) {
-											this.setState({
-												page: this.state.page + 1,
-												onEndReachedLoader: true
-											}, () => {
-												this.fetchLeads(statusFilter);
-											});
-										}
-									}}
-									onEndReachedThreshold={0.5}
-									keyExtractor={(item, index) => this.setKey(index)}
+								<LeadTile
+									purposeTab={'buy'}
+									user={user}
+									// key={key}
+									showDropdown={this.showDropdown}
+									dotsDropDown={this.state.dotsDropDown}
+									selectInventory={this.selectInventory}
+									selectedInventory={selectInventory}
+									data={item}
+									dropDownId={dropDownId}
+									unSelectInventory={this.unSelectInventory}
+									goToInventoryForm={this.goToInventoryForm}
+									navigateTo={this.navigateTo}
+									callNumber={this.callNumber}
 								/>
-								:
-								<LoadingNoResult loading={loading} />
-						}
-						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-					<FAB.Group
-						open={open}
-						icon="plus"
-						style={{ marginBottom: 16 }}
-						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-						color={AppStyles.bgcWhite.backgroundColor}
-						actions={[
-							{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
-							{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
+							)}
+							onEndReached={() => {
+								if (leadsData.length < totalLeads) {
+									this.setState({
+										page: this.state.page + 1,
+										onEndReachedLoader: true
+									}, () => {
+										this.fetchLeads(statusFilter);
+									});
+								}
+							}}
+							onEndReachedThreshold={0.5}
+							keyExtractor={(item, index) => this.setKey(index)}
+						/>
+						:
+						<LoadingNoResult loading={loading} />
+				}
+				<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
+				<FAB.Group
+					open={open}
+					icon="plus"
+					style={{ marginBottom: 16 }}
+					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+					color={AppStyles.bgcWhite.backgroundColor}
+					actions={[
+						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
+						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
 
-						]}
-						onStateChange={({ open }) => this.setState({ open })}
-					/>
+					]}
+					onStateChange={({ open }) => this.setState({ open })}
+				/>
 				<SortModal
 					sendStatus={this.sendStatus}
 					openStatus={this.openStatus}

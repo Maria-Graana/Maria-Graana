@@ -89,11 +89,8 @@ class Payments extends Component {
 		const {
 			formData,
 			arrowCheck,
-			promotionDiscountFormat,
-			tokenFormat,
 			tokenDateStatus,
 			downPaymentDateStatus,
-			downPaymentFormat
 		} = this.state
 		const { lead } = this.props
 		let data = lead
@@ -174,7 +171,6 @@ class Payments extends Component {
 			if (data.payment && data.payment.length) {
 				name = 'payments'
 				arrowCheck[name] = false
-				this.setPaymentDataStatus(data.payment)
 				this.setState({
 					formData: {
 						...formData,
@@ -186,24 +182,11 @@ class Payments extends Component {
 			this.setState({
 				arrowCheck,
 				tokenDateStatus: newtokenDateStatus,
-				downPaymentDateStatus: newdownPaymentDateStatus
 			})
 
 		})
 	}
-	setPaymentDataStatus = (payment) => {
-		const { paymentFiledsArray, dateStatusForPayments, paymentFromat } = this.state
-		let newdateStatusForPayments = [...dateStatusForPayments]
-		let newpaymentFromat = [...paymentFromat]
-		for (var i = 0; payment.length > i; i++) {
-			newdateStatusForPayments.push({ name: i, status: true })
-			newpaymentFromat.push({ name: i, status: true })
-		}
-		this.setState({
-			dateStatusForPayments: newdateStatusForPayments,
-			paymentFromat: newpaymentFromat,
-		})
-	}
+
 	getAllProjects = () => {
 		axios.get(`/api/project/all`)
 			.then((res) => {
@@ -475,7 +458,6 @@ class Payments extends Component {
 			remainingPayment,
 			tokenDateStatus,
 			downPaymentDateStatus,
-			dateStatusForPayments,
 		} = this.state
 
 		const { lead } = this.props
@@ -484,7 +466,6 @@ class Payments extends Component {
 		let newArrowCheck = { ...arrowCheck }
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
-		let newdateStatusForPayments = [...dateStatusForPayments]
 		if (name === 'projectId') {
 			body = { projectId: formData[name] }
 		}
@@ -521,8 +502,6 @@ class Payments extends Component {
 		if (name === 'payments') {
 			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
-			newdateStatusForPayments[arrayName].name = arrayName
-			newdateStatusForPayments[arrayName].status = true
 		}
 		if (name === 'installments') {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
@@ -536,7 +515,6 @@ class Payments extends Component {
 					showStyling: '',
 					tokenDateStatus: newtokenDateStatus,
 					downPaymentDateStatus: newdownPaymentDateStatus,
-					dateStatusForPayments: newdateStatusForPayments,
 				})
 			}).catch((error) => {
 				console.log('Some thing went wrong!!!', error)
@@ -575,15 +553,11 @@ class Payments extends Component {
 
 	addFullpaymentFields = () => {
 		const { lead } = this.props
-		const { paymentFiledsArray, dateStatusForPayments } = this.state
+		const { paymentFiledsArray } = this.state
 		let array = [...paymentFiledsArray]
-		let newdateStatusForPayments = [...dateStatusForPayments]
 		array.push({ installmentAmount: '', type: 'payment', installmentDate: '' })
-		newdateStatusForPayments.push({ name: '', status: false })
-
 		this.setState({
 			paymentFiledsArray: array,
-			dateStatusForPayments: newdateStatusForPayments,
 		})
 	}
 
@@ -661,11 +635,9 @@ class Payments extends Component {
 	}
 
 	showAndHideStyling = (name, clear, arrayName) => {
-		const { tokenDateStatus, formData, tokenDate, downPaymentDateStatus, dateStatusForPayments } = this.state
+		const { tokenDateStatus, formData, tokenDate, downPaymentDateStatus } = this.state
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
-		let newdateStatusForPayments = [...dateStatusForPayments]
-		console.log('hello')
 
 		if (clear === true) {
 			this.clearTimes(name, clear, arrayName)
@@ -703,55 +675,19 @@ class Payments extends Component {
 				this.formatStatusChange('downPayment', true)
 			}
 
-			if (arrayName === 'payments') {
-				newdateStatusForPayments[name].name = ''
-				newdateStatusForPayments[name].status = false
-				this.formatStatusChange(name, false, arrayName);
-			}
-
-			if (arrayName != 'payments' && newdateStatusForPayments.length >= 0) {
-				for (var i = 0; i < newdateStatusForPayments.length; i++) {
-					newdateStatusForPayments[i].name = name
-					newdateStatusForPayments[i].status = true
-					this.formatStatusChange(i, true, 'payments');
-				}
-			}
-
-			if (arrayName === 'payments' && newdateStatusForPayments.length >= 0) {
-				for (var i = 0; i < newdateStatusForPayments.length; i++) {
-					if (name === i) {
-						newdateStatusForPayments[i].name = ''
-						newdateStatusForPayments[i].status = false
-						this.formatStatusChange(i, false, arrayName);
-					} else {
-						newdateStatusForPayments[i].name = name
-						newdateStatusForPayments[i].status = true
-						if (name != i) {
-							this.formatStatusChange(i, true, arrayName);
-						}
-					}
-
-				}
-			}
-
-
-
-
 			this.setState({
 				showStyling: clear === false ? name : '',
 				showDate: false,
 				tokenDateStatus: newtokenDateStatus,
 				downPaymentDateStatus: newdownPaymentDateStatus,
-				dateStatusForPayments, newdateStatusForPayments,
 			})
 		}
 	}
 
 	clearTimes = (name, clear, arrayName) => {
-		const { formData, tokenDate, downPaymentTime, paymentFiledsArray } = this.state
+		const { formData, tokenDate, downPaymentTime } = this.state
 		let newtokenDate = tokenDate
 		let newdownPaymentTime = downPaymentTime
-		let newpaymentFiledsArray = [...paymentFiledsArray]
 		if (name === 'discount') {
 			formData['discount'] = ''
 			this.formatStatusChange(name, false);
@@ -769,16 +705,10 @@ class Payments extends Component {
 			this.formatStatusChange(name, false);
 		}
 
-		if (arrayName === 'payments') {
-			newpaymentFiledsArray[name].installmentAmount = ''
-			newpaymentFiledsArray[name].createdAt = ''
-		}
-
 		this.setState({
 			showStyling: clear === false ? name : '',
 			tokenDate: newtokenDate,
 			downPaymentTime: newdownPaymentTime,
-			paymentFiledsArray: newpaymentFiledsArray,
 		})
 	}
 
@@ -795,12 +725,6 @@ class Payments extends Component {
 		if (name === 'downPayment') {
 			this.setState({ downPaymentFormat: status })
 		}
-		if (arrayName === 'payments') {
-			newpaymentFromat[name].name = name
-			newpaymentFromat[name].status = status
-			this.setState({ paymentFromat: newpaymentFromat })
-		}
-
 	}
 
 	render() {
@@ -838,7 +762,6 @@ class Payments extends Component {
 			dateStatusForPayments,
 			paymentFromat,
 		} = this.state
-		// console.log('wow',paymentFromat)
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />

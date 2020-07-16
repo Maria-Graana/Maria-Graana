@@ -48,7 +48,7 @@ class InputField extends React.Component {
       typeArray,
       arrayName,
     } = this.props
-    var val = editPriceFormat != false && editPriceFormat.name == name && editPriceFormat.status == true ? this.currencyConvert(value) : value
+    var val = editPriceFormat && editPriceFormat != false && editPriceFormat.name == name && editPriceFormat.status == true ? this.currencyConvert(value) : value
     var checkForStyling = dateStatus && dateStatus != false && dateStatus.status === true ? true : false
     return (
       <View style={[styles.mainInputParent, showStylingState === name && styles.paddingTopBottom]}>

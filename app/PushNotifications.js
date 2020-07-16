@@ -86,8 +86,17 @@ class PushNotifications extends React.Component {
     }
 
     _handleNotification = notification => {
-        // Vibration.vibrate();
-        this.setState({ notification: notification });
+        const { navigation } = this.props
+        let data = notification.data
+        Sentry.captureException(`Before handleNotification: ${notification}`)
+        if (notification.origin === 'selected') {
+            Sentry.captureException(`mid handleNotification: ${data}`)
+            if (data.type === 'local') navigation.navigate('Diary', { openDate: data.date, screen: 'Diary' })
+            if (data.type === 'investLead') navigation.navigate('Leads', { screen: 'Invest' })
+            if (data.type === 'buyLead') navigation.navigate('Leads', { screen: 'Buy' })
+            if (data.type === 'rentLead') navigation.navigate('Leads', { screen: 'Rent' })
+            if (data.type === 'diary') navigation.navigate('Diary', { openDate: data.date, screen: 'Diary' })
+        }
     }
 
 

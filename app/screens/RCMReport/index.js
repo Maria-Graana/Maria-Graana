@@ -248,10 +248,10 @@ class RCMReport extends React.Component {
     }
 
     fetchAgents = (zone) => {
-        axios.get(`/api/user/agents`)
+        axios.get(`/api/user/all?searchBy=armsTeamId&q=${zone}&all=true`)
             .then((res) => {
                 let agents = []
-                res && res.data.length && res.data.map((item, index) => { return (agents.push({ value: item.id, name: item.firstName + ' ' + item.lastName })) })
+                res && res.data.rows.length && res.data.rows.map((item, index) => { return (agents.push({ value: item.id, name: item.firstName + ' ' + item.lastName })) })
                 this.setState({ agents })
             })
             .catch((error) => {

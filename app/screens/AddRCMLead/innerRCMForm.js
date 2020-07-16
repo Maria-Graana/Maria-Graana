@@ -21,11 +21,13 @@ class InnerRCMForm extends Component {
   render() {
 
     const {
+      user,
       formSubmit,
       checkValidation,
       handleForm,
       formData,
-      cities,
+      handleCityClick,
+      selectedCity,
       propertyType,
       subType,
       sizeUnit,
@@ -34,27 +36,39 @@ class InnerRCMForm extends Component {
       handleClientClick,
       priceList,
       onSliderValueChange,
+      organizations
     } = this.props
 
     const { leadAreas } = formData;
     const leadAreasLength = leadAreas ? leadAreas.length : 0;
     return (
       <View>
+
+        {
+          user.subRole === 'group_management' ?
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent onValueChange={handleForm} data={organizations} name={'org'} placeholder='Organizations' />
+                {
+                  checkValidation === true && formData.org === '' && <ErrorMessage errorMessage={'Required'} />
+                }
+              </View>
+            </View>
+            :
+            null
+        }
+
         <TouchableInput placeholder="Client"
           onPress={() => handleClientClick()}
           value={clientName}
           showError={checkValidation === true && formData.customerId === ''}
           errorMessage="Required" />
 
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={cities} name={'city_id'} placeholder='Select City' />
-            {
-              checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
-            }
-          </View>
-        </View>
+        <TouchableInput placeholder="Select City"
+          onPress={() => handleCityClick()}
+          value={selectedCity ? selectedCity.name : ''}
+          showError={checkValidation === true && formData.city_id === ''}
+          errorMessage="Required" />
 
         <TouchableInput onPress={() => handleAreaClick()}
           value={leadAreasLength > 0 ? leadAreasLength + ' Areas Selected' : ''}

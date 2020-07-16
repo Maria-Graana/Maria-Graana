@@ -111,14 +111,21 @@ class LeadViewing extends React.Component {
 	}
 
 	closeLead = () => {
-		var commissionPayment = this.props.lead.commissionPayment
-		if (commissionPayment !== null) {
-			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
-		}
-		else {
-			this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
-		}
-	}
+        const {user, lead} = this.props;
+        var commissionPayment = this.props.lead.commissionPayment
+        if(user.id === lead.assigned_to_armsuser_id){
+            if (commissionPayment !== null) {
+                this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+            }
+            else {
+                this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+            }
+        }
+        else{
+            helper.leadNotAssignedToast()
+        }
+        
+    }
 
 	onHandleCloseLead = () => {
 		const { navigation, lead } = this.props
@@ -274,7 +281,7 @@ class LeadViewing extends React.Component {
 					title: res.data.subject,
 					body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
 				}
-				TimerNotification(data, timeStamp)
+				TimerNotification(data, timeStamp, start)
 				this.fetchLead()
 				this.fetchProperties()
 			})
@@ -284,7 +291,7 @@ class LeadViewing extends React.Component {
 	}
 
 	checkStatus = (property) => {
-		const { lead } = this.props;
+		const { lead, user } = this.props;
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'completed') {
 				return (
@@ -315,6 +322,8 @@ class LeadViewing extends React.Component {
 						onPress={() => {
 							if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
 								helper.leadClosedToast();
+							}else if(user.id !== lead.assigned_to_armsuser_id){
+								helper.leadNotAssignedToast();
 							}
 							else {
 								this.openModal();
@@ -341,6 +350,9 @@ class LeadViewing extends React.Component {
 						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
 							helper.leadClosedToast();
 
+						}
+						else if(user.id !== lead.assigned_to_armsuser_id){
+							helper.leadNotAssignedToast();
 						}
 						else {
 							this.openModal();
@@ -411,10 +423,22 @@ class LeadViewing extends React.Component {
 		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
 	}
 
+	showMenuItem =() => {
+		const {lead, user} = this.props;
+		if((lead.status === StaticData.Constants.lead_closed_won || lead.status === StaticData.Constants.lead_closed_lost) || user.id !== lead.assigned_to_armsuser_id ){
+			return false;
+		}
+		else{
+			return true;
+		}
+
+	}
+
+
 	render() {
-		const { loading, matchData, user, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
-		const { lead } = this.props;
-		const showMenuItem = (lead.status === StaticData.Constants.lead_closed_won || lead.status === StaticData.Constants.lead_closed_lost) ? false : true;
+		const { loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+		const { lead, user } = this.props;
+		const showMenuItem = this.showMenuItem();
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>

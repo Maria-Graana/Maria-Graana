@@ -5,14 +5,18 @@ import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-const submitNotification = (body, date) => {
+const submitNotification = (body, timeStamp, date) => {
     Keyboard.dismiss();
     const schedulingOptions = {
-        time: date
+        time: timeStamp
     };
     let localNotification = {
         title: body.title,
         body: body.body,
+        data: {
+            type: 'local',
+            date: date
+        },
         android: {
             channelId: 'reminder',
         },
@@ -33,7 +37,7 @@ const handleNotification = () => {
     console.warn('ok! got your notif');
 };
 
-const askNotification = async (body, date) => {
+const askNotification = async (body, timeStamp, date) => {
     if (Constants.isDevice) {
         const { status: existingStatus } = await Permissions.getAsync(
             Permissions.NOTIFICATIONS
@@ -48,14 +52,14 @@ const askNotification = async (body, date) => {
         if (finalStatus !== 'granted') {
             return;
         }
-        submitNotification(body, date)
+        submitNotification(body, timeStamp, date)
     } else {
         console.log('Must use physical device for Notifications')
     }
 };
 
-const TimerNotification = (body, date) => {
-    askNotification(body, date);
+const TimerNotification = (body, timeStamp, date) => {
+    askNotification(body, timeStamp, date);
 };
 
 export default TimerNotification;

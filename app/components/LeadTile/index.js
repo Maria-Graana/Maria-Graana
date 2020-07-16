@@ -50,7 +50,10 @@ class LeadTile extends React.Component {
                     PKR
             	 	</Text>
                   <Text style={[styles.priceText, styles.multiColumn, changeColor]}>
-                    {` ${!data.projectId && data.min_price && helper.checkPrice(data.min_price) + ' - '}`} {!data.projectId && data.price && helper.checkPrice(data.price)}  {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
+                    {` ${!data.projectId && data.min_price ? helper.checkPrice(data.min_price) + ' - ' : ''}`}
+                    {!data.projectId && data.price ? helper.checkPrice(data.price) : ''}
+                    {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}
+                    {data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
                   </Text>
                 </View>
 

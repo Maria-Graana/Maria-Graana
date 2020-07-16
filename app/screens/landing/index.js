@@ -75,11 +75,11 @@ class Landing extends React.Component {
 
 	render() {
 		const { tiles } = this.state
-		const { user } = this.props
+		const { user, navigation } = this.props
 
 		return (
 			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor }]}>
-				<PushNotification />
+				<PushNotification navigation={navigation} />
 				{
 					tiles.length ?
 						< FlatList

@@ -46,7 +46,8 @@ export default styles = StyleSheet.create({
   },
   doneBtn: {
     position: 'relative',
-    top: -2,
+    top: -8,
+    padding: 7,
   },
   doneText: {
     borderWidth: 1,
@@ -55,13 +56,13 @@ export default styles = StyleSheet.create({
     borderRadius: 12,
     color: '#2A7EF0',
     position: 'relative',
-    top: -4,
+    top: 1,
     paddingTop: 3,
     paddingBottom: 3,
     paddingLeft: 10,
     paddingRight: 10,
     marginRight: 10,
-    fontSize: 12,
+    fontSize: 11,
     textTransform: 'capitalize'
   },
   dropDownMain: {

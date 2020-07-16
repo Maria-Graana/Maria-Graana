@@ -175,14 +175,21 @@ class LeadOffer extends React.Component {
 	}
 
 	closeLead = () => {
-		var commissionPayment = this.props.lead.commissionPayment
-		if (commissionPayment !== null) {
-			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
-		}
-		else {
-			this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
-		}
-	}
+        const {user, lead} = this.props;
+        var commissionPayment = this.props.lead.commissionPayment
+        if(user.id === lead.assigned_to_armsuser_id){
+            if (commissionPayment !== null) {
+                this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+            }
+            else {
+                this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+            }
+        }
+        else{
+            helper.leadNotAssignedToast()
+        }
+        
+    }
 
 	onHandleCloseLead = () => {
 		const { navigation, lead } = this.props
@@ -250,7 +257,7 @@ class LeadOffer extends React.Component {
 	}
 
 	checkStatus = (property) => {
-		const { lead } = this.props;
+		const { lead, user } = this.props;
 		if (property.agreedOffer.length) {
 			return (
 				<TouchableOpacity
@@ -281,6 +288,9 @@ class LeadOffer extends React.Component {
 						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
 							helper.leadClosedToast();
 						}
+						else if(user.id !== lead.assigned_to_armsuser_id){
+							helper.leadNotAssignedToast()
+						}
 						else {
 							this.openChatModal();
 							this.setProperty(property)
@@ -305,6 +315,9 @@ class LeadOffer extends React.Component {
 					onPress={() => {
 						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
 							helper.leadClosedToast();
+						}
+						else if(user.id !== lead.assigned_to_armsuser_id){
+							helper.leadNotAssignedToast()
 						}
 						else {
 							this.openChatModal();

@@ -228,6 +228,7 @@ class RentLeads extends React.Component {
 							renderItem={({ item }) => (
 
 								<LeadTile
+									purposeTab={'rent'}
 									user={user}
 									// key={key}
 									showDropdown={this.showDropdown}

@@ -139,7 +139,7 @@ class InvestLeads extends React.Component {
 			} else {
 				page = 'Meetings'
 			}
-			
+
 			navigation.navigate('CMLeadTabs', {
 				screen: page,
 				params: { lead: data },
@@ -218,6 +218,7 @@ class InvestLeads extends React.Component {
 							data={leadsData}
 							renderItem={({ item }) => (
 								<LeadTile
+									purposeTab={'invest'}
 									user={user}
 									// key={key}
 									showDropdown={this.showDropdown}

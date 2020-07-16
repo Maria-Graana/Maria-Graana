@@ -145,6 +145,7 @@ class InnerForm extends Component {
       downPaymentDateStatus,
       downPaymentFormat,
       dateStatusForPayments,
+      paymentFromat,
     } = this.props
     const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2, editPriceFormat } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
@@ -152,8 +153,7 @@ class InnerForm extends Component {
     let totalSize = readOnly.totalSize && readOnly.totalSize
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
-
-    var newDate = new Date
+    // console.log('paymentFromat',paymentFromat)
     return (
       <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
         <View style={[AppStyles.formMain]}>
@@ -482,7 +482,7 @@ class InnerForm extends Component {
                           paymentDone={submitValues}
                           showStyling={showAndHideStyling}
                           showStylingState={showStylingState}
-                          editPriceFormat={{ status: downPaymentFormat, name: 'payments' }}
+                          editPriceFormat={paymentFromat[index]}
                           date={itemDate}
                           showDate={true}
                           dateStatus={dateStatusForPayments[index]}

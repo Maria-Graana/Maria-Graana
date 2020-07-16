@@ -72,7 +72,8 @@ class Payments extends Component {
 			tokenDateStatus: { name: '', status: false },
 			downPaymentDateStatus: { name: '', status: false },
 			downPaymentFormat: false,
-			dateStatusForPayments: []
+			dateStatusForPayments: [],
+			paymentFromat: [],
 		}
 
 	}
@@ -191,13 +192,16 @@ class Payments extends Component {
 		})
 	}
 	setPaymentDataStatus = (payment) => {
-		const { paymentFiledsArray, dateStatusForPayments } = this.state
+		const { paymentFiledsArray, dateStatusForPayments, paymentFromat } = this.state
 		let newdateStatusForPayments = [...dateStatusForPayments]
+		let newpaymentFromat = [...paymentFromat]
 		for (var i = 0; payment.length > i; i++) {
-			newdateStatusForPayments.push({ name: '', status: false })
+			newdateStatusForPayments.push({ name: i, status: true })
+			newpaymentFromat.push({ name: i, status: true })
 		}
 		this.setState({
 			dateStatusForPayments: newdateStatusForPayments,
+			paymentFromat: newpaymentFromat,
 		})
 	}
 	getAllProjects = () => {
@@ -702,14 +706,33 @@ class Payments extends Component {
 			if (arrayName === 'payments') {
 				newdateStatusForPayments[name].name = ''
 				newdateStatusForPayments[name].status = false
-				this.formatStatusChange(name, false);
+				this.formatStatusChange(name, false, arrayName);
 			}
 
-			// if (arrayName != 'payments') {
-			// 	newdownPaymentDateStatus['name'] = 'downPayment'
-			// 	newdownPaymentDateStatus['status'] = true
-			// 	this.formatStatusChange('downPayment', true)
-			// }
+			if (arrayName != 'payments' && newdateStatusForPayments.length >= 0) {
+				for (var i = 0; i < newdateStatusForPayments.length; i++) {
+					newdateStatusForPayments[i].name = name
+					newdateStatusForPayments[i].status = true
+					this.formatStatusChange(i, true, 'payments');
+				}
+			}
+
+			if (arrayName === 'payments' && newdateStatusForPayments.length >= 0) {
+				for (var i = 0; i < newdateStatusForPayments.length; i++) {
+					if (name === i) {
+						newdateStatusForPayments[i].name = ''
+						newdateStatusForPayments[i].status = false
+						this.formatStatusChange(i, false, arrayName);
+					} else {
+						newdateStatusForPayments[i].name = name
+						newdateStatusForPayments[i].status = true
+						if (name != i) {
+							this.formatStatusChange(i, true, arrayName);
+						}
+					}
+
+				}
+			}
 
 
 
@@ -759,8 +782,10 @@ class Payments extends Component {
 		})
 	}
 
-	formatStatusChange = (name, status) => {
-		const { tokenDateStatus, formData, promotionDiscountFormat } = this.state
+	formatStatusChange = (name, status, arrayName) => {
+		// console.log('name', name, 'status', status, 'arrayName', arrayName)
+		const { tokenDateStatus, formData, paymentFromat } = this.state
+		let newpaymentFromat = [...paymentFromat]
 		if (name === 'discount') {
 			this.setState({ promotionDiscountFormat: status })
 		}
@@ -769,6 +794,11 @@ class Payments extends Component {
 		}
 		if (name === 'downPayment') {
 			this.setState({ downPaymentFormat: status })
+		}
+		if (arrayName === 'payments') {
+			newpaymentFromat[name].name = name
+			newpaymentFromat[name].status = status
+			this.setState({ paymentFromat: newpaymentFromat })
 		}
 
 	}
@@ -806,8 +836,9 @@ class Payments extends Component {
 			downPaymentDateStatus,
 			downPaymentFormat,
 			dateStatusForPayments,
+			paymentFromat,
 		} = this.state
-		// console.log('wow',dateStatusForPayments)
+		// console.log('wow',paymentFromat)
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -863,6 +894,7 @@ class Payments extends Component {
 							downPaymentDateStatus={downPaymentDateStatus}
 							downPaymentFormat={downPaymentFormat}
 							dateStatusForPayments={dateStatusForPayments}
+							paymentFromat={paymentFromat}
 						/>
 					</View>
 				</ScrollView>

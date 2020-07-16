@@ -14,9 +14,11 @@ class LeadTile extends React.Component {
 
 
   render() {
-    const { data, navigateTo, callNumber, user } = this.props;
+    const { data, navigateTo, callNumber, user, purposeTab } = this.props
     var changeColor = data.assigned_to_armsuser_id != null ? styles.blueColor : AppStyles.darkColor
     var changeStatusColor = data.assigned_to_armsuser_id != null ? styles.tokenLabel : styles.tokenLabelDark
+    let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
+
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
 
@@ -74,7 +76,7 @@ class LeadTile extends React.Component {
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                    {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
+                    {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{purposeTab === 'invest' && helper.capitalize(projectName)}
                     {
                       data.projectType && data.projectType != '' &&
                       ` - ${helper.capitalize(data.projectType)}`

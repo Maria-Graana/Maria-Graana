@@ -190,64 +190,65 @@ class Leads extends React.Component {
 						</TouchableOpacity>
 					</View>
 				</View>
-					{
-						leadsData && leadsData && leadsData.length > 0 ?
+				{
+					leadsData && leadsData && leadsData.length > 0 ?
 
-							< FlatList
-								// contentContainerStyle={{ paddingHorizontal: wp('2%') }}
-								data={leadsData}
-								renderItem={({ item }) => (
+						< FlatList
+							// contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+							data={leadsData}
+							renderItem={({ item }) => (
 
-									<LeadTile
-										user={user}
-										// key={key}
-										showDropdown={this.showDropdown}
-										dotsDropDown={this.state.dotsDropDown}
-										selectInventory={this.selectInventory}
-										selectedInventory={selectInventory}
-										data={item}
-										dropDownId={dropDownId}
-										unSelectInventory={this.unSelectInventory}
-										goToInventoryForm={this.goToInventoryForm}
-										navigateTo={this.navigateTo}
-										callNumber={this.callNumber}
-									/>
-								)}
-								onEndReached={() => {
-									if (leadsData.length < totalLeads) {
-										this.setState({
-											page: this.state.page + 1,
-											onEndReachedLoader: true
-										}, () => {
-											this.fetchLeads(purposeTab, statusFilter);
-										});
-									}
-									else {
-										helper.errorToast('No more properties available to show');
-									}
-								}}
-								onEndReachedThreshold={0.5}
-								keyExtractor={(item, index) => this.setKey(index)}
-							/>
-							:
-							<LoadingNoResult loading={loading} />
-					}
-					{
-						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-					}
-					<FAB.Group
-						open={open}
-						icon="plus"
-						style={{ marginBottom: 16 }}
-						fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-						color={AppStyles.bgcWhite.backgroundColor}
-						actions={[
-							{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
-							{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
+								<LeadTile
+									purposeTab={'invest'}
+									user={user}
+									// key={key}
+									showDropdown={this.showDropdown}
+									dotsDropDown={this.state.dotsDropDown}
+									selectInventory={this.selectInventory}
+									selectedInventory={selectInventory}
+									data={item}
+									dropDownId={dropDownId}
+									unSelectInventory={this.unSelectInventory}
+									goToInventoryForm={this.goToInventoryForm}
+									navigateTo={this.navigateTo}
+									callNumber={this.callNumber}
+								/>
+							)}
+							onEndReached={() => {
+								if (leadsData.length < totalLeads) {
+									this.setState({
+										page: this.state.page + 1,
+										onEndReachedLoader: true
+									}, () => {
+										this.fetchLeads(purposeTab, statusFilter);
+									});
+								}
+								else {
+									helper.errorToast('No more properties available to show');
+								}
+							}}
+							onEndReachedThreshold={0.5}
+							keyExtractor={(item, index) => this.setKey(index)}
+						/>
+						:
+						<LoadingNoResult loading={loading} />
+				}
+				{
+					<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
+				}
+				<FAB.Group
+					open={open}
+					icon="plus"
+					style={{ marginBottom: 16 }}
+					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+					color={AppStyles.bgcWhite.backgroundColor}
+					actions={[
+						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
+						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
 
-						]}
-						onStateChange={({ open }) => this.setState({ open })}
-					/>
+					]}
+					onStateChange={({ open }) => this.setState({ open })}
+				/>
 				<SortModal
 					sendStatus={this.sendStatus}
 					openStatus={this.openStatus}

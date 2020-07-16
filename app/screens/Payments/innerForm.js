@@ -144,6 +144,7 @@ class InnerForm extends Component {
       tokenDateStatus,
       downPaymentDateStatus,
       downPaymentFormat,
+      dateStatusForPayments,
     } = this.props
     const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2, editPriceFormat } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
@@ -293,7 +294,7 @@ class InnerForm extends Component {
             paymentDone={submitValues}
             showStyling={showAndHideStyling}
             showStylingState={showStylingState}
-            editPriceFormat={{status: promotionDiscountFormat, name: 'discount'}}
+            editPriceFormat={{ status: promotionDiscountFormat, name: 'discount' }}
             date={''}
             showDate={false}
             dateStatus={false}
@@ -326,7 +327,7 @@ class InnerForm extends Component {
             paymentDone={submitValues}
             showStyling={showAndHideStyling}
             showStylingState={showStylingState}
-            editPriceFormat={{status: tokenFormat, name: 'token'}}
+            editPriceFormat={{ status: tokenFormat, name: 'token' }}
             date={tokenDate}
             showDate={true}
             dateStatus={tokenDateStatus}
@@ -365,7 +366,7 @@ class InnerForm extends Component {
             paymentDone={submitValues}
             showStyling={showAndHideStyling}
             showStylingState={showStylingState}
-            editPriceFormat={{status: downPaymentFormat, name: 'downPayment'}}
+            editPriceFormat={{ status: downPaymentFormat, name: 'downPayment' }}
             date={downPaymentTime}
             showDate={true}
             dateStatus={downPaymentDateStatus}
@@ -447,25 +448,45 @@ class InnerForm extends Component {
                       :
                       item.installmentDate
                     return (
-                      <View style={[AppStyles.mainBlackWrap]}>
-                        <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
-                          <Text style={[AppStyles.blackInputText]}>Payment {index + 1}</Text>
-                          <View style={[AppStyles.blackInput]}>
-                            <TextInput style={[AppStyles.blackInput]} editable={closedLeadEdit} value={item.installmentAmount} placeholder={'Enter Payment'} onChangeText={(text) => { handlePayments(text, index) }} keyboardType={'numeric'} />
-                            <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(item.installmentAmount != null ? item.installmentAmount : '')}</Text>
+                      <View>
+                        {/* <View style={[AppStyles.mainBlackWrap]}>
+                          <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+                            <Text style={[AppStyles.blackInputText]}>Payment {index + 1}</Text>
+                            <View style={[AppStyles.blackInput]}>
+                              <TextInput style={[AppStyles.blackInput]} editable={closedLeadEdit} value={item.installmentAmount} placeholder={'Enter Payment'} onChangeText={(text) => { handlePayments(text, index) }} keyboardType={'numeric'} />
+                              <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(item.installmentAmount != null ? item.installmentAmount : '')}</Text>
+                            </View>
                           </View>
-                        </View>
 
-                        <View style={[AppStyles.blackInputdate]}>
-                          <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{itemDate}</Text>
-                          {
-                            arrowCheck.payments === true ?
-                              <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('payments') }}>
-                                <Image source={targetArrow} style={styles.arrowImg} />
-                              </TouchableOpacity>
-                              : null
-                          }
-                        </View>
+                          <View style={[AppStyles.blackInputdate]}>
+                            <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{itemDate}</Text>
+                            {
+                              arrowCheck.payments === true ?
+                                <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('payments') }}>
+                                  <Image source={targetArrow} style={styles.arrowImg} />
+                                </TouchableOpacity>
+                                : null
+                            }
+                          </View>
+                        </View> */}
+                        <InputField
+                          label={`Payment ${index + 1}`}
+                          placeholder={'Enter Payment'}
+                          name={index}
+                          arrayName={'payments'}
+                          typeArray={true}
+                          value={item.installmentAmount != null ? item.installmentAmount : ''}
+                          priceFormatVal={item.installmentAmount != null ? item.installmentAmount : ''}
+                          keyboardType={'numeric'}
+                          onChange={handlePayments}
+                          paymentDone={submitValues}
+                          showStyling={showAndHideStyling}
+                          showStylingState={showStylingState}
+                          editPriceFormat={{ status: downPaymentFormat, name: 'payments' }}
+                          date={itemDate}
+                          showDate={true}
+                          dateStatus={dateStatusForPayments[index]}
+                        />
                       </View>
                     )
                   })

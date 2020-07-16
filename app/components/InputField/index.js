@@ -66,8 +66,8 @@ class InputField extends React.Component {
               name={name}
               keyboardType={keyboardType}
               value={val}
-              onChangeText={(val) => { onChange(val, name) }}
-              onTouchStart={() => { editable != false && showStyling(name, false) }}
+              onChangeText={(val) => { onChange(val, name, arrayName) }}
+              onTouchStart={() => { editable != false && showStyling(name, false, arrayName) }}
               placeholderTextColor="#96999E"
               placeholderFontWeight="400"
               editable={editable}
@@ -79,8 +79,8 @@ class InputField extends React.Component {
 
           {/* Check Button */}
           {
-            showStylingState == name &&
-            <TouchableOpacity style={[styles.inputCheckBtn]} onPress={() => { paymentDone(typeArray != true ? name : arrayName) }}>
+            showStylingState === name &&
+            <TouchableOpacity style={[styles.inputCheckBtn]} onPress={() => { typeArray != true ? paymentDone(name) : paymentDone(arrayName, name) }}>
               <Image source={InputCheckImg} style={[styles.inputCheckImg]} />
             </TouchableOpacity>
           }
@@ -88,9 +88,9 @@ class InputField extends React.Component {
 
           {/* Times Button */}
           {
-            showStylingState == name &&
+            showStylingState === name &&
             <View style={[styles.timesBtnParent]}>
-              <TouchableOpacity style={[styles.timesBtn]} onPress={() => { showStyling(name, true) }}>
+              <TouchableOpacity style={[styles.timesBtn]} onPress={() => { showStyling(name, true, arrayName) }}>
                 <Image source={inputTimesImg} style={[styles.inputTimesImg]} />
               </TouchableOpacity>
             </View>

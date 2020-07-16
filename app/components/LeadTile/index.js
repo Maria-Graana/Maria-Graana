@@ -35,14 +35,6 @@ class LeadTile extends React.Component {
                   }
                 </Text>
               </View>
-              {/* <View>
-                <TouchableOpacity style={styles.actionBtn} onPress={() => { callNumber(`tel:${data.customer && data.customer.phone}`) }}>
-                  <Image
-                    style={[styles.fireIcon, AppStyles.mlFive]}
-                    source={phone}
-                  />
-                </TouchableOpacity>
-              </View> */}
             </View>
 
             <View style={[styles.contentMainWrap]}>
@@ -74,7 +66,7 @@ class LeadTile extends React.Component {
                     <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
                       {data.size !== 0 ? data.size + ' ' : null}
                       {data.size_unit && data.size_unit !== null ? data.size_unit + ' ' : null}
-                      {helper.capitalize(data.subtype)} {data.purpose != null && 'for'}
+                      {helper.capitalize(data.subtype)} {data.purpose != null && 'for '}
                       {helper.capitalize(data.purpose)}
                     </Text>
 
@@ -86,7 +78,7 @@ class LeadTile extends React.Component {
                   <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
                     {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{purposeTab === 'invest' && helper.capitalize(projectName)}
                     {
-                      data.projectType != '' &&
+                      data.projectType && data.projectType != '' &&
                       ` - ${helper.capitalize(data.projectType)}`
                     }
                     {/* {`${helper.capitalize(data.subtype)} ${helper.capitalize(data.projectType)}`} */}

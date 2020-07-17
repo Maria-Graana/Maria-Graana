@@ -17,6 +17,7 @@ import { setlead } from '../../actions/lead';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import StaticData from '../../StaticData';
 import CMBottomNav from '../../components/CMBottomNav'
+import { Platform } from 'react-native'
 
 class Meetings extends Component {
   constructor(props) {
@@ -318,6 +319,7 @@ class Meetings extends Component {
       isVisible,
       checkForUnassignedLeadEdit,
     } = this.state
+    let platform = Platform.OS == 'ios' ? 'ios' : 'android'
     let leadData = this.props.lead
     // let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
@@ -353,12 +355,12 @@ class Meetings extends Component {
           leadClosedCheck == true &&
           <View style={[styles.callMeetingBtn]}>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.openModal() }}>
+              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.openModal() }}>
                 <Text style={styles.alignCenter}>Add Meeting</Text>
               </TouchableOpacity>
             </View>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={styles.actionBtn} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
+              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
                 <Text style={styles.alignCenter}>Call</Text>
               </TouchableOpacity>
             </View>

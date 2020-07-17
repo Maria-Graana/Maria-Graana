@@ -394,7 +394,7 @@ class CMReport extends React.Component {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
             this.setState({ selectedDate: quarter.name + ', ' + selectedYear, selectedQuarter: newQaurter })
-            url = `/api/leads/project/report?scope=&q=organization${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
+            url = `/api/leads/project/report?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
         }
         this.fetchReport(url)
     }
@@ -439,7 +439,7 @@ class CMReport extends React.Component {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
             this.setState({ selectedDate: quarter.name + ', ' + selectedYear, selectedQuarter: newQaurter })
-            url = `/api/leads/project/report?scope=&q=organization${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
+            url = `/api/leads/project/report?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
         }
 
         this.fetchReport(url)
@@ -482,7 +482,7 @@ class CMReport extends React.Component {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
             this.setState({ selectedDate: quarter.name + ', ' + selectedYear, selectedQuarter: newQaurter })
-            url = `/api/leads/project/report?scope=&q=organization${regionFormData.region}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
+            url = `/api/leads/project/report?scope=region&q=${regionFormData.region}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
         }
 
         this.fetchReport(url)

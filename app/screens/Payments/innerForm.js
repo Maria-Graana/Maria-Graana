@@ -230,7 +230,7 @@ class InnerForm extends Component {
 
 
           {/* **************************************** */}
-          <InputField
+          {/* <InputField
             label={'RATE'}
             placeholder={'Rate'}
             name={'totalRate'}
@@ -241,7 +241,7 @@ class InnerForm extends Component {
             dateStatus={false}
             editable={false}
             editPriceFormat={{status: true, name:'totalRate'}}
-          />
+          /> */}
           <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>RATE</Text>

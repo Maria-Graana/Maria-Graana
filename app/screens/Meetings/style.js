@@ -48,7 +48,7 @@ export default styles = StyleSheet.create({
     marginRight: 10,
   },
   boxShadowForandroid: {
-    elevation: 10,
+    elevation: 5,
     shadowOffset: { width: -1, height: -1 },
     shadowColor: '#000',
     shadowOpacity: 1,

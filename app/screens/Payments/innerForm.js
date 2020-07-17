@@ -248,7 +248,7 @@ class InnerForm extends Component {
             showDate={false}
             dateStatus={false}
             editable={false}
-            editPriceFormat={{ status: true, name: 'totalRate' }}
+            editPriceFormat={{status: true, name:'totalRate'}}
           />
           {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
@@ -257,7 +257,7 @@ class InnerForm extends Component {
                 <TextInput style={[AppStyles.blackInput]} placeholder={'Rate'} value={formatPrice(rate)} editable={false} />
               </View>
             </View>
-          </View> */}
+          </View>  */}
 
           {/* **************************************** */}
           <InputField
@@ -492,10 +492,13 @@ class InnerForm extends Component {
                   })
                 }
 
+                {
+                  closedLeadEdit == true &&
+                  <TouchableOpacity onPress={() => closedLeadEdit == true ? addFullpaymentFields() : closedLead()}>
+                    <Text style={styles.addMore}>Add More Payments</Text>
+                  </TouchableOpacity>
+                }
 
-                <TouchableOpacity onPress={() => closedLeadEdit == true ? addFullpaymentFields() : closedLead()}>
-                  <Text style={styles.addMore}>Add More Payments</Text>
-                </TouchableOpacity>
               </View>
           }
 

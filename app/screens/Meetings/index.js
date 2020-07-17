@@ -21,6 +21,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 class Meetings extends Component {
   constructor(props) {
     super(props)
+    const { lead, user } = this.props
     this.state = {
       active: false,
       formData: {
@@ -43,7 +44,8 @@ class Meetings extends Component {
       isVisible: false,
       selectedReason: '',
       checkReasonValidation: false,
-      closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
+      closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost,
+      checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
     }
   }
 
@@ -314,9 +316,11 @@ class Meetings extends Component {
       checkReasonValidation,
       closedLeadEdit,
       isVisible,
+      checkForUnassignedLeadEdit,
     } = this.state
     let leadData = this.props.lead
-    let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
+    // let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
+    let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
     return (
       <View style={styles.mainWrapCon}>
         <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />

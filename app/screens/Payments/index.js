@@ -67,7 +67,7 @@ class Payments extends Component {
 			closedLeadEdit:
 				lead.status != StaticData.Constants.lead_closed_won &&
 				lead.status != StaticData.Constants.lead_closed_lost,
-				checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
+			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
 		}
 
 	}

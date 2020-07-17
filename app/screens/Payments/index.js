@@ -66,8 +66,8 @@ class Payments extends Component {
 			// checkPaymentTypeValue: ''
 			closedLeadEdit:
 				lead.status != StaticData.Constants.lead_closed_won &&
-				lead.status != StaticData.Constants.lead_closed_lost &&
-				lead.assigned_to_armsuser_id == user.id
+				lead.status != StaticData.Constants.lead_closed_lost,
+			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
 		}
 
 	}
@@ -621,6 +621,7 @@ class Payments extends Component {
 			modalVisible,
 			checkPaymentTypeValue,
 			closedLeadEdit,
+			checkForUnassignedLeadEdit,
 		} = this.state
 		return (
 			<View>
@@ -668,6 +669,7 @@ class Payments extends Component {
 							goToAttachments={this.goToAttachments}
 							goToComments={this.goToComments}
 							navigateTo={this.navigateTo}
+							checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
 						/>
 					</View>
 				</ScrollView>

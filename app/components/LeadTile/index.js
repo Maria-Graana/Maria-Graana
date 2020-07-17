@@ -14,9 +14,10 @@ class LeadTile extends React.Component {
 
 
   render() {
-    const { data, navigateTo, callNumber, user } = this.props
-    var changeColor = data.assigned_to_armsuser_id != null ? styles.blueColor : AppStyles.darkColor
-    var changeStatusColor = data.assigned_to_armsuser_id != null ? styles.tokenLabel : styles.tokenLabelDark
+    const { data, navigateTo, callNumber, user, purposeTab } = this.props
+    var changeColor = data.assigned_to_armsuser_id == user.id ? styles.blueColor : AppStyles.darkColor
+    var changeStatusColor = data.assigned_to_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
+    let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
 
@@ -33,14 +34,6 @@ class LeadTile extends React.Component {
                   }
                 </Text>
               </View>
-              {/* <View>
-                <TouchableOpacity style={styles.actionBtn} onPress={() => { callNumber(`tel:${data.customer && data.customer.phone}`) }}>
-                  <Image
-                    style={[styles.fireIcon, AppStyles.mlFive]}
-                    source={phone}
-                  />
-                </TouchableOpacity>
-              </View> */}
             </View>
 
             <View style={[styles.contentMainWrap]}>
@@ -58,29 +51,39 @@ class LeadTile extends React.Component {
                     PKR
             	 	</Text>
                   <Text style={[styles.priceText, styles.multiColumn, changeColor]}>
-                    {!data.projectId && data.min_price && helper.checkPrice(data.min_price) + ' - '} {!data.projectId && data.price && helper.checkPrice(data.price)}  {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}{data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
+                    {` ${!data.projectId && data.min_price ? helper.checkPrice(data.min_price) + ' - ' : ''}`}
+                    {!data.projectId && data.price ? helper.checkPrice(data.price) : ''}
+                    {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}
+                    {data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
                   </Text>
                 </View>
 
                 {/* ****** Address Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   {
-                    data.size != null && !data.projectId ?
-                      <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>{data.size !== 0 ? data.size + ' ' : null}{data.size_unit && data.size_unit !== null ? data.size_unit + ' ' : null}{helper.capitalize(data.subtype)} {data.purpose != null && 'for'} {helper.capitalize(data.purpose)}</Text>
-                      :
-                      <Text style={[AppStyles.darkColor]}>
-                        {`${helper.capitalize(data.subtype)}${helper.capitalize(data.projectType)}`}
-                      </Text>
+                    data.size != null && !data.projectId &&
+                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                      {data.size !== 0 ? data.size + ' ' : null}
+                      {data.size_unit && data.size_unit !== null ? data.size_unit + ' ' : null}
+                      {helper.capitalize(data.subtype)} {data.purpose != null && 'for '}
+                      {helper.capitalize(data.purpose)}
+                    </Text>
+
                   }
                 </View>
 
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
-                    {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{data.projectId && data.project && helper.capitalize(data.project.name)}
+                    {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{purposeTab === 'invest' && helper.capitalize(projectName)}
+                    {
+                      data.projectType && data.projectType != '' &&
+                      ` - ${helper.capitalize(data.projectType)}`
+                    }
+                    {/* {`${helper.capitalize(data.subtype)} ${helper.capitalize(data.projectType)}`} */}
                   </Text>
                 </View>
-                
+
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, styles.lightColor, AppStyles.mrTen]}>

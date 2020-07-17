@@ -88,7 +88,7 @@ class AddClient extends Component {
     formSubmit = () => {
         const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
         const { route, navigation } = this.props
-        const { update, client } = route.params
+        const { update, client, isFromDropDown, screenName } = route.params
         if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
         if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
             this.setState({
@@ -109,9 +109,15 @@ class AddClient extends Component {
                 if (!update) {
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
-                            if (res.status === 200) {
-                                navigation.goBack()
-                                helper.successToast(res.data.message)
+                            if (res.status === 200 && res.data) {
+                                if(isFromDropDown){
+                                    navigation.navigate(screenName, {client: res.data, name: res.data.first_name + ' ' + res.data.last_name });
+                                    helper.successToast(res.data.message)
+                                }
+                                else{
+                                    navigation.goBack()
+                                    helper.successToast(res.data.message)
+                                }
                             }
                         })
                         .catch((error) => {

@@ -55,7 +55,7 @@ export default styles = StyleSheet.create({
         fontSize: 16
     },
     pickerView: {
-        padding: 15
+        padding: 15,
     },
     resetText: {
         color: AppStyles.colors.primaryColor,

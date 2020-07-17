@@ -14,6 +14,7 @@ import fuzzy from 'fuzzy'
 import Search from '../../components/Search';
 import NoResultsComponent from '../../components/NoResultsComponent';
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
+import _ from 'underscore';
 
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
@@ -29,13 +30,14 @@ class Client extends React.Component {
             pageSize: 20,
             onEndReachedLoader: false,
             searchText: '',
+            isSelected: false,
         }
     }
 
     componentDidMount() {
-        const { navigation } = this.props;
+        const { navigation, route } = this.props;
         this._unsubscribe = navigation.addListener('focus', () => {
-            this.fetchCustomer()
+            this.fetchCustomer();
         })
     }
 
@@ -51,9 +53,18 @@ class Client extends React.Component {
         })
     }
 
+    checkIsSelected = (selectedClient) => {
+        // this function is only called for drop down selection of client.
+        const copyCustomers = [...this.state.customers];
+        const newCustomers = copyCustomers.map(customer => (
+            { ...customer, isSelected: customer.id === selectedClient.id }
+        ))
+        this.setState({ customers: newCustomers })
+    }
+
     fetchCustomer = () => {
-        // const { user } = this.props
         const { customers, page, pageSize } = this.state;
+        const { selectedClient } = this.props.route.params;
         const url = `/api/customer/find?pageSize=${pageSize}&page=${page}`
         axios.get(url)
             .then((res) => {
@@ -62,6 +73,10 @@ class Client extends React.Component {
                     totalCustomers: res.data.count,
                     onEndReachedLoader: false,
                     loading: false
+                }, () => {
+                    if (selectedClient) {
+                        this.checkIsSelected(selectedClient);
+                    }
                 });
             })
             .catch((error) => {
@@ -71,27 +86,43 @@ class Client extends React.Component {
     }
 
     navigateTo = (data) => {
-        this.props.navigation.navigate('ClientDetail', { 'client': data })
+        const { route, navigation } = this.props;
+        const { isFromDropDown = false, screenName } = route.params; // user can by default move to detail screen if param is undefined or null
+        if (isFromDropDown) {
+            // This is the case for dropdown value selection
+            navigation.navigate(screenName, { 'client': data, name: data.firstName + ' ' +  data.lastName })
+
+        }
+        else {
+            // by default flow of client screen
+            navigation.navigate('ClientDetail', { client: data })
+        }
     }
 
     addClient = () => {
-        this.props.navigation.navigate('AddClient', { 'update': false })
+        const { route, navigation } = this.props;
+        const { screenName, isFromDropDown = false } = route.params;
+        navigation.navigate('AddClient', { 'update': false, isFromDropDown, screenName })
     }
 
     handleLongPress = (val) => {
-        ActionSheet.show(
-            {
-                options: BUTTONS,
-                cancelButtonIndex: CANCEL_INDEX,
-                title: 'Select an Option',
-            },
-            buttonIndex => {
-                if (buttonIndex === 0) {
-                    //Delete
-                    this.showDeleteDialog(val);
+        const { route, navigation } = this.props;
+        const { isFromDropDown = false } = route.params;
+        if(!isFromDropDown){
+            ActionSheet.show(
+                {
+                    options: BUTTONS,
+                    cancelButtonIndex: CANCEL_INDEX,
+                    title: 'Select an Option',
+                },
+                buttonIndex => {
+                    if (buttonIndex === 0) {
+                        //Delete
+                        this.showDeleteDialog(val);
+                    }
                 }
-            }
-        );
+            );
+        }
     }
 
     deleteClient = (val) => {
@@ -136,7 +167,7 @@ class Client extends React.Component {
         return (
             !loading ?
                 <View style={[AppStyles.container, styles.container]}>
-                      <Search placeholder='Search clients here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
+                    <Search placeholder='Search clients here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
                     {
                         Ability.canAdd(user.subRole, 'Client') ?
                             <Fab
@@ -154,7 +185,6 @@ class Client extends React.Component {
                     {
                         data.length > 0 ?
                             <FlatList
-                                contentContainerStyle={styles.contentContainerStyle}
                                 data={data}
                                 renderItem={(item, index) => (
                                     <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />

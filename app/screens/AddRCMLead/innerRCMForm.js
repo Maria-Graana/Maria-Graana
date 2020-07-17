@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { formatPrice } from '../../PriceFormate';
 import PriceSlider from '../../components/PriceSlider';
 import StaticData from '../../StaticData'
+import TouchableInput from '../../components/TouchableInput';
 
 class InnerRCMForm extends Component {
   constructor(props) {
@@ -20,56 +21,61 @@ class InnerRCMForm extends Component {
   render() {
 
     const {
+      user,
       formSubmit,
       checkValidation,
       handleForm,
       formData,
-      cities,
-      getClients,
+      handleCityClick,
+      selectedCity,
       propertyType,
       subType,
       sizeUnit,
       handleAreaClick,
+      clientName,
+      handleClientClick,
       priceList,
       onSliderValueChange,
+      organizations
     } = this.props
 
     const { leadAreas } = formData;
+    const leadAreasLength = leadAreas ? leadAreas.length : 0;
     return (
       <View>
 
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={getClients} name={'customerId'} placeholder='Client' />
-            {
-              checkValidation === true && formData.customerId === '' && <ErrorMessage errorMessage={'Required'} />
-            }
-          </View>
-        </View>
-
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={cities} name={'city_id'} placeholder='select City' />
-            {
-              checkValidation === true && formData.city_id === '' && <ErrorMessage errorMessage={'Required'} />
-            }
-          </View>
-        </View>
-
-        {/* **************************************** */}
-        <TouchableOpacity onPress={() => handleAreaClick()}  >
-          <View style={[AppStyles.mainInputWrap, AppStyles.inputPadLeft, AppStyles.formControl, { justifyContent: 'center' }]} >
-            <Text style={[AppStyles.formFontSettings, { color: leadAreas.length > 0 ? AppStyles.colors.textColor : AppStyles.colors.subTextColor }]} >
-              {leadAreas.length > 0 ? `${leadAreas.length} Areas Selected` : 'Select Areas'}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
         {
-          checkValidation === true && leadAreas.length === 0 && <ErrorMessage errorMessage={'Required'} />
+          user.subRole === 'group_management' ?
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent onValueChange={handleForm} data={organizations} name={'org'} placeholder='Organizations' />
+                {
+                  checkValidation === true && formData.org === '' && <ErrorMessage errorMessage={'Required'} />
+                }
+              </View>
+            </View>
+            :
+            null
         }
+
+        <TouchableInput placeholder="Client"
+          onPress={() => handleClientClick()}
+          value={clientName}
+          showError={checkValidation === true && formData.customerId === ''}
+          errorMessage="Required" />
+
+        <TouchableInput placeholder="Select City"
+          onPress={() => handleCityClick()}
+          value={selectedCity ? selectedCity.name : ''}
+          showError={checkValidation === true && formData.city_id === ''}
+          errorMessage="Required" />
+
+        <TouchableInput onPress={() => handleAreaClick()}
+          value={leadAreasLength > 0 ? leadAreasLength + ' Areas Selected' : ''}
+          placeholder="Select Areas"
+          showError={checkValidation === true && leadAreas.length === 0}
+          errorMessage="Required"
+        />
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
@@ -107,7 +113,7 @@ class InnerRCMForm extends Component {
           </View>
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne,  AppStyles.flexMarginRight]}>
+          <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent onValueChange={handleForm} data={sizeUnit} name={'size_unit'} placeholder='Unit Size' />
             </View>

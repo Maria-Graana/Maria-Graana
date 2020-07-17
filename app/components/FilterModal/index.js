@@ -18,6 +18,8 @@ import PriceSlider from '../PriceSlider/index';
 import { Button } from 'native-base';
 import StaticData from '../../StaticData';
 import AreaPicker from '../AreaPicker/index';
+import TouchableInput from '../TouchableInput';
+import SingleSelectionPickerComp from '../SingleSelectionPickerComp/index';
 import ErrorMessage from '../ErrorMessage/index';
 import { formatPrice } from '../../PriceFormate'
 import _ from 'underscore';
@@ -26,14 +28,26 @@ class FilterModal extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            showAreaPicker: false
+            showAreaPicker: false,
+            showCityPicker: false
         }
+    }
+
+    componentDidMount() {
+        this.props.onRef(this)
     }
 
     openModal = () => {
         const { showAreaPicker } = this.state
         this.setState({
             showAreaPicker: !showAreaPicker
+        })
+    }
+
+    openCityModal = () => {
+        const { showCityPicker } = this.state
+        this.setState({
+            showCityPicker: !showCityPicker
         })
     }
 
@@ -53,9 +67,10 @@ class FilterModal extends React.Component {
             subTypVal,
             submitFilter,
             getAreas,
-            onSliderValueChange
+            onSliderValueChange,
+            selectedCity
         } = this.props;
-        const { showAreaPicker } = this.state
+        const { showAreaPicker, showCityPicker } = this.state
         const { sizeUnit, type } = StaticData
         let prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
 
@@ -75,6 +90,9 @@ class FilterModal extends React.Component {
                                 <Text style={styles.headerText}>SEARCH FILTERS</Text>
                             </View>
                         </View>
+
+                        {/* **************************************** */}
+
                         <AreaPicker
                             onRef={ref => (this.areaPicker = ref)}
                             handleForm={handleForm}
@@ -85,12 +103,34 @@ class FilterModal extends React.Component {
                             cityId={formData.cityId}
                             areas={_.clone(areas)}
                         />
-                        <View style={styles.pickerView}>
+
+                        {/* **************************************** */}
+
+                        <SingleSelectionPickerComp
+                            mode={'city'}
+                            handleForm={handleForm}
+                            openModal={this.openCityModal}
+                            isVisible={showCityPicker}
+                            cityId={formData.cityId}
+                            cities={cities.length ? _.clone(cities) : []}
+                        />
+
+                        {/* **************************************** */}
+
+
+                        {/* <View style={styles.pickerView}>
                             <PickerComponent selectedItem={formData.cityId} onValueChange={(text) => {
                                 handleForm(text, 'cityId')
                                 getAreas(text)
                                 this.emptyList()
                             }} data={cities.length ? cities : []} name={'city'} placeholder='Select City' />
+                        </View> */}
+                        <View style={[styles.pickerView, { padding: 0, paddingHorizontal: 15 }]} >
+                            <TouchableInput
+                                placeholder="Select City"
+                                onPress={() => this.openCityModal()}
+                                value={selectedCity ? selectedCity.name : ''}
+                            />
                         </View>
                         <TouchableOpacity onPress={() => this.openModal()} style={styles.btnMargin} >
                             <View style={[AppStyles.mainInputWrap, AppStyles.inputPadLeft, AppStyles.formControl, { justifyContent: 'center' }]} >
@@ -145,7 +185,7 @@ class FilterModal extends React.Component {
                             />
                         </View>
 
-                        <PriceSlider priceValues={prices} initialValue={prices.indexOf(Number(formData.minPrice)  || 0)} finalValue={prices.indexOf(Number(formData.maxPrice)  || 0)} onSliderValueChange={(values) => onSliderValueChange(values)} />
+                        <PriceSlider priceValues={prices} initialValue={prices.indexOf(Number(formData.minPrice) || 0)} finalValue={prices.indexOf(Number(formData.maxPrice) || 0)} onSliderValueChange={(values) => onSliderValueChange(values)} />
 
                         <View style={styles.textInputView}>
                             <View style={styles.textView}>
@@ -167,7 +207,7 @@ class FilterModal extends React.Component {
                         </TouchableOpacity>
                     </ScrollView>
                 </SafeAreaView>
-            </Modal>
+            </Modal >
         )
     }
 }

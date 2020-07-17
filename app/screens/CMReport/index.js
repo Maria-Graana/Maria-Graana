@@ -104,7 +104,7 @@ class CMReport extends React.Component {
 
     checkRole = () => {
         const { user } = this.props
-        
+
         let { regionFormData, agentFormData, zoneFormData } = this.state
         if (user.subRole === 'regional_head') {
             if ('region' in user && user.region) {
@@ -249,12 +249,11 @@ class CMReport extends React.Component {
     }
 
     fetchAgents = (zone) => {
-        const { agentFormData } = this.state
-        axios.get(`/api/user/agents`)
+        axios.get(`/api/user/all?searchBy=armsTeamId&q=${zone}&all=true`)
             .then((res) => {
                 let agents = []
-                res && res.data.length && res.data.map((item, index) => { return (agents.push({ value: item.id, name: item.firstName + ' ' + item.lastName })) })
-                this.setState({ agents, agentFormData })
+                res && res.data.rows.length && res.data.rows.map((item, index) => { return (agents.push({ value: item.id, name: item.firstName + ' ' + item.lastName })) })
+                this.setState({ agents })
             })
             .catch((error) => {
                 console.log(error)
@@ -331,11 +330,10 @@ class CMReport extends React.Component {
         const { selectedQuarter } = this.state
         const date = new Date()
         let newQaurter = selectedQuarter
-
         if (newQaurter === 0) {
-            if (date.getMonth() > 3) return 2
-            if (date.getMonth() > 6) return 3
-            if (date.getMonth() > 9) return 4
+            if (date.getMonth() + 1 > 3 && date.getMonth() + 1 <= 6) return 2
+            if (date.getMonth() + 1 > 6 && date.getMonth() + 1 <= 9) return 3
+            if (date.getMonth() + 1 > 9 && date.getMonth() + 1 <= 13) return 4
             else return 1
         } else return selectedQuarter
     }
@@ -396,7 +394,7 @@ class CMReport extends React.Component {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
             this.setState({ selectedDate: quarter.name + ', ' + selectedYear, selectedQuarter: newQaurter })
-            url = `/api/leads/project/report?scope=&q=organization${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
+            url = `/api/leads/project/report?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
         }
         this.fetchReport(url)
     }
@@ -441,7 +439,7 @@ class CMReport extends React.Component {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
             this.setState({ selectedDate: quarter.name + ', ' + selectedYear, selectedQuarter: newQaurter })
-            url = `/api/leads/project/report?scope=&q=organization${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
+            url = `/api/leads/project/report?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
         }
 
         this.fetchReport(url)
@@ -484,7 +482,7 @@ class CMReport extends React.Component {
             let newQaurter = this.setDefaultQuarter()
             let quarter = _.find(quarters, function (item) { return item.value === newQaurter })
             this.setState({ selectedDate: quarter.name + ', ' + selectedYear, selectedQuarter: newQaurter })
-            url = `/api/leads/project/report?scope=&q=organization${regionFormData.region}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
+            url = `/api/leads/project/report?scope=region&q=${regionFormData.region}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate}&toDate=${selectedYear}-${quarter.toDate}`
         }
 
         this.fetchReport(url)

@@ -24,13 +24,15 @@ class AddInventory extends Component {
         super(props)
         this.state = {
             checkValidation: false,
-            cities: [],
             areas: [],
             selectSubType: [],
             selectedGrade: '',
             sizeUnit: StaticData.sizeUnit,
             buttonText: 'ADD PROPERTY',
-            getClients: [],
+            clientName: '',
+            selectedClient: null,
+            selectedCity: null,
+            selectedArea: null,
             isModalOpen: false,
             formData: {
                 type: '',
@@ -59,15 +61,24 @@ class AddInventory extends Component {
             }
         }
     }
+    
 
     componentDidMount() {
         const { route, navigation, user } = this.props;
+        navigation.addListener('focus', () => {
+           this.onScreenFocused()
+        })
         if (route.params.update) {
             navigation.setOptions({ title: 'EDIT PROPERTY' })
             this.setEditValues()
         }
-        this.getCities();
-        this.getClients(user.id);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        //Typical usage, don't forget to compare the props
+        if (prevState.selectedCity && this.state.selectedCity.value !== prevState.selectedCity.value) {
+            this.clearAreaOnCityChange(); // clear area field only when city is changed, doesnot get called if same city is selected again..
+        }
     }
 
     componentWillUnmount() {
@@ -75,23 +86,27 @@ class AddInventory extends Component {
         this.props.dispatch((setImageLoading(false)));
     }
 
-    getClients = (id) => {
-        axios.get(`/api/customer/find?userId=${id}`)
-            .then((res) => {
-                let clientsArray = [];
-                res && res.data.rows.map((item, index) => {
-                    return (
-                        clientsArray.push(
-                            {
-                                value: item.id, name: item.firstName === '' || item.firstName === null ? item.contact1 : item.firstName + ' ' + item.lastName
-                            }
-                        )
-                    )
-                })
-                this.setState({
-                    getClients: clientsArray
-                })
-            })
+    onScreenFocused = () => {
+        const { client, name, selectedCity, selectedArea } = this.props.route.params;
+        const { formData } = this.state;
+        let copyObject = Object.assign({}, formData);
+        if (client && name) {
+            copyObject.customer_id = client.id;
+            this.setState({ formData: copyObject, clientName: name, selectedClient: client })
+        }
+        if (selectedCity) {
+            copyObject.city_id = selectedCity.value;
+            this.setState({ formData: copyObject, selectedCity })
+        }
+        if(selectedArea){
+            copyObject.area_id = selectedArea.value;
+            this.setState({ formData: copyObject, selectedArea })
+        }
+    }
+
+    clearAreaOnCityChange = () => {
+        const { formData } = this.state;
+        this.setState({ formData: {...formData, area_id :''} , selectedArea: null });
     }
 
     setEditValues = () => {
@@ -127,17 +142,20 @@ class AddInventory extends Component {
                 show_address: true,
                 video: property.video,
             },
+            selectedClient: property.customer ? property.customer : null,
+            selectedCity: property.city ? {...property.city, value:property.city.id} : null,
+            selectedArea: property.area ? {...property.area, value:property.area.id} : null,
+            clientName: property.customer && property.customer.first_name + ' ' + property.customer.last_name,
             buttonText: 'UPDATE PROPERTY'
         }, () => {
-            // console.log(this.state.formData);
             this.selectSubtype(property.type);
-            this.getAreas(property.city_id);
+            // this.getAreas(property.city_id);
             this.state.formData.imageIds.length > 0 && this.setImagesForEditMode();
         })
     }
 
     setImagesForEditMode = () => {
-        const {dispatch} = this.props;
+        const { dispatch } = this.props;
         const { formData } = this.state;
         const { imageIds } = formData;
         imageIds.map(image => {
@@ -147,28 +165,6 @@ class AddInventory extends Component {
                 filetype: image.type,
             }))
         })
-    }
-
-    getCities = () => {
-        axios.get(`/api/cities`)
-            .then((res) => {
-                let citiesArray = [];
-                res && res.data.map((item, index) => { return (citiesArray.push({ value: item.id, name: item.name })) })
-                this.setState({
-                    cities: citiesArray
-                })
-            })
-    }
-
-    getAreas = (cityId) => {
-        axios.get(`/api/areas?city_id=${cityId}&&all=${true}`)
-            .then((res) => {
-                let areas = [];
-                res && res.data.items.map((item, index) => { return (areas.push({ value: item.id, name: item.name })) })
-                this.setState({
-                    areas: areas
-                })
-            })
     }
 
     selectSubtype = (type) => {
@@ -182,7 +178,6 @@ class AddInventory extends Component {
         this.setState({ formData }, () => {
         })
         if (formData.type != '') { this.selectSubtype(formData.type) }
-        if (formData.city_id != '') { this.getAreas(formData.city_id) }
         if (formData.size === '') {
             formData.size = null;
             this.setState({ formData })
@@ -289,7 +284,7 @@ class AddInventory extends Component {
     }
 
     imageBrowserCallback = mediaAssets => {
-       const {dispatch} = this.props;
+        const { dispatch } = this.props;
         mediaAssets
             .then(photos => {
                 this.setState(
@@ -298,14 +293,14 @@ class AddInventory extends Component {
                     },
                     () => {
                         // console.log('@@@', photos)
-                        if(photos.length>0){
+                        if (photos.length > 0) {
                             dispatch((setImageLoading(true)));
                             this._uploadMultipleImages(photos);
                         }
-                        else{
+                        else {
                             helper.errorToast('No pictures selected');
                         }
-                       
+
                     }
                 );
             })
@@ -402,7 +397,7 @@ class AddInventory extends Component {
     }
 
     convertToIntegerForZero = (val) => {
-        if (val === '') {
+        if (val === 0) {
             return 0;
         }
         else if (typeof (val) === 'string' && val != '') {
@@ -410,19 +405,41 @@ class AddInventory extends Component {
         }
     }
 
+    handleClientClick = () => {
+        const { navigation } = this.props;
+        const { selectedClient } = this.state;
+        navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddInventory' });
+    }
 
+    handleCityClick = () => {
+        const { navigation } = this.props;
+        const { selectedCity } = this.state;
+        navigation.navigate('SingleSelectionPicker', { screenName: 'AddInventory', mode: 'city', selectedCity });
+    }
+
+
+    handleAreaClick = () => {
+        const { navigation } = this.props;
+        const { selectedArea, selectedCity } = this.state;
+        if(selectedCity) {
+            navigation.navigate('SingleSelectionPicker', { screenName: 'AddInventory', mode: 'area', cityId: selectedCity.value, selectedArea });
+        }
+        else{
+            alert('Please select city first!');
+        }
+    }
 
     render() {
         const {
             formData,
-            cities,
-            areas,
             selectSubType,
             checkValidation,
             buttonText,
             buttonDisabled,
-            getClients,
             sizeUnit,
+            clientName,
+            selectedCity,
+            selectedArea,
             isModalOpen,
         } = this.state
         return (
@@ -451,9 +468,13 @@ class AddInventory extends Component {
                                 handleForm={this.handleForm}
                                 formData={formData}
                                 purpose={StaticData.purpose}
-                                cities={cities}
-                                areas={areas}
+                                selectedCity={selectedCity}
+                                selectedArea={selectedArea}
+                                handleCityClick={this.handleCityClick}
+                                handleAreaClick = {this.handleAreaClick}
                                 buttonText={buttonText}
+                                clientName={clientName}
+                                handleClientClick={this.handleClientClick}
                                 propertyType={StaticData.type}
                                 getCurrentLocation={this._getLocationAsync}
                                 getImages={() => this.getImages()}
@@ -464,7 +485,6 @@ class AddInventory extends Component {
                                 latitude={formData.lat}
                                 longitude={formData.lng}
                                 price={formData.price}
-                                getClients={getClients}
                                 deleteImage={(image, index) => this.deleteImage(image, index)}
                                 buttonDisabled={buttonDisabled}
                             />

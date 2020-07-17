@@ -5,6 +5,8 @@ import UserAvatar from 'react-native-user-avatar';
 import Ability from '../../hoc/Ability';
 import { connect } from 'react-redux';
 import Avatar from '../Avatar';
+import { isEmpty } from "underscore";
+import { widthPercentageToDP } from "react-native-responsive-screen";
 
 class CustomerTile extends React.Component {
     constructor(props) {
@@ -26,17 +28,17 @@ class CustomerTile extends React.Component {
         const { item } = this.props.data
         const { user } = this.props
         let heading = this.getHeading()
-
         return (
             <TouchableOpacity
+                style={{ backgroundColor: item.isSelected ? AppStyles.colors.backgroundColor : AppStyles.whiteColor }}
                 activeOpacity={.7}
                 onPress={() => { this.props.onPress(item) }}
                 onLongPress={(val) => {
                     if (Ability.canDelete(user.subRole, 'Client')) this.props.handleLongPress(item)
                 }}
             >
-                <View style={{ flexDirection: 'row', marginVertical: 15 }}>
-                    <View style={{ paddingRight: 10 }}>
+                <View style={styles.listItem}>
+                    <View style={styles.imageViewStyle}>
                         <Avatar data={item} />
                     </View>
                     <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
@@ -68,12 +70,13 @@ class CustomerTile extends React.Component {
 
 const styles = StyleSheet.create({
     listItem: {
-        width: "100%",
-        marginVertical: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        flexDirection: "row",
+        flexDirection: 'row',
+        marginVertical: 15,
+        marginHorizontal: widthPercentageToDP('2%'),
         alignItems: "center"
+    },
+    imageViewStyle :{
+        paddingRight: 10 ,
     },
     textFont: {
         fontFamily: AppStyles.fonts.defaultFont

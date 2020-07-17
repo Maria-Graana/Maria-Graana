@@ -11,15 +11,17 @@ import * as RootNavigation from '../../navigation/RootNavigation';
 import StaticData from '../../StaticData'
 import helper from '../../helper';
 import { setSelectedAreas } from "../../actions/areas";
-
+import _ from 'underscore';
 
 class AddRCMLead extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            organizations: [],
             checkValidation: false,
-            cities: [],
-            getClients: [],
+            clientName: '',
+            selectedClient: null,
+            selectedCity: null,
             getProject: [],
             formType: 'sale',
             priceList: [],
@@ -36,31 +38,65 @@ class AddRCMLead extends Component {
                 size_unit: null,
                 minPrice: null,
                 maxPrice: null,
+                org: ''
             }
         }
     }
 
+
+    componentDidUpdate(prevProps, prevState) {
+        //Typical usage, don't forget to compare the props
+        if (prevState.selectedCity && this.state.selectedCity.value !== prevState.selectedCity.value) {
+            this.clearAreaOnCityChange(); // clear area field only when city is changed, doesnot get called if same city is selected again..
+        }
+    }
+
+
+
     componentDidMount() {
         const { user, navigation } = this.props
         navigation.addListener('focus', () => {
-            setTimeout(() => {
-                const { selectedAreasIds } = this.props;
-                const { RCMFormData } = this.state;
-                let copyObject = Object.assign({}, RCMFormData);
-                copyObject.leadAreas = selectedAreasIds;
-                this.setState({ RCMFormData: copyObject })
-            }, 1000)
+            this.onScreenFocused()
         })
-        this.getCities();
-        this.getAllProjects();
-        this.getClients(user.id);
         this.setPriceList()
+        this.fetchOrganizations()
     }
 
     componentWillUnmount() {
         const { dispatch } = this.props;
         // selected Areas should be cleared to be used anywhere else
         dispatch(setSelectedAreas([]));
+    }
+
+    onScreenFocused = () => {
+        const { client, name, selectedCity } = this.props.route.params;
+        const { RCMFormData } = this.state;
+        let copyObject = Object.assign({}, RCMFormData);
+        if (client && name) {
+            copyObject.customerId = client.id;
+            this.setState({ RCMFormData: copyObject, clientName: name, selectedClient: client })
+        }
+        if (selectedCity) {
+            copyObject.city_id = selectedCity.value;
+            this.setState({ formData: copyObject, selectedCity })
+        }
+        setTimeout(() => {
+            const { selectedAreasIds } = this.props;
+            copyObject.leadAreas = selectedAreasIds;
+            this.setState({ RCMFormData: copyObject })
+        }, 1000)
+    }
+
+    fetchOrganizations = () => {
+        axios.get('/api/user/organizations?limit=2')
+            .then((res) => {
+                let organizations = []
+                res && res.data.rows.length && res.data.rows.map((item, index) => { return (organizations.push({ value: item.id, name: item.name })) })
+                this.setState({ organizations })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     setPriceList = () => {
@@ -77,64 +113,23 @@ class AddRCMLead extends Component {
         }
     }
 
-    getClients = (id) => {
-        axios.get(`/api/customer/find?userId=${id}`)
-            .then((res) => {
-                let clientsArray = [];
-                res && res.data.rows.map((item, index) => {
-                    return (
-                        clientsArray.push(
-                            {
-                                value: item.id, name: item.firstName === '' || item.firstName === null ? item.contact1 : item.firstName + ' ' + item.lastName
-                            }
-                        )
-                    )
-                })
-                this.setState({
-                    getClients: clientsArray
-                })
-            })
-    }
-
-    getCities = () => {
-        axios.get(`/api/cities`)
-            .then((res) => {
-                let citiesArray = [];
-                res && res.data.map((item, index) => { return (citiesArray.push({ value: item.id, name: item.name })) })
-                this.setState({
-                    cities: citiesArray
-                })
-            })
-    }
-
-    getAllProjects = () => {
-        axios.get(`/api/project/all`)
-            .then((res) => {
-                let projectArray = [];
-                res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name })) })
-                this.setState({
-                    getProject: projectArray
-                })
-            })
-    }
-
-
     handleRCMForm = (value, name) => {
         const { RCMFormData } = this.state
         const { dispatch } = this.props;
         RCMFormData[name] = value
         this.setState({ RCMFormData })
-        if (RCMFormData.city_id !== '' && name === 'city_id') {
-            let copyObject = Object.assign({}, RCMFormData);
-            copyObject.leadAreas = [];
-            this.setState({ RCMFormData: copyObject });
-            dispatch(setSelectedAreas([]))
-
-        }
         if (RCMFormData.type != '') { this.selectSubtype(RCMFormData.type) }
 
     }
 
+    clearAreaOnCityChange = () => {
+        const { dispatch } = this.props;
+        const { RCMFormData, } = this.state;
+        let copyObject = Object.assign({}, RCMFormData);
+        copyObject.leadAreas = [];
+        this.setState({ RCMFormData: copyObject });
+        dispatch(setSelectedAreas([]))
+    }
 
     handleAreaClick = () => {
         const { RCMFormData } = this.state;
@@ -151,45 +146,84 @@ class AddRCMLead extends Component {
         }
     }
 
+    handleClientClick = () => {
+        const { navigation } = this.props;
+        const { selectedClient } = this.state;
+        navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddRCMLead' });
+    }
+
+    handleCityClick = () => {
+        const { navigation } = this.props;
+        const { selectedCity } = this.state;
+        navigation.navigate('SingleSelectionPicker', { screenName: 'AddRCMLead', mode: 'city', selectedCity });
+    }
+
     selectSubtype = (type) => {
         this.setState({ selectSubType: StaticData.subType[type] })
     }
 
     RCMFormSubmit = () => {
-        const { formType, RCMFormData } = this.state
-        if (
-            !RCMFormData.customerId ||
-            !RCMFormData.city_id ||
-            !RCMFormData.leadAreas ||
-            !RCMFormData.type ||
-            !RCMFormData.subtype
-        ) {
-            this.setState({
-                checkValidation: true
-            })
-        } else {
-            if (RCMFormData.size === '') RCMFormData.size = null
-            else RCMFormData.size = Number(RCMFormData.size)
-            let payLoad = {
-                purpose: formType,
-                type: RCMFormData.type,
-                subtype: RCMFormData.subtype,
-                bed: RCMFormData.bed,
-                bath: RCMFormData.bath,
-                size: RCMFormData.size,
-                leadAreas: RCMFormData.leadAreas,
-                customerId: RCMFormData.customerId,
-                city_id: RCMFormData.city_id,
-                size_unit: RCMFormData.size_unit,
-                price: RCMFormData.maxPrice,
-                min_price: RCMFormData.minPrice,
-            }
-            axios.post(`/api/leads`, payLoad)
-                .then((res) => {
-                    helper.successToast(res.data)
-                    RootNavigation.navigate('Leads')
+        const { RCMFormData } = this.state
+        const { user } = this.props
+        if (user.subRole === 'group_management') {
+            if (
+                !RCMFormData.customerId ||
+                !RCMFormData.city_id ||
+                !RCMFormData.leadAreas ||
+                !RCMFormData.type ||
+                !RCMFormData.org ||
+                !RCMFormData.subtype
+
+            ) {
+                this.setState({
+                    checkValidation: true
                 })
+            } else this.sendPayload()
         }
+        else {
+            if (
+                !RCMFormData.customerId ||
+                !RCMFormData.city_id ||
+                !RCMFormData.leadAreas ||
+                !RCMFormData.type ||
+                !RCMFormData.subtype
+            ) {
+                this.setState({
+                    checkValidation: true
+                })
+            } else this.sendPayload()
+        }
+    }
+
+    sendPayload = () => {
+        const { formType, RCMFormData, formData, organizations } = this.state
+        const { user } = this.props
+
+        if (RCMFormData.size === '') RCMFormData.size = null
+        else RCMFormData.size = Number(RCMFormData.size)
+        let payLoad = {
+            purpose: formType,
+            type: RCMFormData.type,
+            subtype: RCMFormData.subtype,
+            bed: RCMFormData.bed,
+            bath: RCMFormData.bath,
+            size: RCMFormData.size,
+            leadAreas: RCMFormData.leadAreas,
+            customerId: RCMFormData.customerId,
+            city_id: RCMFormData.city_id,
+            size_unit: RCMFormData.size_unit,
+            price: RCMFormData.maxPrice,
+            min_price: RCMFormData.minPrice,
+        }
+        if (user.subRole === 'group_management') {
+            let newOrg = _.find(organizations, function (item) { return item.value === formData.org })
+            payLoad.org = newOrg.name.toLowerCase()
+        }
+        axios.post(`/api/leads`, payLoad)
+            .then((res) => {
+                helper.successToast(res.data)
+                RootNavigation.navigate('Leads')
+            })
     }
 
     changeStatus = (status) => {
@@ -210,15 +244,18 @@ class AddRCMLead extends Component {
 
     render() {
         const {
+            organizations,
             cities,
-            getClients,
+            clientName,
             formType,
             RCMFormData,
+            selectedCity,
             selectSubType,
             checkValidation,
             priceList,
         } = this.state
         const { route } = this.props
+
         return (
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
@@ -226,6 +263,11 @@ class AddRCMLead extends Component {
                         <ScrollView>
                             <View>
                                 <RCMLeadFrom
+                                    organizations={_.clone(organizations)}
+                                    handleClientClick={this.handleClientClick}
+                                    selectedCity={selectedCity}
+                                    handleCityClick={this.handleCityClick}
+                                    clientName={clientName}
                                     formSubmit={this.RCMFormSubmit}
                                     checkValidation={checkValidation}
                                     handleForm={this.handleRCMForm}
@@ -234,8 +276,6 @@ class AddRCMLead extends Component {
                                     sizeUnit={StaticData.sizeUnit}
                                     propertyType={StaticData.type}
                                     formData={RCMFormData}
-                                    cities={cities}
-                                    getClients={getClients}
                                     formType={formType}
                                     subType={selectSubType}
                                     handleAreaClick={this.handleAreaClick}

@@ -10,15 +10,111 @@ import * as RootNavigation from '../../navigation/RootNavigation';
 import { formatPrice } from '../../PriceFormate'
 import targetArrow from '../../../assets/img/targetArrow.png'
 import moment from 'moment'
+import InputField from '../../components/InputField'
 
 
 class InnerForm extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      dummyData: {
+        input: '10023123',
+        input2: '',
+      },
+      refreshInput: false,
+      showStyling: '',
+      showDate: false,
+      inputDateStatus: {
+        name: '',
+        status: false,
+      },
+      inputDateStatus2: {
+        name: '',
+        status: false,
+      },
+      editPriceFormat: {
+        status: false,
+        name: ''
+      },
+    }
+  }
+
+  changeValue = (value, name) => {
+    const { dummyData } = this.state
+    var newDummyData = dummyData
+    newDummyData[name] = value
+    this.setState({ dummyData: newDummyData })
+  }
+
+  showAndHideStyling = (name, clear) => {
+    const { dummyData, inputDateStatus, inputDateStatus2 } = this.state
+    const newDummy = dummyData
+
+    if (clear === true) {
+      newDummy[name] = ''
+    }
+
+    if (name === 'input') {
+      inputDateStatus['name'] = ''
+      inputDateStatus['status'] = false
+    }
+
+    if (name === 'input2') {
+      inputDateStatus2['name'] = ''
+      inputDateStatus2['status'] = false
+    }
+
+
+
+    this.setState({
+      showStyling: clear === false ? name : '',
+      dummyData: newDummy,
+      showDate: false,
+      inputDateStatus,
+      inputDateStatus2,
+      editPriceFormat: {
+        status: false,
+        name: ''
+      },
+    })
+  }
+
+  submit = (name) => {
+    const { dummyData, inputDateStatus, inputDateStatus2 } = this.state
+    var body = {
+      payment: '',
+      payment2: '',
+    }
+    if (name === 'input') {
+      body = {
+        payment: dummyData.input,
+      }
+      inputDateStatus['name'] = name
+      inputDateStatus['status'] = true
+    }
+
+    if (name === 'input2') {
+      body = {
+        payment2: dummyData.input2,
+      }
+      inputDateStatus2['name'] = name
+      inputDateStatus2['status'] = true
+    }
+
+    this.setState({
+      showStyling: '',
+      showDate: true,
+      inputDateStatus,
+      inputDateStatus2,
+      editPriceFormat: {
+        status: true,
+        name: name
+      },
+    })
   }
 
   render() {
-    const { checkValidation,
+    const {
       handleForm,
       getProject,
       getFloor,
@@ -36,48 +132,95 @@ class InnerForm extends Component {
       tokenDate,
       arrowCheck,
       paymentOptions,
-      navigateTo,
       handlePayments,
       paymentFiledsArray,
       addFullpaymentFields,
       closedLeadEdit,
       closedLead,
-      goToAttachments,
-      goToComments,
-      goToDiaryForm
+      checkForUnassignedLeadEdit,
     } = this.props
+    let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false  ? false : true
+    const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2, editPriceFormat } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
     let totalSize = readOnly.totalSize && readOnly.totalSize
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
 
+    var newDate = new Date
     return (
       <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
         <View style={[AppStyles.formMain]}>
 
+          {/* <InputField
+            label={'DOWN PAYMENT'}
+            placeholder={'Enter Amount'}
+            name={'input'}
+            date={moment(newDate).format('MMM DD, hh:mm a')}
+            onChange={this.changeValue}
+            showStyling={this.showAndHideStyling}
+            priceFormatVal={dummyData.input}
+            value={dummyData.input}
+            keyboardType={'numeric'}
+            showStylingState={showStyling}
+            paymentDone={this.submit}
+            showDate={false}
+            dateStatus={false}
+            editable={false}
+            editPriceFormat={{status: true, name:'input'}}
+          />
+
+          <InputField
+            label={'INPUT MAIN 2'}
+            placeholder={'Enter Input'}
+            name={'input2'}
+            value={dummyData.input2}
+            keyboardType={'numeric'}
+            onChange={this.changeValue}
+            editPriceFormat={editPriceFormat}
+            date={moment(newDate).format('MMM DD, hh:mm a')}
+            priceFormatVal={dummyData.input2}
+            showStyling={this.showAndHideStyling}
+            showStylingState={showStyling}
+            paymentDone={this.submit}
+            showDate={true}
+            dateStatus={inputDateStatus2}
+          /> */}
+
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} placeholder='Project' selectedItem={formData.projectId} enabled={closedLeadEdit} />
+              <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} placeholder='Project' selectedItem={formData.projectId} enabled={checkForEdit} />
             </View>
           </View>
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={getFloor} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={closedLeadEdit} />
+              <PickerComponent onValueChange={handleForm} data={getFloor} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={checkForEdit} />
             </View>
           </View>
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={closedLeadEdit} />
+              <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkForEdit} />
             </View>
           </View>
 
           {/* **************************************** */}
+          {/* <InputField
+            label={'TOTAL SIZE'}
+            placeholder={'Total Size'}
+            name={'totalSize'}
+            priceFormatVal={false}
+            value={totalSize}
+            keyboardType={'numeric'}
+            showDate={false}
+            dateStatus={false}
+            editable={false}
+            editPriceFormat={{status: false, name:'totalSize'}}
+          /> */}
           < View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL SIZE</Text>
@@ -89,6 +232,18 @@ class InnerForm extends Component {
 
 
           {/* **************************************** */}
+          {/* <InputField
+            label={'RATE'}
+            placeholder={'Rate'}
+            name={'totalRate'}
+            priceFormatVal={false}
+            value={rate != null ? rate : ''}
+            keyboardType={'numeric'}
+            showDate={false}
+            dateStatus={false}
+            editable={false}
+            editPriceFormat={{status: true, name:'totalRate'}}
+          /> */}
           <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>RATE</Text>
@@ -99,6 +254,18 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
+          {/* <InputField
+            label={'TOTAL PRICE'}
+            placeholder={'Total Price'}
+            name={'totalPrice'}
+            priceFormatVal={totalPrice != null ? totalPrice : ''}
+            value={totalPrice != null ? totalPrice : ''}
+            keyboardType={'numeric'}
+            showDate={false}
+            dateStatus={false}
+            editable={false}
+            editPriceFormat={{status: true, name:'totalPrice'}}
+          /> */}
           <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL PRICE</Text>
@@ -114,7 +281,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.fullWidthPad, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>PROMOTIONAL OFFER </Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} value={formData.discount} placeholder={'Enter Promotional Offer Amount'} onChangeText={(text) => { handleForm(text, 'discount') }} keyboardType={'numeric'} editable={closedLeadEdit} />
+                <TextInput style={[AppStyles.blackInput]} value={formData.discount} placeholder={'Enter Promotional Offer Amount'} onChangeText={(text) => { handleForm(text, 'discount') }} keyboardType={'numeric'} editable={checkForEdit} />
                 {
                   arrowCheck.discount === true &&
                   <TouchableOpacity style={[styles.checkBtnMain, styles.customArrowRight]} onPress={() => { submitValues('discount') }}>
@@ -131,7 +298,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOKEN</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} value={formData.token} editable={closedLeadEdit} placeholder={'Enter Token Amount'} onChangeText={(text) => { handleForm(text, 'token') }} keyboardType={'numeric'} />
+                <TextInput style={[AppStyles.blackInput]} value={formData.token} editable={checkForEdit} placeholder={'Enter Token Amount'} onChangeText={(text) => { handleForm(text, 'token') }} keyboardType={'numeric'} />
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.token != null ? formData.token : '')}</Text>
               </View>
             </View>
@@ -153,7 +320,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>DOWN PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
-                <TextInput style={[AppStyles.blackInput]} value={formData.downPayment} editable={closedLeadEdit} placeholder={'Enter Down Payment'} onChangeText={(text) => { handleForm(text, 'downPayment') }} keyboardType={'numeric'} />
+                <TextInput style={[AppStyles.blackInput]} value={formData.downPayment} editable={checkForEdit} placeholder={'Enter Down Payment'} onChangeText={(text) => { handleForm(text, 'downPayment') }} keyboardType={'numeric'} />
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(formData.downPayment != null ? formData.downPayment : '')}</Text>
               </View>
             </View>
@@ -172,7 +339,7 @@ class InnerForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={paymentOptions} name={'paymentType'} enabled={closedLeadEdit} placeholder='Select Payment Type' selectedItem={formData.paymentType} />
+              <PickerComponent onValueChange={handleForm} data={paymentOptions} name={'paymentType'} enabled={checkForEdit} placeholder='Select Payment Type' selectedItem={formData.paymentType} />
             </View>
           </View>
 
@@ -182,7 +349,7 @@ class InnerForm extends Component {
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                   <View style={[AppStyles.inputWrap]}>
-                    <PickerComponent onValueChange={handleForm} data={getInstallments} enabled={closedLeadEdit} name={'instalments'} placeholder='Installment Plan' selectedItem={no_installments} />
+                    <PickerComponent onValueChange={handleForm} data={getInstallments} enabled={checkForEdit} name={'instalments'} placeholder='Installment Plan' selectedItem={no_installments} />
                   </View>
                 </View>
 
@@ -196,7 +363,7 @@ class InnerForm extends Component {
                         <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
                           <Text style={[AppStyles.blackInputText]}>INSTALLMENT {key + 1}</Text>
                           <View style={[AppStyles.blackInput]}>
-                            <TextInput style={[AppStyles.blackInput]} editable={closedLeadEdit} value={amount} placeholder={`Enter Installment ${key + 1}`} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
+                            <TextInput style={[AppStyles.blackInput]} editable={checkForEdit} value={amount} placeholder={`Enter Installment ${key + 1}`} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
                             <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount > 0 ? totalInstalments[key].installmentAmount : '')}</Text>
                           </View>
                         </View>
@@ -230,7 +397,7 @@ class InnerForm extends Component {
                         <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
                           <Text style={[AppStyles.blackInputText]}>Payment {index + 1}</Text>
                           <View style={[AppStyles.blackInput]}>
-                            <TextInput style={[AppStyles.blackInput]} editable={closedLeadEdit} value={item.installmentAmount} placeholder={'Enter Payment'} onChangeText={(text) => { handlePayments(text, index) }} keyboardType={'numeric'} />
+                            <TextInput style={[AppStyles.blackInput]} editable={checkForEdit} value={item.installmentAmount} placeholder={'Enter Payment'} onChangeText={(text) => { handlePayments(text, index) }} keyboardType={'numeric'} />
                             <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(item.installmentAmount != null ? item.installmentAmount : '')}</Text>
                           </View>
                         </View>
@@ -250,10 +417,13 @@ class InnerForm extends Component {
                   })
                 }
 
+                {
+                  checkForEdit == true &&
+                  <TouchableOpacity onPress={() => checkForEdit == true ? addFullpaymentFields() : closedLead()}>
+                    <Text style={styles.addMore}>Add More Payments</Text>
+                  </TouchableOpacity>
+                }
 
-                <TouchableOpacity onPress={() => closedLeadEdit == true ? addFullpaymentFields() : closedLead()}>
-                  <Text style={styles.addMore}>Add More Payments</Text>
-                </TouchableOpacity>
               </View>
           }
 
@@ -269,7 +439,7 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          
+
 
         </View>
       </View >

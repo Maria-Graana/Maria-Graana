@@ -557,11 +557,19 @@ class Payments extends Component {
 
 	addFullpaymentFields = () => {
 		const { lead } = this.props
-		const { paymentFiledsArray } = this.state
+		const { paymentFiledsArray, dateStatusForPayments, paymentFromat } = this.state
 		let array = [...paymentFiledsArray]
+		let newdateStatusForPayments = [...dateStatusForPayments]
+		let newpaymentFromat = [...paymentFromat]
+
 		array.push({ installmentAmount: '', type: 'payment', installmentDate: '' })
+		newdateStatusForPayments.push({ name: '', status: false})
+		newpaymentFromat.push({ name: '', status: false})
+
 		this.setState({
 			paymentFiledsArray: array,
+			dateStatusForPayments: newdateStatusForPayments,
+			paymentFromat: newpaymentFromat,
 		})
 	}
 
@@ -639,9 +647,10 @@ class Payments extends Component {
 	}
 
 	showAndHideStyling = (name, clear, arrayName) => {
-		const { tokenDateStatus, formData, tokenDate, downPaymentDateStatus } = this.state
+		const { tokenDateStatus, formData, tokenDate, downPaymentDateStatus, dateStatusForPayments } = this.state
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
+		let newdateStatusForPayments = dateStatusForPayments
 
 		if (clear === true) {
 			this.clearTimes(name, clear, arrayName)
@@ -679,11 +688,18 @@ class Payments extends Component {
 				this.formatStatusChange('downPayment', true)
 			}
 
+			if (arrayName === 'payments') {
+				newdateStatusForPayments[name].name = name
+				newdateStatusForPayments[name].status = ''
+				this.formatStatusChange(name, false, arrayName);
+			}
+
 			this.setState({
 				showStyling: clear === false ? name : '',
 				showDate: false,
 				tokenDateStatus: newtokenDateStatus,
 				downPaymentDateStatus: newdownPaymentDateStatus,
+				dateStatusForPayments: newdateStatusForPayments,
 			})
 		}
 	}
@@ -729,6 +745,11 @@ class Payments extends Component {
 		if (name === 'downPayment') {
 			this.setState({ downPaymentFormat: status })
 		}
+		if (arrayName === 'payments') {
+			newpaymentFromat[name].name = name 
+			newpaymentFromat[name].status = status 
+			this.setState({ paymentFromat: newpaymentFromat })
+		}
 	}
 
 	render() {
@@ -766,6 +787,7 @@ class Payments extends Component {
 			dateStatusForPayments,
 			paymentFromat,
 		} = this.state
+		console.log(dateStatusForPayments, paymentFromat)
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />

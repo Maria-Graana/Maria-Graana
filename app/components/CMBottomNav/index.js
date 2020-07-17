@@ -19,7 +19,8 @@ class CMBottomNav extends React.Component {
       goToAttachments,
       closedLeadEdit,
       closeLead,
-      alreadyClosedLead
+      alreadyClosedLead,
+      checkForUnassignedLeadEdit
     } = this.props
     return (
       <View style={styles.bottomNavMain}>

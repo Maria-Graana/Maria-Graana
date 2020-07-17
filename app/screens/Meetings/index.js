@@ -289,7 +289,10 @@ class Meetings extends Component {
   }
 
   closedLead = () => {
-    helper.leadClosedToast()
+    const { lead, user } = this.props
+		lead.status != StaticData.Constants.lead_closed_won ||
+			lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
+			lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
   }
 
   closeLead = () => {
@@ -374,7 +377,7 @@ class Meetings extends Component {
             goToDiaryForm={this.goToDiaryForm}
             goToComments={this.goToComments}
             alreadyClosedLead={this.closedLead}
-            closedLeadEdit={closedLeadEdit}
+            closedLeadEdit={leadClosedCheck}
             closeLead={this.closeLead}
           />
         </View>

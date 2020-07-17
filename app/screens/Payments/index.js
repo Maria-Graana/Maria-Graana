@@ -551,7 +551,10 @@ class Payments extends Component {
 	}
 
 	closedLead = () => {
-		helper.leadClosedToast()
+		const { lead, user } = this.props
+		lead.status != StaticData.Constants.lead_closed_won ||
+			lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
+			lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
 	}
 
 	addFullpaymentFields = () => {
@@ -788,6 +791,7 @@ class Payments extends Component {
 			checkForUnassignedLeadEdit,
 		} = this.state
 		console.log(dateStatusForPayments, paymentFromat)
+		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -855,9 +859,10 @@ class Payments extends Component {
 						navigateTo={this.navigateTo}
 						goToDiaryForm={this.goToDiaryForm}
 						goToComments={this.goToComments}
-						closedLeadEdit={closedLeadEdit}
+						closedLeadEdit={leadClosedCheck}
 						closeLead={this.formSubmit}
 						alreadyClosedLead={this.closedLead}
+						checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
 					/>
 				</View>
 				{

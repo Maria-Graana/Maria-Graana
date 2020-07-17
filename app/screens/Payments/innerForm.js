@@ -54,12 +54,12 @@ class InnerForm extends Component {
       newDummy[name] = ''
     }
 
-    if(name === 'input'){
+    if (name === 'input') {
       inputDateStatus['name'] = ''
       inputDateStatus['status'] = false
     }
 
-    if(name === 'input2'){
+    if (name === 'input2') {
       inputDateStatus2['name'] = ''
       inputDateStatus2['status'] = false
     }
@@ -114,7 +114,7 @@ class InnerForm extends Component {
   }
 
   render() {
-    const { 
+    const {
       handleForm,
       getProject,
       getFloor,
@@ -415,10 +415,13 @@ class InnerForm extends Component {
                   })
                 }
 
+                {
+                  closedLeadEdit == true &&
+                  <TouchableOpacity onPress={() => closedLeadEdit == true ? addFullpaymentFields() : closedLead()}>
+                    <Text style={styles.addMore}>Add More Payments</Text>
+                  </TouchableOpacity>
+                }
 
-                <TouchableOpacity onPress={() => closedLeadEdit == true ? addFullpaymentFields() : closedLead()}>
-                  <Text style={styles.addMore}>Add More Payments</Text>
-                </TouchableOpacity>
               </View>
           }
 

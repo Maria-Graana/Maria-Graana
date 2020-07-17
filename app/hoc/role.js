@@ -23,6 +23,7 @@ const role = {
     },
     TeamDiary: {
         roles: [
+            { role: 'group_management', access: { v: true, a: true, e: true, d: true } },
             { role: 'group_head', access: { v: true, a: false, e: false, d: false } },
             { role: 'country_head', access: { v: true, a: false, e: false, d: false } },
             { role: 'regional_head', access: { v: true, a: false, e: false, d: false } },

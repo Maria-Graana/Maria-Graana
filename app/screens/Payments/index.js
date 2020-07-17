@@ -66,8 +66,7 @@ class Payments extends Component {
 			// checkPaymentTypeValue: ''
 			closedLeadEdit:
 				lead.status != StaticData.Constants.lead_closed_won &&
-				lead.status != StaticData.Constants.lead_closed_lost &&
-				lead.assigned_to_armsuser_id == user.id,
+				lead.status != StaticData.Constants.lead_closed_lost ,
 			showStyling: '',
 			showDate: false,
 			promotionDiscountFormat: false,
@@ -77,7 +76,7 @@ class Payments extends Component {
 			downPaymentFormat: false,
 			dateStatusForPayments: [],
 			paymentFromat: [],
-
+			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
 		}
 
 	}
@@ -786,6 +785,7 @@ class Payments extends Component {
 			downPaymentFormat,
 			dateStatusForPayments,
 			paymentFromat,
+			checkForUnassignedLeadEdit,
 		} = this.state
 		console.log(dateStatusForPayments, paymentFromat)
 		return (
@@ -844,6 +844,7 @@ class Payments extends Component {
 							downPaymentFormat={downPaymentFormat}
 							dateStatusForPayments={dateStatusForPayments}
 							paymentFromat={paymentFromat}
+							checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
 						/>
 					</View>
 				</ScrollView>

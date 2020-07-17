@@ -329,11 +329,10 @@ class RCMReport extends React.Component {
         const { selectedQuarter } = this.state
         const date = new Date()
         let newQaurter = selectedQuarter
-
         if (newQaurter === 0) {
-            if (date.getMonth() > 3) return 2
-            if (date.getMonth() > 6) return 3
-            if (date.getMonth() > 9) return 4
+            if (date.getMonth() + 1 > 3 && date.getMonth() + 1 <= 6) return 2
+            if (date.getMonth() + 1 > 6 && date.getMonth() + 1 <= 9) return 3
+            if (date.getMonth() + 1 > 9 && date.getMonth() + 1 <= 13) return 4
             else return 1
         } else return selectedQuarter
     }

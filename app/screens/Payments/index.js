@@ -692,7 +692,7 @@ class Payments extends Component {
 
 			if (arrayName === 'payments') {
 				newdateStatusForPayments[name].name = name
-				newdateStatusForPayments[name].status = ''
+				newdateStatusForPayments[name].status = false
 				this.formatStatusChange(name, false, arrayName);
 			}
 

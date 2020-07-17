@@ -298,6 +298,7 @@ class InnerForm extends Component {
             showStylingState={showStylingState}
             editPriceFormat={{ status: promotionDiscountFormat, name: 'discount' }}
             date={''}
+            editable={checkForEdit}
             showDate={false}
             dateStatus={false}
           />
@@ -331,6 +332,7 @@ class InnerForm extends Component {
             showStylingState={showStylingState}
             editPriceFormat={{ status: tokenFormat, name: 'token' }}
             date={tokenDate}
+            editable={checkForEdit}
             showDate={true}
             dateStatus={tokenDateStatus}
           />
@@ -370,6 +372,7 @@ class InnerForm extends Component {
             showStylingState={showStylingState}
             editPriceFormat={{ status: downPaymentFormat, name: 'downPayment' }}
             date={downPaymentTime}
+            editable={checkForEdit}
             showDate={true}
             dateStatus={downPaymentDateStatus}
           />
@@ -485,6 +488,7 @@ class InnerForm extends Component {
                           showStyling={showAndHideStyling}
                           showStylingState={showStylingState}
                           editPriceFormat={paymentFromat[index]}
+                          editable={checkForEdit}
                           date={itemDate}
                           showDate={true}
                           dateStatus={dateStatusForPayments[index]}

@@ -509,7 +509,19 @@ class InnerForm extends Component {
           }
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
+          <InputField
+            label={'REMAINING PAYMENT'}
+            placeholder={'Remaining Payment'}
+            name={'remainingPayment'}
+            priceFormatVal={remainingPay}
+            value={remainingPayment === 'no' ? '' : remainingPay}
+            keyboardType={'numeric'}
+            showDate={false}
+            dateStatus={false}
+            editable={false}
+            editPriceFormat={{ status: true, name: 'remainingPayment' }}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
               <Text style={[AppStyles.blackInputText]}>REMAINING PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
@@ -517,7 +529,7 @@ class InnerForm extends Component {
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(remainingPay)}</Text>
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
 

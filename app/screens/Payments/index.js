@@ -725,14 +725,11 @@ class Payments extends Component {
 			}
 
 			if (arrayName != 'payments') {
-				// newdateStatusForPayments[name].name = name
-				// newdateStatusForPayments[name].status = false
 				for (var i = 0; i < dateStatusForPayments.length; i++) {
 					newdateStatusForPayments[i].name = name
 					newdateStatusForPayments[i].status = true
 					this.formatStatusChange(i, true, 'payments');
 				}
-
 			}
 
 			this.setState({

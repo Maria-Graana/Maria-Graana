@@ -66,7 +66,7 @@ class Payments extends Component {
 			// checkPaymentTypeValue: ''
 			closedLeadEdit:
 				lead.status != StaticData.Constants.lead_closed_won &&
-				lead.status != StaticData.Constants.lead_closed_lost ,
+				lead.status != StaticData.Constants.lead_closed_lost,
 			showStyling: '',
 			showDate: false,
 			promotionDiscountFormat: false,
@@ -174,6 +174,7 @@ class Payments extends Component {
 			if (data.payment && data.payment.length) {
 				name = 'payments'
 				arrowCheck[name] = false
+				this.setPaymentDateArray(data.payment.length);
 				this.setState({
 					formData: {
 						...formData,
@@ -244,6 +245,21 @@ class Payments extends Component {
 					}
 				})
 			})
+	}
+
+	setPaymentDateArray = (length) => {
+		console.log(length)
+		const { dateStatusForPayments, paymentFromat } = this.state
+		var arrayDate = [...dateStatusForPayments]
+		var arrayFormat = [...paymentFromat]
+		for (var i = 0; i < length; i++) {
+			arrayDate.push({ name: i, status: true })
+			arrayFormat.push({ name: i, status: true })
+		}
+		this.setState({
+			dateStatusForPayments: arrayDate,
+			paymentFromat: arrayFormat,
+		})
 	}
 
 	instalmentsField = (value) => {
@@ -461,6 +477,7 @@ class Payments extends Component {
 			remainingPayment,
 			tokenDateStatus,
 			downPaymentDateStatus,
+			dateStatusForPayments,
 		} = this.state
 
 		const { lead } = this.props
@@ -469,6 +486,7 @@ class Payments extends Component {
 		let newArrowCheck = { ...arrowCheck }
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
+		let newdateStatusForPayments = [...dateStatusForPayments]
 		if (name === 'projectId') {
 			body = { projectId: formData[name] }
 		}
@@ -505,6 +523,8 @@ class Payments extends Component {
 		if (name === 'payments') {
 			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
+			newdateStatusForPayments[arrayName].name = arrayName
+			newdateStatusForPayments[arrayName].status = true
 		}
 		if (name === 'installments') {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
@@ -518,6 +538,7 @@ class Payments extends Component {
 					showStyling: '',
 					tokenDateStatus: newtokenDateStatus,
 					downPaymentDateStatus: newdownPaymentDateStatus,
+					dateStatusForPayments: newdateStatusForPayments,
 				})
 			}).catch((error) => {
 				console.log('Some thing went wrong!!!', error)
@@ -554,7 +575,7 @@ class Payments extends Component {
 		const { lead, user } = this.props
 		lead.status != StaticData.Constants.lead_closed_won ||
 			lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
-			lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
+		lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
 	}
 
 	addFullpaymentFields = () => {
@@ -565,8 +586,8 @@ class Payments extends Component {
 		let newpaymentFromat = [...paymentFromat]
 
 		array.push({ installmentAmount: '', type: 'payment', installmentDate: '' })
-		newdateStatusForPayments.push({ name: '', status: false})
-		newpaymentFromat.push({ name: '', status: false})
+		newdateStatusForPayments.push({ name: '', status: false })
+		newpaymentFromat.push({ name: '', status: false })
 
 		this.setState({
 			paymentFiledsArray: array,
@@ -694,6 +715,24 @@ class Payments extends Component {
 				newdateStatusForPayments[name].name = name
 				newdateStatusForPayments[name].status = false
 				this.formatStatusChange(name, false, arrayName);
+				for (var i = 0; i < dateStatusForPayments.length; i++) {
+					if (i != name) {
+						newdateStatusForPayments[i].name = name
+						newdateStatusForPayments[i].status = true
+						this.formatStatusChange(i, true, 'payments');
+					}
+				}
+			}
+
+			if (arrayName != 'payments') {
+				// newdateStatusForPayments[name].name = name
+				// newdateStatusForPayments[name].status = false
+				for (var i = 0; i < dateStatusForPayments.length; i++) {
+					newdateStatusForPayments[i].name = name
+					newdateStatusForPayments[i].status = true
+					this.formatStatusChange(i, true, 'payments');
+				}
+
 			}
 
 			this.setState({
@@ -748,8 +787,8 @@ class Payments extends Component {
 			this.setState({ downPaymentFormat: status })
 		}
 		if (arrayName === 'payments') {
-			newpaymentFromat[name].name = name 
-			newpaymentFromat[name].status = status 
+			newpaymentFromat[name].name = name
+			newpaymentFromat[name].status = status
 			this.setState({ paymentFromat: newpaymentFromat })
 		}
 	}
@@ -790,7 +829,6 @@ class Payments extends Component {
 			paymentFromat,
 			checkForUnassignedLeadEdit,
 		} = this.state
-		console.log(dateStatusForPayments, paymentFromat)
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
 			<View>

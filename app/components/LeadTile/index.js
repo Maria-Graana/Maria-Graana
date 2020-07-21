@@ -65,8 +65,8 @@ class LeadTile extends React.Component {
                     <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
                       {data.size !== 0 ? data.size + ' ' : null}
                       {data.size_unit && data.size_unit !== null ? data.size_unit + ' ' : null}
-                      {helper.capitalize(data.subtype)} {data.purpose != null && 'for '}
-                      {helper.capitalize(data.purpose)}
+                      {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
+                      {data.purpose === 'sale' ? 'Buy' : 'Rent'}
                     </Text>
 
                   }

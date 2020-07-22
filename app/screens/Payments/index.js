@@ -76,6 +76,8 @@ class Payments extends Component {
 			downPaymentFormat: false,
 			dateStatusForPayments: [],
 			paymentFromat: [],
+			dateStatusForInstallments: [],
+			installmentsFromat: [],
 			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
 		}
 
@@ -162,6 +164,7 @@ class Payments extends Component {
 			if (data.cmInstallments.length) {
 				name = 'installments'
 				arrowCheck[name] = false
+				this.setInstallmentsDateArray(data.cmInstallments.length);
 				this.setState({
 					formData: {
 						...formData,
@@ -247,7 +250,6 @@ class Payments extends Component {
 	}
 
 	setPaymentDateArray = (length) => {
-		console.log(length)
 		const { dateStatusForPayments, paymentFromat } = this.state
 		var arrayDate = [...dateStatusForPayments]
 		var arrayFormat = [...paymentFromat]
@@ -261,21 +263,45 @@ class Payments extends Component {
 		})
 	}
 
+	setInstallmentsDateArray = (length) => {
+		const { dateStatusForInstallments, installmentsFromat } = this.state
+		var arrayDate = [...dateStatusForInstallments]
+		var arrayFormat = [...installmentsFromat]
+		for (var i = 0; i < length; i++) {
+			arrayDate.push({ name: i, status: true })
+			arrayFormat.push({ name: i, status: true })
+		}
+		this.setState({
+			dateStatusForInstallments: arrayDate,
+			installmentsFromat: arrayFormat,
+		})
+	}
+
 	instalmentsField = (value) => {
-		const { totalInstalments } = this.state
+		const { dateStatusForInstallments, installmentsFromat } = this.state
 		const { lead } = this.props
 		let array = []
+		let newdateStatusForInstallments = [...dateStatusForInstallments]
+		let newinstallmentsFromat = [...installmentsFromat]
 		for (var i = 0; i < value; i++) {
+			newdateStatusForInstallments.push({ name: '', status: false })
+			newinstallmentsFromat.push({ name: '', status: false })
 			array.push({
-				installmentAmount: lead.cmInstallments.length > i ? lead.cmInstallments[i].installmentAmount : '',
+				installmentAmount: lead.cmInstallments.length > i ?
+					lead.cmInstallments[i].installmentAmount
+					:
+					'',
 				installmentAmountDate: lead.cmInstallments.length > i ?
 					moment(lead.cmInstallments[i].createdAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].createdAt).format('MMM DD')
-					: ''
+					:
+					''
 			})
 		}
 		this.setState({
 			totalInstalments: array,
-			instalments: value
+			instalments: value,
+			dateStatusForInstallments: newdateStatusForInstallments,
+			installmentsFromat: newinstallmentsFromat
 		}, () => {
 			this.submitValues('no_installments')
 			this.discountPayment();
@@ -367,6 +393,9 @@ class Payments extends Component {
 					modalVisible: !modalVisible,
 					checkPaymentTypeValue: value,
 				})
+				if (paymentFiledsArray.length === 0) {
+					this.addFullpaymentFields()
+				}
 			}
 
 			if (value === 'full_payment' && totalInstalments.length > 0) {
@@ -477,6 +506,7 @@ class Payments extends Component {
 			tokenDateStatus,
 			downPaymentDateStatus,
 			dateStatusForPayments,
+			dateStatusForInstallments,
 		} = this.state
 
 		const { lead } = this.props
@@ -486,6 +516,7 @@ class Payments extends Component {
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
 		let newdateStatusForPayments = [...dateStatusForPayments]
+		let newdateStatusForInstallments = [...dateStatusForInstallments]
 		if (name === 'projectId') {
 			body = { projectId: formData[name] }
 		}
@@ -520,7 +551,6 @@ class Payments extends Component {
 			body = { no_of_installments: instalments, remainingPayment: remainingPayment }
 		}
 		if (name === 'payments') {
-			console.log('dddd',name, arrayName)
 			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 			newdateStatusForPayments[arrayName].name = arrayName
@@ -528,6 +558,9 @@ class Payments extends Component {
 			this.formatStatusChange(arrayName, true, name);
 		}
 		if (name === 'installments') {
+			newdateStatusForInstallments[arrayName].name = arrayName
+			newdateStatusForInstallments[arrayName].status = true
+			this.formatStatusChange(arrayName, true, name);
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
@@ -619,14 +652,16 @@ class Payments extends Component {
 		const { lead } = this.props
 
 		if (checkPaymentTypeValue === 'installments') {
-			this.handleForm('installments', 'paymentType')
-			this.setState({
-				modalVisible: false,
-				paymentFiledsArray: [],
-			}, () => {
-				this.submitValues('installments');
-				this.discountPayment()
-			})
+			this.handleForm('installments', 'paymentType'), () => {
+				this.setState({
+					modalVisible: false,
+					paymentFiledsArray: [],
+				}, () => {
+					this.submitValues('installments');
+					this.discountPayment()
+				})
+			}
+
 		}
 		if (checkPaymentTypeValue === 'full_payment') {
 			this.handleForm('full_payment', 'paymentType'), () => {
@@ -643,9 +678,7 @@ class Payments extends Component {
 		}
 
 		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
-			.then((res) => {
-				// console.log(res.data)
-			})
+			.then((res) => {	})
 
 	}
 
@@ -673,13 +706,13 @@ class Payments extends Component {
 	}
 
 	showAndHideStyling = (name, clear, arrayName) => {
-		const { tokenDateStatus, formData, tokenDate, downPaymentDateStatus, dateStatusForPayments } = this.state
+		const { tokenDateStatus, formData, tokenDate, downPaymentDateStatus, dateStatusForPayments, dateStatusForInstallments } = this.state
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
 		let newdateStatusForPayments = dateStatusForPayments
+		let newdateStatusForInstallments = [...dateStatusForInstallments]
 
 		if (clear === true) {
-			consolelog(clear)
 			this.clearTimes(name, clear, arrayName)
 		} else {
 
@@ -721,7 +754,6 @@ class Payments extends Component {
 				this.formatStatusChange(name, false, arrayName);
 				for (var i = 0; i < dateStatusForPayments.length; i++) {
 					if (i != name) {
-					console.log('ehlooo=============')
 						newdateStatusForPayments[i].name = name
 						newdateStatusForPayments[i].status = true
 						this.formatStatusChange(i, true, 'payments');
@@ -737,6 +769,27 @@ class Payments extends Component {
 				}
 			}
 
+			if (arrayName === 'installments') {
+				dateStatusForInstallments[name].name = name
+				dateStatusForInstallments[name].status = false
+				this.formatStatusChange(name, false, arrayName);
+				for (var i = 0; i < dateStatusForInstallments.length; i++) {
+					if (i != name) {
+						dateStatusForInstallments[i].name = name
+						dateStatusForInstallments[i].status = true
+						this.formatStatusChange(i, true, 'installments');
+					}
+				}
+			}
+
+			if (arrayName != 'installments') {
+				for (var i = 0; i < dateStatusForInstallments.length; i++) {
+					dateStatusForInstallments[i].name = name
+					dateStatusForInstallments[i].status = true
+					this.formatStatusChange(i, true, 'installments');
+				}
+			}
+
 			this.setState({
 				showStyling: clear === false ? name : '',
 				showDate: false,
@@ -748,11 +801,14 @@ class Payments extends Component {
 	}
 
 	clearTimes = (name, clear, arrayName) => {
-		const { formData, tokenDate, downPaymentTime, dateStatusForPayments, paymentFiledsArray } = this.state
+		const { formData, tokenDate, downPaymentTime, dateStatusForPayments, paymentFiledsArray, totalInstalments, dateStatusForInstallments } = this.state
 		let newtokenDate = tokenDate
 		let newdownPaymentTime = downPaymentTime
 		let newdateStatusForPayments = [...dateStatusForPayments]
 		let newpaymentFiledsArray = paymentFiledsArray
+
+		let newdateStatusForInstallments = [...dateStatusForInstallments]
+		let newtotalInstalments = [...totalInstalments]
 		if (name === 'discount') {
 			formData['discount'] = ''
 			this.formatStatusChange(name, false);
@@ -778,18 +834,28 @@ class Payments extends Component {
 			this.formatStatusChange(name, false, arrayName);
 		}
 
+		if (arrayName === 'installments') {
+			newtotalInstalments[name].installmentAmount = ''
+			newtotalInstalments[name].installmentAmountDate = ''
+			newdateStatusForInstallments[name].name = ''
+			newdateStatusForInstallments[name].status = false
+			this.formatStatusChange(name, false, arrayName);
+		}
+
 		this.setState({
 			showStyling: clear === false ? name : '',
 			tokenDate: newtokenDate,
 			downPaymentTime: newdownPaymentTime,
 			dateStatusForPayments: newdateStatusForPayments,
+			dateStatusForInstallments: newdateStatusForInstallments,
+			totalInstallments: newtotalInstalments,
 		})
 	}
 
 	formatStatusChange = (name, status, arrayName) => {
-		// console.log('name', name, 'status', status, 'arrayName', arrayName)
-		const { tokenDateStatus, formData, paymentFromat } = this.state
+		const { tokenDateStatus, formData, paymentFromat, installmentsFromat } = this.state
 		let newpaymentFromat = [...paymentFromat]
+		let newinstallmentsFromat = [...installmentsFromat]
 		if (name === 'discount') {
 			this.setState({ promotionDiscountFormat: status })
 		}
@@ -803,6 +869,11 @@ class Payments extends Component {
 			newpaymentFromat[name].name = name
 			newpaymentFromat[name].status = status
 			this.setState({ paymentFromat: newpaymentFromat })
+		}
+		if (arrayName === 'installments') {
+			newinstallmentsFromat[name].name = name
+			newinstallmentsFromat[name].status = status
+			this.setState({ installmentsFromat: newinstallmentsFromat })
 		}
 	}
 
@@ -841,8 +912,9 @@ class Payments extends Component {
 			dateStatusForPayments,
 			paymentFromat,
 			checkForUnassignedLeadEdit,
+			dateStatusForInstallments,
+			installmentsFromat,
 		} = this.state
-		// console.log(dateStatusForPayments)
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
 			<View>
@@ -900,6 +972,8 @@ class Payments extends Component {
 							downPaymentFormat={downPaymentFormat}
 							dateStatusForPayments={dateStatusForPayments}
 							paymentFromat={paymentFromat}
+							dateStatusForInstallments={dateStatusForInstallments}
+							installmentsFromat={installmentsFromat}
 							checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
 						/>
 					</View>

@@ -264,6 +264,7 @@ class Diary extends React.Component {
     const { screen, managerId } = route.params;
     navigation.navigate('AddDiary', {
       'agentId': agentId,
+      screenName:'Diary',
       addedBy: screen === 'TeamDiary' ? 'manager' : 'self',
       managerId: managerId ? managerId : null,
     });

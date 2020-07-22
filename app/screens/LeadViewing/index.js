@@ -155,7 +155,7 @@ class LeadViewing extends React.Component {
 		const { lead, navigation, user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
-			rcmLeadId: lead.id,
+		    screenName:'Viewing',
 			agentId: user.id,
 			addedBy: 'self'
 		});

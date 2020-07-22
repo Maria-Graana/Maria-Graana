@@ -221,7 +221,7 @@ class LeadOffer extends React.Component {
 		const { lead, navigation, user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
-			rcmLeadId: lead.id,
+		    screenName:'Offer',
 			agentId: user.id,
 			addedBy: 'self'
 		});

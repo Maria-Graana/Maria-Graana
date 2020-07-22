@@ -85,7 +85,6 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
-		// console.log(this.props.lead)
 	}
 
 	setFields = () => {
@@ -521,10 +520,12 @@ class Payments extends Component {
 			body = { no_of_installments: instalments, remainingPayment: remainingPayment }
 		}
 		if (name === 'payments') {
+			console.log('dddd',name, arrayName)
 			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 			newdateStatusForPayments[arrayName].name = arrayName
 			newdateStatusForPayments[arrayName].status = true
+			this.formatStatusChange(arrayName, true, name);
 		}
 		if (name === 'installments') {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
@@ -628,15 +629,17 @@ class Payments extends Component {
 			})
 		}
 		if (checkPaymentTypeValue === 'full_payment') {
-			this.handleForm('full_payment', 'paymentType')
-			this.setState({
-				modalVisible: false,
-				totalInstalments: [],
-				instalments: '',
-			}, () => {
-				this.submitValues('payments')
-				this.discountPayment()
-			})
+			this.handleForm('full_payment', 'paymentType'), () => {
+				this.setState({
+					modalVisible: false,
+					totalInstalments: [],
+					instalments: '',
+				}, () => {
+					this.submitValues('payments')
+					this.discountPayment()
+				})
+			}
+
 		}
 
 		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
@@ -676,6 +679,7 @@ class Payments extends Component {
 		let newdateStatusForPayments = dateStatusForPayments
 
 		if (clear === true) {
+			consolelog(clear)
 			this.clearTimes(name, clear, arrayName)
 		} else {
 
@@ -717,6 +721,7 @@ class Payments extends Component {
 				this.formatStatusChange(name, false, arrayName);
 				for (var i = 0; i < dateStatusForPayments.length; i++) {
 					if (i != name) {
+					console.log('ehlooo=============')
 						newdateStatusForPayments[i].name = name
 						newdateStatusForPayments[i].status = true
 						this.formatStatusChange(i, true, 'payments');
@@ -743,9 +748,11 @@ class Payments extends Component {
 	}
 
 	clearTimes = (name, clear, arrayName) => {
-		const { formData, tokenDate, downPaymentTime } = this.state
+		const { formData, tokenDate, downPaymentTime, dateStatusForPayments, paymentFiledsArray } = this.state
 		let newtokenDate = tokenDate
 		let newdownPaymentTime = downPaymentTime
+		let newdateStatusForPayments = [...dateStatusForPayments]
+		let newpaymentFiledsArray = paymentFiledsArray
 		if (name === 'discount') {
 			formData['discount'] = ''
 			this.formatStatusChange(name, false);
@@ -763,10 +770,19 @@ class Payments extends Component {
 			this.formatStatusChange(name, false);
 		}
 
+		if (arrayName === 'payments') {
+			newpaymentFiledsArray[name].installmentAmount = ''
+			newpaymentFiledsArray[name].createdAt = ''
+			newdateStatusForPayments[name].name = ''
+			newdateStatusForPayments[name].status = false
+			this.formatStatusChange(name, false, arrayName);
+		}
+
 		this.setState({
 			showStyling: clear === false ? name : '',
 			tokenDate: newtokenDate,
 			downPaymentTime: newdownPaymentTime,
+			dateStatusForPayments: newdateStatusForPayments,
 		})
 	}
 
@@ -826,6 +842,7 @@ class Payments extends Component {
 			paymentFromat,
 			checkForUnassignedLeadEdit,
 		} = this.state
+		// console.log(dateStatusForPayments)
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
 			<View>

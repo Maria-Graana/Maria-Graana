@@ -43,7 +43,6 @@ class AddDiary extends Component {
     generatePayload = (data) => {
         const { route } = this.props;
         const { rcmLeadId, cmLeadId, managerId, addedBy } = route.params;
-        console.log(addedBy);
         let payload = null;
         let start = moment(data.date + data.startTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
         let end = data.endTime !== '' ? 

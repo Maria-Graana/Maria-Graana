@@ -254,6 +254,7 @@ class Meetings extends Component {
     navigation.navigate('AddDiary', {
       update: false,
       agentId: user.id,
+      cmLeadId: this.props.lead.id,
       addedBy: 'self',
       screenName:'Meetings',
       tasksList: StaticData.taskValuesCMLead,

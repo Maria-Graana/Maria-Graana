@@ -157,6 +157,7 @@ class LeadViewing extends React.Component {
 			update: false,
 		    screenName:'Viewing',
 			agentId: user.id,
+			rcmLeadId: lead.id,
 			addedBy: 'self'
 		});
 	}

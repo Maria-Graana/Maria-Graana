@@ -309,6 +309,7 @@ class LeadPropsure extends React.Component {
             update: false,
             screenName:'Propsure',
             agentId: user.id,
+            rcmLeadId: lead.id,
             addedBy: 'self'
         });
     }

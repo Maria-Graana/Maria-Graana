@@ -223,6 +223,7 @@ class LeadOffer extends React.Component {
 			update: false,
 		    screenName:'Offer',
 			agentId: user.id,
+			rcmLeadId: lead.id,
 			addedBy: 'self'
 		});
 	}

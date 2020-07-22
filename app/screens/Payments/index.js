@@ -590,6 +590,7 @@ class Payments extends Component {
 		navigation.navigate('AddDiary', {
 			update: false,
 			screenName:'Payments',
+			cmLeadId: this.props.lead.id,
 			addedBy: 'self',
 			tasksList: StaticData.taskValuesCMLead,
 			agentId: user.id,

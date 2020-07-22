@@ -563,6 +563,7 @@ class LeadMatch extends React.Component {
         navigation.navigate('AddDiary', {
             update: false,
             screenName:'Match',
+            rcmLeadId: lead.id,
             agentId: user.id,
             addedBy: 'self'
         });

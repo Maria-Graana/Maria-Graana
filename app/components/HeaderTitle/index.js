@@ -27,7 +27,7 @@ class HeaderTitle extends React.Component {
                         </Text>
                         :
                         < Text style={[styles.detailText, AppStyles.darkColor,]}>
-                            {lead.projectName && lead.projectName} {+"- " + lead.projectType && lead.projectType}
+                            {lead.projectName && lead.projectName}{lead.projectType ? ' - ' + lead.projectType : ''}
                         </Text>
                 }
 

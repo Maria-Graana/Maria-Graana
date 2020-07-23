@@ -132,7 +132,6 @@ class Meetings extends Component {
       } else {
         formData.addedBy = 'self';
         formData.taskCategory = 'leadTask',
-        console.log(formData);
         axios.post(`api/leads/project/meeting`, formData)
           .then((res) => {
             formData['time'] = ''

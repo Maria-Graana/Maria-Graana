@@ -415,8 +415,9 @@ class InnerForm extends Component {
                 {/* **************************************** */}
                 {
                   totalInstalments != '' && totalInstalments.map((item, key) => {
-                    let amount = item.installmentAmount && item.installmentAmount.toString()
+                    let amount = item.installmentAmount != null ? item.installmentAmount.toString() : ''
                     let installmentDate = totalInstalments[key].installmentAmountDate === '' ? item.installmentDate : totalInstalments[key].installmentAmountDate
+                    console.log(amount)
                     return (
                       <View>
                         <InputField
@@ -425,7 +426,7 @@ class InnerForm extends Component {
                           name={key}
                           arrayName={'installments'}
                           typeArray={true}
-                          value={amount}
+                          value={amount == 'NaN' ? '' : amount}
                           priceFormatVal={totalInstalments[key].installmentAmount > 0 ? totalInstalments[key].installmentAmount : ''}
                           keyboardType={'numeric'}
                           onChange={handleInstalments}

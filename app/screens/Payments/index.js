@@ -87,6 +87,7 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
+		// console.log(this.props.lead.cmInstallments)
 	}
 
 	setFields = () => {
@@ -164,7 +165,7 @@ class Payments extends Component {
 			if (data.cmInstallments.length) {
 				name = 'installments'
 				arrowCheck[name] = false
-				this.setInstallmentsDateArray(data.cmInstallments.length);
+				this.setInstallmentsDateArray(data.no_of_installments);
 				this.setState({
 					formData: {
 						...formData,
@@ -267,7 +268,9 @@ class Payments extends Component {
 		const { dateStatusForInstallments, installmentsFromat } = this.state
 		var arrayDate = [...dateStatusForInstallments]
 		var arrayFormat = [...installmentsFromat]
-		for (var i = 0; i < length; i++) {
+		var newLength = length
+		newLength = length < 4 ? 4 : length
+		for (var i = 0; i < newLength; i++) {
 			arrayDate.push({ name: i, status: true })
 			arrayFormat.push({ name: i, status: true })
 		}
@@ -393,9 +396,6 @@ class Payments extends Component {
 					modalVisible: !modalVisible,
 					checkPaymentTypeValue: value,
 				})
-				if (paymentFiledsArray.length === 0) {
-					this.addFullpaymentFields()
-				}
 			}
 
 			if (value === 'full_payment' && totalInstalments.length > 0) {
@@ -567,6 +567,17 @@ class Payments extends Component {
 		// console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
+				axios.get(`/api/leads/project/byId?id=${lead.id}`)
+				.then((resp) => {
+					var newtotalInstallments = totalInstallments
+					newtotalInstallments = resp.data.cmInstallments
+					console.log('hello',resp.data.cmInstallments)
+					this.setState({
+						totalInstallments: newtotalInstallments
+					})
+					console.log('totalInstallments', totalInstallments)
+				})
+				
 				this.setState({
 					arrowCheck: newArrowCheck,
 					showStyling: '',
@@ -915,6 +926,7 @@ class Payments extends Component {
 			dateStatusForInstallments,
 			installmentsFromat,
 		} = this.state
+		// console.log(totalInstalments)
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
 			<View>

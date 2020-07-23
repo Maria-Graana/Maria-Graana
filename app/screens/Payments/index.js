@@ -708,7 +708,9 @@ class Payments extends Component {
 		navigation.navigate('AddDiary', {
 			update: false,
 			cmLeadId: this.props.lead.id,
-			agentId: user.id
+			addedBy: 'self',
+			tasksList: StaticData.taskValuesCMLead,
+			agentId: user.id,
 		});
 	}
 

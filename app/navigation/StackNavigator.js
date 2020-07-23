@@ -35,6 +35,7 @@ import CMReport from '../screens/CMReport';
 import RCMReport from '../screens/RCMReport';
 import AssignLead from '../screens/AssignLead';
 import SingleSelectionPicker from '../screens/SingleSelectionPicker';
+import HeaderTitle from '../components/HeaderTitle/index';
 
 const Stack = createStackNavigator();
 
@@ -178,6 +179,7 @@ function MainStack() {
             <Stack.Screen name='RCMLeadTabs' component={RCMLeadTabs}
                 options={({ navigation, route }) => ({
                     title: 'LEAD WORKFLOW',
+                    headerTitle: props => <HeaderTitle {...props} />,
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',
@@ -186,6 +188,7 @@ function MainStack() {
             <Stack.Screen name='CMLeadTabs' component={CMLeadTabs}
                 options={({ navigation, route }) => ({
                     title: 'LEAD WORKFLOW',
+                    headerTitle: props => <HeaderTitle {...props} />,
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

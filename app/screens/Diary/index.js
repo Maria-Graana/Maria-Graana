@@ -270,7 +270,7 @@ class Diary extends React.Component {
   }
 
   showPopup = (val) => {
-    if (val.taskType !== 'viewing' && val.taskType !== 'called' && val.armsProjectLeadId === null) {
+    if (val.taskCategory === 'simpleTask') {
       this.setState({
         openPopup: true,
         selectedDiary: val
@@ -350,7 +350,7 @@ class Diary extends React.Component {
     let isManager = false;
     const managerId = val.managerId ? val.managerId : null;
     isManager = managerId ? user.id == managerId ? true : false : false;
-    if ((val.taskType !== 'Daily Task' && val.taskType !== 'Weekly Task') && (val.addedBy === 'self' || isManager)) {
+    if ((val.taskType !== 'Daily Task' && val.taskType !== 'Weekly Task') && (val.addedBy === 'self' || isManager) && val.taskCategory === 'simpleTask') {
       ActionSheet.show(
         {
           options: BUTTONS,

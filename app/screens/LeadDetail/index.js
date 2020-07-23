@@ -10,6 +10,7 @@ import styles from './style'
 import axios from 'axios';
 import Ability from '../../hoc/Ability'
 import Loader from '../../components/loader';
+import StaticData from '../../StaticData';
 
 const _format = 'YYYY-MM-DD';
 
@@ -119,7 +120,7 @@ class LeadDetail extends React.Component {
     checkAssignedLead = (lead) => {
         const { user } = this.props;
         // Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
-        if (Ability.canView(user.subRole, 'AssignLead')) {
+        if (Ability.canView(user.subRole, 'AssignLead') && lead.status !== StaticData.Constants.lead_closed_lost && lead.status !== StaticData.Constants.lead_closed_won) {
 
             // Lead can only be assigned to someone else if it is assigned to no one or to current user 
             if (lead.assigned_to_armsuser_id === null || user.id === lead.assigned_to_armsuser_id) {

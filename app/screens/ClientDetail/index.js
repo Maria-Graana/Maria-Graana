@@ -49,6 +49,7 @@ class ClientDetail extends React.Component {
         let belongs = ''
         if (client.assigned_to_arms_user_id === user.id) belongs = 'Personal Client'
         else belongs = client.added_by_organization + ' Client'
+        if (user.subRole === 'group_management' && !client.added_by_organization) belongs = user.firstName + ' ' + user.lastName + ' Client'
 
         return (
             !loading ?

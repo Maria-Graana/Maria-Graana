@@ -26,7 +26,6 @@ class DetailForm extends Component {
             },
             buttonText: 'ADD'
         }
-        this.taskValues = StaticData.taskValues;
     }
 
     componentDidMount() {
@@ -79,7 +78,7 @@ class DetailForm extends Component {
     render() {
         const { taskType, date, startTime, endTime, subject, notes } = this.state.formData;
         const { formData, buttonText } = this.state;
-        const { formSubmit, checkValidation } = this.props
+        const { formSubmit, checkValidation, taskValues } = this.props
 
         return (
             <View>
@@ -92,7 +91,7 @@ class DetailForm extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={this.handleForm} selectedItem={taskType} data={this.taskValues} name={'taskType'} placeholder='Task Type' />
+                        <PickerComponent onValueChange={this.handleForm} selectedItem={taskType} data={taskValues} name={'taskType'} placeholder='Task Type' />
                     </View>
                     {
                         checkValidation === true && taskType === '' && <ErrorMessage errorMessage={'Required'} />

@@ -56,6 +56,16 @@ export default StaticData = {
             value: 'other'
         }
     ],
+    taskValuesCMLead: [
+        {
+            name: 'Follow Up',
+            value: 'follow up'
+        },
+        {
+            name: 'Other',
+            value: 'other'
+        }
+    ],
     oneToTen: [
         { value: '1', name: '1' },
         { value: '2', name: '2' },

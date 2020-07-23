@@ -402,7 +402,6 @@ class LeadRCMPayment extends React.Component {
         const { lead } = this.state;
         navigation.navigate('AddDiary', {
             update: false,
-            screenName:'Payment',
             rcmLeadId: lead.id,
             agentId: user.id,
             addedBy: 'self'

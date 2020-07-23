@@ -307,7 +307,6 @@ class LeadPropsure extends React.Component {
         const { lead, navigation, user } = this.props
         navigation.navigate('AddDiary', {
             update: false,
-            screenName:'Propsure',
             agentId: user.id,
             rcmLeadId: lead.id,
             addedBy: 'self'

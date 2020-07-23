@@ -29,6 +29,7 @@ class Meetings extends Component {
         time: '',
         date: '',
         addedBy: '',
+        taskCategory: '',
         leadId: this.props.lead.id,
         subject: this.props.lead.customer ? `Meeting with ${this.props.lead.customer.customerName}` : null
       },
@@ -130,6 +131,8 @@ class Meetings extends Component {
           })
       } else {
         formData.addedBy = 'self';
+        formData.taskCategory = 'leadTask',
+        console.log(formData);
         axios.post(`api/leads/project/meeting`, formData)
           .then((res) => {
             formData['time'] = ''
@@ -201,6 +204,7 @@ class Meetings extends Component {
       subject: 'Call to client ' + this.props.lead.customer.customerName,
       cutomerId: this.props.lead.customer.id,
       leadId: this.props.lead.id,
+      taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body)
       .then((res) => {
@@ -256,7 +260,6 @@ class Meetings extends Component {
       agentId: user.id,
       cmLeadId: this.props.lead.id,
       addedBy: 'self',
-      screenName:'Meetings',
       tasksList: StaticData.taskValuesCMLead,
     });
   }

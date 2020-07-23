@@ -49,7 +49,6 @@ class AddDiary extends Component {
         moment(data.date + data.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss') // Actual end date is selected
         : 
         moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss'); // If end date is not selected by user, add plus 1 hour in start time
-
         if (route.params.update) {
             // payload for update contains id of diary from existing api call and other user data
             payload = Object.assign({}, data);
@@ -59,6 +58,8 @@ class AddDiary extends Component {
             payload.diaryTime = start
             payload.start = start
             payload.end = end
+            payload.taskCategory = 'simpleTask';
+           
             if (rcmLeadId) {
                 payload.rcmLeadId = rcmLeadId
             }
@@ -82,6 +83,7 @@ class AddDiary extends Component {
             payload.diaryTime = start
             payload.start = start
             payload.end = end
+            payload.taskCategory = 'simpleTask';
             if (rcmLeadId) {
                 payload.rcmLeadId = rcmLeadId
             }
@@ -110,7 +112,7 @@ class AddDiary extends Component {
 
     addDiary = (data) => {
         const { route, navigation } = this.props;
-        const { rcmLeadId, cmLeadId, screenName='Landing' } = route.params;
+        const { rcmLeadId, cmLeadId} = route.params;
         let diary = this.generatePayload(data)
         if (rcmLeadId || cmLeadId) {
             // create task for lead
@@ -152,7 +154,7 @@ class AddDiary extends Component {
                             body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
                         }
                         TimerNotification(data, timeStamp, start)
-                        navigation.navigate(screenName,
+                        navigation.navigate('Diary',
                             {
                                 'agentId': this.props.route.params.agentId,
                             });

@@ -155,7 +155,6 @@ class LeadViewing extends React.Component {
 		const { lead, navigation, user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
-		    screenName:'Viewing',
 			agentId: user.id,
 			rcmLeadId: lead.id,
 			addedBy: 'self'
@@ -230,7 +229,8 @@ class LeadViewing extends React.Component {
 				time: viewing.time,
 				start: start,
 				end: end,
-				subject: diary.subject
+				subject: diary.subject,
+				taskCategory: 'leadTask',
 			}
 			axios.patch(`/api/diary/update?id=${diary.id}`, body)
 				.then((res) => {
@@ -267,6 +267,7 @@ class LeadViewing extends React.Component {
 			propertyId: currentProperty.id,
 			leadId: lead.id,
 			subject: "Viewing with " + customer + " at " + areaName,
+			taskCategory: 'leadTask',
 			customerId: customerId
 		}
 		axios.post(`/api/leads/viewing`, body)

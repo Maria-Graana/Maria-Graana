@@ -38,26 +38,20 @@ class PushNotifications extends React.Component {
                 return;
             }
 
+            // let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
+
             let expoPushToken = await Notifications.getExpoPushTokenAsync();
+            Sentry.captureException(`ExpoPushToken: ${JSON.stringify(expoPushToken)}`)
 
             if (expoPushToken) {
-                this.setState({
-                    expoPushToken: expoPushToken
-                })
-            }
-
-            let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
-            Sentry.captureException(`After Function End: ${JSON.stringify(fcmPushToken)}`)
-
-            if (fcmPushToken) {
                 let body = {
-                    token: fcmPushToken.data,
+                    token: expoPushToken,
                     armsuserId: user.id,
                 }
                 axios.post('/api/notifications/add-token', body)
                     .then((res) => {
                         this.setState({
-                            fcmPushToken: fcmPushToken
+                            expoPushToken: expoPushToken
                         })
                     })
                     .catch((error) => {

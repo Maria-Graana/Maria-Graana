@@ -921,8 +921,10 @@ class Payments extends Component {
 					}
 
 					if (arrayName === 'payments') {
-						newpaymentFiledsArray[name].installmentAmount = data.payment && data.payment.length ? data.payment[name].installmentAmount : ''
-						newpaymentFiledsArray[name].createdAt = data.payment && data.payment.length >= name ? data.payment[name].createdAt : ''
+						console.log('le',data.payment.length)
+						console.log('name', name)
+						newpaymentFiledsArray[name].installmentAmount = data.payment && data.payment.length > name ? data.payment[name].installmentAmount : ''
+						newpaymentFiledsArray[name].createdAt = data.payment && data.payment.length > name ? data.payment[name].createdAt : ''
 						newdateStatusForPayments[name].name = name
 						newdateStatusForPayments[name].status = true
 						this.formatStatusChange(name, true, arrayName);

@@ -8,7 +8,6 @@ export default styles = StyleSheet.create({
     headingText: {
         fontSize: 12,
         paddingLeft: 5,
-        paddingTop: 5,
         paddingBottom: 0,
         fontFamily: AppStyles.fonts.lightFont
     },
@@ -17,7 +16,6 @@ export default styles = StyleSheet.create({
     },
     labelText: {
         fontSize: 18,
-        paddingBottom: 5,
         paddingLeft: 5,
         fontFamily: AppStyles.fonts.defaultFont
     },
@@ -29,11 +27,8 @@ export default styles = StyleSheet.create({
         backgroundColor: 'white',
         marginTop: 15,
         marginBottom: 20,
-        flexDirection: 'row'
-    },
-    innerContainer: {
-        flex: 1,
-        padding: 10
+        paddingVertical: 10,
+        paddingHorizontal:15,
     },
     pad: {
         padding: 10
@@ -41,31 +36,33 @@ export default styles = StyleSheet.create({
     underLine: {
         height: 1,
         width: "100%",
-        backgroundColor: "#f5f5f6",
-        marginHorizontal: 10,
-        marginVertical: 20
+        backgroundColor: "#ddd",
+        marginVertical: 10,
+        marginHorizontal: 5,
     },
-    tokenLabel: {
-        borderWidth: 1,
-        borderColor: '#2A7EF0',
-        overflow: 'hidden',
-        borderRadius: 12,
-        color: '#2A7EF0',
-        paddingTop: 3,
-        paddingBottom: 3,
-        paddingLeft: 20,
-        paddingRight: 20,
-        fontSize: 12,
+    rowContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
-    mainView: {
+    leadTypeHeading: {
+        flex: 1,
+    },
+    statusView: {
         borderColor: AppStyles.colors.primaryColor,
-        // height: 20,
-        paddingVertical: 5,
-        paddingHorizontal: 10, 
-        // width: 80,
+        height: 25,
         borderWidth: 1,
-        borderRadius: 100,
+        borderRadius: 32,
         justifyContent: "center",
+        paddingHorizontal: 10,
+        alignItems: "center"
+    },
+    roundButtonView: {
+        backgroundColor: AppStyles.colors.primaryColor,
+        borderRadius: 32,
+        justifyContent: "center",
+        alignSelf:'center',
+        paddingHorizontal: 20,
+        paddingVertical: 5,
         alignItems: "center"
     },
     textStyle: {
@@ -73,8 +70,8 @@ export default styles = StyleSheet.create({
         fontFamily: AppStyles.fonts.defaultFont,
         color: AppStyles.colors.primaryColor
     },
-    assignButtonView:{
-        marginTop:5,
-        marginBottom:5
+    assignButtonView: {
+        marginTop: 5,
+        marginBottom: 5
     }
 });

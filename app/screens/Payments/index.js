@@ -88,7 +88,6 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
-		// console.log(this.props.lead.cmInstallments)
 	}
 
 	setFields = () => {
@@ -565,18 +564,16 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		console.log('Payload => ', body)
+		// console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				axios.get(`/api/leads/project/byId?id=${lead.id}`)
 					.then((resp) => {
 						var newtotalInstallments = totalInstallments
 						newtotalInstallments = resp.data.cmInstallments
-						console.log('hello', resp.data.cmInstallments)
 						this.setState({
 							totalInstallments: newtotalInstallments
 						})
-						console.log('totalInstallments', totalInstallments)
 					})
 
 				this.setState({
@@ -850,11 +847,12 @@ class Payments extends Component {
 		}
 
 		if (arrayName === 'installments') {
-			newtotalInstalments[name].installmentAmount = ''
-			newtotalInstalments[name].installmentAmountDate = ''
-			newdateStatusForInstallments[name].name = ''
-			newdateStatusForInstallments[name].status = false
+			// newtotalInstalments[name].installmentAmount = ''
+			// newtotalInstalments[name].installmentAmountDate = ''
+			// newdateStatusForInstallments[name].name = ''
+			// newdateStatusForInstallments[name].status = false
 			this.formatStatusChange(name, false, arrayName);
+			this.apiCallForNewDetails(arrayName, name)
 		}
 
 		this.setState({
@@ -868,7 +866,16 @@ class Payments extends Component {
 	}
 
 	apiCallForNewDetails = (arrayName, name) => {
-		const { tokenDateStatus, formData, downPaymentDateStatus, totalInstallments, paymentFiledsArray, dateStatusForPayments } = this.state
+		const {
+			tokenDateStatus,
+			formData,
+			downPaymentDateStatus,
+			totalInstalments,
+			paymentFiledsArray,
+			dateStatusForPayments,
+			dateStatusForInstallments,
+			totalInstallments,
+		} = this.state
 		const { lead } = this.props
 		var newFormData = { ...formData }
 		axios.get(`/api/leads/project/byId?id=${lead.id}`)
@@ -881,6 +888,8 @@ class Payments extends Component {
 					let newtokenDateStatus = tokenDateStatus
 					let newpaymentFiledsArray = paymentFiledsArray
 					let newdateStatusForPayments = [...dateStatusForPayments]
+					let newtotalInstalments = [...totalInstalments]
+					let newdateStatusForInstallments = [...dateStatusForInstallments]
 
 					if (name === 'discount') {
 						newFormData[name] = data.discount != null ? data.discount : ''
@@ -921,8 +930,6 @@ class Payments extends Component {
 					}
 
 					if (arrayName === 'payments') {
-						console.log('le',data.payment.length)
-						console.log('name', name)
 						newpaymentFiledsArray[name].installmentAmount = data.payment && data.payment.length > name ? data.payment[name].installmentAmount : ''
 						newpaymentFiledsArray[name].createdAt = data.payment && data.payment.length > name ? data.payment[name].createdAt : ''
 						newdateStatusForPayments[name].name = name
@@ -931,6 +938,19 @@ class Payments extends Component {
 						this.setState({
 							dateStatusForPayments: newdateStatusForPayments,
 							paymentFiledsArray: newpaymentFiledsArray,
+						})
+					}
+
+					if (arrayName === 'installments') {
+						var installmentTime = data.cmInstallments && data.cmInstallments.length > name ? data.cmInstallments[name].createdAt : ''
+						newtotalInstalments[name].installmentAmount = data.cmInstallments && data.cmInstallments.length > name ? data.cmInstallments[name].installmentAmount : ''
+						newtotalInstalments[name].installmentAmountDate = moment(installmentTime).format('hh:mm a') + ' ' + moment(installmentTime).format('MMM DD')
+						newdateStatusForInstallments[name].name = true
+						newdateStatusForInstallments[name].status = true
+						this.formatStatusChange(name, true, arrayName);
+						this.setState({
+							dateStatusForInstallments: newdateStatusForInstallments,
+							totalInstalments: newtotalInstalments,
 						})
 					}
 
@@ -1003,7 +1023,6 @@ class Payments extends Component {
 			dateStatusForInstallments,
 			installmentsFromat,
 		} = this.state
-		// console.log(formData)
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
 			<View>

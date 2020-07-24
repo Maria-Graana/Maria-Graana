@@ -417,7 +417,6 @@ class InnerForm extends Component {
                   totalInstalments != '' && totalInstalments.map((item, key) => {
                     let amount = item.installmentAmount != null ? item.installmentAmount.toString() : ''
                     let installmentDate = totalInstalments[key].installmentAmountDate === '' ? item.installmentDate : totalInstalments[key].installmentAmountDate
-                    console.log(amount)
                     return (
                       <View>
                         <InputField

@@ -113,6 +113,11 @@ class InnerForm extends Component {
     })
   }
 
+  dateFormateForFields = (date) => {
+    var newDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+    return newDate
+  }
+
   render() {
     const {
       handleForm,
@@ -416,7 +421,7 @@ class InnerForm extends Component {
                 {
                   totalInstalments != '' && totalInstalments.map((item, key) => {
                     let amount = item.installmentAmount != null ? item.installmentAmount.toString() : ''
-                    let installmentDate = totalInstalments[key].installmentAmountDate === '' ? item.installmentDate : totalInstalments[key].installmentAmountDate
+                    let installmentDate = totalInstalments[key].installmentAmountDate === '' ? item.installmentDate : this.dateFormateForFields(totalInstalments[key].updatedAt)
                     return (
                       <View>
                         <InputField

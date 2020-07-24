@@ -88,6 +88,7 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
+		// console.log('Props array ====>', this.props.lead.cmInstallments)
 	}
 
 	setFields = () => {
@@ -96,6 +97,7 @@ class Payments extends Component {
 			arrowCheck,
 			tokenDateStatus,
 			downPaymentDateStatus,
+			totalInstalments,
 		} = this.state
 		const { lead } = this.props
 		let data = lead
@@ -290,14 +292,18 @@ class Payments extends Component {
 			newdateStatusForInstallments.push({ name: '', status: false })
 			newinstallmentsFromat.push({ name: '', status: false })
 			array.push({
+				id: lead.cmInstallments.length > i ?
+					lead.cmInstallments[i].id
+					:
+					null,
 				installmentAmount: lead.cmInstallments.length > i ?
 					lead.cmInstallments[i].installmentAmount
 					:
-					'',
+					null,
 				installmentAmountDate: lead.cmInstallments.length > i ?
-					moment(lead.cmInstallments[i].createdAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].createdAt).format('MMM DD')
+					 moment(lead.cmInstallments[i].updatedAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].updatedAt).format('MMM DD')
 					:
-					''
+					null,
 			})
 		}
 		this.setState({
@@ -567,14 +573,15 @@ class Payments extends Component {
 		// console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				axios.get(`/api/leads/project/byId?id=${lead.id}`)
-					.then((resp) => {
-						var newtotalInstallments = totalInstallments
-						newtotalInstallments = resp.data.cmInstallments
-						this.setState({
-							totalInstallments: newtotalInstallments
+				if (name === 'installments') {
+					axios.get(`/api/leads/project/byId?id=${lead.id}`)
+						.then((resp) => {
+							var newtotalInstallments = resp.data.cmInstallments
+							this.setState({
+								totalInstalments: newtotalInstallments
+							})
 						})
-					})
+				}
 
 				this.setState({
 					arrowCheck: newArrowCheck,
@@ -584,7 +591,7 @@ class Payments extends Component {
 					dateStatusForPayments: newdateStatusForPayments,
 				})
 			}).catch((error) => {
-				console.log('Some thing went wrong!!!', error)
+				console.log('Some thing went wrong!1!!', error)
 			})
 	}
 

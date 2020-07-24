@@ -144,6 +144,12 @@ class LeadDetail extends React.Component {
 
     }
 
+    goToClientsDetail = () => {
+        const { lead} = this.state;
+        const { navigation } = this.props;
+        navigation.navigate('ClientDetail', { client: lead.customer ? lead.customer : null,  screenName: 'LeadDetail' });
+    }
+
 
 
     render() {
@@ -175,13 +181,13 @@ class LeadDetail extends React.Component {
                         </View>
                         <View style={styles.underLine} />
                         <View style={styles.rowContainer}>
-                            <View  style={AppStyles.mb1}>
+                            <View style={AppStyles.mb1}>
                                 <Text style={styles.headingText}>Client Name </Text>
                                 <Text style={styles.labelText}>{customerName}</Text>
                             </View>
-                             <TouchableOpacity style={styles.roundButtonView} activeOpacity={0.6}>
-                                    <Text style={[AppStyles.btnText,{fontSize:16}]}>Details</Text>
-                             </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.goToClientsDetail()} style={styles.roundButtonView} activeOpacity={0.6}>
+                                <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Requirement </Text>

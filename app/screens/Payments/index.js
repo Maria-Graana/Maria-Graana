@@ -78,7 +78,8 @@ class Payments extends Component {
 			paymentFromat: [],
 			dateStatusForInstallments: [],
 			installmentsFromat: [],
-			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
+			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false,
+			cancelNewData: '',
 		}
 
 	}
@@ -564,20 +565,20 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		// console.log('Payload => ', body)
+		console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				axios.get(`/api/leads/project/byId?id=${lead.id}`)
-				.then((resp) => {
-					var newtotalInstallments = totalInstallments
-					newtotalInstallments = resp.data.cmInstallments
-					console.log('hello',resp.data.cmInstallments)
-					this.setState({
-						totalInstallments: newtotalInstallments
+					.then((resp) => {
+						var newtotalInstallments = totalInstallments
+						newtotalInstallments = resp.data.cmInstallments
+						console.log('hello', resp.data.cmInstallments)
+						this.setState({
+							totalInstallments: newtotalInstallments
+						})
+						console.log('totalInstallments', totalInstallments)
 					})
-					console.log('totalInstallments', totalInstallments)
-				})
-				
+
 				this.setState({
 					arrowCheck: newArrowCheck,
 					showStyling: '',
@@ -689,7 +690,7 @@ class Payments extends Component {
 		}
 
 		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
-			.then((res) => {	})
+			.then((res) => { })
 
 	}
 
@@ -823,28 +824,29 @@ class Payments extends Component {
 		let newdateStatusForInstallments = [...dateStatusForInstallments]
 		let newtotalInstalments = [...totalInstalments]
 		if (name === 'discount') {
-			formData['discount'] = ''
 			this.formatStatusChange(name, false);
+			this.apiCallForNewDetails(arrayName, name)
 		}
 
 		if (name === 'token') {
-			formData['token'] = ''
 			newtokenDate = ''
 			this.formatStatusChange(name, false);
+			this.apiCallForNewDetails(arrayName, name)
 		}
 
 		if (name === 'downPayment') {
-			formData['downPayment'] = ''
 			newdownPaymentTime = ''
 			this.formatStatusChange(name, false);
+			this.apiCallForNewDetails(arrayName, name)
 		}
 
 		if (arrayName === 'payments') {
-			newpaymentFiledsArray[name].installmentAmount = ''
-			newpaymentFiledsArray[name].createdAt = ''
-			newdateStatusForPayments[name].name = ''
-			newdateStatusForPayments[name].status = false
+			// newpaymentFiledsArray[name].installmentAmount = ''
+			// newpaymentFiledsArray[name].createdAt = ''
+			// newdateStatusForPayments[name].name = ''
+			// newdateStatusForPayments[name].status = false
 			this.formatStatusChange(name, false, arrayName);
+			this.apiCallForNewDetails(arrayName, name)
 		}
 
 		if (arrayName === 'installments') {
@@ -863,6 +865,77 @@ class Payments extends Component {
 			dateStatusForInstallments: newdateStatusForInstallments,
 			totalInstallments: newtotalInstalments,
 		})
+	}
+
+	apiCallForNewDetails = (arrayName, name) => {
+		const { tokenDateStatus, formData, downPaymentDateStatus, totalInstallments, paymentFiledsArray, dateStatusForPayments } = this.state
+		const { lead } = this.props
+		var newFormData = { ...formData }
+		axios.get(`/api/leads/project/byId?id=${lead.id}`)
+			.then((res) => {
+				this.setState({
+					cancelNewData: res.data
+				}, () => {
+					var data = res.data
+					let newdownPaymentDateStatus = downPaymentDateStatus
+					let newtokenDateStatus = tokenDateStatus
+					let newpaymentFiledsArray = paymentFiledsArray
+					let newdateStatusForPayments = [...dateStatusForPayments]
+
+					if (name === 'discount') {
+						newFormData[name] = data.discount != null ? data.discount : ''
+						this.formatStatusChange(name, true)
+						this.setState({
+							formData: newFormData,
+						}, () => {
+							this.discountPayment(formData)
+						})
+					}
+
+					if (name === 'token') {
+						newFormData[name] = data.token != null ? data.token : ''
+						this.formatStatusChange(name, true)
+						newtokenDateStatus['name'] = name
+						newtokenDateStatus['status'] = true
+						this.setState({
+							formData: newFormData,
+							tokenDateStatus: newtokenDateStatus,
+							tokenDate: data.tokenPaymentTime ? moment(data.tokenPaymentTime).format('hh:mm a') + ' ' + moment(data.tokenPaymentTime).format('MMM DD') : '',
+						}, () => {
+							this.discountPayment(formData)
+						})
+					}
+
+					if (name === 'downPayment') {
+						newFormData[name] = data.downPayment != null ? data.downPayment : ''
+						this.formatStatusChange(name, true)
+						newdownPaymentDateStatus['name'] = name
+						newdownPaymentDateStatus['status'] = true
+						this.setState({
+							formData: newFormData,
+							downPaymentDateStatus: newdownPaymentDateStatus,
+							downPaymentTime: data.paymentTime ? moment(data.paymentTime).format('hh:mm a') + ' ' + moment(data.paymentTime).format('MMM DD') : '',
+						}, () => {
+							this.discountPayment(formData)
+						})
+					}
+
+					if (arrayName === 'payments') {
+						newpaymentFiledsArray[name].installmentAmount = data.payment && data.payment.length ? data.payment[name].installmentAmount : ''
+						newpaymentFiledsArray[name].createdAt = data.payment && data.payment.length >= name ? data.payment[name].createdAt : ''
+						newdateStatusForPayments[name].name = name
+						newdateStatusForPayments[name].status = true
+						this.formatStatusChange(name, true, arrayName);
+						this.setState({
+							dateStatusForPayments: newdateStatusForPayments,
+							paymentFiledsArray: newpaymentFiledsArray,
+						})
+					}
+
+
+				})
+
+			})
 	}
 
 	formatStatusChange = (name, status, arrayName) => {
@@ -928,7 +1001,7 @@ class Payments extends Component {
 			dateStatusForInstallments,
 			installmentsFromat,
 		} = this.state
-		// console.log(totalInstalments)
+		// console.log(formData)
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
 			<View>

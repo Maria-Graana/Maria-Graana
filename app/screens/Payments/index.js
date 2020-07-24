@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
-import { View, Alert, ScrollView, Modal, Text, TouchableHighlight } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import axios from 'axios'
-import styles from './style'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
 import InnerForm from './innerForm';
 import StaticData from '../../StaticData';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import moment from 'moment'
-import { ProgressBar, Colors } from 'react-native-paper';
+import { ProgressBar } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 import helper from '../../helper';
-import { FAB } from 'react-native-paper';
-import MeetingModal from '../../components/MeetingModal'
 import PaymentAlert from '../../components/PaymentAlert'
 import CMBottomNav from '../../components/CMBottomNav'
 
@@ -301,7 +298,7 @@ class Payments extends Component {
 					:
 					null,
 				installmentAmountDate: lead.cmInstallments.length > i ?
-					 moment(lead.cmInstallments[i].updatedAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].updatedAt).format('MMM DD')
+				lead.cmInstallments[i].installmentAmount != null && moment(lead.cmInstallments[i].updatedAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].updatedAt).format('MMM DD')
 					:
 					null,
 			})
@@ -468,7 +465,7 @@ class Payments extends Component {
 		var date = new Date()
 		arrowCheck['payments'] = true
 		let newPayments = [...paymentFiledsArray]
-		newPayments[index].installmentAmount = parseInt(value)
+		newPayments[index].installmentAmount = value
 		newPayments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
 		this.setState({ paymentFiledsArray: newPayments, arrowCheck }, () => {
 			this.discountPayment()
@@ -570,7 +567,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		// console.log('Payload => ', body)
+		console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (name === 'installments') {
@@ -1010,7 +1007,6 @@ class Payments extends Component {
 			tokenDate,
 			instalments,
 			progressValue,
-			open,
 			arrowCheck,
 			paymentDate,
 			paymentFiledsArray,

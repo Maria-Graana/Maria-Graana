@@ -54,6 +54,12 @@ class LeadRCMPayment extends React.Component {
             selectedReason: '',
             reasons: [],
             closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+            showStyling: '',
+            tokenDateStatus: false,
+            tokenPriceFromat: true,
+            agreeAmountFromat: true,
+            comissionDateStatus: false,
+            comissionPriceFromat: true,
         }
     }
 
@@ -98,6 +104,14 @@ class LeadRCMPayment extends React.Component {
                                 monthlyRent: lead.monthlyRent ? String(lead.monthlyRent) : ''
                             }
                         }, () => {
+                            if (lead.token != null) {
+                                this.dateStatusChange('token', true)
+                                this.formatStatusChange('token', true)
+                            }
+                            if (lead.commissionPayment != null) {
+                                this.dateStatusChange('commissionPayment', true)
+                                this.formatStatusChange('commissionPayment', true)
+                            }
                             this.checkCommissionPayment(response.data);
                         })
                     }
@@ -119,6 +133,8 @@ class LeadRCMPayment extends React.Component {
 
     getShortlistedProperties = (lead) => {
         let matches = []
+        console.log('hello')
+
         axios.get(`/api/leads/${lead.id}/shortlist`)
             .then((response) => {
                 matches = helper.propertyCheck(response.data.rows)
@@ -186,7 +202,7 @@ class LeadRCMPayment extends React.Component {
 
     showLeadPaymentModal = () => {
         const { lead } = this.state;
-        const {user} = this.props;
+        const { user } = this.props;
         var commissionPayment = lead.commissionPayment
         if (user.id === lead.assigned_to_armsuser_id) {
             if (commissionPayment !== null) {
@@ -229,14 +245,13 @@ class LeadRCMPayment extends React.Component {
         })
     }
 
-
     showConfirmationDialog = (item) => {
         const { lead } = this.state;
-        const {user} = this.props;
+        const { user } = this.props;
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast()
         }
-        else if(user.id !== lead.assigned_to_armsuser_id){
+        else if (user.id !== lead.assigned_to_armsuser_id) {
             helper.leadNotAssignedToast();
         }
         else {
@@ -297,7 +312,13 @@ class LeadRCMPayment extends React.Component {
         payload.token = this.convertToInteger(token);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
-            this.setState({ showTokenAmountArrow: false, lead: response.data })
+            this.setState({
+                showTokenAmountArrow: false,
+                lead: response.data,
+                showStyling: '',
+                tokenDateStatus: true,
+            })
+            this.formatStatusChange('token', true)
         }).catch(error => {
             console.log(error);
         })
@@ -310,7 +331,13 @@ class LeadRCMPayment extends React.Component {
         payload.payment = this.convertToInteger(agreedAmount);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
-            this.setState({ showAgreedAmountArrow: false, lead: response.data })
+            this.setState({
+                showAgreedAmountArrow: false,
+                lead: response.data,
+                showStyling: '',
+                agreeAmountFromat: true,
+            })
+            this.formatStatusChange('agreeAmount', true)
         }).catch(error => {
             console.log(error);
         })
@@ -324,7 +351,13 @@ class LeadRCMPayment extends React.Component {
         payload.commissionPayment = this.convertToInteger(commissionPayment);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
-            this.setState({ showCommissionAmountArrow: false, lead: response.data }, () => this.checkCommissionPayment(response.data))
+            this.setState({
+                showCommissionAmountArrow: false,
+                lead: response.data,
+                showStyling: '',
+                comissionDateStatus: true,
+            }, () => this.checkCommissionPayment(response.data))
+            this.formatStatusChange('commissionPayment', true)
         }).catch(error => {
             console.log(error);
         })
@@ -396,7 +429,6 @@ class LeadRCMPayment extends React.Component {
         })
     }
 
-
     goToDiaryForm = () => {
         const { navigation, user } = this.props
         const { lead } = this.state;
@@ -424,6 +456,123 @@ class LeadRCMPayment extends React.Component {
         this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
     }
 
+    showAndHideStyling = (name, clear) => {
+        const { dummyData, inputDateStatus, inputDateStatus2 } = this.state
+        const newDummy = dummyData
+
+        if (clear === true) {
+            this.clearStateValue(name, clear)
+        }
+
+        if (name === 'token') {
+            this.dateStatusChange(name, false)
+            this.formatStatusChange(name, false)
+        }
+
+        if (name != 'token') {
+            this.dateStatusChange('token', true)
+            this.formatStatusChange('token', true)
+        }
+
+        if (name === 'agreeAmount') {
+            this.formatStatusChange(name, false)
+        }
+
+        if (name != 'agreeAmount') {
+            this.formatStatusChange('agreeAmount', true)
+        }
+
+        if (name === 'commissionPayment') {
+            this.dateStatusChange('commissionPayment', false)
+            this.formatStatusChange(name, false)
+        }
+
+        if (name != 'commissionPayment') {
+            this.dateStatusChange('commissionPayment', true)
+            this.formatStatusChange('commissionPayment', true)
+        }
+
+        this.setState({
+            showStyling: clear === false ? name : '',
+            showDate: false,
+        })
+    }
+
+    formatStatusChange = (name, status, arrayName) => {
+        const { } = this.state
+        if (name === 'token') {
+            this.setState({ tokenPriceFromat: status })
+        }
+        if (name === 'agreeAmount') {
+            this.setState({ agreeAmountFromat: status })
+        }
+        if (name === 'commissionPayment') {
+            this.setState({ comissionPriceFromat: status })
+        }
+    }
+
+    dateStatusChange = (name, status, arrayName) => {
+        const { } = this.state
+        if (name === 'token') {
+            this.setState({ tokenDateStatus: status })
+        }
+        if (name === 'agreeAmount') {
+            this.setState({ agreeAmountFromat: status })
+        }
+        if (name === 'commissionPayment') {
+            this.setState({ comissionDateStatus: status })
+        }
+    }
+
+    clearStateValue(name, clear) {
+        const { lead } = this.props
+        axios.get(`/api/leads/byId?id=${lead.id}`)
+            .then((res) => {
+                if (name === 'token') {
+                    var token = res.data.token
+                    this.setState({ token: token != null ? token : '' }, () => {
+                        if (token != null) {
+                            this.dateStatusChange(name, true)
+                            this.formatStatusChange(name, true)
+                        } else {
+                            this.dateStatusChange(name, false)
+                            this.formatStatusChange(name, false)
+                        }
+
+                    })
+                }
+
+
+                if (name === 'agreeAmount') {
+                    var agreeAmount = res.data.payment
+                    this.setState({ agreedAmount: agreeAmount != null ? agreeAmount : '' }, () => {
+                        if (agreeAmount != null) {
+                            this.dateStatusChange(name, true)
+                            this.formatStatusChange(name, true)
+                        } else {
+                            this.dateStatusChange(name, false)
+                            this.formatStatusChange(name, false)
+                        }
+
+                    })
+                }
+
+                if (name === 'commissionPayment') {
+                    var comission = res.data.commissionPayment
+                    this.setState({ commissionPayment: comission != null ? comission : '' }, () => {
+                        if (comission != null) {
+                            this.dateStatusChange(name, true)
+                            this.formatStatusChange(name, true)
+                        } else {
+                            this.dateStatusChange(name, false)
+                            this.formatStatusChange(name, false)
+                        }
+
+                    })
+                }
+            })
+    }
+
 
     render() {
         const { loading,
@@ -444,7 +593,14 @@ class LeadRCMPayment extends React.Component {
             formData,
             closedLeadEdit,
             showMonthlyRentArrow,
-            showCommissionAmountArrow } = this.state;
+            showCommissionAmountArrow,
+            showStyling,
+            tokenDateStatus,
+            tokenPriceFromat,
+            comissionDateStatus,
+            comissionPriceFromat,
+            agreeAmountFromat
+        } = this.state;
 
 
         return (
@@ -466,7 +622,7 @@ class LeadRCMPayment extends React.Component {
                                 <FlatList
                                     data={allProperties}
                                     renderItem={(item, index) => (
-                                        <View style={{ marginVertical: 3, marginHorizontal: 15 }}>
+                                        <View style={{ marginVertical: 3, marginHorizontal: 10 }}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile
@@ -493,7 +649,7 @@ class LeadRCMPayment extends React.Component {
                                         </View>
                                     )}
                                     ListFooterComponent={
-                                        <View style={{ marginHorizontal: 15 }}>
+                                        <View style={{ marginHorizontal: 10 }}>
                                             {
                                                 lead.shortlist_id !== null ?
                                                     lead.purpose === 'sale' ?
@@ -513,6 +669,14 @@ class LeadRCMPayment extends React.Component {
                                                             handleCommissionAmountChange={this.handleCommissionAmountChange}
                                                             showCommissionAmountArrow={showCommissionAmountArrow}
                                                             handleCommissionAmountPress={this.handleCommissionAmountPress}
+
+                                                            showAndHideStyling={this.showAndHideStyling}
+                                                            showStylingState={showStyling}
+                                                            tokenDateStatus={tokenDateStatus}
+                                                            tokenPriceFromat={tokenPriceFromat}
+                                                            agreeAmountFromat={agreeAmountFromat}
+                                                            comissionDateStatus={comissionDateStatus}
+                                                            comissionPriceFromat={comissionPriceFromat}
 
                                                         />
                                                         :

@@ -157,7 +157,7 @@ class LeadDetail extends React.Component {
         const { user, route } = this.props;
         const { purposeTab } = route.params
         let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
-
+        console.log(lead)
         return (
             !loading ?
                 <ScrollView showsVerticalScrollIndicator={false} style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>

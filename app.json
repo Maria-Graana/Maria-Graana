@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.1.10",
+    "version": "1.1.16",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "splash": {
@@ -20,7 +20,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "userInterfaceStyle": "automatic",
     "ios": {
+      "userInterfaceStyle": "automatic",
       "bundleIdentifier": "com.agency21.realtor",
       "buildNumber": "2",
       "supportsTablet": true,
@@ -32,6 +34,7 @@
       }
     },
     "android": {
+      "userInterfaceStyle": "automatic",
       "package": "com.agency21.realtor",
       "versionCode": 1,
       "googleServicesFile": "./google-services.json"

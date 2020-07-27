@@ -34,7 +34,7 @@ class PushNotifications extends React.Component {
                 finalStatus = status;
             }
             if (finalStatus !== 'granted') {
-                alert('Failed to get push token for push notification!');
+                Alert.alert('Failed to get push token for push notification!');
                 return;
             }
 
@@ -87,10 +87,10 @@ class PushNotifications extends React.Component {
 
     _handleNotification = notification => {
         const { navigation } = this.props
-        let data = notification.data
-        Sentry.captureException(`Before handleNotification: ${notification}`)
         if (notification.origin === 'selected') {
-            Sentry.captureException(`mid handleNotification: ${data}`)
+            let data = notification && notification.data
+            Sentry.captureException(`selected`)
+            Sentry.captureException(`Notification Origin: ${JSON.stringify(notification.origin)}`)
             if (data.type === 'local') navigation.navigate('Diary', { openDate: data.date, screen: 'Diary' })
             if (data.type === 'investLead') navigation.navigate('Leads', { screen: 'Invest' })
             if (data.type === 'buyLead') navigation.navigate('Leads', { screen: 'Buy' })

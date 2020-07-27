@@ -85,7 +85,7 @@ export default styles = StyleSheet.create({
   },
   dateView: {
     marginTop: 3,
-    marginLeft: 10,
+    marginLeft: 5,
   },
   bottomDate: {
     marginTop: 5,

@@ -14,12 +14,11 @@ class ClientDetail extends React.Component {
         super(props)
         this.state = {
             client: {},
-            loading: true
+            loading: true,
         }
     }
 
     componentDidMount() {
-        const { route } = this.props
         this.fetchCustomer()
     }
 
@@ -32,22 +31,22 @@ class ClientDetail extends React.Component {
     fetchCustomer = () => {
         const { route } = this.props
         const { client } = route.params
-        const url = `api/customer/${client.id}`
-        axios.get(url)
-            .then((res) => {
-                this.setState({ client: res.data, loading: false })
-            })
-            .catch((error) => {
-                console.log(`URL: ${url}`)
-                console.log(error)
-            })
+            const url = `api/customer/${client.id}`
+            axios.get(url)
+                .then((res) => {
+                    this.setState({ client: res.data, loading: false })
+                })
+                .catch((error) => {
+                    console.log(`URL: ${url}`)
+                    console.log(error)
+                })
     }
 
     render() {
         const { user } = this.props;
         const { client, loading } = this.state
         let belongs = ''
-        if (client.assigned_to_arms_user_id === user.id) belongs = 'Personal Client'
+        if (client.assigned_to_armsuser_id === user.id) belongs = 'Personal Client'
         else belongs = client.added_by_organization + ' Client'
         if (user.subRole === 'group_management' && !client.added_by_organization) belongs = user.firstName + ' ' + user.lastName + ' Client'
 
@@ -75,7 +74,7 @@ class ClientDetail extends React.Component {
                         </View>
                         <View style={styles.pad}>
                             {
-                                Ability.canEdit(user.subRole, 'Client') && <MaterialCommunityIcons onPress={() => { this.navigateTo() }} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
+                                Ability.canEdit(user.subRole, 'Client') && client.assigned_to_armsuser_id === user.id && <MaterialCommunityIcons onPress={() => { this.navigateTo() }} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                             }
                         </View>
                     </View>

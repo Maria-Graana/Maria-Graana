@@ -171,22 +171,30 @@ class Meetings extends Component {
       response: status,
       leadId: formData.leadId
     }
-    if (status === 'cancel_meeting') {
-      axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
-        .then((res) => {
-          this.getMeetingLead();
-          this.setState({
-            doneStatus: !this.state.doneStatus,
-          })
-        })
+    if (status === 'follow_up') {
+      this.setState({
+        doneStatus: !this.state.doneStatus,
+      })
+      // this.props.navigation.navigate('AddDiary', { lead: this.props.lead, purposeTab: 'invest' })
+      this.goToDiaryForm();
     } else {
-      axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
-        .then((res) => {
-          this.getMeetingLead();
-          this.setState({
-            doneStatus: !this.state.doneStatus,
+      if (status === 'cancel_meeting') {
+        axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
+          .then((res) => {
+            this.getMeetingLead();
+            this.setState({
+              doneStatus: !this.state.doneStatus,
+            })
           })
-        })
+      } else {
+        axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
+          .then((res) => {
+            this.getMeetingLead();
+            this.setState({
+              doneStatus: !this.state.doneStatus,
+            })
+          })
+      }
     }
 
   }
@@ -216,6 +224,8 @@ class Meetings extends Component {
       Linking.canOpenURL(url)
         .then(supported => {
           if (!supported) {
+            this.sendCallStatus()
+
             console.log("Can't handle url: " + url);
           } else {
             this.sendCallStatus()
@@ -295,9 +305,9 @@ class Meetings extends Component {
 
   closedLead = () => {
     const { lead, user } = this.props
-		lead.status != StaticData.Constants.lead_closed_won ||
-			lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
-			lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
+    lead.status != StaticData.Constants.lead_closed_won ||
+      lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
+    lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
   }
 
   closeLead = () => {

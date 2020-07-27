@@ -176,7 +176,7 @@ class Meetings extends Component {
         doneStatus: !this.state.doneStatus,
       })
       // this.props.navigation.navigate('AddDiary', { lead: this.props.lead, purposeTab: 'invest' })
-      this.goToDiaryForm();
+      this.goToDiaryForm('follow up');
     } else {
       if (status === 'cancel_meeting') {
         axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
@@ -262,7 +262,7 @@ class Meetings extends Component {
     navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
   }
 
-  goToDiaryForm = () => {
+  goToDiaryForm = (taskType) => {
     const { navigation, route, user } = this.props;
     navigation.navigate('AddDiary', {
       update: false,
@@ -270,6 +270,7 @@ class Meetings extends Component {
       cmLeadId: this.props.lead.id,
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
+      taskType: taskType !=  '' ? taskType : null
     });
   }
 

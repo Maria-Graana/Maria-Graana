@@ -30,8 +30,7 @@ class ClientDetail extends React.Component {
 
     fetchCustomer = () => {
         const { route } = this.props
-        const { client, screenName } = route.params
-        if(screenName === 'Client'){
+        const { client } = route.params
             const url = `api/customer/${client.id}`
             axios.get(url)
                 .then((res) => {
@@ -41,11 +40,6 @@ class ClientDetail extends React.Component {
                     console.log(`URL: ${url}`)
                     console.log(error)
                 })
-        }
-        else{
-            this.setState({ client: client, loading: false })
-        }
-       
     }
 
     render() {

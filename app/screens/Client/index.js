@@ -95,7 +95,7 @@ class Client extends React.Component {
         }
         else {
             // by default flow of client screen
-            navigation.navigate('ClientDetail', { client: data, screenName: 'Client' })
+            navigation.navigate('ClientDetail', { client: data})
         }
     }
 

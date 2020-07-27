@@ -147,7 +147,7 @@ class LeadDetail extends React.Component {
     goToClientsDetail = () => {
         const { lead} = this.state;
         const { navigation } = this.props;
-        navigation.navigate('ClientDetail', { client: lead.customer ? lead.customer : null,  screenName: 'LeadDetail' });
+        navigation.navigate('ClientDetail', { client: lead.customer ? lead.customer : null});
     }
 
 

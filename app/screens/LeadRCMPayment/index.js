@@ -60,6 +60,7 @@ class LeadRCMPayment extends React.Component {
             agreeAmountFromat: true,
             comissionDateStatus: false,
             comissionPriceFromat: true,
+            monthlyFormatStatus: true,
         }
     }
 
@@ -112,6 +113,9 @@ class LeadRCMPayment extends React.Component {
                                 this.dateStatusChange('commissionPayment', true)
                                 this.formatStatusChange('commissionPayment', true)
                             }
+                            if (lead.monthlyRent != null) {
+                                this.formatStatusChange('monthlyRent', true)
+                            }
                             this.checkCommissionPayment(response.data);
                         })
                     }
@@ -133,8 +137,6 @@ class LeadRCMPayment extends React.Component {
 
     getShortlistedProperties = (lead) => {
         let matches = []
-        console.log('hello')
-
         axios.get(`/api/leads/${lead.id}/shortlist`)
             .then((response) => {
                 matches = helper.propertyCheck(response.data.rows)
@@ -371,7 +373,12 @@ class LeadRCMPayment extends React.Component {
         payload.monthlyRent = this.convertToInteger(monthlyRent);
         axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
             this.props.dispatch(setlead(response.data));
-            this.setState({ showMonthlyRentArrow: false, lead: response.data })
+            this.setState({
+                showMonthlyRentArrow: false,
+                lead: response.data,
+                showStyling: '',
+            })
+            this.formatStatusChange('monthlyRent', true)
         }).catch(error => {
             console.log(error);
         })
@@ -397,7 +404,9 @@ class LeadRCMPayment extends React.Component {
         this.setState({ formData }, () => {
             // console.log('formData', formData)
         })
-        if (formData.monthlyRent !== '' && name === 'monthlyRent') { this.setState({ showMonthlyRentArrow: true }) }
+        if (formData.monthlyRent !== '' && name === 'monthlyRent') {
+            this.setState({ showMonthlyRentArrow: true })
+        }
         if (formData.contract_months !== '' && name === 'contract_months') { this.updateRentLead(formData.contract_months, name) }
         if (formData.advance !== '' && name === 'advance') { this.updateRentLead(formData.advance, name) }
         if (formData.security !== '' && name === 'security') { this.updateRentLead(formData.security, name) }
@@ -492,6 +501,13 @@ class LeadRCMPayment extends React.Component {
             this.formatStatusChange('commissionPayment', true)
         }
 
+        if (name === 'monthlyRent') {
+            this.formatStatusChange(name, false)
+        }
+        if (name != 'monthlyRent') {
+            this.formatStatusChange('monthlyRent', true)
+        }
+
         this.setState({
             showStyling: clear === false ? name : '',
             showDate: false,
@@ -508,6 +524,9 @@ class LeadRCMPayment extends React.Component {
         }
         if (name === 'commissionPayment') {
             this.setState({ comissionPriceFromat: status })
+        }
+        if (name === 'monthlyRent') {
+            this.setState({ monthlyFormatStatus: status })
         }
     }
 
@@ -570,6 +589,20 @@ class LeadRCMPayment extends React.Component {
 
                     })
                 }
+
+                if (name === 'monthlyRent') {
+                    var monthly = res.data.monthlyRent
+                    var newFormdata = {...this.state.formData}
+                    newFormdata['monthlyRent'] = monthly != null ? monthly : '' 
+                    this.setState({ formData: newFormdata}, () => {
+                        if (monthly != null) {
+                            this.formatStatusChange(name, true)
+                        } else {
+                            this.formatStatusChange(name, false)
+                        }
+
+                    })
+                }
             })
     }
 
@@ -599,7 +632,8 @@ class LeadRCMPayment extends React.Component {
             tokenPriceFromat,
             comissionDateStatus,
             comissionPriceFromat,
-            agreeAmountFromat
+            agreeAmountFromat,
+            monthlyFormatStatus,
         } = this.state;
 
 
@@ -695,6 +729,15 @@ class LeadRCMPayment extends React.Component {
                                                             handleCommissionAmountChange={this.handleCommissionAmountChange}
                                                             showCommissionAmountArrow={showCommissionAmountArrow}
                                                             handleCommissionAmountPress={this.handleCommissionAmountPress}
+
+                                                            showAndHideStyling={this.showAndHideStyling}
+                                                            showStylingState={showStyling}
+                                                            tokenDateStatus={tokenDateStatus}
+                                                            tokenPriceFromat={tokenPriceFromat}
+                                                            agreeAmountFromat={agreeAmountFromat}
+                                                            comissionDateStatus={comissionDateStatus}
+                                                            comissionPriceFromat={comissionPriceFromat}
+                                                            monthlyFormatStatus={monthlyFormatStatus}
                                                         />
                                                     : null
                                             }

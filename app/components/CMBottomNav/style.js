@@ -3,8 +3,7 @@ export default styles = StyleSheet.create({
   bottomNavMain: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    paddingBottom: 15,
-    paddingTop: 15,
+
     // marginTop: 15,
     elevation: -3,
     shadowOffset: { width: -1, height: -1 },
@@ -13,7 +12,15 @@ export default styles = StyleSheet.create({
   },
   bottomNavBtn: {
     width: '20%',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingBottom: 15,
+    paddingTop: 15,
+  },
+  bottomNavBtn2: {
+    width: 100,
+    alignItems: 'center',
+    paddingBottom: 15,
+    paddingTop: 15,
   },
   bottomNavImg: {
     resizeMode: 'contain',
@@ -24,5 +31,11 @@ export default styles = StyleSheet.create({
     marginTop: 5,
     color: '#4E4E4E',
     fontSize: 12,
+  },
+  forMenuIcon: {
+    backgroundColor: '#0E73EE'
+  },
+  colorWhite: {
+    color: '#fff',
   },
 });

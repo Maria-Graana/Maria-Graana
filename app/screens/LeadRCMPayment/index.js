@@ -592,9 +592,9 @@ class LeadRCMPayment extends React.Component {
 
                 if (name === 'monthlyRent') {
                     var monthly = res.data.monthlyRent
-                    var newFormdata = {...this.state.formData}
-                    newFormdata['monthlyRent'] = monthly != null ? monthly : '' 
-                    this.setState({ formData: newFormdata}, () => {
+                    var newFormdata = { ...this.state.formData }
+                    newFormdata['monthlyRent'] = monthly != null ? monthly : ''
+                    this.setState({ formData: newFormdata }, () => {
                         if (monthly != null) {
                             this.formatStatusChange(name, true)
                         } else {
@@ -758,6 +758,8 @@ class LeadRCMPayment extends React.Component {
                                 alreadyClosedLead={() => this.closedLead()}
                                 closeLead={this.showLeadPaymentModal}
                                 closedLeadEdit={closedLeadEdit}
+                                callButton={true}
+                                callPhoneNumber={this.props.lead && this.props.lead.customer && this.props.lead.customer.phone}
                             />
                         </View>
 

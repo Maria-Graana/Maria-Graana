@@ -52,7 +52,7 @@ const RentPaymentView = (props) => {
                 editable={!isLeadClosed}
                 showDate={false}
             />
-            <View style={[styles.mainBlackWrap]}>
+            {/* <View style={[styles.mainBlackWrap]}>
                 <View style={{ width: "50%", justifyContent: "center" }}>
                     <Text style={[styles.blackInputText, { marginLeft: 12 }]}>MONTHLY RENT</Text>
                     <TextInput style={[styles.blackInput, { marginLeft: 12 }]} editable={!isLeadClosed} placeholder={'Enter Monthly Rent'} value={formData.monthlyRent} keyboardType={'number-pad'} onChangeText={(text) => handleForm(text, 'monthlyRent')} />
@@ -65,7 +65,7 @@ const RentPaymentView = (props) => {
                     </TouchableOpacity>
                 }
 
-            </View>
+            </View> */}
 
             <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>

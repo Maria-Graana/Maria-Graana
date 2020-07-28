@@ -132,19 +132,19 @@ class Meetings extends Component {
       } else {
         formData.addedBy = 'self';
         formData.taskCategory = 'leadTask',
-        axios.post(`api/leads/project/meeting`, formData)
-          .then((res) => {
-            formData['time'] = ''
-            formData['date'] = ''
-            helper.successToast(`Meeting Added`)
-            this.getMeetingLead();
-            this.setState({
-              active: false,
-              formData,
+          axios.post(`api/leads/project/meeting`, formData)
+            .then((res) => {
+              formData['time'] = ''
+              formData['date'] = ''
+              helper.successToast(`Meeting Added`)
+              this.getMeetingLead();
+              this.setState({
+                active: false,
+                formData,
+              })
+            }).catch(() => {
+              helper.errorToast(`Some thing went wrong!!!`)
             })
-          }).catch(() => {
-            helper.errorToast(`Some thing went wrong!!!`)
-          })
       }
 
     }
@@ -172,29 +172,24 @@ class Meetings extends Component {
       leadId: formData.leadId
     }
     if (status === 'follow_up') {
-      this.setState({
-        doneStatus: !this.state.doneStatus,
-      })
-      // this.props.navigation.navigate('AddDiary', { lead: this.props.lead, purposeTab: 'invest' })
       this.goToDiaryForm('follow up');
+    }
+    if (status === 'cancel_meeting') {
+      axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
+        .then((res) => {
+          this.getMeetingLead();
+          this.setState({
+            doneStatus: !this.state.doneStatus,
+          })
+        })
     } else {
-      if (status === 'cancel_meeting') {
-        axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
-          .then((res) => {
-            this.getMeetingLead();
-            this.setState({
-              doneStatus: !this.state.doneStatus,
-            })
+      axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
+        .then((res) => {
+          this.getMeetingLead();
+          this.setState({
+            doneStatus: !this.state.doneStatus,
           })
-      } else {
-        axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
-          .then((res) => {
-            this.getMeetingLead();
-            this.setState({
-              doneStatus: !this.state.doneStatus,
-            })
-          })
-      }
+        })
     }
 
   }
@@ -270,7 +265,7 @@ class Meetings extends Component {
       cmLeadId: this.props.lead.id,
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
-      taskType: taskType !=  '' ? taskType : null
+      taskType: taskType != '' ? taskType : null
     });
   }
 

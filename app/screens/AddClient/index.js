@@ -50,7 +50,7 @@ class AddClient extends Component {
                 lastName: client.lastName,
                 email: client.email,
                 cnic: client.cnic,
-                contactNumber: client.contact1,
+                contactNumber: client.phone,
                 address: client.address,
             }
         })
@@ -129,7 +129,7 @@ class AddClient extends Component {
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')
-                            RootNavigation.navigate('Client')
+                            navigation.goBack();
                         })
                         .catch((error) => {
                             console.log(error)

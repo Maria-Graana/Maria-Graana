@@ -132,19 +132,19 @@ class Meetings extends Component {
       } else {
         formData.addedBy = 'self';
         formData.taskCategory = 'leadTask',
-        axios.post(`api/leads/project/meeting`, formData)
-          .then((res) => {
-            formData['time'] = ''
-            formData['date'] = ''
-            helper.successToast(`Meeting Added`)
-            this.getMeetingLead();
-            this.setState({
-              active: false,
-              formData,
+          axios.post(`api/leads/project/meeting`, formData)
+            .then((res) => {
+              formData['time'] = ''
+              formData['date'] = ''
+              helper.successToast(`Meeting Added`)
+              this.getMeetingLead();
+              this.setState({
+                active: false,
+                formData,
+              })
+            }).catch(() => {
+              helper.errorToast(`Some thing went wrong!!!`)
             })
-          }).catch(() => {
-            helper.errorToast(`Some thing went wrong!!!`)
-          })
       }
 
     }
@@ -170,6 +170,9 @@ class Meetings extends Component {
     let body = {
       response: status,
       leadId: formData.leadId
+    }
+    if (status === 'follow_up') {
+      this.goToDiaryForm('follow up');
     }
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
@@ -216,6 +219,8 @@ class Meetings extends Component {
       Linking.canOpenURL(url)
         .then(supported => {
           if (!supported) {
+            this.sendCallStatus()
+
             console.log("Can't handle url: " + url);
           } else {
             this.sendCallStatus()
@@ -252,7 +257,7 @@ class Meetings extends Component {
     navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
   }
 
-  goToDiaryForm = () => {
+  goToDiaryForm = (taskType) => {
     const { navigation, route, user } = this.props;
     navigation.navigate('AddDiary', {
       update: false,
@@ -260,6 +265,7 @@ class Meetings extends Component {
       cmLeadId: this.props.lead.id,
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
+      taskType: taskType != '' ? taskType : null
     });
   }
 
@@ -295,9 +301,9 @@ class Meetings extends Component {
 
   closedLead = () => {
     const { lead, user } = this.props
-		lead.status != StaticData.Constants.lead_closed_won ||
-			lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
-			lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
+    lead.status != StaticData.Constants.lead_closed_won ||
+      lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
+    lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
   }
 
   closeLead = () => {

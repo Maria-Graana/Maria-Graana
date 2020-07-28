@@ -43,7 +43,8 @@ export default styles = StyleSheet.create({
     },
     badgeText: {
         fontFamily: AppStyles.fonts.defaultFont,
-        color: AppStyles.colors.primaryColor
+        color: AppStyles.colors.primaryColor,
+        fontSize: 12
     },
     badgeView: {
         borderColor: AppStyles.colors.primaryColor,
@@ -53,7 +54,8 @@ export default styles = StyleSheet.create({
         width: 25,
         marginRight: 10,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        padding: 2
     },
     tileView: {
         flexDirection: 'row',

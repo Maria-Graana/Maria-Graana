@@ -145,9 +145,9 @@ class LeadDetail extends React.Component {
     }
 
     goToClientsDetail = () => {
-        const { lead} = this.state;
+        const { lead } = this.state;
         const { navigation } = this.props;
-        navigation.navigate('ClientDetail', { client: lead.customer ? lead.customer : null});
+        navigation.navigate('ClientDetail', { client: lead.customer ? lead.customer : null });
     }
 
 
@@ -157,7 +157,7 @@ class LeadDetail extends React.Component {
         const { user, route } = this.props;
         const { purposeTab } = route.params
         let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
-        
+
         return (
             !loading ?
                 <ScrollView showsVerticalScrollIndicator={false} style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>

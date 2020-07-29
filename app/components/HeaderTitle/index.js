@@ -19,15 +19,15 @@ class HeaderTitle extends React.Component {
                 <Text style={styles.headerText}>{headerName}</Text>
                 {
                     !lead.projectId ?
-                        < Text style={[styles.detailText, AppStyles.darkColor,]}>
+                        < Text numberOfLines={1} style={[styles.detailText, AppStyles.darkColor,]}>
                             {lead.size && lead.size !== 0 ? lead.size + ' ' : null}
                             {lead.size_unit && lead.size_unit !== null ? helper.capitalize(lead.size_unit) + ' ' : null}
                             {lead.subtype && helper.capitalize(lead.subtype)} {lead.purpose != null && 'to '}
                             {lead.purpose === 'sale' ? 'Buy' : 'Rent'}
                         </Text>
                         :
-                        < Text style={[styles.detailText, AppStyles.darkColor,]}>
-                            {lead.projectName && lead.projectName}{lead.projectType ? ' - ' + helper.capitalize(lead.projectType) : ''}
+                        < Text numberOfLines={1} style={[styles.detailText, AppStyles.darkColor,]}>
+                            {lead.project ? helper.capitalize(lead.project.name) : helper.capitalize(lead.projectName)}{lead.projectType ? ' - ' + helper.capitalize(lead.projectType) : ''}
                         </Text>
                 }
 

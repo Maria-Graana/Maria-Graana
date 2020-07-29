@@ -19,40 +19,41 @@ class ClientDetail extends React.Component {
     }
 
     componentDidMount() {
-        this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            this.fetchCustomer()
-        })
+        this.fetchCustomer()
     }
 
     navigateTo = () => {
-        const { client } = this.state;
-        const copyClient = Object.assign(client,{});
-        copyClient.firstName = client.first_name; // have to add additional keys in case of lead bcs it doesnot exist when coming from lead detail screen
-        copyClient.lastName = client.last_name;   // The format is different in api's so adding keys to adjust and display
-        this.props.navigation.navigate('AddClient', { client: copyClient, update: true })
+        const { route } = this.props
+        const { client } = route.params
+        this.props.navigation.navigate('AddClient', { client: client, update: true })
     }
 
     fetchCustomer = () => {
         const { route } = this.props
         const { client } = route.params
-            const url = `api/customer/${client.id}`
-            axios.get(url)
-                .then((res) => {
-                    this.setState({ client: res.data, loading: false })
-                })
-                .catch((error) => {
-                    console.log(`URL: ${url}`)
-                    console.log(error)
-                })
+        const url = `api/customer/${client.id}`
+        axios.get(url)
+            .then((res) => {
+                this.setState({ client: res.data, loading: false })
+            })
+            .catch((error) => {
+                console.log(`URL: ${url}`)
+                console.log(error)
+            })
     }
 
     render() {
         const { user } = this.props;
         const { client, loading } = this.state
         let belongs = ''
-        if (client.assigned_to_armsuser_id === user.id) belongs = 'Personal Client'
-        else belongs = client.added_by_organization
-        if (user.subRole === 'group_management' && !client.added_by_organization) belongs = user.firstName + ' ' + user.lastName
+        if (!client.originalOwner) belongs = 'Personal Client'
+        else {
+            if (client.originalOwner.id === user.id) belongs = 'Personal Client'
+            else {
+                if (client.originalOwner.organization) belongs = client.originalOwner.organization.name
+                else belongs = client.originalOwner.firstName + ' ' + client.originalOwner.lastName
+            }
+        }
 
         return (
             !loading ?

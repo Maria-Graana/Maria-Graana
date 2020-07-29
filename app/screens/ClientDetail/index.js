@@ -42,18 +42,27 @@ class ClientDetail extends React.Component {
             })
     }
 
+    checkClient = () => {
+        const { user } = this.props;
+        const { client } = this.state
+
+        if (!client.originalOwner) {
+            if (client.assigned_to_armsuser_id && client.assigned_to_armsuser_id === user.id) return 'Personal Client'
+            else return client.assigned_to_organization ? client.assigned_to_organization : ''
+        }
+        else {
+            if (client.originalOwner.id === user.id) return 'Personal Client'
+            else {
+                if (client.originalOwner.organization) return client.originalOwner.organization.name
+                else return client.originalOwner.firstName + ' ' + client.originalOwner.lastName
+            }
+        }
+    }
+
     render() {
         const { user } = this.props;
         const { client, loading } = this.state
-        let belongs = ''
-        if (!client.originalOwner) belongs = 'Personal Client'
-        else {
-            if (client.originalOwner.id === user.id) belongs = 'Personal Client'
-            else {
-                if (client.originalOwner.organization) belongs = client.originalOwner.organization.name
-                else belongs = client.originalOwner.firstName + ' ' + client.originalOwner.lastName
-            }
-        }
+        let belongs = this.checkClient()
 
         return (
             !loading ?

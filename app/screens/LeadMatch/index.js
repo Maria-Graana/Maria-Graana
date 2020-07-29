@@ -569,13 +569,11 @@ class LeadMatch extends React.Component {
     }
 
     goToAttachments = () => {
-        this.openMenu(false)
         const { navigation, lead } = this.props;
         navigation.navigate('Attachments', { rcmLeadId: lead.id });
     }
 
     goToComments = () => {
-        this.openMenu(false)
         const { navigation, lead } = this.props;
         navigation.navigate('Comments', { rcmLeadId: lead.id });
     }

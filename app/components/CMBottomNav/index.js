@@ -93,18 +93,25 @@ class CMBottomNav extends React.Component {
           //   <Image style={styles.bottomNavImg} source={require('../../../assets/img/menuIcon.png')} />
           //   <Text style={[styles.bottomNavBtnText, styles.colorWhite]}>Menu</Text>
           // </TouchableOpacity>
-          <Menu
-            visible={visible}
-            onDismiss={() => this.openMenu(false)}
-            anchor={
-              <TouchableOpacity onPress={() => this.openMenu(true)} style={[styles.bottomNavBtn2, styles.forMenuIcon]}>
-                <Image style={styles.bottomNavImg} source={require('../../../assets/img/menuIcon.png')} />
-                <Text style={[styles.bottomNavBtnText, styles.colorWhite]}>Menu</Text>
-              </TouchableOpacity>
-            }>
-            <Menu.Item onPress={() => { goToComments() }} icon={require('../../../assets/img/msg.png')} title="Comments" />
-            <Menu.Item onPress={() => { goToAttachments() }} icon={require('../../../assets/img/files.png')} title="Files" />
-          </Menu>
+          <View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>
+            <Menu
+              visible={visible}
+              onDismiss={() => this.openMenu(false)}
+              anchor={
+                <TouchableOpacity onPress={() => this.openMenu(true)} style={styles.align}>
+                  {
+                    visible === true ?
+                      <Image style={styles.bottomNavImg} source={require('../../../assets/img/menuIcon.png')} />
+                      :
+                      <Image style={styles.bottomNavImg} source={require('../../../assets/img/menuIcon2.png')} />
+                  }
+                  <Text style={[styles.bottomNavBtnText, visible === true && styles.colorWhite]}>Menu</Text>
+                </TouchableOpacity>
+              }>
+              <Menu.Item onPress={() => { goToComments() }} icon={require('../../../assets/img/msg.png')} title="Comments" />
+              <Menu.Item onPress={() => { goToAttachments() }} icon={require('../../../assets/img/files.png')} title="Files" />
+            </Menu>
+          </View>
 
         }
 

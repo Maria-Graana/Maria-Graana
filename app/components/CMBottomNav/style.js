@@ -17,10 +17,13 @@ export default styles = StyleSheet.create({
     paddingTop: 15,
   },
   bottomNavBtn2: {
-    width: 100,
+    width: '20%',
     alignItems: 'center',
     paddingBottom: 15,
     paddingTop: 15,
+  },
+  align:{
+    alignItems: 'center',
   },
   bottomNavImg: {
     resizeMode: 'contain',

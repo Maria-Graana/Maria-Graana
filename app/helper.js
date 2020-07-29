@@ -127,7 +127,7 @@ const helper = {
 	},
 	setStatusText(val, todayDate) {
 		let taskDate = moment(val.date).format('YYYY-MM-DD')
-		if (val.armsProjectLeadId === null && val.taskType !== 'viewing') {
+		if (val.taskCategory === 'simpleTask') { // simple task is reffered to task added from diary directly or through lead but taskcategory is simpleTask
 			if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
 				return 'To-do'
 			}
@@ -174,7 +174,7 @@ const helper = {
 	},
 	checkStatusColor(val, todayDate) {
 		let taskDate = moment(val.date).format('YYYY-MM-DD')
-		if (val.armsProjectLeadId === null) {
+		if (val.taskCategory === 'simpleTask') {
 			if (taskDate > todayDate && (val.status !== 'inProgress' && val.status !== 'completed')) {
 				return 'red'
 			}
@@ -192,6 +192,14 @@ const helper = {
 			}
 			else {
 				return 'black';
+			}
+		}
+		else if (val.taskType === 'viewing') {
+			if (val.status === 'completed') {
+				return 'green'
+			}
+			else {
+				return 'red';
 			}
 		}
 		else {

@@ -50,7 +50,7 @@ class AddClient extends Component {
                 lastName: client.lastName,
                 email: client.email,
                 cnic: client.cnic,
-                contactNumber: client.phone,
+                contactNumber: client.contact1,
                 address: client.address,
             }
         })

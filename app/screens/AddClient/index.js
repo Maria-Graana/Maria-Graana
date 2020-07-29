@@ -116,7 +116,12 @@ class AddClient extends Component {
                                     ],
                                         { cancelable: false })
                                 } else {
-                                    helper.successToast(res.data.message)
+                                    if(res.data.message === 'Client already exists'){
+                                        helper.errorToast(res.data.message)
+                                    }
+                                    else{
+                                        helper.successToast(res.data.message)
+                                    }
                                     isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack() ;
                                 }
                             }

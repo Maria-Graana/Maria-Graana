@@ -175,21 +175,21 @@ class LeadOffer extends React.Component {
 	}
 
 	closeLead = () => {
-        const {user, lead} = this.props;
-        var commissionPayment = this.props.lead.commissionPayment
-        if(user.id === lead.assigned_to_armsuser_id){
-            if (commissionPayment !== null) {
-                this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
-            }
-            else {
-                this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
-            }
-        }
-        else{
-            helper.leadNotAssignedToast()
-        }
-        
-    }
+		const { user, lead } = this.props;
+		var commissionPayment = this.props.lead.commissionPayment
+		if (user.id === lead.assigned_to_armsuser_id) {
+			if (commissionPayment !== null) {
+				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+			}
+			else {
+				this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+			}
+		}
+		else {
+			helper.leadNotAssignedToast()
+		}
+
+	}
 
 	onHandleCloseLead = () => {
 		const { navigation, lead } = this.props
@@ -221,8 +221,8 @@ class LeadOffer extends React.Component {
 		const { lead, navigation, user } = this.props
 		navigation.navigate('AddDiary', {
 			update: false,
-			rcmLeadId: lead.id,
 			agentId: user.id,
+			rcmLeadId: lead.id,
 			addedBy: 'self'
 		});
 	}
@@ -288,7 +288,7 @@ class LeadOffer extends React.Component {
 						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
 							helper.leadClosedToast();
 						}
-						else if(user.id !== lead.assigned_to_armsuser_id){
+						else if (user.id !== lead.assigned_to_armsuser_id) {
 							helper.leadNotAssignedToast()
 						}
 						else {
@@ -316,7 +316,7 @@ class LeadOffer extends React.Component {
 						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
 							helper.leadClosedToast();
 						}
-						else if(user.id !== lead.assigned_to_armsuser_id){
+						else if (user.id !== lead.assigned_to_armsuser_id) {
 							helper.leadNotAssignedToast()
 						}
 						else {
@@ -336,13 +336,14 @@ class LeadOffer extends React.Component {
 	}
 
 	render() {
+
 		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton, leadData, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
 					<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-						<View style={{  paddingBottom: 100  }}>
+						<View style={{ paddingBottom: 100 }}>
 							{
 								matchData.length ?
 									<View>
@@ -402,6 +403,8 @@ class LeadOffer extends React.Component {
 							alreadyClosedLead={() => this.closedLead()}
 							closeLead={this.closeLead}
 							closedLeadEdit={closedLeadEdit}
+							callButton={true}
+							callPhoneNumber={this.props.lead && this.props.lead.customer && this.props.lead.customer.phone}
 						/>
 					</View>
 

@@ -34,30 +34,23 @@ class PushNotifications extends React.Component {
                 finalStatus = status;
             }
             if (finalStatus !== 'granted') {
-                alert('Failed to get push token for push notification!');
+                Alert.alert('Failed to get push token for push notification!');
                 return;
             }
+
+            // let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
 
             let expoPushToken = await Notifications.getExpoPushTokenAsync();
 
             if (expoPushToken) {
-                this.setState({
-                    expoPushToken: expoPushToken
-                })
-            }
-
-            let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
-            Sentry.captureException(`After Function End: ${JSON.stringify(fcmPushToken)}`)
-
-            if (fcmPushToken) {
                 let body = {
-                    token: fcmPushToken.data,
+                    token: expoPushToken,
                     armsuserId: user.id,
                 }
                 axios.post('/api/notifications/add-token', body)
                     .then((res) => {
                         this.setState({
-                            fcmPushToken: fcmPushToken
+                            expoPushToken: expoPushToken
                         })
                     })
                     .catch((error) => {
@@ -70,14 +63,20 @@ class PushNotifications extends React.Component {
             console.log('Must use physical device for Push Notifications')
         }
         if (Platform.OS === 'android') {
+            Notifications.createChannelAndroidAsync('default', {
+                name: 'Default',
+                sound: true,
+                priority: 'max',
+                vibrate: [0, 250, 250, 250],
+            });
             Notifications.createChannelAndroidAsync('development', {
-                name: 'development',
+                name: 'Development',
                 sound: true,
                 priority: 'max',
                 vibrate: [0, 250, 250, 250],
             });
             Notifications.createChannelAndroidAsync('reminder', {
-                name: 'reminder',
+                name: 'Reminder',
                 sound: true,
                 priority: 'max',
                 vibrate: [0, 250, 250, 250],
@@ -87,10 +86,8 @@ class PushNotifications extends React.Component {
 
     _handleNotification = notification => {
         const { navigation } = this.props
-        let data = notification.data
-        Sentry.captureException(`Before handleNotification: ${notification}`)
         if (notification.origin === 'selected') {
-            Sentry.captureException(`mid handleNotification: ${data}`)
+            let data = notification && notification.data
             if (data.type === 'local') navigation.navigate('Diary', { openDate: data.date, screen: 'Diary' })
             if (data.type === 'investLead') navigation.navigate('Leads', { screen: 'Invest' })
             if (data.type === 'buyLead') navigation.navigate('Leads', { screen: 'Buy' })

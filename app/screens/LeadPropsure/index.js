@@ -307,8 +307,8 @@ class LeadPropsure extends React.Component {
         const { lead, navigation, user } = this.props
         navigation.navigate('AddDiary', {
             update: false,
-            rcmLeadId: lead.id,
             agentId: user.id,
+            rcmLeadId: lead.id,
             addedBy: 'self'
         });
     }
@@ -400,6 +400,8 @@ class LeadPropsure extends React.Component {
                             alreadyClosedLead={() => this.closedLead()}
                             closeLead={this.closeLead}
                             closedLeadEdit={closedLeadEdit}
+                            callButton={true}
+							callPhoneNumber={this.props.lead && this.props.lead.customer && this.props.lead.customer.phone}
                         />
                     </View>
                     <LeadRCMPaymentPopup

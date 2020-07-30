@@ -582,12 +582,11 @@ class LeadMatch extends React.Component {
         this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
     }
 
-
     _onStateChange = ({ open }) => this.setState({ open });
 
     render() {
         const { lead, user } = this.props
-        const { selectedCity, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { selectedCity, visible, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
@@ -716,6 +715,8 @@ class LeadMatch extends React.Component {
                             alreadyClosedLead={() => this.closedLead()}
                             closeLead={this.closeLead}
                             closedLeadEdit={closedLeadEdit}
+                            callButton={true}
+                            callPhoneNumber={lead && lead.customer && lead.customer.phone}
                         />
                     </View>
                     <LeadRCMPaymentPopup

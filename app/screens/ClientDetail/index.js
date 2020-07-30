@@ -6,83 +6,99 @@ import AppStyles from '../../AppStyles'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Ability from '../../hoc/Ability';
 import helper from '../../helper';
+import axios from 'axios';
+import Loader from '../../components/loader';
 
 class ClientDetail extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            client: {},
+            loading: true,
         }
     }
 
     componentDidMount() {
-        const { route } = this.props
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            this.fetchCustomer()
+        })
     }
 
     navigateTo = () => {
+        const { client } = this.state;
+        const copyClient = Object.assign(client,{});
+        copyClient.firstName = client.first_name; // have to add additional keys in case of lead bcs it doesnot exist when coming from lead detail screen
+        copyClient.lastName = client.last_name;   // The format is different in api's so adding keys to adjust and display
+        this.props.navigation.navigate('AddClient', { client: copyClient, update: true })
+    }
+
+    fetchCustomer = () => {
         const { route } = this.props
         const { client } = route.params
-        this.props.navigation.navigate('AddClient', { client: client, update: true })
+        const url = `api/customer/${client.id}`
+        axios.get(url)
+            .then((res) => {
+                this.setState({ client: res.data, loading: false })
+            })
+            .catch((error) => {
+                console.log(`URL: ${url}`)
+                console.log(error)
+            })
+    }
+
+    checkClient = () => {
+        const { user } = this.props;
+        const { client } = this.state
+
+        if (!client.originalOwner) {
+            if (client.assigned_to_armsuser_id && client.assigned_to_armsuser_id === user.id) return 'Personal Client'
+            else return client.assigned_to_organization ? client.assigned_to_organization : ''
+        }
+        else {
+            if (client.originalOwner.id === user.id) return 'Personal Client'
+            else {
+                if (client.originalOwner.organization) return client.originalOwner.organization.name
+                else return client.originalOwner.firstName + ' ' + client.originalOwner.lastName
+            }
+        }
     }
 
     render() {
-        const { route, user } = this.props;
-        const { client } = route.params
+        const { user } = this.props;
+        const { client, loading } = this.state
+        let belongs = this.checkClient()
 
         return (
-            <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
-                <View style={styles.outerContainer}>
-                    <View style={styles.innerContainer}>
-                        <Text style={styles.headingText}>First Name </Text>
-                        <Text style={styles.labelText}>{client.firstName} </Text>
-                        <Text style={styles.headingText}>Last Name </Text>
-                        <Text style={styles.labelText}>{client.lastName} </Text>
-                        <Text style={styles.headingText}>Contact Number </Text>
-                        <Text style={styles.labelText}>{client.contact1} </Text>
-                        {
-                            client.email ?
-                                <View>
-                                    <Text style={styles.headingText}>Email </Text>
-                                    <Text style={styles.labelText}>{client.email} </Text>
-                                </View>
-                                :
-                                null
-                        }
-
-                        {
-                            client.cnic ?
-                                <View>
-                                    <Text style={styles.headingText}>CNIC </Text>
-                                    <Text style={styles.labelText}>{client.cnic && helper.normalizeCnic(client.cnic)}</Text>
-                                </View>
-                                :
-                                null
-                        }
-                        {
-                            client.address ?
-                                <View>
-                                    <Text style={styles.headingText}>Address </Text>
-                                    <Text style={styles.labelText}>{client.address} </Text>
-                                </View>
-                                :
-                                null
-                        }
-                        {
-                            client.secondary_address ?
-                                <View>
-                                    <Text style={styles.headingText}>Secondary Address</Text>
-                                    <Text style={styles.labelText}>{client.secondary_address} </Text>
-                                </View>
-                                : null
-                        }
-
-                    </View>
-                    <View style={styles.pad}>
-                        {
-                            Ability.canEdit(user.subRole, 'Client') && <MaterialCommunityIcons onPress={() => { this.navigateTo() }} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
-                        }
+            !loading ?
+                <View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
+                    <View style={styles.outerContainer}>
+                        <View style={styles.innerContainer}>
+                            <Text style={styles.headingText}>First Name</Text>
+                            <Text style={styles.labelText}>{client.first_name}</Text>
+                            <Text style={styles.headingText}>Last Name</Text>
+                            <Text style={styles.labelText}>{client.last_name}</Text>
+                            <Text style={styles.headingText}>Contact Number</Text>
+                            <Text style={styles.labelText}>{client.phone}</Text>
+                            <Text style={styles.headingText}>Email</Text>
+                            <Text style={styles.labelText}>{client.email}</Text>
+                            <Text style={styles.headingText}>CNIC</Text>
+                            <Text style={styles.labelText}>{client.cnic && helper.normalizeCnic(client.cnic)}</Text>
+                            <Text style={styles.headingText}>Address</Text>
+                            <Text style={styles.labelText}>{client.address}</Text>
+                            <Text style={styles.headingText}>Secondary Address</Text>
+                            <Text style={styles.labelText}>{client.secondary_address}</Text>
+                            <Text style={styles.headingText}>Belongs To</Text>
+                            <Text style={styles.labelText}>{belongs}</Text>
+                        </View>
+                        <View style={styles.pad}>
+                            {
+                                Ability.canEdit(user.subRole, 'Client') && client.assigned_to_armsuser_id && client.assigned_to_armsuser_id === user.id && <MaterialCommunityIcons onPress={() => { this.navigateTo() }} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
+                            }
+                        </View>
                     </View>
                 </View>
-            </View>
+                :
+                <Loader loading={loading} />
         )
     }
 }

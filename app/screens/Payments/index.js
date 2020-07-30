@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
-import { View, Alert, ScrollView, Modal, Text, TouchableHighlight } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import axios from 'axios'
-import styles from './style'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
 import InnerForm from './innerForm';
 import StaticData from '../../StaticData';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import moment from 'moment'
-import { ProgressBar, Colors } from 'react-native-paper';
+import { ProgressBar } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 import helper from '../../helper';
-import { FAB } from 'react-native-paper';
-import MeetingModal from '../../components/MeetingModal'
 import PaymentAlert from '../../components/PaymentAlert'
 import CMBottomNav from '../../components/CMBottomNav'
 
@@ -35,7 +32,7 @@ class Payments extends Component {
 			getFloors: [],
 			paymentDate: '',
 			tokenDate: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
-			downPaymentTime: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
+			downPaymentTime: lead.paymentTime ? moment(lead.paymentTime).format('hh:mm a') + ' ' + moment(lead.paymentTime).format('MMM DD') : '',
 			totalInstalments: lead.cmInstallments.length > 0 ? lead.cmInstallments : [],
 			units: [],
 			remainingPayment: 'no',
@@ -67,7 +64,19 @@ class Payments extends Component {
 			closedLeadEdit:
 				lead.status != StaticData.Constants.lead_closed_won &&
 				lead.status != StaticData.Constants.lead_closed_lost,
-			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
+			showStyling: '',
+			showDate: false,
+			promotionDiscountFormat: false,
+			tokenFormat: false,
+			tokenDateStatus: { name: '', status: false },
+			downPaymentDateStatus: { name: '', status: false },
+			downPaymentFormat: false,
+			dateStatusForPayments: [],
+			paymentFromat: [],
+			dateStatusForInstallments: [],
+			installmentsFromat: [],
+			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false,
+			cancelNewData: '',
 		}
 
 	}
@@ -79,9 +88,17 @@ class Payments extends Component {
 	}
 
 	setFields = () => {
-		const { formData, arrowCheck } = this.state
+		const {
+			formData,
+			arrowCheck,
+			tokenDateStatus,
+			downPaymentDateStatus,
+			totalInstalments,
+		} = this.state
 		const { lead } = this.props
 		let data = lead
+		let newtokenDateStatus = tokenDateStatus
+		let newdownPaymentDateStatus = downPaymentDateStatus
 		this.setState({
 			readOnly: {
 				totalSize: '',
@@ -118,18 +135,26 @@ class Payments extends Component {
 				this.discountPayment()
 				name = 'discount'
 				arrowCheck[name] = false
+				this.formatStatusChange(name, true)
 			}
 			if (data.token != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 				name = 'token'
 				arrowCheck[name] = false
+				this.formatStatusChange(name, true)
+				newtokenDateStatus['name'] = name
+				newtokenDateStatus['status'] = true
 			}
 			if (data.downPayment != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 				name = 'downPayment'
 				arrowCheck[name] = false
+				this.formatStatusChange(name, true)
+				newdownPaymentDateStatus['name'] = name
+				newdownPaymentDateStatus['status'] = true
+
 			}
 			if (data.no_of_installments != null) {
 				this.instalmentsField(data.no_of_installments)
@@ -138,6 +163,7 @@ class Payments extends Component {
 			if (data.cmInstallments.length) {
 				name = 'installments'
 				arrowCheck[name] = false
+				this.setInstallmentsDateArray(data.no_of_installments);
 				this.setState({
 					formData: {
 						...formData,
@@ -149,6 +175,7 @@ class Payments extends Component {
 			if (data.payment && data.payment.length) {
 				name = 'payments'
 				arrowCheck[name] = false
+				this.setPaymentDateArray(data.payment.length);
 				this.setState({
 					formData: {
 						...formData,
@@ -157,7 +184,10 @@ class Payments extends Component {
 				})
 			}
 
-			this.setState({ arrowCheck })
+			this.setState({
+				arrowCheck,
+				tokenDateStatus: newtokenDateStatus,
+			})
 
 		})
 	}
@@ -218,21 +248,65 @@ class Payments extends Component {
 			})
 	}
 
+	setPaymentDateArray = (length) => {
+		const { dateStatusForPayments, paymentFromat } = this.state
+		var arrayDate = [...dateStatusForPayments]
+		var arrayFormat = [...paymentFromat]
+		for (var i = 0; i < length; i++) {
+			arrayDate.push({ name: i, status: true })
+			arrayFormat.push({ name: i, status: true })
+		}
+		this.setState({
+			dateStatusForPayments: arrayDate,
+			paymentFromat: arrayFormat,
+		})
+	}
+
+	setInstallmentsDateArray = (length) => {
+		const { dateStatusForInstallments, installmentsFromat } = this.state
+		var arrayDate = [...dateStatusForInstallments]
+		var arrayFormat = [...installmentsFromat]
+		var newLength = length
+		newLength = length < 4 ? 4 : length
+		for (var i = 0; i < newLength; i++) {
+			arrayDate.push({ name: i, status: true })
+			arrayFormat.push({ name: i, status: true })
+		}
+		this.setState({
+			dateStatusForInstallments: arrayDate,
+			installmentsFromat: arrayFormat,
+		})
+	}
+
 	instalmentsField = (value) => {
-		const { totalInstalments } = this.state
+		const { dateStatusForInstallments, installmentsFromat } = this.state
 		const { lead } = this.props
 		let array = []
+		let newdateStatusForInstallments = [...dateStatusForInstallments]
+		let newinstallmentsFromat = [...installmentsFromat]
 		for (var i = 0; i < value; i++) {
+			newdateStatusForInstallments.push({ name: '', status: false })
+			newinstallmentsFromat.push({ name: '', status: false })
 			array.push({
-				installmentAmount: lead.cmInstallments.length > i ? lead.cmInstallments[i].installmentAmount : '',
+				id: lead.cmInstallments.length > i ?
+					lead.cmInstallments[i].id
+					:
+					null,
+				installmentAmount: lead.cmInstallments.length > i ?
+					lead.cmInstallments[i].installmentAmount
+					:
+					null,
 				installmentAmountDate: lead.cmInstallments.length > i ?
-					moment(lead.cmInstallments[i].createdAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].createdAt).format('MMM DD')
-					: ''
+				lead.cmInstallments[i].installmentAmount != null && moment(lead.cmInstallments[i].updatedAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].updatedAt).format('MMM DD')
+					:
+					null,
 			})
 		}
 		this.setState({
 			totalInstalments: array,
-			instalments: value
+			instalments: value,
+			dateStatusForInstallments: newdateStatusForInstallments,
+			installmentsFromat: newinstallmentsFromat
 		}, () => {
 			this.submitValues('no_installments')
 			this.discountPayment();
@@ -373,7 +447,6 @@ class Payments extends Component {
 		})
 	}
 
-
 	handleInstalments = (value, index) => {
 		const { totalInstalments, arrowCheck } = this.state
 		var date = new Date()
@@ -391,7 +464,7 @@ class Payments extends Component {
 		var date = new Date()
 		arrowCheck['payments'] = true
 		let newPayments = [...paymentFiledsArray]
-		newPayments[index].installmentAmount = parseInt(value)
+		newPayments[index].installmentAmount = value
 		newPayments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
 		this.setState({ paymentFiledsArray: newPayments, arrowCheck }, () => {
 			this.discountPayment()
@@ -423,7 +496,7 @@ class Payments extends Component {
 			})
 	}
 
-	submitValues = (name) => {
+	submitValues = (name, arrayName) => {
 		const {
 			formData,
 			instalments,
@@ -432,11 +505,20 @@ class Payments extends Component {
 			arrowCheck,
 			paymentFiledsArray,
 			remainingPayment,
+			tokenDateStatus,
+			downPaymentDateStatus,
+			dateStatusForPayments,
+			dateStatusForInstallments,
 		} = this.state
+
 		const { lead } = this.props
 		formData[name] = formData[name]
 		let body = {};
 		let newArrowCheck = { ...arrowCheck }
+		let newtokenDateStatus = tokenDateStatus
+		let newdownPaymentDateStatus = downPaymentDateStatus
+		let newdateStatusForPayments = [...dateStatusForPayments]
+		let newdateStatusForInstallments = [...dateStatusForInstallments]
 		if (name === 'projectId') {
 			body = { projectId: formData[name] }
 		}
@@ -449,16 +531,23 @@ class Payments extends Component {
 		if (name === 'discount') {
 			body = { discount: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
+			this.formatStatusChange(name, true)
 		}
 		if (name === 'token') {
 			body = { token: formData[name] ? formData[name] : null, tokenPaymentTime: tokenDate, remainingPayment: remainingPayment }
 			this.currentDate(name)
 			newArrowCheck[name] = false
+			newtokenDateStatus['name'] = name
+			newtokenDateStatus['status'] = true
+			this.formatStatusChange(name, true)
 		}
 		if (name === 'downPayment') {
 			body = { downPayment: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
 			this.currentDate(name)
 			newArrowCheck[name] = false
+			newdownPaymentDateStatus['name'] = name
+			newdownPaymentDateStatus['status'] = true
+			this.formatStatusChange(name, true)
 		}
 		if (name === 'no_installments') {
 			body = { no_of_installments: instalments, remainingPayment: remainingPayment }
@@ -466,17 +555,38 @@ class Payments extends Component {
 		if (name === 'payments') {
 			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
+			newdateStatusForPayments[arrayName].name = arrayName
+			newdateStatusForPayments[arrayName].status = true
+			this.formatStatusChange(arrayName, true, name);
 		}
 		if (name === 'installments') {
+			newdateStatusForInstallments[arrayName].name = arrayName
+			newdateStatusForInstallments[arrayName].status = true
+			this.formatStatusChange(arrayName, true, name);
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		// console.log('Payload => ', body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
-				this.setState({ arrowCheck: newArrowCheck })
+				if (name === 'installments') {
+					axios.get(`/api/leads/project/byId?id=${lead.id}`)
+						.then((resp) => {
+							var newtotalInstallments = resp.data.cmInstallments
+							this.setState({
+								totalInstalments: newtotalInstallments
+							})
+						})
+				}
+
+				this.setState({
+					arrowCheck: newArrowCheck,
+					showStyling: '',
+					tokenDateStatus: newtokenDateStatus,
+					downPaymentDateStatus: newdownPaymentDateStatus,
+					dateStatusForPayments: newdateStatusForPayments,
+				})
 			}).catch((error) => {
-				console.log('Some thing went wrong!!!', error)
+				console.log('Some thing went wrong!1!!', error)
 			})
 	}
 
@@ -510,18 +620,24 @@ class Payments extends Component {
 		const { lead, user } = this.props
 		lead.status != StaticData.Constants.lead_closed_won ||
 			lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
-			lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
+		lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
 	}
 
 	addFullpaymentFields = () => {
 		const { lead } = this.props
-		const { paymentFiledsArray } = this.state
+		const { paymentFiledsArray, dateStatusForPayments, paymentFromat } = this.state
 		let array = [...paymentFiledsArray]
-		array.push({ installmentAmount: '', type: 'payment', installmentDate: '' })
+		let newdateStatusForPayments = [...dateStatusForPayments]
+		let newpaymentFromat = [...paymentFromat]
 
+		array.push({ installmentAmount: '', type: 'payment', installmentDate: '' })
+		newdateStatusForPayments.push({ name: '', status: false })
+		newpaymentFromat.push({ name: '', status: false })
 
 		this.setState({
-			paymentFiledsArray: array
+			paymentFiledsArray: array,
+			dateStatusForPayments: newdateStatusForPayments,
+			paymentFromat: newpaymentFromat,
 		})
 	}
 
@@ -547,31 +663,33 @@ class Payments extends Component {
 		const { lead } = this.props
 
 		if (checkPaymentTypeValue === 'installments') {
-			this.handleForm('installments', 'paymentType')
-			this.setState({
-				modalVisible: false,
-				paymentFiledsArray: [],
-			}, () => {
-				this.submitValues('installments');
-				this.discountPayment()
-			})
+			this.handleForm('installments', 'paymentType'), () => {
+				this.setState({
+					modalVisible: false,
+					paymentFiledsArray: [],
+				}, () => {
+					this.submitValues('installments');
+					this.discountPayment()
+				})
+			}
+
 		}
 		if (checkPaymentTypeValue === 'full_payment') {
-			this.handleForm('full_payment', 'paymentType')
-			this.setState({
-				modalVisible: false,
-				totalInstalments: [],
-				instalments: '',
-			}, () => {
-				this.submitValues('payments')
-				this.discountPayment()
-			})
+			this.handleForm('full_payment', 'paymentType'), () => {
+				this.setState({
+					modalVisible: false,
+					totalInstalments: [],
+					instalments: '',
+				}, () => {
+					this.submitValues('payments')
+					this.discountPayment()
+				})
+			}
+
 		}
 
 		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
-			.then((res) => {
-				// console.log(res.data)
-			})
+			.then((res) => { })
 
 	}
 
@@ -590,12 +708,283 @@ class Payments extends Component {
 		navigation.navigate('AddDiary', {
 			update: false,
 			cmLeadId: this.props.lead.id,
-			agentId: user.id
+			addedBy: 'self',
+			tasksList: StaticData.taskValuesCMLead,
+			agentId: user.id,
 		});
 	}
 
 	navigateTo = () => {
 		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
+	}
+
+	showAndHideStyling = (name, clear, arrayName) => {
+		const { tokenDateStatus, formData, tokenDate, downPaymentDateStatus, dateStatusForPayments, dateStatusForInstallments } = this.state
+		let newtokenDateStatus = tokenDateStatus
+		let newdownPaymentDateStatus = downPaymentDateStatus
+		let newdateStatusForPayments = dateStatusForPayments
+		let newdateStatusForInstallments = [...dateStatusForInstallments]
+
+		if (clear === true) {
+			this.clearTimes(name, clear, arrayName)
+		} else {
+
+			if (name === 'discount') {
+				this.formatStatusChange(name, false);
+			}
+
+			if (name != 'discount' && tokenDate != '') {
+				this.formatStatusChange('discount', true)
+			}
+
+			if (name === 'token') {
+				newtokenDateStatus['name'] = ''
+				newtokenDateStatus['status'] = false
+				this.formatStatusChange(name, false);
+			}
+
+			if (name != 'token' && tokenDate != '') {
+				newtokenDateStatus['name'] = 'token'
+				newtokenDateStatus['status'] = true
+				this.formatStatusChange('token', true)
+			}
+
+			if (name === 'downPayment') {
+				newdownPaymentDateStatus['name'] = ''
+				newdownPaymentDateStatus['status'] = false
+				this.formatStatusChange(name, false);
+			}
+
+			if (name != 'downPayment' && tokenDate != '') {
+				newdownPaymentDateStatus['name'] = 'downPayment'
+				newdownPaymentDateStatus['status'] = true
+				this.formatStatusChange('downPayment', true)
+			}
+
+			if (arrayName === 'payments') {
+				newdateStatusForPayments[name].name = name
+				newdateStatusForPayments[name].status = false
+				this.formatStatusChange(name, false, arrayName);
+				for (var i = 0; i < dateStatusForPayments.length; i++) {
+					if (i != name) {
+						newdateStatusForPayments[i].name = name
+						newdateStatusForPayments[i].status = true
+						this.formatStatusChange(i, true, 'payments');
+					}
+				}
+			}
+
+			if (arrayName != 'payments') {
+				for (var i = 0; i < dateStatusForPayments.length; i++) {
+					newdateStatusForPayments[i].name = name
+					newdateStatusForPayments[i].status = true
+					this.formatStatusChange(i, true, 'payments');
+				}
+			}
+
+			if (arrayName === 'installments') {
+				dateStatusForInstallments[name].name = name
+				dateStatusForInstallments[name].status = false
+				this.formatStatusChange(name, false, arrayName);
+				for (var i = 0; i < dateStatusForInstallments.length; i++) {
+					if (i != name) {
+						dateStatusForInstallments[i].name = name
+						dateStatusForInstallments[i].status = true
+						this.formatStatusChange(i, true, 'installments');
+					}
+				}
+			}
+
+			if (arrayName != 'installments') {
+				for (var i = 0; i < dateStatusForInstallments.length; i++) {
+					dateStatusForInstallments[i].name = name
+					dateStatusForInstallments[i].status = true
+					this.formatStatusChange(i, true, 'installments');
+				}
+			}
+
+			this.setState({
+				showStyling: clear === false ? name : '',
+				showDate: false,
+				tokenDateStatus: newtokenDateStatus,
+				downPaymentDateStatus: newdownPaymentDateStatus,
+				dateStatusForPayments: newdateStatusForPayments,
+			})
+		}
+	}
+
+	clearTimes = (name, clear, arrayName) => {
+		const { formData, tokenDate, downPaymentTime, dateStatusForPayments, paymentFiledsArray, totalInstalments, dateStatusForInstallments } = this.state
+		let newtokenDate = tokenDate
+		let newdownPaymentTime = downPaymentTime
+		let newdateStatusForPayments = [...dateStatusForPayments]
+		let newpaymentFiledsArray = paymentFiledsArray
+
+		let newdateStatusForInstallments = [...dateStatusForInstallments]
+		let newtotalInstalments = [...totalInstalments]
+		if (name === 'discount') {
+			this.formatStatusChange(name, false);
+			this.apiCallForNewDetails(arrayName, name)
+		}
+
+		if (name === 'token') {
+			newtokenDate = ''
+			this.formatStatusChange(name, false);
+			this.apiCallForNewDetails(arrayName, name)
+		}
+
+		if (name === 'downPayment') {
+			newdownPaymentTime = ''
+			this.formatStatusChange(name, false);
+			this.apiCallForNewDetails(arrayName, name)
+		}
+
+		if (arrayName === 'payments') {
+			// newpaymentFiledsArray[name].installmentAmount = ''
+			// newpaymentFiledsArray[name].createdAt = ''
+			// newdateStatusForPayments[name].name = ''
+			// newdateStatusForPayments[name].status = false
+			this.formatStatusChange(name, false, arrayName);
+			this.apiCallForNewDetails(arrayName, name)
+		}
+
+		if (arrayName === 'installments') {
+			// newtotalInstalments[name].installmentAmount = ''
+			// newtotalInstalments[name].installmentAmountDate = ''
+			// newdateStatusForInstallments[name].name = ''
+			// newdateStatusForInstallments[name].status = false
+			this.formatStatusChange(name, false, arrayName);
+			this.apiCallForNewDetails(arrayName, name)
+		}
+
+		this.setState({
+			showStyling: clear === false ? name : '',
+			tokenDate: newtokenDate,
+			downPaymentTime: newdownPaymentTime,
+			dateStatusForPayments: newdateStatusForPayments,
+			dateStatusForInstallments: newdateStatusForInstallments,
+			totalInstallments: newtotalInstalments,
+		})
+	}
+
+	apiCallForNewDetails = (arrayName, name) => {
+		const {
+			tokenDateStatus,
+			formData,
+			downPaymentDateStatus,
+			totalInstalments,
+			paymentFiledsArray,
+			dateStatusForPayments,
+			dateStatusForInstallments,
+			totalInstallments,
+		} = this.state
+		const { lead } = this.props
+		var newFormData = { ...formData }
+		axios.get(`/api/leads/project/byId?id=${lead.id}`)
+			.then((res) => {
+				this.setState({
+					cancelNewData: res.data
+				}, () => {
+					var data = res.data
+					let newdownPaymentDateStatus = downPaymentDateStatus
+					let newtokenDateStatus = tokenDateStatus
+					let newpaymentFiledsArray = paymentFiledsArray
+					let newdateStatusForPayments = [...dateStatusForPayments]
+					let newtotalInstalments = [...totalInstalments]
+					let newdateStatusForInstallments = [...dateStatusForInstallments]
+
+					if (name === 'discount') {
+						newFormData[name] = data.discount != null ? data.discount : ''
+						this.formatStatusChange(name, true)
+						this.setState({
+							formData: newFormData,
+						}, () => {
+							this.discountPayment(formData)
+						})
+					}
+
+					if (name === 'token') {
+						newFormData[name] = data.token != null ? data.token : ''
+						this.formatStatusChange(name, true)
+						newtokenDateStatus['name'] = name
+						newtokenDateStatus['status'] = true
+						this.setState({
+							formData: newFormData,
+							tokenDateStatus: newtokenDateStatus,
+							tokenDate: data.tokenPaymentTime ? moment(data.tokenPaymentTime).format('hh:mm a') + ' ' + moment(data.tokenPaymentTime).format('MMM DD') : '',
+						}, () => {
+							this.discountPayment(formData)
+						})
+					}
+
+					if (name === 'downPayment') {
+						newFormData[name] = data.downPayment != null ? data.downPayment : ''
+						this.formatStatusChange(name, true)
+						newdownPaymentDateStatus['name'] = name
+						newdownPaymentDateStatus['status'] = true
+						this.setState({
+							formData: newFormData,
+							downPaymentDateStatus: newdownPaymentDateStatus,
+							downPaymentTime: data.paymentTime ? moment(data.paymentTime).format('hh:mm a') + ' ' + moment(data.paymentTime).format('MMM DD') : '',
+						}, () => {
+							this.discountPayment(formData)
+						})
+					}
+
+					if (arrayName === 'payments') {
+						newpaymentFiledsArray[name].installmentAmount = data.payment && data.payment.length > name ? data.payment[name].installmentAmount : ''
+						newpaymentFiledsArray[name].createdAt = data.payment && data.payment.length > name ? data.payment[name].createdAt : ''
+						newdateStatusForPayments[name].name = name
+						newdateStatusForPayments[name].status = true
+						this.formatStatusChange(name, true, arrayName);
+						this.setState({
+							dateStatusForPayments: newdateStatusForPayments,
+							paymentFiledsArray: newpaymentFiledsArray,
+						})
+					}
+
+					if (arrayName === 'installments') {
+						var installmentTime = data.cmInstallments && data.cmInstallments.length > name ? data.cmInstallments[name].createdAt : ''
+						newtotalInstalments[name].installmentAmount = data.cmInstallments && data.cmInstallments.length > name ? data.cmInstallments[name].installmentAmount : ''
+						newtotalInstalments[name].installmentAmountDate = moment(installmentTime).format('hh:mm a') + ' ' + moment(installmentTime).format('MMM DD')
+						newdateStatusForInstallments[name].name = true
+						newdateStatusForInstallments[name].status = true
+						this.formatStatusChange(name, true, arrayName);
+						this.setState({
+							dateStatusForInstallments: newdateStatusForInstallments,
+							totalInstalments: newtotalInstalments,
+						})
+					}
+
+
+				})
+
+			})
+	}
+
+	formatStatusChange = (name, status, arrayName) => {
+		const { tokenDateStatus, formData, paymentFromat, installmentsFromat } = this.state
+		let newpaymentFromat = [...paymentFromat]
+		let newinstallmentsFromat = [...installmentsFromat]
+		if (name === 'discount') {
+			this.setState({ promotionDiscountFormat: status })
+		}
+		if (name === 'token') {
+			this.setState({ tokenFormat: status })
+		}
+		if (name === 'downPayment') {
+			this.setState({ downPaymentFormat: status })
+		}
+		if (arrayName === 'payments') {
+			newpaymentFromat[name].name = name
+			newpaymentFromat[name].status = status
+			this.setState({ paymentFromat: newpaymentFromat })
+		}
+		if (arrayName === 'installments') {
+			newinstallmentsFromat[name].name = name
+			newinstallmentsFromat[name].status = status
+			this.setState({ installmentsFromat: newinstallmentsFromat })
+		}
 	}
 
 	render() {
@@ -616,7 +1005,6 @@ class Payments extends Component {
 			tokenDate,
 			instalments,
 			progressValue,
-			open,
 			arrowCheck,
 			paymentDate,
 			paymentFiledsArray,
@@ -624,7 +1012,17 @@ class Payments extends Component {
 			modalVisible,
 			checkPaymentTypeValue,
 			closedLeadEdit,
+			showStyling,
+			promotionDiscountFormat,
+			tokenFormat,
+			tokenDateStatus,
+			downPaymentDateStatus,
+			downPaymentFormat,
+			dateStatusForPayments,
+			paymentFromat,
 			checkForUnassignedLeadEdit,
+			dateStatusForInstallments,
+			installmentsFromat,
 		} = this.state
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
@@ -673,6 +1071,18 @@ class Payments extends Component {
 							goToAttachments={this.goToAttachments}
 							goToComments={this.goToComments}
 							navigateTo={this.navigateTo}
+							//Component Props
+							showAndHideStyling={this.showAndHideStyling}
+							showStylingState={showStyling}
+							promotionDiscountFormat={promotionDiscountFormat}
+							tokenFormat={tokenFormat}
+							tokenDateStatus={tokenDateStatus}
+							downPaymentDateStatus={downPaymentDateStatus}
+							downPaymentFormat={downPaymentFormat}
+							dateStatusForPayments={dateStatusForPayments}
+							paymentFromat={paymentFromat}
+							dateStatusForInstallments={dateStatusForInstallments}
+							installmentsFromat={installmentsFromat}
 							checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
 						/>
 					</View>

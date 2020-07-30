@@ -1,4 +1,5 @@
-import { Image, Keyboard, KeyboardAvoidingView, SafeAreaView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Keyboard, KeyboardAvoidingView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input, Item, Label } from 'native-base';
 import React, { Component } from 'react';
 import AppJson from '../../../app.json';
@@ -73,57 +74,58 @@ class Login extends Component {
         return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-                    <Image
-                        style={styles.logo}
-                        source={require('../../../assets/img/login.png')}
-                    />
-                    <View style={{ flex: 0.6, marginHorizontal: 15, marginTop: 25 }}>
-                        <Item floatingLabel>
-                            <Label
-                                style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}
-                            >USERNAME</Label>
-                            <Input
-                                onFocus={() => { this.onFocus() }}
-                                keyboardType='email-address'
-                                textContentType='emailAddress'
-                                autoCompleteType='email'
-                                onChangeText={(text) => { this.handleForm(text, 'email') }} />
-                        </Item>
-                        {
-                            (checkValidation === true && formData.email === '') ? <ErrorMessage errorMessage={'Required'} />
-                                : <ErrorMessage errorMessage={''} />
-                        }
-                        <View style={{ marginTop: 10 }}>
+                    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? 'padding' : undefined}>
+                        <Image
+                            style={styles.logo}
+                            source={require('../../../assets/img/login.png')}
+                        />
+                        <View style={{ flex: 0.6, marginHorizontal: 15, marginTop: 25 }}>
                             <Item floatingLabel>
                                 <Label
-                                    style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}>
-                                    PASSWORD</Label>
+                                    style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}
+                                >USERNAME</Label>
                                 <Input
                                     onFocus={() => { this.onFocus() }}
-                                    secureTextEntry={true} onChangeText={(text) => { this.handleForm(text, 'password') }} />
+                                    keyboardType='email-address'
+                                    textContentType='emailAddress'
+                                    autoCompleteType='email'
+                                    onChangeText={(text) => { this.handleForm(text, 'email') }} />
                             </Item>
+                            {
+                                (checkValidation === true && formData.email === '') ? <ErrorMessage errorMessage={'Required'} />
+                                    : <ErrorMessage errorMessage={''} />
+                            }
+                            <View style={{ marginTop: 10 }}>
+                                <Item floatingLabel>
+                                    <Label
+                                        style={{ color: AppStyles.colors.subTextColor, fontFamily: AppStyles.fonts.defaultFont, fontSize: 12 }}>
+                                        PASSWORD</Label>
+                                    <Input
+                                        onFocus={() => { this.onFocus() }}
+                                        secureTextEntry={true} onChangeText={(text) => { this.handleForm(text, 'password') }} />
+                                </Item>
+                            </View>
+                            {
+                                (checkValidation === true && formData.password === '') ? <ErrorMessage errorMessage={'Required'} />
+                                    : <ErrorMessage errorMessage={''} />
+                            }
+                            {
+                                showError && <ErrorMessage errorMessage={'Invalid Username or Password'} />
+                            }
+                            <View style={{ marginTop: 25 ,marginBottom:25}}>
+                                <TouchableButton
+                                    style={{}}
+                                    label='Sign In'
+                                    onPress={this.submitForm}
+                                    loading={this.props.loading}
+                                    color='white'
+                                />
+                            </View>
+                            <View style={{ alignSelf: 'center', alignItems: 'center' }}>
+                                <Text style={AppStyles.blackInputText}>{label}v{AppJson.expo.version}</Text>
+                            </View>
                         </View>
-                        {
-                            (checkValidation === true && formData.password === '') ? <ErrorMessage errorMessage={'Required'} />
-                                : <ErrorMessage errorMessage={''} />
-                        }
-                        {
-                            showError && <ErrorMessage errorMessage={'Invalid Username or Password'} />
-                        }
-                        <View style={{ marginTop: 25 ,marginBottom:25}}>
-                            <TouchableButton
-                                style={{}}
-                                label='Sign In'
-                                onPress={this.submitForm}
-                                loading={this.props.loading}
-                                color='white'
-                            />
-                        </View>
-                        <View style={{ alignSelf: 'center', alignItems: 'center' }}>
-                            <Text style={AppStyles.blackInputText}>{label}v{AppJson.expo.version}</Text>
-                        </View>
-                    </View>
-
+                    </KeyboardAvoidingView>
                 </SafeAreaView>
             </TouchableWithoutFeedback>
 

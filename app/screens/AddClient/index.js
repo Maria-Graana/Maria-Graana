@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
 import { StyleProvider } from 'native-base';
 import DetailForm from './detailForm';
 import AppStyles from '../../AppStyles';
@@ -50,7 +50,7 @@ class AddClient extends Component {
                 lastName: client.lastName,
                 email: client.email,
                 cnic: client.cnic,
-                contactNumber: client.contact1,
+                contactNumber: client.phone,
                 address: client.address,
             }
         })
@@ -85,6 +85,7 @@ class AddClient extends Component {
         this.setState({ formData })
     }
 
+
     formSubmit = () => {
         const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
         const { route, navigation } = this.props
@@ -110,13 +111,27 @@ class AddClient extends Component {
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
                             if (res.status === 200 && res.data) {
-                                if(isFromDropDown){
-                                    navigation.navigate(screenName, {client: res.data, name: res.data.first_name + ' ' + res.data.last_name });
-                                    helper.successToast(res.data.message)
-                                }
-                                else{
-                                    navigation.goBack()
-                                    helper.successToast(res.data.message)
+                                if (res.data.original_owner) {
+                                    Alert.alert('Alert', res.data.message, [
+                                        {
+                                            text: 'OK', onPress: () => {
+                                                isFromDropDown ?
+                                                    navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : '' }) :
+                                                    navigation.goBack();
+
+                                                    helper.successToast('CLIENT CREATED');
+                                            }
+                                        },
+                                    ],
+                                        { cancelable: false })
+                                } else {
+                                    if (res.data.message === 'Client already exists') {
+                                        helper.errorToast(res.data.message)
+                                    }
+                                    else {
+                                        helper.successToast(res.data.message)
+                                    }
+                                    isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack();
                                 }
                             }
                         })
@@ -128,7 +143,7 @@ class AddClient extends Component {
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')
-                            RootNavigation.navigate('Client')
+                            navigation.goBack();
                         })
                         .catch((error) => {
                             console.log(error)

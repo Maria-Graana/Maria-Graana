@@ -60,6 +60,7 @@ class Landing extends React.Component {
 				}
 				if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
 				else oneTile.badges = 0
+				if (oneTile.badges > 99) oneTile.badges = "99+"
 				tileData.push(oneTile)
 				counter++
 			}

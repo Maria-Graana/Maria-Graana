@@ -113,6 +113,11 @@ class InnerForm extends Component {
     })
   }
 
+  dateFormateForFields = (date) => {
+    var newDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+    return newDate
+  }
+
   render() {
     const {
       handleForm,
@@ -137,17 +142,26 @@ class InnerForm extends Component {
       addFullpaymentFields,
       closedLeadEdit,
       closedLead,
+      showAndHideStyling,
+      showStylingState,
+      promotionDiscountFormat,
+      tokenFormat,
+      tokenDateStatus,
+      downPaymentDateStatus,
+      downPaymentFormat,
+      dateStatusForPayments,
+      paymentFromat,
       checkForUnassignedLeadEdit,
+      dateStatusForInstallments,
+      installmentsFromat,
     } = this.props
-    let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false  ? false : true
+    let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false ? false : true
     const { dummyData, showStyling, showDate, inputDateStatus, inputDateStatus2, editPriceFormat } = this.state
     let rate = readOnly.rate && readOnly.rate.toString()
     let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
     let totalSize = readOnly.totalSize && readOnly.totalSize
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
-
-    var newDate = new Date
     return (
       <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
         <View style={[AppStyles.formMain]}>
@@ -209,7 +223,7 @@ class InnerForm extends Component {
           </View>
 
           {/* **************************************** */}
-          {/* <InputField
+          <InputField
             label={'TOTAL SIZE'}
             placeholder={'Total Size'}
             name={'totalSize'}
@@ -219,20 +233,20 @@ class InnerForm extends Component {
             showDate={false}
             dateStatus={false}
             editable={false}
-            editPriceFormat={{status: false, name:'totalSize'}}
-          /> */}
-          < View style={[AppStyles.mainBlackWrap]}>
+            editPriceFormat={{ status: false, name: 'totalSize' }}
+          />
+          {/* < View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL SIZE</Text>
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} placeholder={'Total Size'} value={totalSize} editable={false} />
               </View>
             </View>
-          </View>
+          </View>*/}
 
 
           {/* **************************************** */}
-          {/* <InputField
+          <InputField
             label={'RATE'}
             placeholder={'Rate'}
             name={'totalRate'}
@@ -242,19 +256,19 @@ class InnerForm extends Component {
             showDate={false}
             dateStatus={false}
             editable={false}
-            editPriceFormat={{status: true, name:'totalRate'}}
-          /> */}
-          <View style={[AppStyles.mainBlackWrap]}>
+            editPriceFormat={{ status: true, name: 'totalRate' }}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>RATE</Text>
               <View style={[AppStyles.blackInput]}>
                 <TextInput style={[AppStyles.blackInput]} placeholder={'Rate'} value={formatPrice(rate)} editable={false} />
               </View>
             </View>
-          </View>
+          </View>  */}
 
           {/* **************************************** */}
-          {/* <InputField
+          <InputField
             label={'TOTAL PRICE'}
             placeholder={'Total Price'}
             name={'totalPrice'}
@@ -264,9 +278,9 @@ class InnerForm extends Component {
             showDate={false}
             dateStatus={false}
             editable={false}
-            editPriceFormat={{status: true, name:'totalPrice'}}
-          /> */}
-          <View style={[AppStyles.mainBlackWrap]}>
+            editPriceFormat={{ status: true, name: 'totalPrice' }}
+          />
+          {/*<View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOTAL PRICE</Text>
               <View style={[AppStyles.blackInput]}>
@@ -274,10 +288,27 @@ class InnerForm extends Component {
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalPrice != null ? totalPrice : '')}</Text>
               </View>
             </View>
-          </View>
+          </View>*/}
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
+          <InputField
+            label={'PROMOTIONAL OFFER'}
+            placeholder={'Enter Promotional Offer Amount'}
+            name={'discount'}
+            value={formData.discount}
+            priceFormatVal={formData.discount != null ? formData.discount : ''}
+            keyboardType={'numeric'}
+            onChange={handleForm}
+            paymentDone={submitValues}
+            showStyling={showAndHideStyling}
+            showStylingState={showStylingState}
+            editPriceFormat={{ status: promotionDiscountFormat, name: 'discount' }}
+            date={''}
+            editable={checkForEdit}
+            showDate={false}
+            dateStatus={false}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.fullWidthPad, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>PROMOTIONAL OFFER </Text>
               <View style={[AppStyles.blackInput]}>
@@ -291,10 +322,27 @@ class InnerForm extends Component {
                 <Text style={[AppStyles.countPrice, styles.customTop, styles.customRight]}>{formatPrice(formData.discount != null ? formData.discount : '')}</Text>
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
+          <InputField
+            label={'TOKEN'}
+            placeholder={'Enter Token Amount'}
+            name={'token'}
+            value={formData.token}
+            priceFormatVal={formData.token != null ? formData.token : ''}
+            keyboardType={'numeric'}
+            onChange={handleForm}
+            paymentDone={submitValues}
+            showStyling={showAndHideStyling}
+            showStylingState={showStylingState}
+            editPriceFormat={{ status: tokenFormat, name: 'token' }}
+            date={tokenDate}
+            editable={checkForEdit}
+            showDate={true}
+            dateStatus={tokenDateStatus}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>TOKEN</Text>
               <View style={[AppStyles.blackInput]}>
@@ -313,10 +361,27 @@ class InnerForm extends Component {
                   : null
               }
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
+          <InputField
+            label={'DOWN PAYMENT'}
+            placeholder={'Enter Down Payment'}
+            name={'downPayment'}
+            value={formData.downPayment != null ? formData.downPayment : ''}
+            priceFormatVal={formData.downPayment != null ? formData.downPayment : ''}
+            keyboardType={'numeric'}
+            onChange={handleForm}
+            paymentDone={submitValues}
+            showStyling={showAndHideStyling}
+            showStylingState={showStylingState}
+            editPriceFormat={{ status: downPaymentFormat, name: 'downPayment' }}
+            date={downPaymentTime}
+            editable={checkForEdit}
+            showDate={true}
+            dateStatus={downPaymentDateStatus}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
               <Text style={[AppStyles.blackInputText]}>DOWN PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
@@ -334,7 +399,7 @@ class InnerForm extends Component {
                 </TouchableOpacity>
               }
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>
@@ -352,32 +417,52 @@ class InnerForm extends Component {
                     <PickerComponent onValueChange={handleForm} data={getInstallments} enabled={checkForEdit} name={'instalments'} placeholder='Installment Plan' selectedItem={no_installments} />
                   </View>
                 </View>
-
                 {/* **************************************** */}
                 {
                   totalInstalments != '' && totalInstalments.map((item, key) => {
-                    let amount = item.installmentAmount && item.installmentAmount.toString()
-                    let installmentDate = totalInstalments[key].installmentAmountDate === '' ? item.installmentDate : totalInstalments[key].installmentAmountDate
+                    let amount = item.installmentAmount != null ? item.installmentAmount.toString() : ''
+                    let installmentDate = totalInstalments[key].installmentAmount == null ? item.installmentDate : this.dateFormateForFields(totalInstalments[key].updatedAt)
                     return (
-                      <View style={[AppStyles.mainBlackWrap]} key={key}>
-                        <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
-                          <Text style={[AppStyles.blackInputText]}>INSTALLMENT {key + 1}</Text>
-                          <View style={[AppStyles.blackInput]}>
-                            <TextInput style={[AppStyles.blackInput]} editable={checkForEdit} value={amount} placeholder={`Enter Installment ${key + 1}`} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
-                            <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount > 0 ? totalInstalments[key].installmentAmount : '')}</Text>
-                          </View>
-                        </View>
-
-                        <View style={[AppStyles.blackInputdate]}>
-                          <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{installmentDate}</Text>
-                          {
-                            arrowCheck.installments === true &&
-                            <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>
-                              <Image source={targetArrow} style={styles.arrowImg} />
-                            </TouchableOpacity>
-                          }
-                        </View>
+                      <View>
+                        <InputField
+                          label={`INSTALLMENT ${key + 1}`}
+                          placeholder={`Enter Installment ${key + 1}`}
+                          name={key}
+                          arrayName={'installments'}
+                          typeArray={true}
+                          value={amount == 'NaN' ? '' : amount}
+                          priceFormatVal={totalInstalments[key].installmentAmount > 0 ? totalInstalments[key].installmentAmount : ''}
+                          keyboardType={'numeric'}
+                          onChange={handleInstalments}
+                          paymentDone={submitValues}
+                          showStyling={showAndHideStyling}
+                          showStylingState={showStylingState}
+                          editPriceFormat={installmentsFromat[key]}
+                          editable={checkForEdit}
+                          date={installmentDate}
+                          showDate={true}
+                          dateStatus={dateStatusForInstallments[key]}
+                        />
                       </View>
+                      // <View style={[AppStyles.mainBlackWrap]} key={key}>
+                      //   <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
+                      //     <Text style={[AppStyles.blackInputText]}>INSTALLMENT {key + 1}</Text>
+                      //     <View style={[AppStyles.blackInput]}>
+                      //       <TextInput style={[AppStyles.blackInput]} editable={checkForEdit} value={amount} placeholder={`Enter Installment ${key + 1}`} onChangeText={(text) => { handleInstalments(text, key) }} keyboardType={'numeric'} />
+                      //       <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(totalInstalments[key].installmentAmount > 0 ? totalInstalments[key].installmentAmount : '')}</Text>
+                      //     </View>
+                      //   </View>
+
+                      //   <View style={[AppStyles.blackInputdate]}>
+                      //     <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{installmentDate}</Text>
+                      //     {
+                      //       arrowCheck.installments === true &&
+                      //       <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('installments') }}>
+                      //         <Image source={targetArrow} style={styles.arrowImg} />
+                      //       </TouchableOpacity>
+                      //     }
+                      //   </View>
+                      // </View>
                     )
                   })
                 }
@@ -393,6 +478,8 @@ class InnerForm extends Component {
                       :
                       item.installmentDate
                     return (
+                      <View>
+                        {/*
                       <View style={[AppStyles.mainBlackWrap]}>
                         <View style={[AppStyles.blackInputWrap, styles.blackBorder]}>
                           <Text style={[AppStyles.blackInputText]}>Payment {index + 1}</Text>
@@ -400,18 +487,37 @@ class InnerForm extends Component {
                             <TextInput style={[AppStyles.blackInput]} editable={checkForEdit} value={item.installmentAmount} placeholder={'Enter Payment'} onChangeText={(text) => { handlePayments(text, index) }} keyboardType={'numeric'} />
                             <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(item.installmentAmount != null ? item.installmentAmount : '')}</Text>
                           </View>
-                        </View>
 
-                        <View style={[AppStyles.blackInputdate]}>
-                          <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{itemDate}</Text>
-                          {
-                            arrowCheck.payments === true ?
-                              <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('payments') }}>
-                                <Image source={targetArrow} style={styles.arrowImg} />
-                              </TouchableOpacity>
-                              : null
-                          }
-                        </View>
+                          <View style={[AppStyles.blackInputdate]}>
+                            <Text style={[AppStyles.dateText, styles.dateTextTwo]}>{itemDate}</Text>
+                            {
+                              arrowCheck.payments === true ?
+                                <TouchableOpacity style={styles.checkBtnMain} onPress={() => { submitValues('payments') }}>
+                                  <Image source={targetArrow} style={styles.arrowImg} />
+                                </TouchableOpacity>
+                                : null
+                            }
+                          </View>
+                        </View> */}
+                        <InputField
+                          label={`Payment ${index + 1}`}
+                          placeholder={'Enter Payment'}
+                          name={index}
+                          arrayName={'payments'}
+                          typeArray={true}
+                          value={item.installmentAmount != null ? item.installmentAmount : ''}
+                          priceFormatVal={item.installmentAmount != null ? item.installmentAmount : ''}
+                          keyboardType={'numeric'}
+                          onChange={handlePayments}
+                          paymentDone={submitValues}
+                          showStyling={showAndHideStyling}
+                          showStylingState={showStylingState}
+                          editPriceFormat={paymentFromat[index]}
+                          editable={checkForEdit}
+                          date={itemDate}
+                          showDate={true}
+                          dateStatus={dateStatusForPayments[index]}
+                        />
                       </View>
                     )
                   })
@@ -428,7 +534,19 @@ class InnerForm extends Component {
           }
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainBlackWrap]}>
+          <InputField
+            label={'REMAINING PAYMENT'}
+            placeholder={'Remaining Payment'}
+            name={'remainingPayment'}
+            priceFormatVal={remainingPay}
+            value={remainingPayment === 'no' ? '' : remainingPay}
+            keyboardType={'numeric'}
+            showDate={false}
+            dateStatus={false}
+            editable={false}
+            editPriceFormat={{ status: true, name: 'remainingPayment' }}
+          />
+          {/* <View style={[AppStyles.mainBlackWrap]}>
             <View style={[AppStyles.blackInputWrap, styles.fullWidth]}>
               <Text style={[AppStyles.blackInputText]}>REMAINING PAYMENT</Text>
               <View style={[AppStyles.blackInput]}>
@@ -436,7 +554,7 @@ class InnerForm extends Component {
                 <Text style={[AppStyles.countPrice, styles.customTop]}>{formatPrice(remainingPay)}</Text>
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
 

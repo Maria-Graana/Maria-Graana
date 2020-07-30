@@ -41,7 +41,6 @@ class PushNotifications extends React.Component {
             // let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
 
             let expoPushToken = await Notifications.getExpoPushTokenAsync();
-            Sentry.captureException(`ExpoPushToken: ${JSON.stringify(expoPushToken)}`)
 
             if (expoPushToken) {
                 let body = {
@@ -89,8 +88,6 @@ class PushNotifications extends React.Component {
         const { navigation } = this.props
         if (notification.origin === 'selected') {
             let data = notification && notification.data
-            Sentry.captureException(`selected`)
-            Sentry.captureException(`Notification Origin: ${JSON.stringify(notification.origin)}`)
             if (data.type === 'local') navigation.navigate('Diary', { openDate: data.date, screen: 'Diary' })
             if (data.type === 'investLead') navigation.navigate('Leads', { screen: 'Invest' })
             if (data.type === 'buyLead') navigation.navigate('Leads', { screen: 'Buy' })

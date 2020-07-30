@@ -85,6 +85,7 @@ class AddClient extends Component {
         this.setState({ formData })
     }
 
+
     formSubmit = () => {
         const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
         const { route, navigation } = this.props
@@ -112,17 +113,25 @@ class AddClient extends Component {
                             if (res.status === 200 && res.data) {
                                 if (res.data.original_owner) {
                                     Alert.alert('Alert', res.data.message, [
-                                        { text: 'OK', onPress: () => isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : '' }) : navigation.goBack() },
+                                        {
+                                            text: 'OK', onPress: () => {
+                                                isFromDropDown ?
+                                                    navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : '' }) :
+                                                    navigation.goBack();
+
+                                                    helper.successToast('CLIENT CREATED');
+                                            }
+                                        },
                                     ],
                                         { cancelable: false })
                                 } else {
-                                    if(res.data.message === 'Client already exists'){
+                                    if (res.data.message === 'Client already exists') {
                                         helper.errorToast(res.data.message)
                                     }
-                                    else{
+                                    else {
                                         helper.successToast(res.data.message)
                                     }
-                                    isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack() ;
+                                    isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack();
                                 }
                             }
                         })

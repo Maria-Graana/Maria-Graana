@@ -221,7 +221,7 @@ class AddRCMLead extends Component {
         }
         axios.post(`/api/leads`, payLoad)
             .then((res) => {
-                helper.successToast(res.data)
+                helper.successToast('Lead created successfully')
                 RootNavigation.navigate('Leads')
             })
     }

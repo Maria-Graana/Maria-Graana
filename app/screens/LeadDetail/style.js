@@ -28,7 +28,7 @@ export default styles = StyleSheet.create({
         marginTop: 15,
         marginBottom: 20,
         paddingVertical: 10,
-        paddingHorizontal:15,
+        paddingHorizontal: 15,
     },
     pad: {
         padding: 10
@@ -60,7 +60,7 @@ export default styles = StyleSheet.create({
         backgroundColor: AppStyles.colors.primaryColor,
         borderRadius: 32,
         justifyContent: "center",
-        alignSelf:'center',
+        alignSelf: 'center',
         paddingHorizontal: 20,
         paddingVertical: 5,
         alignItems: "center"
@@ -73,5 +73,39 @@ export default styles = StyleSheet.create({
     assignButtonView: {
         marginTop: 5,
         marginBottom: 5
-    }
+    },
+    mainDesView: {
+        flexDirection: 'row',
+    },
+    viewOne: {
+        width: '90%'
+    },
+    viewTwo: {
+        width: '10%',
+        alignItems: 'center'
+    },
+    editImg: {
+        width: 18,
+        height: 18,
+        resizeMode: 'contain'
+    },
+    inputDes: {
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#ebebeb',
+        borderRadius: 4,
+        paddingLeft: 10,
+        marginTop: 5,
+        marginBottom: 5,
+    },
+    roundButtonViewTwo: {
+        backgroundColor: '#0f73ee',
+        marginTop: 5,
+        marginBottom: 5,
+        width: 100,
+        color: '#fff',
+        textAlign: 'center',
+        padding: 8,
+        borderRadius: 4,
+    },
 });

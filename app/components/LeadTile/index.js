@@ -51,7 +51,7 @@ class LeadTile extends React.Component {
                 {
                   data.description != null && purposeTab === 'invest' &&
                   <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                    <Text style={[styles.priceText, styles.multiColumn, changeColor]}>
+                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
                       {data.description}
                     </Text>
                   </View>
@@ -75,7 +75,7 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   {
                     data.size != null && !data.projectId &&
-                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}  numberOfLines={1}>
+                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
                       {data.size !== 0 ? data.size + ' ' : null}
                       {data.size_unit && data.size_unit !== null ? helper.capitalize(data.size_unit) + ' ' : null}
                       {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}

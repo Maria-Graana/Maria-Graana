@@ -25,11 +25,6 @@ class BuyLeads extends React.Component {
 		this.state = {
 			language: '',
 			leadsData: [],
-			dotsDropDown: false,
-			dropDownId: '',
-			selectInventory: [],
-			febDrawer: false,
-			purposeTab: 'invest',
 			statusFilter: 'all',
 			open: false,
 			sort: '&order=Desc&field=createdAt',
@@ -88,41 +83,9 @@ class BuyLeads extends React.Component {
 			})
 	}
 
-	showDropdown = (id) => {
-		this.setState({
-			dropDownId: id,
-			dotsDropDown: !this.state.dotsDropDown
-		})
-	}
-
-	selectInventory = (id) => {
-		const { selectInventory } = this.state
-		this.setState({
-			selectInventory: [...selectInventory, id]
-		})
-	}
-
-	unSelectInventory = (id) => {
-		const { selectInventory } = this.state
-		let index = selectInventory.indexOf(id)
-		selectInventory.splice(index, 1)
-		this.setState({ selectInventory: selectInventory })
-	}
-
 	goToFormPage = (page, status) => {
 		const { navigation } = this.props;
 		navigation.navigate(page, { 'pageName': status });
-	}
-
-	changeTab = (status) => {
-		this.setState({
-			purposeTab: status,
-			statusFilter: 'all',
-			sort: '&order=Desc&field=createdAt'
-		}, () => {
-			this.fetchLeads('all');
-		})
-
 	}
 
 	changeStatus = (status) => {
@@ -133,7 +96,6 @@ class BuyLeads extends React.Component {
 	}
 
 	navigateTo = (data) => {
-		const { purposeTab } = this.state
 		this.props.dispatch(setlead(data))
 		let page = ''
 		if (data.status === 'open') {
@@ -197,9 +159,7 @@ class BuyLeads extends React.Component {
 
 	render() {
 		const {
-			selectInventory,
 			dropDownId,
-			purposeTab,
 			leadsData,
 			open,
 			statusFilter,
@@ -275,14 +235,7 @@ class BuyLeads extends React.Component {
 								<LeadTile
 									purposeTab={'buy'}
 									user={user}
-									// key={key}
-									showDropdown={this.showDropdown}
-									dotsDropDown={this.state.dotsDropDown}
-									selectInventory={this.selectInventory}
-									selectedInventory={selectInventory}
 									data={item}
-									dropDownId={dropDownId}
-									unSelectInventory={this.unSelectInventory}
 									goToInventoryForm={this.goToInventoryForm}
 									navigateTo={this.navigateTo}
 									callNumber={this.callNumber}

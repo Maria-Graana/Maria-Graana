@@ -19,13 +19,17 @@ class ClientDetail extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchCustomer()
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            this.fetchCustomer()
+        })
     }
 
     navigateTo = () => {
-        const { route } = this.props
-        const { client } = route.params
-        this.props.navigation.navigate('AddClient', { client: client, update: true })
+        const { client } = this.state;
+        const copyClient = Object.assign(client,{});
+        copyClient.firstName = client.first_name; // have to add additional keys in case of lead bcs it doesnot exist when coming from lead detail screen
+        copyClient.lastName = client.last_name;   // The format is different in api's so adding keys to adjust and display
+        this.props.navigation.navigate('AddClient', { client: copyClient, update: true })
     }
 
     fetchCustomer = () => {
@@ -88,7 +92,7 @@ class ClientDetail extends React.Component {
                         </View>
                         <View style={styles.pad}>
                             {
-                                Ability.canEdit(user.subRole, 'Client') && belongs === 'Personal Client' && <MaterialCommunityIcons onPress={() => { this.navigateTo() }} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
+                                Ability.canEdit(user.subRole, 'Client') && client.assigned_to_armsuser_id && client.assigned_to_armsuser_id === user.id && <MaterialCommunityIcons onPress={() => { this.navigateTo() }} name="square-edit-outline" size={26} color={AppStyles.colors.primaryColor} />
                             }
                         </View>
                     </View>

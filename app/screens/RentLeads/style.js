@@ -1,53 +1,21 @@
 import { StyleSheet } from 'react-native'
+import { widthPercentageToDP } from 'react-native-responsive-screen';
 
 export default styles = StyleSheet.create({
-  mainTopTabs: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderBottomColor: '#EFEFEF',
-    borderBottomWidth: 1,
-  },
-  CustomContainer: {
-    paddingRight: 15,
-    paddingLeft: 15,
-    backgroundColor: '#e7ecf0'
-  },
-  mainTabs: {
-    width: '33.3%',
-  },
-  mainInventoryTile: {
-    marginTop: 15,
-  },
-  tabBtnStyle: {
-    paddingTop: 15,
-    paddingBottom: 15,
-    borderBottomWidth: 2,
-    borderBottomColor: '#fff',
-  },
-  activeTab: {
-    borderBottomColor: '#5497F3'
-  },
-  minHeight: {
-    minHeight: '85%',
-  },
-  // padBottom:{
-  //   paddingBottom: 200,
-  // },
-  mainFilter: {
+  filterRow:{
     backgroundColor: '#fff',
     paddingTop: 10,
-    paddingBottom: 10,
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    justifyContent: 'flex-end',
-    paddingRight: 15,
+    paddingHorizontal: 15,
+    paddingBottom:10,
+    width:'100%'
   },
   pickerMain: {
-    width: 250,
+    width: '80%',
     borderWidth: 1,
     borderRadius: 20,
     borderColor: '#ebebeb',
-    overflow: 'hidden'
+    overflow:'hidden',
   },
   pickerStyle: {
     height: 40,
@@ -70,6 +38,22 @@ export default styles = StyleSheet.create({
     color: '#393939'
   },
   stylesMainSort: {
-    marginLeft: 15,
+    marginHorizontal: 15,
+    width:'20%',
+    flexDirection: 'row',
+    justifyContent:'space-around',
   },
+  paddingHorizontal: {
+    paddingHorizontal: widthPercentageToDP('2.5%'),
+  },
+  roundButtonView: {
+    backgroundColor: AppStyles.colors.primaryColor,
+    borderRadius: 32,
+    justifyContent: "center",
+    alignSelf:'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    alignItems: "center",
+    width:'20%',
+},
 });

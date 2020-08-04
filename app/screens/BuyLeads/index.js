@@ -159,7 +159,6 @@ class BuyLeads extends React.Component {
 
 	render() {
 		const {
-			dropDownId,
 			leadsData,
 			open,
 			statusFilter,
@@ -236,7 +235,6 @@ class BuyLeads extends React.Component {
 									purposeTab={'buy'}
 									user={user}
 									data={item}
-									goToInventoryForm={this.goToInventoryForm}
 									navigateTo={this.navigateTo}
 									callNumber={this.callNumber}
 								/>

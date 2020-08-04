@@ -31,6 +31,7 @@ export default styles = StyleSheet.create({
   },
   largeText: {
     fontSize: 18,
+    width: '75%',
   },
   contentMultiMain: {
     flexDirection: 'row',
@@ -42,17 +43,20 @@ export default styles = StyleSheet.create({
     top: 10,
     right: 10,
   },
+  normalText: {
+    width: '75%',
+  },
   contentMainWrap: {
     position: 'relative',
     flexDirection: 'row',
     marginTop: 5,
   },
   leftContent: {
-    width: '90%',
+    width: '85%',
   },
   phoneMain: {
     justifyContent: 'flex-end',
-    marginBottom: 15,
+    width: '15%',
   },
   tokenLabel: {
     borderWidth: 1,
@@ -78,6 +82,10 @@ export default styles = StyleSheet.create({
     paddingRight: 20,
     fontSize: 12,
   },
+  viewStyle: {
+    maxWidth: '70%',
+    minWidth: '40%',
+  },
   fireIcon: {
     width: 22,
     height: 22,
@@ -97,5 +105,10 @@ export default styles = StyleSheet.create({
   selectedInventory: {
     borderColor: '#2A7EF0',
     borderWidth: 1,
+  },
+  actionBtn:{
+    alignItems: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
   },
 });

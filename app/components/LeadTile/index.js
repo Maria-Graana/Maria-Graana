@@ -24,8 +24,9 @@ class LeadTile extends React.Component {
         <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
-              <View>
-                <Text style={[changeStatusColor, AppStyles.mrFive]}>
+              <View style={styles.viewStyle}>
+                <Text style={[changeStatusColor, AppStyles.mrFive]} numberOfLines={1}>
+                  {/* Disabled Sentry in development  Sentry in */}
                   {
                     data.status === 'token' ?
                       <Text>DEAL SIGNED - TOKEN</Text>
@@ -40,29 +41,41 @@ class LeadTile extends React.Component {
               <View style={styles.leftContent}>
                 {/* ****** Name Wrap */}
                 <View style={[styles.contentMain, AppStyles.mbTen]}>
-                  <Text style={[styles.largeText, changeColor]}>
+                  <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
+                    {/* Disabled Sentry in development  Sentry in */}
                     {data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)}
                   </Text>
                 </View>
 
                 {/* ****** Price Wrap */}
-                <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  <Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor]}>
-                    PKR
-            	 	</Text>
-                  <Text style={[styles.priceText, styles.multiColumn, changeColor]}>
-                    {` ${!data.projectId && data.min_price ? helper.checkPrice(data.min_price) + ' - ' : ''}`}
-                    {!data.projectId && data.price ? helper.checkPrice(data.price) : ''}
-                    {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}
-                    {data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
-                  </Text>
-                </View>
+                {
+                  data.description != null && purposeTab === 'invest' &&
+                  <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
+                      {data.description}
+                    </Text>
+                  </View>
+                }
+                {
+                  purposeTab != 'invest' &&
+                  <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                    <Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor]}>
+                      PKR
+                     </Text>
+                    <Text style={[styles.priceText, styles.multiColumn, changeColor]}>
+                      {` ${!data.projectId && data.min_price ? helper.checkPrice(data.min_price) + ' - ' : ''}`}
+                      {!data.projectId && data.price ? helper.checkPrice(data.price) : ''}
+                      {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}
+                      {data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
+                    </Text>
+                  </View>
+                }
 
                 {/* ****** Address Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   {
                     data.size != null && !data.projectId &&
-                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
                       {data.size !== 0 ? data.size + ' ' : null}
                       {data.size_unit && data.size_unit !== null ? helper.capitalize(data.size_unit) + ' ' : null}
                       {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
@@ -74,7 +87,7 @@ class LeadTile extends React.Component {
 
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}>
+                  <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
                     {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{purposeTab === 'invest' && helper.capitalize(projectName)}
                     {
                       data.projectType && data.projectType != '' &&

@@ -35,7 +35,7 @@ class AddRCMLead extends Component {
                 leadAreas: [],
                 customerId: '',
                 city_id: '',
-                size_unit: null,
+                size_unit: 'marla',
                 minPrice: null,
                 maxPrice: null,
                 org: ''

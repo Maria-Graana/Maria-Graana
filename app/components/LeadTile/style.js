@@ -52,11 +52,11 @@ export default styles = StyleSheet.create({
     marginTop: 5,
   },
   leftContent: {
-    width: '90%',
+    width: '85%',
   },
   phoneMain: {
     justifyContent: 'flex-end',
-    marginBottom: 15,
+    width: '15%',
   },
   tokenLabel: {
     borderWidth: 1,
@@ -105,5 +105,10 @@ export default styles = StyleSheet.create({
   selectedInventory: {
     borderColor: '#2A7EF0',
     borderWidth: 1,
+  },
+  actionBtn:{
+    alignItems: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
   },
 });

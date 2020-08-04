@@ -52,7 +52,7 @@ class RentLeads extends React.Component {
 	clearStateValues = () => {
 		this.setState({
 			page: 1,
-			totalProperties: 0,
+			totalLeads: 0,
 		})
 	}
 
@@ -151,7 +151,7 @@ class RentLeads extends React.Component {
 	}
 
 	clearAndCloseSearch = () => {
-		this.setState({ searchText: '', showSearchBar: false }, () => {
+		this.setState({ searchText: '', showSearchBar: false, sort: '&order=Desc&field=createdAt' }, () => {
 			this.clearStateValues();
 			this.fetchLeads('all')
 		})

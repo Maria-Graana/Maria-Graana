@@ -151,7 +151,7 @@ class BuyLeads extends React.Component {
 	}
 
 	clearAndCloseSearch = () => {
-		this.setState({ searchText: '', showSearchBar: false }, () => {
+		this.setState({ searchText: '', showSearchBar: false, sort: '&order=Desc&field=createdAt' }, () => {
 			this.clearStateValues();
 			this.fetchLeads('all')
 		})

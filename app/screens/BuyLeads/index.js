@@ -17,6 +17,7 @@ import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
+import Search from '../../components/Search';
 
 class BuyLeads extends React.Component {
 	constructor(props) {
@@ -24,11 +25,6 @@ class BuyLeads extends React.Component {
 		this.state = {
 			language: '',
 			leadsData: [],
-			dotsDropDown: false,
-			dropDownId: '',
-			selectInventory: [],
-			febDrawer: false,
-			purposeTab: 'invest',
 			statusFilter: 'all',
 			open: false,
 			sort: '&order=Desc&field=createdAt',
@@ -38,12 +34,13 @@ class BuyLeads extends React.Component {
 			page: 1,
 			pageSize: 20,
 			onEndReachedLoader: false,
+			showSearchBar: false,
+			searchText: '',
 		}
 	}
 
 	componentDidMount() {
 		const { statusFilter } = this.state
-		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.fetchLeads(statusFilter);
 		})
@@ -56,15 +53,20 @@ class BuyLeads extends React.Component {
 	clearStateValues = () => {
 		this.setState({
 			page: 1,
-			totalProperties: 0,
+			totalLeads: 0,
 		})
 	}
 
 	fetchLeads = (statusFilter) => {
-		const { sort, pageSize, page, leadsData } = this.state
+		const { sort, pageSize, page, leadsData, showSearchBar, searchText } = this.state
 		this.setState({ loading: true })
 		let query = ``
-		query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		if (showSearchBar && searchText !== '') {
+			query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+		}
+		else {
+			query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		}
 		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({
@@ -81,41 +83,9 @@ class BuyLeads extends React.Component {
 			})
 	}
 
-	showDropdown = (id) => {
-		this.setState({
-			dropDownId: id,
-			dotsDropDown: !this.state.dotsDropDown
-		})
-	}
-
-	selectInventory = (id) => {
-		const { selectInventory } = this.state
-		this.setState({
-			selectInventory: [...selectInventory, id]
-		})
-	}
-
-	unSelectInventory = (id) => {
-		const { selectInventory } = this.state
-		let index = selectInventory.indexOf(id)
-		selectInventory.splice(index, 1)
-		this.setState({ selectInventory: selectInventory })
-	}
-
 	goToFormPage = (page, status) => {
 		const { navigation } = this.props;
 		navigation.navigate(page, { 'pageName': status });
-	}
-
-	changeTab = (status) => {
-		this.setState({
-			purposeTab: status,
-			statusFilter: 'all',
-			sort: '&order=Desc&field=createdAt'
-		}, () => {
-			this.fetchLeads('all');
-		})
-
 	}
 
 	changeStatus = (status) => {
@@ -126,7 +96,6 @@ class BuyLeads extends React.Component {
 	}
 
 	navigateTo = (data) => {
-		const { purposeTab } = this.state
 		this.props.dispatch(setlead(data))
 		let page = ''
 		if (data.status === 'open') {
@@ -181,11 +150,15 @@ class BuyLeads extends React.Component {
 		return String(index);
 	}
 
+	clearAndCloseSearch = () => {
+		this.setState({ searchText: '', showSearchBar: false, sort: '&order=Desc&field=createdAt' }, () => {
+			this.clearStateValues();
+			this.fetchLeads('all')
+		})
+	}
+
 	render() {
 		const {
-			selectInventory,
-			dropDownId,
-			purposeTab,
 			leadsData,
 			open,
 			statusFilter,
@@ -194,50 +167,74 @@ class BuyLeads extends React.Component {
 			sort,
 			totalLeads,
 			onEndReachedLoader,
+			searchText,
+			showSearchBar,
 		} = this.state
 		const { user } = this.props;
 		let leadStatus = StaticData.buyRentFilter
 		return (
-			<View style={[AppStyles.container, { marginBottom: 25 }]}>
+			<View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
 
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
-				<View style={[styles.mainFilter, { marginBottom: 15 }]}>
-					<View style={styles.pickerMain}>
-						<PickerComponent
-							placeholder={'Lead Status'}
-							data={leadStatus}
-							customStyle={styles.pickerStyle}
-							customIconStyle={styles.customIconStyle}
-							onValueChange={this.changeStatus}
-							selectedItem={statusFilter}
-						/>
-					</View>
-					<View style={styles.stylesMainSort}>
-						<TouchableOpacity style={styles.sortBtn} onPress={() => { this.openStatus() }}>
-							<Image source={SortImg} style={[styles.sortImg]} />
-							<Text style={styles.sortText}>Sort</Text>
-						</TouchableOpacity>
-					</View>
+				<View style={{ marginBottom: 15 }}>
+					{
+						showSearchBar ? <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
+							<Search
+								containerWidth="80%"
+								placeholder='Search leads here'
+								searchText={searchText}
+								setSearchText={(value) => this.setState({ searchText: value })}
+								showShadow={false}
+								showClearButton={true}
+								closeSearchBar={() => this.clearAndCloseSearch()}
+							/>
+							<TouchableOpacity onPress={() => this.fetchLeads(null)}
+								style={styles.roundButtonView}
+								activeOpacity={0.6}>
+								<Text style={[AppStyles.btnText, { fontSize: 12 }]}>Search</Text>
+							</TouchableOpacity>
+						</View>
+							:
+							<View style={styles.filterRow}>
+								<View style={styles.pickerMain}>
+									<PickerComponent
+										placeholder={'Lead Status'}
+										data={leadStatus}
+										customStyle={styles.pickerStyle}
+										customIconStyle={styles.customIconStyle}
+										onValueChange={this.changeStatus}
+										selectedItem={statusFilter}
+									/>
+								</View>
+								<View style={styles.stylesMainSort}>
+									<TouchableOpacity style={styles.sortBtn} onPress={() => { this.openStatus() }}>
+										<Image source={SortImg} style={[styles.sortImg]} />
+									</TouchableOpacity>
+									<Ionicons style={{ alignSelf: 'center' }}
+										onPress={() => {
+											this.setState({ showSearchBar: true }, () => {
+												this.clearStateValues();
+											})
+										}}
+										name={'ios-search'}
+										size={26}
+										color={AppStyles.colors.primaryColor} />
+								</View>
+							</View>
+					}
 				</View>
 				{
-					leadsData && leadsData && leadsData.length > 0 ?
+					leadsData && leadsData.length > 0 ?
 
 						< FlatList
 							data={leadsData}
+							contentContainerStyle={styles.paddingHorizontal}
 							renderItem={({ item }) => (
 
 								<LeadTile
 									purposeTab={'buy'}
 									user={user}
-									// key={key}
-									showDropdown={this.showDropdown}
-									dotsDropDown={this.state.dotsDropDown}
-									selectInventory={this.selectInventory}
-									selectedInventory={selectInventory}
 									data={item}
-									dropDownId={dropDownId}
-									unSelectInventory={this.unSelectInventory}
-									goToInventoryForm={this.goToInventoryForm}
 									navigateTo={this.navigateTo}
 									callNumber={this.callNumber}
 								/>

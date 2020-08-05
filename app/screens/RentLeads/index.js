@@ -18,6 +18,7 @@ import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
+import { storeItem, getItem } from '../../actions/user';
 
 class RentLeads extends React.Component {
 	constructor(props) {
@@ -39,14 +40,28 @@ class RentLeads extends React.Component {
 	}
 
 	componentDidMount() {
-		const { statusFilter } = this.state
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads(statusFilter);
+			this.onFocus();
 		})
 	}
 
 	componentWillUnmount() {
 		this.clearStateValues();
+	}
+
+	onFocus = async () => {
+		const statusValue = await getItem('statusFilterRent');
+		if (statusValue) {
+			this.setState({ statusFilter: String(statusValue) },()=>{
+				this.fetchLeads(this.state.statusFilter)
+			})
+		}
+		else {
+			storeItem('statusFilterRent', 'all');
+			this.setState({ statusFilter: 'all' },()=>{
+				this.fetchLeads(this.state.statusFilter)
+			})
+		}
 	}
 
 	clearStateValues = () => {
@@ -90,6 +105,7 @@ class RentLeads extends React.Component {
 	changeStatus = (status) => {
 		this.clearStateValues()
 		this.setState({ statusFilter: status, leadsData: [] }, () => {
+			storeItem('statusFilterRent', status);
 			this.fetchLeads(this.state.statusFilter);
 		})
 	}

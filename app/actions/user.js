@@ -5,7 +5,7 @@ import { SplashScreen } from 'expo';
 import axios from 'axios';
 import config from '../config';
 
-storeItem = async (key, item) =>  {
+export const storeItem = async (key, item) =>  {
     try {
         let jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item));
         return jsonOfItem;
@@ -13,7 +13,7 @@ storeItem = async (key, item) =>  {
     }
   }
 
-getItem = async (key) => {
+export const getItem = async (key) => {
     try {
       const retrievedItem =  await AsyncStorage.getItem(key);
       const item = JSON.parse(retrievedItem);
@@ -23,7 +23,7 @@ getItem = async (key) => {
     }
 }
 
-removeItem = async (key) =>  {    
+export const removeItem = async (key) =>  {    
     try {
         var jsonOfItem = await AsyncStorage.removeItem(key);
         return jsonOfItem;

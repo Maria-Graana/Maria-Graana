@@ -18,6 +18,7 @@ import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
+import { storeItem, getItem } from '../../actions/user';
 
 class BuyLeads extends React.Component {
 	constructor(props) {
@@ -25,7 +26,7 @@ class BuyLeads extends React.Component {
 		this.state = {
 			language: '',
 			leadsData: [],
-			statusFilter: 'all',
+			statusFilter: '',
 			open: false,
 			sort: '&order=Desc&field=createdAt',
 			loading: false,
@@ -39,15 +40,29 @@ class BuyLeads extends React.Component {
 		}
 	}
 
-	componentDidMount() {
-		const { statusFilter } = this.state
+	 componentDidMount() {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads(statusFilter);
+			this.onFocus()
 		})
 	}
 
 	componentWillUnmount() {
 		this.clearStateValues();
+	}
+
+	onFocus = async () => {
+		const statusValue = await getItem('statusFilterBuy');
+		if (statusValue) {
+			this.setState({ statusFilter: String(statusValue) },()=>{
+				this.fetchLeads(this.state.statusFilter)
+			})
+		}
+		else {
+			storeItem('statusFilterBuy', 'all');
+			this.setState({ statusFilter: 'all' },()=>{
+				this.fetchLeads(this.state.statusFilter)
+			})
+		}
 	}
 
 	clearStateValues = () => {
@@ -91,6 +106,7 @@ class BuyLeads extends React.Component {
 	changeStatus = (status) => {
 		this.clearStateValues()
 		this.setState({ statusFilter: status, leadsData: [] }, () => {
+			storeItem('statusFilterBuy', status);
 			this.fetchLeads(status);
 		})
 	}

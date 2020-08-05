@@ -17,6 +17,7 @@ class LeadTile extends React.Component {
     const { data, navigateTo, callNumber, user, purposeTab } = this.props
     var changeColor = data.assigned_to_armsuser_id == user.id ? styles.blueColor : AppStyles.darkColor
     var changeStatusColor = data.assigned_to_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
+    var descriptionColor = data.assigned_to_armsuser_id == user.id ? styles.desBlue : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
@@ -51,7 +52,7 @@ class LeadTile extends React.Component {
                 {
                   data.description != null && purposeTab === 'invest' &&
                   <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
+                    <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen, descriptionColor]} numberOfLines={1}>
                       {data.description}
                     </Text>
                   </View>

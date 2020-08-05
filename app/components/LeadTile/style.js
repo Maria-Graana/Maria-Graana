@@ -111,4 +111,10 @@ export default styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
   },
+  desBlue:{
+    color: '#0E73EE'
+  },
+  desDark:{
+    color: '#000'
+  },
 });

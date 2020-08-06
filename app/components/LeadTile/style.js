@@ -31,7 +31,7 @@ export default styles = StyleSheet.create({
   },
   largeText: {
     fontSize: 18,
-    width: '75%',
+    width: '65%',
   },
   contentMultiMain: {
     flexDirection: 'row',
@@ -44,7 +44,7 @@ export default styles = StyleSheet.create({
     right: 10,
   },
   normalText: {
-    width: '75%',
+    width: '100%',
   },
   contentMainWrap: {
     position: 'relative',
@@ -83,7 +83,7 @@ export default styles = StyleSheet.create({
     fontSize: 12,
   },
   viewStyle: {
-    maxWidth: '70%',
+    maxWidth: '65%',
     minWidth: '40%',
   },
   fireIcon: {

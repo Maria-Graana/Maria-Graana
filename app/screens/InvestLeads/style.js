@@ -45,6 +45,7 @@ export default styles = StyleSheet.create({
   },
   paddingHorizontal: {
     paddingHorizontal: widthPercentageToDP('2.5%'),
+    paddingBottom: 80,
   },
   roundButtonView: {
     backgroundColor: AppStyles.colors.primaryColor,

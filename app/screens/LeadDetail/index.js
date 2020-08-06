@@ -35,6 +35,7 @@ class LeadDetail extends React.Component {
         })
     }
 
+
     purposeTab = () => {
         const { route } = this.props
         const { purposeTab } = route.params
@@ -64,7 +65,7 @@ class LeadDetail extends React.Component {
         axios.get(`${url}?id=${lead.id}`)
             .then((res) => {
                 this.props.dispatch(setlead(res.data))
-                this.setState({ lead: res.data, loading: false }, () => {
+                this.setState({ lead: res.data, loading: false, description: res.data.description }, () => {
                     that.checkCustomerName(res.data);
                     that.checkAssignedLead(res.data);
                 })
@@ -229,7 +230,7 @@ class LeadDetail extends React.Component {
                                 {
                                     editDes === true ?
                                         <View>
-                                            <TextInput style={styles.inputDes} placeholder={`Edit Description`} onChangeText={(text) => { this.handleDes(text) }} />
+                                            <TextInput style={styles.inputDes} placeholder={`Edit Description`} value={description} onChangeText={(text) => { this.handleDes(text) }} />
                                             <TouchableOpacity onPress={() => this.submitDes()} style={styles.roundButtonViewTwo} activeOpacity={0.6}>
                                                 <Text style={{ textAlign: 'center', color: '#fff' }}>Submit</Text>
                                             </TouchableOpacity>

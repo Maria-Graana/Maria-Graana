@@ -79,7 +79,6 @@ class RentLeads extends React.Component {
 			query = `/api/leads?purpose=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
 		}
 		else {
-			console.log('statusFilter', statusFilter, sort, page, pageSize)
 			query = `/api/leads?purpose=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
 		}
 		axios.get(`${query}`)

@@ -1,9 +1,19 @@
 import React from 'react'
-import { StyleSheet, TextInput, View } from 'react-native'
+import { StyleSheet, TextInput, View, Keyboard } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 
 
-const Search = ({ placeholder, searchText, setSearchText, showShadow = true, containerWidth = '100%', showClearButton = false, closeSearchBar, }) => {
+const Search = ({ placeholder,
+    searchText,
+    setSearchText,
+    showShadow = true,
+    containerWidth = '100%',
+    returnKeyType = 'return',
+    showClearButton = false,
+    closeSearchBar,
+    onSubmitEditing,
+    autoFocus=false,
+}) => {
     return (
         <View style={[styles.searchMainContainerStyle, { width: containerWidth }, showShadow ? styles.shadow : null]}>
             <View style={styles.searchTextContainerStyle}>
@@ -11,7 +21,10 @@ const Search = ({ placeholder, searchText, setSearchText, showShadow = true, con
                     style={styles.searchTextInput}
                     placeholder={placeholder}
                     value={searchText}
+                    autoFocus={autoFocus}
                     onChangeText={(value) => setSearchText(value)}
+                    returnKeyType={returnKeyType}
+                    onSubmitEditing={() => onSubmitEditing ? onSubmitEditing() : Keyboard.dismiss()}
                 />
                 {
                     showClearButton ?

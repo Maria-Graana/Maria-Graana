@@ -54,13 +54,13 @@ class BuyLeads extends React.Component {
 		const statusValue = await getItem('statusFilterBuy');
 		if (statusValue) {
 			this.setState({ statusFilter: String(statusValue) },()=>{
-				this.fetchLeads(this.state.statusFilter)
+				this.fetchLeads()
 			})
 		}
 		else {
 			storeItem('statusFilterBuy', 'all');
 			this.setState({ statusFilter: 'all' },()=>{
-				this.fetchLeads(this.state.statusFilter)
+				this.fetchLeads()
 			})
 		}
 	}
@@ -72,8 +72,8 @@ class BuyLeads extends React.Component {
 		})
 	}
 
-	fetchLeads = (statusFilter) => {
-		const { sort, pageSize, page, leadsData, showSearchBar, searchText } = this.state
+	fetchLeads = () => {
+		const { sort, pageSize, page, leadsData, showSearchBar, searchText, statusFilter } = this.state
 		this.setState({ loading: true })
 		let query = ``
 		if (showSearchBar && searchText !== '') {
@@ -107,7 +107,7 @@ class BuyLeads extends React.Component {
 		this.clearStateValues()
 		this.setState({ statusFilter: status, leadsData: [] }, () => {
 			storeItem('statusFilterBuy', status);
-			this.fetchLeads(status);
+			this.fetchLeads();
 		})
 	}
 
@@ -155,7 +155,7 @@ class BuyLeads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(this.state.statusFilter); })
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(); })
 	}
 
 	openStatus = () => {
@@ -169,7 +169,7 @@ class BuyLeads extends React.Component {
 	clearAndCloseSearch = () => {
 		this.setState({ searchText: '', showSearchBar: false, sort: '&order=Desc&field=createdAt' }, () => {
 			this.clearStateValues();
-			this.fetchLeads('all')
+			this.fetchLeads()
 		})
 	}
 
@@ -196,19 +196,17 @@ class BuyLeads extends React.Component {
 					{
 						showSearchBar ? <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
 							<Search
-								containerWidth="80%"
+								containerWidth="100%"
 								placeholder='Search leads here'
 								searchText={searchText}
 								setSearchText={(value) => this.setState({ searchText: value })}
 								showShadow={false}
 								showClearButton={true}
+								returnKeyType={'search'}
+								onSubmitEditing={() => this.fetchLeads()}
+								autoFocus={true}
 								closeSearchBar={() => this.clearAndCloseSearch()}
 							/>
-							<TouchableOpacity onPress={() => this.fetchLeads(null)}
-								style={styles.roundButtonView}
-								activeOpacity={0.6}>
-								<Text style={[AppStyles.btnText, { fontSize: 12 }]}>Search</Text>
-							</TouchableOpacity>
 						</View>
 							:
 							<View style={styles.filterRow}>
@@ -261,7 +259,7 @@ class BuyLeads extends React.Component {
 										page: this.state.page + 1,
 										onEndReachedLoader: true
 									}, () => {
-										this.fetchLeads(statusFilter);
+										this.fetchLeads();
 									});
 								}
 							}}

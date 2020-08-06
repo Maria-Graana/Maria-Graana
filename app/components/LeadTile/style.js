@@ -66,8 +66,8 @@ export default styles = StyleSheet.create({
     color: '#2A7EF0',
     paddingTop: 3,
     paddingBottom: 3,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
     fontSize: 12,
   },
   tokenLabelDark: {
@@ -78,13 +78,19 @@ export default styles = StyleSheet.create({
     color: '#5B5B5B',
     paddingTop: 3,
     paddingBottom: 3,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
     fontSize: 12,
   },
   viewStyle: {
+    // maxWidth: '65%',
+    // minWidth: '40%',
+    width: '100%',
+    textAlign: 'center'
+  },
+  extraStatus: {
     maxWidth: '65%',
-    minWidth: '40%',
+    minWidth: '50%',
   },
   fireIcon: {
     width: 22,

@@ -25,8 +25,8 @@ class LeadTile extends React.Component {
         <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
-              <View style={styles.viewStyle}>
-                <Text style={[changeStatusColor, AppStyles.mrFive]} numberOfLines={1}>
+              <View style={styles.extraStatus}>
+                <Text style={[changeStatusColor, AppStyles.mrFive, styles.viewStyle]} numberOfLines={1}>
                   {/* Disabled Sentry in development  Sentry in */}
                   {
                     data.status === 'token' ?

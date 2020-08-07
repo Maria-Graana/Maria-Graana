@@ -223,7 +223,7 @@ class RentLeads extends React.Component {
 							/>
 						</View>
 							:
-							<View style={styles.filterRow}>
+							<View style={[styles.filterRow, {paddingHorizontal:15}]}>
 								<View style={styles.pickerMain}>
 									<PickerComponent
 										placeholder={'Lead Status'}

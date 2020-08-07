@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, KeyboardAvoidingView } from 'react-native';
 import axios from 'axios'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
@@ -1028,6 +1028,7 @@ class Payments extends Component {
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
+				<KeyboardAvoidingView>
 				<ScrollView>
 
 					<View style={[AppStyles.container]}>
@@ -1087,7 +1088,7 @@ class Payments extends Component {
 						/>
 					</View>
 				</ScrollView>
-
+				</KeyboardAvoidingView>
 				<View style={AppStyles.mainCMBottomNav}>
 					<CMBottomNav
 						goToAttachments={this.goToAttachments}

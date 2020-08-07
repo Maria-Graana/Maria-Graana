@@ -338,6 +338,8 @@ class LeadOffer extends React.Component {
 	render() {
 
 		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton, leadData, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+		const { lead } = this.props
+		
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
@@ -405,6 +407,7 @@ class LeadOffer extends React.Component {
 							closedLeadEdit={closedLeadEdit}
 							callButton={true}
 							callPhoneNumber={this.props.lead && this.props.lead.customer && this.props.lead.customer.phone}
+							customerName={lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName)}
 						/>
 					</View>
 

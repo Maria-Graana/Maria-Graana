@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, KeyboardAvoidingView } from 'react-native';
 import axios from 'axios'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
@@ -12,6 +12,7 @@ import { setlead } from '../../actions/lead';
 import helper from '../../helper';
 import PaymentAlert from '../../components/PaymentAlert'
 import CMBottomNav from '../../components/CMBottomNav'
+
 
 class Payments extends Component {
 	constructor(props) {
@@ -297,7 +298,7 @@ class Payments extends Component {
 					:
 					null,
 				installmentAmountDate: lead.cmInstallments.length > i ?
-				lead.cmInstallments[i].installmentAmount != null && moment(lead.cmInstallments[i].updatedAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].updatedAt).format('MMM DD')
+					lead.cmInstallments[i].installmentAmount != null && moment(lead.cmInstallments[i].updatedAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].updatedAt).format('MMM DD')
 					:
 					null,
 			})
@@ -1028,66 +1029,65 @@ class Payments extends Component {
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
-				<ScrollView>
+						<ScrollView>
 
-					<View style={[AppStyles.container]}>
-						<LeadRCMPaymentPopup
-							reasons={reasons}
-							selectedReason={selectedReason}
-							changeReason={this.handleReasonChange}
-							checkValidation={checkReasonValidation}
-							isVisible={isVisible}
-							closeModal={() => this.closeModal()}
-							onPress={this.onHandleCloseLead}
-							CMlead={true}
-						/>
-						<InnerForm
-							getFloor={getFloors}
-							getUnit={getUnit}
-							getProject={getProject}
-							getInstallments={StaticData.getInstallments}
-							totalInstalments={totalInstalments}
-							instalments={instalments}
-							checkValidation={checkValidation}
-							handleInstalments={this.handleInstalments}
-							handleForm={this.handleForm}
-							formSubmit={this.formSubmit}
-							readOnly={readOnly}
-							remainingPayment={remainingPayment}
-							formData={formData}
-							tokenDate={tokenDate}
-							downPaymentTime={downPaymentTime}
-							submitValues={this.submitValues}
-							arrowCheck={arrowCheck}
-							paymentOptions={StaticData.paymentOptions}
-							paymentDate={paymentDate}
-							fullPaymentCount={fullPaymentCount}
-							addFullpaymentFields={this.addFullpaymentFields}
-							paymentFiledsArray={paymentFiledsArray}
-							handlePayments={this.handlePayments}
-							closedLeadEdit={closedLeadEdit}
-							closedLead={this.closedLead}
-							goToDiaryForm={this.goToDiaryForm}
-							goToAttachments={this.goToAttachments}
-							goToComments={this.goToComments}
-							navigateTo={this.navigateTo}
-							//Component Props
-							showAndHideStyling={this.showAndHideStyling}
-							showStylingState={showStyling}
-							promotionDiscountFormat={promotionDiscountFormat}
-							tokenFormat={tokenFormat}
-							tokenDateStatus={tokenDateStatus}
-							downPaymentDateStatus={downPaymentDateStatus}
-							downPaymentFormat={downPaymentFormat}
-							dateStatusForPayments={dateStatusForPayments}
-							paymentFromat={paymentFromat}
-							dateStatusForInstallments={dateStatusForInstallments}
-							installmentsFromat={installmentsFromat}
-							checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
-						/>
-					</View>
-				</ScrollView>
-
+							<View style={[AppStyles.container]}>
+								<LeadRCMPaymentPopup
+									reasons={reasons}
+									selectedReason={selectedReason}
+									changeReason={this.handleReasonChange}
+									checkValidation={checkReasonValidation}
+									isVisible={isVisible}
+									closeModal={() => this.closeModal()}
+									onPress={this.onHandleCloseLead}
+									CMlead={true}
+								/>
+								<InnerForm
+									getFloor={getFloors}
+									getUnit={getUnit}
+									getProject={getProject}
+									getInstallments={StaticData.getInstallments}
+									totalInstalments={totalInstalments}
+									instalments={instalments}
+									checkValidation={checkValidation}
+									handleInstalments={this.handleInstalments}
+									handleForm={this.handleForm}
+									formSubmit={this.formSubmit}
+									readOnly={readOnly}
+									remainingPayment={remainingPayment}
+									formData={formData}
+									tokenDate={tokenDate}
+									downPaymentTime={downPaymentTime}
+									submitValues={this.submitValues}
+									arrowCheck={arrowCheck}
+									paymentOptions={StaticData.paymentOptions}
+									paymentDate={paymentDate}
+									fullPaymentCount={fullPaymentCount}
+									addFullpaymentFields={this.addFullpaymentFields}
+									paymentFiledsArray={paymentFiledsArray}
+									handlePayments={this.handlePayments}
+									closedLeadEdit={closedLeadEdit}
+									closedLead={this.closedLead}
+									goToDiaryForm={this.goToDiaryForm}
+									goToAttachments={this.goToAttachments}
+									goToComments={this.goToComments}
+									navigateTo={this.navigateTo}
+									//Component Props
+									showAndHideStyling={this.showAndHideStyling}
+									showStylingState={showStyling}
+									promotionDiscountFormat={promotionDiscountFormat}
+									tokenFormat={tokenFormat}
+									tokenDateStatus={tokenDateStatus}
+									downPaymentDateStatus={downPaymentDateStatus}
+									downPaymentFormat={downPaymentFormat}
+									dateStatusForPayments={dateStatusForPayments}
+									paymentFromat={paymentFromat}
+									dateStatusForInstallments={dateStatusForInstallments}
+									installmentsFromat={installmentsFromat}
+									checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
+								/>
+							</View>
+						</ScrollView>
 				<View style={AppStyles.mainCMBottomNav}>
 					<CMBottomNav
 						goToAttachments={this.goToAttachments}

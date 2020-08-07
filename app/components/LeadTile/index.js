@@ -6,27 +6,30 @@ import React from 'react'
 import phone from '../../../assets/img/phone2.png'
 import styles from './style'
 import helper from '../../helper';
+import { connect } from 'react-redux';
+
 class LeadTile extends React.Component {
   constructor(props) {
     super(props)
   }
 
-
-
   render() {
-    const { data, navigateTo, callNumber, user, purposeTab } = this.props
+    const { data, navigateTo, callNumber, user, purposeTab, contacts } = this.props
     var changeColor = data.assigned_to_armsuser_id == user.id ? styles.blueColor : AppStyles.darkColor
     var changeStatusColor = data.assigned_to_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
     var descriptionColor = data.assigned_to_armsuser_id == user.id ? styles.desBlue : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
+    let customerName = data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
+    let phoneUrl = `tel:${data.customer && data.customer.phone}`
+
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
 
         <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
-              <View style={styles.viewStyle}>
-                <Text style={[changeStatusColor, AppStyles.mrFive]} numberOfLines={1}>
+              <View style={styles.extraStatus}>
+                <Text style={[changeStatusColor, AppStyles.mrFive, styles.viewStyle]} numberOfLines={1}>
                   {/* Disabled Sentry in development  Sentry in */}
                   {
                     data.status === 'token' ?
@@ -44,7 +47,7 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMain, AppStyles.mbTen]}>
                   <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
                     {/* Disabled Sentry in development  Sentry in */}
-                    {data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)}
+                    {customerName}
                   </Text>
                 </View>
 
@@ -106,7 +109,7 @@ class LeadTile extends React.Component {
                 </View>
               </View>
               <View style={styles.phoneMain}>
-                <TouchableOpacity style={styles.actionBtn} onPress={() => { callNumber(`tel:${data.customer && data.customer.phone}`) }}>
+                <TouchableOpacity style={styles.actionBtn} onPress={() => { helper.callNumber({ url: `tel:${data.customer && data.customer.phone}`, name: customerName }, contacts) }}>
                   <Image
                     style={[styles.fireIcon, AppStyles.mlFive]}
                     source={phone}
@@ -121,4 +124,11 @@ class LeadTile extends React.Component {
   }
 }
 
-export default LeadTile;
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
+    contacts: store.contacts.contacts,
+  }
+}
+
+export default connect(mapStateToProps)(LeadTile)

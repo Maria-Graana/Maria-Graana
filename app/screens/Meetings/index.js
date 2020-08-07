@@ -333,8 +333,11 @@ class Meetings extends Component {
       isVisible,
       checkForUnassignedLeadEdit,
     } = this.state
+    const { contacts } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
     let leadData = this.props.lead
+    let customerName = leadData.customer && leadData.customer.customerName && helper.capitalize(leadData.customer.customerName)
+
     // let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
     return (
@@ -374,7 +377,7 @@ class Meetings extends Component {
               </TouchableOpacity>
             </View>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
+              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { helper.callNumber({ url: `tel:${leadData && leadData.customer && leadData.customer.phone}`, name: customerName }, contacts) }}>
                 <Text style={styles.alignCenter}>Call</Text>
               </TouchableOpacity>
             </View>
@@ -426,7 +429,7 @@ class Meetings extends Component {
           CMlead={true}
         />
 
-      </View>
+      </View >
     )
   }
 }
@@ -435,7 +438,8 @@ class Meetings extends Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
-    lead: store.lead.lead
+    lead: store.lead.lead,
+    contacts: store.contacts.contacts
   }
 }
 

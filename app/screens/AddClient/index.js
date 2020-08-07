@@ -88,7 +88,7 @@ class AddClient extends Component {
 
     formSubmit = () => {
         const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
-        const { route, navigation } = this.props
+        const { route, navigation, contacts } = this.props
         const { update, client, isFromDropDown, screenName } = route.params
         if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
         if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
@@ -119,7 +119,7 @@ class AddClient extends Component {
                                                     navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : '' }) :
                                                     navigation.goBack();
 
-                                                    helper.successToast('CLIENT CREATED');
+                                                helper.successToast('CLIENT CREATED');
                                             }
                                         },
                                     ],
@@ -134,6 +134,10 @@ class AddClient extends Component {
                                     isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack();
                                 }
                             }
+                            body.name = body.firstName + ' ' + body.last_name
+                            let result = helper.contacts(body.phone, contacts)
+                            if (!result) helper.addContact(body)
+                            else console.log('Contact is Already Saved!')
                         })
                         .catch((error) => {
                             console.log(error)
@@ -143,6 +147,9 @@ class AddClient extends Component {
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')
+                            let result = helper.contacts(body.phone, contacts)
+                            if (!result) helper.addContact(body)
+                            else console.log('Contact is Already Saved!')
                             navigation.goBack();
                         })
                         .catch((error) => {
@@ -190,6 +197,7 @@ class AddClient extends Component {
 mapStateToProps = (store) => {
     return {
         user: store.user.user,
+        contacts: store.contacts.contacts,
     }
 }
 

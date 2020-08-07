@@ -587,6 +587,7 @@ class LeadMatch extends React.Component {
     render() {
         const { lead, user } = this.props
         const { selectedCity, visible, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
+
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
@@ -717,6 +718,7 @@ class LeadMatch extends React.Component {
                             closedLeadEdit={closedLeadEdit}
                             callButton={true}
                             callPhoneNumber={lead && lead.customer && lead.customer.phone}
+                            customerName={lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName)}
                         />
                     </View>
                     <LeadRCMPaymentPopup

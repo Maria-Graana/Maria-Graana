@@ -73,21 +73,6 @@ const helper = {
 		var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		return re.test(email);
 	},
-	callNumber(url) {
-		if (url && url != 'tel:null') {
-			Linking.canOpenURL(url)
-				.then(supported => {
-					if (!supported) {
-						helper.errorToast(`No application available to dial phone number`)
-						console.log("Can't handle url: " + url);
-					} else {
-						return Linking.openURL(url)
-					}
-				}).catch(err => console.error('An error occurred', err));
-		} else {
-			helper.errorToast(`No Phone Number`)
-		}
-	},
 	capitalize(str) {
 		return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 	},
@@ -272,6 +257,24 @@ const helper = {
 			return (showPkr ? 'PKR ' : '') + formatPrice(price);
 		}
 	},
+	callNumber(body, contacts) {
+		let url = body.url
+		if (url && url != 'tel:null') {
+			Linking.canOpenURL(url)
+				.then(supported => {
+					if (!supported) {
+						helper.errorToast(`No application available to dial phone number`)
+						console.log("Can't handle url: " + url);
+					} else {
+						let result = helper.contacts(body, contacts)
+						if (body.name && body.name !== '') if (!result) helper.addContact(body)
+						return Linking.openURL(url)
+					}
+				}).catch(err => console.error('An error occurred', err));
+		} else {
+			helper.errorToast(`No Phone Number`)
+		}
+	},
 	contacts(targetNum, contacts) {
 		let resultNum = null
 		let phoneNumbers = _.flatten(_.pluck(contacts, "phoneNumbers"), true)
@@ -304,14 +307,16 @@ const helper = {
 		} else return resultNum
 	},
 	addContact(data) {
-		console.log(data)
-		let createNumber = {
-			firstName: data.first_name,
-			lastName: data.last_name
+		const contact = {
+			[Contacts.Fields.Name]: data.name,
+			[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
 		}
-		Contacts.addContactAsync(data)
+		Contacts.addContactAsync(contact)
 			.then((result) => {
-				console.log(result)
+				console.log('PhoneID: ', result)
+			})
+			.catch((error) => {
+				console.log('Contacts Error: ', error)
 			})
 	}
 }

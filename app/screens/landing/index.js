@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { getListingsCount } from '../../actions/listings'
 import { View, TouchableOpacity, Text, Image } from 'react-native';
 import addIcon from '../../../assets/img/add-icon-l.png';
+import { setContacts } from '../../actions/contacts';
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -22,10 +23,11 @@ class Landing extends React.Component {
 	}
 
 	componentDidMount() {
-		const { navigation, dispatch } = this.props;
+		const { navigation, dispatch, contacts } = this.props;
 		this._unsubscribe = navigation.addListener('focus', () => {
 			dispatch(getListingsCount())
 		});
+		this.props.dispatch(setContacts())
 	}
 
 	componentDidUpdate(prevProps) {
@@ -125,7 +127,8 @@ class Landing extends React.Component {
 mapStateToProps = (store) => {
 	return {
 		user: store.user.user,
-		count: store.listings.count
+		count: store.listings.count,
+		contacts: store.contacts.contacts
 	}
 }
 

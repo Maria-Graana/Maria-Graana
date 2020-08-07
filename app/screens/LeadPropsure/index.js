@@ -120,7 +120,7 @@ class LeadPropsure extends React.Component {
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
-        else if(user.id !== lead.assigned_to_armsuser_id){
+        else if (user.id !== lead.assigned_to_armsuser_id) {
             helper.leadNotAssignedToast();
         }
         else {
@@ -161,11 +161,11 @@ class LeadPropsure extends React.Component {
     }
 
     showDocumentModal = (propsureId) => {
-        const { lead,user } = this.props
+        const { lead, user } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
         }
-        else if(user.id !== lead.assigned_to_armsuser_id){
+        else if (user.id !== lead.assigned_to_armsuser_id) {
             helper.leadNotAssignedToast();
         }
         else {
@@ -263,9 +263,9 @@ class LeadPropsure extends React.Component {
     }
 
     closeLead = () => {
-        const {user, lead} = this.props;
+        const { user, lead } = this.props;
         var commissionPayment = this.props.lead.commissionPayment
-        if(user.id === lead.assigned_to_armsuser_id){
+        if (user.id === lead.assigned_to_armsuser_id) {
             if (commissionPayment !== null) {
                 this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
             }
@@ -273,10 +273,10 @@ class LeadPropsure extends React.Component {
                 this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
             }
         }
-        else{
+        else {
             helper.leadNotAssignedToast()
         }
-        
+
     }
 
     onHandleCloseLead = () => {
@@ -328,7 +328,9 @@ class LeadPropsure extends React.Component {
     }
 
     render() {
-        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state;
+        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { lead } = this.props
+
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
@@ -401,7 +403,8 @@ class LeadPropsure extends React.Component {
                             closeLead={this.closeLead}
                             closedLeadEdit={closedLeadEdit}
                             callButton={true}
-							callPhoneNumber={this.props.lead && this.props.lead.customer && this.props.lead.customer.phone}
+                            callPhoneNumber={this.props.lead && this.props.lead.customer && this.props.lead.customer.phone}
+                            customerName={lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName)}
                         />
                     </View>
                     <LeadRCMPaymentPopup

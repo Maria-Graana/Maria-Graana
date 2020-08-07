@@ -28,7 +28,7 @@ class BuyLeads extends React.Component {
 			leadsData: [],
 			statusFilter: '',
 			open: false,
-			sort: '&order=Desc&field=createdAt',
+			sort: '',
 			loading: false,
 			activeSortModal: false,
 			totalLeads: 0,
@@ -51,17 +51,30 @@ class BuyLeads extends React.Component {
 	}
 
 	onFocus = async () => {
+		const sortValue =  await this.getSortOrderFromStorage()
 		const statusValue = await getItem('statusFilterBuy');
 		if (statusValue) {
-			this.setState({ statusFilter: String(statusValue) },()=>{
+			this.setState({ statusFilter: String(statusValue), sort: sortValue },()=>{
 				this.fetchLeads()
 			})
 		}
 		else {
 			storeItem('statusFilterBuy', 'all');
-			this.setState({ statusFilter: 'all' },()=>{
+			this.setState({ statusFilter: 'all', sort: sortValue },()=>{
 				this.fetchLeads()
 			})
+		}
+	}
+
+	getSortOrderFromStorage = async () => {
+		const sortOrder = await getItem('sortBuy');
+		if(sortOrder){
+			return String(sortOrder);
+		}
+		else{
+			// default case only runs when no value exists in async storage.
+			storeItem('sortBuy', '&order=Desc&field=updatedAt');
+			return '&order=Desc&field=updatedAt';
 		}
 	}
 
@@ -155,7 +168,10 @@ class BuyLeads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(); })
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { 
+			storeItem('sortBuy', status);
+			this.fetchLeads(); 
+		})
 	}
 
 	openStatus = () => {
@@ -167,7 +183,7 @@ class BuyLeads extends React.Component {
 	}
 
 	clearAndCloseSearch = () => {
-		this.setState({ searchText: '', showSearchBar: false, sort: '&order=Desc&field=createdAt' }, () => {
+		this.setState({ searchText: '', showSearchBar: false}, () => {
 			this.clearStateValues();
 			this.fetchLeads()
 		})

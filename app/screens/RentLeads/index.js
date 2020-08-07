@@ -25,9 +25,9 @@ class RentLeads extends React.Component {
 		super(props)
 		this.state = {
 			leadsData: [],
-			statusFilter: 'all',
+			statusFilter: '',
 			open: false,
-			sort: '&order=Desc&field=createdAt',
+			sort: '',
 			loading: false,
 			activeSortModal: false,
 			totalLeads: 0,
@@ -50,17 +50,29 @@ class RentLeads extends React.Component {
 	}
 
 	onFocus = async () => {
+		const sortValue =  await this.getSortOrderFromStorage()
 		const statusValue = await getItem('statusFilterRent');
 		if (statusValue) {
-			this.setState({ statusFilter: String(statusValue) }, () => {
+			this.setState({ statusFilter: String(statusValue),sort: sortValue }, () => {
 				this.fetchLeads()
 			})
 		}
 		else {
 			storeItem('statusFilterRent', 'all');
-			this.setState({ statusFilter: 'all' }, () => {
+			this.setState({ statusFilter: 'all' , sort: sortValue}, () => {
 				this.fetchLeads()
 			})
+		}
+	}
+
+	getSortOrderFromStorage = async () => {
+		const sortOrder = await getItem('sortRent');
+		if(sortOrder){
+			return String(sortOrder);
+		}
+		else{
+			storeItem('sortRent', '&order=Desc&field=updatedAt');
+			return '&order=Desc&field=updatedAt';
 		}
 	}
 
@@ -155,7 +167,10 @@ class RentLeads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(); })
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { 
+			storeItem('sortRent', status);
+			this.fetchLeads();
+		 })
 	}
 
 	openStatus = () => {
@@ -167,7 +182,7 @@ class RentLeads extends React.Component {
 	}
 
 	clearAndCloseSearch = () => {
-		this.setState({ searchText: '', showSearchBar: false, sort: '&order=Desc&field=createdAt' }, () => {
+		this.setState({ searchText: '', showSearchBar: false}, () => {
 			this.clearStateValues();
 			this.fetchLeads()
 		})

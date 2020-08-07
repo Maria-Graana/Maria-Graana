@@ -28,7 +28,7 @@ class InvestLeads extends React.Component {
 			purposeTab: 'invest',
 			statusFilter: '',
 			open: false,
-			sort: '&order=Desc&field=createdAt',
+			sort: '',
 			loading: false,
 			activeSortModal: false,
 			totalLeads: 0,
@@ -51,17 +51,29 @@ class InvestLeads extends React.Component {
 	}
 
 	onFocus = async () => {
+		const sortValue =  await this.getSortOrderFromStorage()
 		const statusValue = await getItem('statusFilterInvest');
 		if (statusValue) {
-			this.setState({ statusFilter: String(statusValue) }, () => {
-				this.fetchLeads(this.state.statusFilter)
+			this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+				this.fetchLeads()
 			})
 		}
 		else {
 			storeItem('statusFilterInvest', 'all');
-			this.setState({ statusFilter: 'all' }, () => {
-				this.fetchLeads(this.state.statusFilter)
+			this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+				this.fetchLeads();
 			})
+		}    
+	}
+
+	getSortOrderFromStorage = async () => {
+		const sortOrder = await getItem('sortInvest');
+		if(sortOrder){
+			return String(sortOrder);
+		}
+		else{
+			storeItem('sortInvest', '&order=Desc&field=updatedAt');
+			return '&order=Desc&field=updatedAt';
 		}
 	}
 
@@ -72,7 +84,7 @@ class InvestLeads extends React.Component {
 		})
 	}
 
-	fetchLeads = () => {
+	fetchLeads = async () => {
 		const { sort, pageSize, page, leadsData, showSearchBar, searchText,statusFilter } = this.state
 		this.setState({ loading: true })
 		let query = ``
@@ -147,7 +159,11 @@ class InvestLeads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(); })
+
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { 
+			storeItem('sortInvest', status);
+			this.fetchLeads(); 
+		})
 	}
 
 	openStatus = () => {
@@ -159,7 +175,7 @@ class InvestLeads extends React.Component {
 	}
 
 	clearAndCloseSearch = () => {
-		this.setState({ searchText: '', showSearchBar: false, sort: '&order=Desc&field=createdAt' }, () => {
+		this.setState({ searchText: '', showSearchBar: false}, () => {
 			this.clearStateValues();
 			this.fetchLeads();
 		})

@@ -5,7 +5,6 @@ export default styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingTop: 10,
     flexDirection: 'row',
-    paddingHorizontal: 15,
     paddingBottom:10,
     width:'100%'
   },

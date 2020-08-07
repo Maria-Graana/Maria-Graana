@@ -12,6 +12,7 @@ import DashboardImg from '../assets/img/dashboard-icon-l.png'
 import TargetsImg from '../assets/img/target-icon-l.png'
 import ClientsImg from '../assets/img/clients-icon-l.png'
 import * as Contacts from 'expo-contacts';
+import * as Sentry from 'sentry-expo';
 import _ from 'underscore';
 
 const helper = {
@@ -267,6 +268,7 @@ const helper = {
 						console.log("Can't handle url: " + url);
 					} else {
 						let result = helper.contacts(body, contacts)
+						Sentry.captureException(`Phone Result: ${JSON.stringify(result)}`)
 						if (body.name && body.name !== '') if (!result) helper.addContact(body)
 						return Linking.openURL(url)
 					}
@@ -313,9 +315,11 @@ const helper = {
 		}
 		Contacts.addContactAsync(contact)
 			.then((result) => {
+				Sentry.captureException(`PhoneID: ${JSON.stringify(result)}`)
 				console.log('PhoneID: ', result)
 			})
 			.catch((error) => {
+				Sentry.captureException(`Contacts Error: ${JSON.stringify(error)}`)
 				console.log('Contacts Error: ', error)
 			})
 	}

@@ -11,6 +11,8 @@ import LeadsImg from '../assets/img/lead-icon-l.png'
 import DashboardImg from '../assets/img/dashboard-icon-l.png'
 import TargetsImg from '../assets/img/target-icon-l.png'
 import ClientsImg from '../assets/img/clients-icon-l.png'
+import * as Contacts from 'expo-contacts';
+import _ from 'underscore';
 
 const helper = {
 	successToast(message) {
@@ -252,24 +254,66 @@ const helper = {
 			type: 'danger'
 		})
 	},
-	leadNotAssignedToast(){
+	leadNotAssignedToast() {
 		Toast.show({
 			text: 'Lead is not assigned to you',
 			duration: 3000,
 			type: 'danger'
 		})
 	},
-	checkPrice(price, showPkr = false){
-        if(price===null){
-          return '0';
-        }
-        else if(Number(price) === StaticData.Constants.any_value){
-          return 'Any'
-        }
-        else{
-           return (showPkr ? 'PKR ' : '') + formatPrice(price);
-        }
-  }
+	checkPrice(price, showPkr = false) {
+		if (price === null) {
+			return '0';
+		}
+		else if (Number(price) === StaticData.Constants.any_value) {
+			return 'Any'
+		}
+		else {
+			return (showPkr ? 'PKR ' : '') + formatPrice(price);
+		}
+	},
+	contacts(targetNum, contacts) {
+		let resultNum = null
+		let phoneNumbers = _.flatten(_.pluck(contacts, "phoneNumbers"), true)
+		if (contacts.length) {
+			for (let i = 0; i < phoneNumbers.length; i++) {
+				let phone = phoneNumbers[i]
+				phone.number = phone.number.replace(/\s/g, '')
+				if (targetNum === phone.number) {
+					resultNum = phone
+					return resultNum
+				}
+				else {
+					if (phone.number[0] === '0') {
+						let newNumber = phone.number.replace('0', '+92')
+						if (newNumber === targetNum) {
+							resultNum = phone
+							return resultNum
+						}
+					}
+					if (phone.number[0] === '+') {
+						let newNumber = phone.number.replace('+92', '0')
+						if (newNumber === targetNum) {
+							resultNum = phone
+							return resultNum
+						}
+					}
+				}
+			}
+			return resultNum
+		} else return resultNum
+	},
+	addContact(data) {
+		console.log(data)
+		let createNumber = {
+			firstName: data.first_name,
+			lastName: data.last_name
+		}
+		Contacts.addContactAsync(data)
+			.then((result) => {
+				console.log(result)
+			})
+	}
 }
 
 

@@ -89,7 +89,7 @@ export default styles = StyleSheet.create({
     textAlign: 'center'
   },
   extraStatus: {
-    maxWidth: '65%',
+    maxWidth: '70%',
     minWidth: '50%',
   },
   fireIcon: {

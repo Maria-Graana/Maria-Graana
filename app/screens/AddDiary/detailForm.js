@@ -33,9 +33,9 @@ class DetailForm extends Component {
         if (editableData != null) {
             this.setFormValues(editableData)
         }
-        if(props.route.params.taskType != null){
+        if (props.route.params.taskType != null) {
             this.setDefaultValue(props.route.params.taskType);
-        } 
+        }
     }
 
 
@@ -71,12 +71,19 @@ class DetailForm extends Component {
 
     }
 
-    setDefaultValue =  (taskType) => {
+    setDefaultValue = (taskType) => {
         const { formData } = this.state
-        var newformData = {...formData}
-        formData['taskType'] = taskType
+        var startTime = new Date
+        var endTime = new Date
+        endTime.setMinutes(endTime.getMinutes() + 15);
+        console.log()
+        var newformData = { ...formData }
+        newformData['taskType'] = taskType
+        newformData['startTime'] = moment(startTime).format('h:mm a')
+        newformData['endTime'] = moment(endTime).format('h:mm a')
+        newformData['date'] = moment(startTime).format('YYYY-MM-DD')
         this.setState({
-            formData,
+            formData: newformData,
         })
     }
 
@@ -91,6 +98,7 @@ class DetailForm extends Component {
         const { taskType, date, startTime, endTime, subject, notes } = this.state.formData;
         const { formData, buttonText } = this.state;
         const { formSubmit, checkValidation, taskValues } = this.props
+        console.log(formData)
         return (
             <View>
 

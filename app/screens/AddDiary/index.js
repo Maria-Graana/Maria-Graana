@@ -201,7 +201,13 @@ class AddDiary extends Component {
             <KeyboardAwareScrollView style={[AppStyles.container]} keyboardShouldPersistTaps="always" enableOnAndroid>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} onLongPress={Keyboard.dismiss}>
                     <SafeAreaView style={AppStyles.mb1} >
-                        <DetailForm formSubmit={this.formSubmit} props={this.props} editableData={route.params.update ? route.params.data : null} taskValues={taskValues} checkValidation={checkValidation} />
+                        <DetailForm
+                            formSubmit={this.formSubmit}
+                            props={this.props}
+                            editableData={route.params.update ? route.params.data : null}
+                            taskValues={taskValues}
+                            checkValidation={checkValidation}
+                        />
                     </SafeAreaView>
                 </TouchableWithoutFeedback>
             </KeyboardAwareScrollView>

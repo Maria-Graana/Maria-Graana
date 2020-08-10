@@ -76,7 +76,6 @@ class DetailForm extends Component {
         var startTime = new Date
         var endTime = new Date
         endTime.setMinutes(endTime.getMinutes() + 15);
-        console.log()
         var newformData = { ...formData }
         newformData['taskType'] = taskType
         newformData['startTime'] = moment(startTime).format('h:mm a')
@@ -98,7 +97,6 @@ class DetailForm extends Component {
         const { taskType, date, startTime, endTime, subject, notes } = this.state.formData;
         const { formData, buttonText } = this.state;
         const { formSubmit, checkValidation, taskValues } = this.props
-        console.log(formData)
         return (
             <View>
 

@@ -27,32 +27,32 @@ function Authstack() {
 }
 
 class RootStack extends React.Component {
-    constructor (props) {
+    constructor(props) {
         super(props)
     }
-    
+
     componentDidMount() {
         this.props.dispatch(checkToken())
     }
-    
-    render () {
-        const {user, token, loading}= this.props
+
+    render() {
+        const { user, token, loading } = this.props
         return (
             <SafeAreaProvider>
                 <NavigationContainer ref={navigationRef}>
                     {
-                        user && loading === false && token?
+                        user && loading === false && token ?
                             <Drawer.Navigator drawerContent={({ navigation }) => <CustomDrawerContent navigation={navigation} />}>
                                 <Drawer.Screen name="MainStack" component={MainStack} />
                             </Drawer.Navigator>
-                        :
-                        <Stack.Navigator
-                        screenOptions={{
-                            headerShown: false
-                        }}
-                        >
-                            <Stack.Screen name={"Authstack"} component={Authstack} />
-                        </Stack.Navigator>
+                            :
+                            <Stack.Navigator
+                                screenOptions={{
+                                    headerShown: false
+                                }}
+                            >
+                                <Stack.Screen name={"Authstack"} component={Authstack} />
+                            </Stack.Navigator>
                     }
                 </NavigationContainer>
             </SafeAreaProvider>

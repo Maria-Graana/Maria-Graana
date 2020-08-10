@@ -313,7 +313,7 @@ const helper = {
 	},
 	addContact(data) {
 		const contact = {
-			[Contacts.Fields.FirstName]: data.name,
+			[Contacts.Fields.FirstName]: data.name + ' - ARMS',
 			[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
 		}
 		Contacts.addContactAsync(contact)

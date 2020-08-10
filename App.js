@@ -17,6 +17,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SplashScreen } from 'expo';
 import { setCustomTouchableOpacity } from 'react-native-global-props'
 import helper from './app/helper';
+import config from './app/config';
+import axios from 'axios';
+import { AsyncStorage } from 'react-native';
 
 // const firebaseConfig = {
 // 	apiKey: "AIzaSyBcMF6jv0j0EY82JC9XW0jKMu4o7fRDKrg",
@@ -37,6 +40,24 @@ export default class App extends React.Component {
 	async componentDidMount() {
 		setCustomTouchableOpacity({ activeOpacity: 0.8 })
 		SplashScreen.preventAutoHide();
+		axios.defaults.baseURL = config.apiPath
+		const retrievedItem = AsyncStorage.getItem('token')
+			.then((token) => {
+				if (token) {
+					axios.defaults.headers.common['Authorization'] = 'Bearer ' + JSON.parse(token)
+				}
+			})
+		axios.interceptors.request.use(config =>
+			new Promise(resolve => {
+				const retrievedItem = AsyncStorage.getItem('token')
+					.then((token) => {
+						if (token) {
+							config.headers.Authorization = 'Bearer ' + JSON.parse(token)
+						}
+					})
+				resolve(config)
+			})
+		)
 		// firebase.initializeApp(firebaseConfig)
 		Sentry.init({
 			dsn: 'https://d23d9b7296fa43a1ab41150269693c2f@o375514.ingest.sentry.io/5195102',

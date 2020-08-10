@@ -20,7 +20,11 @@ class LeadTile extends React.Component {
     var descriptionColor = data.assigned_to_armsuser_id == user.id ? styles.desBlue : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
     let customerName = data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
-    let phoneUrl = `tel:${data.customer && data.customer.phone}`
+    let newContact = {
+      phone: data.customer && data.customer.phone,
+      name: data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName),
+      url: `tel:${data.customer && data.customer.phone}`
+    }
 
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
@@ -109,7 +113,7 @@ class LeadTile extends React.Component {
                 </View>
               </View>
               <View style={styles.phoneMain}>
-                <TouchableOpacity style={styles.actionBtn} onPress={() => { helper.callNumber({ url: `tel:${data.customer && data.customer.phone}`, name: customerName }, contacts) }}>
+                <TouchableOpacity style={styles.actionBtn} onPress={() => { helper.callNumber(newContact, contacts) }}>
                   <Image
                     style={[styles.fireIcon, AppStyles.mlFive]}
                     source={phone}

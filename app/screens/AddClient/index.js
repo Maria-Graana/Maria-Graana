@@ -134,7 +134,7 @@ class AddClient extends Component {
                                     isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack();
                                 }
                             }
-                            body.name = body.firstName + ' ' + body.last_name
+                            body.name = body.first_name + ' ' + body.last_name
                             let result = helper.contacts(body.phone, contacts)
                             if (!result) helper.addContact(body)
                             else console.log('Contact is Already Saved!')

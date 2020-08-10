@@ -54,6 +54,12 @@ class CMBottomNav extends React.Component {
       contacts
     } = this.props
     const { visible } = this.state
+    let newContact = {
+      phone: callPhoneNumber,
+      name: customerName,
+      url: `tel:${callPhoneNumber}`
+    }
+
     return (
       <View style={styles.bottomNavMain}>
         <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
@@ -84,7 +90,7 @@ class CMBottomNav extends React.Component {
         </TouchableOpacity>
         {
           callButton === true &&
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => helper.callNumber({ url: `tel:${callPhoneNumber}`, name: customerName }, contacts)}>
+          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => helper.callNumber(newContact, contacts)}>
             <Image style={styles.bottomNavImg} source={require('../../../assets/img/callIcon.png')} />
             <Text style={styles.bottomNavBtnText}>Call</Text>
           </TouchableOpacity>

@@ -267,9 +267,8 @@ const helper = {
 						helper.errorToast(`No application available to dial phone number`)
 						console.log("Can't handle url: " + url);
 					} else {
-						let result = helper.contacts(body, contacts)
-						Sentry.captureException(`Phone Result: ${JSON.stringify(result)}`)
-						if (body.name && body.name !== '') if (!result) helper.addContact(body)
+						let result = helper.contacts(body.phone, contacts)
+						if (body.name && body.name !== '' && body.name !== ' ' && body.phone && body.phone !== '') if (!result) helper.addContact(body)
 						return Linking.openURL(url)
 					}
 				}).catch(err => console.error('An error occurred', err));
@@ -282,25 +281,29 @@ const helper = {
 		let phoneNumbers = _.flatten(_.pluck(contacts, "phoneNumbers"), true)
 		if (contacts.length) {
 			for (let i = 0; i < phoneNumbers.length; i++) {
-				let phone = phoneNumbers[i]
-				phone.number = phone.number.replace(/\s/g, '')
-				if (targetNum === phone.number) {
-					resultNum = phone
-					return resultNum
-				}
-				else {
-					if (phone.number[0] === '0') {
-						let newNumber = phone.number.replace('0', '+92')
-						if (newNumber === targetNum) {
+				if (phoneNumbers[i] && phoneNumbers[i] !== undefined) {
+					let phone = phoneNumbers[i]
+					if ('number' in phone && phone.number) {
+						phone.number = phone.number.replace(/\s/g, '')
+						if (targetNum === phone.number) {
 							resultNum = phone
 							return resultNum
 						}
-					}
-					if (phone.number[0] === '+') {
-						let newNumber = phone.number.replace('+92', '0')
-						if (newNumber === targetNum) {
-							resultNum = phone
-							return resultNum
+						else {
+							if (phone.number[0] === '0') {
+								let newNumber = phone.number.replace('0', '+92')
+								if (newNumber === targetNum) {
+									resultNum = phone
+									return resultNum
+								}
+							}
+							if (phone.number[0] === '+') {
+								let newNumber = phone.number.replace('+92', '0')
+								if (newNumber === targetNum) {
+									resultNum = phone
+									return resultNum
+								}
+							}
 						}
 					}
 				}
@@ -310,16 +313,14 @@ const helper = {
 	},
 	addContact(data) {
 		const contact = {
-			[Contacts.Fields.Name]: data.name,
+			[Contacts.Fields.FirstName]: data.name,
 			[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
 		}
 		Contacts.addContactAsync(contact)
 			.then((result) => {
-				Sentry.captureException(`PhoneID: ${JSON.stringify(result)}`)
 				console.log('PhoneID: ', result)
 			})
 			.catch((error) => {
-				Sentry.captureException(`Contacts Error: ${JSON.stringify(error)}`)
 				console.log('Contacts Error: ', error)
 			})
 	}

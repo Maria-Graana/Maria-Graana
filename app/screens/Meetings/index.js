@@ -296,8 +296,7 @@ class Meetings extends Component {
       Linking.canOpenURL(url)
         .then(supported => {
           if (!supported) {
-            this.sendCallStatus()
-
+            // this.sendCallStatus()
             console.log("Can't handle url: " + url);
           } else {
             this.sendCallStatus()
@@ -456,7 +455,7 @@ class Meetings extends Component {
               </TouchableOpacity>
             </View>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { helper.callNumber({ url: `tel:${leadData && leadData.customer && leadData.customer.phone}`, name: customerName }, contacts) }}>
+              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
                 <Text style={styles.alignCenter}>Call</Text>
               </TouchableOpacity>
             </View>

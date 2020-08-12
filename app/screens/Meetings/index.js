@@ -181,7 +181,6 @@ class Meetings extends Component {
         taskType: diaryTask.taskType,
         time: diaryTask.startTime,
       }
-      console.log(body)
       axios.post(`api/leads/project/meeting`, body)
         .then((res) => {
           helper.successToast(`Follow up task added to the Diary`)

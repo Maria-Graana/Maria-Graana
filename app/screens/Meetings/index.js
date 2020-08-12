@@ -170,7 +170,7 @@ class Meetings extends Component {
       this.setState({ checkValidation: true })
     } else {
       let startTime = moment(diaryTask.startTime, 'LT').format('HH:mm:ss')
-      let endTime = moment(startTime, 'LT').add(0.25, 'hours').format('HH:mm:ss')
+      let endTime = moment(startTime, 'LT').add(0.33, 'hours').format('HH:mm:ss')
       let startDate = moment(diaryTask.date, 'YYYY-MM-DDLT').format('YYYY-MM-DD')
       let body = {
         subject: '',
@@ -181,6 +181,7 @@ class Meetings extends Component {
         taskType: diaryTask.taskType,
         time: diaryTask.startTime,
       }
+      console.log(body)
       axios.post(`api/leads/project/meeting`, body)
         .then((res) => {
           helper.successToast(`Follow up task added to the Diary`)
@@ -250,7 +251,7 @@ class Meetings extends Component {
     const { diaryTask } = this.state
     var startTime = new Date
     var endTime = new Date
-    endTime.setMinutes(endTime.getMinutes() + 15);
+    startTime.setMinutes(startTime.getMinutes() + 20);
     var newformData = { ...diaryTask }
     newformData['taskType'] = 'follow up'
     newformData['startTime'] = moment(startTime).format('h:mm a')
@@ -266,13 +267,7 @@ class Meetings extends Component {
   handleFormDiary = (value, name) => {
     const { diaryTask } = this.state
     let newdiaryTask = { ...diaryTask }
-    if (name === 'startTime') {
-      var endTime = new Date
-      endTime.setMinutes(endTime.getMinutes() + 15);
-      newdiaryTask['endTime'] = moment(endTime).format('h:mm a')
-    }
     newdiaryTask[name] = value
-    // diaryTask['leadId'] = this.props.lead.id
     this.setState({ diaryTask: newdiaryTask })
   }
 

@@ -19,7 +19,6 @@ import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { storeItem, getItem } from '../../actions/user';
-import { setContacts } from '../../actions/contacts';
 
 class RentLeads extends React.Component {
 	constructor(props) {
@@ -43,7 +42,6 @@ class RentLeads extends React.Component {
 	componentDidMount() {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.onFocus();
-			this.props.dispatch(setContacts())
 		})
 	}
 
@@ -52,16 +50,16 @@ class RentLeads extends React.Component {
 	}
 
 	onFocus = async () => {
-		const sortValue =  await this.getSortOrderFromStorage()
+		const sortValue = await this.getSortOrderFromStorage()
 		const statusValue = await getItem('statusFilterRent');
 		if (statusValue) {
-			this.setState({ statusFilter: String(statusValue),sort: sortValue }, () => {
+			this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
 				this.fetchLeads()
 			})
 		}
 		else {
 			storeItem('statusFilterRent', 'all');
-			this.setState({ statusFilter: 'all' , sort: sortValue}, () => {
+			this.setState({ statusFilter: 'all', sort: sortValue }, () => {
 				this.fetchLeads()
 			})
 		}
@@ -69,10 +67,10 @@ class RentLeads extends React.Component {
 
 	getSortOrderFromStorage = async () => {
 		const sortOrder = await getItem('sortRent');
-		if(sortOrder){
+		if (sortOrder) {
 			return String(sortOrder);
 		}
-		else{
+		else {
 			storeItem('sortRent', '&order=Desc&field=updatedAt');
 			return '&order=Desc&field=updatedAt';
 		}
@@ -169,10 +167,10 @@ class RentLeads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { 
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
 			storeItem('sortRent', status);
 			this.fetchLeads();
-		 })
+		})
 	}
 
 	openStatus = () => {
@@ -184,7 +182,7 @@ class RentLeads extends React.Component {
 	}
 
 	clearAndCloseSearch = () => {
-		this.setState({ searchText: '', showSearchBar: false}, () => {
+		this.setState({ searchText: '', showSearchBar: false }, () => {
 			this.clearStateValues();
 			this.fetchLeads()
 		})
@@ -225,7 +223,7 @@ class RentLeads extends React.Component {
 							/>
 						</View>
 							:
-							<View style={[styles.filterRow, {paddingHorizontal:15}]}>
+							<View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
 								<View style={styles.pickerMain}>
 									<PickerComponent
 										placeholder={'Lead Status'}
@@ -260,6 +258,7 @@ class RentLeads extends React.Component {
 							contentContainerStyle={styles.paddingHorizontal}
 							renderItem={({ item }) => (
 								<LeadTile
+									dispatch={this.props.dispatch}
 									purposeTab={'rent'}
 									user={user}
 									data={item}

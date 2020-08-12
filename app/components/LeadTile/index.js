@@ -7,10 +7,24 @@ import phone from '../../../assets/img/phone2.png'
 import styles from './style'
 import helper from '../../helper';
 import { connect } from 'react-redux';
+import { setContacts } from '../../actions/contacts';
 
 class LeadTile extends React.Component {
   constructor(props) {
     super(props)
+  }
+
+  call = (data) => {
+    let newContact = {
+      phone: data.customer && data.customer.phone,
+      name: data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName),
+      url: `tel:${data.customer && data.customer.phone}`
+    }
+    this.props.dispatch(setContacts())
+      .then((response) => {
+        const { contacts } = this.props
+        helper.callNumber(newContact, contacts)
+      })
   }
 
   render() {
@@ -20,11 +34,6 @@ class LeadTile extends React.Component {
     var descriptionColor = data.assigned_to_armsuser_id == user.id ? styles.desBlue : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
     let customerName = data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
-    let newContact = {
-      phone: data.customer && data.customer.phone,
-      name: data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName),
-      url: `tel:${data.customer && data.customer.phone}`
-    }
 
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
@@ -113,7 +122,7 @@ class LeadTile extends React.Component {
                 </View>
               </View>
               <View style={styles.phoneMain}>
-                <TouchableOpacity style={styles.actionBtn} onPress={() => { helper.callNumber(newContact, contacts) }}>
+                <TouchableOpacity style={styles.actionBtn} onPress={() => { this.call(data) }}>
                   <Image
                     style={[styles.fireIcon, AppStyles.mlFive]}
                     source={phone}

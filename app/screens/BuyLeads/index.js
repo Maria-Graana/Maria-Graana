@@ -17,7 +17,6 @@ import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
-import { setContacts } from '../../actions/contacts';
 import Search from '../../components/Search';
 import { storeItem, getItem } from '../../actions/user';
 
@@ -44,7 +43,6 @@ class BuyLeads extends React.Component {
 	componentDidMount() {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.onFocus()
-			this.props.dispatch(setContacts())
 		})
 	}
 
@@ -264,6 +262,7 @@ class BuyLeads extends React.Component {
 							renderItem={({ item }) => (
 
 								<LeadTile
+									dispatch={this.props.dispatch}
 									purposeTab={'buy'}
 									user={user}
 									data={item}

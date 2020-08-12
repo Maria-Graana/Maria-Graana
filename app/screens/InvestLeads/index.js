@@ -19,7 +19,6 @@ import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { getItem, storeItem } from '../../actions/user';
-import { setContacts } from '../../actions/contacts';
 
 class InvestLeads extends React.Component {
 	constructor(props) {
@@ -44,7 +43,6 @@ class InvestLeads extends React.Component {
 	componentDidMount() {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.onFocus()
-			this.props.dispatch(setContacts())
 		})
 	}
 
@@ -183,7 +181,6 @@ class InvestLeads extends React.Component {
 		})
 	}
 
-
 	render() {
 		const {
 			leadsData,
@@ -255,6 +252,7 @@ class InvestLeads extends React.Component {
 							contentContainerStyle={styles.paddingHorizontal}
 							renderItem={({ item }) => (
 								<LeadTile
+									dispatch={this.props.dispatch}
 									purposeTab={'invest'}
 									user={user}
 									data={item}

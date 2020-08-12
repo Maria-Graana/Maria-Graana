@@ -35,7 +35,6 @@ class AddClient extends Component {
     }
     componentDidMount() {
         const { route, navigation } = this.props
-        this.props.dispatch(setContacts())
         navigation.setParams({ title: 'ADD CLIENT INFO' })
         if ('update' in route.params && route.params.update) {
             navigation.setParams({ title: 'UPDATE CLIENT INFO' })
@@ -87,6 +86,15 @@ class AddClient extends Component {
         this.setState({ formData })
     }
 
+    call = (body) => {
+        this.props.dispatch(setContacts())
+            .then((response) => {
+                const { contacts } = this.props
+                let result = helper.contacts(body.phone, contacts)
+                if (!result) helper.addContact(body)
+                else console.log('Contact is Already Saved!')
+            })
+    }
 
     formSubmit = () => {
         const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
@@ -137,9 +145,7 @@ class AddClient extends Component {
                                 }
                             }
                             body.name = body.first_name + ' ' + body.last_name
-                            let result = helper.contacts(body.phone, contacts)
-                            if (!result) helper.addContact(body)
-                            else console.log('Contact is Already Saved!')
+                            this.call(body)
                         })
                         .catch((error) => {
                             console.log(error)
@@ -149,9 +155,8 @@ class AddClient extends Component {
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')
-                            let result = helper.contacts(body.phone, contacts)
-                            if (!result) helper.addContact(body)
-                            else console.log('Contact is Already Saved!')
+                            body.name = body.first_name + ' ' + body.last_name
+                            this.call(body)
                             navigation.goBack();
                         })
                         .catch((error) => {

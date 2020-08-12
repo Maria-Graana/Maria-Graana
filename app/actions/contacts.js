@@ -4,7 +4,7 @@ import * as Contacts from 'expo-contacts';
 
 export function setContacts() {
     return (dispatch, getsState) => {
-        Contacts.requestPermissionsAsync()
+        return Contacts.requestPermissionsAsync()
             .then((res) => {
                 if (res.status === 'granted') {
                     Contacts.getContactsAsync()
@@ -15,6 +15,7 @@ export function setContacts() {
                                     type: types.SET_CONTACTS,
                                     payload: data,
                                 })
+                                return result.data
                             }
                         })
                 }

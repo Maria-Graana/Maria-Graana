@@ -18,6 +18,7 @@ import { ProgressBar } from 'react-native-paper';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import CMBottomNav from '../../components/CMBottomNav'
+import { setContacts } from '../../actions/contacts';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -81,8 +82,22 @@ class LeadMatch extends React.Component {
 
     componentDidMount() {
         const { lead } = this.props
+        this.fetchLead()
         this.props.dispatch(setlead(lead))
-        this.getCities()
+        this.props.dispatch(setContacts())
+
+    }
+
+    fetchLead = (url) => {
+        const { lead } = this.props
+        axios.get(`/api/leads/byId?id=${lead.id}`)
+            .then((res) => {
+                this.props.dispatch(setlead(res.data))
+                this.setState({ lead: res.data }, () => this.getCities())
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     selectedOrganization = (value) => {
@@ -197,7 +212,7 @@ class LeadMatch extends React.Component {
     }
 
     resetFilter = () => {
-        const { lead } = this.props
+        const { lead } = this.state
         let cityId = ''
         let areas = []
         let prices = lead.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
@@ -228,7 +243,6 @@ class LeadMatch extends React.Component {
                 lead.price = StaticData.Constants.any_value
             }
         }
-
         this.setState({
             formData: {
                 cityId: cityId,
@@ -270,7 +284,7 @@ class LeadMatch extends React.Component {
 
     setParams = () => {
         const { organization, formData } = this.state
-        const { lead } = this.props
+        const { lead } = this.state
 
         let params = {
             leadId: lead.id,
@@ -299,13 +313,12 @@ class LeadMatch extends React.Component {
 
     fetchMatches = () => {
         const { organization, showCheckBoxes } = this.state
-        const { lead } = this.props
+        const { lead } = this.state
         const { rcmProgressBar } = StaticData
         let matches = []
 
         let params = this.setParams()
         let callApi = this.canCallApi()
-
         if (callApi || !showCheckBoxes) {
             axios.get(`/api/leads/matches`,
                 {

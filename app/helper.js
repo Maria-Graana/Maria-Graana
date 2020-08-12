@@ -267,8 +267,12 @@ const helper = {
 						helper.errorToast(`No application available to dial phone number`)
 						console.log("Can't handle url: " + url);
 					} else {
-						let result = helper.contacts(body.phone, contacts)
-						if (body.name && body.name !== '' && body.name !== ' ' && body.phone && body.phone !== '') if (!result) helper.addContact(body)
+						if (contacts) {
+							let result = helper.contacts(body.phone, contacts)
+							Sentry.captureException(`result: ${JSON.stringify(result)}`)
+							Sentry.captureException(`body: ${JSON.stringify(body)}`)
+							if (body.name && body.name !== '' && body.name !== ' ' && body.phone && body.phone !== '') if (!result) helper.addContact(body)
+						}
 						return Linking.openURL(url)
 					}
 				}).catch(err => console.error('An error occurred', err));
@@ -278,15 +282,15 @@ const helper = {
 	},
 	contacts(targetNum, contacts) {
 		let resultNum = null
-		Sentry.captureException(`resultNum: ${JSON.stringify(resultNum)}`)
+		Sentry.captureException(`targetNum: ${JSON.stringify(targetNum)}`)
 		let phoneNumbers = _.flatten(_.pluck(contacts, "phoneNumbers"), true)
 		if (contacts.length) {
 			for (let i = 0; i < phoneNumbers.length; i++) {
 				if (phoneNumbers[i] && phoneNumbers[i] !== undefined) {
 					let phone = phoneNumbers[i]
+					Sentry.captureException(`phone: ${JSON.stringify(phone)}`)
 					if ('number' in phone && phone.number) {
 						phone.number = phone.number.replace(/\s/g, '')
-						Sentry.captureException(`phone.number: ${JSON.stringify(phone.number)}`)
 						if (targetNum === phone.number) {
 							resultNum = phone
 							return resultNum

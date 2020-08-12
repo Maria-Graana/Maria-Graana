@@ -7,9 +7,10 @@ import { Ionicons, FontAwesome, Entypo, Feather } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { CheckBox } from 'native-base';
 import { Menu } from 'react-native-paper';
+import { connect } from 'react-redux';
 
 
-class InventoryTile extends React.Component {
+class MatchTile extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -58,7 +59,7 @@ class InventoryTile extends React.Component {
 			}
 		}
 		phoneNumber = this.displayPhoneNumber(data);
-
+		console.log(phoneNumber)
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row', marginVertical: 2 }}
 				onLongPress={() => {
@@ -145,7 +146,7 @@ class InventoryTile extends React.Component {
 								<View />
 						}
 						<View style={{ flexDirection: 'row-reverse' }}>
-							<FontAwesome onPress={() => { helper.callNumber(`tel:${phoneNumber}`) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+							<FontAwesome onPress={() => { helper.callNumber({ url: `tel:${this.displayPhoneNumber(data)}`, body: '' }, this.props.contacts) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 						</View>
 					</View>
 				</View>
@@ -155,4 +156,11 @@ class InventoryTile extends React.Component {
 	}
 }
 
-export default InventoryTile;
+mapStateToProps = (store) => {
+	return {
+		user: store.user.user,
+		contacts: store.contacts.contacts,
+	}
+}
+
+export default connect(mapStateToProps)(MatchTile)

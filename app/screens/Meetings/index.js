@@ -18,6 +18,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import StaticData from '../../StaticData';
 import CMBottomNav from '../../components/CMBottomNav'
 import { Platform } from 'react-native'
+import { setContacts } from '../../actions/contacts';
 
 class Meetings extends Component {
   constructor(props) {
@@ -65,7 +66,7 @@ class Meetings extends Component {
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
-
+    this.props.dispatch(setContacts())
   }
 
   fetchLead = () => {

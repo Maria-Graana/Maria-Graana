@@ -26,8 +26,8 @@ class Landing extends React.Component {
 		const { navigation, dispatch, contacts } = this.props;
 		this._unsubscribe = navigation.addListener('focus', () => {
 			dispatch(getListingsCount())
+			this.props.dispatch(setContacts())
 		});
-		this.props.dispatch(setContacts())
 	}
 
 	componentDidUpdate(prevProps) {

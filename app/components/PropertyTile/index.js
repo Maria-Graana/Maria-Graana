@@ -31,25 +31,25 @@ class InventoryTile extends React.Component {
   }
 
   checkCustomerName = (data) => {
-    if (data.customer)
-    {
-       return helper.capitalize(data.customer.first_name) + ' ' + helper.capitalize(data.customer.last_name);
-     }
-     else{
-       return '';
-   }
+    if (data.customer) {
+      return helper.capitalize(data.customer.first_name) + ' ' + helper.capitalize(data.customer.last_name);
+    }
+    else {
+      return '';
+    }
   }
 
   render() {
     const { data, onCall } = this.props;
     const imagesList = data.armsPropertyImages;
     const ownerName = this.checkCustomerName(data);
+    
     return (
       <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => this.onLongPress(data.id)} activeOpacity={0.7}>
         <View>
           {
             imagesList.length ?
-              <Carousel 
+              <Carousel
                 // ref={(c) => { this._carousel = c; }}
                 data={imagesList}
                 renderItem={this._renderItem}
@@ -87,7 +87,7 @@ class InventoryTile extends React.Component {
             {`${data.size} ${data.size_unit.charAt(0).toUpperCase() + data.size_unit.slice(1)} ${data.subtype.charAt(0).toUpperCase() + data.subtype.slice(1)} for ${data.purpose.charAt(0).toUpperCase() + data.purpose.slice(1)}`}
           </Text>
 
-          <Text style={[styles.textControlStyle,{paddingTop: 2}]} numberOfLines={1}>{ownerName}</Text>
+          <Text style={[styles.textControlStyle, { paddingTop: 2 }]} numberOfLines={1}>{ownerName}</Text>
 
           <Text style={[styles.textControlStyle, { fontFamily: AppStyles.fonts.lightFont }]} numberOfLines={1}>
             {`${data.area.name}, ${data.city.name}`}
@@ -113,8 +113,8 @@ class InventoryTile extends React.Component {
         </View>
         {
           data.customer && data.customer.phone !== '' ?
-          <View style={{position: "absolute", bottom:5, left: wp('82%')}}>
-            <Foundation name={'telephone'} onPress={() => onCall(data.customer.phone)} color={AppStyles.colors.subTextColor} size={30} style={styles.phoneButton} />
+            <View style={{ position: "absolute", bottom: 5, left: wp('82%') }}>
+              <Foundation name={'telephone'} onPress={() => onCall(data.customer.phone)} color={AppStyles.colors.subTextColor} size={30} style={styles.phoneButton} />
             </View>
             :
             null

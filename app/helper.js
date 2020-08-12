@@ -278,6 +278,7 @@ const helper = {
 	},
 	contacts(targetNum, contacts) {
 		let resultNum = null
+		Sentry.captureException(`resultNum: ${JSON.stringify(resultNum)}`)
 		let phoneNumbers = _.flatten(_.pluck(contacts, "phoneNumbers"), true)
 		if (contacts.length) {
 			for (let i = 0; i < phoneNumbers.length; i++) {
@@ -285,6 +286,7 @@ const helper = {
 					let phone = phoneNumbers[i]
 					if ('number' in phone && phone.number) {
 						phone.number = phone.number.replace(/\s/g, '')
+						Sentry.captureException(`phone.number: ${JSON.stringify(phone.number)}`)
 						if (targetNum === phone.number) {
 							resultNum = phone
 							return resultNum
@@ -316,6 +318,7 @@ const helper = {
 			[Contacts.Fields.FirstName]: data.name + ' - ARMS',
 			[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
 		}
+		Sentry.captureException(`contact BODY: ${JSON.stringify(contact)}`)
 		Contacts.addContactAsync(contact)
 			.then((result) => {
 				console.log('PhoneID: ', result)

@@ -17,6 +17,7 @@ import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
+import { setContacts } from '../../actions/contacts';
 import Search from '../../components/Search';
 import { storeItem, getItem } from '../../actions/user';
 
@@ -40,9 +41,10 @@ class BuyLeads extends React.Component {
 		}
 	}
 
-	 componentDidMount() {
+	componentDidMount() {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.onFocus()
+			this.props.dispatch(setContacts())
 		})
 	}
 
@@ -51,16 +53,16 @@ class BuyLeads extends React.Component {
 	}
 
 	onFocus = async () => {
-		const sortValue =  await this.getSortOrderFromStorage()
+		const sortValue = await this.getSortOrderFromStorage()
 		const statusValue = await getItem('statusFilterBuy');
 		if (statusValue) {
-			this.setState({ statusFilter: String(statusValue), sort: sortValue },()=>{
+			this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
 				this.fetchLeads()
 			})
 		}
 		else {
 			storeItem('statusFilterBuy', 'all');
-			this.setState({ statusFilter: 'all', sort: sortValue },()=>{
+			this.setState({ statusFilter: 'all', sort: sortValue }, () => {
 				this.fetchLeads()
 			})
 		}
@@ -68,10 +70,10 @@ class BuyLeads extends React.Component {
 
 	getSortOrderFromStorage = async () => {
 		const sortOrder = await getItem('sortBuy');
-		if(sortOrder){
+		if (sortOrder) {
 			return String(sortOrder);
 		}
-		else{
+		else {
 			// default case only runs when no value exists in async storage.
 			storeItem('sortBuy', '&order=Desc&field=updatedAt');
 			return '&order=Desc&field=updatedAt';
@@ -168,9 +170,9 @@ class BuyLeads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { 
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
 			storeItem('sortBuy', status);
-			this.fetchLeads(); 
+			this.fetchLeads();
 		})
 	}
 
@@ -183,7 +185,7 @@ class BuyLeads extends React.Component {
 	}
 
 	clearAndCloseSearch = () => {
-		this.setState({ searchText: '', showSearchBar: false}, () => {
+		this.setState({ searchText: '', showSearchBar: false }, () => {
 			this.clearStateValues();
 			this.fetchLeads()
 		})
@@ -225,7 +227,7 @@ class BuyLeads extends React.Component {
 							/>
 						</View>
 							:
-							<View style={[styles.filterRow, {paddingHorizontal:15}]}>
+							<View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
 								<View style={styles.pickerMain}>
 									<PickerComponent
 										placeholder={'Lead Status'}

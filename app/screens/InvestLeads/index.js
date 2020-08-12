@@ -19,6 +19,7 @@ import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { getItem, storeItem } from '../../actions/user';
+import { setContacts } from '../../actions/contacts';
 
 class InvestLeads extends React.Component {
 	constructor(props) {
@@ -42,7 +43,8 @@ class InvestLeads extends React.Component {
 
 	componentDidMount() {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.onFocus();
+			this.onFocus()
+			this.props.dispatch(setContacts())
 		})
 	}
 
@@ -51,7 +53,7 @@ class InvestLeads extends React.Component {
 	}
 
 	onFocus = async () => {
-		const sortValue =  await this.getSortOrderFromStorage()
+		const sortValue = await this.getSortOrderFromStorage()
 		const statusValue = await getItem('statusFilterInvest');
 		if (statusValue) {
 			this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
@@ -63,15 +65,15 @@ class InvestLeads extends React.Component {
 			this.setState({ statusFilter: 'all', sort: sortValue }, () => {
 				this.fetchLeads();
 			})
-		}    
+		}
 	}
 
 	getSortOrderFromStorage = async () => {
 		const sortOrder = await getItem('sortInvest');
-		if(sortOrder){
+		if (sortOrder) {
 			return String(sortOrder);
 		}
-		else{
+		else {
 			storeItem('sortInvest', '&order=Desc&field=updatedAt');
 			return '&order=Desc&field=updatedAt';
 		}
@@ -85,7 +87,7 @@ class InvestLeads extends React.Component {
 	}
 
 	fetchLeads = async () => {
-		const { sort, pageSize, page, leadsData, showSearchBar, searchText,statusFilter } = this.state
+		const { sort, pageSize, page, leadsData, showSearchBar, searchText, statusFilter } = this.state
 		this.setState({ loading: true })
 		let query = ``
 		if (showSearchBar && searchText !== '') {
@@ -160,9 +162,9 @@ class InvestLeads extends React.Component {
 
 	sendStatus = (status) => {
 
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { 
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
 			storeItem('sortInvest', status);
-			this.fetchLeads(); 
+			this.fetchLeads();
 		})
 	}
 
@@ -175,7 +177,7 @@ class InvestLeads extends React.Component {
 	}
 
 	clearAndCloseSearch = () => {
-		this.setState({ searchText: '', showSearchBar: false}, () => {
+		this.setState({ searchText: '', showSearchBar: false }, () => {
 			this.clearStateValues();
 			this.fetchLeads();
 		})
@@ -218,7 +220,7 @@ class InvestLeads extends React.Component {
 							/>
 						</View>
 							:
-							<View style={[styles.filterRow, {paddingHorizontal:15}]}>
+							<View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
 								<View style={styles.pickerMain}>
 									<PickerComponent
 										placeholder={'Lead Status'}

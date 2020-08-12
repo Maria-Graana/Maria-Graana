@@ -19,6 +19,7 @@ import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { storeItem, getItem } from '../../actions/user';
+import { setContacts } from '../../actions/contacts';
 
 class RentLeads extends React.Component {
 	constructor(props) {
@@ -42,6 +43,7 @@ class RentLeads extends React.Component {
 	componentDidMount() {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.onFocus();
+			this.props.dispatch(setContacts())
 		})
 	}
 

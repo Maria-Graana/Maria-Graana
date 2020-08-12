@@ -9,6 +9,7 @@ import axios from 'axios'
 import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import helper from '../../helper';
+import { setContacts } from '../../actions/contacts';
 
 class AddClient extends Component {
     constructor(props) {
@@ -34,6 +35,7 @@ class AddClient extends Component {
     }
     componentDidMount() {
         const { route, navigation } = this.props
+        this.props.dispatch(setContacts())
         navigation.setParams({ title: 'ADD CLIENT INFO' })
         if ('update' in route.params && route.params.update) {
             navigation.setParams({ title: 'UPDATE CLIENT INFO' })

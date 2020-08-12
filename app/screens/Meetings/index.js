@@ -47,7 +47,18 @@ class Meetings extends Component {
       selectedReason: '',
       checkReasonValidation: false,
       closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost,
-      checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
+      checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false,
+      diaryForm: false,
+      diaryTask: {
+        subject: '',
+        taskType: 'follow up',
+        startTime: '',
+        endTime: '',
+        date: '',
+        notes: '',
+        status: 'pending',
+        leadId: this.props.lead.id,
+      }
     }
   }
 
@@ -78,6 +89,7 @@ class Meetings extends Component {
       active: !this.state.active,
       formData: {},
       editMeeting: false,
+      diaryForm: false,
     })
   }
 
@@ -115,6 +127,7 @@ class Meetings extends Component {
           start: startDate + 'T' + startTime,
           end: startDate + 'T' + endTime,
         }
+        
         axios.patch(`/api/diary/update?id=${meetingId}`, body)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
@@ -132,6 +145,7 @@ class Meetings extends Component {
       } else {
         formData.addedBy = 'self';
         formData.taskCategory = 'leadTask',
+        console.log(formData)
           axios.post(`api/leads/project/meeting`, formData)
             .then((res) => {
               formData['time'] = ''
@@ -147,6 +161,38 @@ class Meetings extends Component {
             })
       }
 
+    }
+  }
+
+  formSubmitDiary = (id) => {
+    const { diaryTask, editMeeting, meetingId } = this.state
+    if (!diaryTask.startTime || !diaryTask.date) {
+      this.setState({ checkValidation: true })
+    } else {
+      let startTime = moment(diaryTask.startTime, 'LT').format('HH:mm:ss')
+      let endTime = moment(startTime, 'LT').add(0.25, 'hours').format('HH:mm:ss')
+      let startDate = moment(diaryTask.date, 'YYYY-MM-DDLT').format('YYYY-MM-DD')
+      let body = {
+        subject: '',
+        date: startDate + 'T' + startTime,
+        endTime: startDate + 'T' + endTime,
+        leadId: diaryTask.leadId,
+        startTime: startDate + 'T' + startTime,
+        taskType: diaryTask.taskType,
+        time: diaryTask.startTime,
+      }
+      axios.post(`api/leads/project/meeting`, body)
+        .then((res) => {
+          helper.successToast(`Follow up task added to the Diary`)
+          this.getMeetingLead();
+          this.setState({
+            active: false,
+            editMeeting: false,
+          })
+        }).catch((error) => {
+          console.log(error)
+          helper.errorToast(`Some thing went wrong!!!`)
+        })
     }
   }
 
@@ -171,9 +217,7 @@ class Meetings extends Component {
       response: status,
       leadId: formData.leadId
     }
-    if (status === 'follow_up') {
-      this.goToDiaryForm('follow up');
-    }
+
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
         .then((res) => {
@@ -188,10 +232,48 @@ class Meetings extends Component {
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
+          }, () => {
+
+            if (status === 'follow_up') {
+              setTimeout(() => {
+                this.addDiary()
+              }, 500)
+
+            }
           })
         })
     }
 
+  }
+
+  addDiary = () => {
+    const { diaryTask } = this.state
+    var startTime = new Date
+    var endTime = new Date
+    endTime.setMinutes(endTime.getMinutes() + 15);
+    var newformData = { ...diaryTask }
+    newformData['taskType'] = 'follow up'
+    newformData['startTime'] = moment(startTime).format('h:mm a')
+    newformData['endTime'] = moment(endTime).format('h:mm a')
+    newformData['date'] = moment(startTime).format('YYYY-MM-DD')
+    this.setState({
+      active: !this.state.active,
+      diaryForm: true,
+      diaryTask: newformData,
+    })
+  }
+
+  handleFormDiary = (value, name) => {
+    const { diaryTask } = this.state
+    let newdiaryTask = { ...diaryTask }
+    if (name === 'startTime') {
+      var endTime = new Date
+      endTime.setMinutes(endTime.getMinutes() + 15);
+      newdiaryTask['endTime'] = moment(endTime).format('h:mm a')
+    }
+    newdiaryTask[name] = value
+    // diaryTask['leadId'] = this.props.lead.id
+    this.setState({ diaryTask: newdiaryTask })
   }
 
   sendCallStatus = () => {
@@ -332,6 +414,8 @@ class Meetings extends Component {
       closedLeadEdit,
       isVisible,
       checkForUnassignedLeadEdit,
+      diaryForm,
+      diaryTask,
     } = this.state
     const { contacts } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
@@ -397,15 +481,22 @@ class Meetings extends Component {
         </View>
 
         {/* ************Modal Component************ */}
-        <MeetingModal
-          active={active}
-          formData={formData}
-          checkValidation={checkValidation}
-          openModal={this.openModal}
-          handleForm={this.handleForm}
-          formSubmit={this.formSubmit}
-          editMeeting={editMeeting}
-        />
+        {
+          active === true &&
+          <MeetingModal
+            active={active}
+            formData={formData}
+            checkValidation={checkValidation}
+            openModal={this.openModal}
+            handleForm={this.handleForm}
+            formSubmit={this.formSubmit}
+            diaryForm={diaryForm}
+            editMeeting={editMeeting}
+            diaryTask={diaryTask}
+            handleFormDiary={this.handleFormDiary}
+            formSubmitDiary={this.formSubmitDiary}
+          />
+        }
 
         <MeetingStatusModal
           doneStatus={doneStatus}

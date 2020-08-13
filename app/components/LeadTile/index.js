@@ -7,7 +7,6 @@ import phone from '../../../assets/img/phone2.png'
 import styles from './style'
 import helper from '../../helper';
 import { connect } from 'react-redux';
-import * as Contacts from 'expo-contacts';
 
 class LeadTile extends React.Component {
   constructor(props) {
@@ -20,18 +19,8 @@ class LeadTile extends React.Component {
       name: data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName),
       url: `tel:${data.customer && data.customer.phone}`
     }
-    Contacts.requestPermissionsAsync()
-      .then((res) => {
-        if (res.status === 'granted') {
-          Contacts.getContactsAsync()
-            .then((result) => {
-              if (result.data && result.data.length) {
-                let contacts = result.data
-                helper.callNumber(newContact, contacts)
-              }
-            })
-        }
-      })
+    const { contacts } = this.props
+    helper.callNumber(newContact, contacts)
   }
 
   render() {

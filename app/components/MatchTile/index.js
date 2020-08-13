@@ -28,6 +28,18 @@ class MatchTile extends React.Component {
 		this.setState({ menuShow: val })
 	}
 
+	displayName = (data) => {
+		if (data.armsuser) {
+			return data.armsuser.firstName + ' ' + data.armsuser.lastName;
+		}
+		else if (data.user) {
+			return data.user.first_name + ' ' + data.user.last_name;
+		}
+		else {
+			return '- - -';
+		}
+	}
+
 	displayPhoneNumber = (data) => {
 		if (data.armsuser) {
 			return data.armsuser.phoneNumber;
@@ -39,6 +51,17 @@ class MatchTile extends React.Component {
 		else {
 			return null;
 		}
+	}
+
+	call = (data) => {
+		let name = this.displayName(data)
+		let newContact = {
+			phone: this.displayPhoneNumber(data),
+			name: name !== '- - -' ? name : '',
+			url: `tel:${this.displayPhoneNumber(data)}`
+		}
+		const { contacts } = this.props
+		helper.callNumber(newContact, contacts)
 	}
 
 	render() {
@@ -59,7 +82,7 @@ class MatchTile extends React.Component {
 			}
 		}
 		phoneNumber = this.displayPhoneNumber(data);
-		console.log(phoneNumber)
+
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row', marginVertical: 2 }}
 				onLongPress={() => {
@@ -146,7 +169,7 @@ class MatchTile extends React.Component {
 								<View />
 						}
 						<View style={{ flexDirection: 'row-reverse' }}>
-							<FontAwesome onPress={() => { helper.callNumber({ url: `tel:${this.displayPhoneNumber(data)}`, body: '' }, this.props.contacts) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+							<FontAwesome onPress={() => { this.call(data) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 						</View>
 					</View>
 				</View>

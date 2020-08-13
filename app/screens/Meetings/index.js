@@ -390,6 +390,17 @@ class Meetings extends Component {
       this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
     }
   }
+
+  call = (data) => {
+    let newContact = {
+      phone: data.customer && data.customer.phone,
+      name: data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName),
+      url: `tel:${data.customer && data.customer.phone}`
+    }
+    const { contacts } = this.props
+    helper.callNumber(newContact, contacts)
+  }
+
   render() {
     const {
       active,
@@ -455,7 +466,7 @@ class Meetings extends Component {
               </TouchableOpacity>
             </View>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
+              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.call(leadData) }}>
                 <Text style={styles.alignCenter}>Call</Text>
               </TouchableOpacity>
             </View>

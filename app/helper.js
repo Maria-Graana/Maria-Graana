@@ -318,18 +318,20 @@ const helper = {
 		} else return resultNum
 	},
 	addContact(data) {
-		const contact = {
-			[Contacts.Fields.FirstName]: data.name + ' - ARMS',
-			[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
+		if (data && data.name && data.name !== '' && data.name !== ' ') {
+			const contact = {
+				[Contacts.Fields.FirstName]: data.name + ' - ARMS',
+				[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
+			}
+			Sentry.captureException(`contact BODY: ${JSON.stringify(contact)}`)
+			Contacts.addContactAsync(contact)
+				.then((result) => {
+					console.log('PhoneID: ', result)
+				})
+				.catch((error) => {
+					console.log('Contacts Error: ', error)
+				})
 		}
-		Sentry.captureException(`contact BODY: ${JSON.stringify(contact)}`)
-		Contacts.addContactAsync(contact)
-			.then((result) => {
-				console.log('PhoneID: ', result)
-			})
-			.catch((error) => {
-				console.log('Contacts Error: ', error)
-			})
 	}
 }
 

@@ -140,7 +140,7 @@ class AddClient extends Component {
                                 }
                             }
                             body.name = body.first_name + ' ' + body.last_name
-                            this.call(body)
+                            // this.call(body)
                         })
                         .catch((error) => {
                             console.log(error)
@@ -151,7 +151,7 @@ class AddClient extends Component {
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')
                             body.name = body.first_name + ' ' + body.last_name
-                            this.call(body)
+                            // this.call(body)
                             navigation.goBack();
                         })
                         .catch((error) => {

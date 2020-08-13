@@ -9,7 +9,7 @@ import axios from 'axios'
 import { connect } from 'react-redux';
 import * as RootNavigation from '../../navigation/RootNavigation';
 import helper from '../../helper';
-import { setContacts } from '../../actions/contacts';
+import * as Contacts from 'expo-contacts';
 
 class AddClient extends Component {
     constructor(props) {
@@ -87,12 +87,19 @@ class AddClient extends Component {
     }
 
     call = (body) => {
-        this.props.dispatch(setContacts())
-            .then((response) => {
-                const { contacts } = this.props
-                let result = helper.contacts(body.phone, contacts)
-                if (!result) helper.addContact(body)
-                else console.log('Contact is Already Saved!')
+        Contacts.requestPermissionsAsync()
+            .then((res) => {
+                if (res.status === 'granted') {
+                    Contacts.getContactsAsync()
+                        .then((result) => {
+                            if (result.data && result.data.length) {
+                                let contacts = result.data
+                                let response = helper.contacts(body.phone, contacts)
+                                if (!response) helper.addContact(body)
+                                else console.log('Contact is Already Saved!')
+                            }
+                        })
+                }
             })
     }
 

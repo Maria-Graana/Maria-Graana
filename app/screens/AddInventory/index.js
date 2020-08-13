@@ -319,11 +319,15 @@ class AddInventory extends Component {
     //Image Compression and image size reduction...
     _compressImageAndUpload = async (uri, object) => {
         const { dispatch } = this.props;
-        console.log(uri)
-        const manipResult = await ImageManipulator.manipulateAsync(uri, [], {
-            compress: 0.48,
+        let finalWidth = object.width;
+        let finalHeight = object.height;
+        if(finalWidth > 1920){
+            finalWidth = finalWidth * 0.5;
+            finalHeight = finalHeight * 0.5;
+        }
+        const manipResult = await ImageManipulator.manipulateAsync(uri, [{resize: {width:finalWidth , height: finalHeight}}], {
+            compress: 0.5,
         });
-        console.log(manipResult)
         let filename = manipResult.uri.split('/').pop();
         let match = /\.(\w+)$/.exec(filename);
         let type = match ? `image/${match[1]}` : `image`;
@@ -333,12 +337,11 @@ class AddInventory extends Component {
             type: type,
             uri: manipResult.uri
         }
-        dispatch(uploadImage(image));
+       dispatch(uploadImage(image));
     };
 
 
     deleteImage = (imageId) => {
-        console.log(imageId);
         const { dispatch } = this.props;
         if (imageId) {
             dispatch(removeImage(imageId)).then((response) => {

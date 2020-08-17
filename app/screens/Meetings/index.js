@@ -300,12 +300,24 @@ class Meetings extends Component {
             console.log("Can't handle url: " + url);
           } else {
             this.sendCallStatus()
+            this.call()
             return Linking.openURL(url)
           }
         }).catch(err => console.error('An error occurred', err));
     } else {
       helper.errorToast(`No Phone Number`)
     }
+  }
+
+  call = () => {
+    const { lead, contacts } = this.props
+    let newContact = {
+      phone: lead.customer && lead.customer.phone,
+      name: lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName),
+      url: `tel:${lead.customer && lead.customer.phone}`
+    }
+    let result = helper.contacts(newContact.phone, contacts)
+    if (newContact.name && newContact.name !== '' && newContact.name !== ' ' && newContact.phone && newContact.phone !== '') if (!result) helper.addContact(newContact)
   }
 
   editFunction = (id) => {
@@ -391,16 +403,6 @@ class Meetings extends Component {
     }
   }
 
-  call = (data) => {
-    let newContact = {
-      phone: data.customer && data.customer.phone,
-      name: data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName),
-      url: `tel:${data.customer && data.customer.phone}`
-    }
-    const { contacts } = this.props
-    helper.callNumber(newContact, contacts)
-  }
-
   render() {
     const {
       active,
@@ -466,7 +468,7 @@ class Meetings extends Component {
               </TouchableOpacity>
             </View>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.call(leadData) }}>
+              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.callNumber(`tel:${leadData.customer && leadData.customer.phone}`) }}>
                 <Text style={styles.alignCenter}>Call</Text>
               </TouchableOpacity>
             </View>

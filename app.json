@@ -44,6 +44,7 @@
         "ACCESS_COARSE_LOCATION",
         "MANAGE_DOCUMENTS",
         "READ_EXTERNAL_STORAGE",
+        "READ_INTERNAL_STORAGE",
         "READ_PHONE_STATE",
         "RECORD_AUDIO",
         "VIBRATE",

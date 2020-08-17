@@ -22,8 +22,7 @@
     ],
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.agency21.arms",
-      "buildNumber": "2",
+      "bundleIdentifier": "com.agency21.realtor",
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
@@ -31,11 +30,11 @@
       "infoPlist": {
         "UIUserInterfaceStyle": "Light"
       },
-      "userInterfaceStyle": "automatic"
+      "userInterfaceStyle": "automatic",
+      "buildNumber": "4"
     },
     "android": {
-      "package": "com.agency21.arms",
-      "versionCode": 1,
+      "package": "com.agency21.realtor",
       "googleServicesFile": "./google-services.json",
       "userInterfaceStyle": "automatic",
       "permissions": [
@@ -52,7 +51,8 @@
         "WRITE_EXTERNAL_STORAGE",
         "READ_CONTACTS",
         "WRITE_CONTACTS"
-      ]
+      ],
+      "versionCode": 3
     },
     "notification": {
       "icon": "./assets/img/ARMS-notif.png",

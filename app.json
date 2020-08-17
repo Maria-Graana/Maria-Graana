@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.1.29",
+    "version": "1.1.68",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "splash": {
@@ -37,7 +37,22 @@
       "package": "com.agency21.arms",
       "versionCode": 1,
       "googleServicesFile": "./google-services.json",
-      "userInterfaceStyle": "automatic"
+      "userInterfaceStyle": "automatic",
+      "permissions": [
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "MANAGE_DOCUMENTS",
+        "READ_EXTERNAL_STORAGE",
+        "READ_INTERNAL_STORAGE",
+        "READ_PHONE_STATE",
+        "RECORD_AUDIO",
+        "VIBRATE",
+        "WAKE_LOCK",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_CONTACTS",
+        "WRITE_CONTACTS"
+      ]
     },
     "notification": {
       "icon": "./assets/img/ARMS-notif.png",

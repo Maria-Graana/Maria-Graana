@@ -6,8 +6,9 @@ import { Ionicons, FontAwesome, Entypo } from '@expo/vector-icons';
 import { CheckBox } from 'native-base';
 import helper from '../../helper'
 import { Menu } from 'react-native-paper';
+import { connect } from 'react-redux';
 
-class InventoryTile extends React.Component {
+class AgentTile extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -31,7 +32,6 @@ class InventoryTile extends React.Component {
 		}
 		else if (data.user) {
 			return data.user.first_name + ' ' + data.user.last_name;
-			r
 		}
 		else {
 			return '- - -';
@@ -44,11 +44,22 @@ class InventoryTile extends React.Component {
 		}
 		else if (data.user) {
 			return data.user.phone;
-			r
 		}
 		else {
 			return null;
 		}
+	}
+
+	call = (data) => {
+		let name = this.displayName(data)
+		let newContact = {
+			phone: this.displayPhoneNumber(data),
+			name: name !== '- - -' ? name : '',
+			url: `tel:${this.displayPhoneNumber(data)}`
+		}
+		console.log(newContact)
+		const { contacts } = this.props
+		helper.callNumber(newContact, contacts)
 	}
 
 	render() {
@@ -61,6 +72,7 @@ class InventoryTile extends React.Component {
 				if (data.diaries[0].status === 'completed') show = false
 			}
 		}
+
 		return (
 			<TouchableOpacity
 				style={{ flexDirection: "row" }}
@@ -130,7 +142,7 @@ class InventoryTile extends React.Component {
 							</View>
 							<View style={{ flexDirection: 'row-reverse' }}>
 								{/* <View style={{ flex: 1 }}></View> */}
-								<FontAwesome onPress={() => { helper.callNumber(`tel:${this.displayPhoneNumber(data)}`) }} style={{ paddingTop: 40, paddingRight: 0 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+								<FontAwesome onPress={() => { this.call(data) }} style={{ paddingTop: 40, paddingRight: 0 }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 							</View>
 						</View>
 					</View>
@@ -142,4 +154,11 @@ class InventoryTile extends React.Component {
 	}
 }
 
-export default InventoryTile;
+mapStateToProps = (store) => {
+	return {
+		user: store.user.user,
+		contacts: store.contacts.contacts,
+	}
+}
+
+export default connect(mapStateToProps)(AgentTile)

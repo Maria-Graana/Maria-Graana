@@ -14,6 +14,8 @@ import AppStyles from '../../AppStyles';
 import styles from './style';
 import Ability from '../../hoc/Ability';
 import Avatar from '../Avatar/index';
+import config from '../../config';
+import AppJson from '../../../app.json';
 
 class CustomDrawerContent extends React.Component {
 
@@ -33,9 +35,11 @@ class CustomDrawerContent extends React.Component {
     render() {
         const { user, count } = this.props
         const { subRole } = user
+        let label = config.channel === 'development' ? 'Dev ' : ''
         return (
             <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
-                <ScrollView style={[styles.scrollContainer, { width: '100%', }]}>
+                <ScrollView style={[styles.scrollContainer, { width: '100%', }]}
+                contentContainerStyle={AppStyles.mb1}>
                     <View style={AppStyles.flexDirectionRow}>
                         <View >
                             <Avatar data={user} />
@@ -65,6 +69,9 @@ class CustomDrawerContent extends React.Component {
                         this.props.navigation.closeDrawer()
                         setTimeout(() => this.signOut(), 0)
                     }} />
+                    <View style={{ alignSelf: 'center', justifyContent:'flex-end', flex:1}}>
+                        <Text style={AppStyles.blackInputText}>{label}v{AppJson.expo.version}</Text>
+                    </View>
                 </ScrollView>
             </SafeAreaView>
         )

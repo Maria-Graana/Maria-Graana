@@ -16,38 +16,33 @@ import StaticData from '../../StaticData'
 import { FAB } from 'react-native-paper';
 import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
-import { widthPercentageToDP } from 'react-native-responsive-screen';
 import { setlead } from '../../actions/lead';
+import Search from '../../components/Search';
+import { getItem, storeItem } from '../../actions/user';
 
 class InvestLeads extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			language: '',
 			leadsData: [],
-			dotsDropDown: false,
-			dropDownId: '',
-			selectInventory: [],
-			febDrawer: false,
 			purposeTab: 'invest',
-			statusFilter: 'all',
+			statusFilter: '',
 			open: false,
-			sort: '&order=Desc&field=createdAt',
+			sort: '',
 			loading: false,
 			activeSortModal: false,
 			totalLeads: 0,
 			page: 1,
 			pageSize: 20,
 			onEndReachedLoader: false,
+			showSearchBar: false,
+			searchText: '',
 		}
 	}
 
 	componentDidMount() {
-		const { statusFilter } = this.state
-
-		this.fetchLeads(statusFilter);
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
-			this.fetchLeads(statusFilter);
+			this.onFocus()
 		})
 	}
 
@@ -55,26 +50,58 @@ class InvestLeads extends React.Component {
 		this.clearStateValues();
 	}
 
+	onFocus = async () => {
+		const sortValue = await this.getSortOrderFromStorage()
+		const statusValue = await getItem('statusFilterInvest');
+		if (statusValue) {
+			this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+				this.fetchLeads()
+			})
+		}
+		else {
+			storeItem('statusFilterInvest', 'all');
+			this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+				this.fetchLeads();
+			})
+		}
+	}
+
+	getSortOrderFromStorage = async () => {
+		const sortOrder = await getItem('sortInvest');
+		if (sortOrder) {
+			return String(sortOrder);
+		}
+		else {
+			storeItem('sortInvest', '&order=Desc&field=updatedAt');
+			return '&order=Desc&field=updatedAt';
+		}
+	}
+
 	clearStateValues = () => {
 		this.setState({
 			page: 1,
-			totalProperties: 0,
+			totalLeads: 0,
 		})
 	}
 
-	fetchLeads = (statusFilter) => {
-		const { sort, pageSize, page, leadsData } = this.state
+	fetchLeads = async () => {
+		const { sort, pageSize, page, leadsData, showSearchBar, searchText, statusFilter } = this.state
 		this.setState({ loading: true })
 		let query = ``
-		query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		if (showSearchBar && searchText !== '') {
+			query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+		}
+		else {
+			query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+		}
 		axios.get(`${query}`)
 			.then((res) => {
 				this.setState({
 					leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
 					loading: false,
-					statusFilter: statusFilter,
 					onEndReachedLoader: false,
-					totalLeads: res.data.count
+					totalLeads: res.data.count,
+					statusFilter: statusFilter,
 				})
 			}).catch((res) => {
 				this.setState({
@@ -83,47 +110,16 @@ class InvestLeads extends React.Component {
 			})
 	}
 
-	showDropdown = (id) => {
-		this.setState({
-			dropDownId: id,
-			dotsDropDown: !this.state.dotsDropDown
-		})
-	}
-
-	selectInventory = (id) => {
-		const { selectInventory } = this.state
-		this.setState({
-			selectInventory: [...selectInventory, id]
-		})
-	}
-
-	unSelectInventory = (id) => {
-		const { selectInventory } = this.state
-		let index = selectInventory.indexOf(id)
-		selectInventory.splice(index, 1)
-		this.setState({ selectInventory: selectInventory })
-	}
-
 	goToFormPage = (page, status) => {
 		const { navigation } = this.props;
 		navigation.navigate(page, { 'pageName': status });
 	}
 
-	changeTab = (status) => {
-		this.setState({
-			purposeTab: status,
-			statusFilter: 'all',
-			sort: '&order=Desc&field=createdAt'
-		}, () => {
-			this.fetchLeads('all');
-		})
-
-	}
-
 	changeStatus = (status) => {
 		this.clearStateValues()
 		this.setState({ statusFilter: status, leadsData: [] }, () => {
-			this.fetchLeads(this.state.statusFilter);
+			storeItem('statusFilterInvest', status);
+			this.fetchLeads();
 		})
 	}
 
@@ -163,7 +159,11 @@ class InvestLeads extends React.Component {
 	}
 
 	sendStatus = (status) => {
-		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => { this.fetchLeads(this.state.statusFilter); })
+
+		this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
+			storeItem('sortInvest', status);
+			this.fetchLeads();
+		})
 	}
 
 	openStatus = () => {
@@ -174,11 +174,15 @@ class InvestLeads extends React.Component {
 		return String(index);
 	}
 
+	clearAndCloseSearch = () => {
+		this.setState({ searchText: '', showSearchBar: false }, () => {
+			this.clearStateValues();
+			this.fetchLeads();
+		})
+	}
+
 	render() {
 		const {
-			selectInventory,
-			dropDownId,
-			purposeTab,
 			leadsData,
 			open,
 			statusFilter,
@@ -187,60 +191,82 @@ class InvestLeads extends React.Component {
 			sort,
 			totalLeads,
 			onEndReachedLoader,
+			searchText,
+			showSearchBar,
 		} = this.state
 		const { user } = this.props;
-
-		let leadStatus = purposeTab === 'invest' ? StaticData.investmentFilter : StaticData.buyRentFilter
 		return (
-			<View style={[AppStyles.container, { marginBottom: 25 }]}>
+			<View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
+
+
 				{/* ******************* TOP FILTER MAIN VIEW ********** */}
-				<View style={[styles.mainFilter, { marginBottom: 15 }]}>
-					<View style={styles.pickerMain}>
-						<PickerComponent
-							placeholder={'Lead Status'}
-							data={leadStatus}
-							customStyle={styles.pickerStyle}
-							customIconStyle={styles.customIconStyle}
-							onValueChange={this.changeStatus}
-							selectedItem={statusFilter}
-						/>
-					</View>
-					<View style={styles.stylesMainSort}>
-						<TouchableOpacity style={styles.sortBtn} onPress={() => { this.openStatus() }}>
-							<Image source={SortImg} style={[styles.sortImg]} />
-							<Text style={styles.sortText}>Sort</Text>
-						</TouchableOpacity>
-					</View>
+				<View style={{ marginBottom: 15 }}>
+					{
+						showSearchBar ? <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
+							<Search
+								containerWidth="100%"
+								placeholder='Search leads here'
+								searchText={searchText}
+								setSearchText={(value) => this.setState({ searchText: value })}
+								showShadow={false}
+								showClearButton={true}
+								returnKeyType={'search'}
+								onSubmitEditing={() => this.fetchLeads()}
+								autoFocus={true}
+								closeSearchBar={() => this.clearAndCloseSearch()}
+							/>
+						</View>
+							:
+							<View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+								<View style={styles.pickerMain}>
+									<PickerComponent
+										placeholder={'Lead Status'}
+										data={StaticData.investmentFilter}
+										customStyle={styles.pickerStyle}
+										customIconStyle={styles.customIconStyle}
+										onValueChange={this.changeStatus}
+										selectedItem={statusFilter}
+									/>
+								</View>
+								<View style={styles.stylesMainSort}>
+									<TouchableOpacity style={styles.sortBtn} onPress={() => { this.openStatus() }}>
+										<Image source={SortImg} style={[styles.sortImg]} />
+									</TouchableOpacity>
+									<Ionicons style={{ alignSelf: 'center' }}
+										onPress={() => {
+											this.setState({ showSearchBar: true }, () => {
+												this.clearStateValues();
+											})
+										}}
+										name={'ios-search'}
+										size={26}
+										color={AppStyles.colors.primaryColor} />
+								</View>
+							</View>
+					}
 				</View>
 				{
-					leadsData && leadsData && leadsData.length > 0 ?
+					leadsData && leadsData.length > 0 ?
 						< FlatList
 							data={leadsData}
+							contentContainerStyle={styles.paddingHorizontal}
 							renderItem={({ item }) => (
 								<LeadTile
+									dispatch={this.props.dispatch}
 									purposeTab={'invest'}
 									user={user}
-									// key={key}
-									showDropdown={this.showDropdown}
-									dotsDropDown={this.state.dotsDropDown}
-									selectInventory={this.selectInventory}
-									selectedInventory={selectInventory}
 									data={item}
-									dropDownId={dropDownId}
-									unSelectInventory={this.unSelectInventory}
-									goToInventoryForm={this.goToInventoryForm}
 									navigateTo={this.navigateTo}
 									callNumber={this.callNumber}
 								/>
 							)}
-							// ListEmptyComponent={<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />}
 							onEndReached={() => {
 								if (leadsData.length < totalLeads) {
 									this.setState({
 										page: this.state.page + 1,
 										onEndReachedLoader: true
 									}, () => {
-										this.fetchLeads(statusFilter);
+										this.fetchLeads();
 									});
 								}
 							}}

@@ -18,6 +18,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import StaticData from '../../StaticData';
 import CMBottomNav from '../../components/CMBottomNav'
 import { Platform } from 'react-native'
+import { setContacts } from '../../actions/contacts';
 
 class Meetings extends Component {
   constructor(props) {
@@ -47,14 +48,25 @@ class Meetings extends Component {
       selectedReason: '',
       checkReasonValidation: false,
       closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost,
-      checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false
+      checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false,
+      diaryForm: false,
+      diaryTask: {
+        subject: '',
+        taskType: 'follow up',
+        startTime: '',
+        endTime: '',
+        date: '',
+        notes: '',
+        status: 'pending',
+        leadId: this.props.lead.id,
+      }
     }
   }
 
   componentDidMount() {
     this.fetchLead()
     this.getMeetingLead()
-
+    this.props.dispatch(setContacts())
   }
 
   fetchLead = () => {
@@ -78,6 +90,7 @@ class Meetings extends Component {
       active: !this.state.active,
       formData: {},
       editMeeting: false,
+      diaryForm: false,
     })
   }
 
@@ -115,6 +128,7 @@ class Meetings extends Component {
           start: startDate + 'T' + startTime,
           end: startDate + 'T' + endTime,
         }
+
         axios.patch(`/api/diary/update?id=${meetingId}`, body)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
@@ -132,21 +146,54 @@ class Meetings extends Component {
       } else {
         formData.addedBy = 'self';
         formData.taskCategory = 'leadTask',
-          axios.post(`api/leads/project/meeting`, formData)
-            .then((res) => {
-              formData['time'] = ''
-              formData['date'] = ''
-              helper.successToast(`Meeting Added`)
-              this.getMeetingLead();
-              this.setState({
-                active: false,
-                formData,
-              })
-            }).catch(() => {
-              helper.errorToast(`Some thing went wrong!!!`)
+          console.log(formData)
+        axios.post(`api/leads/project/meeting`, formData)
+          .then((res) => {
+            formData['time'] = ''
+            formData['date'] = ''
+            helper.successToast(`Meeting Added`)
+            this.getMeetingLead();
+            this.setState({
+              active: false,
+              formData,
             })
+          }).catch(() => {
+            helper.errorToast(`Some thing went wrong!!!`)
+          })
       }
 
+    }
+  }
+
+  formSubmitDiary = (id) => {
+    const { diaryTask, editMeeting, meetingId } = this.state
+    if (!diaryTask.startTime || !diaryTask.date) {
+      this.setState({ checkValidation: true })
+    } else {
+      let startTime = moment(diaryTask.startTime, 'LT').format('HH:mm:ss')
+      let endTime = moment(startTime, 'LT').add(0.33, 'hours').format('HH:mm:ss')
+      let startDate = moment(diaryTask.date, 'YYYY-MM-DDLT').format('YYYY-MM-DD')
+      let body = {
+        subject: '',
+        date: startDate + 'T' + startTime,
+        endTime: startDate + 'T' + endTime,
+        leadId: diaryTask.leadId,
+        startTime: startDate + 'T' + startTime,
+        taskType: diaryTask.taskType,
+        time: diaryTask.startTime,
+      }
+      axios.post(`api/leads/project/meeting`, body)
+        .then((res) => {
+          helper.successToast(`Follow up task added to the Diary`)
+          this.getMeetingLead();
+          this.setState({
+            active: false,
+            editMeeting: false,
+          })
+        }).catch((error) => {
+          console.log(error)
+          helper.errorToast(`Some thing went wrong!!!`)
+        })
     }
   }
 
@@ -171,9 +218,7 @@ class Meetings extends Component {
       response: status,
       leadId: formData.leadId
     }
-    if (status === 'follow_up') {
-      this.goToDiaryForm('follow up');
-    }
+
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
         .then((res) => {
@@ -188,10 +233,42 @@ class Meetings extends Component {
           this.getMeetingLead();
           this.setState({
             doneStatus: !this.state.doneStatus,
+          }, () => {
+
+            if (status === 'follow_up') {
+              setTimeout(() => {
+                this.addDiary()
+              }, 500)
+
+            }
           })
         })
     }
 
+  }
+
+  addDiary = () => {
+    const { diaryTask } = this.state
+    var startTime = new Date
+    var endTime = new Date
+    startTime.setMinutes(startTime.getMinutes() + 20);
+    var newformData = { ...diaryTask }
+    newformData['taskType'] = 'follow up'
+    newformData['startTime'] = moment(startTime).format('hh:mm a')
+    newformData['endTime'] = moment(endTime).format('hh:mm a')
+    newformData['date'] = moment(startTime).format('YYYY-MM-DD')
+    this.setState({
+      active: !this.state.active,
+      diaryForm: true,
+      diaryTask: newformData,
+    })
+  }
+
+  handleFormDiary = (value, name) => {
+    const { diaryTask } = this.state
+    let newdiaryTask = { ...diaryTask }
+    newdiaryTask[name] = value
+    this.setState({ diaryTask: newdiaryTask })
   }
 
   sendCallStatus = () => {
@@ -219,17 +296,28 @@ class Meetings extends Component {
       Linking.canOpenURL(url)
         .then(supported => {
           if (!supported) {
-            this.sendCallStatus()
-
+            // this.sendCallStatus()
             console.log("Can't handle url: " + url);
           } else {
             this.sendCallStatus()
+            this.call()
             return Linking.openURL(url)
           }
         }).catch(err => console.error('An error occurred', err));
     } else {
       helper.errorToast(`No Phone Number`)
     }
+  }
+
+  call = () => {
+    const { lead, contacts } = this.props
+    let newContact = {
+      phone: lead.customer && lead.customer.phone,
+      name: lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName),
+      url: `tel:${lead.customer && lead.customer.phone}`
+    }
+    let result = helper.contacts(newContact.phone, contacts)
+    if (newContact.name && newContact.name !== '' && newContact.name !== ' ' && newContact.phone && newContact.phone !== '') if (!result) helper.addContact(newContact)
   }
 
   editFunction = (id) => {
@@ -314,6 +402,7 @@ class Meetings extends Component {
       this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
     }
   }
+
   render() {
     const {
       active,
@@ -332,9 +421,14 @@ class Meetings extends Component {
       closedLeadEdit,
       isVisible,
       checkForUnassignedLeadEdit,
+      diaryForm,
+      diaryTask,
     } = this.state
+    const { contacts } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
     let leadData = this.props.lead
+    let customerName = leadData.customer && leadData.customer.customerName && helper.capitalize(leadData.customer.customerName)
+    // console.log(diaryTask)
     // let leadClosedCheck = this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost
     let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
     return (
@@ -374,7 +468,7 @@ class Meetings extends Component {
               </TouchableOpacity>
             </View>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.callNumber(`tel:${leadData && leadData.customer && leadData.customer.phone}`) }}>
+              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.callNumber(`tel:${leadData.customer && leadData.customer.phone}`) }}>
                 <Text style={styles.alignCenter}>Call</Text>
               </TouchableOpacity>
             </View>
@@ -394,15 +488,22 @@ class Meetings extends Component {
         </View>
 
         {/* ************Modal Component************ */}
-        <MeetingModal
-          active={active}
-          formData={formData}
-          checkValidation={checkValidation}
-          openModal={this.openModal}
-          handleForm={this.handleForm}
-          formSubmit={this.formSubmit}
-          editMeeting={editMeeting}
-        />
+        {
+          active === true &&
+          <MeetingModal
+            active={active}
+            formData={formData}
+            checkValidation={checkValidation}
+            openModal={this.openModal}
+            handleForm={this.handleForm}
+            formSubmit={this.formSubmit}
+            diaryForm={diaryForm}
+            editMeeting={editMeeting}
+            diaryTask={diaryTask}
+            handleFormDiary={this.handleFormDiary}
+            formSubmitDiary={this.formSubmitDiary}
+          />
+        }
 
         <MeetingStatusModal
           doneStatus={doneStatus}
@@ -426,7 +527,7 @@ class Meetings extends Component {
           CMlead={true}
         />
 
-      </View>
+      </View >
     )
   }
 }
@@ -435,7 +536,8 @@ class Meetings extends Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
-    lead: store.lead.lead
+    lead: store.lead.lead,
+    contacts: store.contacts.contacts
   }
 }
 

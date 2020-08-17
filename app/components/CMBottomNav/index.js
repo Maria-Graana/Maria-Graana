@@ -37,6 +37,15 @@ class CMBottomNav extends React.Component {
     })
   }
 
+  call = () => {
+    const { contacts, callPhoneNumber, customerName } = this.props
+    let newContact = {
+      phone: callPhoneNumber,
+      name: customerName,
+      url: `tel:${callPhoneNumber}`
+    }
+    helper.callNumber(newContact, contacts)
+  }
 
   render() {
     const {
@@ -50,8 +59,12 @@ class CMBottomNav extends React.Component {
       checkForUnassignedLeadEdit,
       callButton,
       callPhoneNumber,
+      customerName,
+      contacts
     } = this.props
     const { visible } = this.state
+
+
     return (
       <View style={styles.bottomNavMain}>
         <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
@@ -82,7 +95,7 @@ class CMBottomNav extends React.Component {
         </TouchableOpacity>
         {
           callButton === true &&
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.callNumber(`tel:${callPhoneNumber}`)}>
+          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.call()}>
             <Image style={styles.bottomNavImg} source={require('../../../assets/img/callIcon.png')} />
             <Text style={styles.bottomNavBtnText}>Call</Text>
           </TouchableOpacity>
@@ -122,7 +135,8 @@ class CMBottomNav extends React.Component {
 
 mapStateToProps = (store) => {
   return {
-    user: store.user.user
+    user: store.user.user,
+    contacts: store.contacts.contacts,
   }
 }
 

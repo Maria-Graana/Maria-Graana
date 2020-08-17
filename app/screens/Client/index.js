@@ -158,7 +158,7 @@ class Client extends React.Component {
         const { user } = this.props
         let data = [];
         if (searchText !== '' && data.length === 0) {
-            data = fuzzy.filter(searchText, customers, { extract: (e) => (e.firstName + e.lastName) })
+            data = fuzzy.filter(searchText, customers, { extract: (e) => (e.firstName ? e.firstName + e.lastName : '') })
             data = data.map((item) => item.original)
         }
         else {

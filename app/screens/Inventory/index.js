@@ -127,7 +127,8 @@ class Inventory extends React.Component {
 	}
 
 	onHandleOnCall = (url) => {
-		helper.callNumber(url);
+		const { contacts } = this.props
+		helper.callNumber({ url: url, name: '' }, contacts);
 	}
 
 	setKey = (index) => {
@@ -202,7 +203,8 @@ class Inventory extends React.Component {
 
 mapStateToProps = (store) => {
 	return {
-		user: store.user.user
+		user: store.user.user,
+		contacts: store.contacts.contacts
 	}
 }
 

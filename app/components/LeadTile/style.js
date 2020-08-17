@@ -31,6 +31,7 @@ export default styles = StyleSheet.create({
   },
   largeText: {
     fontSize: 18,
+    width: '65%',
   },
   contentMultiMain: {
     flexDirection: 'row',
@@ -42,17 +43,20 @@ export default styles = StyleSheet.create({
     top: 10,
     right: 10,
   },
+  normalText: {
+    width: '100%',
+  },
   contentMainWrap: {
     position: 'relative',
     flexDirection: 'row',
     marginTop: 5,
   },
   leftContent: {
-    width: '90%',
+    width: '85%',
   },
   phoneMain: {
     justifyContent: 'flex-end',
-    marginBottom: 15,
+    width: '15%',
   },
   tokenLabel: {
     borderWidth: 1,
@@ -62,8 +66,8 @@ export default styles = StyleSheet.create({
     color: '#2A7EF0',
     paddingTop: 3,
     paddingBottom: 3,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
     fontSize: 12,
   },
   tokenLabelDark: {
@@ -74,9 +78,19 @@ export default styles = StyleSheet.create({
     color: '#5B5B5B',
     paddingTop: 3,
     paddingBottom: 3,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
     fontSize: 12,
+  },
+  viewStyle: {
+    // maxWidth: '65%',
+    // minWidth: '40%',
+    width: '100%',
+    textAlign: 'center'
+  },
+  extraStatus: {
+    maxWidth: '70%',
+    minWidth: '50%',
   },
   fireIcon: {
     width: 22,
@@ -97,5 +111,16 @@ export default styles = StyleSheet.create({
   selectedInventory: {
     borderColor: '#2A7EF0',
     borderWidth: 1,
+  },
+  actionBtn:{
+    alignItems: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  desBlue:{
+    color: '#0E73EE'
+  },
+  desDark:{
+    color: '#000'
   },
 });

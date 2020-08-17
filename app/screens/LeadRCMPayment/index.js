@@ -636,7 +636,6 @@ class LeadRCMPayment extends React.Component {
             monthlyFormatStatus,
         } = this.state;
 
-
         return (
             !loading ?
                 <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
@@ -760,6 +759,7 @@ class LeadRCMPayment extends React.Component {
                                 closedLeadEdit={closedLeadEdit}
                                 callButton={true}
                                 callPhoneNumber={this.props.lead && this.props.lead.customer && this.props.lead.customer.phone}
+                                customerName={this.props.lead.customer && this.props.lead.customer.customerName && helper.capitalize(this.props.lead.customer.customerName)}
                             />
                         </View>
 

@@ -88,7 +88,7 @@ class AddCMLead extends Component {
             }
             axios.post(`/api/leads/project`, formData)
                 .then((res) => {
-                    helper.successToast(res.data)
+                    helper.successToast('Lead created successfully')
                     RootNavigation.navigate('Leads')
                 })
                 .catch((error) => {

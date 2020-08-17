@@ -45,7 +45,7 @@ class TeamDiary extends React.Component {
         const { teamDiary, loading, searchText } = this.state
         let data = [];
         if (searchText !== '' && data.length === 0) {
-            data = fuzzy.filter(searchText, teamDiary, { extract: (e) => (e.firstName + e.lastName) })
+            data = fuzzy.filter(searchText, teamDiary, { extract: (e) => (e.firstName ? e.firstName + e.lastName : '') })
             data = data.map((item) => item.original)
         }
         else {

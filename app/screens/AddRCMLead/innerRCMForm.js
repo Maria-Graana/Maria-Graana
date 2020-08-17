@@ -115,7 +115,7 @@ class InnerRCMForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
             <View style={[AppStyles.inputWrap]}>
-              <PickerComponent onValueChange={handleForm} data={sizeUnit} name={'size_unit'} placeholder='Unit Size' />
+              <PickerComponent onValueChange={handleForm} data={sizeUnit} name={'size_unit'} selectedItem={formData.size_unit} placeholder='Unit Size' />
             </View>
           </View>
 

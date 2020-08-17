@@ -61,12 +61,12 @@ class AddInventory extends Component {
             }
         }
     }
-    
+
 
     componentDidMount() {
         const { route, navigation, user } = this.props;
         navigation.addListener('focus', () => {
-           this.onScreenFocused()
+            this.onScreenFocused()
         })
         if (route.params.update) {
             navigation.setOptions({ title: 'EDIT PROPERTY' })
@@ -98,7 +98,7 @@ class AddInventory extends Component {
             copyObject.city_id = selectedCity.value;
             this.setState({ formData: copyObject, selectedCity })
         }
-        if(selectedArea){
+        if (selectedArea) {
             copyObject.area_id = selectedArea.value;
             this.setState({ formData: copyObject, selectedArea })
         }
@@ -106,7 +106,7 @@ class AddInventory extends Component {
 
     clearAreaOnCityChange = () => {
         const { formData } = this.state;
-        this.setState({ formData: {...formData, area_id :''} , selectedArea: null });
+        this.setState({ formData: { ...formData, area_id: '' }, selectedArea: null });
     }
 
     setEditValues = () => {
@@ -143,8 +143,8 @@ class AddInventory extends Component {
                 video: property.video,
             },
             selectedClient: property.customer ? property.customer : null,
-            selectedCity: property.city ? {...property.city, value:property.city.id} : null,
-            selectedArea: property.area ? {...property.area, value:property.area.id} : null,
+            selectedCity: property.city ? { ...property.city, value: property.city.id } : null,
+            selectedArea: property.area ? { ...property.area, value: property.area.id } : null,
             clientName: property.customer && property.customer.first_name + ' ' + property.customer.last_name,
             buttonText: 'UPDATE PROPERTY'
         }, () => {
@@ -319,8 +319,10 @@ class AddInventory extends Component {
     //Image Compression and image size reduction...
     _compressImageAndUpload = async (uri, object) => {
         const { dispatch } = this.props;
-        const manipResult = await ImageManipulator.manipulateAsync(uri, [], {
-            compress: 0.48,
+        let orginalWidth = object.width;
+        let originalHeight = object.height;
+        const manipResult = await ImageManipulator.manipulateAsync(uri, orginalWidth * 0.5 > 1920 ? [{ resize: { width: orginalWidth * 0.5, height: originalHeight * 0.5 } }] : [], {
+            compress: 0.5,
         });
         let filename = manipResult.uri.split('/').pop();
         let match = /\.(\w+)$/.exec(filename);
@@ -336,7 +338,6 @@ class AddInventory extends Component {
 
 
     deleteImage = (imageId) => {
-        console.log(imageId);
         const { dispatch } = this.props;
         if (imageId) {
             dispatch(removeImage(imageId)).then((response) => {
@@ -421,10 +422,10 @@ class AddInventory extends Component {
     handleAreaClick = () => {
         const { navigation } = this.props;
         const { selectedArea, selectedCity } = this.state;
-        if(selectedCity) {
+        if (selectedCity) {
             navigation.navigate('SingleSelectionPicker', { screenName: 'AddInventory', mode: 'area', cityId: selectedCity.value, selectedArea });
         }
-        else{
+        else {
             alert('Please select city first!');
         }
     }
@@ -471,7 +472,7 @@ class AddInventory extends Component {
                                 selectedCity={selectedCity}
                                 selectedArea={selectedArea}
                                 handleCityClick={this.handleCityClick}
-                                handleAreaClick = {this.handleAreaClick}
+                                handleAreaClick={this.handleAreaClick}
                                 buttonText={buttonText}
                                 clientName={clientName}
                                 handleClientClick={this.handleClientClick}

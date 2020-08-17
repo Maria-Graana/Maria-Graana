@@ -7,9 +7,10 @@ import { Ionicons, FontAwesome, Entypo, Feather } from '@expo/vector-icons';
 import Carousel from 'react-native-snap-carousel';
 import { CheckBox } from 'native-base';
 import { Menu } from 'react-native-paper';
+import { connect } from 'react-redux';
 
 
-class InventoryTile extends React.Component {
+class MatchTile extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -27,6 +28,18 @@ class InventoryTile extends React.Component {
 		this.setState({ menuShow: val })
 	}
 
+	displayName = (data) => {
+		if (data.armsuser) {
+			return data.armsuser.firstName + ' ' + data.armsuser.lastName;
+		}
+		else if (data.user) {
+			return data.user.first_name + ' ' + data.user.last_name;
+		}
+		else {
+			return '- - -';
+		}
+	}
+
 	displayPhoneNumber = (data) => {
 		if (data.armsuser) {
 			return data.armsuser.phoneNumber;
@@ -38,6 +51,17 @@ class InventoryTile extends React.Component {
 		else {
 			return null;
 		}
+	}
+
+	call = (data) => {
+		let name = this.displayName(data)
+		let newContact = {
+			phone: this.displayPhoneNumber(data),
+			name: name !== '- - -' ? name : '',
+			url: `tel:${this.displayPhoneNumber(data)}`
+		}
+		const { contacts } = this.props
+		helper.callNumber(newContact, contacts)
 	}
 
 	render() {
@@ -145,7 +169,7 @@ class InventoryTile extends React.Component {
 								<View />
 						}
 						<View style={{ flexDirection: 'row-reverse' }}>
-							<FontAwesome onPress={() => { helper.callNumber(`tel:${phoneNumber}`) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
+							<FontAwesome onPress={() => { this.call(data) }} name="phone" size={30} color={AppStyles.colors.subTextColor} />
 						</View>
 					</View>
 				</View>
@@ -155,4 +179,11 @@ class InventoryTile extends React.Component {
 	}
 }
 
-export default InventoryTile;
+mapStateToProps = (store) => {
+	return {
+		user: store.user.user,
+		contacts: store.contacts.contacts,
+	}
+}
+
+export default connect(mapStateToProps)(MatchTile)

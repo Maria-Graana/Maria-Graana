@@ -11,6 +11,9 @@ import LeadsImg from '../assets/img/lead-icon-l.png'
 import DashboardImg from '../assets/img/dashboard-icon-l.png'
 import TargetsImg from '../assets/img/target-icon-l.png'
 import ClientsImg from '../assets/img/clients-icon-l.png'
+import * as Contacts from 'expo-contacts';
+import * as Sentry from 'sentry-expo';
+import _ from 'underscore';
 
 const helper = {
 	successToast(message) {
@@ -70,21 +73,6 @@ const helper = {
 	validateEmail(email) {
 		var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		return re.test(email);
-	},
-	callNumber(url) {
-		if (url && url != 'tel:null') {
-			Linking.canOpenURL(url)
-				.then(supported => {
-					if (!supported) {
-						helper.errorToast(`No application available to dial phone number`)
-						console.log("Can't handle url: " + url);
-					} else {
-						return Linking.openURL(url)
-					}
-				}).catch(err => console.error('An error occurred', err));
-		} else {
-			helper.errorToast(`No Phone Number`)
-		}
 	},
 	capitalize(str) {
 		return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
@@ -252,24 +240,94 @@ const helper = {
 			type: 'danger'
 		})
 	},
-	leadNotAssignedToast(){
+	leadNotAssignedToast() {
 		Toast.show({
 			text: 'Lead is not assigned to you',
 			duration: 3000,
 			type: 'danger'
 		})
 	},
-	checkPrice(price, showPkr = false){
-        if(price===null){
-          return '0';
-        }
-        else if(Number(price) === StaticData.Constants.any_value){
-          return 'Any'
-        }
-        else{
-           return (showPkr ? 'PKR ' : '') + formatPrice(price);
-        }
-  }
+	checkPrice(price, showPkr = false) {
+		if (price === null) {
+			return '0';
+		}
+		else if (Number(price) === StaticData.Constants.any_value) {
+			return 'Any'
+		}
+		else {
+			return (showPkr ? 'PKR ' : '') + formatPrice(price);
+		}
+	},
+	callNumber(body, contacts) {
+		let url = body.url
+		if (url && url != 'tel:null') {
+			Linking.canOpenURL(url)
+				.then(supported => {
+					if (!supported) {
+						helper.errorToast(`No application available to dial phone number`)
+						console.log("Can't handle url: " + url);
+					} else {
+						if (contacts) {
+							let result = helper.contacts(body.phone, contacts)
+							if (body.name && body.name !== '' && body.name !== ' ' && body.phone && body.phone !== '') if (!result) helper.addContact(body)
+						}
+						return Linking.openURL(url)
+					}
+				}).catch(err => console.error('An error occurred', err));
+		} else {
+			helper.errorToast(`No Phone Number`)
+		}
+	},
+	contacts(targetNum, contacts) {
+		let resultNum = null
+		let phoneNumbers = _.flatten(_.pluck(contacts, "phoneNumbers"), true)
+		if (contacts.length) {
+			for (let i = 0; i < phoneNumbers.length; i++) {
+				if (phoneNumbers[i] && phoneNumbers[i] !== undefined) {
+					let phone = phoneNumbers[i]
+					if ('number' in phone && phone.number) {
+						phone.number = phone.number.replace(/\s/g, '')
+						if (targetNum === phone.number) {
+							resultNum = phone
+							return resultNum
+						}
+						else {
+							if (phone.number[0] === '0') {
+								let newNumber = phone.number.replace('0', '+92')
+								if (newNumber === targetNum) {
+									resultNum = phone
+									return resultNum
+								}
+							}
+							if (phone.number[0] === '+') {
+								let newNumber = phone.number.replace('+92', '0')
+								if (newNumber === targetNum) {
+									resultNum = phone
+									return resultNum
+								}
+							}
+						}
+					}
+				}
+			}
+			return resultNum
+		} else return resultNum
+	},
+	addContact(data) {
+		if (data && data.name && data.name !== '' && data.name !== ' ') {
+			const contact = {
+				[Contacts.Fields.FirstName]: data.name + ' - ARMS',
+				[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
+			}
+			Contacts.addContactAsync(contact)
+				.then((result) => {
+					console.log('PhoneID: ', result)
+				})
+				.catch((error) => {
+					console.log('Contacts Error: ', error)
+				})
+		}
+	}
 }
 
 

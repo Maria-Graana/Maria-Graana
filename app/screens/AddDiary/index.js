@@ -21,11 +21,11 @@ class AddDiary extends Component {
 
     componentDidMount() {
         const { route, navigation } = this.props;
-        const {tasksList = StaticData.taskValues} = route.params;
+        const { tasksList = StaticData.taskValues } = route.params;
         if (route.params.update) {
             navigation.setOptions({ title: 'EDIT TASK' })
         }
-        this.setState({taskValues:tasksList});
+        this.setState({ taskValues: tasksList });
     }
 
     formSubmit = (data) => {
@@ -45,10 +45,10 @@ class AddDiary extends Component {
         const { rcmLeadId, cmLeadId, managerId, addedBy } = route.params;
         let payload = null;
         let start = moment(data.date + data.startTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
-        let end = data.endTime !== '' ? 
-        moment(data.date + data.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss') // Actual end date is selected
-        : 
-        moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss'); // If end date is not selected by user, add plus 1 hour in start time
+        let end = data.endTime !== '' ?
+            moment(data.date + data.endTime, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss') // Actual end date is selected
+            :
+            moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss'); // If end date is not selected by user, add plus 1 hour in start time
         if (route.params.update) {
             // payload for update contains id of diary from existing api call and other user data
             payload = Object.assign({}, data);
@@ -59,7 +59,7 @@ class AddDiary extends Component {
             payload.start = start
             payload.end = end
             payload.taskCategory = 'simpleTask';
-           
+
             if (rcmLeadId) {
                 payload.rcmLeadId = rcmLeadId
             }
@@ -112,7 +112,7 @@ class AddDiary extends Component {
 
     addDiary = (data) => {
         const { route, navigation } = this.props;
-        const { rcmLeadId, cmLeadId} = route.params;
+        const { rcmLeadId, cmLeadId } = route.params;
         let diary = this.generatePayload(data)
         if (rcmLeadId || cmLeadId) {
             // create task for lead
@@ -177,6 +177,14 @@ class AddDiary extends Component {
         axios.patch(`/api/diary/update?id=${diary.id}`, diary)
             .then((res) => {
                 helper.successToast('TASK UPDATED SUCCESSFULLY!')
+                let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
+                let start = helper.convertTimeZone(res.data.start)
+                let end = helper.convertTimeZone(res.data.end)
+                let data = {
+                    title: res.data.subject,
+                    body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+                }
+                TimerNotification(data, timeStamp, start)
                 this.props.navigation.navigate('Diary', { update: false, 'agentId': this.props.route.params.agentId })
             })
             .catch((error) => {
@@ -193,7 +201,13 @@ class AddDiary extends Component {
             <KeyboardAwareScrollView style={[AppStyles.container]} keyboardShouldPersistTaps="always" enableOnAndroid>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} onLongPress={Keyboard.dismiss}>
                     <SafeAreaView style={AppStyles.mb1} >
-                        <DetailForm formSubmit={this.formSubmit} props={this.props} editableData={route.params.update ? route.params.data : null} taskValues={taskValues} checkValidation={checkValidation} />
+                        <DetailForm
+                            formSubmit={this.formSubmit}
+                            props={this.props}
+                            editableData={route.params.update ? route.params.data : null}
+                            taskValues={taskValues}
+                            checkValidation={checkValidation}
+                        />
                     </SafeAreaView>
                 </TouchableWithoutFeedback>
             </KeyboardAwareScrollView>

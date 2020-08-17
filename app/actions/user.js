@@ -1,29 +1,29 @@
 import * as types from '../types';
 
-import {AsyncStorage} from 'react-native';
+import { AsyncStorage } from 'react-native';
 import { SplashScreen } from 'expo';
 import axios from 'axios';
 import config from '../config';
 
-storeItem = async (key, item) =>  {
+export const storeItem = async (key, item) => {
     try {
         let jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item));
         return jsonOfItem;
     } catch (error) {
     }
-  }
+}
 
-getItem = async (key) => {
+export const getItem = async (key) => {
     try {
-      const retrievedItem =  await AsyncStorage.getItem(key);
-      const item = JSON.parse(retrievedItem);
-      return item;
+        const retrievedItem = await AsyncStorage.getItem(key);
+        const item = JSON.parse(retrievedItem);
+        return item;
     } catch (error) {
         return error
     }
 }
 
-removeItem = async (key) =>  {    
+export const removeItem = async (key) => {
     try {
         var jsonOfItem = await AsyncStorage.removeItem(key);
         return jsonOfItem;
@@ -32,7 +32,7 @@ removeItem = async (key) =>  {
 }
 
 setAuthorizationToken = (token) => {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`     
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 
 deleteAuthorizationToken = () => {
@@ -53,19 +53,19 @@ export function getListingsCount() {
     return (dispatch, getsState) => {
         //Put All Your Code Here, Which You Want To Execute After Some Delay Time.
         axios.get(`/api/inventory/counts`).then(response => {
-         dispatch({
-            type: types.UPDATE_LISTING_COUNT,
-            payload: response.data,
-         });
+            dispatch({
+                type: types.UPDATE_LISTING_COUNT,
+                payload: response.data,
+            });
 
         }).catch(error => {
-
+            console.log(`/api/inventory/counts`)
             console.log('error', error);
         })
     }
 }
 
-export function setuser(data){
+export function setuser(data) {
     return (dispatch, getsState) => {
         dispatch({
             type: types.USER_LOADING
@@ -79,7 +79,7 @@ export function setuser(data){
             dispatch(checkToken())
             dispatch({
                 type: types.SET_USER,
-                payload: {...response.data},
+                payload: { ...response.data },
             })
             dispatch({
                 type: types.USER_LOADED
@@ -89,22 +89,22 @@ export function setuser(data){
             })
             return response
         })
-        .catch((error) => {
-            console.log(error)
-            console.log('crashing', error.response.data)
-            dispatch({
-                type: types.USER_LOADED
+            .catch((error) => {
+                console.log(error)
+                console.log('crashing', error.response.data)
+                dispatch({
+                    type: types.USER_LOADED
+                })
+                dispatch({
+                    type: types.SET_USER_ERROR,
+                    payload: error.response ? error.response.data : error.message,
+                })
+                return error
             })
-            dispatch({
-                type: types.SET_USER_ERROR,
-                payload: error.response ? error.response.data : error.message,
-            })
-            return error
-        })
     }
 }
 
-export function logoutUser(){
+export function logoutUser() {
     return (dispatch, getsState) => {
         deleteAuthorizationToken();
         removeBaseUrl();
@@ -118,36 +118,36 @@ export function logoutUser(){
     }
 }
 
-export function checkToken(){
+export function checkToken() {
     return (dispatch, getsState) => {
         getItem('token').then((token) => {
             if (token) {
                 axios.get(`${config.apiPath}/api/user/me`, { headers: { "Authorization": `Bearer ${token}` } })
-                .then((response) => {
-                    setAuthorizationToken(token)
-                    setBaseUrl()
-                    // console.log(response.data)
-                    dispatch({
-                        type: types.SET_USER,
-                        payload: {...response.data},
+                    .then((response) => {
+                        setAuthorizationToken(token)
+                        setBaseUrl()
+                        // console.log(response.data)
+                        dispatch({
+                            type: types.SET_USER,
+                            payload: { ...response.data },
+                        })
+                        dispatch({
+                            type: types.USER_LOADED
+                        })
+                        dispatch({
+                            type: types.SET_TOKEN_SUCCESS
+                        })
+                        dispatch(getListingsCount());
+                        SplashScreen.hide();
                     })
-                    dispatch({
-                        type: types.USER_LOADED
+                    .catch((error) => {
+                        SplashScreen.hide();
+                        console.log(error.message)
+                        dispatch({
+                            type: types.SET_TOKEN_ERROR,
+                            payload: error.response ? error.response.data : error.message,
+                        })
                     })
-                    dispatch({
-                        type: types.SET_TOKEN_SUCCESS
-                    })
-                    dispatch(getListingsCount());
-                    SplashScreen.hide();
-                })
-                .catch((error) => {
-                    SplashScreen.hide();
-                    console.log(error.message)
-                    dispatch({
-                        type: types.SET_TOKEN_ERROR,
-                        payload: error.response ? error.response.data : error.message,
-                    })
-                })                
             } else {
                 console.log('SET_TOKEN_ERROR')
                 dispatch({
@@ -156,14 +156,14 @@ export function checkToken(){
                 SplashScreen.hide();
             }
         })
-    }   
+    }
 }
 
 export function getCurrentUser() {
     return (dispatch, getsState) => {
-        axios.post(`${config.apiPath}/api/user/me`, {headers: {Authorization: `Bearer ${token}`}}).then((response) => {
+        axios.post(`${config.apiPath}/api/user/me`, { headers: { Authorization: `Bearer ${token}` } }).then((response) => {
             // store in async storage
-             dispatch({
+            dispatch({
                 type: types.SET_USER,
                 payload: response.data,
             })

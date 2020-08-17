@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native';
 import AppStyles from '../../AppStyles'
 import { Button } from 'native-base';
 import React from 'react';
@@ -11,6 +11,7 @@ import axios from 'axios';
 import Ability from '../../hoc/Ability'
 import Loader from '../../components/loader';
 import StaticData from '../../StaticData';
+// import { TextInput } from 'react-native-paper';
 
 const _format = 'YYYY-MM-DD';
 
@@ -22,7 +23,9 @@ class LeadDetail extends React.Component {
             lead: [],
             loading: true,
             customerName: '',
-            showAssignToButton: false
+            showAssignToButton: false,
+            editDes: false,
+            description: '',
         }
     }
 
@@ -31,6 +34,7 @@ class LeadDetail extends React.Component {
             this.purposeTab()
         })
     }
+
 
     purposeTab = () => {
         const { route } = this.props
@@ -61,7 +65,7 @@ class LeadDetail extends React.Component {
         axios.get(`${url}?id=${lead.id}`)
             .then((res) => {
                 this.props.dispatch(setlead(res.data))
-                this.setState({ lead: res.data, loading: false }, () => {
+                this.setState({ lead: res.data, loading: false, description: res.data.description }, () => {
                     that.checkCustomerName(res.data);
                     that.checkAssignedLead(res.data);
                 })
@@ -150,10 +154,40 @@ class LeadDetail extends React.Component {
         navigation.navigate('ClientDetail', { client: lead.customer ? lead.customer : null });
     }
 
+    editDescription = (status) => {
+        this.setState({
+            editDes: status,
+        })
+    }
 
+    handleDes = (text) => {
+        this.setState({
+            description: text,
+        })
+    }
+
+    submitDes = () => {
+        const { route } = this.props;
+        const { description } = this.state;
+        const { purposeTab, lead } = route.params
+        var endPoint = ''
+        var body = {
+            description: description,
+        }
+        if (purposeTab == 'invest') {
+            endPoint = `/api/leads/project?id=${lead.id}`
+        } else {
+            endPoint = `/api/leads/?id=${lead.id}`
+        }
+        axios.patch(endPoint, body)
+        .then((res) => {
+            this.purposeTab()
+            this.editDescription(false)
+        })
+    }
 
     render() {
-        const { type, lead, customerName, showAssignToButton, loading } = this.state
+        const { type, lead, customerName, showAssignToButton, loading, editDes, description } = this.state
         const { user, route } = this.props;
         const { purposeTab } = route.params
         let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
@@ -188,6 +222,40 @@ class LeadDetail extends React.Component {
                             <TouchableOpacity onPress={() => this.goToClientsDetail()} style={styles.roundButtonView} activeOpacity={0.6}>
                                 <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
                             </TouchableOpacity>
+                        </View>
+                        <View style={styles.underLine} />
+                        <View style={styles.mainDesView}>
+                            <View style={styles.viewOne}>
+                                <Text style={styles.headingText}>Description </Text>
+                                {
+                                    editDes === true ?
+                                        <View>
+                                            <TextInput style={styles.inputDes} placeholder={`Edit Description`} value={description} onChangeText={(text) => { this.handleDes(text) }} />
+                                            <TouchableOpacity onPress={() => this.submitDes()} style={styles.roundButtonViewTwo} activeOpacity={0.6}>
+                                                <Text style={{ textAlign: 'center', color: '#fff' }}>Submit</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        :
+                                        <Text style={styles.labelText}>
+                                            {lead.description}
+                                        </Text>
+                                }
+
+                            </View>
+                            <View style={styles.viewTwo}>
+                                {
+                                    editDes === true ?
+                                        <TouchableOpacity onPress={() => { this.editDescription(false) }} style={styles.editDesBtn} activeOpacity={0.6}>
+                                            <Image source={require('../../../assets/img/times.png')} style={styles.editImg} />
+                                        </TouchableOpacity>
+                                        :
+                                        <TouchableOpacity onPress={() => { this.editDescription(true) }} style={styles.editDesBtn} activeOpacity={0.6}>
+                                            <Image source={require('../../../assets/img/edit.png')} style={styles.editImg} />
+                                        </TouchableOpacity>
+                                }
+
+
+                            </View>
                         </View>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Requirement </Text>

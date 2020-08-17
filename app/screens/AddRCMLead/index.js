@@ -35,7 +35,7 @@ class AddRCMLead extends Component {
                 leadAreas: [],
                 customerId: '',
                 city_id: '',
-                size_unit: null,
+                size_unit: 'marla',
                 minPrice: null,
                 maxPrice: null,
                 org: ''
@@ -221,7 +221,7 @@ class AddRCMLead extends Component {
         }
         axios.post(`/api/leads`, payLoad)
             .then((res) => {
-                helper.successToast(res.data)
+                helper.successToast('Lead created successfully')
                 RootNavigation.navigate('Leads')
             })
     }

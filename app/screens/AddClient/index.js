@@ -7,7 +7,6 @@ import getTheme from '../../../native-base-theme/components';
 import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
-import * as RootNavigation from '../../navigation/RootNavigation';
 import helper from '../../helper';
 
 class AddClient extends Component {
@@ -85,10 +84,16 @@ class AddClient extends Component {
         this.setState({ formData })
     }
 
+    call = (body) => {
+        const { contacts } = this.props
+        let response = helper.contacts(body.phone, contacts)
+        if (!response) helper.addContact(body)
+        else console.log('Contact is Already Saved!')
+    }
 
     formSubmit = () => {
         const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
-        const { route, navigation } = this.props
+        const { route, navigation, contacts } = this.props
         const { update, client, isFromDropDown, screenName } = route.params
         if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
         if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
@@ -119,7 +124,7 @@ class AddClient extends Component {
                                                     navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : '' }) :
                                                     navigation.goBack();
 
-                                                    helper.successToast('CLIENT CREATED');
+                                                helper.successToast('CLIENT CREATED');
                                             }
                                         },
                                     ],
@@ -134,6 +139,8 @@ class AddClient extends Component {
                                     isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack();
                                 }
                             }
+                            body.name = body.first_name + ' ' + body.last_name
+                            // this.call(body)
                         })
                         .catch((error) => {
                             console.log(error)
@@ -143,6 +150,8 @@ class AddClient extends Component {
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')
+                            body.name = body.first_name + ' ' + body.last_name
+                            // this.call(body)
                             navigation.goBack();
                         })
                         .catch((error) => {
@@ -190,6 +199,7 @@ class AddClient extends Component {
 mapStateToProps = (store) => {
     return {
         user: store.user.user,
+        contacts: store.contacts.contacts,
     }
 }
 

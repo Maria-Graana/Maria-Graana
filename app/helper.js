@@ -269,8 +269,6 @@ const helper = {
 					} else {
 						if (contacts) {
 							let result = helper.contacts(body.phone, contacts)
-							Sentry.captureException(`result: ${JSON.stringify(result)}`)
-							Sentry.captureException(`body: ${JSON.stringify(body)}`)
 							if (body.name && body.name !== '' && body.name !== ' ' && body.phone && body.phone !== '') if (!result) helper.addContact(body)
 						}
 						return Linking.openURL(url)
@@ -282,13 +280,11 @@ const helper = {
 	},
 	contacts(targetNum, contacts) {
 		let resultNum = null
-		Sentry.captureException(`targetNum: ${JSON.stringify(targetNum)}`)
 		let phoneNumbers = _.flatten(_.pluck(contacts, "phoneNumbers"), true)
 		if (contacts.length) {
 			for (let i = 0; i < phoneNumbers.length; i++) {
 				if (phoneNumbers[i] && phoneNumbers[i] !== undefined) {
 					let phone = phoneNumbers[i]
-					Sentry.captureException(`phone: ${JSON.stringify(phone)}`)
 					if ('number' in phone && phone.number) {
 						phone.number = phone.number.replace(/\s/g, '')
 						if (targetNum === phone.number) {
@@ -323,7 +319,6 @@ const helper = {
 				[Contacts.Fields.FirstName]: data.name + ' - ARMS',
 				[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
 			}
-			Sentry.captureException(`contact BODY: ${JSON.stringify(contact)}`)
 			Contacts.addContactAsync(contact)
 				.then((result) => {
 					console.log('PhoneID: ', result)

@@ -23,7 +23,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.agency21.realtor",
-      "buildNumber": "2",
+      "buildNumber": "4",
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
@@ -35,7 +35,7 @@
     },
     "android": {
       "package": "com.agency21.realtor",
-      "versionCode": 1,
+      "versionCode": 3,
       "googleServicesFile": "./google-services.json",
       "userInterfaceStyle": "automatic",
       "permissions": [

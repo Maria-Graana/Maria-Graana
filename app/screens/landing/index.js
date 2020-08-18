@@ -5,6 +5,7 @@ import styles from './style';
 import helper from '../../helper'
 import LandingTile from '../../components/LandingTile'
 import PushNotification from '../../PushNotifications';
+import AndroidNotifications from '../../AndroidNotifications';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from 'react-redux';
@@ -83,7 +84,7 @@ class Landing extends React.Component {
 
 		return (
 			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor, paddingHorizontal: wp('0%'), paddingLeft: 0 }]}>
-				<PushNotification navigation={navigation} />
+				<AndroidNotifications navigation={navigation} />
 				{
 					tiles.length ?
 						< FlatList

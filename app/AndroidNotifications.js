@@ -25,7 +25,6 @@ class AndroidNotifications extends React.Component {
             }),
         })
         this._notificationSubscription = Notifications.addNotificationResponseReceivedListener(this._handleNotification)
-        Notifications.removeNotificationSubscription(this._notificationSubscriptiont)
     }
 
     componentWillUnmount = () => {

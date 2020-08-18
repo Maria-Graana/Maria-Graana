@@ -261,7 +261,7 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}>Requirement </Text>
                         <Text style={styles.labelText}>
                             {!lead.projectId && lead.size && lead.size !== 0 ? lead.size + ' ' : ''}
-                            {!lead.projectId && lead.size_unit && lead.size_unit + ' '}
+                            {!lead.projectId && lead.size ? lead.size_unit + ' ' : ''}
                             {!lead.projectId && helper.capitalize(lead.subtype)}
                             {lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}
                         </Text>

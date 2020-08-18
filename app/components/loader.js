@@ -8,7 +8,7 @@ class Loader extends React.Component {
   }
   render() {
     const { loading, color } = this.props
-    let loaderColor= color || AppStyles.colors.primaryColor
+    let loaderColor = color || AppStyles.colors.primaryColor
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         {

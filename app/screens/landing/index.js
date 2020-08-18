@@ -12,6 +12,7 @@ import { getListingsCount } from '../../actions/listings'
 import { View, TouchableOpacity, Text, Image } from 'react-native';
 import addIcon from '../../../assets/img/add-icon-l.png';
 import { setContacts } from '../../actions/contacts';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -81,7 +82,7 @@ class Landing extends React.Component {
 		const { user, navigation } = this.props
 
 		return (
-			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor }]}>
+			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor, paddingHorizontal: wp('0%'), paddingLeft: 0 }]}>
 				<PushNotification navigation={navigation} />
 				{
 					tiles.length ?

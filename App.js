@@ -19,7 +19,7 @@ import { setCustomTouchableOpacity } from 'react-native-global-props'
 import helper from './app/helper';
 import config from './app/config';
 import axios from 'axios';
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, YellowBox } from 'react-native';
 
 // const firebaseConfig = {
 // 	apiKey: "AIzaSyBcMF6jv0j0EY82JC9XW0jKMu4o7fRDKrg",
@@ -73,6 +73,7 @@ export default class App extends React.Component {
 			OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
 			...Ionicons.font,
 		});
+		YellowBox.ignoreWarnings(['Animated: `useNativeDriver` was not specified'])
 		this.setState({ isReady: true });
 	}
 

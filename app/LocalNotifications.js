@@ -1,6 +1,6 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
@@ -27,10 +27,10 @@ const submitNotification = (body, timeStamp, date) => {
     console.log(' <<<<<<<<< Local Notification >>>>>>>>>>>')
     console.log(localNotification)
     console.log(schedulingOptions)
-    Notifications.scheduleLocalNotificationAsync(
-        localNotification,
-        schedulingOptions,
-    );
+    Notifications.scheduleNotificationAsync({
+        content: localNotification,
+        trigger: schedulingOptions,
+    });
 };
 
 const handleNotification = () => {

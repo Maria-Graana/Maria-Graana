@@ -53,6 +53,7 @@ class InnerForm extends Component {
       checkForUnassignedLeadEdit,
       dateStatusForInstallments,
       installmentsFromat,
+      openUnitDetailsModal,
     } = this.props
     let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false ? false : true
     let rate = readOnly.rate && readOnly.rate.toString()
@@ -82,8 +83,15 @@ class InnerForm extends Component {
 
               {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkForEdit} />
+                <View style={styles.maiinDetailBtn}>
+                  <View style={[AppStyles.inputWrap,styles.unitDetailInput]}>
+                    <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkForEdit} />
+                  </View>
+                  <View style={styles.mainDetailViewBtn}>
+                    <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => {openUnitDetailsModal(true)}}>
+                      <Text style={styles.detailBtnText}>Details</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
 

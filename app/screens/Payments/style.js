@@ -67,7 +67,28 @@ export default styles = StyleSheet.create({
   heightContainer: {
     height: '20%'
   },
-  marginBottomFrom:{
+  marginBottomFrom: {
     paddingBottom: 80,
+  },
+  maiinDetailBtn: {
+    flexDirection: 'row',
+  },
+  unitDetailInput: {
+    width: '70%',
+  },
+  mainDetailViewBtn: {
+    width: '30%',
+    paddingLeft: 15,
+  },
+  unitDetailBtn: {
+    backgroundColor: '#016FF2',
+    height: 50,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  detailBtnText: {
+    textAlign: 'center',
+    color: '#fff',
   },
 });

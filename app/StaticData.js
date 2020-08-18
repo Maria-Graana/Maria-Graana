@@ -490,6 +490,6 @@ export default StaticData = {
         1000000,
         10000000000,
         
-    ]
+    ],
 }
 

@@ -12,6 +12,7 @@ import { setlead } from '../../actions/lead';
 import helper from '../../helper';
 import PaymentAlert from '../../components/PaymentAlert'
 import CMBottomNav from '../../components/CMBottomNav'
+import UnitDetailsModal from '../../components/UnitDetailsModal'
 
 
 class Payments extends Component {
@@ -23,6 +24,7 @@ class Payments extends Component {
 			getProject: [],
 			checkValidation: false,
 			getUnit: [],
+			unitDetailModal: false,
 			arrowCheck: {
 				discount: false,
 				token: false,
@@ -988,6 +990,13 @@ class Payments extends Component {
 		}
 	}
 
+	openUnitDetailsModal = (status) => {
+		console.log(status)
+		this.setState({
+			unitDetailModal: status,
+		})
+	}
+
 	render() {
 		const {
 			getProject,
@@ -1024,70 +1033,73 @@ class Payments extends Component {
 			checkForUnassignedLeadEdit,
 			dateStatusForInstallments,
 			installmentsFromat,
+			unitDetailModal,
 		} = this.state
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
-						<ScrollView>
+				<ScrollView>
 
-							<View style={[AppStyles.container]}>
-								<LeadRCMPaymentPopup
-									reasons={reasons}
-									selectedReason={selectedReason}
-									changeReason={this.handleReasonChange}
-									checkValidation={checkReasonValidation}
-									isVisible={isVisible}
-									closeModal={() => this.closeModal()}
-									onPress={this.onHandleCloseLead}
-									CMlead={true}
-								/>
-								<InnerForm
-									getFloor={getFloors}
-									getUnit={getUnit}
-									getProject={getProject}
-									getInstallments={StaticData.getInstallments}
-									totalInstalments={totalInstalments}
-									instalments={instalments}
-									checkValidation={checkValidation}
-									handleInstalments={this.handleInstalments}
-									handleForm={this.handleForm}
-									formSubmit={this.formSubmit}
-									readOnly={readOnly}
-									remainingPayment={remainingPayment}
-									formData={formData}
-									tokenDate={tokenDate}
-									downPaymentTime={downPaymentTime}
-									submitValues={this.submitValues}
-									arrowCheck={arrowCheck}
-									paymentOptions={StaticData.paymentOptions}
-									paymentDate={paymentDate}
-									fullPaymentCount={fullPaymentCount}
-									addFullpaymentFields={this.addFullpaymentFields}
-									paymentFiledsArray={paymentFiledsArray}
-									handlePayments={this.handlePayments}
-									closedLeadEdit={closedLeadEdit}
-									closedLead={this.closedLead}
-									goToDiaryForm={this.goToDiaryForm}
-									goToAttachments={this.goToAttachments}
-									goToComments={this.goToComments}
-									navigateTo={this.navigateTo}
-									//Component Props
-									showAndHideStyling={this.showAndHideStyling}
-									showStylingState={showStyling}
-									promotionDiscountFormat={promotionDiscountFormat}
-									tokenFormat={tokenFormat}
-									tokenDateStatus={tokenDateStatus}
-									downPaymentDateStatus={downPaymentDateStatus}
-									downPaymentFormat={downPaymentFormat}
-									dateStatusForPayments={dateStatusForPayments}
-									paymentFromat={paymentFromat}
-									dateStatusForInstallments={dateStatusForInstallments}
-									installmentsFromat={installmentsFromat}
-									checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
-								/>
-							</View>
-						</ScrollView>
+					<View style={[AppStyles.container]}>
+						<LeadRCMPaymentPopup
+							reasons={reasons}
+							selectedReason={selectedReason}
+							changeReason={this.handleReasonChange}
+							checkValidation={checkReasonValidation}
+							isVisible={isVisible}
+							closeModal={() => this.closeModal()}
+							onPress={this.onHandleCloseLead}
+							CMlead={true}
+						/>
+						<InnerForm
+							getFloor={getFloors}
+							getUnit={getUnit}
+							getProject={getProject}
+							getInstallments={StaticData.getInstallments}
+							totalInstalments={totalInstalments}
+							instalments={instalments}
+							checkValidation={checkValidation}
+							handleInstalments={this.handleInstalments}
+							handleForm={this.handleForm}
+							formSubmit={this.formSubmit}
+							readOnly={readOnly}
+							remainingPayment={remainingPayment}
+							formData={formData}
+							tokenDate={tokenDate}
+							downPaymentTime={downPaymentTime}
+							submitValues={this.submitValues}
+							arrowCheck={arrowCheck}
+							paymentOptions={StaticData.paymentOptions}
+							paymentDate={paymentDate}
+							fullPaymentCount={fullPaymentCount}
+							addFullpaymentFields={this.addFullpaymentFields}
+							paymentFiledsArray={paymentFiledsArray}
+							handlePayments={this.handlePayments}
+							closedLeadEdit={closedLeadEdit}
+							closedLead={this.closedLead}
+							goToDiaryForm={this.goToDiaryForm}
+							goToAttachments={this.goToAttachments}
+							goToComments={this.goToComments}
+							navigateTo={this.navigateTo}
+							//Component Props
+							showAndHideStyling={this.showAndHideStyling}
+							showStylingState={showStyling}
+							promotionDiscountFormat={promotionDiscountFormat}
+							tokenFormat={tokenFormat}
+							tokenDateStatus={tokenDateStatus}
+							downPaymentDateStatus={downPaymentDateStatus}
+							downPaymentFormat={downPaymentFormat}
+							dateStatusForPayments={dateStatusForPayments}
+							paymentFromat={paymentFromat}
+							dateStatusForInstallments={dateStatusForInstallments}
+							installmentsFromat={installmentsFromat}
+							checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
+							//Unit Details Modal Props
+							openUnitDetailsModal={this.openUnitDetailsModal}
+						/>
+					</View>
+				</ScrollView>
 				<View style={AppStyles.mainCMBottomNav}>
 					<CMBottomNav
 						goToAttachments={this.goToAttachments}
@@ -1100,6 +1112,10 @@ class Payments extends Component {
 						checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
 					/>
 				</View>
+				<UnitDetailsModal
+					active={unitDetailModal}
+					openUnitDetailsModal={this.openUnitDetailsModal}
+				/>
 				{
 					modalVisible &&
 					<PaymentAlert

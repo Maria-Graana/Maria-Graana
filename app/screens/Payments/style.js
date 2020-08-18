@@ -81,14 +81,19 @@ export default styles = StyleSheet.create({
     paddingLeft: 15,
   },
   unitDetailBtn: {
-    backgroundColor: '#016FF2',
-    height: 50,
+    borderWidth: 1,
+    borderColor: '#016FF2',
+    height: 48,
     borderRadius: 4,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   detailBtnText: {
     textAlign: 'center',
-    color: '#fff',
+    color: '#016FF2',
+  },
+  removePad: {
+    paddingTop: 0,
   },
 });

@@ -132,6 +132,7 @@ class Payments extends Component {
 			if (data.unitId != null) {
 				this.readOnly(data.unitId)
 				this.discountPayment()
+				
 			}
 			if (data.discount != null) {
 				this.discountPayment(formData)
@@ -246,6 +247,7 @@ class Payments extends Component {
 				}, () => {
 					if (lead.unitId != null) {
 						this.readOnly(lead.unitId)
+						this.getUnitDetailsThroughId(lead.unitId)
 					}
 				})
 			})
@@ -427,6 +429,7 @@ class Payments extends Component {
 			if (name === 'unitId' && value != '') {
 				this.readOnly(value)
 				this.submitValues('unitId')
+				this.getUnitDetailsThroughId(value)
 			}
 			if (name === 'discount') {
 				this.discountPayment(newFormData)
@@ -447,6 +450,14 @@ class Payments extends Component {
 				this.submitValues('payment')
 				// this.discountPayment(newFormData)
 			}
+		})
+	}
+
+	getUnitDetailsThroughId = (id) => {
+		const { units } = this.state
+		var getObject = units && units.filter((item) => {return item.id === id ? item : null})
+		this.setState({
+			unitDetailsData: getObject[0]
 		})
 	}
 
@@ -991,7 +1002,6 @@ class Payments extends Component {
 	}
 
 	openUnitDetailsModal = (status) => {
-		console.log(status)
 		this.setState({
 			unitDetailModal: status,
 		})
@@ -1034,6 +1044,7 @@ class Payments extends Component {
 			dateStatusForInstallments,
 			installmentsFromat,
 			unitDetailModal,
+			unitDetailsData,
 		} = this.state
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
@@ -1115,6 +1126,7 @@ class Payments extends Component {
 				<UnitDetailsModal
 					active={unitDetailModal}
 					openUnitDetailsModal={this.openUnitDetailsModal}
+					data={unitDetailsData}
 				/>
 				{
 					modalVisible &&

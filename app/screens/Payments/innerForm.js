@@ -62,7 +62,7 @@ class InnerForm extends Component {
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
     return (
-      <SafeAreaView>
+      <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
           <View style={[AppStyles.modalMain, styles.marginBottomFrom]}>
 

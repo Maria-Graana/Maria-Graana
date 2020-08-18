@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.1.68",
+    "version": "1.1.71",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "splash": {
@@ -28,7 +28,11 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "UIUserInterfaceStyle": "Light"
+        "UIUserInterfaceStyle": "Light",
+        "NSContactsUsageDescription": "The Contacts permission used to create new contacts for users when creating new clients and calling from leads",
+        "NSCameraUsageDescription": "The Camera permission used to capture user's properties pictures when posting property",
+        "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
+        "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
       "userInterfaceStyle": "automatic",
       "buildNumber": "4"

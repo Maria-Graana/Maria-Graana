@@ -31,6 +31,7 @@ class AddCMLead extends Component {
                 projectType: '',
                 minPrice: StaticData.PricesProject[0],
                 maxPrice: StaticData.PricesProject[StaticData.PricesProject.length - 1],
+                description: '',
             }
         }
     }

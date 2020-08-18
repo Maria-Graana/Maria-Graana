@@ -38,6 +38,7 @@ class AddRCMLead extends Component {
                 size_unit: 'marla',
                 minPrice: null,
                 maxPrice: null,
+                description:'',
                 org: ''
             }
         }
@@ -117,7 +118,7 @@ class AddRCMLead extends Component {
         const { RCMFormData } = this.state
         const { dispatch } = this.props;
         RCMFormData[name] = value
-        this.setState({ RCMFormData })
+        this.setState({ RCMFormData });
         if (RCMFormData.type != '') { this.selectSubtype(RCMFormData.type) }
 
     }
@@ -214,6 +215,7 @@ class AddRCMLead extends Component {
             size_unit: RCMFormData.size_unit,
             price: RCMFormData.maxPrice,
             min_price: RCMFormData.minPrice,
+            description: RCMFormData.description,
         }
         if (user.subRole === 'group_management') {
             let newOrg = _.find(organizations, function (item) { return item.value === formData.org })

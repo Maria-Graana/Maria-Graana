@@ -52,7 +52,8 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 3
+      "versionCode": 3,
+      "useNextNotificationsApi": true
     },
     "notification": {
       "icon": "./assets/img/ARMS-notif.png",

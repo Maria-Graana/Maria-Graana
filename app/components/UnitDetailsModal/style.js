@@ -4,7 +4,7 @@ import AppStyles from '../../AppStyles'
 export default styles = StyleSheet.create({
   modalMain: {
     backgroundColor: '#fff',
-    borderRadius: 10,
+    // borderRadius: 10,
     padding: 15,
     paddingTop: 30,
     paddingBottom: 50,
@@ -35,9 +35,13 @@ export default styles = StyleSheet.create({
     color: '#1F2029',
     fontSize: 14,
     marginBottom: 3,
+    textTransform: 'capitalize',
   },
   largeText: {
     color: '#1F2029',
     fontSize: 20,
+  },
+  noBorder: {
+    borderBottomWidth: 0
   },
 });

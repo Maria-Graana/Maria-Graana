@@ -11,6 +11,7 @@ import axios from 'axios';
 import Ability from '../../hoc/Ability'
 import Loader from '../../components/loader';
 import StaticData from '../../StaticData';
+import { createPortal } from 'react-dom';
 // import { TextInput } from 'react-native-paper';
 
 const _format = 'YYYY-MM-DD';
@@ -186,11 +187,27 @@ class LeadDetail extends React.Component {
         })
     }
 
+    checkLeadSource = () => {
+           const {lead} = this.state;
+           if(lead.origin) {
+               if(lead.origin === 'arms'){
+                   return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${ lead.creator ? `(${lead.creator.firstName } ${lead.creator.lastName})`: ''}`
+               }
+               else{
+                   return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`;
+               }
+           }
+           else{
+               return null;
+           }
+    }
+
     render() {
         const { type, lead, customerName, showAssignToButton, loading, editDes, description } = this.state
         const { user, route } = this.props;
         const { purposeTab } = route.params
         let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
+        const leadSource = this.checkLeadSource();
 
         return (
             !loading ?
@@ -287,7 +304,7 @@ class LeadDetail extends React.Component {
                         <Text style={styles.labelText}>{moment(lead.updatedAt).format("MMM DD YYYY, hh:mm A")} </Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Lead Source </Text>
-                        <Text style={styles.labelText}>{lead.origin ? (lead.origin.split('_').join(' ')).toLocaleUpperCase() : null} </Text>
+                        <Text style={styles.labelText}>{leadSource} </Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Assigned To </Text>
                         <Text style={styles.labelText}>{(lead.armsuser && lead.armsuser.firstName) ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName : '-'}</Text>

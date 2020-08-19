@@ -309,6 +309,9 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}>Assigned To </Text>
                         <Text style={styles.labelText}>{(lead.armsuser && lead.armsuser.firstName) ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName : '-'}</Text>
                         <View style={styles.underLine} />
+                        <Text style={styles.headingText}>Lead ID</Text>
+                        <Text style={styles.labelText}>{lead.id ? lead.id : ''} </Text>
+                        <View style={styles.underLine} />
                         <Text style={styles.headingText}>Additional Information </Text>
                         <Text style={styles.labelText}>{lead.category ? lead.category : 'NA'} </Text>
                     </View>

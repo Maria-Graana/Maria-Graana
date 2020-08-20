@@ -25,10 +25,14 @@ class AddClient extends Component {
                 contactNumber: '',
                 address: '',
                 secondaryAddress: '',
+                contact1: '',
+                contact2: ''
             },
             emailValidate: true,
             phoneValidate: false,
-            cnicValidate: false
+            cnicValidate: false,
+            contact1Validate: false,
+            contact2Validate: false,
         }
     }
     componentDidMount() {
@@ -43,6 +47,7 @@ class AddClient extends Component {
     updateFields = () => {
         const { route } = this.props
         const { client } = route.params
+
         this.setState({
             formData: {
                 firstName: client.firstName,
@@ -51,6 +56,8 @@ class AddClient extends Component {
                 cnic: client.cnic,
                 contactNumber: client.phone,
                 address: client.address,
+                contact1: client.contact1,
+                contact2: client.contact2,
             }
         })
     }
@@ -66,6 +73,16 @@ class AddClient extends Component {
         else this.setState({ phoneValidate: false })
     }
 
+    validateContact1 = (value) => {
+        if (value.length < 11 && value !== '') this.setState({ contact1Validate: true })
+        else this.setState({ contact1Validate: false })
+    }
+
+    validateContact2 = (value) => {
+        if (value.length < 11 && value !== '') this.setState({ contact2Validate: true })
+        else this.setState({ contact2Validate: false })
+    }
+
     validateCnic = (value) => {
         if (value.length < 15 && value !== '') this.setState({ cnicValidate: true })
         else this.setState({ cnicValidate: false })
@@ -79,6 +96,8 @@ class AddClient extends Component {
         }
         if (name == 'email') this.validateEmail(value)
         if (name == 'contactNumber') this.validatePhone(value)
+        if (name == 'contact1') this.validateContact1(value)
+        if (name == 'contact2') this.validateContact2(value)
 
         formData[name] = value
         this.setState({ formData })
@@ -92,7 +111,7 @@ class AddClient extends Component {
     }
 
     formSubmit = () => {
-        const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
+        const { formData, emailValidate, phoneValidate, cnicValidate, contact1Validate, contact2Validate } = this.state
         const { route, navigation, contacts } = this.props
         const { update, client, isFromDropDown, screenName } = route.params
         if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
@@ -101,7 +120,7 @@ class AddClient extends Component {
                 checkValidation: true
             })
         } else {
-            if (emailValidate && !phoneValidate && !cnicValidate) {
+            if (emailValidate && !phoneValidate && !cnicValidate && !contact1Validate && !contact2Validate) {
                 if (formData.cnic === '') formData.cnic = null
                 let body = {
                     first_name: helper.capitalize(formData.firstName),
@@ -110,7 +129,9 @@ class AddClient extends Component {
                     cnic: formData.cnic,
                     phone: formData.contactNumber,
                     address: formData.address,
-                    secondary_address: formData.secondaryAddress
+                    secondary_address: formData.secondaryAddress,
+                    contact1: formData.contact1,
+                    contact2: formData.contact2,
                 }
                 if (!update) {
                     axios.post(`/api/customer/create`, body)
@@ -164,7 +185,7 @@ class AddClient extends Component {
     }
 
     render() {
-        const { formData, cities, getClients, getProject, phoneValidate, emailValidate, cnicValidate } = this.state
+        const { formData, cities, getClients, getProject, phoneValidate, emailValidate, cnicValidate, contact2Validate, contact1Validate } = this.state
         const { route } = this.props
         const { update } = route.params
         return (
@@ -185,6 +206,8 @@ class AddClient extends Component {
                                     phoneValidate={phoneValidate}
                                     emailValidate={emailValidate}
                                     cnicValidate={cnicValidate}
+                                    contact2Validate={contact2Validate}
+                                    contact1Validate={contact1Validate}
                                 />
                             </View>
                         </ScrollView>

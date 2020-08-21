@@ -112,8 +112,8 @@ class LeadTile extends React.Component {
 
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  <Text style={[styles.normalText, styles.lightColor, AppStyles.mrTen]}>
-                    {moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}
+                  <Text style={[styles.normalText, styles.lightColor, AppStyles.mrTen]} numberOfLines={1}>
+                  { data.id ? `ID: ${data.id}, ` : ''} {`Created: ${moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}`}
                   </Text>
                 </View>
               </View>

@@ -17,18 +17,6 @@ class AndroidNotifications extends React.Component {
 
     componentDidMount = () => {
         this.registerForPushNotificationsAsync()
-        Notifications.setNotificationHandler({
-            handleNotification: async () => ({
-                shouldShowAlert: true,
-                shouldPlaySound: true,
-                shouldSetBadge: false,
-            }),
-        })
-        this._notificationSubscription = Notifications.addNotificationResponseReceivedListener(this._handleNotification)
-    }
-
-    componentWillUnmount = () => {
-        Notifications.removeNotificationSubscription(this._notificationSubscriptiont)
     }
 
     registerForPushNotificationsAsync = async () => {
@@ -48,11 +36,9 @@ class AndroidNotifications extends React.Component {
                 Alert.alert('Failed to get push token for push notification!');
                 return;
             }
-
             // let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
-
             let expoPushToken = (await Notifications.getExpoPushTokenAsync()).data;
-
+            Sentry.captureException(`Expo Push Token: ${JSON.stringify(expoPushToken)}`)
             if (expoPushToken) {
                 let body = {
                     token: expoPushToken,
@@ -63,6 +49,7 @@ class AndroidNotifications extends React.Component {
                         this.setState({
                             expoPushToken: expoPushToken
                         })
+                        Sentry.captureException(`Expo Token Saved!: ${JSON.stringify(body)}`)
                     })
                     .catch((error) => {
                         console.log(error)
@@ -95,18 +82,6 @@ class AndroidNotifications extends React.Component {
                 priority: 'max',
                 vibrationPattern: [0, 250, 250, 250],
             });
-        }
-    }
-
-    _handleNotification = notification => {
-        const { navigation } = this.props
-        if (notification.origin === 'selected') {
-            let data = notification && notification.data
-            if (data.type === 'local') navigation.navigate('Diary', { openDate: data.date, screen: 'Diary' })
-            if (data.type === 'investLead') navigation.navigate('Leads', { screen: 'Invest' })
-            if (data.type === 'buyLead') navigation.navigate('Leads', { screen: 'Buy' })
-            if (data.type === 'rentLead') navigation.navigate('Leads', { screen: 'Rent' })
-            if (data.type === 'diary') navigation.navigate('Diary', { openDate: data.date, screen: 'Diary' })
         }
     }
 

@@ -22,7 +22,6 @@ class UnitDetailsModal extends React.Component {
       data,
     } = this.props
     const optional = data && data != '' && JSON.parse(data.project.optional_fields)
-    console.log(data)
 
     return (
 

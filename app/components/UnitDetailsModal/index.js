@@ -22,6 +22,7 @@ class UnitDetailsModal extends React.Component {
       data,
     } = this.props
     const optional = data && data != '' && JSON.parse(data.project.optional_fields)
+
     return (
 
       <Modal isVisible={active}>
@@ -45,7 +46,7 @@ class UnitDetailsModal extends React.Component {
                     <View style={styles.MainTileView}>
                       <View>
                         <Text style={styles.smallText}>{item.fieldName}</Text>
-                        <Text style={styles.largeText}>{item.fieldType && item.fieldType.label}</Text>
+                        <Text style={styles.largeText}>{item.fieldType && item.fieldType.value}</Text>
                       </View>
                     </View>
                   )
@@ -60,10 +61,29 @@ class UnitDetailsModal extends React.Component {
                 </View>
               </View>
               {/* ===================== */}
+              {
+                data.category_charges !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Standard Rate</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.pricePerSqFt)}</Text>
+                  </View>
+                </View>
+              }
+              {
+                data.category_charges !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Category Charges</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.category_charges)}</Text>
+                  </View>
+                </View>
+              }
+              {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
-                  <Text style={styles.smallText}>Standard Rate</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.pricePerSqFt)}</Text>
+                  <Text style={styles.smallText}>Rate/Sqft</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.rate_per_sqft)}</Text>
                 </View>
               </View>
               {/* ===================== */}
@@ -74,19 +94,26 @@ class UnitDetailsModal extends React.Component {
                 </View>
               </View>
               {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Rent/Sqft</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
+              {
+                data.rentPerSqFt !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Rent/Sqft</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
+                  </View>
                 </View>
-              </View>
+              }
               {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Rent Amount</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.rent)}</Text>
+              {
+                data.rentPerSqFt !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Rent Amount</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rent)}</Text>
+                  </View>
                 </View>
-              </View>
+              }
+
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>

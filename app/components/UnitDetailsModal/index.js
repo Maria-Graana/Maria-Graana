@@ -22,6 +22,8 @@ class UnitDetailsModal extends React.Component {
       data,
     } = this.props
     const optional = data && data != '' && JSON.parse(data.project.optional_fields)
+    console.log(data)
+
     return (
 
       <Modal isVisible={active}>
@@ -45,7 +47,7 @@ class UnitDetailsModal extends React.Component {
                     <View style={styles.MainTileView}>
                       <View>
                         <Text style={styles.smallText}>{item.fieldName}</Text>
-                        <Text style={styles.largeText}>{item.fieldType && item.fieldType.label}</Text>
+                        <Text style={styles.largeText}>{item.fieldType && item.fieldType.value}</Text>
                       </View>
                     </View>
                   )
@@ -78,6 +80,13 @@ class UnitDetailsModal extends React.Component {
                   </View>
                 </View>
               }
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Rate/Sqft</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.rate_per_sqft)}</Text>
+                </View>
+              </View>
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>

@@ -88,7 +88,7 @@ class InnerForm extends Component {
                     <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkForEdit} />
                   </View>
                   <View style={styles.mainDetailViewBtn}>
-                    <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => {openUnitDetailsModal(true)}}>
+                    <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.unitId != '' && openUnitDetailsModal(true)}}>
                       <Text style={styles.detailBtnText}>Details</Text>
                     </TouchableOpacity>
                   </View>

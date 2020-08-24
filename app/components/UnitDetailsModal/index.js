@@ -60,12 +60,24 @@ class UnitDetailsModal extends React.Component {
                 </View>
               </View>
               {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Standard Rate</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.pricePerSqFt)}</Text>
+              {
+                data.category_charges !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Standard Rate</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.pricePerSqFt)}</Text>
+                  </View>
                 </View>
-              </View>
+              }
+              {
+                data.category_charges !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Category Charges</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.category_charges)}</Text>
+                  </View>
+                </View>
+              }
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
@@ -74,19 +86,26 @@ class UnitDetailsModal extends React.Component {
                 </View>
               </View>
               {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Rent/Sqft</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
+              {
+                data.rentPerSqFt !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Rent/Sqft</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
+                  </View>
                 </View>
-              </View>
+              }
               {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Rent Amount</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.rent)}</Text>
+              {
+                data.rentPerSqFt !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Rent Amount</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rent)}</Text>
+                  </View>
                 </View>
-              </View>
+              }
+
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>

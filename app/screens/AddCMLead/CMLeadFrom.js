@@ -30,7 +30,8 @@ class CMLeadFrom extends Component {
       handleCityClick,
       handleClientClick,
       getProject,
-      onSliderValueChange
+      onSliderValueChange,
+      getProductType,
     } = this.props
 
     return (
@@ -61,7 +62,7 @@ class CMLeadFrom extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={StaticData.projectType} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Product Type' />
+            <PickerComponent onValueChange={handleForm} data={getProductType} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Product Type' />
             {/* {
               checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
             } */}

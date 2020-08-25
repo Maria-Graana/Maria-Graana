@@ -349,21 +349,21 @@ const helper = {
 					} else {
 						payload.push({
 							number: item.phone,
-							lable: 'mobile'
+							label: 'mobile'
 						})
 					}
 				})
 				if (!primaryBol) {
 					payload.push({
 						number: customer.phone,
-						lable: 'mobile',
+						label: 'mobile',
 						isPrimary: true
 					})
 				}
 			} else {
 				payload.push({
 					number: customer.phone,
-					lable: 'mobile',
+					label: 'mobile',
 					isPrimary: true
 				})
 			}

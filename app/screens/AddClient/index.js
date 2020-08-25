@@ -174,10 +174,10 @@ class AddClient extends Component {
                             helper.errorToast('ERROR CREATING CLIENT')
                         })
                 } else {
-                    body.contactNumber = []
-                    body.contactNumber.push(body.phone)
-                    if (body.contact1) body.contactNumber.push(body.contact1)
-                    if (body.contact2) body.contactNumber.push(body.contact2)
+                    body.customersContacts = []
+                    body.customersContacts.push(body.phone)
+                    if (body.contact1) body.customersContacts.push(body.contact1)
+                    if (body.contact2) body.customersContacts.push(body.contact2)
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')

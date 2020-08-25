@@ -403,8 +403,7 @@ class LeadPropsure extends React.Component {
                             closeLead={this.closeLead}
                             closedLeadEdit={closedLeadEdit}
                             callButton={true}
-                            callPhoneNumber={this.props.lead && this.props.lead.customer && this.props.lead.customer.phone}
-                            customerName={lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName)}
+                            customer={lead.customer}
                         />
                     </View>
                     <LeadRCMPaymentPopup

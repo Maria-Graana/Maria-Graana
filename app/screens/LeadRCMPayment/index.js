@@ -758,8 +758,7 @@ class LeadRCMPayment extends React.Component {
                                 closeLead={this.showLeadPaymentModal}
                                 closedLeadEdit={closedLeadEdit}
                                 callButton={true}
-                                callPhoneNumber={this.props.lead && this.props.lead.customer && this.props.lead.customer.phone}
-                                customerName={this.props.lead.customer && this.props.lead.customer.customerName && helper.capitalize(this.props.lead.customer.customerName)}
+                                customer={lead.customer}
                             />
                         </View>
 

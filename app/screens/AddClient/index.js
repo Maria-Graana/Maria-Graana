@@ -8,6 +8,7 @@ import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import helper from '../../helper';
+import _ from 'underscore';
 
 class AddClient extends Component {
     constructor(props) {
@@ -47,19 +48,24 @@ class AddClient extends Component {
     updateFields = () => {
         const { route } = this.props
         const { client } = route.params
-
-        this.setState({
-            formData: {
-                firstName: client.firstName,
-                lastName: client.lastName,
-                email: client.email,
-                cnic: client.cnic,
-                contactNumber: client.phone,
-                address: client.address,
-                contact1: client.contact1,
-                contact2: client.contact2,
+        let formData = {
+            firstName: client.firstName,
+            lastName: client.lastName,
+            email: client.email,
+            cnic: client.cnic,
+            contactNumber: client.phone,
+            address: client.address,
+            contact1: client.contact1,
+            contact2: client.contact2,
+        }
+        if (client.customerContacts.length) {
+            for (let i = 0; i < client.customerContacts.length; i++) {
+                if (i === 0) formData.contactNumber = client.customerContacts[i].phone
+                if (i === 1) formData.contact1 = client.customerContacts[i].phone
+                if (i === 2) formData.contact2 = client.customerContacts[i].phone
             }
-        })
+        }
+        this.setState({ formData })
     }
 
     validateEmail = (value) => {
@@ -168,6 +174,10 @@ class AddClient extends Component {
                             helper.errorToast('ERROR CREATING CLIENT')
                         })
                 } else {
+                    body.contactNumber = []
+                    body.contactNumber.push(body.phone)
+                    if (body.contact1) body.contactNumber.push(body.contact1)
+                    if (body.contact2) body.contactNumber.push(body.contact2)
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')

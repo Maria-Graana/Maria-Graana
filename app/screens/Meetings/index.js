@@ -311,11 +311,7 @@ class Meetings extends Component {
 
   call = () => {
     const { lead, contacts } = this.props
-    let newContact = {
-      phone: lead.customer && lead.customer.phone,
-      name: lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName),
-      url: `tel:${lead.customer && lead.customer.phone}`
-    }
+    let newContact = helper.createContactPayload(lead.customer)
     let result = helper.contacts(newContact.phone, contacts)
     if (newContact.name && newContact.name !== '' && newContact.name !== ' ' && newContact.phone && newContact.phone !== '') if (!result) helper.addContact(newContact)
   }

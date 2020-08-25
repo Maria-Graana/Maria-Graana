@@ -18,7 +18,6 @@ import { ProgressBar } from 'react-native-paper';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import CMBottomNav from '../../components/CMBottomNav'
-import { setContacts } from '../../actions/contacts';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -84,8 +83,6 @@ class LeadMatch extends React.Component {
         const { lead } = this.props
         this.fetchLead()
         this.props.dispatch(setlead(lead))
-        this.props.dispatch(setContacts())
-
     }
 
     fetchLead = (url) => {
@@ -672,7 +669,7 @@ class LeadMatch extends React.Component {
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile
-                                                        data={item.item}
+                                                        data={_.clone(item.item)}
                                                         user={user}
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={showCheckBoxes}
@@ -681,7 +678,7 @@ class LeadMatch extends React.Component {
                                                     />
                                                     :
                                                     <AgentTile
-                                                        data={item.item}
+                                                        data={_.clone(item.item)}
                                                         user={user}
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={showCheckBoxes}
@@ -730,8 +727,7 @@ class LeadMatch extends React.Component {
                             closeLead={this.closeLead}
                             closedLeadEdit={closedLeadEdit}
                             callButton={true}
-                            callPhoneNumber={lead && lead.customer && lead.customer.phone}
-                            customerName={lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName)}
+                            customer={lead.customer}
                         />
                     </View>
                     <LeadRCMPaymentPopup

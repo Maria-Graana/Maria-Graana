@@ -317,7 +317,7 @@ const helper = {
 		if (data && data.name && data.name !== '' && data.name !== ' ') {
 			const contact = {
 				[Contacts.Fields.FirstName]: data.name + ' - ARMS',
-				[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
+				[Contacts.Fields.PhoneNumbers]: data.payload
 			}
 			Contacts.addContactAsync(contact)
 				.then((result) => {
@@ -327,7 +327,50 @@ const helper = {
 					console.log('Contacts Error: ', error)
 				})
 		}
-	}
+	},
+	createContactPayload(customer) {
+		let payload = []
+		let primaryBol = false
+		let contact = {
+			phone: customer && customer.phone,
+			name: customer && customer.customerName && helper.capitalize(customer.customerName),
+			url: `tel:${customer && customer.phone}`
+		}
+		if (customer && customer.customerContacts) {
+			if (customer.customerContacts.length) {
+				customer.customerContacts.map((item) => {
+					if (customer.phone === item.phone) {
+						payload.push({
+							number: item.phone,
+							label: 'mobile',
+							isPrimary: true
+						})
+						primaryBol = true
+					} else {
+						payload.push({
+							number: item.phone,
+							lable: 'mobile'
+						})
+					}
+				})
+				if (!primaryBol) {
+					payload.push({
+						number: customer.phone,
+						lable: 'mobile',
+						isPrimary: true
+					})
+				}
+			} else {
+				payload.push({
+					number: customer.phone,
+					lable: 'mobile',
+					isPrimary: true
+				})
+			}
+			contact.payload = payload
+			return contact
+		} else return contact
+	},
 }
 
 

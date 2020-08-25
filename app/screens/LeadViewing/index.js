@@ -514,8 +514,7 @@ class LeadViewing extends React.Component {
 							closeLead={this.closeLead}
 							closedLeadEdit={closedLeadEdit}
 							callButton={true}
-							callPhoneNumber={lead && lead.customer && lead.customer.phone}
-							customerName={lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName)}
+							customer={lead.customer}
 						/>
 					</View>
 

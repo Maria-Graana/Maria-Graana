@@ -21,7 +21,9 @@ class UnitDetailsModal extends React.Component {
       openUnitDetailsModal,
       data,
     } = this.props
-    const optional = data && data != '' && JSON.parse(data.project.optional_fields)
+    var optionalArray = data && data.optional_fields != null && data.optional_fields
+    var optional = []
+    optional = data && data != '' && JSON.parse([optionalArray])
 
     return (
 
@@ -41,16 +43,63 @@ class UnitDetailsModal extends React.Component {
               </View>
               {/* ===================== */}
               {
-                optional && optional.map((item, key) => {
-                  return (
-                    <View style={styles.MainTileView}>
-                      <View>
-                        <Text style={styles.smallText}>{item.fieldName}</Text>
-                        <Text style={styles.largeText}>{item.fieldType && item.fieldType.value}</Text>
-                      </View>
-                    </View>
-                  )
-                })
+                optional && optional[0] &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Custom Field 1</Text>
+                    <Text style={styles.largeText}>
+                      {optional[0].data}
+                    </Text>
+                  </View>
+                </View>
+              }
+
+              {/* ===================== */}
+              {
+                optional && optional[1] &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Custom Field 2</Text>
+                    <Text style={styles.largeText}>
+                      {optional[1].data}
+                    </Text>
+                  </View>
+                </View>
+              }
+
+              {/* ===================== */}
+              {
+                optional && optional[2] &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Custom Field 3</Text>
+                    <Text style={styles.largeText}>
+                      {optional[2].data}
+                    </Text>
+                  </View>
+                </View>
+              }
+
+              {
+                // optional && optional.map((item, key) => {
+                //   return (
+                //     <View style={styles.MainTileView}>
+                //       <View>
+                //         <Text style={styles.smallText}>{item.fieldName}</Text>
+                //         <Text style={styles.largeText}>
+                //           {
+                //             item.fieldType && item.fieldType.value === 'dropdown' &&
+                //             item.value && item.value.map((items, index) => {
+                //               return (
+                //                 items.value + ', '
+                //               )
+                //             })
+                //           }
+                //         </Text>
+                //       </View>
+                //     </View>
+                //   )
+                // })
               }
 
               {/* ===================== */}
@@ -75,7 +124,7 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Category Charges</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.category_charges)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.category_charges + '%')}</Text>
                   </View>
                 </View>
               }

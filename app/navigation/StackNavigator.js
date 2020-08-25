@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import Landing from '../screens/Landing/index';
+import Landing from '../screens/landing/index';
 import { createStackNavigator } from '@react-navigation/stack';
 import Diary from '../screens/Diary/index';
 import Inventory from '../screens/Inventory/index';

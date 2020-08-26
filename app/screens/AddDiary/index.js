@@ -114,7 +114,6 @@ class AddDiary extends Component {
         const { route, navigation } = this.props;
         const { rcmLeadId, cmLeadId } = route.params;
         let diary = this.generatePayload(data)
-        console.log(diary);
         if (rcmLeadId || cmLeadId) {
             // create task for lead
             axios.post(`/api/leads/task`, diary)

@@ -5,10 +5,9 @@ import PickerComponent from '../../components/Picker/index';
 import AppStyles from '../../AppStyles';
 import { connect } from 'react-redux';
 import moment from 'moment'
-import StaticData from '../../StaticData'
-import DateComponent from '../../components/DatePicker'
+import helper from '../../helper'
 import ErrorMessage from '../../components/ErrorMessage'
-import style from './style';
+import DateTimePicker from '../../components/DatePicker';
 
 class DetailForm extends Component {
 
@@ -24,7 +23,7 @@ class DetailForm extends Component {
                 notes: '',
                 status: 'pending',
             },
-            buttonText: 'ADD'
+            buttonText: 'ADD',
         }
     }
 
@@ -33,59 +32,24 @@ class DetailForm extends Component {
         if (editableData != null) {
             this.setFormValues(editableData)
         }
-        if (props.route.params.taskType != null) {
-            this.setDefaultValue(props.route.params.taskType);
-        }
     }
 
 
 
     setFormValues = (data) => {
         const { formData } = this.state;
-        let startReplace
-        let endReplace
-        if (data.start) {
-            startReplace = data.start.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
-        }
-        else {
-            startReplace = data.time.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
-        }
-        if (data.end) {
-            endReplace = data.end.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
-        }
-        else {
-            endReplace = data.time.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
-        }
-
         const newObject = Object.assign({}, formData, data)
         newObject.subject = data.subject;
         newObject.notes = data.notes;
-        newObject.date = moment(data.date).utcOffset(data.date).format('YYYY-MM-DD');
+        newObject.date = moment(data.date);
         newObject.status = data.status;
-        newObject.startTime = startReplace;
-        newObject.endTime = endReplace;
+        newObject.startTime = data.start;
+        newObject.endTime = data.end;
         newObject.taskType = data.taskType;
         newObject.status = data.status;
-
         this.setState({ formData: newObject, buttonText: 'UPDATE' })
 
     }
-
-    setDefaultValue = (taskType) => {
-        const { formData } = this.state
-        var startTime = new Date
-        var endTime = new Date
-        endTime.setMinutes(endTime.getMinutes() + 15);
-        var newformData = { ...formData }
-        newformData['taskType'] = taskType
-        newformData['startTime'] = moment(startTime).format('h:mm a')
-        newformData['endTime'] = moment(endTime).format('h:mm a')
-        newformData['date'] = moment(startTime).format('YYYY-MM-DD')
-        this.setState({
-            formData: newformData,
-        })
-    }
-
 
     handleForm = (value, name) => {
         const { formData } = this.state
@@ -99,7 +63,6 @@ class DetailForm extends Component {
         const { formSubmit, checkValidation, taskValues } = this.props
         return (
             <View>
-
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
                         <TextInput style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings]} placeholder={'Subject/Title'} value={subject} onChangeText={(text) => this.handleForm(text, 'subject')} />
@@ -114,27 +77,38 @@ class DetailForm extends Component {
                         checkValidation === true && taskType === '' && <ErrorMessage errorMessage={'Required'} />
                     }
                 </View>
-
-                <View style={[AppStyles.mainInputWrap]}>
-                    <DateComponent
-                        date={date} mode='date' placeholder='Select Date' onDateChange={(date) => this.handleForm(date, 'date')}
-                    />
-                    {
-                        checkValidation === true && date === '' && <ErrorMessage errorMessage={'Required'} />
-                    }
-                </View>
-
-                <View style={[AppStyles.mainInputWrap]}>
-                    <DateComponent date={startTime} mode='time' placeholder='Select Start Time' onTimeChange={(value) => this.handleForm(value, 'startTime')} />
-                    {
-                        checkValidation === true && startTime === '' && <ErrorMessage errorMessage={'Required'} />
-                    }
-                </View>
-
-                <View style={[AppStyles.mainInputWrap]}>
-                    <DateComponent date={endTime} mode='time' placeholder='Select End Time' disabled={startTime === '' ? true : false} onTimeChange={(value) => this.handleForm(value, 'endTime')} />
-                </View>
-
+                <DateTimePicker
+                    placeholderLabel={'Select Date'}
+                    name={'date'}
+                    mode={'date'}
+                    showError={checkValidation === true && date === ''}
+                    errorMessage={'Required'}
+                    iconSource={require('../../../assets/img/calendar.png')}
+                    date={date ? new Date(date) : new Date()}
+                    selectedValue={date ? moment(date).format(moment.HTML5_FMT.DATE) : ''}
+                    handleForm={(value, name) => this.handleForm(value, name)}
+                />
+                <DateTimePicker
+                    placeholderLabel={'Select Start Time'}
+                    name={'startTime'}
+                    mode={'time'}
+                    showError={checkValidation === true && startTime === ''}
+                    errorMessage={'Required'}
+                    iconSource={require('../../../assets/img/clock.png')}
+                    date={startTime ? new Date(startTime) : new Date()}
+                    selectedValue={startTime ? moment(startTime).format('hh:mm a') : ''}
+                    handleForm={(value, name) => this.handleForm(value, name)}
+                />
+                <DateTimePicker
+                    placeholderLabel={'Select End Time'}
+                    name={'endTime'}
+                    mode={'time'}
+                    iconSource={require('../../../assets/img/clock.png')}
+                    date={endTime ?  new Date(endTime) : new Date()}
+                    selectedValue={endTime ? moment(endTime).format('hh:mm a') : ''}
+                    disabled={startTime === '' ? true : false}
+                    handleForm={(value, name) => this.handleForm(value, name)}
+                />
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <Textarea

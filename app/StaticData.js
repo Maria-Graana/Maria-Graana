@@ -179,6 +179,14 @@ export default StaticData = {
         { value: '16', name: '4 Years' },
         { value: '20', name: '5 Years' },
     ],
+    getInstallmentsMonthly: [
+        { value: '12', name: '1 Year' },
+        { value: '24', name: '2 Years' },
+        { value: '36', name: '3 Years' },
+        { value: '48', name: '4 Years' },
+        { value: '60', name: '5 Years' },
+        { value: '72', name: '6 Years' },
+    ],
     propsurePackages: [
         {
             name: 'SILVER PACKAGE',
@@ -490,6 +498,17 @@ export default StaticData = {
         1000000,
         10000000000,
         
+    ],
+    planOptions:[
+        {name: 'Investment Plan', value: 'Sold on Investment Plan'},
+        {name: 'Rental Plan', value: 'Sold on Rental Plan'},
+    ],
+    installmentDue:[
+        {name: 'Quarterly', value: 'Sold on Installment Plan'},
+        {name: 'Monthly', value: 'Sold on Monthly Plan'},
+    ],
+    onlyQuarterly:[
+        {name: 'Quarterly', value: 'quarterly'},
     ],
 }
 

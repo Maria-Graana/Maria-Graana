@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import moment from 'moment'
 import InputField from '../../components/InputField'
 import { SafeAreaView } from 'react-native-safe-area-context';
+import StaticData from '../../StaticData';
 
 
 class InnerForm extends Component {
@@ -25,11 +26,9 @@ class InnerForm extends Component {
       getProject,
       getFloor,
       getUnit,
-      getInstallments,
       formData,
       totalInstalments,
       handleInstalments,
-      readOnly,
       remainingPayment,
       downPaymentTime,
       instalments,
@@ -43,7 +42,6 @@ class InnerForm extends Component {
       closedLead,
       showAndHideStyling,
       showStylingState,
-      promotionDiscountFormat,
       tokenFormat,
       tokenDateStatus,
       downPaymentDateStatus,
@@ -54,13 +52,17 @@ class InnerForm extends Component {
       dateStatusForInstallments,
       installmentsFromat,
       openUnitDetailsModal,
+      unitDetails,
+      discountAmount,
+      discountedPrice,
+      checkMonthlyOption,
     } = this.props
     let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false ? false : true
-    let rate = readOnly.rate && readOnly.rate.toString()
-    let totalPrice = readOnly.totalPrice && readOnly.totalPrice.toString()
-    let totalSize = readOnly.totalSize && readOnly.totalSize
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
+    var unitDetail = unitDetails && unitDetails != null && unitDetails != '' && unitDetails
+    var installmentsPlans = formData.installmentDue === 'Sold on Installment Plan' ? StaticData.getInstallments : StaticData.getInstallmentsMonthly
+    var installmentsDueOption = checkMonthlyOption === true ? StaticData.installmentDue : StaticData.onlyQuarterly
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -84,11 +86,11 @@ class InnerForm extends Component {
               {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={styles.maiinDetailBtn}>
-                  <View style={[AppStyles.inputWrap,styles.unitDetailInput]}>
+                  <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
                     <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkForEdit} />
                   </View>
                   <View style={styles.mainDetailViewBtn}>
-                    <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.unitId != '' && openUnitDetailsModal(true)}}>
+                    <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.unitId != '' && openUnitDetailsModal(true) }}>
                       <Text style={styles.detailBtnText}>Details</Text>
                     </TouchableOpacity>
                   </View>
@@ -97,63 +99,62 @@ class InnerForm extends Component {
 
               {/* **************************************** */}
               <InputField
-                label={'TOTAL SIZE'}
-                placeholder={'Total Size'}
-                name={'totalSize'}
+                label={'UNIT PRICE'}
+                placeholder={'Unit Price'}
+                name={'unitPrice'}
+                priceFormatVal={unitDetail && unitDetail.unit_price != null  ?  unitDetail.unit_price.toString() : ''}
+                value={unitDetail && unitDetail.unit_price != null  ?  unitDetail.unit_price.toString() : ''}
+                keyboardType={'numeric'}
+                showDate={false}
+                dateStatus={false}
+                editable={false}
+                editPriceFormat={{ status: true, name: 'unitPrice' }}
+              />
+
+              {/* **************************************** */}
+              <InputField
+                label={'DISCOUNT PARCENTAGE'}
+                placeholder={'Discount Percentage'}
+                name={'discountPercentage'}
                 priceFormatVal={false}
-                value={totalSize}
-                keyboardType={'numeric'}
-                showDate={false}
-                dateStatus={false}
-                editable={false}
-                editPriceFormat={{ status: false, name: 'totalSize' }}
-              />
-
-              {/* **************************************** */}
-              <InputField
-                label={'RATE'}
-                placeholder={'Rate'}
-                name={'totalRate'}
-                priceFormatVal={false}
-                value={rate != null ? rate : ''}
-                keyboardType={'numeric'}
-                showDate={false}
-                dateStatus={false}
-                editable={false}
-                editPriceFormat={{ status: true, name: 'totalRate' }}
-              />
-
-              {/* **************************************** */}
-              <InputField
-                label={'TOTAL PRICE'}
-                placeholder={'Total Price'}
-                name={'totalPrice'}
-                priceFormatVal={totalPrice != null ? totalPrice : ''}
-                value={totalPrice != null ? totalPrice : ''}
-                keyboardType={'numeric'}
-                showDate={false}
-                dateStatus={false}
-                editable={false}
-                editPriceFormat={{ status: true, name: 'totalPrice' }}
-              />
-
-              {/* **************************************** */}
-              <InputField
-                label={'PROMOTIONAL OFFER'}
-                placeholder={'Enter Promotional Offer Amount'}
-                name={'discount'}
-                value={formData.discount}
-                priceFormatVal={formData.discount != null ? formData.discount : ''}
+                value={formData.discountPercentage ? formData.discountPercentage.toString() : ''}
                 keyboardType={'numeric'}
                 onChange={handleForm}
                 paymentDone={submitValues}
                 showStyling={showAndHideStyling}
                 showStylingState={showStylingState}
-                editPriceFormat={{ status: promotionDiscountFormat, name: 'discount' }}
-                date={''}
-                editable={checkForEdit}
                 showDate={false}
                 dateStatus={false}
+                editable={checkForEdit}
+                editPriceFormat={{ status: false, name: 'discountPercentage' }}
+              />
+
+              {/* **************************************** */}
+              <InputField
+                label={'DISCOUNT AMOUNT'}
+                placeholder={'Discount Amount'}
+                name={'discountAmount'}
+                priceFormatVal={discountAmount ? discountAmount.toString() : ''}
+                value={discountAmount ? discountAmount.toString() : ''}
+                keyboardType={'numeric'}
+                showDate={false}
+                dateStatus={false}
+                editable={false}
+                editPriceFormat={{ status: true, name: 'discountAmount' }}
+              />
+
+              {/* **************************************** */}
+              <InputField
+                label={'DISCOUNTED PRICE'}
+                placeholder={'Discounted Price'}
+                name={'discountedPrice'}
+                priceFormatVal={discountedPrice ? discountedPrice.toString() : ''}
+                value={discountedPrice ? discountedPrice.toString() : ''}
+                keyboardType={'numeric'}
+                showDate={false}
+                dateStatus={false}
+                editable={false}
+                editPriceFormat={{ status: true, name: 'discountedPrice' }}
               />
 
               {/* **************************************** */}
@@ -176,25 +177,6 @@ class InnerForm extends Component {
               />
 
               {/* **************************************** */}
-              <InputField
-                label={'DOWN PAYMENT'}
-                placeholder={'Enter Down Payment'}
-                name={'downPayment'}
-                value={formData.downPayment != null ? formData.downPayment : ''}
-                priceFormatVal={formData.downPayment != null ? formData.downPayment : ''}
-                keyboardType={'numeric'}
-                onChange={handleForm}
-                paymentDone={submitValues}
-                showStyling={showAndHideStyling}
-                showStylingState={showStylingState}
-                editPriceFormat={{ status: downPaymentFormat, name: 'downPayment' }}
-                date={downPaymentTime}
-                editable={checkForEdit}
-                showDate={true}
-                dateStatus={downPaymentDateStatus}
-              />
-
-              {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
                   <PickerComponent onValueChange={handleForm} data={paymentOptions} name={'paymentType'} enabled={checkForEdit} placeholder='Select Payment Type' selectedItem={formData.paymentType} />
@@ -205,9 +187,33 @@ class InnerForm extends Component {
                 formData.paymentType === 'installments' ?
                   <View>
                     {/* **************************************** */}
+                    <InputField
+                      label={'DOWN PAYMENT'}
+                      placeholder={'Enter Down Payment'}
+                      name={'downPayment'}
+                      value={formData.downPayment != null ? formData.downPayment : ''}
+                      priceFormatVal={formData.downPayment != null ? formData.downPayment : ''}
+                      keyboardType={'numeric'}
+                      onChange={handleForm}
+                      paymentDone={submitValues}
+                      showStyling={showAndHideStyling}
+                      showStylingState={showStylingState}
+                      editPriceFormat={{ status: downPaymentFormat, name: 'downPayment' }}
+                      date={downPaymentTime}
+                      editable={checkForEdit}
+                      showDate={true}
+                      dateStatus={downPaymentDateStatus}
+                    />
+                    {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap]}>
                       <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={getInstallments} enabled={checkForEdit} name={'instalments'} placeholder='Installment Plan' selectedItem={no_installments} />
+                        <PickerComponent onValueChange={handleForm} data={installmentsDueOption} enabled={checkForEdit} name={'installmentDue'} placeholder='Installment Due' selectedItem={formData.installmentDue} />
+                      </View>
+                    </View>
+                    {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap]}>
+                      <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={checkForEdit} name={'instalments'} placeholder='Installment Plan' selectedItem={no_installments} />
                       </View>
                     </View>
                     {/* **************************************** */}
@@ -240,11 +246,33 @@ class InnerForm extends Component {
                         )
                       })
                     }
+                    {/* **************************************** */}
+                    <InputField
+                      label={'POSSESSION CHARGES'}
+                      placeholder={'Possession Charges'}
+                      name={'possessionCharges'}
+                      priceFormatVal={formData.discountPercentage ? formData.discountPercentage.toString() : ''}
+                      value={formData.discountPercentage ? formData.discountPercentage.toString() : ''}
+                      keyboardType={'numeric'}
+                      onChange={handleForm}
+                      paymentDone={submitValues}
+                      showStyling={showAndHideStyling}
+                      showStylingState={showStylingState}
+                      showDate={false}
+                      dateStatus={false}
+                      editable={checkForEdit}
+                      editPriceFormat={{ status: false, name: 'possessionCharges' }}
+                    />
                   </View>
                   :
                   formData.paymentType === 'full_payment' &&
                   <View>
                     {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap]}>
+                      <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={StaticData.planOptions} name={'unitStatus'} enabled={checkForEdit} placeholder='Plan' selectedItem={formData.unitStatus} />
+                      </View>
+                    </View>
                     {
                       paymentFiledsArray && paymentFiledsArray.map((item, index) => {
                         let itemDate = item && item.createdAt ?

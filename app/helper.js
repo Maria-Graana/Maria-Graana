@@ -90,7 +90,7 @@ const helper = {
 		let paktz = moment.tz(date, 'Asia/Karachi').format(_format)
 		var duration = moment.duration({ hours: 5 })
 		var sub = moment(paktz, _format).subtract(duration).format();
-		return sub
+		return (new Date(sub))
 	},
 	propertyCheck(data) {
 		let matches = []

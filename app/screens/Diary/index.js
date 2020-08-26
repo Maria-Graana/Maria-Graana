@@ -184,9 +184,9 @@ class Diary extends React.Component {
       if (selectedObject.dayTasks.length) { // Do manipulation on mapped dates
         let groupTasksByTime = _.map(selectedObject.dayTasks, (item) => {
           item.statusColor = helper.checkStatusColor(item, _today); // check status color for example todo task is indicated with red color
+          item.hour = moment(item.start).format('hh A');
         })
         groupTasksByTime = (_.groupBy(selectedObject.dayTasks, 'hour')); // group tasks in a day by hour
-        // console.log(groupTasksByTime);
         calendarData = calendarList.map((item, index) => {
           if (groupTasksByTime[item]) {
             return {

@@ -491,5 +491,9 @@ export default StaticData = {
         10000000000,
         
     ],
+    searchTeamBy:[
+        { value: 'myTeam', name: 'My Team' },
+        { value: 'others', name: 'Others' },
+    ]
 }
 

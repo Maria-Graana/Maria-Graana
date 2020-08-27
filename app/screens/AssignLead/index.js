@@ -8,7 +8,8 @@ import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
 import axios from 'axios';
 import helper from '../../helper'
-
+import PickerComponent from '../../components/Picker';
+import StaticData from '../../StaticData';
 class AssignLead extends React.Component {
     constructor(props) {
         super(props)
@@ -16,15 +17,20 @@ class AssignLead extends React.Component {
             teamMembers: [],
             loading: true,
             selected: false,
-            selectedId: null
+            selectedId: null,
+            searchBy: 'myTeam',
         }
+    }
+
+    componentDidMount() {
         this.fetchTeam()
     }
 
     fetchTeam = () => {
-        const {route} = this.props;
-        const {type} = route.params
-        const url = type === 'Investment' ? `/api/user/agents?leads=${true}` : `/api/user/agents?leads=${true}&rcm=${true}`
+        const { route } = this.props;
+        const {searchBy} = this.state;
+        const { type } = route.params
+        const url = type === 'Investment' ? `/api/user/agents?leads=${true}&searchBy=${searchBy}` : `/api/user/agents?leads=${true}&rcm=${true}&searchBy=${searchBy}`
         axios.get(url)
             .then((res) => {
                 this.setState({
@@ -43,7 +49,7 @@ class AssignLead extends React.Component {
     assignLeadToSelectedMember = () => {
         const { navigation, route } = this.props;
         const { selectedId } = this.state;
-        const { leadId,type } = route.params;
+        const { leadId, type } = route.params;
         let body = {
             userId: selectedId,
             type: type ? type.toLowerCase() : ''
@@ -51,14 +57,14 @@ class AssignLead extends React.Component {
 
         axios.patch(`/api/leads/assign/${leadId}`, body)
             .then(response => {
-                if(response.status===200){
+                if (response.status === 200) {
                     helper.successToast('LEAD ASSIGNED SUCCESSFULLY');
                     navigation.navigate('Leads');
                 }
-                else{
+                else {
                     helper.errorToast('SOMETHING WENT WRONG');
                 }
-                
+
             }).catch(error => {
                 console.log(error);
                 helper.errorToast(error.message);
@@ -79,12 +85,34 @@ class AssignLead extends React.Component {
         })
     }
 
+    changeSearchValue = (value) => {
+        this.setState({ searchBy: value },()=>{
+            this.fetchTeam()
+        })
+    }
+
 
     render() {
-        const { teamMembers, loading, selected, selectedId } = this.state
+        const { teamMembers, loading, selected, selectedId, searchBy } = this.state
+        const { user } = this.props;
         return (
             !loading ?
                 <View style={[AppStyles.container, styles.container]}>
+                    {
+                        user.role === 'admin 3' || user.role === 'sub_admin 1' ?
+                        <View style={styles.pickerMain}>
+                        <PickerComponent
+                            placeholder={'Search By'}
+                            data={StaticData.searchTeamBy}
+                            customStyle={styles.pickerStyle}
+                            customIconStyle={styles.customIconStyle}
+                            onValueChange={this.changeSearchValue}
+                            selectedItem={searchBy}
+                        />
+                    </View>
+                    : null
+                    }
+                   
                     {
                         teamMembers.length ?
                             <FlatList
@@ -102,6 +130,7 @@ class AssignLead extends React.Component {
                             :
                             <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
                     }
+
                     <TouchableOpacity
                         disabled={!selected}
                         onPress={() => this.assignLeadToSelectedMember()}

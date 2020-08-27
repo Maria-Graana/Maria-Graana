@@ -28,7 +28,9 @@ class DetailForm extends Component {
 			update,
 			phoneValidate,
 			emailValidate,
-			cnicValidate
+			cnicValidate,
+			contact1Validate,
+			contact2Validate,
 		} = this.props
 		let btnText = update ? 'UPDATE' : 'ADD'
 		return (
@@ -60,6 +62,24 @@ class DetailForm extends Component {
 						}
 						{
 							phoneValidate == false && checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
+						}
+					</View>
+				</View>
+
+				<View style={[AppStyles.mainInputWrap]}>
+					<View style={[AppStyles.inputWrap]}>
+						<TextInput maxLength={12} value={formData.contact1} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contact1') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number 2'} />
+						{
+							contact1Validate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+						}
+					</View>
+				</View>
+
+				<View style={[AppStyles.mainInputWrap]}>
+					<View style={[AppStyles.inputWrap]}>
+						<TextInput maxLength={12} value={formData.contact2} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contact2') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number 3'} />
+						{
+							contact2Validate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}
 					</View>
 				</View>

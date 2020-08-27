@@ -66,6 +66,7 @@ class Client extends React.Component {
         const { customers, page, pageSize } = this.state;
         const { selectedClient } = this.props.route.params;
         const url = `/api/customer/find?pageSize=${pageSize}&page=${page}`
+
         axios.get(url)
             .then((res) => {
                 this.setState({
@@ -90,12 +91,12 @@ class Client extends React.Component {
         const { isFromDropDown = false, screenName } = route.params; // user can by default move to detail screen if param is undefined or null
         if (isFromDropDown) {
             // This is the case for dropdown value selection
-            navigation.navigate(screenName, { 'client': data, name: data.firstName + ' ' +  data.lastName })
+            navigation.navigate(screenName, { 'client': data, name: data.firstName + ' ' + data.lastName })
 
         }
         else {
             // by default flow of client screen
-            navigation.navigate('ClientDetail', { client: data})
+            navigation.navigate('ClientDetail', { client: data })
         }
     }
 
@@ -108,7 +109,7 @@ class Client extends React.Component {
     handleLongPress = (val) => {
         const { route, navigation } = this.props;
         const { isFromDropDown = false } = route.params;
-        if(!isFromDropDown){
+        if (!isFromDropDown) {
             ActionSheet.show(
                 {
                     options: BUTTONS,
@@ -157,7 +158,7 @@ class Client extends React.Component {
         const { customers, loading, totalCustomers, onEndReachedLoader, searchText } = this.state
         const { user } = this.props
         let data = [];
-        if (searchText !== '' && data.length === 0) {
+        if (searchText !== '' && data && data.length === 0) {
             data = fuzzy.filter(searchText, customers, { extract: (e) => (e.firstName ? e.firstName + e.lastName : '') })
             data = data.map((item) => item.original)
         }
@@ -183,7 +184,7 @@ class Client extends React.Component {
                             null
                     }
                     {
-                        data.length > 0 ?
+                        data && data.length > 0 ?
                             <FlatList
                                 data={data}
                                 renderItem={(item, index) => (

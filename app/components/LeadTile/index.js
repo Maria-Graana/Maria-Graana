@@ -14,12 +14,8 @@ class LeadTile extends React.Component {
   }
 
   call = (data) => {
-    let newContact = {
-      phone: data.customer && data.customer.phone,
-      name: data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName),
-      url: `tel:${data.customer && data.customer.phone}`
-    }
     const { contacts } = this.props
+    let newContact = helper.createContactPayload(data.customer)
     helper.callNumber(newContact, contacts)
   }
 
@@ -33,7 +29,6 @@ class LeadTile extends React.Component {
 
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
-
         <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
@@ -90,7 +85,7 @@ class LeadTile extends React.Component {
                     data.size != null && !data.projectId &&
                     <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
                       {data.size !== 0 ? data.size + ' ' : null}
-                      {data.size_unit && data.size_unit !== null ? helper.capitalize(data.size_unit) + ' ' : null}
+                      {data.size_unit && data.size_unit !== null && data.size !== 0 ? helper.capitalize(data.size_unit) + ' ' : null}
                       {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
                       {data.purpose === 'sale' ? 'Buy' : 'Rent'}
                     </Text>
@@ -112,8 +107,8 @@ class LeadTile extends React.Component {
 
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  <Text style={[styles.normalText, styles.lightColor, AppStyles.mrTen]}>
-                    {moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}
+                  <Text style={[styles.normalText, styles.lightColor, AppStyles.mrTen]} numberOfLines={1}>
+                    {data.id ? `ID: ${data.id}, ` : ''} {`Created: ${moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}`}
                   </Text>
                 </View>
               </View>

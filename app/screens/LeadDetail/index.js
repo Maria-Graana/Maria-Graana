@@ -11,6 +11,7 @@ import axios from 'axios';
 import Ability from '../../hoc/Ability'
 import Loader from '../../components/loader';
 import StaticData from '../../StaticData';
+import { createPortal } from 'react-dom';
 // import { TextInput } from 'react-native-paper';
 
 const _format = 'YYYY-MM-DD';
@@ -65,7 +66,9 @@ class LeadDetail extends React.Component {
         axios.get(`${url}?id=${lead.id}`)
             .then((res) => {
                 this.props.dispatch(setlead(res.data))
-                this.setState({ lead: res.data, loading: false, description: res.data.description }, () => {
+                const regex = /(<([^>]+)>)/ig
+                let text = res.data.description && res.data.description !== '' ? res.data.description.replace(regex, '') : null
+                this.setState({ lead: res.data, loading: false, description: text }, () => {
                     that.checkCustomerName(res.data);
                     that.checkAssignedLead(res.data);
                 })
@@ -161,8 +164,10 @@ class LeadDetail extends React.Component {
     }
 
     handleDes = (text) => {
+        const regex = /(<([^>]+)>)/ig
+        text = text && text !== '' ? text.replace(regex, '') : null
         this.setState({
-            description: text,
+            description: text
         })
     }
 
@@ -180,10 +185,25 @@ class LeadDetail extends React.Component {
             endPoint = `/api/leads/?id=${lead.id}`
         }
         axios.patch(endPoint, body)
-        .then((res) => {
-            this.purposeTab()
-            this.editDescription(false)
-        })
+            .then((res) => {
+                this.purposeTab()
+                this.editDescription(false)
+            })
+    }
+
+    checkLeadSource = () => {
+        const { lead } = this.state;
+        if (lead.origin) {
+            if (lead.origin === 'arms') {
+                return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${lead.creator ? `(${lead.creator.firstName} ${lead.creator.lastName})` : ''}`
+            }
+            else {
+                return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`;
+            }
+        }
+        else {
+            return null;
+        }
     }
 
     render() {
@@ -191,6 +211,8 @@ class LeadDetail extends React.Component {
         const { user, route } = this.props;
         const { purposeTab } = route.params
         let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
+        const leadSource = this.checkLeadSource();
+        const regex = /(<([^>]+)>)/ig
 
         return (
             !loading ?
@@ -237,7 +259,7 @@ class LeadDetail extends React.Component {
                                         </View>
                                         :
                                         <Text style={styles.labelText}>
-                                            {lead.description}
+                                            {lead.description && lead.description !== '' ? lead.description.replace(regex, '') : null}
                                         </Text>
                                 }
 
@@ -261,7 +283,7 @@ class LeadDetail extends React.Component {
                         <Text style={styles.headingText}>Requirement </Text>
                         <Text style={styles.labelText}>
                             {!lead.projectId && lead.size && lead.size !== 0 ? lead.size + ' ' : ''}
-                            {!lead.projectId && lead.size_unit && lead.size_unit + ' '}
+                            {!lead.projectId && lead.size ? lead.size_unit + ' ' : ''}
                             {!lead.projectId && helper.capitalize(lead.subtype)}
                             {lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}
                         </Text>
@@ -287,10 +309,13 @@ class LeadDetail extends React.Component {
                         <Text style={styles.labelText}>{moment(lead.updatedAt).format("MMM DD YYYY, hh:mm A")} </Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Lead Source </Text>
-                        <Text style={styles.labelText}>{lead.origin ? (lead.origin.split('_').join(' ')).toLocaleUpperCase() : null} </Text>
+                        <Text style={styles.labelText}>{leadSource} </Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Assigned To </Text>
                         <Text style={styles.labelText}>{(lead.armsuser && lead.armsuser.firstName) ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName : '-'}</Text>
+                        <View style={styles.underLine} />
+                        <Text style={styles.headingText}>Lead ID</Text>
+                        <Text style={styles.labelText}>{lead.id ? lead.id : ''} </Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Additional Information </Text>
                         <Text style={styles.labelText}>{lead.category ? lead.category : 'NA'} </Text>

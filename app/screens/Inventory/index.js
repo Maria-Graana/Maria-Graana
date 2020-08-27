@@ -126,9 +126,10 @@ class Inventory extends React.Component {
 			{ cancelable: false })
 	}
 
-	onHandleOnCall = (url) => {
+	onHandleOnCall = (data) => {
 		const { contacts } = this.props
-		helper.callNumber({ url: url, name: '' }, contacts);
+		let newContact = helper.createContactPayload(data.customer)
+		helper.callNumber(newContact, contacts)
 	}
 
 	setKey = (index) => {
@@ -171,7 +172,7 @@ class Inventory extends React.Component {
 										data={item}
 										onPress={(data) => this.onHandlePress(data)}
 										onLongPress={(id) => this.onHandleLongPress(id)}
-										onCall={(number) => this.onHandleOnCall(`tel:${number}`)}
+										onCall={this.onHandleOnCall}
 									/>
 								)}
 								onEndReached={() => {

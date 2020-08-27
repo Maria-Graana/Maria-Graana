@@ -15,6 +15,10 @@ class ClientDetail extends React.Component {
         this.state = {
             client: {},
             loading: true,
+            clientPhones: {
+                contact2: null,
+                contact3: null
+            }
         }
     }
 
@@ -26,7 +30,7 @@ class ClientDetail extends React.Component {
 
     navigateTo = () => {
         const { client } = this.state;
-        const copyClient = Object.assign(client,{});
+        const copyClient = Object.assign(client, {});
         copyClient.firstName = client.first_name; // have to add additional keys in case of lead bcs it doesnot exist when coming from lead detail screen
         copyClient.lastName = client.last_name;   // The format is different in api's so adding keys to adjust and display
         this.props.navigation.navigate('AddClient', { client: copyClient, update: true })
@@ -34,11 +38,19 @@ class ClientDetail extends React.Component {
 
     fetchCustomer = () => {
         const { route } = this.props
+        const { clientPhones } = this.state
         const { client } = route.params
         const url = `api/customer/${client.id}`
         axios.get(url)
             .then((res) => {
-                this.setState({ client: res.data, loading: false })
+                let oneClient = res.data
+                if (oneClient.customerContacts.length) {
+                    oneClient.customerContacts.map((item) => {
+                        if (item.phone !== oneClient.phone && !clientPhones.contact2) clientPhones.contact2 = item.phone
+                        if (item.phone !== oneClient.phone && clientPhones.contact2 && clientPhones.contact2 !== item.phone) clientPhones.contact3 = item.phone
+                    })
+                }
+                this.setState({ client: res.data, loading: false, clientPhones })
             })
             .catch((error) => {
                 console.log(`URL: ${url}`)
@@ -65,7 +77,7 @@ class ClientDetail extends React.Component {
 
     render() {
         const { user } = this.props;
-        const { client, loading } = this.state
+        const { client, loading, clientPhones } = this.state
         let belongs = this.checkClient()
 
         return (
@@ -79,6 +91,10 @@ class ClientDetail extends React.Component {
                             <Text style={styles.labelText}>{client.last_name}</Text>
                             <Text style={styles.headingText}>Contact Number</Text>
                             <Text style={styles.labelText}>{client.phone}</Text>
+                            <Text style={styles.headingText}>Contact Number 2</Text>
+                            <Text style={styles.labelText}>{clientPhones.contact2 && clientPhones.contact2}</Text>
+                            <Text style={styles.headingText}>Contact Number 3</Text>
+                            <Text style={styles.labelText}>{clientPhones.contact3 && clientPhones.contact3}</Text>
                             <Text style={styles.headingText}>Email</Text>
                             <Text style={styles.labelText}>{client.email}</Text>
                             <Text style={styles.headingText}>CNIC</Text>

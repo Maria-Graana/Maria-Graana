@@ -38,12 +38,8 @@ class CMBottomNav extends React.Component {
   }
 
   call = () => {
-    const { contacts, callPhoneNumber, customerName } = this.props
-    let newContact = {
-      phone: callPhoneNumber,
-      name: customerName,
-      url: `tel:${callPhoneNumber}`
-    }
+    const { contacts, customer } = this.props
+    let newContact = helper.createContactPayload(customer)
     helper.callNumber(newContact, contacts)
   }
 
@@ -56,11 +52,7 @@ class CMBottomNav extends React.Component {
       closedLeadEdit,
       closeLead,
       alreadyClosedLead,
-      checkForUnassignedLeadEdit,
       callButton,
-      callPhoneNumber,
-      customerName,
-      contacts
     } = this.props
     const { visible } = this.state
 

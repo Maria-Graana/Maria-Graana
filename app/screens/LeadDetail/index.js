@@ -162,8 +162,10 @@ class LeadDetail extends React.Component {
     }
 
     handleDes = (text) => {
+        const regex = /(<([^>]+)>)/ig
+        text = text && text !== '' ? text.replace(regex, '') : null
         this.setState({
-            description: text,
+            description: text
         })
     }
 
@@ -181,25 +183,25 @@ class LeadDetail extends React.Component {
             endPoint = `/api/leads/?id=${lead.id}`
         }
         axios.patch(endPoint, body)
-        .then((res) => {
-            this.purposeTab()
-            this.editDescription(false)
-        })
+            .then((res) => {
+                this.purposeTab()
+                this.editDescription(false)
+            })
     }
 
     checkLeadSource = () => {
-           const {lead} = this.state;
-           if(lead.origin) {
-               if(lead.origin === 'arms'){
-                   return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${ lead.creator ? `(${lead.creator.firstName } ${lead.creator.lastName})`: ''}`
-               }
-               else{
-                   return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`;
-               }
-           }
-           else{
-               return null;
-           }
+        const { lead } = this.state;
+        if (lead.origin) {
+            if (lead.origin === 'arms') {
+                return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${lead.creator ? `(${lead.creator.firstName} ${lead.creator.lastName})` : ''}`
+            }
+            else {
+                return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`;
+            }
+        }
+        else {
+            return null;
+        }
     }
 
     render() {
@@ -208,6 +210,7 @@ class LeadDetail extends React.Component {
         const { purposeTab } = route.params
         let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
         const leadSource = this.checkLeadSource();
+        const regex = /(<([^>]+)>)/ig
 
         return (
             !loading ?
@@ -254,7 +257,7 @@ class LeadDetail extends React.Component {
                                         </View>
                                         :
                                         <Text style={styles.labelText}>
-                                            {lead.description}
+                                            {lead.description && lead.description !== '' ? lead.description.replace(regex, '') : null}
                                         </Text>
                                 }
 

@@ -179,6 +179,14 @@ export default StaticData = {
         { value: '16', name: '4 Years' },
         { value: '20', name: '5 Years' },
     ],
+    getInstallmentsMonthly: [
+        { value: '12', name: '1 Year' },
+        { value: '24', name: '2 Years' },
+        { value: '36', name: '3 Years' },
+        { value: '48', name: '4 Years' },
+        { value: '60', name: '5 Years' },
+        { value: '72', name: '6 Years' },
+    ],
     propsurePackages: [
         {
             name: 'SILVER PACKAGE',
@@ -494,6 +502,17 @@ export default StaticData = {
     searchTeamBy:[
         { value: 'myTeam', name: 'My Team' },
         { value: 'others', name: 'Others' },
-    ]
+    ],
+    planOptions:[
+        {name: 'Investment Plan', value: 'Sold on Investment Plan'},
+        {name: 'Rental Plan', value: 'Sold on Rental Plan'},
+    ],
+    installmentDue:[
+        {name: 'Quarterly', value: 'quarterly'},
+        {name: 'Monthly', value: 'monthly'},
+    ],
+    onlyQuarterly:[
+        {name: 'Quarterly', value: 'quarterly'},
+    ],
 }
 

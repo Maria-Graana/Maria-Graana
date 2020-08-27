@@ -19,6 +19,7 @@ import StaticData from '../../StaticData';
 import CMBottomNav from '../../components/CMBottomNav'
 import { Platform } from 'react-native'
 import { setContacts } from '../../actions/contacts';
+import TimerNotification from '../../LocalNotifications';
 
 class Meetings extends Component {
   constructor(props) {
@@ -135,6 +136,13 @@ class Meetings extends Component {
         axios.patch(`/api/diary/update?id=${meetingId}`, body)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
+            let start = new Date(res.data.start)
+            let end = new Date(res.data.end)
+            let data = {
+              title: res.data.subject,
+              body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+            }
+            TimerNotification(data, start)
             this.getMeetingLead();
             formData['time'] = ''
             formData['date'] = ''
@@ -159,6 +167,13 @@ class Meetings extends Component {
             formData['time'] = ''
             formData['date'] = ''
             helper.successToast(`Meeting Added`)
+            let start = new Date(res.data.start)
+            let end = new Date(res.data.end)
+            let data = {
+              title: res.data.subject,
+              body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+            }
+            TimerNotification(data, start)
             this.getMeetingLead();
             this.setState({
               active: false,

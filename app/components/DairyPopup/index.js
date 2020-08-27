@@ -95,7 +95,7 @@ class DairyPopup extends React.Component {
                         <Text style={[styles.textStyle, { paddingHorizontal: 15 }]}>{data.taskType !== undefined && data.taskType.charAt(0).toUpperCase() + data.taskType.slice(1)}</Text>
 
                         <View style={styles.horizontalWrapStyle}>
-                            <Text style={styles.textStyle}>{moment.utc(data.start).format('hh:mm a')} - {moment.utc(data.end).format("hh:mm a")} </Text>
+                            <Text style={styles.textStyle}>{moment(data.start).format('hh:mm a')} - {moment(data.end).format("hh:mm a")} </Text>
                             {
                                 data.armsLeadId !== null || data.armsProjectLeadId !== null ?
                                     <TouchableOpacity style={styles.lead} onPress={() => onLeadLinkClicked(data)} >

@@ -53,6 +53,6 @@ export default styles = StyleSheet.create({
     bottom: 30,
     right: 0,
     flexDirection: "row",
-    marginHorizontal: 10
+    marginHorizontal: 5
   }
 });

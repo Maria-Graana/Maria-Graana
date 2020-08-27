@@ -5,6 +5,7 @@ import AppStyles from '../../AppStyles';
 import dots from '../../../assets/img/dots.png';
 import moment from 'moment';
 import StaticData from '../../StaticData'
+import helper from '../../helper'
 
 class MeetingTile extends React.Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class MeetingTile extends React.Component {
           <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
             <View style={styles.border}>
               <Text style={[AppStyles.mrTen, styles.meetingCon]}>{data.taskType} @</Text>
-              <Text style={[styles.fontBold]}>{data.time} </Text>
+              <Text style={[styles.fontBold]}>{helper.formatTime(data.time)} </Text>
               <Text style={[styles.fontBold]}>{moment(data.date).format("MMM DD")}</Text>
             </View>
             <View style={[styles.dotsWrap]}>

@@ -120,14 +120,13 @@ class AddDiary extends Component {
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('TASK ADDED SUCCESSFULLY!')
-                        let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
-                        let start = helper.convertTimeZone(res.data.start)
-                        let end = helper.convertTimeZone(res.data.end)
+                        let start = new Date(res.data.start)
+                        let end = new Date(res.data.end)
                         let data = {
                             title: res.data.subject,
                             body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
                         }
-                        TimerNotification(data, timeStamp)
+                        TimerNotification(data, start)
                         navigation.goBack();
                     }
                     else {
@@ -146,14 +145,13 @@ class AddDiary extends Component {
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('TASK ADDED SUCCESSFULLY!')
-                        let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
-                        let start = helper.convertTimeZone(res.data.start)
-                        let end = helper.convertTimeZone(res.data.end)
+                        let start = new Date(res.data.start)
+                        let end = new Date(res.data.end)
                         let data = {
                             title: res.data.subject,
                             body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
                         }
-                        TimerNotification(data, timeStamp, start)
+                        TimerNotification(data, start)
                         navigation.navigate('Diary',
                             {
                                 'agentId': this.props.route.params.agentId,
@@ -177,14 +175,13 @@ class AddDiary extends Component {
         axios.patch(`/api/diary/update?id=${diary.id}`, diary)
             .then((res) => {
                 helper.successToast('TASK UPDATED SUCCESSFULLY!')
-                let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
-                let start = helper.convertTimeZone(res.data.start)
-                let end = helper.convertTimeZone(res.data.end)
+                let start = new Date(res.data.start)
+                let end = new Date(res.data.end)
                 let data = {
                     title: res.data.subject,
                     body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
                 }
-                TimerNotification(data, timeStamp, start)
+                TimerNotification(data, start)
                 this.props.navigation.navigate('Diary', { update: false, 'agentId': this.props.route.params.agentId })
             })
             .catch((error) => {

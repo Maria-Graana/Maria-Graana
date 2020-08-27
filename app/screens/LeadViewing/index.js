@@ -238,14 +238,13 @@ class LeadViewing extends React.Component {
 						isVisible: false,
 						loading: true
 					})
-					let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
-					let start = helper.convertTimeZone(res.data.start)
-					let end = helper.convertTimeZone(res.data.end)
+					let start = new Date(res.data.start)
+					let end = new Date(res.data.end)
 					let data = {
 						title: res.data.subject,
 						body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
 					}
-					TimerNotification(data, timeStamp)
+					TimerNotification(data, start)
 					this.fetchLead()
 					this.fetchProperties()
 				})
@@ -276,14 +275,13 @@ class LeadViewing extends React.Component {
 					isVisible: false,
 					loading: true
 				})
-				let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
-				let start = helper.convertTimeZone(res.data.start)
-				let end = helper.convertTimeZone(res.data.end)
-				let data = {
-					title: res.data.subject,
-					body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
-				}
-				TimerNotification(data, timeStamp, start)
+                let start = new Date(res.data.start)
+                let end = new Date(res.data.end)
+                let data = {
+                    title: res.data.subject,
+                    body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+                }
+                TimerNotification(data, start)
 				this.fetchLead()
 				this.fetchProperties()
 			})

@@ -4,12 +4,13 @@ import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import moment from 'moment-timezone';
+import * as Sentry from 'sentry-expo';
 
-const submitNotification = (body, timeStamp, date) => {
+const submitNotification = (body, date) => {
     Keyboard.dismiss();
-    const schedulingOptions = {
-        time: timeStamp
-    };
+    let duration = moment.duration({ minutes: 15 })
+    const trigger = new Date(moment(date).subtract(duration).format())
     let localNotification = {
         title: body.title,
         body: body.body,
@@ -17,19 +18,16 @@ const submitNotification = (body, timeStamp, date) => {
             type: 'local',
             date: date
         },
-        android: {
-            channelId: 'reminder',
-        },
-        ios: {
-            sound: true,
-        }
+        sound: 'default'
     }
     console.log(' <<<<<<<<< Local Notification >>>>>>>>>>>')
     console.log(localNotification)
-    console.log(schedulingOptions)
+    console.log('trigger: ', trigger)
+    Sentry.captureException(`Local localNotification: ${JSON.stringify(localNotification)}`)
+    Sentry.captureException(`trigger: ${JSON.stringify(trigger)}`)
     Notifications.scheduleNotificationAsync({
         content: localNotification,
-        trigger: schedulingOptions,
+        trigger
     });
 };
 
@@ -37,7 +35,7 @@ const handleNotification = () => {
     console.warn('ok! got your notif');
 };
 
-const askNotification = async (body, timeStamp, date) => {
+const askNotification = async (body, date) => {
     if (Constants.isDevice) {
         const { status: existingStatus } = await Permissions.getAsync(
             Permissions.NOTIFICATIONS
@@ -52,14 +50,14 @@ const askNotification = async (body, timeStamp, date) => {
         if (finalStatus !== 'granted') {
             return;
         }
-        submitNotification(body, timeStamp, date)
+        submitNotification(body, date)
     } else {
         console.log('Must use physical device for Notifications')
     }
 };
 
-const TimerNotification = (body, timeStamp, date) => {
-    askNotification(body, timeStamp, date);
+const TimerNotification = (body, date) => {
+    askNotification(body, date);
 };
 
 export default TimerNotification;

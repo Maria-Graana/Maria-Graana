@@ -63,6 +63,8 @@ class LeadViewing extends React.Component {
 					loading: false,
 					matchData: matches,
 					progressValue: rcmProgressBar[lead.status]
+				},()=>{
+					// console.log(this.state.matchData);
 				})
 			})
 			.catch((error) => {
@@ -172,6 +174,9 @@ class LeadViewing extends React.Component {
 	}
 
 	setProperty = (property) => {
+		const {viewing} = this.state;
+		viewing['date'] = '';
+		viewing['time'] = '';
 		this.setState({ currentProperty: property, updateViewing: false })
 	}
 
@@ -179,19 +184,13 @@ class LeadViewing extends React.Component {
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'pending') {
 				let diary = property.diaries[0]
-				let startReplace = ''
-				if (diary.start) {
-					startReplace = diary.start.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
-				}
-				else {
-					startReplace = diary.time.replace(/^[^:]*([0-2]\d:[0-5]\d).*$/, "$1")
-				}
-				let date = moment(diary.date).utcOffset(diary.date).format('YYYY-MM-DD')
+				// console.log(diary);
+				let date = moment(diary.date);
 				this.setState({
 					currentProperty: property,
 					viewing: {
 						date: date,
-						time: startReplace
+						time: diary.start
 					},
 					updateViewing: true
 				})
@@ -222,11 +221,11 @@ class LeadViewing extends React.Component {
 		const { lead } = this.props
 		if (currentProperty.diaries.length) {
 			let diary = currentProperty.diaries[0]
-			let start = moment(viewing.date + viewing.time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
-			let end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ss')
+			let start = helper.formatDateAndTime(helper.formatDate(viewing.date),viewing.time);
+			let end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
 			let body = {
-				date: viewing.date,
-				time: viewing.time,
+				date: start,
+				time: start,
 				start: start,
 				end: end,
 				subject: diary.subject,
@@ -238,14 +237,14 @@ class LeadViewing extends React.Component {
 						isVisible: false,
 						loading: true
 					})
-					let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
-					let start = helper.convertTimeZone(res.data.start)
-					let end = helper.convertTimeZone(res.data.end)
-					let data = {
-						title: res.data.subject,
-						body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
-					}
-					TimerNotification(data, timeStamp)
+					// let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
+					// let start = helper.convertTimeZone(res.data.start)
+					// let end = helper.convertTimeZone(res.data.end)
+					// let data = {
+					// 	title: res.data.subject,
+					// 	body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+					// }
+					// TimerNotification(data, timeStamp)
 					this.fetchLead()
 					this.fetchProperties()
 				})
@@ -261,9 +260,13 @@ class LeadViewing extends React.Component {
 		let customer = lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName) || ''
 		let areaName = currentProperty.area && currentProperty.area.name && currentProperty.area.name || ''
 		let customerId = lead.customer && lead.customer.id
+		let start = helper.formatDateAndTime(helper.formatDate(viewing.date),viewing.time);
+		let end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
 		let body = {
-			date: viewing.date,
-			time: viewing.time,
+			date: start,
+			time: start,
+			start: start,
+			end: end,
 			propertyId: currentProperty.id,
 			leadId: lead.id,
 			subject: "Viewing with " + customer + " at " + areaName,
@@ -272,18 +275,19 @@ class LeadViewing extends React.Component {
 		}
 		axios.post(`/api/leads/viewing`, body)
 			.then((res) => {
+				// console.log(res.data);
 				this.setState({
 					isVisible: false,
-					loading: true
+					loading: true,
 				})
-				let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
-				let start = helper.convertTimeZone(res.data.start)
-				let end = helper.convertTimeZone(res.data.end)
-				let data = {
-					title: res.data.subject,
-					body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
-				}
-				TimerNotification(data, timeStamp, start)
+				// let timeStamp = helper.convertTimeZoneTimeStamp(res.data.start)
+				// let start = helper.convertTimeZone(res.data.start)
+				// let end = helper.convertTimeZone(res.data.end)
+				// let data = {
+				// 	title: res.data.subject,
+				// 	body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+				// }
+				// TimerNotification(data, timeStamp, start)
 				this.fetchLead()
 				this.fetchProperties()
 			})
@@ -333,7 +337,7 @@ class LeadViewing extends React.Component {
 							}
 						}}
 					>
-						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Viewing at <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>{moment(helper.convertTimeZone(property.diaries[0].start)).format('LLL')}</Text></Text>
+						<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Viewing at <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>{moment(property.diaries[0].start).format('LLL')}</Text></Text>
 					</TouchableOpacity >
 				)
 			}
@@ -389,9 +393,10 @@ class LeadViewing extends React.Component {
 	}
 
 	cancelViewing = (property) => {
+		const { lead } = this.props;
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'pending') {
-				axios.delete(`/api/diary/delete?id=${property.diaries[0].id}`)
+				axios.delete(`/api/diary/delete?id=${property.diaries[0].id}&propertyId=${property.id}&leadId=${lead.id}`)
 					.then((res) => {
 						this.setState({ loading: true })
 						this.fetchProperties()

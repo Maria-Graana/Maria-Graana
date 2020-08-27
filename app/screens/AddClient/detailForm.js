@@ -68,7 +68,7 @@ class DetailForm extends Component {
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput maxLength={12} value={formData.contact1} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contact1') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number 2*'} />
+						<TextInput maxLength={12} value={formData.contact1} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contact1') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number 2'} />
 						{
 							contact1Validate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}
@@ -77,7 +77,7 @@ class DetailForm extends Component {
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput maxLength={12} value={formData.contact2} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contact2') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number 3*'} />
+						<TextInput maxLength={12} value={formData.contact2} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contact2') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number 3'} />
 						{
 							contact2Validate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}

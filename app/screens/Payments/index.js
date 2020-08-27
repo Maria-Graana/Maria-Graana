@@ -55,7 +55,7 @@ class Payments extends Component {
 				payment: '',
 				discountPercentage: lead.unit != null ? lead.unit.discount : '',
 				unitStatus: lead.unit != null ? lead.unit.bookingStatus : '',
-				installmentDue: 'quarterly',
+				installmentDue: lead && lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
 			},
 			instalments: lead.no_of_installments ? lead.no_of_installments : '',
 			reasons: [],
@@ -80,12 +80,14 @@ class Payments extends Component {
 			paymentFromat: [],
 			dateStatusForInstallments: [],
 			installmentsFromat: [],
+			possessionFormat: false,
 			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false,
 			cancelNewData: '',
 			discountAmount: lead.unit != null && lead.unit.discount != null && lead.unit.discount_amount,
 			discountedPrice: lead.unit != null && lead.unit.discount != null && lead.unit.discounted_price,
 			getAllProject: [],
 			checkMonthlyOption: false,
+			possessionCharges: '',
 		}
 
 	}
@@ -124,9 +126,10 @@ class Payments extends Component {
 				commisionPayment: '',
 				downPayment: data.downPayment ? data.downPayment : '',
 				discountPercentage: data.unit != null ? data.unit.discount : '',
-				installmentDue: 'Sold on Installment Plan'
+				installmentDue: lead && lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
 			},
 			instalments: data.no_of_installments ? data.no_of_installments : '',
+			possessionCharges: data.unit != null ? data.unit.possession_charges : '',
 		}, () => {
 			let name = ''
 			if (data.projectId != null) {
@@ -144,8 +147,13 @@ class Payments extends Component {
 			if (data.discount != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
-				name = 'discount'
+
 				arrowCheck[name] = false
+				this.formatStatusChange(name, true)
+			}
+			if (data.unit != null && data.unit.possession_charges != null) {
+				name = 'possessionCharges'
+				this.discountPayment()
 				this.formatStatusChange(name, true)
 			}
 			if (data.token != null) {
@@ -255,24 +263,24 @@ class Payments extends Component {
 
 	getUnits = (projectId, floorId) => {
 		const { lead } = this.props
-		if(lead.unit === null){
-		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
-			.then((res) => {
-				let array = [];
-				res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
-				this.setState({
-					getUnit: array,
-					units: res.data.rows
-				}, () => {
-					if (lead.unitId != null) {
-						this.readOnly(lead.unitId)
-						this.getUnitDetailsThroughId(lead.unitId)
-					}
+		if (lead.unit === null) {
+			axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
+				.then((res) => {
+					let array = [];
+					res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
+					this.setState({
+						getUnit: array,
+						units: res.data.rows
+					}, () => {
+						if (lead.unitId != null) {
+							this.readOnly(lead.unitId)
+							this.getUnitDetailsThroughId(lead.unitId)
+						}
+					})
 				})
-			})
-		}else{
+		} else {
 			this.setState({
-				getUnit:[{ value: lead.unit.id, name: lead.unit.name }],
+				getUnit: [{ value: lead.unit.id, name: lead.unit.name }],
 				unitDetailsData: lead.unit
 			})
 		}
@@ -363,7 +371,7 @@ class Payments extends Component {
 	}
 
 	discountPayment = () => {
-		const { readOnly, unitDetailsData, formData, totalInstalments, paymentFiledsArray, discountedPrice } = this.state
+		const { readOnly, unitDetailsData, formData, totalInstalments, paymentFiledsArray, discountedPrice, possessionCharges } = this.state
 		let totalPrice = unitDetailsData && unitDetailsData.unit_price
 		let totalInstallments = ''
 		let totalPayment = ''
@@ -379,7 +387,7 @@ class Payments extends Component {
 		})
 		let remaining = ''
 		if (totalPrice != '') {
-			remaining = totalPrice - Number(discountedPrice) - formData['token'] - Number(totalInstallments) - Number(totalPayment)
+			remaining = totalPrice - Number(possessionCharges) - Number(discountedPrice) - formData['downPayment'] - formData['token'] - Number(totalInstallments) - Number(totalPayment)
 		}
 		this.setState({ remainingPayment: remaining })
 	}
@@ -449,6 +457,11 @@ class Payments extends Component {
 				this.addFullpaymentFields()
 			}
 		}
+		if (name === 'possessionCharges') {
+			this.setState({
+				possessionCharges: value
+			})
+		}
 		if (name === 'discountPercentage' && unitDetailsData != '') {
 			var discountAmount = this.percentFormula(unitDetailsData.unit_price, value)
 			this.setState({
@@ -471,8 +484,11 @@ class Payments extends Component {
 				this.submitValues('unitId')
 				this.getUnitDetailsThroughId(value)
 			}
-			if (name === 'discount') {
-				this.discountPayment(newFormData)
+			if (name === 'installmentDue') {
+				this.submitValues(name)
+			}
+			if (name === 'possessionCharges') {
+				this.discountPayment()
 			}
 			if (name === 'discountPercentage') {
 				this.discountPayment(newFormData)
@@ -485,8 +501,9 @@ class Payments extends Component {
 				this.currentDate(name)
 				this.discountPayment(newFormData)
 			}
-			if (name === 'instalments') {
+			if (name === 'no_installments') {
 				this.instalmentsField(value)
+				this.submitValues(name)
 			}
 			if (name === 'payment') {
 				this.currentDate(name)
@@ -569,6 +586,7 @@ class Payments extends Component {
 			unitDetailsData,
 			discountAmount,
 			discountedPrice,
+			possessionCharges,
 		} = this.state
 
 		const { lead } = this.props
@@ -591,6 +609,17 @@ class Payments extends Component {
 		if (name === 'discount') {
 			body = { discount: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
+			this.formatStatusChange(name, true)
+		}
+		if(name === 'installmentDue'){
+			body = {installmentDue: formData[name],  remainingPayment: remainingPayment ,}
+		}
+		if (name === 'possessionCharges') {
+			body = {
+				possession_charges: possessionCharges,
+				unitId: formData['unitId'],
+				remainingPayment: remainingPayment
+			}
 			this.formatStatusChange(name, true)
 		}
 		if (name === 'token' || name === 'discountPercentage' && formData['token'] != '') {
@@ -635,7 +664,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		console.log(body)
+		// console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (name === 'installments') {
@@ -829,6 +858,14 @@ class Payments extends Component {
 				newdownPaymentDateStatus['name'] = 'downPayment'
 				newdownPaymentDateStatus['status'] = true
 				this.formatStatusChange('downPayment', true)
+			}
+
+			if (name === 'possessionCharges') {
+				this.formatStatusChange('possessionCharges', false);
+			}
+
+			if (name != 'possessionCharges') {
+				this.formatStatusChange('possessionCharges', true);
 			}
 
 			if (arrayName === 'payments') {
@@ -1046,6 +1083,9 @@ class Payments extends Component {
 		if (name === 'downPayment') {
 			this.setState({ downPaymentFormat: status })
 		}
+		if (name === 'possessionCharges') {
+			this.setState({ possessionFormat: status })
+		}
 		if (arrayName === 'payments') {
 			newpaymentFromat[name].name = name
 			newpaymentFromat[name].status = status
@@ -1111,9 +1151,10 @@ class Payments extends Component {
 			discountedPrice,
 			getAllProject,
 			checkMonthlyOption,
+			possessionCharges,
+			possessionFormat,
 		} = this.state
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
-
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -1173,12 +1214,15 @@ class Payments extends Component {
 							dateStatusForInstallments={dateStatusForInstallments}
 							installmentsFromat={installmentsFromat}
 							checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
+							possessionFormat={possessionFormat}
 							//Unit Details Modal Props
 							openUnitDetailsModal={this.openUnitDetailsModal}
 							unitDetails={unitDetailsData}
+							// New Fields Props
 							discountAmount={discountAmount}
 							discountedPrice={discountedPrice}
 							checkMonthlyOption={checkMonthlyOption}
+							possessionCharges={possessionCharges}
 						/>
 					</View>
 				</ScrollView>

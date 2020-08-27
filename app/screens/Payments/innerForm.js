@@ -56,12 +56,14 @@ class InnerForm extends Component {
       discountAmount,
       discountedPrice,
       checkMonthlyOption,
+      possessionCharges,
+      possessionFormat,
     } = this.props
     let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false ? false : true
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
     var unitDetail = unitDetails && unitDetails != null && unitDetails != '' && unitDetails
-    var installmentsPlans = formData.installmentDue === 'Sold on Installment Plan' ? StaticData.getInstallments : StaticData.getInstallmentsMonthly
+    var installmentsPlans = formData.installmentDue === 'quarterly' ? StaticData.getInstallments : StaticData.getInstallmentsMonthly
     var installmentsDueOption = checkMonthlyOption === true ? StaticData.installmentDue : StaticData.onlyQuarterly
     return (
       <SafeAreaView style={styles.removePad}>
@@ -213,7 +215,7 @@ class InnerForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap]}>
                       <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={checkForEdit} name={'instalments'} placeholder='Installment Plan' selectedItem={no_installments} />
+                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={checkForEdit} name={'no_installments'} placeholder='Installment Plan' selectedItem={no_installments} />
                       </View>
                     </View>
                     {/* **************************************** */}
@@ -251,8 +253,8 @@ class InnerForm extends Component {
                       label={'POSSESSION CHARGES'}
                       placeholder={'Possession Charges'}
                       name={'possessionCharges'}
-                      priceFormatVal={formData.discountPercentage ? formData.discountPercentage.toString() : ''}
-                      value={formData.discountPercentage ? formData.discountPercentage.toString() : ''}
+                      priceFormatVal={possessionCharges ? possessionCharges.toString() : ''}
+                      value={possessionCharges ? possessionCharges.toString() : ''}
                       keyboardType={'numeric'}
                       onChange={handleForm}
                       paymentDone={submitValues}
@@ -261,7 +263,7 @@ class InnerForm extends Component {
                       showDate={false}
                       dateStatus={false}
                       editable={checkForEdit}
-                      editPriceFormat={{ status: false, name: 'possessionCharges' }}
+                      editPriceFormat={{ status: possessionFormat, name: 'possessionCharges' }}
                     />
                   </View>
                   :

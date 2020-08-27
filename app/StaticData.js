@@ -504,8 +504,8 @@ export default StaticData = {
         {name: 'Rental Plan', value: 'Sold on Rental Plan'},
     ],
     installmentDue:[
-        {name: 'Quarterly', value: 'Sold on Installment Plan'},
-        {name: 'Monthly', value: 'Sold on Monthly Plan'},
+        {name: 'Quarterly', value: 'quarterly'},
+        {name: 'Monthly', value: 'monthly'},
     ],
     onlyQuarterly:[
         {name: 'Quarterly', value: 'quarterly'},

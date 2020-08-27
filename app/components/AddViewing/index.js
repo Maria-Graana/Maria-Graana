@@ -9,8 +9,9 @@ import { AntDesign } from '@expo/vector-icons';
 import styles from './style'
 import AppStyles from '../../AppStyles';
 import { Button } from 'native-base';
-import DateComponent from '../DatePicker';
+import DateTimePicker from '../DatePicker';
 import ErrorMessage from '../ErrorMessage'
+import helper from '../../helper';
 
 class AddViewing extends React.Component {
 
@@ -19,8 +20,7 @@ class AddViewing extends React.Component {
     }
 
     render() {
-        const { isVisible, onPress, date, time, handleForm, openModal, checkValidation, viewing, update } = this.props;
-
+        const { isVisible, onPress, handleForm, openModal, checkValidation, viewing, update } = this.props;
         return (
             <Modal
                 visible={isVisible}
@@ -30,17 +30,28 @@ class AddViewing extends React.Component {
                 <SafeAreaView style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}>
                     <AntDesign style={styles.closeStyle} onPress={openModal} name="close" size={26} color={AppStyles.colors.textColor} />
                     <View style={[styles.viewContainer]}>
-                        <DateComponent date={viewing.date} mode='date' placeholder='Select Date' onDateChange={(date) => handleForm(date, 'date')} />
-                        {
-							checkValidation === true && viewing.date === '' && <ErrorMessage errorMessage={'Required'} />
-						}
-                        <View style={{marginVertical: 10}}/>
-                        <DateComponent date={viewing.time} mode='time' placeholder='Select Time' onTimeChange={(value) => handleForm(value, 'time')} />
-                        {
-							checkValidation === true && viewing.time === '' && <ErrorMessage errorMessage={'Required'} />
-						}
-
-
+                        <DateTimePicker
+                            placeholderLabel={'Select Date'}
+                            name={'date'}
+                            mode={'date'}
+                            showError={checkValidation === true && viewing.date === ''}
+                            errorMessage={'Required'}
+                            iconSource={require('../../../assets/img/calendar.png')}
+                            date={viewing.date ? new Date(viewing.date) : new Date()}
+                            selectedValue={viewing.date ? helper.formatDate(viewing.date) : ''}
+                            handleForm={(value, name) => handleForm(value, name)}
+                        />
+                        <DateTimePicker
+                            placeholderLabel={'Select Time'}
+                            name={'time'}
+                            mode={'time'}
+                            showError={checkValidation === true && viewing.time === ''}
+                            errorMessage={'Required'}
+                            iconSource={require('../../../assets/img/clock.png')}
+                            date={viewing.time ? new Date(viewing.time) : new Date()}
+                            selectedValue={viewing.time ? helper.formatTime(viewing.time) : ''}
+                            handleForm={(value, name) => handleForm(value, name)}
+                        />
                         <View style={[AppStyles.mainInputWrap]}>
                             <Button
                                 style={[AppStyles.formBtn, { marginTop: 10 }]} onPress={onPress}>

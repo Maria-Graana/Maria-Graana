@@ -44,17 +44,16 @@ class AddDiary extends Component {
         const { route } = this.props;
         const { rcmLeadId, cmLeadId, managerId, addedBy } = route.params;
         let payload = null;
-        let formattedDate = moment(data.date).format('YYYY-MM-DD');
-        let start = moment(formattedDate + moment(data.startTime).format('hh:mm a'), 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ssZ')
+        let start = helper.formatDateAndTime(helper.formatDate(data.date), data.startTime);
         let end = data.endTime !== '' ?
-            moment(formattedDate + moment(data.endTime).format('hh:mm a'), 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ssZ') // Actual end date is selected
+            helper.formatDateAndTime(helper.formatDate(data.date), data.endTime)
             :
             moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ'); // If end date is not selected by user, add plus 1 hour in start time
         if (route.params.update) {
             // payload for update contains id of diary from existing api call and other user data
             payload = Object.assign({}, data);
             payload.date = start;
-            payload.time = moment(data.startTime).format('hh:mm a')
+            payload.time = helper.formatTime(data.startTime);
             payload.userId = route.params.agentId;
             payload.diaryTime = start
             payload.start = start

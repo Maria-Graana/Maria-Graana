@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput } from 'react-native';
-import { Button } from 'native-base';
+import { Button, Textarea } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import styles from './style';
 import AppStyles from '../../AppStyles';
@@ -30,7 +30,8 @@ class CMLeadFrom extends Component {
       handleCityClick,
       handleClientClick,
       getProject,
-      onSliderValueChange
+      onSliderValueChange,
+      getProductType,
     } = this.props
 
     return (
@@ -61,7 +62,7 @@ class CMLeadFrom extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={StaticData.projectType} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Product Type' />
+            <PickerComponent onValueChange={handleForm} data={getProductType} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Product Type' />
             {/* {
               checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
             } */}
@@ -83,6 +84,14 @@ class CMLeadFrom extends Component {
         </View>
 
         <PriceSlider priceValues={StaticData.PricesProject} initialValue={0} finalValue={StaticData.PricesProject.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} />
+        <View style={[AppStyles.mainInputWrap]}>
+          <Textarea
+            value={formData.description}
+            style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings, { height: 100, paddingTop: 10, }]} rowSpan={5}
+            placeholder="Description"
+            onChangeText={(text) => handleForm(text, 'description')}
+          />
+        </View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

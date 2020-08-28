@@ -90,7 +90,7 @@ const helper = {
 		let paktz = moment.tz(date, 'Asia/Karachi').format(_format)
 		var duration = moment.duration({ hours: 5 })
 		var sub = moment(paktz, _format).subtract(duration).format();
-		return sub
+		return (new Date(sub))
 	},
 	propertyCheck(data) {
 		let matches = []
@@ -317,7 +317,7 @@ const helper = {
 		if (data && data.name && data.name !== '' && data.name !== ' ') {
 			const contact = {
 				[Contacts.Fields.FirstName]: data.name + ' - ARMS',
-				[Contacts.Fields.PhoneNumbers]: [{ label: 'mobile', number: data.phone }]
+				[Contacts.Fields.PhoneNumbers]: data.payload
 			}
 			Contacts.addContactAsync(contact)
 				.then((result) => {
@@ -327,7 +327,59 @@ const helper = {
 					console.log('Contacts Error: ', error)
 				})
 		}
-	}
+	},
+	formatDate (date){
+		return moment(date).format('YYYY-MM-DD')
+	},
+	formatTime (time){
+      return moment(time).format('hh:mm a');
+	},
+	formatDateAndTime(date, time){
+		return moment(date + moment(time).format('hh:mm a'), 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ssZ');
+	},
+	createContactPayload(customer) {
+		let payload = []
+		let primaryBol = false
+		let contact = {
+			phone: customer && customer.phone,
+			name: customer && customer.customerName && helper.capitalize(customer.customerName),
+			url: `tel:${customer && customer.phone}`
+		}
+		if (customer && customer.customerContacts) {
+			if (customer.customerContacts.length) {
+				customer.customerContacts.map((item) => {
+					if (customer.phone === item.phone) {
+						payload.push({
+							number: item.phone,
+							label: 'mobile',
+							isPrimary: true
+						})
+						primaryBol = true
+					} else {
+						payload.push({
+							number: item.phone,
+							label: 'mobile'
+						})
+					}
+				})
+				if (!primaryBol) {
+					payload.push({
+						number: customer.phone,
+						label: 'mobile',
+						isPrimary: true
+					})
+				}
+			} else {
+				payload.push({
+					number: customer.phone,
+					label: 'mobile',
+					isPrimary: true
+				})
+			}
+			contact.payload = payload
+			return contact
+		} else return contact
+	},
 }
 
 

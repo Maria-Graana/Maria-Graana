@@ -8,6 +8,7 @@ import formTheme from '../../../native-base-theme/variables/formTheme';
 import axios from 'axios'
 import { connect } from 'react-redux';
 import helper from '../../helper';
+import _ from 'underscore';
 
 class AddClient extends Component {
     constructor(props) {
@@ -25,10 +26,14 @@ class AddClient extends Component {
                 contactNumber: '',
                 address: '',
                 secondaryAddress: '',
+                contact1: '',
+                contact2: ''
             },
             emailValidate: true,
             phoneValidate: false,
-            cnicValidate: false
+            cnicValidate: false,
+            contact1Validate: false,
+            contact2Validate: false,
         }
     }
     componentDidMount() {
@@ -43,16 +48,24 @@ class AddClient extends Component {
     updateFields = () => {
         const { route } = this.props
         const { client } = route.params
-        this.setState({
-            formData: {
-                firstName: client.firstName,
-                lastName: client.lastName,
-                email: client.email,
-                cnic: client.cnic,
-                contactNumber: client.phone,
-                address: client.address,
+        let formData = {
+            firstName: client.firstName,
+            lastName: client.lastName,
+            email: client.email,
+            cnic: client.cnic,
+            contactNumber: client.phone,
+            address: client.address,
+            contact1: client.contact1,
+            contact2: client.contact2,
+        }
+        if (client.customerContacts.length) {
+            for (let i = 0; i < client.customerContacts.length; i++) {
+                if (i === 0) formData.contactNumber = client.customerContacts[i].phone
+                if (i === 1) formData.contact1 = client.customerContacts[i].phone
+                if (i === 2) formData.contact2 = client.customerContacts[i].phone
             }
-        })
+        }
+        this.setState({ formData })
     }
 
     validateEmail = (value) => {
@@ -64,6 +77,16 @@ class AddClient extends Component {
     validatePhone = (value) => {
         if (value.length < 11 && value !== '') this.setState({ phoneValidate: true })
         else this.setState({ phoneValidate: false })
+    }
+
+    validateContact1 = (value) => {
+        if (value.length < 11 && value !== '') this.setState({ contact1Validate: true })
+        else this.setState({ contact1Validate: false })
+    }
+
+    validateContact2 = (value) => {
+        if (value.length < 11 && value !== '') this.setState({ contact2Validate: true })
+        else this.setState({ contact2Validate: false })
     }
 
     validateCnic = (value) => {
@@ -79,6 +102,8 @@ class AddClient extends Component {
         }
         if (name == 'email') this.validateEmail(value)
         if (name == 'contactNumber') this.validatePhone(value)
+        if (name == 'contact1') this.validateContact1(value)
+        if (name == 'contact2') this.validateContact2(value)
 
         formData[name] = value
         this.setState({ formData })
@@ -92,7 +117,7 @@ class AddClient extends Component {
     }
 
     formSubmit = () => {
-        const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
+        const { formData, emailValidate, phoneValidate, cnicValidate, contact1Validate, contact2Validate } = this.state
         const { route, navigation, contacts } = this.props
         const { update, client, isFromDropDown, screenName } = route.params
         if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
@@ -101,7 +126,7 @@ class AddClient extends Component {
                 checkValidation: true
             })
         } else {
-            if (emailValidate && !phoneValidate && !cnicValidate) {
+            if (emailValidate && !phoneValidate && !cnicValidate && !contact1Validate && !contact2Validate) {
                 if (formData.cnic === '') formData.cnic = null
                 let body = {
                     first_name: helper.capitalize(formData.firstName),
@@ -110,7 +135,9 @@ class AddClient extends Component {
                     cnic: formData.cnic,
                     phone: formData.contactNumber,
                     address: formData.address,
-                    secondary_address: formData.secondaryAddress
+                    secondary_address: formData.secondaryAddress,
+                    contact1: formData.contact1,
+                    contact2: formData.contact2,
                 }
                 if (!update) {
                     axios.post(`/api/customer/create`, body)
@@ -147,6 +174,10 @@ class AddClient extends Component {
                             helper.errorToast('ERROR CREATING CLIENT')
                         })
                 } else {
+                    body.customersContacts = []
+                    body.customersContacts.push(body.phone)
+                    if (body.contact1) body.customersContacts.push(body.contact1)
+                    if (body.contact2) body.customersContacts.push(body.contact2)
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')
@@ -164,13 +195,13 @@ class AddClient extends Component {
     }
 
     render() {
-        const { formData, cities, getClients, getProject, phoneValidate, emailValidate, cnicValidate } = this.state
+        const { formData, cities, getClients, getProject, phoneValidate, emailValidate, cnicValidate, contact2Validate, contact1Validate } = this.state
         const { route } = this.props
         const { update } = route.params
         return (
             <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
-                    <KeyboardAvoidingView behavior="padding" enabled>
+                    <KeyboardAvoidingView enabled>
                         <ScrollView>
                             <View>
                                 <DetailForm
@@ -185,6 +216,8 @@ class AddClient extends Component {
                                     phoneValidate={phoneValidate}
                                     emailValidate={emailValidate}
                                     cnicValidate={cnicValidate}
+                                    contact2Validate={contact2Validate}
+                                    contact1Validate={contact1Validate}
                                 />
                             </View>
                         </ScrollView>

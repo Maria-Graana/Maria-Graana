@@ -55,9 +55,12 @@ class AgentTile extends React.Component {
 		let newContact = {
 			phone: this.displayPhoneNumber(data),
 			name: name !== '- - -' ? name : '',
-			url: `tel:${this.displayPhoneNumber(data)}`
+			url: `tel:${this.displayPhoneNumber(data)}`,
+			payload: [{
+				label: 'mobile',
+				number: this.displayPhoneNumber(data)
+			}]
 		}
-		console.log(newContact)
 		const { contacts } = this.props
 		helper.callNumber(newContact, contacts)
 	}

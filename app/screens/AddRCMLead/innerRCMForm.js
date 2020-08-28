@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { Button } from 'native-base';
+import { Button, Textarea } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import styles from './style';
 import AppStyles from '../../AppStyles';
@@ -169,6 +169,14 @@ class InnerRCMForm extends Component {
         </View>
 
         <PriceSlider priceValues={priceList} initialValue={0} finalValue={priceList.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} />
+        <View style={[AppStyles.mainInputWrap]}>
+          <Textarea
+            value={formData.description}
+            style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings, { height: 100, paddingTop: 10, }]} rowSpan={5}
+            placeholder="Description"
+            onChangeText={(text) => handleForm(text, 'description')}
+          />
+        </View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

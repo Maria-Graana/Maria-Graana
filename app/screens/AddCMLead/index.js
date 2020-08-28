@@ -21,6 +21,7 @@ class AddCMLead extends Component {
             selectedClient: null,
             selectedCity: null,
             getProject: [],
+            getProductType: [],
             formType: 'sale',
             selectSubType: [],
             getAreas: [],
@@ -29,8 +30,10 @@ class AddCMLead extends Component {
                 cityId: '',
                 projectId: '',
                 projectType: '',
+                armsProjectTypeId: null,
                 minPrice: StaticData.PricesProject[0],
                 maxPrice: StaticData.PricesProject[StaticData.PricesProject.length - 1],
+                description: '',
             }
         }
     }
@@ -58,7 +61,7 @@ class AddCMLead extends Component {
         axios.get(`/api/project/all`)
             .then((res) => {
                 let projectArray = [];
-                res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name })) })
+                res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name, productType: item.productTypes })) })
                 this.setState({
                     getProject: projectArray
                 });
@@ -66,8 +69,16 @@ class AddCMLead extends Component {
     }
 
     handleForm = (value, name) => {
-        const { formData } = this.state
+        const { formData, getProductType } = this.state
         formData[name] = value
+        if (name === 'projectId') {
+            this.getProductType(value)
+        }
+        if(name === 'projectType'){
+            const getProName = getProductType.find((item)=>{return item.value === value})
+            formData['armsProjectTypeId'] = value
+            formData['projectType'] = getProName.name
+        }
         this.setState({ formData })
     }
 
@@ -82,7 +93,7 @@ class AddCMLead extends Component {
                 checkValidation: true
             })
         } else {
-          if (formData.projectId && formData.projectId !== '') {
+            if (formData.projectId && formData.projectId !== '') {
                 let project = _.find(getProject, function (item) { return item.value === formData.projectId })
                 formData.projectName = project.name
             }
@@ -120,7 +131,21 @@ class AddCMLead extends Component {
     handleCityClick = () => {
         const { navigation } = this.props;
         const { selectedCity } = this.state;
-        navigation.navigate('SingleSelectionPicker', { screenName: 'AddCMLead', mode:'city', selectedCity });
+        navigation.navigate('SingleSelectionPicker', { screenName: 'AddCMLead', mode: 'city', selectedCity });
+    }
+
+    getProductType = (id) => {
+        const { getProject } = this.state
+        var getProType = _.pluck(_.filter(getProject, item => item.value === id), 'productType')
+        var getPro = []
+        getProType[0].map((item) => {
+            return (
+                getPro.push({ value: item.id, name: item.name })
+            )
+        })
+        this.setState({
+            getProductType: getPro
+        })
     }
 
     render() {
@@ -129,13 +154,14 @@ class AddCMLead extends Component {
             getProject,
             checkValidation,
             selectedCity,
-            clientName
+            clientName,
+            getProductType
         } = this.state
         const { route } = this.props
         return (
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
-                    <KeyboardAvoidingView behavior="padding" enabled>
+                    <KeyboardAvoidingView enabled>
                         <ScrollView>
                             <View>
                                 <CMLeadFrom
@@ -149,6 +175,7 @@ class AddCMLead extends Component {
                                     formData={formData}
                                     getProject={getProject}
                                     onSliderValueChange={(values) => this.onSliderValueChange(values)}
+                                    getProductType={getProductType}
                                 />
 
                             </View>

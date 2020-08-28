@@ -7,6 +7,7 @@ import phone from '../../../assets/img/phone2.png'
 import styles from './style'
 import helper from '../../helper';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
 class LeadTile extends React.Component {
   constructor(props) {
@@ -14,13 +15,29 @@ class LeadTile extends React.Component {
   }
 
   call = (data) => {
-    let newContact = {
-      phone: data.customer && data.customer.phone,
-      name: data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName),
-      url: `tel:${data.customer && data.customer.phone}`
-    }
-    const { contacts } = this.props
+    const { contacts, purposeTab } = this.props
+    let newContact = helper.createContactPayload(data.customer)
+    if (purposeTab === 'invest') this.sendCallStatus(data)
     helper.callNumber(newContact, contacts)
+  }
+
+  sendCallStatus = (data) => {
+    const start = moment().format();
+    let body = {
+      start: start,
+      end: start,
+      time: start,
+      date: start,
+      taskType: 'called',
+      response: 'Called',
+      subject: 'Call to client ' + data.customer.customerName,
+      cutomerId: data.customer.id,
+      leadId: data.id,
+      taskCategory: 'leadTask',
+    }
+    axios.post(`api/leads/project/meeting`, body)
+      .then((res) => {
+      })
   }
 
   render() {
@@ -33,7 +50,6 @@ class LeadTile extends React.Component {
 
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
-
         <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
@@ -62,7 +78,7 @@ class LeadTile extends React.Component {
 
                 {/* ****** Price Wrap */}
                 {
-                  data.description != null && purposeTab === 'invest' &&
+                  data.description != null && data.description != '' && purposeTab === 'invest' &&
                   <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                     <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen, descriptionColor]} numberOfLines={1}>
                       {data.description}
@@ -90,7 +106,7 @@ class LeadTile extends React.Component {
                     data.size != null && !data.projectId &&
                     <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
                       {data.size !== 0 ? data.size + ' ' : null}
-                      {data.size_unit && data.size_unit !== null ? helper.capitalize(data.size_unit) + ' ' : null}
+                      {data.size_unit && data.size_unit !== null && data.size !== 0 ? helper.capitalize(data.size_unit) + ' ' : null}
                       {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
                       {data.purpose === 'sale' ? 'Buy' : 'Rent'}
                     </Text>
@@ -112,8 +128,8 @@ class LeadTile extends React.Component {
 
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  <Text style={[styles.normalText, styles.lightColor, AppStyles.mrTen]}>
-                    {moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}
+                  <Text style={[styles.normalText, styles.lightColor, AppStyles.mrTen]} numberOfLines={1}>
+                    {data.id ? `ID: ${data.id}, ` : ''} {`Created: ${moment(data.createdAt).format("MMM DD YYYY, hh:mm A")}`}
                   </Text>
                 </View>
               </View>

@@ -1,10 +1,7 @@
 import * as Font from 'expo-font';
 import * as Sentry from 'sentry-expo';
-
 import { persistor, store } from './app/store';
-
 import { AppLoading } from 'expo';
-// import * as firebase from 'firebase';
 import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -16,28 +13,33 @@ import RootStack from './app/navigation/AppNavigation'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SplashScreen } from 'expo';
 import { setCustomTouchableOpacity } from 'react-native-global-props'
-import helper from './app/helper';
 import config from './app/config';
 import axios from 'axios';
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, YellowBox } from 'react-native';
+import * as RootNavigation from './app/navigation/RootNavigation';
+import * as Notifications from 'expo-notifications';
+import { NavigationContainer } from '@react-navigation/native';
+import { navigationRef } from './app/navigation/RootNavigation';
 
-// const firebaseConfig = {
-// 	apiKey: "AIzaSyBcMF6jv0j0EY82JC9XW0jKMu4o7fRDKrg",
-// 	authDomain: "graana-push-notification-e4375.firebaseapp.com",
-// 	databaseURL: "https://graana-push-notification-e4375.firebaseio.com",
-// 	storageBucket: "graana-push-notification-e4375.appspot.com",
-// 	measurementId: "G-8CRWYW95PT"
-//   }
+Notifications.setNotificationHandler({
+	handleNotification: async () => ({
+		shouldShowAlert: true,
+		shouldPlaySound: true,
+		shouldSetBadge: true,
+	})
+})
 
 export default class App extends React.Component {
 	constructor(props) {
 		super(props)
+		this._notificationSubscription = Notifications.addNotificationResponseReceivedListener(this._handleNotification)
 		this.state = {
-			isReady: false,
-		};
+			isReady: false
+		}
 	}
 
 	async componentDidMount() {
+		this.setState({ isReady: true })
 		setCustomTouchableOpacity({ activeOpacity: 0.8 })
 		SplashScreen.preventAutoHide();
 		axios.defaults.baseURL = config.apiPath
@@ -58,12 +60,11 @@ export default class App extends React.Component {
 				resolve(config)
 			})
 		)
-		// firebase.initializeApp(firebaseConfig)
 		Sentry.init({
+			enableInExpoDevelopment: true,
 			dsn: 'https://d23d9b7296fa43a1ab41150269693c2f@o375514.ingest.sentry.io/5195102',
 		})
-		Sentry.setRelease(Constants.manifest.revisionId);
-
+		Sentry.setRelease(Constants.manifest.revisionId)
 		await Font.loadAsync({
 			Roboto: require('native-base/Fonts/Roboto.ttf'),
 			Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
@@ -72,13 +73,37 @@ export default class App extends React.Component {
 			OpenSans_light: require('./assets/fonts/OpenSans-Light.ttf'),
 			OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
 			...Ionicons.font,
-		});
-		this.setState({ isReady: true });
+		})
+		YellowBox.ignoreWarnings(['Animated: `useNativeDriver` was not specified'])
+	}
+
+	_handleNotification = response => {
+		const { navigation } = this.props
+		let notification = response.notification
+		Sentry.captureException(`Notification Handler: ${JSON.stringify(notification)}`)
+
+		if (response.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER && notification.request) {
+			let content = notification.request && notification.request.content
+			setTimeout(() => { this.navigateRoutes(content) }, 300)
+		}
+	}
+
+	navigateRoutes = (content) => {
+		if (content) {
+			let data = content.data
+			Sentry.captureException(`Notification data: ${JSON.stringify(data)}`)
+			Sentry.captureException(`Notification RootNavigation: ${JSON.stringify(RootNavigation)}`)
+			if (data.type === 'local') RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
+			if (data.type === 'investLead') RootNavigation.navigateTo('Leads', { screen: 'Invest' })
+			if (data.type === 'buyLead') RootNavigation.navigateTo('Leads', { screen: 'Buy' })
+			if (data.type === 'rentLead') RootNavigation.navigateTo('Leads', { screen: 'Rent' })
+			if (data.type === 'diary') RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
+		}
 	}
 
 	render() {
 		if (!this.state.isReady) {
-			return <AppLoading />;
+			return <AppLoading />
 		}
 		return (
 			<Provider store={store}>
@@ -86,7 +111,9 @@ export default class App extends React.Component {
 					<SafeAreaProvider>
 						<Root>
 							<PaperProvider>
-								<RootStack />
+								<NavigationContainer ref={navigationRef}>
+									<RootStack />
+								</NavigationContainer>
 							</PaperProvider>
 						</Root>
 					</SafeAreaProvider>

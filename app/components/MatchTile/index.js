@@ -58,7 +58,11 @@ class MatchTile extends React.Component {
 		let newContact = {
 			phone: this.displayPhoneNumber(data),
 			name: name !== '- - -' ? name : '',
-			url: `tel:${this.displayPhoneNumber(data)}`
+			url: `tel:${this.displayPhoneNumber(data)}`,
+			payload: [{
+				label: 'mobile',
+				number: this.displayPhoneNumber(data)
+			}]
 		}
 		const { contacts } = this.props
 		helper.callNumber(newContact, contacts)

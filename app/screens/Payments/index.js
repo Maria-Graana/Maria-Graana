@@ -446,6 +446,9 @@ class Payments extends Component {
 		if (name === 'projectId') {
 			this.getSpecificProject(value)
 		}
+		if (name === 'unitId') {
+			console.log('hello')
+		}
 		if (name === 'discount') {
 			arrowCheck[name] = true
 		}
@@ -533,10 +536,15 @@ class Payments extends Component {
 	}
 
 	getUnitDetailsThroughId = (id) => {
-		const { units } = this.state
+		const { units, formData } = this.state
 		var getObject = units && units.filter((item) => { return item.id == id ? item : null })
+		var newFormData = {...formData}
+		newFormData['discountPercentage'] = ''
 		this.setState({
-			unitDetailsData: getObject[0]
+			unitDetailsData: getObject[0],
+			formData: newFormData,
+			discountAmount: '',
+			discountedPrice: '',
 		})
 	}
 

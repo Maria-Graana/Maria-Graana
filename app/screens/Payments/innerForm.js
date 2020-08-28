@@ -58,6 +58,7 @@ class InnerForm extends Component {
       checkMonthlyOption,
       possessionCharges,
       possessionFormat,
+      checkForUnitAvail,
     } = this.props
     let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false ? false : true
     let remainingPay = remainingPayment && remainingPayment.toString()
@@ -65,6 +66,7 @@ class InnerForm extends Component {
     var unitDetail = unitDetails && unitDetails != null && unitDetails != '' && unitDetails
     var installmentsPlans = formData.installmentDue === 'quarterly' ? StaticData.getInstallments : StaticData.getInstallmentsMonthly
     var installmentsDueOption = checkMonthlyOption === true ? StaticData.installmentDue : StaticData.onlyQuarterly
+    var checkForUnitAvailable = checkForEdit === false || checkForUnitAvail === false ? false : true
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -74,14 +76,14 @@ class InnerForm extends Component {
               {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} placeholder='Project' selectedItem={formData.projectId} enabled={checkForEdit} />
+                  <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} placeholder='Project' selectedItem={formData.projectId} enabled={checkForUnitAvailable} />
                 </View>
               </View>
 
               {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent onValueChange={handleForm} data={getFloor} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={checkForEdit} />
+                  <PickerComponent onValueChange={handleForm} data={getFloor} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={checkForUnitAvailable} />
                 </View>
               </View>
 
@@ -89,7 +91,7 @@ class InnerForm extends Component {
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={styles.maiinDetailBtn}>
                   <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
-                    <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkForEdit} />
+                    <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkForUnitAvailable} />
                   </View>
                   <View style={styles.mainDetailViewBtn}>
                     <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.unitId != '' && openUnitDetailsModal(true) }}>
@@ -104,8 +106,8 @@ class InnerForm extends Component {
                 label={'UNIT PRICE'}
                 placeholder={'Unit Price'}
                 name={'unitPrice'}
-                priceFormatVal={unitDetail && unitDetail.unit_price != null  ?  unitDetail.unit_price.toString() : ''}
-                value={unitDetail && unitDetail.unit_price != null  ?  unitDetail.unit_price.toString() : ''}
+                priceFormatVal={unitDetail && unitDetail.unit_price != null ? unitDetail.unit_price.toString() : ''}
+                value={unitDetail && unitDetail.unit_price != null ? unitDetail.unit_price.toString() : ''}
                 keyboardType={'numeric'}
                 showDate={false}
                 dateStatus={false}
@@ -115,7 +117,7 @@ class InnerForm extends Component {
 
               {/* **************************************** */}
               <InputField
-                label={'DISCOUNT PARCENTAGE'}
+                label={'DISCOUNT PERCENTAGE'}
                 placeholder={'Discount Percentage'}
                 name={'discountPercentage'}
                 priceFormatVal={false}
@@ -129,6 +131,7 @@ class InnerForm extends Component {
                 dateStatus={false}
                 editable={checkForEdit}
                 editPriceFormat={{ status: false, name: 'discountPercentage' }}
+                isPercentageValue={true}
               />
 
               {/* **************************************** */}
@@ -136,8 +139,8 @@ class InnerForm extends Component {
                 label={'DISCOUNT AMOUNT'}
                 placeholder={'Discount Amount'}
                 name={'discountAmount'}
-                priceFormatVal={discountAmount ? discountAmount.toString() : ''}
-                value={discountAmount ? discountAmount.toString() : ''}
+                priceFormatVal={discountedPrice ? discountedPrice.toString() : ''}
+                value={discountedPrice ? discountedPrice.toString() : ''}
                 keyboardType={'numeric'}
                 showDate={false}
                 dateStatus={false}
@@ -150,8 +153,8 @@ class InnerForm extends Component {
                 label={'DISCOUNTED PRICE'}
                 placeholder={'Discounted Price'}
                 name={'discountedPrice'}
-                priceFormatVal={discountedPrice ? discountedPrice.toString() : ''}
-                value={discountedPrice ? discountedPrice.toString() : ''}
+                priceFormatVal={discountAmount ? discountAmount.toString() : ''}
+                value={discountAmount ? discountAmount.toString() : ''}
                 keyboardType={'numeric'}
                 showDate={false}
                 dateStatus={false}
@@ -181,13 +184,32 @@ class InnerForm extends Component {
               {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent onValueChange={handleForm} data={paymentOptions} name={'paymentType'} enabled={checkForEdit} placeholder='Select Payment Type' selectedItem={formData.paymentType} />
+                  <PickerComponent
+                    onValueChange={handleForm}
+                    data={paymentOptions}
+                    name={'paymentType'}
+                    enabled={checkForEdit}
+                    placeholder='Select Payment Type'
+                    selectedItem={formData.paymentType}
+                  />
                 </View>
               </View>
 
               {
                 formData.paymentType === 'installments' ?
                   <View>
+                    {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap]}>
+                      <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={installmentsDueOption} enabled={checkForEdit} name={'installmentDue'} placeholder='Installment Due' selectedItem={formData.installmentDue} />
+                      </View>
+                    </View>
+                    {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap]}>
+                      <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={checkForEdit} name={'no_installments'} placeholder='Installment Plan' selectedItem={no_installments} />
+                      </View>
+                    </View>
                     {/* **************************************** */}
                     <InputField
                       label={'DOWN PAYMENT'}
@@ -206,18 +228,6 @@ class InnerForm extends Component {
                       showDate={true}
                       dateStatus={downPaymentDateStatus}
                     />
-                    {/* **************************************** */}
-                    <View style={[AppStyles.mainInputWrap]}>
-                      <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={installmentsDueOption} enabled={checkForEdit} name={'installmentDue'} placeholder='Installment Due' selectedItem={formData.installmentDue} />
-                      </View>
-                    </View>
-                    {/* **************************************** */}
-                    <View style={[AppStyles.mainInputWrap]}>
-                      <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={checkForEdit} name={'no_installments'} placeholder='Installment Plan' selectedItem={no_installments} />
-                      </View>
-                    </View>
                     {/* **************************************** */}
                     {
                       totalInstalments != '' && totalInstalments.map((item, key) => {
@@ -309,9 +319,11 @@ class InnerForm extends Component {
 
                     {
                       checkForEdit == true &&
-                      <TouchableOpacity onPress={() => checkForEdit == true ? addFullpaymentFields() : closedLead()}>
-                        <Text style={styles.addMore}>Add More Payments</Text>
-                      </TouchableOpacity>
+                      <View style={[styles.addMoreBtnMain]}>
+                        <TouchableOpacity onPress={() => checkForEdit == true ? addFullpaymentFields() : closedLead()}>
+                          <Text style={styles.addMore}>Add More Payments</Text>
+                        </TouchableOpacity>
+                      </View>
                     }
 
                   </View>

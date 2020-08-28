@@ -55,7 +55,7 @@ class Payments extends Component {
 				payment: '',
 				discountPercentage: lead.unit != null ? lead.unit.discount : '',
 				unitStatus: lead.unit != null ? lead.unit.bookingStatus : '',
-				installmentDue: lead && lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
+				installmentDue: '',
 			},
 			instalments: lead.no_of_installments ? lead.no_of_installments : '',
 			reasons: [],
@@ -87,7 +87,8 @@ class Payments extends Component {
 			discountedPrice: lead.unit != null && lead.unit.discount != null && lead.unit.discounted_price,
 			getAllProject: [],
 			checkMonthlyOption: false,
-			possessionCharges: '',
+			possessionCharges: 'quarterly',
+			checkForUnitAvail: true,
 		}
 
 	}
@@ -126,10 +127,11 @@ class Payments extends Component {
 				commisionPayment: '',
 				downPayment: data.downPayment ? data.downPayment : '',
 				discountPercentage: data.unit != null ? data.unit.discount : '',
-				installmentDue: lead && lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
+				installmentDue: lead && lead.installmentDue != 'monthly' ? 'quarterly' : 'monthly',
 			},
-			instalments: data.no_of_installments ? data.no_of_installments : '',
+			instalments: data.project && data.project.installment_plan ? this.noOfInstallments(data.project.installment_plan) : '',
 			possessionCharges: data.unit != null ? data.unit.possession_charges : '',
+			checkForUnitAvail: data.unit && data.unit != null && data.unit.bookingStatus != 'Available' ? false : true,
 		}, () => {
 			let name = ''
 			if (data.projectId != null) {
@@ -179,6 +181,11 @@ class Payments extends Component {
 				this.instalmentsField(data.no_of_installments)
 				this.discountPayment()
 			}
+			if (data.project.installment_plan != null) {
+				var totalInstallments = this.noOfInstallments(data.project.installment_plan)
+				this.instalmentsField(totalInstallments)
+				this.discountPayment()
+			}
 			if (data.cmInstallments.length) {
 				name = 'installments'
 				arrowCheck[name] = false
@@ -211,6 +218,18 @@ class Payments extends Component {
 		})
 	}
 
+	noOfInstallments = (noOfInstallments) => {
+		const { formData } = this.state
+		var total = ''
+		if(formData.installmentDue === 'quarterly'){
+			total = noOfInstallments * 4
+		}else{
+			total = noOfInstallments * 12
+		}
+		console.log(total)
+		return total
+	}
+
 	getAllProjects = () => {
 		axios.get(`/api/project/all`)
 			.then((res) => {
@@ -231,7 +250,7 @@ class Payments extends Component {
 		const { getAllProject } = this.state
 		var getSpecific = getAllProject && getAllProject.items.filter((item) => { return item.id == id && item })
 		this.setState({
-			checkMonthlyOption: getSpecific[0].monthly_installment_availablity === 'yes' ? true : false
+			checkMonthlyOption: getSpecific && getSpecific[0].monthly_installment_availablity === 'yes' ? true : false
 		})
 	}
 
@@ -263,7 +282,29 @@ class Payments extends Component {
 
 	getUnits = (projectId, floorId) => {
 		const { lead } = this.props
-		if (lead.unit === null) {
+		if (lead.unit != null) {
+			if (lead.unit.bookingStatus === 'Available') {
+				axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
+					.then((res) => {
+						let array = [];
+						res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
+						this.setState({
+							getUnit: array,
+							units: res.data.rows
+						}, () => {
+							if (lead.unitId != null) {
+								this.readOnly(lead.unitId)
+								this.getUnitDetailsThroughId(lead.unitId)
+							}
+						})
+					})
+			} else {
+				this.setState({
+					getUnit: [{ value: lead.unit.id, name: lead.unit.name }],
+					unitDetailsData: lead.unit
+				})
+			}
+		} else {
 			axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
 				.then((res) => {
 					let array = [];
@@ -278,11 +319,6 @@ class Payments extends Component {
 						}
 					})
 				})
-		} else {
-			this.setState({
-				getUnit: [{ value: lead.unit.id, name: lead.unit.name }],
-				unitDetailsData: lead.unit
-			})
 		}
 	}
 
@@ -427,6 +463,9 @@ class Payments extends Component {
 		if (name === 'projectId') {
 			this.getSpecificProject(value)
 		}
+		if (name === 'unitId') {
+			console.log('hello')
+		}
 		if (name === 'discount') {
 			arrowCheck[name] = true
 		}
@@ -514,10 +553,15 @@ class Payments extends Component {
 	}
 
 	getUnitDetailsThroughId = (id) => {
-		const { units } = this.state
+		const { units, formData } = this.state
 		var getObject = units && units.filter((item) => { return item.id == id ? item : null })
+		var newFormData = { ...formData }
+		newFormData['discountPercentage'] = ''
 		this.setState({
-			unitDetailsData: getObject[0]
+			unitDetailsData: getObject[0],
+			formData: newFormData,
+			discountAmount: '',
+			discountedPrice: '',
 		})
 	}
 
@@ -611,8 +655,8 @@ class Payments extends Component {
 			newArrowCheck[name] = false
 			this.formatStatusChange(name, true)
 		}
-		if(name === 'installmentDue'){
-			body = {installmentDue: formData[name],  remainingPayment: remainingPayment ,}
+		if (name === 'installmentDue') {
+			body = { installmentDue: formData[name], remainingPayment: remainingPayment, }
 		}
 		if (name === 'possessionCharges') {
 			body = {
@@ -638,9 +682,16 @@ class Payments extends Component {
 			newtokenDateStatus['name'] = name
 			newtokenDateStatus['status'] = true
 			this.formatStatusChange(name, true)
+			
 		}
 		if (name === 'downPayment') {
-			body = { downPayment: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
+
+			body = {
+				downPayment: formData[name] ? formData[name] : null,
+				remainingPayment: remainingPayment,
+				unitStatus: formData['installmentDue'] === 'quarterly' ? 'Sold on Installment Plan' : 'Sold on Monthly Installments',
+				unitId: formData['unitId']
+			}
 			this.currentDate(name)
 			newArrowCheck[name] = false
 			newdownPaymentDateStatus['name'] = name
@@ -675,6 +726,10 @@ class Payments extends Component {
 								totalInstalments: newtotalInstallments
 							})
 						})
+				}
+
+				if(name === 'token'){
+					this.setState({checkForUnitAvail: false})
 				}
 
 				this.setState({
@@ -935,11 +990,8 @@ class Payments extends Component {
 		}
 
 		if (name === 'discountPercentage') {
-			newFormData[name] = ''
-			this.setState({
-				discountAmount: '',
-				discountedPrice: ''
-			})
+			this.formatStatusChange(name, false);
+			this.apiCallForNewDetails(arrayName, name)
 		}
 
 		if (name === 'token') {
@@ -1009,6 +1061,17 @@ class Payments extends Component {
 						}, () => {
 							this.discountPayment(formData)
 						})
+					}
+
+					if (name === 'discountPercentage') {
+						if (data.unit != null) {
+							newFormData[name] = data.unit.discount != null ? data.unit.discount : ''
+							this.setState({
+								formData: newFormData,
+								discountAmount: data.unit.discount_amount != null ? data.unit.discount_amount : '',
+								discountedPrice: data.unit.discounted_price != null ? data.unit.discounted_price : '',
+							})
+						}
 					}
 
 					if (name === 'token') {
@@ -1153,6 +1216,7 @@ class Payments extends Component {
 			checkMonthlyOption,
 			possessionCharges,
 			possessionFormat,
+			checkForUnitAvail,
 		} = this.state
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
@@ -1223,6 +1287,7 @@ class Payments extends Component {
 							discountedPrice={discountedPrice}
 							checkMonthlyOption={checkMonthlyOption}
 							possessionCharges={possessionCharges}
+							checkForUnitAvail={checkForUnitAvail}
 						/>
 					</View>
 				</ScrollView>

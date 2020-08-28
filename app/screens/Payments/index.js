@@ -131,7 +131,7 @@ class Payments extends Component {
 			},
 			instalments: data.no_of_installments ? data.no_of_installments : '',
 			possessionCharges: data.unit != null ? data.unit.possession_charges : '',
-			checkForUnitAvail: data.unit && data.unit != null ? false : true,
+			checkForUnitAvail: data.unit && data.unit != null && data.unit.bookingStatus != 'Available' ? false : true,
 		}, () => {
 			let name = ''
 			if (data.projectId != null) {
@@ -265,7 +265,29 @@ class Payments extends Component {
 
 	getUnits = (projectId, floorId) => {
 		const { lead } = this.props
-		if (lead.unit === null) {
+		if (lead.unit != null) {
+			if (lead.unit.bookingStatus === 'Available') {
+				axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
+					.then((res) => {
+						let array = [];
+						res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
+						this.setState({
+							getUnit: array,
+							units: res.data.rows
+						}, () => {
+							if (lead.unitId != null) {
+								this.readOnly(lead.unitId)
+								this.getUnitDetailsThroughId(lead.unitId)
+							}
+						})
+					})
+			} else {
+				this.setState({
+					getUnit: [{ value: lead.unit.id, name: lead.unit.name }],
+					unitDetailsData: lead.unit
+				})
+			}
+		} else {
 			axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
 				.then((res) => {
 					let array = [];
@@ -280,11 +302,6 @@ class Payments extends Component {
 						}
 					})
 				})
-		} else {
-			this.setState({
-				getUnit: [{ value: lead.unit.id, name: lead.unit.name }],
-				unitDetailsData: lead.unit
-			})
 		}
 	}
 
@@ -666,7 +683,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		console.log(body)
+		// console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (name === 'installments') {
@@ -1015,8 +1032,8 @@ class Payments extends Component {
 							newFormData[name] = data.unit.discount != null ? data.unit.discount : ''
 							this.setState({
 								formData: newFormData,
-								discountAmount:  data.unit.discount_amount != null ? data.unit.discount_amount : '',
-								discountedPrice:  data.unit.discounted_price != null ? data.unit.discounted_price : '',
+								discountAmount: data.unit.discount_amount != null ? data.unit.discount_amount : '',
+								discountedPrice: data.unit.discounted_price != null ? data.unit.discounted_price : '',
 							})
 						}
 					}

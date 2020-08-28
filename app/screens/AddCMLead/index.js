@@ -75,7 +75,6 @@ class AddCMLead extends Component {
             this.getProductType(value)
         }
         if(name === 'projectType'){
-            console.log(getProductType)
             const getProName = getProductType.find((item)=>{return item.value === value})
             formData['armsProjectTypeId'] = value
             formData['projectType'] = getProName.name
@@ -159,7 +158,6 @@ class AddCMLead extends Component {
             getProductType
         } = this.state
         const { route } = this.props
-         console.log(formData)
         return (
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>

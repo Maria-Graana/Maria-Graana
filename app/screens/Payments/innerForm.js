@@ -139,8 +139,8 @@ class InnerForm extends Component {
                 label={'DISCOUNT AMOUNT'}
                 placeholder={'Discount Amount'}
                 name={'discountAmount'}
-                priceFormatVal={discountAmount ? discountAmount.toString() : ''}
-                value={discountAmount ? discountAmount.toString() : ''}
+                priceFormatVal={discountedPrice ? discountedPrice.toString() : ''}
+                value={discountedPrice ? discountedPrice.toString() : ''}
                 keyboardType={'numeric'}
                 showDate={false}
                 dateStatus={false}
@@ -153,8 +153,8 @@ class InnerForm extends Component {
                 label={'DISCOUNTED PRICE'}
                 placeholder={'Discounted Price'}
                 name={'discountedPrice'}
-                priceFormatVal={discountedPrice ? discountedPrice.toString() : ''}
-                value={discountedPrice ? discountedPrice.toString() : ''}
+                priceFormatVal={discountAmount ? discountAmount.toString() : ''}
+                value={discountAmount ? discountAmount.toString() : ''}
                 keyboardType={'numeric'}
                 showDate={false}
                 dateStatus={false}
@@ -199,6 +199,18 @@ class InnerForm extends Component {
                 formData.paymentType === 'installments' ?
                   <View>
                     {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap]}>
+                      <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={installmentsDueOption} enabled={checkForEdit} name={'installmentDue'} placeholder='Installment Due' selectedItem={formData.installmentDue} />
+                      </View>
+                    </View>
+                    {/* **************************************** */}
+                    <View style={[AppStyles.mainInputWrap]}>
+                      <View style={[AppStyles.inputWrap]}>
+                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={checkForEdit} name={'no_installments'} placeholder='Installment Plan' selectedItem={no_installments} />
+                      </View>
+                    </View>
+                    {/* **************************************** */}
                     <InputField
                       label={'DOWN PAYMENT'}
                       placeholder={'Enter Down Payment'}
@@ -216,18 +228,6 @@ class InnerForm extends Component {
                       showDate={true}
                       dateStatus={downPaymentDateStatus}
                     />
-                    {/* **************************************** */}
-                    <View style={[AppStyles.mainInputWrap]}>
-                      <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={installmentsDueOption} enabled={checkForEdit} name={'installmentDue'} placeholder='Installment Due' selectedItem={formData.installmentDue} />
-                      </View>
-                    </View>
-                    {/* **************************************** */}
-                    <View style={[AppStyles.mainInputWrap]}>
-                      <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={checkForEdit} name={'no_installments'} placeholder='Installment Plan' selectedItem={no_installments} />
-                      </View>
-                    </View>
                     {/* **************************************** */}
                     {
                       totalInstalments != '' && totalInstalments.map((item, key) => {

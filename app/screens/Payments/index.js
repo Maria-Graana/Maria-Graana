@@ -682,6 +682,7 @@ class Payments extends Component {
 			newtokenDateStatus['name'] = name
 			newtokenDateStatus['status'] = true
 			this.formatStatusChange(name, true)
+			
 		}
 		if (name === 'downPayment') {
 
@@ -725,6 +726,10 @@ class Payments extends Component {
 								totalInstalments: newtotalInstallments
 							})
 						})
+				}
+
+				if(name === 'token'){
+					this.setState({checkForUnitAvail: false})
 				}
 
 				this.setState({

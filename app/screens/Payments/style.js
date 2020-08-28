@@ -96,4 +96,7 @@ export default styles = StyleSheet.create({
   removePad: {
     paddingTop: 0,
   },
+  addMoreBtnMain: {
+    flexDirection: 'row'
+  },
 });

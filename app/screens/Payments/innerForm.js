@@ -104,8 +104,8 @@ class InnerForm extends Component {
                 label={'UNIT PRICE'}
                 placeholder={'Unit Price'}
                 name={'unitPrice'}
-                priceFormatVal={unitDetail && unitDetail.unit_price != null  ?  unitDetail.unit_price.toString() : ''}
-                value={unitDetail && unitDetail.unit_price != null  ?  unitDetail.unit_price.toString() : ''}
+                priceFormatVal={unitDetail && unitDetail.unit_price != null ? unitDetail.unit_price.toString() : ''}
+                value={unitDetail && unitDetail.unit_price != null ? unitDetail.unit_price.toString() : ''}
                 keyboardType={'numeric'}
                 showDate={false}
                 dateStatus={false}
@@ -309,9 +309,11 @@ class InnerForm extends Component {
 
                     {
                       checkForEdit == true &&
-                      <TouchableOpacity onPress={() => checkForEdit == true ? addFullpaymentFields() : closedLead()}>
-                        <Text style={styles.addMore}>Add More Payments</Text>
-                      </TouchableOpacity>
+                      <View style={[styles.addMoreBtnMain]}>
+                        <TouchableOpacity onPress={() => checkForEdit == true ? addFullpaymentFields() : closedLead()}>
+                          <Text style={styles.addMore}>Add More Payments</Text>
+                        </TouchableOpacity>
+                      </View>
                     }
 
                   </View>

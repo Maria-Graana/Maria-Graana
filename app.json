@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.1.77",
+    "version": "1.1.85",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "splash": {
@@ -56,7 +56,8 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 3
+      "versionCode": 3,
+      "useNextNotificationsApi": true
     },
     "notification": {
       "icon": "./assets/img/ARMS-notif.png",

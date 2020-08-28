@@ -115,7 +115,6 @@ class Inventory extends React.Component {
 				}
 			}
 		);
-
 	}
 
 	showDeleteDialog(id) {
@@ -129,6 +128,9 @@ class Inventory extends React.Component {
 	onHandleOnCall = (data) => {
 		const { contacts } = this.props
 		let newContact = helper.createContactPayload(data.customer)
+		let firstName = data.customer && data.customer.first_name && data.customer.first_name
+		let last_name = data.customer && data.customer.last_name && data.customer.last_name
+		newContact.name = firstName + ' ' + last_name
 		helper.callNumber(newContact, contacts)
 	}
 

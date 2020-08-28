@@ -46,22 +46,23 @@ class Diary extends React.Component {
 
   componentDidMount() {
     const { navigation } = this.props;
-    let { selectedDate } = this.state
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route, user } = this.props;
+      let { selectedDate } = this.state
+      let dateSelected = selectedDate;
       if ('openDate' in route.params) {
         const { openDate } = route.params
-        selectedDate = moment(openDate).format(_format)
+        dateSelected = moment(openDate).format(_format)
       }
-      else selectedDate = _today
+      navigation.setOptions({ title: moment(dateSelected).format('DD MMMM YYYY') })
       if (route.params !== undefined && 'agentId' in route.params) {
-        this.setState({ agentId: route.params.agentId, selectedDate }, () => {
+        this.setState({ agentId: route.params.agentId, selectedDate:dateSelected }, () => {
           this.diaryMain();
           this.listData();
         });
       }
       else {
-        this.setState({ agentId: user.id, selectedDate }, () => {
+        this.setState({ agentId: user.id, selectedDate:dateSelected }, () => {
           this.diaryMain();
           this.listData();
         })
@@ -151,12 +152,13 @@ class Diary extends React.Component {
               {
                 selected: currentValue === selectedDate, // only selected if the date is today's date
                 marked: _.contains(uniqueDates, currentValue),  // unique date format is 2020-08-01 so we check the array if it contains the date that that came from server
-                dayTasks: _.contains(uniqueDates, currentValue) ? _.filter(res.data.rows, (item) => moment(item.date).format('YYYY-MM-DD') === currentValue) : [], // if date is similar put data object in the selected date else put empty object
+                dayTasks: _.contains(uniqueDates, currentValue) ? _.filter(res.data.rows, (item) => moment(item.date).format('YYYY-MM-DD') === currentValue) : [], // if date is similar put data object in the selected date else put empty array
               }
             }), {});
           this.setState({
             diaryData: diaryTasks,
           }, () => {
+            // console.log(diaryTasks);
             this.showTime();
           })
         }).catch((error) => {
@@ -183,6 +185,7 @@ class Diary extends React.Component {
       if (selectedObject.dayTasks.length) { // Do manipulation on mapped dates
         let groupTasksByTime = _.map(selectedObject.dayTasks, (item) => {
           item.statusColor = helper.checkStatusColor(item, _today); // check status color for example todo task is indicated with red color
+          item.hour = moment(item.start).format('hh A');
         })
         groupTasksByTime = (_.groupBy(selectedObject.dayTasks, 'hour')); // group tasks in a day by hour
         calendarData = calendarList.map((item, index) => {

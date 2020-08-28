@@ -5,6 +5,7 @@ import styles from './style';
 import helper from '../../helper'
 import LandingTile from '../../components/LandingTile'
 import PushNotification from '../../PushNotifications';
+import AndroidNotifications from '../../AndroidNotifications';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from 'react-redux';
@@ -12,6 +13,7 @@ import { getListingsCount } from '../../actions/listings'
 import { View, TouchableOpacity, Text, Image } from 'react-native';
 import addIcon from '../../../assets/img/add-icon-l.png';
 import { setContacts } from '../../actions/contacts';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -81,8 +83,8 @@ class Landing extends React.Component {
 		const { user, navigation } = this.props
 
 		return (
-			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor }]}>
-				<PushNotification navigation={navigation} />
+			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor, paddingHorizontal: wp('0%'), paddingLeft: 0 }]}>
+				<AndroidNotifications navigation={navigation} />
 				{
 					tiles.length ?
 						< FlatList

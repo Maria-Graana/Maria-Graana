@@ -201,7 +201,7 @@ class AddClient extends Component {
         return (
             <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
-                    <KeyboardAvoidingView behavior="padding" enabled>
+                    <KeyboardAvoidingView enabled>
                         <ScrollView>
                             <View>
                                 <DetailForm

@@ -39,22 +39,20 @@ class RootStack extends React.Component {
         const { user, token, loading } = this.props
         return (
             <SafeAreaProvider>
-                <NavigationContainer ref={navigationRef}>
-                    {
-                        user && loading === false && token ?
-                            <Drawer.Navigator drawerContent={({ navigation }) => <CustomDrawerContent navigation={navigation} />}>
-                                <Drawer.Screen name="MainStack" component={MainStack} />
-                            </Drawer.Navigator>
-                            :
-                            <Stack.Navigator
-                                screenOptions={{
-                                    headerShown: false
-                                }}
-                            >
-                                <Stack.Screen name={"Authstack"} component={Authstack} />
-                            </Stack.Navigator>
-                    }
-                </NavigationContainer>
+                {
+                    user && loading === false && token ?
+                        <Drawer.Navigator drawerContent={({ navigation }) => <CustomDrawerContent navigation={navigation} />}>
+                            <Drawer.Screen name="MainStack" component={MainStack} />
+                        </Drawer.Navigator>
+                        :
+                        <Stack.Navigator
+                            screenOptions={{
+                                headerShown: false
+                            }}
+                        >
+                            <Stack.Screen name={"Authstack"} component={Authstack} />
+                        </Stack.Navigator>
+                }
             </SafeAreaProvider>
         )
     }

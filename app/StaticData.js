@@ -499,6 +499,10 @@ export default StaticData = {
         10000000000,
         
     ],
+    searchTeamBy:[
+        { value: 'myTeam', name: 'My Team' },
+        { value: 'others', name: 'Others' },
+    ],
     planOptions:[
         {name: 'Investment Plan', value: 'Sold on Investment Plan'},
         {name: 'Rental Plan', value: 'Sold on Rental Plan'},

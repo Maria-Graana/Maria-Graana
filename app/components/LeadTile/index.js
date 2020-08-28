@@ -7,6 +7,7 @@ import phone from '../../../assets/img/phone2.png'
 import styles from './style'
 import helper from '../../helper';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
 class LeadTile extends React.Component {
   constructor(props) {
@@ -14,9 +15,29 @@ class LeadTile extends React.Component {
   }
 
   call = (data) => {
-    const { contacts } = this.props
+    const { contacts, purposeTab } = this.props
     let newContact = helper.createContactPayload(data.customer)
+    if (purposeTab === 'invest') this.sendCallStatus(data)
     helper.callNumber(newContact, contacts)
+  }
+
+  sendCallStatus = (data) => {
+    const start = moment().format();
+    let body = {
+      start: start,
+      end: start,
+      time: start,
+      date: start,
+      taskType: 'called',
+      response: 'Called',
+      subject: 'Call to client ' + data.customer.customerName,
+      cutomerId: data.customer.id,
+      leadId: data.id,
+      taskCategory: 'leadTask',
+    }
+    axios.post(`api/leads/project/meeting`, body)
+      .then((res) => {
+      })
   }
 
   render() {

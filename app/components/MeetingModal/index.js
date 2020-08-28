@@ -4,9 +4,10 @@ import { Button, } from 'native-base';
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal';
-import DateComponent from '../../components/DatePicker'
 import times from '../../../assets/img/times.png'
 import ErrorMessage from '../../components/ErrorMessage'
+import DateTimePicker from '../DatePicker';
+import helper from '../../helper'
 
 class MeetingModal extends React.Component {
   constructor(props) {
@@ -36,33 +37,35 @@ class MeetingModal extends React.Component {
             </TouchableOpacity>
 
             <View style={[styles.formMain]}>
+              <DateTimePicker
+                placeholderLabel={'Select Date'}
+                name={'date'}
+                mode={'date'}
+                showError={checkValidation === true && diaryTask.date === ''}
+                errorMessage={'Required'}
+                iconSource={require('../../../assets/img/calendar.png')}
+                date={diaryTask.date ? new Date(diaryTask.date) : new Date()}
+                selectedValue={diaryTask.date? helper.formatDate(diaryTask.date) : ''}
+                handleForm={(value, name) => handleFormDiary(value, name)}
+              />
 
-              {/* **************************************** */}
-              <View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <DateComponent date={diaryTask.date} mode='date' placeholder='Select Date' onDateChange={(value) => { handleFormDiary(value, 'date') }} />
-                  {
-                    checkValidation === true && formData.date === '' && <ErrorMessage errorMessage={'Required'} />
-                  }
-                </View>
-              </View>
-
-              {/* **************************************** */}
-              <View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <DateComponent date={diaryTask.startTime} mode='time' placeholder='Select Start Time' onTimeChange={(value) => { handleFormDiary(value, 'startTime') }} />
-                  {
-                    checkValidation === true && formData.time === '' && <ErrorMessage errorMessage={'Required'} />
-                  }
-                </View>
-              </View>
-
+              <DateTimePicker
+                placeholderLabel={'Select Time'}
+                name={'start'}
+                mode={'time'}
+                showError={checkValidation === true &&  diaryTask.start === ''}
+                errorMessage={'Required'}
+                iconSource={require('../../../assets/img/clock.png')}
+                date={diaryTask.start ? new Date(diaryTask.start) : new Date()}
+                selectedValue={diaryTask.start ? helper.formatTime(diaryTask.start) : ''}
+                handleForm={(value, name) => handleFormDiary(value, name)}
+              />
               {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>
                 <Button
                   onPress={() => { formSubmitDiary() }}
                   style={[AppStyles.formBtn, styles.addInvenBtn]}>
-                  <Text style={AppStyles.btnText}>{editMeeting ? 'UPDATE MEETING' : 'ADD FOLLOW UP TASK'}</Text>
+                  <Text style={AppStyles.btnText}>{'ADD FOLLOW UP TASK'}</Text>
                 </Button>
               </View>
 
@@ -81,24 +84,30 @@ class MeetingModal extends React.Component {
             <View style={[styles.formMain]}>
 
               {/* **************************************** */}
-              <View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <DateComponent date={formData.date} mode='date' placeholder='Select Date' onDateChange={(value) => { handleForm(value, 'date') }} />
-                  {
-                    checkValidation === true && formData.date === '' && <ErrorMessage errorMessage={'Required'} />
-                  }
-                </View>
-              </View>
+              <DateTimePicker
+                placeholderLabel={'Select Date'}
+                name={'date'}
+                mode={'date'}
+                showError={checkValidation === true && formData.date === ''}
+                errorMessage={'Required'}
+                iconSource={require('../../../assets/img/calendar.png')}
+                date={formData.date ? new Date(formData.date) : new Date()}
+                selectedValue={formData.date ? helper.formatDate(formData.date) : ''}
+                handleForm={(value, name) => handleForm(value, name)}
+              />
 
-              {/* **************************************** */}
-              <View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <DateComponent date={formData.time} mode='time' placeholder='Select Start Time' onTimeChange={(value) => { handleForm(value, 'time') }} />
-                  {
-                    checkValidation === true && formData.time === '' && <ErrorMessage errorMessage={'Required'} />
-                  }
-                </View>
-              </View>
+               {/* **************************************** */}
+               <DateTimePicker
+                placeholderLabel={'Select Start Time'}
+                name={'time'}
+                mode={'time'}
+                showError={checkValidation === true && formData.time === ''}
+                errorMessage={'Required'}
+                iconSource={require('../../../assets/img/clock.png')}
+                date={formData.time ? new Date(formData.time) : new Date()}
+                selectedValue={formData.time ? helper.formatTime(formData.time) : ''}
+                handleForm={(value, name) => handleForm(value, name)}
+              />
 
               {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>

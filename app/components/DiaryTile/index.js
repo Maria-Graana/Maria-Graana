@@ -73,7 +73,7 @@ class DiaryTile extends React.Component {
                                                         style={[styles.tileWrap, { borderLeftColor: val.statusColor }]}
                                                     >
                                                         <View style={styles.innerTile}>
-                                                            <Text style={styles.showTime}>{moment.utc(val.start).format('hh:mm a')} - {moment.utc(val.end).format("hh:mm a")} </Text>
+                                                            <Text style={styles.showTime}>{moment(val.start).format('hh:mm a')} - {moment(val.end).format("hh:mm a")} </Text>
                                                             <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{helper.setStatusText(val, todayDate)}</Text>
                                                         </View>
                                                         <Text style={styles.meetingText}>{val.subject}</Text>

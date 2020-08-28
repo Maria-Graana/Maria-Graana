@@ -445,7 +445,7 @@ class AddInventory extends Component {
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
-                <KeyboardAvoidingView behavior="padding" enabled>
+                <KeyboardAvoidingView enabled>
                     <Modal
                         animated={true}
                         ref={ref => (this._modal = ref)}

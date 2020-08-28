@@ -47,6 +47,7 @@ class InputField extends React.Component {
       editPriceFormat,
       typeArray,
       arrayName,
+      isPercentageValue,
     } = this.props
     var val = editPriceFormat && editPriceFormat != false && editPriceFormat.name == name && editPriceFormat.status == true ? this.currencyConvert(value) : value
     var checkForStyling = dateStatus && dateStatus != false && dateStatus.status === true ? true : false
@@ -65,7 +66,7 @@ class InputField extends React.Component {
               placeholder={placeholder}
               name={name}
               keyboardType={keyboardType}
-              value={val}
+              value={isPercentageValue && showStylingState === '' && val ? val + '%' : val}
               onChangeText={(val) => { onChange(val, name, arrayName) }}
               onTouchStart={() => { editable != false && showStyling(name, false, arrayName) }}
               placeholderTextColor="#96999E"

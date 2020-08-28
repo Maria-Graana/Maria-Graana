@@ -129,6 +129,7 @@ class InnerForm extends Component {
                 dateStatus={false}
                 editable={checkForEdit}
                 editPriceFormat={{ status: false, name: 'discountPercentage' }}
+                isPercentageValue={true}
               />
 
               {/* **************************************** */}

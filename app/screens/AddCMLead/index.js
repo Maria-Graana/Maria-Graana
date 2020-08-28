@@ -30,6 +30,7 @@ class AddCMLead extends Component {
                 cityId: '',
                 projectId: '',
                 projectType: '',
+                armsProjectTypeId: null,
                 minPrice: StaticData.PricesProject[0],
                 maxPrice: StaticData.PricesProject[StaticData.PricesProject.length - 1],
                 description: '',
@@ -68,10 +69,14 @@ class AddCMLead extends Component {
     }
 
     handleForm = (value, name) => {
-        const { formData } = this.state
+        const { formData, getProductType } = this.state
         formData[name] = value
         if (name === 'projectId') {
             this.getProductType(value)
+        }
+        if(name === 'projectType'){
+
+            console.log(getProductType)
         }
         this.setState({ formData })
     }

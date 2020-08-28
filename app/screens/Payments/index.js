@@ -538,7 +538,7 @@ class Payments extends Component {
 	getUnitDetailsThroughId = (id) => {
 		const { units, formData } = this.state
 		var getObject = units && units.filter((item) => { return item.id == id ? item : null })
-		var newFormData = {...formData}
+		var newFormData = { ...formData }
 		newFormData['discountPercentage'] = ''
 		this.setState({
 			unitDetailsData: getObject[0],
@@ -667,7 +667,13 @@ class Payments extends Component {
 			this.formatStatusChange(name, true)
 		}
 		if (name === 'downPayment') {
-			body = { downPayment: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
+
+			body = {
+				downPayment: formData[name] ? formData[name] : null,
+				remainingPayment: remainingPayment,
+				unitStatus: formData['installmentDue'] === 'quarterly' ? 'Sold on Installment Plan' : 'Sold on Monthly Installments',
+				unitId: formData['unitId']
+			}
 			this.currentDate(name)
 			newArrowCheck[name] = false
 			newdownPaymentDateStatus['name'] = name
@@ -691,7 +697,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		// console.log(body)
+		console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (name === 'installments') {

@@ -55,7 +55,7 @@ class Payments extends Component {
 				payment: '',
 				discountPercentage: lead.unit != null ? lead.unit.discount : '',
 				unitStatus: lead.unit != null ? lead.unit.bookingStatus : '',
-				installmentDue: lead && lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
+				installmentDue: '',
 			},
 			instalments: lead.no_of_installments ? lead.no_of_installments : '',
 			reasons: [],
@@ -87,7 +87,8 @@ class Payments extends Component {
 			discountedPrice: lead.unit != null && lead.unit.discount != null && lead.unit.discounted_price,
 			getAllProject: [],
 			checkMonthlyOption: false,
-			possessionCharges: '',
+			possessionCharges: 'quarterly',
+			checkForUnitAvail: true,
 		}
 
 	}
@@ -126,10 +127,11 @@ class Payments extends Component {
 				commisionPayment: '',
 				downPayment: data.downPayment ? data.downPayment : '',
 				discountPercentage: data.unit != null ? data.unit.discount : '',
-				installmentDue: lead && lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
+				installmentDue: lead && lead.installmentDue != 'monthly' ? 'quarterly' : 'monthly',
 			},
 			instalments: data.no_of_installments ? data.no_of_installments : '',
 			possessionCharges: data.unit != null ? data.unit.possession_charges : '',
+			checkForUnitAvail: data.unit && data.unit != null ? false : true,
 		}, () => {
 			let name = ''
 			if (data.projectId != null) {
@@ -231,7 +233,7 @@ class Payments extends Component {
 		const { getAllProject } = this.state
 		var getSpecific = getAllProject && getAllProject.items.filter((item) => { return item.id == id && item })
 		this.setState({
-			checkMonthlyOption: getSpecific[0].monthly_installment_availablity === 'yes' ? true : false
+			checkMonthlyOption: getSpecific && getSpecific[0].monthly_installment_availablity === 'yes' ? true : false
 		})
 	}
 
@@ -611,8 +613,8 @@ class Payments extends Component {
 			newArrowCheck[name] = false
 			this.formatStatusChange(name, true)
 		}
-		if(name === 'installmentDue'){
-			body = {installmentDue: formData[name],  remainingPayment: remainingPayment ,}
+		if (name === 'installmentDue') {
+			body = { installmentDue: formData[name], remainingPayment: remainingPayment, }
 		}
 		if (name === 'possessionCharges') {
 			body = {
@@ -664,7 +666,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		// console.log(body)
+		console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (name === 'installments') {
@@ -935,11 +937,8 @@ class Payments extends Component {
 		}
 
 		if (name === 'discountPercentage') {
-			newFormData[name] = ''
-			this.setState({
-				discountAmount: '',
-				discountedPrice: ''
-			})
+			this.formatStatusChange(name, false);
+			this.apiCallForNewDetails(arrayName, name)
 		}
 
 		if (name === 'token') {
@@ -1009,6 +1008,17 @@ class Payments extends Component {
 						}, () => {
 							this.discountPayment(formData)
 						})
+					}
+
+					if (name === 'discountPercentage') {
+						if (data.unit != null) {
+							newFormData[name] = data.unit.discount != null ? data.unit.discount : ''
+							this.setState({
+								formData: newFormData,
+								discountAmount:  data.unit.discount_amount != null ? data.unit.discount_amount : '',
+								discountedPrice:  data.unit.discounted_price != null ? data.unit.discounted_price : '',
+							})
+						}
 					}
 
 					if (name === 'token') {
@@ -1153,6 +1163,7 @@ class Payments extends Component {
 			checkMonthlyOption,
 			possessionCharges,
 			possessionFormat,
+			checkForUnitAvail,
 		} = this.state
 		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
 		return (
@@ -1223,6 +1234,7 @@ class Payments extends Component {
 							discountedPrice={discountedPrice}
 							checkMonthlyOption={checkMonthlyOption}
 							possessionCharges={possessionCharges}
+							checkForUnitAvail={checkForUnitAvail}
 						/>
 					</View>
 				</ScrollView>

@@ -39,9 +39,6 @@ import HeaderTitle from '../components/HeaderTitle/index';
 
 const Stack = createStackNavigator();
 
-const _format = 'DD MMMM YYYY';
-const _today = moment(new Date().dateString).format(_format);
-
 const headerStyle = {
     headerStyle: {
         borderBottomWidth: 0,
@@ -74,7 +71,7 @@ function MainStack() {
             />
             <Stack.Screen name='Diary' component={Diary}
                 options={({ navigation, route }) => ({
-                    title: _today,
+                    title: '',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerRight: props => <HeaderRight navigation={navigation} />,
                     headerTitleAlign: 'center',

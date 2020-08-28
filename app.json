@@ -35,7 +35,7 @@
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
       "userInterfaceStyle": "automatic",
-      "buildNumber": "5"
+      "buildNumber": "6"
     },
     "android": {
       "package": "com.agency21.arms",

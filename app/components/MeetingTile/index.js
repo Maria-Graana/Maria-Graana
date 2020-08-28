@@ -28,7 +28,7 @@ class MeetingTile extends React.Component {
           <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
             <View style={styles.border}>
               <Text style={[AppStyles.mrTen, styles.meetingCon]}>{data.taskType} @</Text>
-              <Text style={[styles.fontBold]}>{helper.formatTime(data.time)} </Text>
+              <Text style={[styles.fontBold]}>{helper.formatTime(data.start)} </Text>
               <Text style={[styles.fontBold]}>{moment(data.date).format("MMM DD")}</Text>
             </View>
             <View style={[styles.dotsWrap]}>

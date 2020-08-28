@@ -15,7 +15,7 @@ class LeadTile extends React.Component {
   }
 
   call = (data) => {
-    const { contacts } = this.props
+    const { contacts, purposeTab } = this.props
     let newContact = helper.createContactPayload(data.customer)
     if (purposeTab === 'invest') this.sendCallStatus(data)
     helper.callNumber(newContact, contacts)

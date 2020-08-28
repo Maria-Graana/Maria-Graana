@@ -130,16 +130,16 @@ class AddCMLead extends Component {
 
     getProductType = (id) => {
         const { getProject } = this.state
-        var getProType = _.pluck(_.filter(getProject, item => item.value === id ), 'productType')
+        var getProType = _.pluck(_.filter(getProject, item => item.value === id), 'productType')
         var getPro = []
-         getProType[0].map((item) => {
-            return(
-                getPro.push({value: item.id, name: item.name})
+        getProType[0].map((item) => {
+            return (
+                getPro.push({ value: item.id, name: item.name })
             )
         })
-       this.setState({
-           getProductType: getPro
-       })
+        this.setState({
+            getProductType: getPro
+        })
     }
 
     render() {

@@ -129,7 +129,7 @@ class Payments extends Component {
 				discountPercentage: data.unit != null ? data.unit.discount : '',
 				installmentDue: lead && lead.installmentDue != 'monthly' ? 'quarterly' : 'monthly',
 			},
-			instalments: data.no_of_installments ? data.no_of_installments : '',
+			instalments: data.project && data.project.installment_plan ? this.noOfInstallments(data.project.installment_plan) : '',
 			possessionCharges: data.unit != null ? data.unit.possession_charges : '',
 			checkForUnitAvail: data.unit && data.unit != null && data.unit.bookingStatus != 'Available' ? false : true,
 		}, () => {
@@ -181,6 +181,11 @@ class Payments extends Component {
 				this.instalmentsField(data.no_of_installments)
 				this.discountPayment()
 			}
+			if (data.project.installment_plan != null) {
+				var totalInstallments = this.noOfInstallments(data.project.installment_plan)
+				this.instalmentsField(totalInstallments)
+				this.discountPayment()
+			}
 			if (data.cmInstallments.length) {
 				name = 'installments'
 				arrowCheck[name] = false
@@ -211,6 +216,18 @@ class Payments extends Component {
 			})
 
 		})
+	}
+
+	noOfInstallments = (noOfInstallments) => {
+		const { formData } = this.state
+		var total = ''
+		if(formData.installmentDue === 'quarterly'){
+			total = noOfInstallments * 4
+		}else{
+			total = noOfInstallments * 12
+		}
+		console.log(total)
+		return total
 	}
 
 	getAllProjects = () => {
@@ -697,7 +714,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
 			newArrowCheck[name] = false
 		}
-		console.log(body)
+		// console.log(body)
 		axios.patch(`/api/leads/project?id=${lead.id}`, body)
 			.then((res) => {
 				if (name === 'installments') {

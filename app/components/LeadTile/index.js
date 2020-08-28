@@ -78,7 +78,7 @@ class LeadTile extends React.Component {
 
                 {/* ****** Price Wrap */}
                 {
-                  data.description != null && purposeTab === 'invest' &&
+                  data.description != null && data.description != '' && purposeTab === 'invest' &&
                   <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                     <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen, descriptionColor]} numberOfLines={1}>
                       {data.description}

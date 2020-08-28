@@ -55,7 +55,7 @@ class Payments extends Component {
 				payment: '',
 				discountPercentage: lead.unit != null ? lead.unit.discount : '',
 				unitStatus: lead.unit != null ? lead.unit.bookingStatus : '',
-				installmentDue: '',
+				installmentDue: 'quarterly',
 			},
 			instalments: lead.no_of_installments ? lead.no_of_installments : '',
 			reasons: [],
@@ -177,10 +177,6 @@ class Payments extends Component {
 				newdownPaymentDateStatus['status'] = true
 
 			}
-			if (data.no_of_installments != null) {
-				this.instalmentsField(data.no_of_installments)
-				this.discountPayment()
-			}
 			if (data.project.installment_plan != null) {
 				var totalInstallments = this.noOfInstallments(data.project.installment_plan)
 				this.instalmentsField(totalInstallments)
@@ -221,12 +217,11 @@ class Payments extends Component {
 	noOfInstallments = (noOfInstallments) => {
 		const { formData } = this.state
 		var total = ''
-		if(formData.installmentDue === 'quarterly'){
+		if (formData.installmentDue === 'quarterly') {
 			total = noOfInstallments * 4
-		}else{
+		} else {
 			total = noOfInstallments * 12
 		}
-		console.log(total)
 		return total
 	}
 
@@ -463,9 +458,6 @@ class Payments extends Component {
 		if (name === 'projectId') {
 			this.getSpecificProject(value)
 		}
-		if (name === 'unitId') {
-			console.log('hello')
-		}
 		if (name === 'discount') {
 			arrowCheck[name] = true
 		}
@@ -682,7 +674,7 @@ class Payments extends Component {
 			newtokenDateStatus['name'] = name
 			newtokenDateStatus['status'] = true
 			this.formatStatusChange(name, true)
-			
+
 		}
 		if (name === 'downPayment') {
 
@@ -728,8 +720,8 @@ class Payments extends Component {
 						})
 				}
 
-				if(name === 'token'){
-					this.setState({checkForUnitAvail: false})
+				if (name === 'token') {
+					this.setState({ checkForUnitAvail: false })
 				}
 
 				this.setState({
@@ -1016,6 +1008,11 @@ class Payments extends Component {
 			this.apiCallForNewDetails(arrayName, name)
 		}
 
+		if (name === 'possessionCharges') {
+			this.formatStatusChange(name, false, '');
+			this.apiCallForNewDetails('possessionCharges', name)
+		}
+
 		this.setState({
 			showStyling: clear === false ? name : '',
 			tokenDate: newtokenDate,
@@ -1074,6 +1071,14 @@ class Payments extends Component {
 						}
 					}
 
+					if (name === 'possessionCharges') {
+						if (data.unit != null) {
+							this.setState({
+								possessionCharges: data.unit.possession_charges,
+							})
+						}
+					}
+
 					if (name === 'token') {
 						newFormData[name] = data.token != null ? data.token : ''
 						this.formatStatusChange(name, true)
@@ -1101,6 +1106,7 @@ class Payments extends Component {
 							this.discountPayment(formData)
 						})
 					}
+					
 
 					if (arrayName === 'payments') {
 						newpaymentFiledsArray[name].installmentAmount = data.payment && data.payment.length > name ? data.payment[name].installmentAmount : ''
@@ -1303,11 +1309,15 @@ class Payments extends Component {
 						checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
 					/>
 				</View>
-				<UnitDetailsModal
-					active={unitDetailModal}
-					openUnitDetailsModal={this.openUnitDetailsModal}
-					data={unitDetailsData}
-				/>
+				{
+					unitDetailsData &&
+					<UnitDetailsModal
+						active={unitDetailModal}
+						openUnitDetailsModal={this.openUnitDetailsModal}
+						data={unitDetailsData}
+					/>
+				}
+
 				{
 					modalVisible &&
 					<PaymentAlert
@@ -1332,5 +1342,3 @@ mapStateToProps = (store) => {
 }
 
 export default connect(mapStateToProps)(Payments)
-
-

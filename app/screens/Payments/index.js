@@ -111,6 +111,8 @@ class Payments extends Component {
 		let data = lead
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
+		console.log(data.project)
+
 		this.setState({
 			readOnly: {
 				totalSize: '',
@@ -457,6 +459,7 @@ class Payments extends Component {
 		newFormData[name] = value
 		if (name === 'projectId') {
 			this.getSpecificProject(value)
+			this.apiCallForNewDetails('','noOfInstallments')
 		}
 		if (name === 'discount') {
 			arrowCheck[name] = true
@@ -1117,6 +1120,12 @@ class Payments extends Component {
 						this.setState({
 							dateStatusForPayments: newdateStatusForPayments,
 							paymentFiledsArray: newpaymentFiledsArray,
+						})
+					}
+
+					if(name === 'noOfInstallments'){
+						this.setState({
+							installments: data.project && data.project.installment_plan ? data.project.installment_plan : ''
 						})
 					}
 

@@ -289,7 +289,18 @@ class LeadDetail extends React.Component {
                         </Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
-                        <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{purposeTab === 'invest' && projectName}</Text>
+                        <Text style={styles.labelText}>
+                            {
+                                !lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ?
+                                    lead.armsLeadAreas[0].area &&
+                                    // lead.armsLeadAreas[0].area.name 
+                                    lead.armsLeadAreas.map((item, index) => {
+                                        return(item.area.name) + ', '
+                                    })
+                                    :
+                                    ''
+                            }
+                            {!lead.projectId && lead.city && lead.city.name}{purposeTab === 'invest' && projectName}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Price Range </Text>
                         <Text style={styles.labelText}>

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import AppStyles from '../../AppStyles';
+import { apps } from 'firebase';
 
 export default styles = StyleSheet.create({
     mainInputWrap: {
@@ -98,5 +99,47 @@ export default styles = StyleSheet.create({
         borderLeftWidth: 1,
         backgroundColor: '#fafafa',
         borderColor: '#EAEEF1',
-    }
+    },
+    additonalViewContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderColor: '#EAEEF1',
+        borderWidth: 1,
+        borderRadius: 4
+    },
+    additionalInformationText: {
+        width: '86%',
+        paddingLeft: 15,
+        fontSize: AppStyles.fontSize.medium,
+        color: AppStyles.colors.textColor,
+    },
+    additionalDetailsIconView: {
+        width: '14%',
+        alignItems: 'center',
+        backgroundColor: "#fff",
+        borderLeftWidth: 1,
+        borderColor: '#EAEEF1',
+        padding: 10,
+    },
+    headings: {
+        fontSize: AppStyles.fontSize.large,
+        fontFamily: AppStyles.fonts.semiBoldFont,
+        color: AppStyles.colors.subTextColor,
+        marginVertical: 10,
+    },
+    additionalViewMain: {
+        paddingHorizontal: 5,
+        paddingVertical:10,
+    },
+    featureOpacity: {
+        flexDirection: "row",
+        width: '50%',
+        alignItems: 'center',
+        padding: 5,
+    },
+    featureText: {
+        fontSize: 12,
+        color: AppStyles.colors.textColor,
+    },
 })

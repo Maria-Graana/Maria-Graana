@@ -69,16 +69,26 @@ class MatchTile extends React.Component {
 	}
 
 	render() {
-		const { data, isMenuVisible, showCheckBoxes } = this.props
+		const { data, isMenuVisible, showCheckBoxes, organization } = this.props
 		const { menuShow } = this.state
 		let imagesList = []
 		let show = isMenuVisible
 		let phoneNumber = null
-
-		if (data.images.length > 0) {
-			imagesList = data.images.map((item) => {
-				return item.url
-			})
+		let totalImages = 0
+		if (organization === 'arms') {
+			if (data.images.length > 0) {
+				totalImages = data.armsPropertyImages && data.armsPropertyImages.length
+				imagesList = data.images.map((item) => {
+					return item.url
+				})
+			}
+		} else {
+			if (data.property_images.length > 0) {
+				totalImages = data.property_images.length
+				imagesList = data.property_images.map((item) => {
+					return item.url
+				})
+			}
 		}
 		if (isMenuVisible) {
 			if (data.diaries && data.diaries.length) {
@@ -122,7 +132,7 @@ class MatchTile extends React.Component {
 					</View>
 					<View style={styles.imageCountViewStyle}>
 						<Feather name={'camera'} color={'#fff'} size={16} />
-						<Text style={styles.imageCount}>{data.armsPropertyImages && data.armsPropertyImages.length}</Text>
+						<Text style={styles.imageCount}>{totalImages}</Text>
 					</View>
 					<View style={[AppStyles.mb1, styles.pad5, { paddingBottom: 2, justifyContent: 'space-between' }]}>
 						<View>

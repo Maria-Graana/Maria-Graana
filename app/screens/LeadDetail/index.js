@@ -293,7 +293,7 @@ class LeadDetail extends React.Component {
                                     lead.armsLeadAreas[0].area &&
                                     // lead.armsLeadAreas[0].area.name 
                                     lead.armsLeadAreas.map((item, index) => {
-                                        return(item.area.name) + ', '
+                                        return (item.area.name) + ', '
                                     })
                                     :
                                     ''

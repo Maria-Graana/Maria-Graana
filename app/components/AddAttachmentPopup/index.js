@@ -27,7 +27,7 @@ const AddAttachmentPopup = (props) => {
 
                     <View style={[AppStyles.mainInputWrap]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} placeholder={'Subject/Title'} onChangeText={(text) => setTitle(text)} />
+                            <TextInput placeholderTextColor={'#a8a8aa'} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} placeholder={'Subject/Title'} onChangeText={(text) => setTitle(text)} />
                         </View>
                         {
                             checkValidation === true && formData.title === '' && <ErrorMessage errorMessage={'Required'} />

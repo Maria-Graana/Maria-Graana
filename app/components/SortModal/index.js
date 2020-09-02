@@ -1,12 +1,8 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, TextInput, TouchableWithoutFeedback } from 'react-native'
-import { Button, } from 'native-base';
+import { View, Text, Image, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal';
-import DateComponent from '../../components/DatePicker'
-import times from '../../../assets/img/times.png'
-import ErrorMessage from '../../components/ErrorMessage'
 
 class SortModal extends React.Component {
   constructor(props) {

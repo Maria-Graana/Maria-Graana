@@ -103,7 +103,7 @@ class InnerRCMForm extends Component {
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
             <View style={[AppStyles.inputWrap]}>
-              <TextInput onChangeText={(text) => { handleForm(text, 'size') }}
+              <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'size') }}
                 value={formData.size ? String(formData.size) : ''}
                 keyboardType='numeric'
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
@@ -127,7 +127,7 @@ class InnerRCMForm extends Component {
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
               <View style={[AppStyles.inputWrap]}>
-                <TextInput onChangeText={(text) => { handleForm(text, 'bed') }}
+                <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'bed') }}
                   value={formData.bed ? String(formData.bed) : ''}
                   keyboardType='numeric'
                   style={[AppStyles.formControl, AppStyles.inputPadLeft]}
@@ -139,7 +139,7 @@ class InnerRCMForm extends Component {
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
               <View style={[AppStyles.inputWrap]}>
-                <TextInput onChangeText={(text) => { handleForm(text, 'bath') }}
+                <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'bath') }}
                   value={formData.bath ? String(formData.bath) : ''}
                   keyboardType='numeric'
                   style={[AppStyles.formControl, AppStyles.inputPadLeft]}

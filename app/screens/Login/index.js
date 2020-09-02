@@ -1,4 +1,4 @@
-import { Image, Keyboard, KeyboardAvoidingView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Keyboard, KeyboardAvoidingView, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input, Item, Label } from 'native-base';
 import React, { Component } from 'react';
@@ -44,21 +44,21 @@ class Login extends Component {
                 password: formData.password,
             }
             this.props.dispatch(setuser(creds))
-            .then((response) => {
-                if(!response.data) {
-                    this.setState({showError: true})
-                }
-            })
-            .catch((error) => {
-                // console.log('caughtError', error)
-            })
+                .then((response) => {
+                    if (!response.data) {
+                        this.setState({ showError: true })
+                    }
+                })
+                .catch((error) => {
+                    // console.log('caughtError', error)
+                })
         }
     }
 
     handleForm = (value, name) => {
         const { formData, showError } = this.state
-        if(showError) {
-            this.setState({showError: false})
+        if (showError) {
+            this.setState({ showError: false })
         }
         formData[name] = value
         this.setState({ formData, checkLogin: false })
@@ -69,7 +69,7 @@ class Login extends Component {
     }
 
     render() {
-        const { checkValidation, formData, checkLogin,showError } = this.state
+        const { checkValidation, formData, checkLogin, showError } = this.state
         let label = config.channel === 'development' ? 'Dev ' : ''
         return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -112,7 +112,7 @@ class Login extends Component {
                             {
                                 showError && <ErrorMessage errorMessage={'Invalid Username or Password'} />
                             }
-                            <View style={{ marginTop: 25 ,marginBottom:25}}>
+                            <View style={{ marginTop: 25, marginBottom: 25 }}>
                                 <TouchableButton
                                     style={{}}
                                     label='Sign In'

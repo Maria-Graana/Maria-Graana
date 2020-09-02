@@ -1,10 +1,6 @@
 
 import React from 'react'
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native'
-import AppStyles from '../../AppStyles'
-import styles from './styles'
-import { Ionicons } from '@expo/vector-icons';
-import { formatPrice } from '../../PriceFormate'
+import { View, TextInput } from 'react-native'
 import moment from 'moment';
 import StaticData from '../../StaticData';
 import InputField from '../../components/InputField'

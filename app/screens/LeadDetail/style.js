@@ -90,6 +90,7 @@ export default styles = StyleSheet.create({
         resizeMode: 'contain'
     },
     inputDes: {
+        color: '#1d1d26',
         height: 40,
         borderWidth: 1,
         borderColor: '#ebebeb',

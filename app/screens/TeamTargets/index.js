@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, Alert } from 'react-native';
 import AppStyles from '../../AppStyles';
 import styles from './style.js'
 import { Button, } from 'native-base';

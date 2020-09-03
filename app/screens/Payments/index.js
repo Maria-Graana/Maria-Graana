@@ -37,7 +37,7 @@ class Payments extends Component {
 			downPaymentTime: lead.paymentTime ? moment(lead.paymentTime).format('hh:mm a') + ' ' + moment(lead.paymentTime).format('MMM DD') : '',
 			totalInstalments: lead.cmInstallments.length > 0 ? lead.cmInstallments : [],
 			units: [],
-			remainingPayment: 'no',
+			remainingPayment: '',
 			readOnly: {
 				totalSize: '',
 				rate: '',
@@ -111,7 +111,6 @@ class Payments extends Component {
 		let data = lead
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
-		console.log(data.project)
 
 		this.setState({
 			readOnly: {
@@ -138,17 +137,17 @@ class Payments extends Component {
 			let name = ''
 			if (data.projectId != null) {
 				this.getFloors(data.projectId)
-				this.discountPayment()
+				// this.discountPayment()
 			}
 			if (data.floorId != null) {
 				this.getUnits(data.projectId, data.floorId)
-				this.discountPayment()
+				// this.discountPayment()
 			}
 			if (data.unitId != null) {
 				this.readOnly(data.unitId)
 				this.discountPayment()
 			}
-			if (data.discount != null) {
+			if (data.discount != null && data.unitId != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 
@@ -160,7 +159,7 @@ class Payments extends Component {
 				this.discountPayment()
 				this.formatStatusChange(name, true)
 			}
-			if (data.token != null) {
+			if (data.token != null && data.unitId != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 				name = 'token'
@@ -169,7 +168,7 @@ class Payments extends Component {
 				newtokenDateStatus['name'] = name
 				newtokenDateStatus['status'] = true
 			}
-			if (data.downPayment != null) {
+			if (data.downPayment != null && data.unitId != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 				name = 'downPayment'
@@ -179,12 +178,12 @@ class Payments extends Component {
 				newdownPaymentDateStatus['status'] = true
 
 			}
-			if (data.project.installment_plan != null) {
+			if (data.project.installment_plan != null && data.unitId != null) {
 				var totalInstallments = this.noOfInstallments(data.project.installment_plan)
 				this.instalmentsField(totalInstallments)
 				this.discountPayment()
 			}
-			if (data.cmInstallments.length) {
+			if (data.cmInstallments.length && data.unitId != null) {
 				name = 'installments'
 				arrowCheck[name] = false
 				this.setInstallmentsDateArray(data.no_of_installments);
@@ -196,7 +195,7 @@ class Payments extends Component {
 				})
 			}
 
-			if (data.payment && data.payment.length) {
+			if (data.payment && data.payment.length && data.unitId != null) {
 				name = 'payments'
 				arrowCheck[name] = false
 				this.setPaymentDateArray(data.payment.length);

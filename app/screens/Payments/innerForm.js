@@ -60,13 +60,13 @@ class InnerForm extends Component {
       possessionFormat,
       checkForUnitAvail,
     } = this.props
-    let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false ? false : true
+    let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false || formData.unitId === '' ? false : true
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
     var unitDetail = unitDetails && unitDetails != null && unitDetails != '' && unitDetails
     var installmentsPlans = formData.installmentDue === 'quarterly' ? StaticData.getInstallments : StaticData.getInstallmentsMonthly
     var installmentsDueOption = checkMonthlyOption === true ? StaticData.installmentDue : StaticData.onlyQuarterly
-    var checkForUnitAvailable = checkForEdit === false || checkForUnitAvail === false ? false : true
+    var checkForUnitAvailable = formData.unitId != '' && checkForEdit === false || checkForUnitAvail === false  ? false : true
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>

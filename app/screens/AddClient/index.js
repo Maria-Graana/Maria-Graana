@@ -83,7 +83,7 @@ class AddClient extends Component {
     }
 
     validatePhone = (value) => {
-        if (value.length < 11 && value !== '') this.setState({ phoneValidate: true })
+        if (value.length < 4 && value !== '') this.setState({ phoneValidate: true })
         else this.setState({ phoneValidate: false })
     }
 

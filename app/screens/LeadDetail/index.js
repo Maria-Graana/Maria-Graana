@@ -293,12 +293,14 @@ class LeadDetail extends React.Component {
                                     lead.armsLeadAreas[0].area &&
                                     // lead.armsLeadAreas[0].area.name 
                                     lead.armsLeadAreas.map((item, index) => {
-                                        return (item.area.name) + ', '
+                                        console.log(index)
+                                        var comma = index > 0 && ', '
+                                        return  comma + (item.area.name) 
                                     })
                                     :
                                     ''
                             }
-                            {!lead.projectId && lead.city && lead.city.name}{purposeTab === 'invest' && projectName}</Text>
+                            {!lead.projectId && lead.city && ' - ' + lead.city.name}{purposeTab === 'invest' && projectName}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Price Range </Text>
                         <Text style={styles.labelText}>

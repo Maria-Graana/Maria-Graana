@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, Image } from 'react-native';
 import { Button, Textarea } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import styles from './style';
@@ -7,16 +7,20 @@ import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
 import helper from '../../helper';
+import PhoneInputComponent from '../../components/PhoneCountry/PhoneInput'
 
 class DetailForm extends Component {
 	constructor(props) {
 		super(props)
 
 		this.state = {
+			phone: '+92432342432334',
 		}
 	}
 
 	componentDidMount() { }
+
+
 
 	render() {
 
@@ -31,6 +35,12 @@ class DetailForm extends Component {
 			cnicValidate,
 			contact1Validate,
 			contact2Validate,
+			getTrimmedPhone,
+			validate,
+			hello,
+			countryCode,
+			countryCode1,
+			countryCode2,
 		} = this.props
 		let btnText = update ? 'UPDATE' : 'ADD'
 		return (
@@ -56,7 +66,38 @@ class DetailForm extends Component {
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<TextInput placeholderTextColor={'#a8a8aa'} maxLength={12} value={formData.contactNumber} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contactNumber') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number*'} />
+						<PhoneInputComponent
+							phoneValue={getTrimmedPhone(formData.contactNumber.replace('+92', ''))}
+							countryCodeValue={countryCode}
+							containerStyle={AppStyles.phoneInputStyle}
+							setPhone={(value) => validate(value, 'phone')}
+							setFlagObject={(object) => { hello(object, 'contactNumber') }}
+							onChangeHandle={handleForm}
+							name={'contactNumber'}
+							placeholder={'Contact Number*'}
+						/>
+						{
+							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+						}
+						{
+							phoneValidate == false && checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
+						}
+					</View>
+				</View>
+
+
+				<View style={[AppStyles.mainInputWrap]}>
+					<View style={[AppStyles.inputWrap]}>
+						<PhoneInputComponent
+							phoneValue={getTrimmedPhone(formData.contact1.replace('+92', ''))}
+							countryCodeValue={countryCode1}
+							containerStyle={AppStyles.phoneInputStyle}
+							setPhone={(value) => validate(value, 'phone')}
+							setFlagObject={(object) => { hello(object, 'contact1') }}
+							onChangeHandle={handleForm}
+							name={'contact1'}
+							placeholder={'Contact Number 2'}
+						/>
 						{
 							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}
@@ -67,6 +108,27 @@ class DetailForm extends Component {
 				</View>
 
 				<View style={[AppStyles.mainInputWrap]}>
+					<View style={[AppStyles.inputWrap]}>
+						<PhoneInputComponent
+							phoneValue={getTrimmedPhone(formData.contact2.replace('+92', ''))}
+							countryCodeValue={countryCode2}
+							containerStyle={AppStyles.phoneInputStyle}
+							setPhone={(value) => validate(value, 'phone')}
+							setFlagObject={(object) => { hello(object, 'contact2') }}
+							onChangeHandle={handleForm}
+							name={'contact2'}
+							placeholder={'Contact Number 3'}
+						/>
+						{
+							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+						}
+						{
+							phoneValidate == false && checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
+						}
+					</View>
+				</View>
+
+				{/* <View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<TextInput placeholderTextColor={'#a8a8aa'} maxLength={12} value={formData.contact1} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contact1') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number 2'} />
 						{
@@ -82,7 +144,7 @@ class DetailForm extends Component {
 							contact2Validate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}
 					</View>
-				</View>
+				</View> */}
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>

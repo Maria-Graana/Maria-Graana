@@ -47,7 +47,8 @@ class LeadTile extends React.Component {
     var descriptionColor = data.assigned_to_armsuser_id == user.id ? styles.desBlue : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
     let customerName = data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
-
+    let areasLength = !data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 1 ? '+' + data.armsLeadAreas.length : ''
+    console.log(areasLength)
     return (
       <TouchableOpacity onPress={() => { navigateTo(data) }}>
         <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
@@ -117,7 +118,15 @@ class LeadTile extends React.Component {
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
-                    {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 && data.armsLeadAreas[0].area.name + ', '}{!data.projectId && data.city && data.city.name}{purposeTab === 'invest' && helper.capitalize(projectName)}
+                    {
+                      !data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 ?
+                      data.armsLeadAreas[0].area.name + ' ' + areasLength + ', '  
+                      : ''
+                    }
+                    {
+                      console.log(data.armsLeadAreas && data.armsLeadAreas.length)
+                    }
+                    {!data.projectId && data.city && data.city.name}{purposeTab === 'invest' && helper.capitalize(projectName)}
                     {
                       data.projectType && data.projectType != '' &&
                       ` - ${helper.capitalize(data.projectType)}`

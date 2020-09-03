@@ -312,6 +312,7 @@ export default StaticData = {
     buyRentFilter: [
         { value: 'all', name: 'All' },
         { value: 'open', name: 'Open' },
+        { value: 'called', name: 'Called' },
         { value: 'viewing', name: 'Viewing' },
         { value: 'offer', name: 'Offer' },
         { value: 'propsure', name: 'Propsure' },

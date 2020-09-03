@@ -115,9 +115,9 @@ class DetailForm extends Component {
                     :
                     <View style={[AppStyles.mainInputWrap]}>
                         <PickerComponent data={this._getYears()}
-                         onValueChange={handleForm} 
-                         selectedItem={formData.year_built} 
-                         name={'year_built'} placeholder='Build Year' />
+                            onValueChange={handleForm}
+                            selectedItem={formData.year_built}
+                            name={'year_built'} placeholder='Build Year' />
                     </View>
                 }
                 {
@@ -200,7 +200,8 @@ class DetailForm extends Component {
             selectedGrade,
             purpose,
             getCurrentLocation,
-            getImages,
+            getImagesFromGallery,
+            takePhotos,
             longitude,
             latitude,
             buttonText,
@@ -338,17 +339,31 @@ class DetailForm extends Component {
                                             <ActivityIndicator size="large" color={AppStyles.colors.primaryColor} />
                                         </View>
                                         :
-                                        <TouchableOpacity style={styles.addMoreImg} onPress={getImages}>
-                                            <Text style={styles.uploadImageText}>Add More</Text>
-                                        </TouchableOpacity>
+                                        <View style={{ flexDirection: 'row', marginHorizontal: 15 }}>
+                                            <TouchableOpacity style={[styles.addMoreImg, styles.extraAddMore]} onPress={getImagesFromGallery}>
+                                                <Text style={styles.uploadImageText}>Add More From Gallery</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={[styles.addMoreImg, styles.extraAddMore]} onPress={takePhotos}>
+                                                <Text style={styles.uploadImageText}>Take Photos</Text>
+                                            </TouchableOpacity>
+                                        </View>
+
                                 }
 
 
                             </View>
                             :
-                            <TouchableOpacity style={styles.uploadImg} onPress={getImages}>
-                                <Text style={styles.uploadImageText}>Upload Images</Text>
-                            </TouchableOpacity>
+                            <View style={styles.uploadImg}>
+                                <Button
+                                    style={[AppStyles.formBtn, styles.buttonWidth]} onPress={getImagesFromGallery}>
+                                    <Text style={AppStyles.btnText}>Upload From Gallery</Text>
+                                </Button>
+                                <Text style={{ marginVertical: 15 }}>OR</Text>
+                                <Button
+                                    style={[AppStyles.formBtn, styles.buttonWidth]} onPress={takePhotos}>
+                                    <Text style={AppStyles.btnText}>Take Photos</Text>
+                                </Button>
+                            </View>
                     }
 
                 </View>

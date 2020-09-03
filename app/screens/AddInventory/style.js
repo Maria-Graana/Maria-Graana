@@ -44,9 +44,12 @@ export default styles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5,
         borderRadius: 4,
-        margin: 5
+        margin: 5,
     },
-
+    extraAddMore: {
+        paddingHorizontal: 10,
+        width: '50%',
+    },
     imageContainerStyle: {
         alignItems: 'center',
         borderWidth: 1,
@@ -71,7 +74,7 @@ export default styles = StyleSheet.create({
         width: 130,
         height: 130,
         marginHorizontal: 10,
-        marginTop: 25,
+        marginTop: 20,
         marginBottom: 20,
         // marginBottom: 5
     },
@@ -130,7 +133,7 @@ export default styles = StyleSheet.create({
     },
     additionalViewMain: {
         paddingHorizontal: 5,
-        paddingVertical:10,
+        paddingVertical: 10,
     },
     featureOpacity: {
         flexDirection: "row",
@@ -142,4 +145,7 @@ export default styles = StyleSheet.create({
         fontSize: 12,
         color: AppStyles.colors.textColor,
     },
+    buttonWidth: {
+        width: '80%'
+    }
 })

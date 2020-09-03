@@ -121,11 +121,11 @@ class AddInventory extends Component {
     setEditValues = () => {
         const { route } = this.props
         const { property } = route.params
-       let parsedFeatures = JSON.parse(property.features);
-        let amentities = _.isEmpty(parsedFeatures) ? [] :(_.keys(parsedFeatures));
-        if(amentities.length){
+        let parsedFeatures = JSON.parse(property.features);
+        let amentities = _.isEmpty(parsedFeatures) ? [] : (_.keys(parsedFeatures));
+        if (amentities.length) {
             amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
-            amentities = _.without(amentities,'Year Built', 'Floors', 'Downpayment', 'Parking Space');
+            amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
         }
         this.setState({
             formData: {
@@ -150,7 +150,7 @@ class AddInventory extends Component {
                 lat: property.lat,
                 lng: property.lng,
                 description: property.description,
-                year_built: parsedFeatures.year_built? parsedFeatures.year_built : '',
+                year_built: parsedFeatures.year_built ? parsedFeatures.year_built : '',
                 floors: parsedFeatures.floors ? parsedFeatures.floors : 0,
                 parking_space: parsedFeatures.parking_space ? String(parsedFeatures.parking_space) : '',
                 downpayment: parsedFeatures.downpayment ? String(parsedFeatures.downpayment) : '',
@@ -324,7 +324,7 @@ class AddInventory extends Component {
         return true;
     };
 
-    getImages = () => {
+    getImagesFromGallery = () => {
         this.getPermissionAsync().then(result => {
             if (result === true) {
                 this.setState({ isModalOpen: true })
@@ -333,6 +333,24 @@ class AddInventory extends Component {
                 // Perimission denied, perform action or display alert
             }
         });
+    }
+
+    takePhotos = async () => {
+        let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA);
+        if (camStatus !== 'granted') {
+            const status = await Permissions.askAsync(Permissions.CAMERA).status;
+            if (status !== 'granted') {
+                return;
+            }
+        }
+
+        let result = await ImagePicker.launchCameraAsync({
+            quality: 0.5,
+        });
+
+        if (!result.cancelled) {
+            this._compressImageAndUpload(result.uri, result)
+        }
     }
 
     imageBrowserCallback = mediaAssets => {
@@ -548,7 +566,8 @@ class AddInventory extends Component {
                                 handleClientClick={this.handleClientClick}
                                 propertyType={StaticData.type}
                                 getCurrentLocation={this._getLocationAsync}
-                                getImages={() => this.getImages()}
+                                getImagesFromGallery={() => this.getImagesFromGallery()}
+                                takePhotos={() => this.takePhotos()}
                                 selectSubType={selectSubType}
                                 sizeUnit={sizeUnit}
                                 selectedGrade={formData.grade}

@@ -12,12 +12,13 @@ const Search = ({ placeholder,
     showClearButton = false,
     closeSearchBar,
     onSubmitEditing,
-    autoFocus=false,
+    autoFocus = false,
 }) => {
     return (
         <View style={[styles.searchMainContainerStyle, { width: containerWidth }, showShadow ? styles.shadow : null]}>
             <View style={styles.searchTextContainerStyle}>
                 <TextInput
+                    placeholderTextColor={'#a8a8aa'}
                     style={styles.searchTextInput}
                     placeholder={placeholder}
                     value={searchText}
@@ -59,6 +60,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     searchTextInput: {
+        color: '#1d1d26',
         width: '90%',
         paddingVertical: Platform.OS === 'android' ? 5 : 10,
         paddingHorizontal: 15

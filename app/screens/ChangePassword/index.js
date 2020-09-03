@@ -77,7 +77,7 @@ class ChangePassword extends Component {
             <View style={AppStyles.container}>
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} value={oldPassword} secureTextEntry={true} placeholder={'Current Password'} onChangeText={(text) => this.handleForm(text, 'oldPassword')} />
+                        <TextInput placeholderTextColor={'#a8a8aa'} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} value={oldPassword} secureTextEntry={true} placeholder={'Current Password'} onChangeText={(text) => this.handleForm(text, 'oldPassword')} />
                     </View>
                     {
                         checkValidation === true && oldPassword === '' && <ErrorMessage errorMessage={'Required'} />
@@ -86,7 +86,7 @@ class ChangePassword extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} value={newPassword} secureTextEntry={true} placeholder={'New Password'} onChangeText={(text) => this.handleForm(text, 'newPassword')} />
+                        <TextInput placeholderTextColor={'#a8a8aa'} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} value={newPassword} secureTextEntry={true} placeholder={'New Password'} onChangeText={(text) => this.handleForm(text, 'newPassword')} />
                     </View>
                     {
                         checkValidation === true && newPassword === '' && <ErrorMessage errorMessage={'Required'} />
@@ -95,7 +95,7 @@ class ChangePassword extends Component {
 
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <TextInput style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} value={confirmNewPassword} secureTextEntry={true} placeholder={'Confirm new password'} onChangeText={(text) => this.handleForm(text, 'confirmNewPassword')} />
+                        <TextInput placeholderTextColor={'#a8a8aa'} style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]} value={confirmNewPassword} secureTextEntry={true} placeholder={'Confirm new password'} onChangeText={(text) => this.handleForm(text, 'confirmNewPassword')} />
                     </View>
                     {
                         checkValidation === true && confirmNewPassword === '' && <ErrorMessage errorMessage={'Required'} />

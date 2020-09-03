@@ -63,8 +63,6 @@ class LeadViewing extends React.Component {
 					loading: false,
 					matchData: matches,
 					progressValue: rcmProgressBar[lead.status]
-				},()=>{
-					// console.log(this.state.matchData);
 				})
 			})
 			.catch((error) => {
@@ -184,7 +182,6 @@ class LeadViewing extends React.Component {
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'pending') {
 				let diary = property.diaries[0]
-				// console.log(diary);
 				let date = moment(diary.date);
 				this.setState({
 					currentProperty: property,
@@ -274,7 +271,6 @@ class LeadViewing extends React.Component {
 		}
 		axios.post(`/api/leads/viewing`, body)
 			.then((res) => {
-				// console.log(res.data);
 				this.setState({
 					isVisible: false,
 					loading: true,

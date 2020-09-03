@@ -40,7 +40,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'firstName') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'First Name*'} />
+            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'firstName') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'First Name*'} />
             {
               checkValidation === true && formData.firstName == '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -50,7 +50,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'lastName') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Last Name*'} />
+            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'lastName') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Last Name*'} />
             {
               checkValidation === true && formData.lastName === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -61,7 +61,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Email*'} />
+            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Email*'} />
             {
               emailValidate == false && <ErrorMessage errorMessage={'Enter a Valid Email Address'} />
             }
@@ -75,7 +75,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'password') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Password*'} />
+            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'password') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Password*'} />
             {
               checkValidation === true && formData.password === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -85,7 +85,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'confirmPassword') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Confirm Password*'} />
+            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'confirmPassword') }} secureTextEntry={true} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Confirm Password*'} />
             {
               checkValidation === true && formData.confirmPassword === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -99,7 +99,7 @@ class InnerForm extends Component {
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
             <Image source={mobileIcon} style={styles.mobileIcon} />
-            <TextInput onChangeText={(text) => { handleForm(text, 'phoneNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Contact Number*'} keyboardType={'number-pad'} maxLength={11} autoCompleteType='cc-number' />
+            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'phoneNumber') }} style={[AppStyles.formControl, styles.padLeft]} placeholder={'Contact Number*'} keyboardType={'number-pad'} maxLength={11} autoCompleteType='cc-number' />
             {
               checkValidation === true && formData.phoneNumber === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -112,7 +112,7 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput onChangeText={(text) => { handleForm(text, 'cnic') }} keyboardType={'number-pad'} maxLength={15} style={[AppStyles.formControl, styles.padLeft]} placeholder={'CNIC*'} />
+            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'cnic') }} keyboardType={'number-pad'} maxLength={15} style={[AppStyles.formControl, styles.padLeft]} placeholder={'CNIC*'} />
             {
               checkValidation === true && formData.cnic === '' && <ErrorMessage errorMessage={'Required'} />
             }
@@ -135,14 +135,14 @@ class InnerForm extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput style={[AppStyles.formControl, styles.padLeft]} value={organization[0].name} editable={false} />
+            <TextInput placeholderTextColor={'#a8a8aa'} style={[AppStyles.formControl, styles.padLeft]} value={organization[0].name} editable={false} />
           </View>
         </View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap,]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput style={[AppStyles.formControl, styles.padLeft]} value={getRole} editable={false} />
+            <TextInput placeholderTextColor={'#a8a8aa'} style={[AppStyles.formControl, styles.padLeft]} value={getRole} editable={false} />
           </View>
         </View>
 

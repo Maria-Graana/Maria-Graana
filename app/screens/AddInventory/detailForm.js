@@ -124,7 +124,9 @@ class DetailForm extends Component {
                     formData.type === 'residential' ? <>
                         <View style={[AppStyles.mainInputWrap]}>
                             <View style={[AppStyles.inputWrap]}>
-                                <TextInput onChangeText={(text) => { handleForm(text, 'bed') }}
+                                <TextInput 
+                                    placeholderTextColor={'#a8a8aa'}
+                                    onChangeText={(text) => { handleForm(text, 'bed') }}
                                     value={formData.bed === 0 ? '' : String(formData.bed)}
                                     keyboardType='numeric'
                                     style={[AppStyles.formControl, AppStyles.inputPadLeft]}
@@ -136,6 +138,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.mainInputWrap]}>
                             <View style={[AppStyles.inputWrap]}>
                                 <TextInput onChangeText={(text) => { handleForm(text, 'bath') }}
+                                    placeholderTextColor={'#a8a8aa'}
                                     value={formData.bath === 0 ? '' : String(formData.bath)}
                                     keyboardType='numeric'
                                     style={[AppStyles.formControl, AppStyles.inputPadLeft]}
@@ -147,6 +150,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.mainInputWrap]}>
                             <View style={[AppStyles.inputWrap]}>
                                 <TextInput onChangeText={(text) => { handleForm(text, 'parking_space') }}
+                                    placeholderTextColor={'#a8a8aa'}
                                     value={formData.parking_space === 0 ? '' : String(formData.parking_space)}
                                     keyboardType='numeric'
                                     style={[AppStyles.formControl, AppStyles.inputPadLeft]}
@@ -167,6 +171,7 @@ class DetailForm extends Component {
                     <View style={[AppStyles.inputWrap]}>
                         <TextInput onChangeText={(text) => { handleForm(text, 'downpayment') }}
                             value={formData.downpayment === 0 ? '' : String(formData.downpayment)}
+                             placeholderTextColor={'#a8a8aa'}
                             keyboardType='numeric'
                             style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                             name={'downpayment'}
@@ -264,7 +269,7 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm(text, 'size') }} value={formData.size} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
+                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'size') }} value={formData.size} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
                             {
                                 checkValidation === true && formData.size === null && <ErrorMessage errorMessage={'Required'} />
                             }
@@ -304,7 +309,7 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[{ width: '75%' }, AppStyles.mainInputWrap, AppStyles.noMargin]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm(text, 'price') }}
+                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'price') }}
                                 value={price}
                                 keyboardType='number-pad'
                                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
@@ -417,14 +422,14 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin, AppStyles.borderrightLat]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm((text), 'lat') }} value={latitude === null ? '' : String(latitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Latitude'} />
+                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm((text), 'lat') }} value={latitude === null ? '' : String(latitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Latitude'} />
                         </View>
                     </View>
 
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm((text), 'lng') }} value={longitude === null ? '' : String(longitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Longitude'} />
+                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm((text), 'lng') }} value={longitude === null ? '' : String(longitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Longitude'} />
                         </View>
                     </View>
 

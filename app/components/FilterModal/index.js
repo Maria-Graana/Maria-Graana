@@ -150,7 +150,9 @@ class FilterModal extends React.Component {
                         </View>
                         <View style={styles.textInputView}>
                             <View style={styles.textView}>
-                                <TextInput onChangeText={(text) => { handleForm(text, 'size') }}
+                                <TextInput
+                                    placeholderTextColor={'#a8a8aa'}
+                                    onChangeText={(text) => { handleForm(text, 'size') }}
                                     value={formData.size ? String(formData.size) : ''}
                                     keyboardType='numeric'
                                     style={[AppStyles.formControl, AppStyles.inputPadLeft]}
@@ -171,13 +173,17 @@ class FilterModal extends React.Component {
                         }
                         <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15 }]}>
 
-                            <TextInput placeholder='Price Min'
+                            <TextInput
+                                placeholderTextColor={'#a8a8aa'}
+                                placeholder='Price Min'
                                 value={formData.minPrice == StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice || 0)}
                                 style={[AppStyles.formControl, styles.priceStyle]}
                                 editable={false}
                             />
                             <Text style={styles.toText}>to</Text>
-                            <TextInput placeholder='Price Max'
+                            <TextInput
+                                placeholderTextColor={'#a8a8aa'}
+                                placeholder='Price Max'
                                 value={formData.maxPrice == StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice || 0)}
                                 style={[AppStyles.formControl, styles.priceStyle]}
                                 style={[AppStyles.formControl, styles.priceStyle]}
@@ -189,10 +195,10 @@ class FilterModal extends React.Component {
 
                         <View style={styles.textInputView}>
                             <View style={styles.textView}>
-                                <TextInput keyboardType={'numeric'} value={formData.bed ? String(formData.bed) : ''} onChangeText={(text) => { handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
+                                <TextInput placeholderTextColor={'#a8a8aa'} keyboardType={'numeric'} value={formData.bed ? String(formData.bed) : ''} onChangeText={(text) => { handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
                             </View>
                             <View style={AppStyles.mb1}>
-                                <TextInput keyboardType={'numeric'} value={formData.bath ? String(formData.bath) : ''} onChangeText={(text) => { handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
+                                <TextInput placeholderTextColor={'#a8a8aa'} keyboardType={'numeric'} value={formData.bath ? String(formData.bath) : ''} onChangeText={(text) => { handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
                             </View>
                         </View>
                         <View style={[AppStyles.mainInputWrap, styles.matchBtn]}>

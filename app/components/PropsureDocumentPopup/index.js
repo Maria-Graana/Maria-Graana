@@ -2,8 +2,6 @@ import React from 'react'
 import {
     View,
     Text,
-    TextInput,
-    Image,
     Modal,
     SafeAreaView,
     TouchableOpacity

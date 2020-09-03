@@ -13,6 +13,7 @@ import _ from 'underscore';
 class AddClient extends Component {
     constructor(props) {
         super(props)
+        var defaultCountry = { name: 'PK', code: '+92' }
         this.state = {
             checkValidation: false,
             cities: [],
@@ -34,6 +35,13 @@ class AddClient extends Component {
             cnicValidate: false,
             contact1Validate: false,
             contact2Validate: false,
+            phoneVerified: false,
+            countryCode: defaultCountry.name,
+            countryCode1: defaultCountry.name,
+            countryCode2: defaultCountry.name,
+            callingCode: defaultCountry.code,
+            callingCode1: defaultCountry.code,
+            callingCode2: defaultCountry.code,
         }
     }
     componentDidMount() {
@@ -101,7 +109,9 @@ class AddClient extends Component {
             this.validateCnic(value)
         }
         if (name == 'email') this.validateEmail(value)
-        if (name == 'contactNumber') this.validatePhone(value)
+        if (name === 'contactNumber') {
+            this.validatePhone(value)
+        }
         if (name == 'contact1') this.validateContact1(value)
         if (name == 'contact2') this.validateContact2(value)
 
@@ -117,7 +127,17 @@ class AddClient extends Component {
     }
 
     formSubmit = () => {
-        const { formData, emailValidate, phoneValidate, cnicValidate, contact1Validate, contact2Validate } = this.state
+        const {
+            formData,
+            emailValidate,
+            phoneValidate,
+            cnicValidate,
+            contact1Validate,
+            contact2Validate,
+            callingCode,
+            callingCode1,
+            callingCode2,
+        } = this.state
         const { route, navigation, contacts } = this.props
         const { update, client, isFromDropDown, screenName } = route.params
         if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
@@ -133,11 +153,11 @@ class AddClient extends Component {
                     last_name: helper.capitalize(formData.lastName),
                     email: formData.email,
                     cnic: formData.cnic,
-                    phone: formData.contactNumber,
+                    phone: callingCode + '' + formData.contactNumber,
                     address: formData.address,
                     secondary_address: formData.secondaryAddress,
-                    contact1: formData.contact1,
-                    contact2: formData.contact2,
+                    contact1: callingCode1 + '' + formData.contact1,
+                    contact2: callingCode2 + '' + formData.contact2,
                 }
                 if (!update) {
                     axios.post(`/api/customer/create`, body)
@@ -167,7 +187,6 @@ class AddClient extends Component {
                                 }
                             }
                             body.name = body.first_name + ' ' + body.last_name
-                            // this.call(body)
                         })
                         .catch((error) => {
                             console.log(error)
@@ -194,8 +213,64 @@ class AddClient extends Component {
         }
     }
 
+    getTrimmedPhone = (number) => {
+        let phone = number;
+        if (phone.startsWith('92')) {
+            phone = phone.substring(2);
+        } else
+            if (phone.startsWith('092')) {
+                phone = phone.substring(3);
+            } else
+                if (phone.startsWith('0092')) {
+                    phone = phone.substring(4);
+                } else
+                    if (phone.startsWith('03')) {
+                        phone = phone.substring(1);
+                    }
+        return phone
+    }
+
+    validate(text, type) {
+        var phonenum = /(?=.{10})/
+        if (type == 'phone') {
+            this.setState({ phone: text });
+            if (phonenum.test(text)) {
+                this.setState({ phoneVerified: true })
+            }
+            else {
+                this.setState({ phoneVerified: false })
+            }
+        }
+    }
+
+    hello = (object, name) => {
+        if (name === 'contactNumber') {
+            this.setState({ countryCode: object.cca2, callingCode: '+' + object.callingCode[0] })
+        }
+        if (name === 'contact1') {
+            this.setState({ countryCode1: object.cca2, callingCode1: '+' + object.callingCode[0] })
+        }
+        if (name === 'contact2') {
+            this.setState({ countryCode2: object.cca2, callingCode2: '+' + object.callingCode[0] })
+        }
+    }
+
     render() {
-        const { formData, cities, getClients, getProject, phoneValidate, emailValidate, cnicValidate, contact2Validate, contact1Validate } = this.state
+        const {
+            formData,
+            cities,
+            getClients,
+            getProject,
+            phoneValidate,
+            emailValidate,
+            cnicValidate,
+            contact2Validate,
+            contact1Validate,
+            countryCode,
+            countryCode1,
+            countryCode2,
+            callingCode,
+        } = this.state
         const { route } = this.props
         const { update } = route.params
         return (
@@ -218,6 +293,12 @@ class AddClient extends Component {
                                     cnicValidate={cnicValidate}
                                     contact2Validate={contact2Validate}
                                     contact1Validate={contact1Validate}
+                                    countryCode={countryCode}
+                                    countryCode1={countryCode1}
+                                    countryCode2={countryCode2}
+                                    getTrimmedPhone={this.getTrimmedPhone}
+                                    validate={this.validate}
+                                    hello={this.hello}
                                 />
                             </View>
                         </ScrollView>

@@ -1,12 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { View, FlatList, Animated, TextInput, TouchableOpacity, Text } from 'react-native';
-// import { searchPropertiesFilterSearchParams } from '../../actions/property';
-// import { getAreas } from '../../actions/home'
+import { View, FlatList, Animated, TouchableOpacity, Text } from 'react-native';
 import _ from 'underscore';
 import { Checkbox } from 'react-native-paper';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-
 import fuzzy from 'fuzzy'
 import AppStyles from '../../AppStyles';
 import Loader from '../../components/loader';

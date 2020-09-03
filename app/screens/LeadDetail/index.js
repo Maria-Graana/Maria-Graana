@@ -11,8 +11,6 @@ import axios from 'axios';
 import Ability from '../../hoc/Ability'
 import Loader from '../../components/loader';
 import StaticData from '../../StaticData';
-import { createPortal } from 'react-dom';
-// import { TextInput } from 'react-native-paper';
 
 const _format = 'YYYY-MM-DD';
 
@@ -252,7 +250,7 @@ class LeadDetail extends React.Component {
                                 {
                                     editDes === true ?
                                         <View>
-                                            <TextInput style={styles.inputDes} placeholder={`Edit Description`} value={description} onChangeText={(text) => { this.handleDes(text) }} />
+                                            <TextInput placeholderTextColor={'#a8a8aa'} style={styles.inputDes} placeholder={`Edit Description`} value={description} onChangeText={(text) => { this.handleDes(text) }} />
                                             <TouchableOpacity onPress={() => this.submitDes()} style={styles.roundButtonViewTwo} activeOpacity={0.6}>
                                                 <Text style={{ textAlign: 'center', color: '#fff' }}>Submit</Text>
                                             </TouchableOpacity>
@@ -289,7 +287,18 @@ class LeadDetail extends React.Component {
                         </Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
-                        <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{purposeTab === 'invest' && projectName}</Text>
+                        <Text style={styles.labelText}>
+                            {
+                                !lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ?
+                                    lead.armsLeadAreas[0].area &&
+                                    // lead.armsLeadAreas[0].area.name 
+                                    lead.armsLeadAreas.map((item, index) => {
+                                        return (item.area.name) + ', '
+                                    })
+                                    :
+                                    ''
+                            }
+                            {!lead.projectId && lead.city && lead.city.name}{purposeTab === 'invest' && projectName}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Price Range </Text>
                         <Text style={styles.labelText}>

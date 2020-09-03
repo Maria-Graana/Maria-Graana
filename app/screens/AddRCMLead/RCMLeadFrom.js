@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import styles from './style';
 import AppStyles from '../../AppStyles';
 import InnerRCMForm from './innerRCMForm'

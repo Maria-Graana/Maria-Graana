@@ -114,6 +114,7 @@ class AreaPicker extends React.Component {
                             borderWidth: 0.5,
                         }]}>
                             <TextInput
+                                placeholderTextColor={'#a8a8aa'}
                                 placeholder=' Type to filter '
                                 value={searchText}
                                 onChangeText={(value) => this.setState({ searchText: value })}

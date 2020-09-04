@@ -57,7 +57,6 @@ class AddClient extends Component {
     updateFields = () => {
         const { route } = this.props
         const { client } = route.params
-        console.log(client)
         let formData = {
             firstName: client.firstName,
             lastName: client.lastName,
@@ -65,8 +64,8 @@ class AddClient extends Component {
             cnic: client.cnic,
             contactNumber: client.phone,
             address: client.address,
-            contact1: client.contact1,
-            contact2: client.contact2,
+            contact1: client.contact1 ? client.contact1 : '',
+            contact2: client.contact2 ? client.contact2 : '',
         }
         if (client.customerContacts.length) {
             for (let i = 0; i < client.customerContacts.length; i++) {
@@ -150,18 +149,19 @@ class AddClient extends Component {
         } else {
             if (emailValidate && !phoneValidate && !cnicValidate) {
                 if (formData.cnic === '') formData.cnic = null
-                let body = {
-                    first_name: helper.capitalize(formData.firstName),
-                    last_name: helper.capitalize(formData.lastName),
-                    email: formData.email,
-                    cnic: formData.cnic,
-                    phone: callingCode + '' + formData.contactNumber,
-                    address: formData.address,
-                    secondary_address: formData.secondaryAddress,
-                    contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
-                    contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
-                }
+
                 if (!update) {
+                    let body = {
+                        first_name: helper.capitalize(formData.firstName),
+                        last_name: helper.capitalize(formData.lastName),
+                        email: formData.email,
+                        cnic: formData.cnic,
+                        phone: formData.contactNumber != '' ? callingCode + '' + formData.contactNumber : '',
+                        address: formData.address,
+                        secondary_address: formData.secondaryAddress,
+                        contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
+                        contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
+                    }
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
                             if (res.status === 200 && res.data) {
@@ -195,10 +195,24 @@ class AddClient extends Component {
                             helper.errorToast('ERROR CREATING CLIENT')
                         })
                 } else {
+                    var checkForPlus = formData.contactNumber.substring(0, 1)
+                    var checkForPlus2 = formData.contact1.substring(0, 1)
+                    var checkForPlus3 = formData.contact2.substring(0, 1)
+                    let body = {
+                        first_name: helper.capitalize(formData.firstName),
+                        last_name: helper.capitalize(formData.lastName),
+                        email: formData.email,
+                        cnic: formData.cnic,
+                        phone: checkForPlus === '+' ? formData.contactNumber : callingCode + '' + formData.contactNumber,
+                        address: formData.address,
+                        secondary_address: formData.secondaryAddress,
+                        contact1: checkForPlus2 == '+' ? formData.contact1 : formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
+                        contact2: checkForPlus3 == '+' ? formData.contact2 : formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
+                    }
                     body.customersContacts = []
                     body.customersContacts.push(body.phone)
-                    if (body.contact1) body.customersContacts.push(body.contact1)
-                    if (body.contact2) body.customersContacts.push(body.contact2)
+                    body.customersContacts.push(body.contact1)
+                    body.customersContacts.push(body.contact2)
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')

@@ -64,11 +64,10 @@ class DetailForm extends Component {
 						}
 					</View>
 				</View>
-						{console.log(formData)}
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<PhoneInputComponent
-							phoneValue={getTrimmedPhone(formData.contactNumber.replace('+92', ''))}
+							phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber.replace('+92', ''))}
 							countryCodeValue={countryCode}
 							containerStyle={AppStyles.phoneInputStyle}
 							setPhone={(value) => validate(value, 'phone')}
@@ -90,7 +89,7 @@ class DetailForm extends Component {
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<PhoneInputComponent
-							phoneValue={getTrimmedPhone(formData.contact1.replace('+92', ''))}
+							phoneValue={formData.contact1 != '' && getTrimmedPhone(formData.contact1.replace('+92', ''))}
 							countryCodeValue={countryCode1}
 							containerStyle={AppStyles.phoneInputStyle}
 							setPhone={(value) => validate(value, 'phone')}
@@ -108,7 +107,7 @@ class DetailForm extends Component {
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<PhoneInputComponent
-							phoneValue={getTrimmedPhone(formData.contact2.replace('+92', ''))}
+							phoneValue={formData.contact2 != '' && getTrimmedPhone(formData.contact2.replace('+92', ''))}
 							countryCodeValue={countryCode2}
 							containerStyle={AppStyles.phoneInputStyle}
 							setPhone={(value) => validate(value, 'phone')}

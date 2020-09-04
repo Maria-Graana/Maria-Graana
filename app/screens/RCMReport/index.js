@@ -93,7 +93,7 @@ class RCMReport extends React.Component {
             fromDate: moment(_today).format(_format),
             toDate: moment(_today).format(_format),
             organizations: [],
-            graphLabels: ['open', 'viewing', 'offer', 'propsure', 'token', 'payment', 'closed_won', 'closed_lost']
+            graphLabels: ['open', 'called', 'viewing', 'offer', 'propsure', 'token', 'payment', 'closed_won', 'closed_lost']
         }
     }
 
@@ -648,6 +648,7 @@ class RCMReport extends React.Component {
             style: {
                 backgroundGradientFrom: "#fb8c00",
                 borderRadius: 16,
+                paddingRight: 20,
                 borderWidth: 0,
                 borderColor: AppStyles.colors.subTextColor,
             },
@@ -742,7 +743,7 @@ class RCMReport extends React.Component {
                                                 withInnerLines={false}
                                                 withDots={false}
                                                 fromZero={true}
-                                                withHorizontalLabels={true}
+                                                withHorizontalLabels={false}
                                                 showBarTops={true}
                                                 width={width}
                                                 height={height}

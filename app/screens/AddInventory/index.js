@@ -54,11 +54,20 @@ class AddInventory extends Component {
                 description: '',
                 general_size: null,
                 lisitng_type: 'mm',
-                features: JSON.stringify({}),
+                features: {},
                 custom_title: '',
                 show_address: true,
                 video: '',
-            }
+                year_built: null,
+                floors: null,
+                parking_space: 0,
+                downpayment: 0,
+            },
+            showAdditional: false,
+            features: StaticData.residentialFeatures,
+            facing: StaticData.facing,
+            utilities: StaticData.residentialUtilities,
+            selectedFeatures: [],
         }
     }
 
@@ -112,6 +121,12 @@ class AddInventory extends Component {
     setEditValues = () => {
         const { route } = this.props
         const { property } = route.params
+        let parsedFeatures = JSON.parse(property.features);
+        let amentities = _.isEmpty(parsedFeatures) ? [] : (_.keys(parsedFeatures));
+        if (amentities.length) {
+            amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
+            amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
+        }
         this.setState({
             formData: {
                 id: property.id,
@@ -135,20 +150,26 @@ class AddInventory extends Component {
                 lat: property.lat,
                 lng: property.lng,
                 description: property.description,
+                year_built: parsedFeatures.year_built ? parsedFeatures.year_built : '',
+                floors: parsedFeatures.floors ? parsedFeatures.floors : 0,
+                parking_space: parsedFeatures.parking_space ? String(parsedFeatures.parking_space) : '',
+                downpayment: parsedFeatures.downpayment ? String(parsedFeatures.downpayment) : '',
                 general_size: null,
                 lisitng_type: 'mm',
-                features: JSON.stringify({}),
                 custom_title: '',
                 show_address: true,
                 video: property.video,
             },
             selectedClient: property.customer ? property.customer : null,
             selectedCity: property.city ? { ...property.city, value: property.city.id } : null,
+            selectedFeatures: amentities,
             selectedArea: property.area ? { ...property.area, value: property.area.id } : null,
             clientName: property.customer && property.customer.first_name + ' ' + property.customer.last_name,
             buttonText: 'UPDATE PROPERTY'
         }, () => {
+            //console.log(this.state.formData)
             this.selectSubtype(property.type);
+            this.setFeatures(property.type);
             // this.getAreas(property.city_id);
             this.state.formData.imageIds.length > 0 && this.setImagesForEditMode();
         })
@@ -171,13 +192,29 @@ class AddInventory extends Component {
         this.setState({ selectSubType: StaticData.subType[type] })
     }
 
+    setFeatures = (type) => {
+        if (type !== '') {
+            if (type === 'residential') {
+                this.setState({ features: StaticData.residentialFeatures, utilities: StaticData.residentialUtilities })
+            }
+            else if (type === 'plot') {
+                this.setState({ features: StaticData.plotFeatures, utilities: StaticData.plotUtilities })
+            }
+            else if (type === 'commercial') {
+                this.setState({ features: StaticData.commercialFeatures, utilities: StaticData.commercialUtilities })
+            }
+        }
+    }
+
     // ********* Form Handle Function
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
-        this.setState({ formData }, () => {
-        })
-        if (formData.type != '') { this.selectSubtype(formData.type) }
+        this.setState({ formData });
+        if (formData.type !== '') {
+            this.setFeatures(formData.type);
+            this.selectSubtype(formData.type)
+        }
         if (formData.size === '') {
             formData.size = null;
             this.setState({ formData })
@@ -187,7 +224,6 @@ class AddInventory extends Component {
     // ********* On form Submit Function
     formSubmit = () => {
         const { formData } = this.state
-
         // ********* Form Validation Check
         if (!formData.type ||
             !formData.subtype ||
@@ -208,7 +244,17 @@ class AddInventory extends Component {
     }
 
     createOrEditProperty = (formData) => {
+        let features = {};
         const { navigation, route, dispatch } = this.props;
+        const { selectedFeatures } = this.state;
+        if (formData.year_built) { features["year_built"] = formData.year_built };
+        if (formData.floors) { features["floors"] = formData.floors };
+        if (formData.parking_space) { features["parking_space"] = this.convertToIntegerForZero(formData.parking_space) };
+        if (formData.downpayment) { features["downpayment"] = this.convertToIntegerForZero(formData.downpayment) };
+        selectedFeatures && selectedFeatures.length ? selectedFeatures.map((amenity, index) => {
+            features[amenity.replace(/\s+/g, '_').toLowerCase()] = true;
+        })
+            : {}
         const { property } = route.params;
         const { images } = this.props;
         formData.lat = this.convertLatitude(formData.lat);
@@ -217,11 +263,18 @@ class AddInventory extends Component {
         formData.bed = this.convertToIntegerForZero(formData.bed)
         formData.bath = this.convertToIntegerForZero(formData.bath)
         formData.price = this.convertToIntegerForZero(formData.price)
+        formData.features = features || {};
         formData.imageIds = _.pluck(images, 'id');
-
+        // deleting these keys below from formdata as they are sent in features instead of seperately
+        delete formData.parking_space;
+        delete formData.floors;
+        delete formData.year_built;
+        delete formData.downpayment;
+        console.log(formData)
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)
                 .then((res) => {
+                    console.log(res.data)
                     if (res.status === 200) {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         dispatch(flushImages());
@@ -256,7 +309,6 @@ class AddInventory extends Component {
                     console.log('error', error.message)
                 })
         }
-
     }
 
     getPermissionAsync = async () => {
@@ -272,7 +324,7 @@ class AddInventory extends Component {
         return true;
     };
 
-    getImages = () => {
+    getImagesFromGallery = () => {
         this.getPermissionAsync().then(result => {
             if (result === true) {
                 this.setState({ isModalOpen: true })
@@ -281,6 +333,24 @@ class AddInventory extends Component {
                 // Perimission denied, perform action or display alert
             }
         });
+    }
+
+    takePhotos = async () => {
+        let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA);
+        if (camStatus !== 'granted') {
+            const status = await Permissions.askAsync(Permissions.CAMERA).status;
+            if (status !== 'granted') {
+                return;
+            }
+        }
+
+        let result = await ImagePicker.launchCameraAsync({
+            quality: 0.5,
+        });
+
+        if (!result.cancelled) {
+            this._compressImageAndUpload(result.uri, result)
+        }
     }
 
     imageBrowserCallback = mediaAssets => {
@@ -430,6 +500,18 @@ class AddInventory extends Component {
         }
     }
 
+    handleFeatures(feature) {
+        if (this.state.selectedFeatures.includes(feature)) {
+            let temp = this.state.selectedFeatures;
+            delete temp[temp.indexOf(feature)];
+            this.setState({ selectedFeatures: temp })
+        } else {
+            let temp = this.state.selectedFeatures;
+            temp.push(feature);
+            this.setState({ selectedFeatures: temp })
+        }
+    }
+
     render() {
         const {
             formData,
@@ -442,6 +524,12 @@ class AddInventory extends Component {
             selectedCity,
             selectedArea,
             isModalOpen,
+            showAdditional,
+            additionalInformation,
+            features,
+            utilities,
+            facing,
+            selectedFeatures,
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
@@ -478,7 +566,8 @@ class AddInventory extends Component {
                                 handleClientClick={this.handleClientClick}
                                 propertyType={StaticData.type}
                                 getCurrentLocation={this._getLocationAsync}
-                                getImages={() => this.getImages()}
+                                getImagesFromGallery={() => this.getImagesFromGallery()}
+                                takePhotos={() => this.takePhotos()}
                                 selectSubType={selectSubType}
                                 sizeUnit={sizeUnit}
                                 selectedGrade={formData.grade}
@@ -488,6 +577,14 @@ class AddInventory extends Component {
                                 price={formData.price}
                                 deleteImage={(image, index) => this.deleteImage(image, index)}
                                 buttonDisabled={buttonDisabled}
+                                showAdditional={showAdditional}
+                                showAdditionalInformation={() => this.setState({ showAdditional: !showAdditional })}
+                                additionalInformation={additionalInformation}
+                                features={features}
+                                utilities={utilities}
+                                facing={facing}
+                                selectedFeatures={selectedFeatures}
+                                handleFeatures={(value) => this.handleFeatures(value)}
                             />
                         </View>
                     </ScrollView>

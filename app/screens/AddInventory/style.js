@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import AppStyles from '../../AppStyles';
+import { apps } from 'firebase';
 
 export default styles = StyleSheet.create({
     mainInputWrap: {
@@ -43,9 +44,12 @@ export default styles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5,
         borderRadius: 4,
-        margin: 5
+        margin: 5,
     },
-
+    extraAddMore: {
+        paddingHorizontal: 10,
+        width: '50%',
+    },
     imageContainerStyle: {
         alignItems: 'center',
         borderWidth: 1,
@@ -70,7 +74,7 @@ export default styles = StyleSheet.create({
         width: 130,
         height: 130,
         marginHorizontal: 10,
-        marginTop: 25,
+        marginTop: 20,
         marginBottom: 20,
         // marginBottom: 5
     },
@@ -98,5 +102,50 @@ export default styles = StyleSheet.create({
         borderLeftWidth: 1,
         backgroundColor: '#fafafa',
         borderColor: '#EAEEF1',
+    },
+    additonalViewContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderColor: '#EAEEF1',
+        borderWidth: 1,
+        borderRadius: 4
+    },
+    additionalInformationText: {
+        width: '86%',
+        paddingLeft: 15,
+        fontSize: AppStyles.fontSize.medium,
+        color: AppStyles.colors.textColor,
+    },
+    additionalDetailsIconView: {
+        width: '14%',
+        alignItems: 'center',
+        backgroundColor: "#fff",
+        borderLeftWidth: 1,
+        borderColor: '#EAEEF1',
+        padding: 10,
+    },
+    headings: {
+        fontSize: AppStyles.fontSize.large,
+        fontFamily: AppStyles.fonts.semiBoldFont,
+        color: AppStyles.colors.subTextColor,
+        marginVertical: 10,
+    },
+    additionalViewMain: {
+        paddingHorizontal: 5,
+        paddingVertical: 10,
+    },
+    featureOpacity: {
+        flexDirection: "row",
+        width: '50%',
+        alignItems: 'center',
+        padding: 5,
+    },
+    featureText: {
+        fontSize: 12,
+        color: AppStyles.colors.textColor,
+    },
+    buttonWidth: {
+        width: '80%'
     }
 })

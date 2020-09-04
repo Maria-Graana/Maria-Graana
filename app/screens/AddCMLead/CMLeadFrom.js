@@ -33,7 +33,7 @@ class CMLeadFrom extends Component {
       onSliderValueChange,
       getProductType,
     } = this.props
-    console.log(formData)
+    
     return (
       <View>
 

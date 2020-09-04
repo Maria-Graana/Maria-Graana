@@ -42,6 +42,7 @@ class AddClient extends Component {
             callingCode: defaultCountry.code,
             callingCode1: defaultCountry.code,
             callingCode2: defaultCountry.code,
+            contactNumberCheck: '',
         }
     }
     componentDidMount() {
@@ -56,6 +57,7 @@ class AddClient extends Component {
     updateFields = () => {
         const { route } = this.props
         const { client } = route.params
+        console.log(client)
         let formData = {
             firstName: client.firstName,
             lastName: client.lastName,
@@ -88,12 +90,12 @@ class AddClient extends Component {
     }
 
     validateContact1 = (value) => {
-        if (value.length < 11 && value !== '') this.setState({ contact1Validate: true })
+        if (value.length < 4 && value !== '') this.setState({ contact1Validate: true })
         else this.setState({ contact1Validate: false })
     }
 
     validateContact2 = (value) => {
-        if (value.length < 11 && value !== '') this.setState({ contact2Validate: true })
+        if (value.length < 4 && value !== '') this.setState({ contact2Validate: true })
         else this.setState({ contact2Validate: false })
     }
 
@@ -116,7 +118,7 @@ class AddClient extends Component {
         if (name == 'contact2') this.validateContact2(value)
 
         formData[name] = value
-        this.setState({ formData })
+        this.setState({ formData, contactNumberCheck: name })
     }
 
     call = (body) => {
@@ -146,7 +148,7 @@ class AddClient extends Component {
                 checkValidation: true
             })
         } else {
-            if (emailValidate && !phoneValidate && !cnicValidate && !contact1Validate && !contact2Validate) {
+            if (emailValidate && !phoneValidate && !cnicValidate) {
                 if (formData.cnic === '') formData.cnic = null
                 let body = {
                     first_name: helper.capitalize(formData.firstName),
@@ -156,8 +158,8 @@ class AddClient extends Component {
                     phone: callingCode + '' + formData.contactNumber,
                     address: formData.address,
                     secondary_address: formData.secondaryAddress,
-                    contact1: callingCode1 + '' + formData.contact1,
-                    contact2: callingCode2 + '' + formData.contact2,
+                    contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
+                    contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
                 }
                 if (!update) {
                     axios.post(`/api/customer/create`, body)
@@ -270,6 +272,7 @@ class AddClient extends Component {
             countryCode1,
             countryCode2,
             callingCode,
+            contactNumberCheck,
         } = this.state
         const { route } = this.props
         const { update } = route.params
@@ -296,6 +299,7 @@ class AddClient extends Component {
                                     countryCode={countryCode}
                                     countryCode1={countryCode1}
                                     countryCode2={countryCode2}
+                                    contactNumberCheck={contactNumberCheck}
                                     getTrimmedPhone={this.getTrimmedPhone}
                                     validate={this.validate}
                                     hello={this.hello}

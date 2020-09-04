@@ -41,6 +41,7 @@ class DetailForm extends Component {
 			countryCode,
 			countryCode1,
 			countryCode2,
+			contactNumberCheck,
 		} = this.props
 		let btnText = update ? 'UPDATE' : 'ADD'
 		return (
@@ -63,7 +64,7 @@ class DetailForm extends Component {
 						}
 					</View>
 				</View>
-
+						{console.log(formData)}
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<PhoneInputComponent
@@ -99,10 +100,7 @@ class DetailForm extends Component {
 							placeholder={'Contact Number 2'}
 						/>
 						{
-							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
-						}
-						{
-							phoneValidate == false && checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
+							contact1Validate == true  && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}
 					</View>
 				</View>
@@ -120,31 +118,12 @@ class DetailForm extends Component {
 							placeholder={'Contact Number 3'}
 						/>
 						{
-							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
-						}
-						{
-							phoneValidate == false && checkValidation === true && formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />
-						}
-					</View>
-				</View>
-
-				{/* <View style={[AppStyles.mainInputWrap]}>
-					<View style={[AppStyles.inputWrap]}>
-						<TextInput placeholderTextColor={'#a8a8aa'} maxLength={12} value={formData.contact1} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contact1') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number 2'} />
-						{
-							contact1Validate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
-						}
-					</View>
-				</View>
-
-				<View style={[AppStyles.mainInputWrap]}>
-					<View style={[AppStyles.inputWrap]}>
-						<TextInput placeholderTextColor={'#a8a8aa'} maxLength={12} value={formData.contact2} keyboardType='number-pad' autoCompleteType='cc-number' onChangeText={(text) => { handleForm(text, 'contact2') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'contactNumber'} placeholder={'Contact Number 3'} />
-						{
 							contact2Validate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}
+					
 					</View>
-				</View> */}
+				</View>
+
 
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>

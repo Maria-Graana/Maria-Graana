@@ -40,12 +40,12 @@ class AddInventory extends Component {
                 purpose: '',
                 bed: 0,
                 bath: 0,
-                size: null,
+                size: 0,
                 city_id: '',
                 area_id: '',
                 size_unit: 'marla',
                 customer_id: '',
-                price: '',
+                price: 0,
                 grade: '',
                 status: 'pending',
                 imageIds: [],
@@ -57,9 +57,10 @@ class AddInventory extends Component {
                 features: {},
                 custom_title: '',
                 show_address: true,
+                address: '',
                 video: '',
                 year_built: null,
-                floors: null,
+                floors: 0,
                 parking_space: 0,
                 downpayment: 0,
             },
@@ -133,14 +134,15 @@ class AddInventory extends Component {
                 type: property.type,
                 subtype: property.subtype,
                 purpose: property.purpose,
-                bed: property.bed ? String(property.bed) : '',
-                bath: property.bath ? String(property.bath) : '',
+                bed: property.bed ? property.bed : '',
+                bath: property.bath ? property.bath : '',
                 size_unit: property.size_unit,
-                size: String(property.size),
+                size: property.size ? property.size : 0,
                 city_id: property.city_id,
                 area_id: property.area_id,
+                address: property.address,
                 customer_id: property.customer_id ? property.customer_id : '',
-                price: property.price != 0 ? String(property.price) : '',
+                price: property.price ? property.price : 0,
                 imageIds: property.armsPropertyImages.length === 0 || property.armsPropertyImages === undefined
                     ?
                     []
@@ -150,10 +152,10 @@ class AddInventory extends Component {
                 lat: property.lat,
                 lng: property.lng,
                 description: property.description,
-                year_built: parsedFeatures.year_built ? parsedFeatures.year_built : '',
-                floors: parsedFeatures.floors ? parsedFeatures.floors : 0,
-                parking_space: parsedFeatures.parking_space ? String(parsedFeatures.parking_space) : '',
-                downpayment: parsedFeatures.downpayment ? String(parsedFeatures.downpayment) : '',
+                year_built: parsedFeatures && parsedFeatures.year_built ? parsedFeatures.year_built : '',
+                floors: parsedFeatures && parsedFeatures.floors ? parsedFeatures.floors : 0,
+                parking_space: parsedFeatures && parsedFeatures.parking_space ? parsedFeatures.parking_space : '',
+                downpayment: parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : 0,
                 general_size: null,
                 lisitng_type: 'mm',
                 custom_title: '',
@@ -210,7 +212,9 @@ class AddInventory extends Component {
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
-        this.setState({ formData });
+        this.setState({ formData }, () => {
+            //  console.log(formData);
+        });
         if (formData.type !== '') {
             this.setFeatures(formData.type);
             this.selectSubtype(formData.type)
@@ -249,7 +253,7 @@ class AddInventory extends Component {
         const { selectedFeatures } = this.state;
         if (formData.year_built) { features["year_built"] = formData.year_built };
         if (formData.floors) { features["floors"] = formData.floors };
-        if (formData.parking_space) { features["parking_space"] = this.convertToIntegerForZero(formData.parking_space) };
+        if (formData.parking_space) { features["parking_space"] = formData.parking_space };
         if (formData.downpayment) { features["downpayment"] = this.convertToIntegerForZero(formData.downpayment) };
         selectedFeatures && selectedFeatures.length ? selectedFeatures.map((amenity, index) => {
             features[amenity.replace(/\s+/g, '_').toLowerCase()] = true;
@@ -260,9 +264,7 @@ class AddInventory extends Component {
         formData.lat = this.convertLatitude(formData.lat);
         formData.lng = this.convertLongitude(formData.lng);
         formData.size = this.convertToInteger(formData.size)
-        formData.bed = this.convertToIntegerForZero(formData.bed)
-        formData.bath = this.convertToIntegerForZero(formData.bath)
-        formData.price = this.convertToIntegerForZero(formData.price)
+        formData.price = this.convertToInteger(formData.price)
         formData.features = features || {};
         formData.imageIds = _.pluck(images, 'id');
         // deleting these keys below from formdata as they are sent in features instead of seperately
@@ -270,11 +272,10 @@ class AddInventory extends Component {
         delete formData.floors;
         delete formData.year_built;
         delete formData.downpayment;
-        console.log(formData)
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)
                 .then((res) => {
-                    console.log(res.data)
+                    //console.log(res.data)
                     if (res.status === 200) {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         dispatch(flushImages());

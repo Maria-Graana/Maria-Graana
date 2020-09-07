@@ -58,4 +58,15 @@ export default styles = StyleSheet.create({
         borderColor: AppStyles.colors.primaryColor,
         borderWidth: 0.5
     },
+    featureOpacity: {
+        flexDirection: "row",
+        width: '50%',
+        alignItems: 'center',
+        padding: 5,
+        marginTop:5,
+    },
+    featureText: {
+        fontSize: 12,
+        color: AppStyles.colors.textColor,
+    },
 });

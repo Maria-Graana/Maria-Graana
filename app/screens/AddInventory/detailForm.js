@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ImageBackground, FlatList, Dimensions, ActivityIndicator } from 'react-native';
-import { Button } from 'native-base';
+import { Button, Textarea } from 'native-base';
 import { Checkbox } from 'react-native-paper';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import PickerComponent from '../../components/Picker/index';
-import axios from 'axios'
 import styles from './style';
 import AppStyles from '../../AppStyles';
 import LocationImg from '../../../assets/img/location.png'
@@ -49,16 +48,6 @@ class DetailForm extends Component {
         return this.years.reverse();
     }
 
-    _getFloors = () => {
-        var min = 1;
-        var max = 30;
-        this.floors = [];
-        for (var i = min; i <= max; i++) {
-            this.floors.push({ value: i, name: i.toString() });
-        }
-        return this.floors;
-    }
-
     _renderAdditionalView = () => {
         const { formData, handleForm, features, utilities, facing, selectedFeatures, handleFeatures } = this.props;
         let _renderFeatures = () => {
@@ -76,6 +65,43 @@ class DetailForm extends Component {
                 })
             )
         }
+        let _renderBeds = () => {
+            var min = 1;
+            var max = 10;
+            this.beds = [];
+            for (var i = min; i <= max; i++) {
+                this.beds.push({ name: i.toString() + ' Bedroom(s)', value: i });
+            }
+            return this.beds;
+        }
+        let _renderBaths = () => {
+            var min = 1;
+            var max = 10;
+            this.baths = [];
+            for (var i = min; i <= max; i++) {
+                this.baths.push({ name: i.toString() + ' Bathroom(s)', value: i });
+            }
+            return this.baths;
+        }
+        let _renderParkings = () => {
+            var min = 1;
+            var max = 10;
+            this.parkings = [];
+            for (var i = min; i <= max; i++) {
+                this.parkings.push({ name: i.toString() + ' Parking Space(s)', value: i });
+            }
+            return this.parkings;
+        }
+        let _renderFloors = () => {
+            var min = 1;
+            var max = 30;
+            this.floors = [];
+            for (var i = min; i <= max; i++) {
+                this.floors.push({ name: i.toString() + ' Floor(s)', value: i });
+            }
+            return this.floors;
+        }
+
         let _renderUtilities = () => {
             return (
                 utilities.map((item) => {
@@ -123,58 +149,48 @@ class DetailForm extends Component {
                 {
                     formData.type === 'residential' ? <>
                         <View style={[AppStyles.mainInputWrap]}>
-                            <View style={[AppStyles.inputWrap]}>
-                                <TextInput 
-                                    placeholderTextColor={'#a8a8aa'}
-                                    onChangeText={(text) => { handleForm(text, 'bed') }}
-                                    value={formData.bed === 0 ? '' : String(formData.bed)}
-                                    keyboardType='numeric'
-                                    style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                    name={'bed'}
-                                    placeholder={'Bed'} />
-                            </View>
+                            <PickerComponent data={_renderBeds()}
+                                onValueChange={handleForm}
+                                selectedItem={formData.bed}
+                                name={'bed'}
+                                placeholder='Select Total Bed(s)' />
                         </View>
 
                         <View style={[AppStyles.mainInputWrap]}>
-                            <View style={[AppStyles.inputWrap]}>
-                                <TextInput onChangeText={(text) => { handleForm(text, 'bath') }}
-                                    placeholderTextColor={'#a8a8aa'}
-                                    value={formData.bath === 0 ? '' : String(formData.bath)}
-                                    keyboardType='numeric'
-                                    style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                    name={'bath'}
-                                    placeholder={'Bath'} />
-                            </View>
+                            <PickerComponent data={_renderBaths()}
+                                onValueChange={handleForm}
+                                selectedItem={formData.bath}
+                                name={'bath'}
+                                placeholder='Select Total Bath(s)' />
                         </View>
 
                         <View style={[AppStyles.mainInputWrap]}>
-                            <View style={[AppStyles.inputWrap]}>
-                                <TextInput onChangeText={(text) => { handleForm(text, 'parking_space') }}
-                                    placeholderTextColor={'#a8a8aa'}
-                                    value={formData.parking_space === 0 ? '' : String(formData.parking_space)}
-                                    keyboardType='numeric'
-                                    style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                    name={'parking_space'}
-                                    placeholder={'Parking'} />
-                            </View>
+                            <PickerComponent data={_renderParkings()}
+                                onValueChange={handleForm}
+                                selectedItem={formData.parking_space}
+                                name={'parking_space'}
+                                placeholder='Select Total Parking Space(s)' />
                         </View>
                     </>
                         : null
                 }
                 {formData.type === 'commercial' ?
                     <View style={[AppStyles.mainInputWrap]}>
-                        <PickerComponent data={this._getFloors()} onValueChange={handleForm} selectedItem={formData.floors} name={'floors'} placeholder='Floor' />
+                        <PickerComponent data={_renderFloors()}
+                            onValueChange={handleForm}
+                            selectedItem={formData.floors}
+                            name={'floors'}
+                            placeholder='Select Total Floor(s)' />
                     </View>
                     : null
                 }
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
                         <TextInput onChangeText={(text) => { handleForm(text, 'downpayment') }}
-                            value={formData.downpayment === 0 ? '' : String(formData.downpayment)}
-                             placeholderTextColor={'#a8a8aa'}
+                            value={formData.downpayment && String(formData.downpayment)}
+                            placeholderTextColor={'#a8a8aa'}
                             keyboardType='numeric'
                             style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                            name={'downpayment'}
                             placeholder={'Down Payment is PKR (if any)'} />
                     </View>
                 </View>
@@ -262,6 +278,15 @@ class DetailForm extends Component {
                     showError={checkValidation === true && formData.area_id === ''}
                     errorMessage="Required" />
 
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <TextInput onChangeText={(text) => { handleForm(text, 'address') }}
+                            placeholderTextColor={'#a8a8aa'}
+                            value={formData.address}
+                            style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                            placeholder={'Address'} />
+                    </View>
+                </View>
                 {/* **************************************** */}
 
                 <View style={AppStyles.multiFormInput}>
@@ -269,7 +294,12 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'size') }} value={formData.size} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
+                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'size') }}
+                                value={formData.size && String(formData.size)}
+                                keyboardType='numeric'
+                                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                name={'size'}
+                                placeholder={'Size'} />
                             {
                                 checkValidation === true && formData.size === null && <ErrorMessage errorMessage={'Required'} />
                             }
@@ -309,8 +339,9 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[{ width: '75%' }, AppStyles.mainInputWrap, AppStyles.noMargin]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'price') }}
-                                value={price}
+                            <TextInput placeholderTextColor={'#a8a8aa'}
+                                onChangeText={(text) => { handleForm(text, 'price') }}
+                                value={price && String(price)}
                                 keyboardType='number-pad'
                                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                                 placeholder={'Demand Price'} />
@@ -318,9 +349,19 @@ class DetailForm extends Component {
                     </View>
                     {/* **************************************** */}
 
-                    <Text style={[styles.countPrice, { textAlignVertical: 'center' }]}>{formatPrice(price)}</Text>
+                    <Text style={[styles.countPrice, { textAlignVertical: 'center' }]}>{price ? formatPrice(price) : ''}</Text>
 
 
+                </View>
+
+                <View style={[AppStyles.mainInputWrap]}>
+                    <Textarea
+                        placeholderTextColor={'#a8a8aa'}
+                        style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings, { height: 100, paddingTop: 10, }]} rowSpan={5}
+                        placeholder="Description"
+                        onChangeText={(text) => handleForm(text, 'description')}
+                        value={formData.description}
+                    />
                 </View>
 
 

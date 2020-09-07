@@ -26,7 +26,6 @@ class PropertyDetail extends React.Component {
             else if (property.customer.first_name) {
                 return property.customer.first_name
             }
-          
         }
         else {
             return '';
@@ -40,18 +39,19 @@ class PropertyDetail extends React.Component {
         const type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1);
         const subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1);
         const areaName = property && property.area.name;
+        const propertyAddress = property && property.address;
         const cityName = property && property.city.name;
         const size = property && property.size;
         const sizeUnit = property && property.size_unit.charAt(0).toUpperCase() + property.size_unit.slice(1);
         const purpose = property && property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1);;
         const demandPrice = property.price;
+        const description = property && property.description;
         const grade = property.grade === null || property.grade === '' ? '' : property.grade;
         const lattitude = property.lat === null ? '' : property.lat + '/';
         const longitude = property.lng === null ? '' : property.lng;
         const ownerName = this.checkUserName(property);
         const ownerPhoneNumber = property.customer && property.customer.phone.trim();
         const address = property.customer && property.customer.address && property.customer.address;
-        const status = property.status === 'pending' ? 'Open' : property.status;
         const images = property && property.armsPropertyImages;
 
 
@@ -65,6 +65,15 @@ class PropertyDetail extends React.Component {
                         <Text style={styles.labelText}> {subtype + ', ' + type} </Text>
                         <Text style={styles.headingText}> Area </Text>
                         <Text style={styles.labelText}> {areaName} </Text>
+                        {
+                            propertyAddress ?
+                                <>
+                                    <Text style={styles.headingText}> Address </Text>
+                                    <Text style={styles.labelText}> {propertyAddress} </Text>
+                                </>
+                                : null
+                        }
+
                         <Text style={styles.headingText}> City </Text>
                         <Text style={styles.labelText}> {cityName} </Text>
                         <Text style={styles.headingText}> Size/Unit </Text>
@@ -73,6 +82,13 @@ class PropertyDetail extends React.Component {
                         <Text style={styles.labelText}> {purpose} </Text>
                         <Text style={styles.headingText}> Demand Price </Text>
                         <Text style={styles.labelText}> {helper.checkPrice(demandPrice, true)} </Text>
+                        {
+                            description ? <>
+                                <Text style={styles.headingText}> Description </Text>
+                                <Text style={styles.labelText}> {description} </Text>
+                            </> : null
+                        }
+
                         {images.length ? <Text style={styles.headingText}> Images </Text> : null}
                         <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
                             {

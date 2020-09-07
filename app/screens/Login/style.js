@@ -95,5 +95,17 @@ export default styles = StyleSheet.create({
     requiredTextColor: {
         color: "red",
         // paddingLeft : 
-    }
+    },
+    buttonContainer: {
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "white",
+        marginBottom: 12,
+        paddingVertical: 12,
+        borderColor: "rgba(255, 255, 255, 0.7)",
+        alignSelf: "center",
+        padding: 10,
+        height: 60,
+    },
 });

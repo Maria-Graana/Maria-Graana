@@ -114,8 +114,9 @@ class Login extends Component {
                             }
                             <View style={{ marginTop: 25, marginBottom: 25 }}>
                                 <TouchableButton
-                                    style={{}}
+                                    containerStyle={styles.buttonContainer}
                                     label='Sign In'
+                                    fontFamily={AppStyles.fonts.defaultFont}
                                     onPress={this.submitForm}
                                     loading={this.props.loading}
                                     color='white'

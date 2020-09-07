@@ -239,10 +239,11 @@ class LeadViewing extends React.Component {
 					let start = new Date(res.data.start)
 					let end = new Date(res.data.end)
 					let data = {
+						id: res.data.id,
 						title: res.data.subject,
 						body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
 					}
-					TimerNotification(data, start)
+					helper.deleteAndUpdateNotification(data, start, res.data.id)
 					this.fetchLead()
 					this.fetchProperties()
 				})
@@ -280,6 +281,7 @@ class LeadViewing extends React.Component {
 				let start = new Date(res.data.start)
 				let end = new Date(res.data.end)
 				let data = {
+					id: res.data.id,
 					title: res.data.subject,
 					body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
 				}
@@ -395,6 +397,7 @@ class LeadViewing extends React.Component {
 				axios.delete(`/api/diary/delete?id=${property.diaries[0].id}&propertyId=${property.id}&leadId=${lead.id}`)
 					.then((res) => {
 						this.setState({ loading: true })
+						helper.deleteLocalNotification(property.diaries[0].id)
 						this.fetchProperties()
 					})
 					.catch((error) => {

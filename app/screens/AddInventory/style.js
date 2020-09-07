@@ -147,5 +147,5 @@ export default styles = StyleSheet.create({
     },
     buttonWidth: {
         width: '80%'
-    }
+    },
 })

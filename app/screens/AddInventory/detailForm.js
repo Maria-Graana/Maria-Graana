@@ -301,7 +301,7 @@ class DetailForm extends Component {
                                 name={'size'}
                                 placeholder={'Size'} />
                             {
-                                checkValidation === true && formData.size === null && <ErrorMessage errorMessage={'Required'} />
+                                checkValidation === true && formData.size === '' && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                     </View>
@@ -485,9 +485,8 @@ class DetailForm extends Component {
                 <TouchableInput placeholder="Owner Name"
                     onPress={() => handleClientClick()}
                     value={clientName}
-                    showError={checkValidation === true && formData.customerId === ''}
+                    showError={checkValidation === true && formData.customer_id === ''}
                     errorMessage="Required" />
-
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>

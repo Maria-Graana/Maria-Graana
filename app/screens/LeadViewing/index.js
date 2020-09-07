@@ -395,6 +395,7 @@ class LeadViewing extends React.Component {
 				axios.delete(`/api/diary/delete?id=${property.diaries[0].id}&propertyId=${property.id}&leadId=${lead.id}`)
 					.then((res) => {
 						this.setState({ loading: true })
+						helper.deleteLocalNotification(property.diaries[0].id)
 						this.fetchProperties()
 					})
 					.catch((error) => {

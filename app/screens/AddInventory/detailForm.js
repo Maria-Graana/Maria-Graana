@@ -4,7 +4,6 @@ import { Button, Textarea } from 'native-base';
 import { Checkbox } from 'react-native-paper';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import PickerComponent from '../../components/Picker/index';
-import axios from 'axios'
 import styles from './style';
 import AppStyles from '../../AppStyles';
 import LocationImg from '../../../assets/img/location.png'

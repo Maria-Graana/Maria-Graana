@@ -1,10 +1,12 @@
 import React from 'react';
 import styles from './style'
 import { View, Text, ScrollView, Image } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import helper from '../../helper';
+import _ from 'underscore';
+import { FlatList } from 'react-native-gesture-handler';
 
 const PlaceHolderImage = require('../../../assets/img/img-3.png')
 
@@ -32,7 +34,6 @@ class PropertyDetail extends React.Component {
         }
     }
 
-
     render() {
         const { route } = this.props;
         const property = route.params.property;
@@ -53,6 +54,16 @@ class PropertyDetail extends React.Component {
         const ownerPhoneNumber = property.customer && property.customer.phone.trim();
         const address = property.customer && property.customer.address && property.customer.address;
         const images = property && property.armsPropertyImages;
+        let parsedFeatures = JSON.parse(property.features);
+        let amentities = _.isEmpty(parsedFeatures) ? [] : (_.keys(parsedFeatures));
+        if (amentities.length) {
+            amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
+            amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
+        }
+        const yearBuilt = parsedFeatures && parsedFeatures.year_built ? parsedFeatures.year_built : null;
+        const parkingSpace = parsedFeatures && parsedFeatures.parking_space ? parsedFeatures.parking_space : null;
+        const downPayment = parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : null;
+        const floors = parsedFeatures && parsedFeatures.floors ? parsedFeatures.floors : null;
 
 
         return (
@@ -119,7 +130,42 @@ class PropertyDetail extends React.Component {
                                 <Text style={styles.labelText}> {property.bed === null ? '0' + ' Bed(s)' : String(property.bed) + ' Bed(s)'} </Text>
                                 <Text style={styles.headingText}> Baths </Text>
                                 <Text style={styles.labelText}> {property.bath === null ? '0' + ' Bed(s)' : String(property.bath) + ' Bath(s)'} </Text>
+                                {
+                                    parkingSpace ? <>
+                                        <Text style={styles.headingText}> Parking </Text>
+                                        <Text style={styles.labelText}> {String(parkingSpace) + ' Parking Space(s)'} </Text>
+                                    </> : null
+
+                                }
+                                {
+                                    yearBuilt ? <>
+                                        <Text style={styles.headingText}> Year Built </Text>
+                                        <Text style={styles.labelText}> {String(yearBuilt)} </Text>
+                                    </> : null
+                                }
                             </View>
+                        }
+                        {
+                            type === 'plot' &&
+                            <View>
+                                {
+                                    floors ?
+                                        <>
+                                            <Text style={styles.headingText}> Floor </Text>
+                                            <Text style={styles.labelText}> {String(floors)} </Text>
+                                        </>
+                                        :
+                                        null
+                                }
+                            </View>
+                        }
+
+                        {
+                            downPayment ? <>
+                                <Text style={styles.headingText}> Down Payment </Text>
+                                <Text style={styles.labelText}> {helper.checkPrice(downPayment, true)} </Text>
+                            </> :
+                                null
                         }
 
                         {
@@ -153,6 +199,26 @@ class PropertyDetail extends React.Component {
                                     <Text style={styles.labelText}> {address}</Text>
                                 </View> :
                                 null
+                        }
+
+                        {
+                            amentities && amentities.length ? <>
+
+                                <Text style={styles.headingText}> Property Features </Text>
+                                {
+                                    <FlatList data={amentities}
+                                        keyExtractor={item => item.toString()}
+                                        scrollEnabled={false}
+                                        numColumns={2}
+                                        showsVerticalScrollIndicator={false}
+                                        renderItem={({ item }) => <View key={item.toString()} style={styles.featureOpacity}>
+                                            <Ionicons name="ios-checkmark-circle-outline" size={24} color={AppStyles.colors.primaryColor} />
+                                            <Text style={styles.featureText} style={{ padding: 5 }}>{item}</Text>
+                                        </View>} />
+                                }
+                            </>
+                                : null
+
                         }
 
                     </View>

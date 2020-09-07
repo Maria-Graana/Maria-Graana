@@ -274,7 +274,7 @@ class AddInventory extends Component {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        navigation.navigate('Inventory', { update: false })
+                        navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
                     }
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')
@@ -292,7 +292,7 @@ class AddInventory extends Component {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        navigation.navigate('Inventory', { update: false })
+                        navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
                     }
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')

@@ -383,10 +383,11 @@ const helper = {
 		} else return contact
 	},
 	deleteAndUpdateNotification(data, start, id) {
-		helper.deleteLocalNotification(id)
-			.then(item => {
-				TimerNotification(data, start)
-			})
+		Notifications.getAllScheduledNotificationsAsync().then(notifications => {
+			this.deleteNotification(notifications, id)
+			TimerNotification(data, start)
+		})
+
 	},
 	deleteLocalNotification(id) {
 		Notifications.getAllScheduledNotificationsAsync().then(notifications => {
@@ -398,7 +399,6 @@ const helper = {
 		if (notifications.length) {
 			notifications.map(item => {
 				if (item.content && item.content.data && item.content.data.id && item.content.data.id === id) {
-					console.log('matched: ', item)
 					identifier = item.identifier
 				}
 			})
@@ -406,8 +406,6 @@ const helper = {
 		if (identifier) {
 			Notifications.cancelScheduledNotificationAsync(identifier)
 				.then(notification => {
-					console.log('deleted: ', notification)
-					return notification
 				})
 				.catch(error => {
 					console.log(error)

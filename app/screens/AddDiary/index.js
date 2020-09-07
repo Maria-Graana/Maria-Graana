@@ -187,7 +187,6 @@ class AddDiary extends Component {
                 this.props.navigation.navigate('Diary', { update: false, 'agentId': this.props.route.params.agentId })
             })
             .catch((error) => {
-                //console.log('error', error)
                 helper.errorToast('ERROR: UPDATING TASK')
                 console.log(error)
             })

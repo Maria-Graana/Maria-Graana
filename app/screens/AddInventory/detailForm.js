@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ImageBackground, FlatList, Dimensions, ActivityIndicator } from 'react-native';
-import { Button } from 'native-base';
+import { Button, Textarea } from 'native-base';
 import { Checkbox } from 'react-native-paper';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import PickerComponent from '../../components/Picker/index';
@@ -124,13 +124,12 @@ class DetailForm extends Component {
                     formData.type === 'residential' ? <>
                         <View style={[AppStyles.mainInputWrap]}>
                             <View style={[AppStyles.inputWrap]}>
-                                <TextInput 
+                                <TextInput
                                     placeholderTextColor={'#a8a8aa'}
                                     onChangeText={(text) => { handleForm(text, 'bed') }}
                                     value={formData.bed === 0 ? '' : String(formData.bed)}
                                     keyboardType='numeric'
                                     style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                    name={'bed'}
                                     placeholder={'Bed'} />
                             </View>
                         </View>
@@ -142,7 +141,6 @@ class DetailForm extends Component {
                                     value={formData.bath === 0 ? '' : String(formData.bath)}
                                     keyboardType='numeric'
                                     style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                    name={'bath'}
                                     placeholder={'Bath'} />
                             </View>
                         </View>
@@ -154,7 +152,6 @@ class DetailForm extends Component {
                                     value={formData.parking_space === 0 ? '' : String(formData.parking_space)}
                                     keyboardType='numeric'
                                     style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                    name={'parking_space'}
                                     placeholder={'Parking'} />
                             </View>
                         </View>
@@ -171,10 +168,9 @@ class DetailForm extends Component {
                     <View style={[AppStyles.inputWrap]}>
                         <TextInput onChangeText={(text) => { handleForm(text, 'downpayment') }}
                             value={formData.downpayment === 0 ? '' : String(formData.downpayment)}
-                             placeholderTextColor={'#a8a8aa'}
+                            placeholderTextColor={'#a8a8aa'}
                             keyboardType='numeric'
                             style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                            name={'downpayment'}
                             placeholder={'Down Payment is PKR (if any)'} />
                     </View>
                 </View>
@@ -262,6 +258,15 @@ class DetailForm extends Component {
                     showError={checkValidation === true && formData.area_id === ''}
                     errorMessage="Required" />
 
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <TextInput onChangeText={(text) => { handleForm(text, 'address') }}
+                            placeholderTextColor={'#a8a8aa'}
+                            value={formData.address}
+                            style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                            placeholder={'Address'} />
+                    </View>
+                </View>
                 {/* **************************************** */}
 
                 <View style={AppStyles.multiFormInput}>
@@ -321,6 +326,16 @@ class DetailForm extends Component {
                     <Text style={[styles.countPrice, { textAlignVertical: 'center' }]}>{formatPrice(price)}</Text>
 
 
+                </View>
+
+                <View style={[AppStyles.mainInputWrap]}>
+                    <Textarea
+                        placeholderTextColor={'#a8a8aa'}
+                        style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings, { height: 100, paddingTop: 10, }]} rowSpan={5}
+                        placeholder="Description"
+                        onChangeText={(text) => handleForm(text, 'description')}
+                        value={formData.description}
+                    />
                 </View>
 
 

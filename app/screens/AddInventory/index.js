@@ -57,6 +57,7 @@ class AddInventory extends Component {
                 features: {},
                 custom_title: '',
                 show_address: true,
+                address: '',
                 video: '',
                 year_built: null,
                 floors: null,
@@ -271,44 +272,44 @@ class AddInventory extends Component {
         delete formData.year_built;
         delete formData.downpayment;
         console.log(formData)
-        if (route.params.update) {
-            axios.patch(`/api/inventory/${property.id}`, formData)
-                .then((res) => {
-                    console.log(res.data)
-                    if (res.status === 200) {
-                        helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
-                        dispatch(flushImages());
-                        navigation.navigate('Inventory', { update: false })
-                    }
-                    else {
-                        console.log('wrong');
-                        helper.errorToast('ERROR: SOMETHING WENT WRONG')
-                    }
+        // if (route.params.update) {
+        //     axios.patch(`/api/inventory/${property.id}`, formData)
+        //         .then((res) => {
+        //             console.log(res.data)
+        //             if (res.status === 200) {
+        //                 helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
+        //                 dispatch(flushImages());
+        //                 navigation.navigate('Inventory', { update: false })
+        //             }
+        //             else {
+        //                 console.log('wrong');
+        //                 helper.errorToast('ERROR: SOMETHING WENT WRONG')
+        //             }
 
-                })
-                .catch((error) => {
-                    helper.errorToast('ERROR: UPDATING PROPERTY')
-                    console.log('error', error.message)
-                })
-        }
-        else {
-            axios.post(`/api/inventory/create`, formData)
-                .then((res) => {
-                    if (res.status === 200) {
-                        helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
-                        dispatch(flushImages());
-                        navigation.goBack();
-                    }
-                    else {
-                        helper.errorToast('ERROR: SOMETHING WENT WRONG')
-                    }
+        //         })
+        //         .catch((error) => {
+        //             helper.errorToast('ERROR: UPDATING PROPERTY')
+        //             console.log('error', error.message)
+        //         })
+        // }
+        // else {
+        //     axios.post(`/api/inventory/create`, formData)
+        //         .then((res) => {
+        //             if (res.status === 200) {
+        //                 helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
+        //                 dispatch(flushImages());
+        //                 navigation.goBack();
+        //             }
+        //             else {
+        //                 helper.errorToast('ERROR: SOMETHING WENT WRONG')
+        //             }
 
-                })
-                .catch((error) => {
-                    helper.errorToast('ERROR: ADDING PROPERTY')
-                    console.log('error', error.message)
-                })
-        }
+        //         })
+        //         .catch((error) => {
+        //             helper.errorToast('ERROR: ADDING PROPERTY')
+        //             console.log('error', error.message)
+        //         })
+        // }
     }
 
     getPermissionAsync = async () => {

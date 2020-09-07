@@ -295,7 +295,12 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'size') }} value={formData.size} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
+                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'size') }}
+                                value={formData.size && String(formData.size)}
+                                keyboardType='numeric'
+                                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                name={'size'}
+                                placeholder={'Size'} />
                             {
                                 checkValidation === true && formData.size === null && <ErrorMessage errorMessage={'Required'} />
                             }

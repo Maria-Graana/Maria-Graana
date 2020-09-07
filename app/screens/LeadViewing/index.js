@@ -172,7 +172,7 @@ class LeadViewing extends React.Component {
 	}
 
 	setProperty = (property) => {
-		const {viewing} = this.state;
+		const { viewing } = this.state;
 		viewing['date'] = '';
 		viewing['time'] = '';
 		this.setState({ currentProperty: property, updateViewing: false })
@@ -218,7 +218,7 @@ class LeadViewing extends React.Component {
 		const { lead } = this.props
 		if (currentProperty.diaries.length) {
 			let diary = currentProperty.diaries[0]
-			let start = helper.formatDateAndTime(helper.formatDate(viewing.date),viewing.time);
+			let start = helper.formatDateAndTime(helper.formatDate(viewing.date), viewing.time);
 			let end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
 			let body = {
 				date: start,
@@ -237,10 +237,11 @@ class LeadViewing extends React.Component {
 					let start = new Date(res.data.start)
 					let end = new Date(res.data.end)
 					let data = {
+						id: res.data.id,
 						title: res.data.subject,
 						body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
 					}
-					TimerNotification(data, start)
+					helper.deleteAndUpdateNotification(data, start, res.data.id)
 					this.fetchLead()
 					this.fetchProperties()
 				})
@@ -256,7 +257,7 @@ class LeadViewing extends React.Component {
 		let customer = lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName) || ''
 		let areaName = currentProperty.area && currentProperty.area.name && currentProperty.area.name || ''
 		let customerId = lead.customer && lead.customer.id
-		let start = helper.formatDateAndTime(helper.formatDate(viewing.date),viewing.time);
+		let start = helper.formatDateAndTime(helper.formatDate(viewing.date), viewing.time);
 		let end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
 		let body = {
 			date: start,
@@ -275,13 +276,14 @@ class LeadViewing extends React.Component {
 					isVisible: false,
 					loading: true,
 				})
-                let start = new Date(res.data.start)
-                let end = new Date(res.data.end)
-                let data = {
-                    title: res.data.subject,
-                    body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
-                }
-                TimerNotification(data, start)
+				let start = new Date(res.data.start)
+				let end = new Date(res.data.end)
+				let data = {
+					id: res.data.id,
+					title: res.data.subject,
+					body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+				}
+				TimerNotification(data, start)
 				this.fetchLead()
 				this.fetchProperties()
 			})

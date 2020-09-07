@@ -139,10 +139,11 @@ class Meetings extends Component {
             let start = new Date(res.data.start)
             let end = new Date(res.data.end)
             let data = {
+              id: res.data.id,
               title: res.data.subject,
               body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
             }
-            TimerNotification(data, start)
+            helper.deleteAndUpdateNotification(data, start, res.data.id)
             this.getMeetingLead();
             formData['time'] = ''
             formData['date'] = ''
@@ -170,6 +171,7 @@ class Meetings extends Component {
             let start = new Date(res.data.start)
             let end = new Date(res.data.end)
             let data = {
+              id: res.data.id,
               title: res.data.subject,
               body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
             }

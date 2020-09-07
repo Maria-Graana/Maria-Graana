@@ -1,5 +1,5 @@
 import { Linking } from 'react-native';
-import { Toast } from 'native-base';
+import { Toast, Content } from 'native-base';
 import moment from 'moment-timezone';
 import StaticData from './StaticData';
 import { formatPrice } from './PriceFormate';
@@ -14,6 +14,8 @@ import ClientsImg from '../assets/img/clients-icon-l.png'
 import * as Contacts from 'expo-contacts';
 import * as Sentry from 'sentry-expo';
 import _ from 'underscore';
+import * as Notifications from 'expo-notifications';
+import TimerNotification from './LocalNotifications';
 
 const helper = {
 	successToast(message) {
@@ -328,13 +330,13 @@ const helper = {
 				})
 		}
 	},
-	formatDate (date){
+	formatDate(date) {
 		return moment(date).format('YYYY-MM-DD')
 	},
-	formatTime (time){
-      return moment(time).format('hh:mm a');
+	formatTime(time) {
+		return moment(time).format('hh:mm a');
 	},
-	formatDateAndTime(date, time){
+	formatDateAndTime(date, time) {
 		return moment(date + moment(time).format('hh:mm a'), 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ssZ');
 	},
 	createContactPayload(customer) {
@@ -380,6 +382,38 @@ const helper = {
 			return contact
 		} else return contact
 	},
+	deleteAndUpdateNotification(data, start, id) {
+		helper.deleteLocalNotification(id)
+			.then(item => {
+				TimerNotification(data, start)
+			})
+	},
+	deleteLocalNotification(id) {
+		Notifications.getAllScheduledNotificationsAsync().then(notifications => {
+			this.deleteNotification(notifications, id)
+		})
+	},
+	deleteNotification(notifications, id) {
+		let identifier = null
+		if (notifications.length) {
+			notifications.map(item => {
+				if (item.content && item.content.data && item.content.data.id && item.content.data.id === id) {
+					console.log('matched: ', item)
+					identifier = item.identifier
+				}
+			})
+		}
+		if (identifier) {
+			Notifications.cancelScheduledNotificationAsync(identifier)
+				.then(notification => {
+					console.log('deleted: ', notification)
+					return notification
+				})
+				.catch(error => {
+					console.log(error)
+				})
+		}
+	}
 }
 
 

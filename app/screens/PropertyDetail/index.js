@@ -20,12 +20,13 @@ class PropertyDetail extends React.Component {
 
     checkUserName = (property) => {
         if (property.customer) {
-            if (property.customer.first_name) {
-                return property.customer.first_name
-            }
-            else if (property.customer.first_name && property.customer.last_name) {
+            if (property.customer.first_name && property.customer.last_name) {
                 return property.customer.first_name + ' ' + property.customer.last_name
             }
+            else if (property.customer.first_name) {
+                return property.customer.first_name
+            }
+          
         }
         else {
             return '';

@@ -174,15 +174,17 @@ class LeadDetail extends React.Component {
         const { description } = this.state;
         const { purposeTab, lead } = route.params
         var endPoint = ''
+        var leadId = []
+        leadId.push(lead.id)
         var body = {
             description: description,
         }
         if (purposeTab == 'invest') {
-            endPoint = `/api/leads/project?id=${lead.id}`
+            endPoint = `/api/leads/project`
         } else {
-            endPoint = `/api/leads/?id=${lead.id}`
+            endPoint = `/api/leads`
         }
-        axios.patch(endPoint, body)
+        axios.patch(endPoint, body, { params: { id: leadId } })
             .then((res) => {
                 this.purposeTab()
                 this.editDescription(false)
@@ -293,8 +295,8 @@ class LeadDetail extends React.Component {
                                     lead.armsLeadAreas[0].area &&
                                     // lead.armsLeadAreas[0].area.name 
                                     lead.armsLeadAreas.map((item, index) => {
-                                        var comma = index > 0 && ', '
-                                        return  comma + (item.area.name) 
+                                        var comma = index > 0 ? ', ' : ''
+                                        return comma + (item.area.name)
                                     })
                                     :
                                     ''

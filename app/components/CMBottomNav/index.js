@@ -47,12 +47,14 @@ class CMBottomNav extends React.Component {
 
 	updateStatus = () => {
 		const { lead, user } = this.props
+		var leadId = []
+		leadId.push(lead.id)
 		if (lead.assigned_to_armsuser_id === user.id) {
 			if (lead.status === 'open') {
-				axios.patch(`/api/leads/?id=${lead.id}`,
+				axios.patch(`/api/leads`,
 					{
 						status: 'called'
-					})
+					}, { params: { id: leadId } })
 					.then((res) => {
 						console.log('success')
 					})

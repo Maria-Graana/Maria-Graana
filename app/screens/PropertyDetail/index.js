@@ -4,7 +4,7 @@ import { View, Text, ScrollView, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
-import { formatPrice } from '../../PriceFormate'
+import helper from '../../helper';
 
 const PlaceHolderImage = require('../../../assets/img/img-3.png')
 
@@ -43,7 +43,7 @@ class PropertyDetail extends React.Component {
         const size = property && property.size;
         const sizeUnit = property && property.size_unit.charAt(0).toUpperCase() + property.size_unit.slice(1);
         const purpose = property && property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1);;
-        const demandPrice = property.price === null ? '0' : formatPrice(property.price);
+        const demandPrice = property.price;
         const grade = property.grade === null || property.grade === '' ? '' : property.grade;
         const lattitude = property.lat === null ? '' : property.lat + '/';
         const longitude = property.lng === null ? '' : property.lng;
@@ -71,7 +71,7 @@ class PropertyDetail extends React.Component {
                         <Text style={styles.headingText}> Available for </Text>
                         <Text style={styles.labelText}> {purpose} </Text>
                         <Text style={styles.headingText}> Demand Price </Text>
-                        <Text style={styles.labelText}> {'PKR ' + demandPrice} </Text>
+                        <Text style={styles.labelText}> {helper.checkPrice(demandPrice, true)} </Text>
                         {images.length ? <Text style={styles.headingText}> Images </Text> : null}
                         <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
                             {

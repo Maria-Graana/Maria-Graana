@@ -80,7 +80,7 @@ class InventoryTile extends React.Component {
 
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.currencyTextStyle}>PKR</Text>
-            <Text style={styles.priceTextStyle} numberOfLines={1}>{formatPrice(data.price)}</Text>
+            <Text style={styles.priceTextStyle} numberOfLines={1}>{helper.checkPrice(data.price)}</Text>
           </View >
 
           <Text style={styles.textControlStyle} numberOfLines={1}>

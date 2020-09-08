@@ -97,7 +97,7 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects();
 		this.setFields();
-		console.log(this.props.lead)
+		// console.log(this.props.lead)
 	}
 
 	setFields = () => {
@@ -180,7 +180,6 @@ class Payments extends Component {
 
 			}
 			if (data.project != null && data.project.installment_plan != null && data.unitId != null) {
-				console.log('#######################################')
 				var totalInstallments = this.noOfInstallments(data.project.installment_plan)
 				this.instalmentsField(totalInstallments)
 				this.discountPayment()
@@ -727,7 +726,7 @@ class Payments extends Component {
 			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment,  }
 			newArrowCheck[name] = false
 		}
-		console.log(body)
+		// console.log(body)
 		axios.patch(`/api/leads/project`, body, {params: {id: leadId}})
 			.then((res) => {
 				if (name === 'installments') {

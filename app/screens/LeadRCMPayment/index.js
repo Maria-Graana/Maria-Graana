@@ -399,15 +399,21 @@ class LeadRCMPayment extends React.Component {
         const { lead, selectedReason } = this.state;
         let payload = Object.create({});
         payload.reasons = selectedReason;
-        var leadId = []
-        leadId.push(lead.id)
-        axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
-            this.setState({ isVisible: false }, () => {
-                navigation.navigate('Leads');
-            });
-        }).catch(error => {
-            console.log(error);
-        })
+        if(selectedReason!==''){
+            var leadId = []
+            leadId.push(lead.id)
+            axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
+                this.setState({ isVisible: false }, () => {
+                    navigation.navigate('Leads');
+                });
+            }).catch(error => {
+                console.log(error);
+            })
+        }
+        else{
+            alert('Please select a reason for lead closure!')
+        }
+      
     }
 
     handleForm = (value, name) => {

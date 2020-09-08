@@ -62,7 +62,8 @@ class Meetings extends Component {
         notes: '',
         status: 'pending',
         leadId: this.props.lead.id,
-      }
+      },
+      loading: false,
     }
   }
 
@@ -120,6 +121,7 @@ class Meetings extends Component {
     if (!formData.time || !formData.date) {
       this.setState({ checkValidation: true })
     } else {
+      this.setState({ loading: true });
       let formattedDate = helper.formatDate(formData.date);
       const start = helper.formatDateAndTime(formattedDate, formData.time);
       const end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ');
@@ -154,6 +156,8 @@ class Meetings extends Component {
             })
           }).catch(() => {
             helper.errorToast(`Some thing went wrong!!!`)
+          }).finally(() => {
+            this.setState({ loading: false })
           })
       } else {
         formData.addedBy = 'self';
@@ -183,6 +187,8 @@ class Meetings extends Component {
             })
           }).catch(() => {
             helper.errorToast(`Some thing went wrong!!!`)
+          }).finally(() => {
+            this.setState({ loading: false })
           })
       }
 
@@ -194,6 +200,7 @@ class Meetings extends Component {
     if (!diaryTask.start || !diaryTask.date) {
       this.setState({ checkValidation: true })
     } else {
+      this.setState({ loading: true })
       let formattedDate = helper.formatDate(diaryTask.date);
       const start = helper.formatDateAndTime(formattedDate, diaryTask.start);
       const end = moment(start).add(0.33, 'hours').format('YYYY-MM-DDTHH:mm:ssZ');
@@ -217,6 +224,8 @@ class Meetings extends Component {
         }).catch((error) => {
           console.log(error)
           helper.errorToast(`Some thing went wrong!!!`)
+        }).finally(() => {
+          this.setState({ loading: false })
         })
     }
   }
@@ -443,6 +452,7 @@ class Meetings extends Component {
       checkForUnassignedLeadEdit,
       diaryForm,
       diaryTask,
+      loading,
     } = this.state
     const { contacts } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
@@ -519,6 +529,7 @@ class Meetings extends Component {
             diaryTask={diaryTask}
             handleFormDiary={this.handleFormDiary}
             formSubmitDiary={this.formSubmitDiary}
+            loading={loading}
           />
         }
 

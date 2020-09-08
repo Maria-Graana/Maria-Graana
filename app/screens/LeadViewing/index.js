@@ -215,6 +215,7 @@ class LeadViewing extends React.Component {
 				checkValidation: true
 			})
 		} else {
+			this.setState({ addLoading: true })
 			if (updateViewing) this.updateViewing()
 			else this.createViewing()
 		}
@@ -254,6 +255,8 @@ class LeadViewing extends React.Component {
 				})
 				.catch((error) => {
 					console.log(error)
+				}).finally(() => {
+					this.setState({ addLoading: false })
 				})
 		}
 	}
@@ -296,6 +299,8 @@ class LeadViewing extends React.Component {
 			})
 			.catch((error) => {
 				console.log(error)
+			}).finally(() => {
+				this.setState({ addLoading: false })
 			})
 	}
 
@@ -447,7 +452,7 @@ class LeadViewing extends React.Component {
 
 
 	render() {
-		const { loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+		const { loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
 		const { lead, user } = this.props;
 		const showMenuItem = this.showMenuItem();
 		return (
@@ -463,6 +468,7 @@ class LeadViewing extends React.Component {
 								onPress={this.submitViewing}
 								handleForm={this.handleForm}
 								openModal={this.openModal}
+								loading={addLoading}
 								viewing={viewing}
 								checkValidation={checkValidation}
 								isVisible={isVisible} />

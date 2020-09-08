@@ -8,10 +8,10 @@ import {
 import { AntDesign } from '@expo/vector-icons';
 import styles from './style'
 import AppStyles from '../../AppStyles';
-import { Button } from 'native-base';
 import DateTimePicker from '../DatePicker';
 import ErrorMessage from '../ErrorMessage'
 import helper from '../../helper';
+import TouchableButton from '../../components/TouchableButton'
 
 class AddViewing extends React.Component {
 
@@ -20,7 +20,7 @@ class AddViewing extends React.Component {
     }
 
     render() {
-        const { isVisible, onPress, handleForm, openModal, checkValidation, viewing, update } = this.props;
+        const { isVisible, onPress, handleForm, openModal, checkValidation, viewing, update, loading } = this.props;
         return (
             <Modal
                 visible={isVisible}
@@ -52,14 +52,12 @@ class AddViewing extends React.Component {
                             selectedValue={viewing.time ? helper.formatTime(viewing.time) : ''}
                             handleForm={(value, name) => handleForm(value, name)}
                         />
-                        <View style={[AppStyles.mainInputWrap]}>
-                            <Button
-                                style={[AppStyles.formBtn, { marginTop: 10 }]} onPress={onPress}>
-                                <Text style={AppStyles.btnText}>{update ? 'UPDATE VIEWING' : 'BOOK VIEWING'}</Text>
-                            </Button>
-                        </View>
-
-
+                            <TouchableButton
+                                containerStyle={[AppStyles.formBtn, { marginTop: 10 }]}
+                                label={update ? 'UPDATE VIEWING' : 'BOOK VIEWING'}
+                                onPress={onPress}
+                                loading={loading}
+                            />
                     </View>
                 </SafeAreaView>
             </Modal>

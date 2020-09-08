@@ -115,16 +115,15 @@ class LeadViewing extends React.Component {
 		var commissionPayment = this.props.lead.commissionPayment
 		if (user.id === lead.assigned_to_armsuser_id) {
 			if (commissionPayment !== null) {
-				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 			else {
-				this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 		}
 		else {
 			helper.leadNotAssignedToast()
 		}
-
 	}
 
 	onHandleCloseLead = () => {
@@ -135,7 +134,7 @@ class LeadViewing extends React.Component {
 		var leadId = []
 		leadId.push(lead.id)
 		axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
-			this.setState({ isVisible: false }, () => {
+			this.setState({ isCloseLeadVisible: false }, () => {
 				helper.successToast(`Lead Closed`)
 				navigation.navigate('Leads');
 			});

@@ -8,6 +8,7 @@ import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
 import helper from '../../helper';
 import PhoneInputComponent from '../../components/PhoneCountry/PhoneInput'
+import TouchableButton from '../../components/TouchableButton';
 
 class DetailForm extends Component {
 	constructor(props) {
@@ -42,6 +43,7 @@ class DetailForm extends Component {
 			countryCode1,
 			countryCode2,
 			contactNumberCheck,
+			loading,
 		} = this.props
 		let btnText = update ? 'UPDATE' : 'ADD'
 		return (
@@ -99,7 +101,7 @@ class DetailForm extends Component {
 							placeholder={'Contact Number 2'}
 						/>
 						{
-							contact1Validate == true  && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+							contact1Validate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}
 					</View>
 				</View>
@@ -119,7 +121,7 @@ class DetailForm extends Component {
 						{
 							contact2Validate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
 						}
-					
+
 					</View>
 				</View>
 
@@ -165,11 +167,12 @@ class DetailForm extends Component {
 
 				{/* **************************************** */}
 				<View style={[AppStyles.mainInputWrap]}>
-					<Button
-						onPress={() => { formSubmit(formData) }}
-						style={[AppStyles.formBtn, styles.addInvenBtn]}>
-						<Text style={AppStyles.btnText}>{btnText}</Text>
-					</Button>
+					<TouchableButton
+						containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+						label={btnText}
+						onPress={() => formSubmit(formData)}
+						loading={loading}
+					/>
 				</View>
 			</View>
 		)

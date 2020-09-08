@@ -25,7 +25,7 @@ class AddViewing extends React.Component {
             <Modal
                 visible={isVisible}
                 animationType="slide"
-                onRequestClose={isVisible}
+                onRequestClose={openModal}
             >
                 <SafeAreaView style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}>
                     <AntDesign style={styles.closeStyle} onPress={openModal} name="close" size={26} color={AppStyles.colors.textColor} />

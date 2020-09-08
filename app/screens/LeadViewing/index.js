@@ -521,7 +521,6 @@ class LeadViewing extends React.Component {
 							lead={lead}
 						/>
 					</View>
-
 					<LeadRCMPaymentPopup
 						reasons={reasons}
 						selectedReason={selectedReason}

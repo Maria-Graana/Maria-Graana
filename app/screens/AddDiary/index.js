@@ -16,6 +16,7 @@ class AddDiary extends Component {
         this.state = {
             checkValidation: false,
             taskValues: [],
+            loading: false,
         }
     }
 
@@ -34,7 +35,9 @@ class AddDiary extends Component {
                 checkValidation: true
             })
         } else {
-            this.createDiary(data)
+            this.setState({ loading: true }, () => {
+                this.createDiary(data);
+            })
         }
     }
 
@@ -118,6 +121,7 @@ class AddDiary extends Component {
             axios.post(`/api/leads/task`, diary)
                 .then((res) => {
                     if (res.status === 200) {
+                        this.setState({ loading: false });
                         helper.successToast('TASK ADDED SUCCESSFULLY!')
                         let start = new Date(res.data.start)
                         let end = new Date(res.data.end)
@@ -135,6 +139,7 @@ class AddDiary extends Component {
 
                 })
                 .catch((error) => {
+                    this.setState({ loading: false });
                     helper.errorToast('ERROR: ADDING DIARY')
                     console.log('error', error.message)
                 })
@@ -144,6 +149,7 @@ class AddDiary extends Component {
             axios.post(`/api/diary/create`, diary)
                 .then((res) => {
                     if (res.status === 200) {
+                        this.setState({ loading: false });
                         helper.successToast('TASK ADDED SUCCESSFULLY!')
                         let start = new Date(res.data.start)
                         let end = new Date(res.data.end)
@@ -164,6 +170,7 @@ class AddDiary extends Component {
 
                 })
                 .catch((error) => {
+                    this.setState({ loading: false });
                     helper.errorToast('ERROR: ADDING TASK')
                     console.log('error', error.message)
                 })
@@ -175,6 +182,7 @@ class AddDiary extends Component {
         let diary = this.generatePayload(data)
         axios.patch(`/api/diary/update?id=${diary.id}`, diary)
             .then((res) => {
+                this.setState({ loading: false });
                 helper.successToast('TASK UPDATED SUCCESSFULLY!')
                 let start = new Date(res.data.start)
                 let end = new Date(res.data.end)
@@ -187,13 +195,14 @@ class AddDiary extends Component {
                 this.props.navigation.navigate('Diary', { update: false, 'agentId': this.props.route.params.agentId })
             })
             .catch((error) => {
+                this.setState({ loading: false });
                 helper.errorToast('ERROR: UPDATING TASK')
                 console.log(error)
             })
     }
 
     render() {
-        const { checkValidation, taskValues } = this.state;
+        const { checkValidation, taskValues, loading } = this.state;
         const { route } = this.props;
         return (
             <KeyboardAwareScrollView style={[AppStyles.container]} keyboardShouldPersistTaps="always" enableOnAndroid>
@@ -205,6 +214,7 @@ class AddDiary extends Component {
                             editableData={route.params.update ? route.params.data : null}
                             taskValues={taskValues}
                             checkValidation={checkValidation}
+                            loading={loading}
                         />
                     </SafeAreaView>
                 </TouchableWithoutFeedback>

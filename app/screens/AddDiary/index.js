@@ -121,7 +121,6 @@ class AddDiary extends Component {
             axios.post(`/api/leads/task`, diary)
                 .then((res) => {
                     if (res.status === 200) {
-                        this.setState({ loading: false });
                         helper.successToast('TASK ADDED SUCCESSFULLY!')
                         let start = new Date(res.data.start)
                         let end = new Date(res.data.end)
@@ -139,9 +138,10 @@ class AddDiary extends Component {
 
                 })
                 .catch((error) => {
-                    this.setState({ loading: false });
                     helper.errorToast('ERROR: ADDING DIARY')
                     console.log('error', error.message)
+                }).finally(() => {
+                    this.setState({ loading: false });
                 })
 
         }
@@ -149,7 +149,6 @@ class AddDiary extends Component {
             axios.post(`/api/diary/create`, diary)
                 .then((res) => {
                     if (res.status === 200) {
-                        this.setState({ loading: false });
                         helper.successToast('TASK ADDED SUCCESSFULLY!')
                         let start = new Date(res.data.start)
                         let end = new Date(res.data.end)
@@ -170,9 +169,10 @@ class AddDiary extends Component {
 
                 })
                 .catch((error) => {
-                    this.setState({ loading: false });
                     helper.errorToast('ERROR: ADDING TASK')
                     console.log('error', error.message)
+                }).finally(() => {
+                    this.setState({ loading: false });
                 })
         }
 
@@ -182,7 +182,6 @@ class AddDiary extends Component {
         let diary = this.generatePayload(data)
         axios.patch(`/api/diary/update?id=${diary.id}`, diary)
             .then((res) => {
-                this.setState({ loading: false });
                 helper.successToast('TASK UPDATED SUCCESSFULLY!')
                 let start = new Date(res.data.start)
                 let end = new Date(res.data.end)
@@ -195,9 +194,10 @@ class AddDiary extends Component {
                 this.props.navigation.navigate('Diary', { update: false, 'agentId': this.props.route.params.agentId })
             })
             .catch((error) => {
-                this.setState({ loading: false });
                 helper.errorToast('ERROR: UPDATING TASK')
                 console.log(error)
+            }).finally(() => {
+                this.setState({ loading: false });
             })
     }
 

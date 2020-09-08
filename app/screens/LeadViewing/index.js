@@ -115,16 +115,15 @@ class LeadViewing extends React.Component {
 		var commissionPayment = this.props.lead.commissionPayment
 		if (user.id === lead.assigned_to_armsuser_id) {
 			if (commissionPayment !== null) {
-				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 			else {
-				this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 		}
 		else {
 			helper.leadNotAssignedToast()
 		}
-
 	}
 
 	onHandleCloseLead = () => {
@@ -132,8 +131,10 @@ class LeadViewing extends React.Component {
 		const { selectedReason } = this.state;
 		let payload = Object.create({});
 		payload.reasons = selectedReason;
-		axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
-			this.setState({ isVisible: false }, () => {
+		var leadId = []
+		leadId.push(lead.id)
+		axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
+			this.setState({ isCloseLeadVisible: false }, () => {
 				helper.successToast(`Lead Closed`)
 				navigation.navigate('Leads');
 			});
@@ -395,6 +396,7 @@ class LeadViewing extends React.Component {
 				axios.delete(`/api/diary/delete?id=${property.diaries[0].id}&propertyId=${property.id}&leadId=${lead.id}`)
 					.then((res) => {
 						this.setState({ loading: true })
+						helper.deleteLocalNotification(property.diaries[0].id)
 						this.fetchProperties()
 					})
 					.catch((error) => {

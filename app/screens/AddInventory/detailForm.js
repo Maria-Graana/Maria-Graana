@@ -485,7 +485,6 @@ class DetailForm extends Component {
                     showError={checkValidation === true && formData.customer_id === null}
                     errorMessage="Required" />
 
-
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
                     <TouchableButton

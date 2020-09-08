@@ -19,8 +19,6 @@ class LeadTile extends React.Component {
 		let newContact = helper.createContactPayload(data.customer)
 		if (purposeTab === 'invest') this.sendCallStatus(data)
 		else {
-			console.log('data.assigned_to_armsuser_id: ', data.assigned_to_armsuser_id)
-			console.log('user.id: ', user.id)
 			if (data.assigned_to_armsuser_id === user.id) updateStatus(data)
 		}
 		helper.callNumber(newContact, contacts)
@@ -52,7 +50,11 @@ class LeadTile extends React.Component {
 		var descriptionColor = data.assigned_to_armsuser_id == user.id ? styles.desBlue : styles.desDark
 		let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
 		let customerName = data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
-		let areasLength = !data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 1 ? `, (+${data.armsLeadAreas.length} areas)` : ''
+		let areasLength = !data.projectId && data.armsLeadAreas &&
+			data.armsLeadAreas.length > 1 ?
+			` (+${Number(data.armsLeadAreas.length) - 1} ${data.armsLeadAreas.length > 2 ? 'areas' : 'area'})`
+			:
+			''
 
 		return (
 			<TouchableOpacity onPress={() => { navigateTo(data) }}>
@@ -123,16 +125,15 @@ class LeadTile extends React.Component {
 									<Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
 										{
 											!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0 ?
-												data.armsLeadAreas[0].area.name + ' - '
+												data.armsLeadAreas[0].area.name + `${areasLength}` + ' - '
 												: ''
 										}
-										{!data.projectId && data.city && data.city.name + `${areasLength}`}
+										{!data.projectId && data.city && data.city.name}
 										{purposeTab === 'invest' && helper.capitalize(projectName)}
 										{
 											data.projectType && data.projectType != '' &&
 											` - ${helper.capitalize(data.projectType)}`
 										}
-										{/* {`${helper.capitalize(data.subtype)} ${helper.capitalize(data.projectType)}`} */}
 									</Text>
 								</View>
 								{/* ****** Location Wrap */}

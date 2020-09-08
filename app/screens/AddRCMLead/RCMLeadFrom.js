@@ -36,6 +36,8 @@ class CMLeadFrom extends Component {
       onSliderValueChange,
       organizations,
       loading,
+      sizeUnitList,
+      onSizeUnitSliderValueChange
     } = this.props
     const checkBuy = formType === 'sale'
     const checkRent = formType === 'rent'
@@ -53,6 +55,7 @@ class CMLeadFrom extends Component {
         {/* *********** Main Container *********** */}
         <View style={[AppStyles.container]}>
           <InnerRCMForm
+            sizeUnitList={sizeUnitList}
             organizations={_.clone(organizations)}
             clientName={clientName}
             handleClientClick={handleClientClick}
@@ -68,6 +71,7 @@ class CMLeadFrom extends Component {
             checkValidation={checkValidation}
             handleAreaClick={handleAreaClick}
             priceList={priceList}
+            onSizeUnitSliderValueChange={(values) => onSizeUnitSliderValueChange(values)}
             onSliderValueChange={(values) => onSliderValueChange(values)}
             loading={loading}
           />

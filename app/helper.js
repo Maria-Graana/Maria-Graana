@@ -411,7 +411,8 @@ const helper = {
 					console.log(error)
 				})
 		}
-	}
+	},
+	createArray(N) { return Array.from({ length: N }, (_, index) => index + 1) }
 }
 
 

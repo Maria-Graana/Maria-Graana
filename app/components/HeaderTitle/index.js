@@ -21,6 +21,7 @@ class HeaderTitle extends React.Component {
                     !lead.projectId ?
                         < Text numberOfLines={1} style={[styles.detailText, AppStyles.darkColor,]}>
                             {lead.size && lead.size !== 0 ? lead.size + ' ' : null}
+                            {lead.max_size && lead.max_size !== 0 ? 'to ' + lead.max_size + ' ' : null}
                             {lead.size_unit && lead.size_unit !== null ? helper.capitalize(lead.size_unit) + ' ' : null}
                             {lead.subtype && helper.capitalize(lead.subtype)} {lead.purpose != null && 'to '}
                             {lead.purpose === 'sale' ? 'Buy' : 'Rent'}

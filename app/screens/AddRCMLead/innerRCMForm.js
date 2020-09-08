@@ -37,7 +37,9 @@ class InnerRCMForm extends Component {
 			handleClientClick,
 			priceList,
 			onSliderValueChange,
-			organizations
+			organizations,
+			sizeUnitList,
+			onSizeUnitSliderValueChange
 		} = this.props
 
 		const { leadAreas } = formData;
@@ -97,29 +99,6 @@ class InnerRCMForm extends Component {
 						}
 					</View>
 				</View>
-
-				{/* **************************************** */}
-				<View style={AppStyles.multiFormInput}>
-
-					{/* **************************************** */}
-					<View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
-						<View style={[AppStyles.inputWrap]}>
-							<TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'size') }}
-								value={formData.size ? String(formData.size) : ''}
-								keyboardType='numeric'
-								style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-								name={'size'}
-								placeholder={'Size'} />
-						</View>
-					</View>
-
-					{/* **************************************** */}
-					<View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
-						<View style={[AppStyles.inputWrap]}>
-							<PickerComponent onValueChange={handleForm} data={sizeUnit} name={'size_unit'} selectedItem={formData.size_unit} placeholder='Unit Size' />
-						</View>
-					</View>
-				</View>
 				{/* **************************************** */}
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
@@ -129,39 +108,23 @@ class InnerRCMForm extends Component {
 						}
 					</View>
 				</View>
-				{
-					formData.type != 'plot' && formData.type != 'commercial' &&
-					<View style={AppStyles.multiFormInput}>
 
-						{/* **************************************** */}
-						<View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
-							<View style={[AppStyles.inputWrap]}>
-								<TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'bed') }}
-									value={formData.bed ? String(formData.bed) : ''}
-									keyboardType='numeric'
-									style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-									name={'bed'}
-									placeholder={'Bed'} />
-							</View>
-						</View>
-
-						{/* **************************************** */}
-						<View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
-							<View style={[AppStyles.inputWrap]}>
-								<TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'bath') }}
-									value={formData.bath ? String(formData.bath) : ''}
-									keyboardType='numeric'
-									style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-									name={'bath'}
-									placeholder={'Bath'} />
-							</View>
-						</View>
-
-					</View>
-				}
+				<View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
+					<TextInput placeholder='Size Min'
+						value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.size)}
+						style={[AppStyles.formControl, styles.priceStyle]}
+						editable={false}
+					/>
+					<Text style={styles.toText}>to</Text>
+					<TextInput placeholder='Size Max'
+						value={formatPrice(formData.maxSize)}
+						style={[AppStyles.formControl, styles.priceStyle]}
+						editable={false}
+					/>
+				</View>
+				<PriceSlider priceValues={sizeUnitList} initialValue={0} finalValue={sizeUnitList.length - 1} onSliderValueChange={(values) => onSizeUnitSliderValueChange(values)} />
 
 				{/* **************************************** */}
-
 				<View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
 
 					<TextInput placeholder='Price Min'
@@ -176,8 +139,28 @@ class InnerRCMForm extends Component {
 						editable={false}
 					/>
 				</View>
-
 				<PriceSlider priceValues={priceList} initialValue={0} finalValue={priceList.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} />
+
+				{
+					formData.type != 'plot' && formData.type != 'commercial' &&
+					<View style={AppStyles.multiFormInput}>
+
+						{/* **************************************** */}
+						<View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
+							<View style={[AppStyles.inputWrap]}>
+								<PickerComponent onValueChange={handleForm} data={StaticData.bedBathList} name={'bed'} placeholder='Bed' />
+							</View>
+						</View>
+
+						{/* **************************************** */}
+						<View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
+							<View style={[AppStyles.inputWrap]}>
+								<PickerComponent onValueChange={handleForm} data={StaticData.bedBathList} name={'bath'} placeholder='Bath' />
+							</View>
+						</View>
+					</View>
+				}
+
 				<View style={[AppStyles.mainInputWrap]}>
 					<Textarea
 						value={formData.description}

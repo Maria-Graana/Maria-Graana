@@ -37,7 +37,8 @@ class InnerRCMForm extends Component {
 			handleClientClick,
 			priceList,
 			onSliderValueChange,
-			organizations
+			organizations,
+			loading,
 		} = this.props
 
 		const { leadAreas } = formData;
@@ -189,11 +190,12 @@ class InnerRCMForm extends Component {
 
 				{/* **************************************** */}
 				<View style={[AppStyles.mainInputWrap]}>
-					<Button
-						onPress={() => { formSubmit(formData) }}
-						style={[AppStyles.formBtn, styles.addInvenBtn]}>
-						<Text style={AppStyles.btnText}>CREATE LEAD</Text>
-					</Button>
+					<TouchableButton
+						containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+						label={'CREATE LEAD'}
+						onPress={() => formSubmit(formData)}
+						loading={loading}
+					/>
 				</View>
 			</View>
 		)

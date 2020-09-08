@@ -24,7 +24,6 @@ class UnitDetailsModal extends React.Component {
     var optionalArray = data && data.optional_fields != null && data.optional_fields
     var optional = []
     optional = data && data != '' && JSON.parse([optionalArray])
-    console.log('sss',data)
 
     return (
 

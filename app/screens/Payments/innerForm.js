@@ -207,7 +207,7 @@ class InnerForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap]}>
                       <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={checkForEdit} name={'no_installments'} placeholder='Installment Plan' selectedItem={no_installments} />
+                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={false} name={'no_installments'} placeholder='Installment Plan' selectedItem={no_installments} />
                       </View>
                     </View>
                     {/* **************************************** */}

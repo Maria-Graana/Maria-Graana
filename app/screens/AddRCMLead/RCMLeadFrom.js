@@ -34,7 +34,8 @@ class CMLeadFrom extends Component {
       handleClientClick,
       priceList,
       onSliderValueChange,
-      organizations
+      organizations,
+      loading,
     } = this.props
     const checkBuy = formType === 'sale'
     const checkRent = formType === 'rent'
@@ -68,6 +69,7 @@ class CMLeadFrom extends Component {
             handleAreaClick={handleAreaClick}
             priceList={priceList}
             onSliderValueChange={(values) => onSliderValueChange(values)}
+            loading={loading}
           />
         </View>
       </View>

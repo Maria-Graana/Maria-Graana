@@ -26,6 +26,7 @@ class AddRCMLead extends Component {
             formType: 'sale',
             priceList: [],
             selectSubType: [],
+            loading: false,
             RCMFormData: {
                 type: "",
                 subtype: "",
@@ -38,7 +39,7 @@ class AddRCMLead extends Component {
                 size_unit: 'marla',
                 minPrice: null,
                 maxPrice: null,
-                description:'',
+                description: '',
                 org: ''
             }
         }
@@ -202,6 +203,7 @@ class AddRCMLead extends Component {
 
         if (RCMFormData.size === '') RCMFormData.size = null
         else RCMFormData.size = Number(RCMFormData.size)
+        this.setState({ loading: true })
         let payLoad = {
             purpose: formType,
             type: RCMFormData.type,
@@ -225,6 +227,8 @@ class AddRCMLead extends Component {
             .then((res) => {
                 helper.successToast('Lead created successfully')
                 RootNavigation.navigate('Leads')
+            }).finally(() => {
+                this.setState({ loading: false })
             })
     }
 
@@ -255,6 +259,7 @@ class AddRCMLead extends Component {
             selectSubType,
             checkValidation,
             priceList,
+            loading,
         } = this.state
         const { route } = this.props
 
@@ -283,6 +288,7 @@ class AddRCMLead extends Component {
                                     handleAreaClick={this.handleAreaClick}
                                     priceList={priceList}
                                     onSliderValueChange={(values) => this.onSliderValueChange(values)}
+                                    loading={loading}
                                 />
                             </View>
                         </ScrollView>

@@ -226,7 +226,7 @@ class LeadRCMPayment extends React.Component {
         payload.shortlist_id = selectedProperty[0].id;
         var leadId = []
         leadId.push(lead.id)
-        axios.patch(`/api/leads/?id=${leadId}`, payload).then(response => {
+        axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
             this.setState({ lead: response.data }, () => {
                 this.getSelectedProperty(lead);
             });
@@ -316,7 +316,7 @@ class LeadRCMPayment extends React.Component {
         payload.token = this.convertToInteger(token);
         var leadId = []
         leadId.push(lead.id)
-        axios.patch(`/api/leads/?id=${leadId}`, payload).then(response => {
+        axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
             this.props.dispatch(setlead(response.data));
             this.setState({
                 showTokenAmountArrow: false,
@@ -337,7 +337,7 @@ class LeadRCMPayment extends React.Component {
         payload.payment = this.convertToInteger(agreedAmount);
         var leadId = []
         leadId.push(lead.id)
-        axios.patch(`/api/leads/?id=${leadId}`, payload).then(response => {
+        axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
             this.props.dispatch(setlead(response.data));
             this.setState({
                 showAgreedAmountArrow: false,
@@ -359,7 +359,7 @@ class LeadRCMPayment extends React.Component {
         payload.commissionPayment = this.convertToInteger(commissionPayment);
         var leadId = []
         leadId.push(lead.id)
-        axios.patch(`/api/leads/?id=${leadId}`, payload).then(response => {
+        axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
             this.props.dispatch(setlead(response.data));
             this.setState({
                 showCommissionAmountArrow: false,
@@ -381,7 +381,7 @@ class LeadRCMPayment extends React.Component {
         payload.monthlyRent = this.convertToInteger(monthlyRent);
         var leadId = []
         leadId.push(lead.id)
-        axios.patch(`/api/leads/?id=${leadId}`, payload).then(response => {
+        axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
             this.props.dispatch(setlead(response.data));
             this.setState({
                 showMonthlyRentArrow: false,
@@ -401,7 +401,7 @@ class LeadRCMPayment extends React.Component {
         payload.reasons = selectedReason;
         var leadId = []
         leadId.push(lead.id)
-        axios.patch(`/api/leads/?id=${leadId}`, payload).then(response => {
+        axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
             this.setState({ isVisible: false }, () => {
                 navigation.navigate('Leads');
             });

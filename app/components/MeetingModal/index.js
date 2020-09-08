@@ -8,6 +8,7 @@ import times from '../../../assets/img/times.png'
 import ErrorMessage from '../../components/ErrorMessage'
 import DateTimePicker from '../DatePicker';
 import helper from '../../helper'
+import TouchableButton from '../../components/TouchableButton';
 
 class MeetingModal extends React.Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class MeetingModal extends React.Component {
       diaryTask,
       handleFormDiary,
       formSubmitDiary,
+      loading,
     } = this.props
     if (diaryForm === true) {
       return (
@@ -45,7 +47,7 @@ class MeetingModal extends React.Component {
                 errorMessage={'Required'}
                 iconSource={require('../../../assets/img/calendar.png')}
                 date={diaryTask.date ? new Date(diaryTask.date) : new Date()}
-                selectedValue={diaryTask.date? helper.formatDate(diaryTask.date) : ''}
+                selectedValue={diaryTask.date ? helper.formatDate(diaryTask.date) : ''}
                 handleForm={(value, name) => handleFormDiary(value, name)}
               />
 
@@ -53,7 +55,7 @@ class MeetingModal extends React.Component {
                 placeholderLabel={'Select Time'}
                 name={'start'}
                 mode={'time'}
-                showError={checkValidation === true &&  diaryTask.start === ''}
+                showError={checkValidation === true && diaryTask.start === ''}
                 errorMessage={'Required'}
                 iconSource={require('../../../assets/img/clock.png')}
                 date={diaryTask.start ? new Date(diaryTask.start) : new Date()}
@@ -62,13 +64,13 @@ class MeetingModal extends React.Component {
               />
               {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>
-                <Button
-                  onPress={() => { formSubmitDiary() }}
-                  style={[AppStyles.formBtn, styles.addInvenBtn]}>
-                  <Text style={AppStyles.btnText}>{'ADD FOLLOW UP TASK'}</Text>
-                </Button>
+                <TouchableButton
+                  containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+                  label={'ADD FOLLOW UP TASK'}
+                  onPress={() => formSubmitDiary()}
+                  loading={loading}
+                />
               </View>
-
             </View>
           </View>
         </Modal>
@@ -96,8 +98,8 @@ class MeetingModal extends React.Component {
                 handleForm={(value, name) => handleForm(value, name)}
               />
 
-               {/* **************************************** */}
-               <DateTimePicker
+              {/* **************************************** */}
+              <DateTimePicker
                 placeholderLabel={'Select Start Time'}
                 name={'time'}
                 mode={'time'}
@@ -111,13 +113,13 @@ class MeetingModal extends React.Component {
 
               {/* **************************************** */}
               <View style={[AppStyles.mainInputWrap]}>
-                <Button
-                  onPress={() => { formSubmit() }}
-                  style={[AppStyles.formBtn, styles.addInvenBtn]}>
-                  <Text style={AppStyles.btnText}>{editMeeting ? 'UPDATE MEETING' : 'ADD MEETING'}</Text>
-                </Button>
+                <TouchableButton
+                  containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+                  label={editMeeting ? 'UPDATE MEETING' : 'ADD MEETING'}
+                  onPress={() => formSubmit()}
+                  loading={loading}
+                />
               </View>
-
             </View>
           </View>
         </Modal>

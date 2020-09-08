@@ -26,6 +26,7 @@ class LeadViewing extends React.Component {
 			isVisible: false,
 			open: false,
 			loading: true,
+			addLoading: false,
 			viewing: {
 				date: '',
 				time: ''
@@ -131,16 +132,21 @@ class LeadViewing extends React.Component {
 		const { selectedReason } = this.state;
 		let payload = Object.create({});
 		payload.reasons = selectedReason;
-		var leadId = []
-		leadId.push(lead.id)
-		axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
-			this.setState({ isCloseLeadVisible: false }, () => {
-				helper.successToast(`Lead Closed`)
-				navigation.navigate('Leads');
-			});
-		}).catch(error => {
-			console.log(error);
-		})
+		if (selectedReason !== '') {
+			var leadId = []
+			leadId.push(lead.id)
+			axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
+				this.setState({ isCloseLeadVisible: false }, () => {
+					helper.successToast(`Lead Closed`)
+					navigation.navigate('Leads');
+				});
+			}).catch(error => {
+				console.log(error);
+			})
+		}
+		else {
+			alert('Please select a reason for lead closure!')
+		}
 	}
 
 	handleReasonChange = (value) => {
@@ -209,6 +215,7 @@ class LeadViewing extends React.Component {
 				checkValidation: true
 			})
 		} else {
+			this.setState({ addLoading: true })
 			if (updateViewing) this.updateViewing()
 			else this.createViewing()
 		}
@@ -248,6 +255,8 @@ class LeadViewing extends React.Component {
 				})
 				.catch((error) => {
 					console.log(error)
+				}).finally(() => {
+					this.setState({ addLoading: false })
 				})
 		}
 	}
@@ -290,6 +299,8 @@ class LeadViewing extends React.Component {
 			})
 			.catch((error) => {
 				console.log(error)
+			}).finally(() => {
+				this.setState({ addLoading: false })
 			})
 	}
 
@@ -441,7 +452,7 @@ class LeadViewing extends React.Component {
 
 
 	render() {
-		const { loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+		const { loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
 		const { lead, user } = this.props;
 		const showMenuItem = this.showMenuItem();
 		return (
@@ -457,6 +468,7 @@ class LeadViewing extends React.Component {
 								onPress={this.submitViewing}
 								handleForm={this.handleForm}
 								openModal={this.openModal}
+								loading={addLoading}
 								viewing={viewing}
 								checkValidation={checkValidation}
 								isVisible={isVisible} />

@@ -42,6 +42,7 @@ class AddClient extends Component {
             callingCode: defaultCountry.code,
             callingCode1: defaultCountry.code,
             callingCode2: defaultCountry.code,
+            contactNumberCheck: '',
         }
     }
     componentDidMount() {
@@ -63,8 +64,8 @@ class AddClient extends Component {
             cnic: client.cnic,
             contactNumber: client.phone,
             address: client.address,
-            contact1: client.contact1,
-            contact2: client.contact2,
+            contact1: client.contact1 ? client.contact1 : '',
+            contact2: client.contact2 ? client.contact2 : '',
         }
         if (client.customerContacts.length) {
             for (let i = 0; i < client.customerContacts.length; i++) {
@@ -83,17 +84,17 @@ class AddClient extends Component {
     }
 
     validatePhone = (value) => {
-        if (value.length < 11 && value !== '') this.setState({ phoneValidate: true })
+        if (value.length < 4 && value !== '') this.setState({ phoneValidate: true })
         else this.setState({ phoneValidate: false })
     }
 
     validateContact1 = (value) => {
-        if (value.length < 11 && value !== '') this.setState({ contact1Validate: true })
+        if (value.length < 4 && value !== '') this.setState({ contact1Validate: true })
         else this.setState({ contact1Validate: false })
     }
 
     validateContact2 = (value) => {
-        if (value.length < 11 && value !== '') this.setState({ contact2Validate: true })
+        if (value.length < 4 && value !== '') this.setState({ contact2Validate: true })
         else this.setState({ contact2Validate: false })
     }
 
@@ -116,7 +117,7 @@ class AddClient extends Component {
         if (name == 'contact2') this.validateContact2(value)
 
         formData[name] = value
-        this.setState({ formData })
+        this.setState({ formData, contactNumberCheck: name })
     }
 
     call = (body) => {
@@ -146,20 +147,21 @@ class AddClient extends Component {
                 checkValidation: true
             })
         } else {
-            if (emailValidate && !phoneValidate && !cnicValidate && !contact1Validate && !contact2Validate) {
+            if (emailValidate && !phoneValidate && !cnicValidate) {
                 if (formData.cnic === '') formData.cnic = null
-                let body = {
-                    first_name: helper.capitalize(formData.firstName),
-                    last_name: helper.capitalize(formData.lastName),
-                    email: formData.email,
-                    cnic: formData.cnic,
-                    phone: callingCode + '' + formData.contactNumber,
-                    address: formData.address,
-                    secondary_address: formData.secondaryAddress,
-                    contact1: callingCode1 + '' + formData.contact1,
-                    contact2: callingCode2 + '' + formData.contact2,
-                }
+
                 if (!update) {
+                    let body = {
+                        first_name: helper.capitalize(formData.firstName),
+                        last_name: helper.capitalize(formData.lastName),
+                        email: formData.email,
+                        cnic: formData.cnic,
+                        phone: formData.contactNumber != '' ? callingCode + '' + formData.contactNumber : '',
+                        address: formData.address,
+                        secondary_address: formData.secondaryAddress,
+                        contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
+                        contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
+                    }
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
                             if (res.status === 200 && res.data) {
@@ -193,10 +195,24 @@ class AddClient extends Component {
                             helper.errorToast('ERROR CREATING CLIENT')
                         })
                 } else {
+                    var checkForPlus = formData.contactNumber.substring(0, 1)
+                    var checkForPlus2 = formData.contact1.substring(0, 1)
+                    var checkForPlus3 = formData.contact2.substring(0, 1)
+                    let body = {
+                        first_name: helper.capitalize(formData.firstName),
+                        last_name: helper.capitalize(formData.lastName),
+                        email: formData.email,
+                        cnic: formData.cnic,
+                        phone: checkForPlus === '+' ? formData.contactNumber : callingCode + '' + formData.contactNumber,
+                        address: formData.address,
+                        secondary_address: formData.secondaryAddress,
+                        contact1: checkForPlus2 == '+' ? formData.contact1 : formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
+                        contact2: checkForPlus3 == '+' ? formData.contact2 : formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
+                    }
                     body.customersContacts = []
                     body.customersContacts.push(body.phone)
-                    if (body.contact1) body.customersContacts.push(body.contact1)
-                    if (body.contact2) body.customersContacts.push(body.contact2)
+                    body.customersContacts.push(body.contact1)
+                    body.customersContacts.push(body.contact2)
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')
@@ -270,6 +286,7 @@ class AddClient extends Component {
             countryCode1,
             countryCode2,
             callingCode,
+            contactNumberCheck,
         } = this.state
         const { route } = this.props
         const { update } = route.params
@@ -296,6 +313,7 @@ class AddClient extends Component {
                                     countryCode={countryCode}
                                     countryCode1={countryCode1}
                                     countryCode2={countryCode2}
+                                    contactNumberCheck={contactNumberCheck}
                                     getTrimmedPhone={this.getTrimmedPhone}
                                     validate={this.validate}
                                     hello={this.hello}

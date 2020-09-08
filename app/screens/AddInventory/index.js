@@ -40,7 +40,7 @@ class AddInventory extends Component {
                 purpose: '',
                 bed: 0,
                 bath: 0,
-                size: 0,
+                size: '',
                 city_id: '',
                 area_id: '',
                 size_unit: 'marla',
@@ -169,7 +169,6 @@ class AddInventory extends Component {
             clientName: property.customer && property.customer.first_name + ' ' + property.customer.last_name,
             buttonText: 'UPDATE PROPERTY'
         }, () => {
-            //console.log(this.state.formData)
             this.selectSubtype(property.type);
             this.setFeatures(property.type);
             // this.getAreas(property.city_id);
@@ -212,9 +211,7 @@ class AddInventory extends Component {
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
-        this.setState({ formData }, () => {
-            //  console.log(formData);
-        });
+        this.setState({ formData })
         if (formData.type !== '') {
             this.setFeatures(formData.type);
             this.selectSubtype(formData.type)
@@ -234,7 +231,6 @@ class AddInventory extends Component {
             !formData.city_id ||
             !formData.purpose ||
             !formData.area_id ||
-            !formData.size_unit ||
             !formData.size ||
             !formData.customer_id
         ) {
@@ -275,14 +271,12 @@ class AddInventory extends Component {
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)
                 .then((res) => {
-                    if (res.status === 200) 
-                    {
+                    if (res.status === 200) {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        navigation.navigate('Inventory', { update: false })
+                        navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
                     }
                     else {
-                        console.log('wrong');
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')
                     }
                     this.setState({ loading: false })
@@ -300,7 +294,7 @@ class AddInventory extends Component {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        navigation.goBack();
+                        navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
                     }
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')
@@ -366,7 +360,6 @@ class AddInventory extends Component {
                         isModalOpen: false,
                     },
                     () => {
-                        // console.log('@@@', photos)
                         if (photos.length > 0) {
                             dispatch((setImageLoading(true)));
                             this._uploadMultipleImages(photos);

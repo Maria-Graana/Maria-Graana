@@ -647,6 +647,7 @@ class CMReport extends React.Component {
             labelColor: (opacity = 1) => `black`,
             style: {
                 borderRadius: 16,
+                paddingRight: 20,
                 borderWidth: 0,
                 borderColor: AppStyles.colors.subTextColor
             },
@@ -734,10 +735,11 @@ class CMReport extends React.Component {
                                         <ScrollView horizontal={true}>
                                             <BarChart
                                                 useShadowColorFromDataset={true}
+                                                showValuesOnTopOfBars={true}
                                                 withInnerLines={false}
                                                 withDots={false}
                                                 fromZero={true}
-                                                withHorizontalLabels={true}
+                                                withHorizontalLabels={false}
                                                 showBarTops={true}
                                                 width={width}
                                                 height={height}

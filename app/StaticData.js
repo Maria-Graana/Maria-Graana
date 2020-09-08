@@ -400,7 +400,7 @@ export default StaticData = {
         }]
     },
     rcmBarCharData: {
-        labels: ['Open', 'Viewing', 'Offer', 'Propsure', 'Token', 'Payment', 'Won', 'Lost'],
+        labels: ['Open', 'Called', 'Viewing', 'Offer', 'Propsure', 'Token', 'Payment', 'Won', 'Lost'],
         datasets: [{
             data: [
                 0,

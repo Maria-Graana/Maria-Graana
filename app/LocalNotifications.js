@@ -16,7 +16,8 @@ const submitNotification = (body, date) => {
         body: body.body,
         data: {
             type: 'local',
-            date: date
+            date: date,
+            id: body.id
         },
         sound: 'default'
     }

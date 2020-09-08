@@ -26,6 +26,7 @@ class LeadViewing extends React.Component {
 			isVisible: false,
 			open: false,
 			loading: true,
+			addLoading: false,
 			viewing: {
 				date: '',
 				time: ''
@@ -131,16 +132,21 @@ class LeadViewing extends React.Component {
 		const { selectedReason } = this.state;
 		let payload = Object.create({});
 		payload.reasons = selectedReason;
-		var leadId = []
-		leadId.push(lead.id)
-		axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
-			this.setState({ isCloseLeadVisible: false }, () => {
-				helper.successToast(`Lead Closed`)
-				navigation.navigate('Leads');
-			});
-		}).catch(error => {
-			console.log(error);
-		})
+		if (selectedReason !== '') {
+			var leadId = []
+			leadId.push(lead.id)
+			axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
+				this.setState({ isCloseLeadVisible: false }, () => {
+					helper.successToast(`Lead Closed`)
+					navigation.navigate('Leads');
+				});
+			}).catch(error => {
+				console.log(error);
+			})
+		}
+		else {
+			alert('Please select a reason for lead closure!')
+		}
 	}
 
 	handleReasonChange = (value) => {

@@ -134,14 +134,14 @@ class AddInventory extends Component {
                 type: property.type,
                 subtype: property.subtype,
                 purpose: property.purpose,
-                bed: property.bed ? property.bed : '',
-                bath: property.bath ? property.bath : '',
+                bed: property.bed ? property.bed : 0,
+                bath: property.bath ? property.bath : 0,
                 size_unit: property.size_unit,
                 size: property.size ? property.size : 0,
                 city_id: property.city_id,
                 area_id: property.area_id,
                 address: property.address,
-                customer_id: property.customer_id ? property.customer_id : '',
+                customer_id: property.customer_id ? property.customer_id : null,
                 price: property.price ? property.price : 0,
                 imageIds: property.armsPropertyImages.length === 0 || property.armsPropertyImages === undefined
                     ?
@@ -152,9 +152,9 @@ class AddInventory extends Component {
                 lat: property.lat,
                 lng: property.lng,
                 description: property.description,
-                year_built: parsedFeatures && parsedFeatures.year_built ? parsedFeatures.year_built : '',
+                year_built: parsedFeatures && parsedFeatures.year_built ? parsedFeatures.year_built : null,
                 floors: parsedFeatures && parsedFeatures.floors ? parsedFeatures.floors : 0,
-                parking_space: parsedFeatures && parsedFeatures.parking_space ? parsedFeatures.parking_space : '',
+                parking_space: parsedFeatures && parsedFeatures.parking_space ? parsedFeatures.parking_space : 0,
                 downpayment: parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : 0,
                 general_size: null,
                 lisitng_type: 'mm',
@@ -263,8 +263,8 @@ class AddInventory extends Component {
         const { images } = this.props;
         formData.lat = this.convertLatitude(formData.lat);
         formData.lng = this.convertLongitude(formData.lng);
-        formData.size = this.convertToInteger(formData.size)
-        formData.price = this.convertToInteger(formData.price)
+        formData.size = this.convertToIntegerForZero(formData.size)
+        formData.price = this.convertToIntegerForZero(formData.price)
         formData.features = features || {};
         formData.imageIds = _.pluck(images, 'id');
         // deleting these keys below from formdata as they are sent in features instead of seperately
@@ -275,8 +275,8 @@ class AddInventory extends Component {
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)
                 .then((res) => {
-                    //console.log(res.data)
-                    if (res.status === 200) {
+                    if (res.status === 200) 
+                    {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         dispatch(flushImages());
                         navigation.navigate('Inventory', { update: false })
@@ -285,9 +285,11 @@ class AddInventory extends Component {
                         console.log('wrong');
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')
                     }
+                    this.setState({ loading: false })
 
                 })
                 .catch((error) => {
+                    this.setState({ loading: false })
                     helper.errorToast('ERROR: UPDATING PROPERTY')
                     console.log('error', error.message)
                 })
@@ -303,9 +305,10 @@ class AddInventory extends Component {
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')
                     }
-
+                    this.setState({ loading: false })
                 })
                 .catch((error) => {
+                    this.setState({ loading: false })
                     helper.errorToast('ERROR: ADDING PROPERTY')
                     console.log('error', error.message)
                 })
@@ -474,6 +477,9 @@ class AddInventory extends Component {
         }
         else if (typeof (val) === 'string' && val != '') {
             return parseInt(val);
+        }
+        else{
+            return val;
         }
     }
 

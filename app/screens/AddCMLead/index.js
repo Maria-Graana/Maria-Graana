@@ -25,6 +25,7 @@ class AddCMLead extends Component {
             formType: 'sale',
             selectSubType: [],
             getAreas: [],
+            loading: false,
             formData: {
                 customerId: '',
                 cityId: '',
@@ -74,8 +75,8 @@ class AddCMLead extends Component {
         if (name === 'projectId') {
             this.getProductType(value)
         }
-        if(name === 'projectType'){
-            const getProName = getProductType.find((item)=>{return item.value === value})
+        if (name === 'projectType') {
+            const getProName = getProductType.find((item) => { return item.value === value })
             formData['armsProjectTypeId'] = value
             formData['projectType'] = getProName.name
         }
@@ -97,6 +98,7 @@ class AddCMLead extends Component {
                 let project = _.find(getProject, function (item) { return item.value === formData.projectId })
                 formData.projectName = project.name
             }
+            this.setState({ loading: true })
             axios.post(`/api/leads/project`, formData)
                 .then((res) => {
                     helper.successToast('Lead created successfully')
@@ -104,6 +106,8 @@ class AddCMLead extends Component {
                 })
                 .catch((error) => {
                     console.log(error)
+                }).finally(() => {
+                    this.setState({ loading: false })
                 })
         }
     }
@@ -155,7 +159,8 @@ class AddCMLead extends Component {
             checkValidation,
             selectedCity,
             clientName,
-            getProductType
+            getProductType,
+            loading,
         } = this.state
         const { route } = this.props
         return (
@@ -176,6 +181,7 @@ class AddCMLead extends Component {
                                     getProject={getProject}
                                     onSliderValueChange={(values) => this.onSliderValueChange(values)}
                                     getProductType={getProductType}
+                                    loading={loading}
                                 />
 
                             </View>

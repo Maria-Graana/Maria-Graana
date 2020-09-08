@@ -106,18 +106,17 @@ class LeadTile extends React.Component {
 										</Text>
 									</View>
 								}
-
 								{/* ****** Address Wrap */}
 								<View style={[styles.contentMultiMain, AppStyles.mbFive]}>
 									{
 										data.size != null && !data.projectId &&
 										<Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
 											{data.size !== 0 ? data.size + ' ' : null}
+											{data.max_size && data.max_size !== 0 ? 'to ' + data.max_size + ' ' : null}
 											{data.size_unit && data.size_unit !== null && data.size !== 0 ? helper.capitalize(data.size_unit) + ' ' : null}
 											{helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
 											{data.purpose === 'sale' ? 'Buy' : 'Rent'}
 										</Text>
-
 									}
 								</View>
 								{/* ****** Location Wrap */}

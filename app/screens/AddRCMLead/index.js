@@ -25,14 +25,18 @@ class AddRCMLead extends Component {
             getProject: [],
             formType: 'sale',
             priceList: [],
+            sizeUnitList: [],
             selectSubType: [],
             loading: false,
+            sixKArray: helper.createArray(6000),
+            fifteenKArray: helper.createArray(15000),
+            fiftyArray: helper.createArray(50),
+            hundredArray: helper.createArray(100),
             RCMFormData: {
                 type: "",
                 subtype: "",
                 bed: null,
                 bath: null,
-                size: null,
                 leadAreas: [],
                 customerId: '',
                 city_id: '',
@@ -40,7 +44,9 @@ class AddRCMLead extends Component {
                 minPrice: null,
                 maxPrice: null,
                 description: '',
-                org: ''
+                org: '',
+                size: null,
+                maxSize: null
             }
         }
     }
@@ -61,6 +67,7 @@ class AddRCMLead extends Component {
             this.onScreenFocused()
         })
         this.setPriceList()
+        this.setSizeUnitList('marla')
         this.fetchOrganizations()
     }
 
@@ -115,13 +122,25 @@ class AddRCMLead extends Component {
         }
     }
 
+    setSizeUnitList = (sizeUnit) => {
+        const { RCMFormData, fifteenKArray, fiftyArray, sixKArray, hundredArray } = this.state
+        let priceList = []
+        if (sizeUnit === 'marla') priceList = fiftyArray
+        if (sizeUnit === 'kanal') priceList = hundredArray
+        if (sizeUnit === 'sqft') priceList = fifteenKArray
+        if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') priceList = sixKArray
+        RCMFormData.size = priceList[0];
+        RCMFormData.maxSize = priceList[priceList.length - 1];
+        this.setState({ RCMFormData, sizeUnitList: priceList })
+    }
+
     handleRCMForm = (value, name) => {
         const { RCMFormData } = this.state
         const { dispatch } = this.props;
         RCMFormData[name] = value
+        if (name === 'size_unit') this.setSizeUnitList(value)
         this.setState({ RCMFormData });
         if (RCMFormData.type != '') { this.selectSubtype(RCMFormData.type) }
-
     }
 
     clearAreaOnCityChange = () => {
@@ -137,9 +156,7 @@ class AddRCMLead extends Component {
         const { RCMFormData } = this.state;
         const { city_id, leadAreas } = RCMFormData;
         const { navigation } = this.props;
-
         const isEditMode = `${leadAreas.length > 0 ? true : false}`
-
         if (city_id !== '' && city_id !== undefined) {
             navigation.navigate('AreaPickerScreen', { cityId: city_id, isEditMode: isEditMode, screenName: 'AddRCMLead' });
         }
@@ -200,7 +217,6 @@ class AddRCMLead extends Component {
     sendPayload = () => {
         const { formType, RCMFormData, formData, organizations } = this.state
         const { user } = this.props
-
         if (RCMFormData.size === '') RCMFormData.size = null
         else RCMFormData.size = Number(RCMFormData.size)
         this.setState({ loading: true })
@@ -218,6 +234,7 @@ class AddRCMLead extends Component {
             price: RCMFormData.maxPrice,
             min_price: RCMFormData.minPrice,
             description: RCMFormData.description,
+            max_size: RCMFormData.maxSize
         }
         if (user.subRole === 'group_management') {
             let newOrg = _.find(organizations, function (item) { return item.value === formData.org })
@@ -248,6 +265,14 @@ class AddRCMLead extends Component {
         this.setState({ RCMFormData: copyObject });
     }
 
+    onSizeUnitSliderValueChange = (values) => {
+        const { RCMFormData, sizeUnitList } = this.state;
+        const copyObject = { ...RCMFormData };
+        copyObject.size = sizeUnitList[values[0]];
+        copyObject.maxSize = sizeUnitList[values[values.length - 1]];
+        this.setState({ RCMFormData: copyObject });
+    }
+
     render() {
         const {
             organizations,
@@ -260,6 +285,7 @@ class AddRCMLead extends Component {
             checkValidation,
             priceList,
             loading,
+            sizeUnitList
         } = this.state
         const { route } = this.props
 
@@ -270,6 +296,7 @@ class AddRCMLead extends Component {
                         <ScrollView>
                             <View>
                                 <RCMLeadFrom
+                                    sizeUnitList={sizeUnitList}
                                     organizations={_.clone(organizations)}
                                     handleClientClick={this.handleClientClick}
                                     selectedCity={selectedCity}
@@ -287,6 +314,7 @@ class AddRCMLead extends Component {
                                     subType={selectSubType}
                                     handleAreaClick={this.handleAreaClick}
                                     priceList={priceList}
+                                    onSizeUnitSliderValueChange={(values) => this.onSizeUnitSliderValueChange(values)}
                                     onSliderValueChange={(values) => this.onSliderValueChange(values)}
                                     loading={loading}
                                 />

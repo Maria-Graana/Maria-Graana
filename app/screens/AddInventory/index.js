@@ -34,6 +34,7 @@ class AddInventory extends Component {
             selectedCity: null,
             selectedArea: null,
             isModalOpen: false,
+            loading: false,
             formData: {
                 type: '',
                 subtype: '',
@@ -44,7 +45,7 @@ class AddInventory extends Component {
                 city_id: '',
                 area_id: '',
                 size_unit: 'marla',
-                customer_id: '',
+                customer_id: null,
                 price: 0,
                 grade: '',
                 status: 'pending',
@@ -239,7 +240,9 @@ class AddInventory extends Component {
             })
         } else {
             // ********* Call Add Inventory API here :)
-            this.createOrEditProperty(formData);
+            this.setState({ loading: true }, () => {
+                this.createOrEditProperty(formData);
+            })
         }
     }
 
@@ -287,6 +290,9 @@ class AddInventory extends Component {
                     helper.errorToast('ERROR: UPDATING PROPERTY')
                     console.log('error', error.message)
                 })
+                .finally(() => {
+                    this.setState({ loading: false })
+                })
         }
         else {
             axios.post(`/api/inventory/create`, formData)
@@ -305,6 +311,9 @@ class AddInventory extends Component {
                     this.setState({ loading: false })
                     helper.errorToast('ERROR: ADDING PROPERTY')
                     console.log('error', error.message)
+                })
+                .finally(() => {
+                    this.setState({ loading: false })
                 })
         }
     }
@@ -530,6 +539,7 @@ class AddInventory extends Component {
             utilities,
             facing,
             selectedFeatures,
+            loading,
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
@@ -585,6 +595,7 @@ class AddInventory extends Component {
                                 facing={facing}
                                 selectedFeatures={selectedFeatures}
                                 handleFeatures={(value) => this.handleFeatures(value)}
+                                loading={loading}
                             />
                         </View>
                     </ScrollView>

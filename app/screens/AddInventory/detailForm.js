@@ -11,6 +11,7 @@ import ErrorMessage from '../../components/ErrorMessage'
 import RadioComponent from '../../components/RadioButton/index';
 import { formatPrice } from '../../PriceFormate'
 import TouchableInput from '../../components/TouchableInput';
+import TouchableButton from '../../components/TouchableButton'
 import { connect } from 'react-redux';
 import { YellowBox } from 'react-native';
 const { width } = Dimensions.get('window')
@@ -232,6 +233,7 @@ class DetailForm extends Component {
             handleClientClick,
             showAdditional,
             showAdditionalInformation,
+            loading,
         } = this.props
 
         const { size_unit } = this.props.formData;
@@ -301,7 +303,7 @@ class DetailForm extends Component {
                                 name={'size'}
                                 placeholder={'Size'} />
                             {
-                                checkValidation === true && formData.size === '' && <ErrorMessage errorMessage={'Required'} />
+                                checkValidation === true && formData.size === 0 && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                     </View>
@@ -380,19 +382,14 @@ class DetailForm extends Component {
                                     getItemLayout={this.getItemLayout}
                                 />
                                 {
-                                    imageLoading ?
-                                        <View style={styles.addMoreImg}>
-                                            <ActivityIndicator size="large" color={AppStyles.colors.primaryColor} />
-                                        </View>
-                                        :
-                                        <View style={{ flexDirection: 'row', marginHorizontal: 15 }}>
-                                            <TouchableOpacity style={[styles.addMoreImg, styles.extraAddMore]} onPress={getImagesFromGallery}>
-                                                <Text style={styles.uploadImageText}>Add More From Gallery</Text>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity style={[styles.addMoreImg, styles.extraAddMore]} onPress={takePhotos}>
-                                                <Text style={styles.uploadImageText}>Take Photos</Text>
-                                            </TouchableOpacity>
-                                        </View>
+                                    <View style={{ flexDirection: 'row', marginHorizontal: 15 }}>
+                                        <TouchableOpacity disabled={imageLoading} style={[styles.addMoreImg, styles.extraAddMore]} onPress={getImagesFromGallery}>
+                                            <Text style={styles.uploadImageText}>Add More From Gallery</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity disabled={imageLoading} style={[styles.addMoreImg, styles.extraAddMore]} onPress={takePhotos}>
+                                            <Text style={styles.uploadImageText}>Take Photos</Text>
+                                        </TouchableOpacity>
+                                    </View>
 
                                 }
 
@@ -485,16 +482,17 @@ class DetailForm extends Component {
                 <TouchableInput placeholder="Owner Name"
                     onPress={() => handleClientClick()}
                     value={clientName}
-                    showError={checkValidation === true && formData.customer_id === ''}
+                    showError={checkValidation === true && formData.customer_id === null}
                     errorMessage="Required" />
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
-                    <Button
-                        disabled={imageLoading}
-                        style={[AppStyles.formBtn, styles.addInvenBtn]} onPress={() => { formSubmit() }}>
-                        <Text style={AppStyles.btnText}>{buttonText}</Text>
-                    </Button>
+                    <TouchableButton
+                        containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+                        label={buttonText}
+                        onPress={() => formSubmit()}
+                        loading={imageLoading || loading}
+                    />
                 </View>
 
             </View >

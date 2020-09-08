@@ -10,6 +10,7 @@ import { formatPrice } from '../../PriceFormate';
 import PriceSlider from '../../components/PriceSlider';
 import StaticData from '../../StaticData'
 import TouchableInput from '../../components/TouchableInput';
+import TouchableButton from '../../components/TouchableButton';
 
 class InnerRCMForm extends Component {
   constructor(props) {
@@ -36,7 +37,8 @@ class InnerRCMForm extends Component {
       handleClientClick,
       priceList,
       onSliderValueChange,
-      organizations
+      organizations,
+      loading,
     } = this.props
 
     const { leadAreas } = formData;
@@ -180,11 +182,12 @@ class InnerRCMForm extends Component {
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
-          <Button
-            onPress={() => { formSubmit(formData) }}
-            style={[AppStyles.formBtn, styles.addInvenBtn]}>
-            <Text style={AppStyles.btnText}>CREATE LEAD</Text>
-          </Button>
+          <TouchableButton
+            containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+            label={'CREATE LEAD'}
+            onPress={() => formSubmit(formData)}
+            loading={loading}
+          />
         </View>
       </View>
     )

@@ -19,6 +19,7 @@ class AddClient extends Component {
             cities: [],
             getClients: [],
             getProject: [],
+            loading: false,
             formData: {
                 firstName: '',
                 lastName: '',
@@ -149,7 +150,6 @@ class AddClient extends Component {
         } else {
             if (emailValidate && !phoneValidate && !cnicValidate) {
                 if (formData.cnic === '') formData.cnic = null
-
                 if (!update) {
                     let body = {
                         first_name: helper.capitalize(formData.firstName),
@@ -162,6 +162,7 @@ class AddClient extends Component {
                         contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
                         contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
                     }
+                    this.setState({ loading: true })
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
                             if (res.status === 200 && res.data) {
@@ -193,6 +194,8 @@ class AddClient extends Component {
                         .catch((error) => {
                             console.log(error)
                             helper.errorToast('ERROR CREATING CLIENT')
+                        }).finally(() => {
+                            this.setState({ loading: false })
                         })
                 } else {
                     var checkForPlus = formData.contactNumber.substring(0, 1)
@@ -213,6 +216,7 @@ class AddClient extends Component {
                     body.customersContacts.push(body.phone)
                     body.customersContacts.push(body.contact1)
                     body.customersContacts.push(body.contact2)
+                    this.setState({ loading: true })
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {
                             helper.successToast('CLIENT UPDATED')
@@ -223,6 +227,8 @@ class AddClient extends Component {
                         .catch((error) => {
                             console.log(error)
                             helper.errorToast('ERROR UPDATING CLIENT')
+                        }).finally(() => {
+                            this.setState({ loading: false })
                         })
                 }
             }
@@ -287,6 +293,7 @@ class AddClient extends Component {
             countryCode2,
             callingCode,
             contactNumberCheck,
+            loading,
         } = this.state
         const { route } = this.props
         const { update } = route.params
@@ -316,6 +323,7 @@ class AddClient extends Component {
                                     contactNumberCheck={contactNumberCheck}
                                     getTrimmedPhone={this.getTrimmedPhone}
                                     validate={this.validate}
+                                    loading={loading}
                                     hello={this.hello}
                                 />
                             </View>

@@ -8,6 +8,7 @@ import moment from 'moment'
 import helper from '../../helper'
 import ErrorMessage from '../../components/ErrorMessage'
 import DateTimePicker from '../../components/DatePicker';
+import TouchableButton from '../../components/TouchableButton'
 
 class DetailForm extends Component {
 
@@ -60,7 +61,7 @@ class DetailForm extends Component {
     render() {
         const { taskType, date, startTime, endTime, subject, notes } = this.state.formData;
         const { formData, buttonText } = this.state;
-        const { formSubmit, checkValidation, taskValues } = this.props
+        const { formSubmit, checkValidation, taskValues, loading } = this.props
         return (
             <View>
                 <View style={[AppStyles.mainInputWrap]}>
@@ -104,7 +105,7 @@ class DetailForm extends Component {
                     name={'endTime'}
                     mode={'time'}
                     iconSource={require('../../../assets/img/clock.png')}
-                    date={endTime ?  new Date(endTime) : new Date()}
+                    date={endTime ? new Date(endTime) : new Date()}
                     selectedValue={endTime ? moment(endTime).format('hh:mm a') : ''}
                     disabled={startTime === '' ? true : false}
                     handleForm={(value, name) => this.handleForm(value, name)}
@@ -122,10 +123,12 @@ class DetailForm extends Component {
 
 
                 <View style={{ marginVertical: 10 }}>
-                    <Button onPress={() => { formSubmit(formData) }}
-                        style={[AppStyles.formBtn]}>
-                        <Text style={AppStyles.btnText}>{buttonText}</Text>
-                    </Button>
+                    <TouchableButton
+                        containerStyle={[AppStyles.formBtn]}
+                        label={buttonText}
+                        onPress={() => formSubmit(formData)}
+                        loading={loading}
+                    />
                 </View>
             </View>
         )

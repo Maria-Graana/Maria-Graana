@@ -10,6 +10,7 @@ import StaticData from '../../StaticData'
 import { formatPrice } from '../../PriceFormate'
 import PriceSlider from '../../components/PriceSlider';
 import TouchableInput from '../../components/TouchableInput';
+import TouchableButton from '../../components/TouchableButton';
 
 class CMLeadFrom extends Component {
   constructor(props) {
@@ -32,8 +33,9 @@ class CMLeadFrom extends Component {
       getProject,
       onSliderValueChange,
       getProductType,
+      loading,
     } = this.props
-    
+
     return (
       <View>
 
@@ -95,11 +97,12 @@ class CMLeadFrom extends Component {
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
-          <Button
-            onPress={() => { formSubmit(formData) }}
-            style={[AppStyles.formBtn, styles.addInvenBtn]}>
-            <Text style={AppStyles.btnText}>CREATE LEAD</Text>
-          </Button>
+          <TouchableButton
+            containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+            label={'CREATE LEAD'}
+            onPress={() => formSubmit(formData)}
+            loading={loading}
+          />
         </View>
       </View>
     )

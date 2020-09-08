@@ -16,6 +16,7 @@ class AddDiary extends Component {
         this.state = {
             checkValidation: false,
             taskValues: [],
+            loading: false,
         }
     }
 
@@ -34,7 +35,9 @@ class AddDiary extends Component {
                 checkValidation: true
             })
         } else {
-            this.createDiary(data)
+            this.setState({ loading: true }, () => {
+                this.createDiary(data);
+            })
         }
     }
 
@@ -137,6 +140,8 @@ class AddDiary extends Component {
                 .catch((error) => {
                     helper.errorToast('ERROR: ADDING DIARY')
                     console.log('error', error.message)
+                }).finally(() => {
+                    this.setState({ loading: false });
                 })
 
         }
@@ -166,6 +171,8 @@ class AddDiary extends Component {
                 .catch((error) => {
                     helper.errorToast('ERROR: ADDING TASK')
                     console.log('error', error.message)
+                }).finally(() => {
+                    this.setState({ loading: false });
                 })
         }
 
@@ -189,11 +196,13 @@ class AddDiary extends Component {
             .catch((error) => {
                 helper.errorToast('ERROR: UPDATING TASK')
                 console.log(error)
+            }).finally(() => {
+                this.setState({ loading: false });
             })
     }
 
     render() {
-        const { checkValidation, taskValues } = this.state;
+        const { checkValidation, taskValues, loading } = this.state;
         const { route } = this.props;
         return (
             <KeyboardAwareScrollView style={[AppStyles.container]} keyboardShouldPersistTaps="always" enableOnAndroid>
@@ -205,6 +214,7 @@ class AddDiary extends Component {
                             editableData={route.params.update ? route.params.data : null}
                             taskValues={taskValues}
                             checkValidation={checkValidation}
+                            loading={loading}
                         />
                     </SafeAreaView>
                 </TouchableWithoutFeedback>

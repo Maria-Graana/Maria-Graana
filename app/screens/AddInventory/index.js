@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView, Alert, Modal } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Modal, Keyboard } from 'react-native';
 import { StyleProvider } from 'native-base';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -13,7 +13,7 @@ import AppStyles from '../../AppStyles';
 import helper from '../../helper';
 import { connect } from 'react-redux';
 import _ from 'underscore';
-import ImageBrowser  from '../../components/ImageBrowser/ImageBrowser';
+import ImageBrowser from '../../components/ImageBrowser/ImageBrowser';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { uploadImage, addImage, flushImages, removeImage, setImageLoading } from '../../actions/property'
 
@@ -41,7 +41,7 @@ class AddInventory extends Component {
                 purpose: '',
                 bed: 0,
                 bath: 0,
-                size: '',
+                size: 0,
                 city_id: '',
                 area_id: '',
                 size_unit: 'marla',
@@ -480,7 +480,7 @@ class AddInventory extends Component {
         else if (typeof (val) === 'string' && val != '') {
             return parseInt(val);
         }
-        else{
+        else {
             return val;
         }
     }
@@ -558,48 +558,51 @@ class AddInventory extends Component {
                             />
                         </View>
                     </Modal>
-                    <ScrollView  keyboardShouldPersistTaps="always">
+                    <ScrollView keyboardShouldPersistTaps="always">
                         {/* ********* Form Component */}
-                        <View style={AppStyles.container}>
-                            <DetailForm
-                                formSubmit={this.formSubmit}
-                                checkValidation={checkValidation}
-                                handleForm={this.handleForm}
-                                formData={formData}
-                                purpose={StaticData.purpose}
-                                selectedCity={selectedCity}
-                                selectedArea={selectedArea}
-                                handleCityClick={this.handleCityClick}
-                                handleAreaClick={this.handleAreaClick}
-                                buttonText={buttonText}
-                                clientName={clientName}
-                                handleClientClick={this.handleClientClick}
-                                propertyType={StaticData.type}
-                                getCurrentLocation={this._getLocationAsync}
-                                getImagesFromGallery={() => this.getImagesFromGallery()}
-                                takePhotos={() => this.takePhotos()}
-                                selectSubType={selectSubType}
-                                sizeUnit={sizeUnit}
-                                selectedGrade={formData.grade}
-                                size={StaticData.oneToTen}
-                                latitude={formData.lat}
-                                longitude={formData.lng}
-                                price={formData.price}
-                                deleteImage={(image, index) => this.deleteImage(image, index)}
-                                buttonDisabled={buttonDisabled}
-                                showAdditional={showAdditional}
-                                showAdditionalInformation={() => this.setState({ showAdditional: !showAdditional })}
-                                additionalInformation={additionalInformation}
-                                features={features}
-                                utilities={utilities}
-                                facing={facing}
-                                selectedFeatures={selectedFeatures}
-                                handleFeatures={(value) => this.handleFeatures(value)}
-                                loading={loading}
-                            />
-                        </View>
+                        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                            <View style={AppStyles.container}>
+                                <DetailForm
+                                    formSubmit={this.formSubmit}
+                                    checkValidation={checkValidation}
+                                    handleForm={this.handleForm}
+                                    formData={formData}
+                                    purpose={StaticData.purpose}
+                                    selectedCity={selectedCity}
+                                    selectedArea={selectedArea}
+                                    handleCityClick={this.handleCityClick}
+                                    handleAreaClick={this.handleAreaClick}
+                                    buttonText={buttonText}
+                                    clientName={clientName}
+                                    handleClientClick={this.handleClientClick}
+                                    propertyType={StaticData.type}
+                                    getCurrentLocation={this._getLocationAsync}
+                                    getImagesFromGallery={() => this.getImagesFromGallery()}
+                                    takePhotos={() => this.takePhotos()}
+                                    selectSubType={selectSubType}
+                                    sizeUnit={sizeUnit}
+                                    selectedGrade={formData.grade}
+                                    size={StaticData.oneToTen}
+                                    latitude={formData.lat}
+                                    longitude={formData.lng}
+                                    price={formData.price}
+                                    deleteImage={(image, index) => this.deleteImage(image, index)}
+                                    buttonDisabled={buttonDisabled}
+                                    showAdditional={showAdditional}
+                                    showAdditionalInformation={() => this.setState({ showAdditional: !showAdditional })}
+                                    additionalInformation={additionalInformation}
+                                    features={features}
+                                    utilities={utilities}
+                                    facing={facing}
+                                    selectedFeatures={selectedFeatures}
+                                    handleFeatures={(value) => this.handleFeatures(value)}
+                                    loading={loading}
+                                />
+                            </View>
+                        </TouchableWithoutFeedback>
                     </ScrollView>
                 </KeyboardAvoidingView>
+
             </StyleProvider>
         )
     }

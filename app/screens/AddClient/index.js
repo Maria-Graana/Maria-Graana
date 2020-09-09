@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { StyleProvider } from 'native-base';
 import DetailForm from './detailForm';
 import AppStyles from '../../AppStyles';
@@ -302,31 +302,33 @@ class AddClient extends Component {
                 <StyleProvider style={getTheme(formTheme)}>
                     <KeyboardAvoidingView enabled>
                         <ScrollView keyboardShouldPersistTaps="always">
-                            <View>
-                                <DetailForm
-                                    formSubmit={this.formSubmit}
-                                    checkValidation={this.state.checkValidation}
-                                    handleForm={this.handleForm}
-                                    formData={formData}
-                                    cities={cities}
-                                    getClients={getClients}
-                                    getProject={getProject}
-                                    update={update}
-                                    phoneValidate={phoneValidate}
-                                    emailValidate={emailValidate}
-                                    cnicValidate={cnicValidate}
-                                    contact2Validate={contact2Validate}
-                                    contact1Validate={contact1Validate}
-                                    countryCode={countryCode}
-                                    countryCode1={countryCode1}
-                                    countryCode2={countryCode2}
-                                    contactNumberCheck={contactNumberCheck}
-                                    getTrimmedPhone={this.getTrimmedPhone}
-                                    validate={this.validate}
-                                    loading={loading}
-                                    hello={this.hello}
-                                />
-                            </View>
+                            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                                <View>
+                                    <DetailForm
+                                        formSubmit={this.formSubmit}
+                                        checkValidation={this.state.checkValidation}
+                                        handleForm={this.handleForm}
+                                        formData={formData}
+                                        cities={cities}
+                                        getClients={getClients}
+                                        getProject={getProject}
+                                        update={update}
+                                        phoneValidate={phoneValidate}
+                                        emailValidate={emailValidate}
+                                        cnicValidate={cnicValidate}
+                                        contact2Validate={contact2Validate}
+                                        contact1Validate={contact1Validate}
+                                        countryCode={countryCode}
+                                        countryCode1={countryCode1}
+                                        countryCode2={countryCode2}
+                                        contactNumberCheck={contactNumberCheck}
+                                        getTrimmedPhone={this.getTrimmedPhone}
+                                        validate={this.validate}
+                                        loading={loading}
+                                        hello={this.hello}
+                                    />
+                                </View>
+                            </TouchableWithoutFeedback>
                         </ScrollView>
                     </KeyboardAvoidingView>
                 </StyleProvider>

@@ -48,7 +48,6 @@ class DetailForm extends Component {
 		let btnText = update ? 'UPDATE' : 'ADD'
 		return (
 			<View>
-
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<TextInput placeholderTextColor={'#a8a8aa'} value={formData.firstName} onChangeText={(text) => { handleForm(text, 'firstName') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'firstName'} placeholder={'First Name*'} />
@@ -86,8 +85,6 @@ class DetailForm extends Component {
 						}
 					</View>
 				</View>
-
-
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<PhoneInputComponent
@@ -105,7 +102,6 @@ class DetailForm extends Component {
 						}
 					</View>
 				</View>
-
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<PhoneInputComponent
@@ -124,8 +120,6 @@ class DetailForm extends Component {
 
 					</View>
 				</View>
-
-
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<TextInput placeholderTextColor={'#a8a8aa'} value={formData.email} keyboardType='email-address' autoCompleteType='email' onChangeText={(text) => { handleForm(text, 'email') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'email'} placeholder={'Email'} />
@@ -134,7 +128,6 @@ class DetailForm extends Component {
 						}
 					</View>
 				</View>
-
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<TextInput placeholderTextColor={'#a8a8aa'} keyboardType={'number-pad'} maxLength={15} value={formData.cnic} onChangeText={(text) => { handleForm(text, 'cnic') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'cnic'} placeholder={'CNIC'} />
@@ -143,7 +136,6 @@ class DetailForm extends Component {
 						}
 					</View>
 				</View>
-
 				<View style={[AppStyles.mainInputWrap]}>
 					<Textarea
 						placeholderTextColor={AppStyles.colors.subTextColor}
@@ -153,7 +145,6 @@ class DetailForm extends Component {
 						value={formData.address}
 					/>
 				</View>
-
 				<View style={[AppStyles.mainInputWrap]}>
 					<Textarea
 						placeholderTextColor={AppStyles.colors.subTextColor}
@@ -163,7 +154,6 @@ class DetailForm extends Component {
 						value={formData.secondaryAddress}
 					/>
 				</View>
-
 
 				{/* **************************************** */}
 				<View style={[AppStyles.mainInputWrap]}>

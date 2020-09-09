@@ -178,6 +178,11 @@ export default StaticData = {
         { value: '12', name: '3 Years' },
         { value: '16', name: '4 Years' },
         { value: '20', name: '5 Years' },
+        { value: '24', name: '6 Years' },
+        { value: '28', name: '7 Years' },
+        { value: '32', name: '8 Years' },
+        { value: '36', name: '9 Years' },
+        { value: '40', name: '10 Years' },
     ],
     getInstallmentsMonthly: [
         { value: '12', name: '1 Year' },
@@ -186,6 +191,10 @@ export default StaticData = {
         { value: '48', name: '4 Years' },
         { value: '60', name: '5 Years' },
         { value: '72', name: '6 Years' },
+        { value: '84', name: '7 Years' },
+        { value: '96', name: '8 Years' },
+        { value: '108', name: '9 Years' },
+        { value: '120', name: '10 Years' },
     ],
     propsurePackages: [
         {

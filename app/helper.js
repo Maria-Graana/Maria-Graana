@@ -148,10 +148,10 @@ const helper = {
 				switch (val.response) {
 					case 'visited':
 						return 'Visited'
-					case 'expected_conversion':
-						return 'Meeting Expected Conversion'
+					case 'deal_expected':
+						return 'Deal Expected'
 					case 'deal_signed':
-						return 'Meeting Deal Signed'
+						return 'Deal Signed'
 					default:
 						break;
 				}
@@ -198,7 +198,7 @@ const helper = {
 				switch (val.response) {
 					case 'visited':
 						return 'green'
-					case 'expected_conversion':
+					case 'deal_expected':
 						return '#FDD835'
 					case 'deal_signed':
 						return 'green'

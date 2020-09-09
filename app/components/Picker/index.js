@@ -21,7 +21,7 @@ class PickerComponent extends React.Component {
             this.props.onValueChange(itemValue, name)
         }
         this.setState({
-            selectedTask: itemValue
+            selectedTask: itemValue  === '' ? 'Select' : itemValue,
         })
     }
 
@@ -66,7 +66,7 @@ class PickerComponent extends React.Component {
                     enabled={enabled}
                     style={[AppStyles.formControlForPicker, customStyle]}
                     placeholder={placeholderLabel}
-                    selectedValue={this.state.selectedTask != '' && selectedValue}
+                    selectedValue={selectedValue}
                     onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}
                 >
                     {pickerItems}

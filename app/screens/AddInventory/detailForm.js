@@ -82,7 +82,7 @@ class DetailForm extends Component {
             this.baths = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.baths.push({ name: i.toString() + ' Bathroom', value: i })
-                this.baths.push({ name: i.toString() + ' Bathroom(s)', value: i });
+                else this.baths.push({ name: i.toString() + ' Bathroom(s)', value: i });
             }
             return this.baths;
         }
@@ -92,16 +92,17 @@ class DetailForm extends Component {
             this.parkings = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.parkings.push({ name: i.toString() + ' Parking Space', value: i })
-                this.parkings.push({ name: i.toString() + ' Parking Space(s)', value: i });
+                else this.parkings.push({ name: i.toString() + ' Parking Space(s)', value: i });
             }
             return this.parkings;
         }
         let _renderFloors = () => {
-            var min = 1;
+            var min = 0;
             var max = 30;
             this.floors = [];
             for (var i = min; i <= max; i++) {
-                this.floors.push({ name: i.toString() + ' Floor(s)', value: i });
+                if (i == 0 || i == 1) this.floors.push({ name: i.toString() + ' Floor', value: i })
+                else this.floors.push({ name: i.toString() + ' Floor(s)', value: i });
             }
             return this.floors;
         }

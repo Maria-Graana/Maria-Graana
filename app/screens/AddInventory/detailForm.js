@@ -147,6 +147,7 @@ class DetailForm extends Component {
                     <View style={[AppStyles.mainInputWrap]}>
                         <PickerComponent data={this._getYears()}
                             onValueChange={handleForm}
+                            clearOnChange={true}
                             selectedItem={formData.year_built}
                             name={'year_built'} placeholder='Build Year' />
                     </View>
@@ -156,7 +157,8 @@ class DetailForm extends Component {
                         <View style={[AppStyles.mainInputWrap]}>
                             <PickerComponent data={_renderBeds()}
                                 onValueChange={handleForm}
-                                selectedItem={formData.bed == 0 ? '0 Bedroom' : formData.bed}
+                                clearOnChange={true}
+                                selectedItem={formData.bed}
                                 name={'bed'}
                                 placeholder='Select Total Bed(s)' />
                         </View>
@@ -164,6 +166,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.mainInputWrap]}>
                             <PickerComponent data={_renderBaths()}
                                 onValueChange={handleForm}
+                                clearOnChange={true}
                                 selectedItem={formData.bath}
                                 name={'bath'}
                                 placeholder='Select Total Bath(s)' />
@@ -172,6 +175,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.mainInputWrap]}>
                             <PickerComponent data={_renderParkings()}
                                 onValueChange={handleForm}
+                                clearOnChange={true}
                                 selectedItem={formData.parking_space}
                                 name={'parking_space'}
                                 placeholder='Select Total Parking Space(s)' />
@@ -183,6 +187,7 @@ class DetailForm extends Component {
                     <View style={[AppStyles.mainInputWrap]}>
                         <PickerComponent data={_renderFloors()}
                             onValueChange={handleForm}
+                            clearOnChange={true}
                             selectedItem={formData.floors}
                             name={'floors'}
                             placeholder='Select Total Floor(s)' />

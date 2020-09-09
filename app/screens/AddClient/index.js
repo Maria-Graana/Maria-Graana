@@ -9,6 +9,7 @@ import axios from 'axios'
 import { connect } from 'react-redux';
 import helper from '../../helper';
 import _ from 'underscore';
+import { getAllCountries } from 'react-native-country-picker-modal'
 
 class AddClient extends Component {
     constructor(props) {
@@ -44,6 +45,7 @@ class AddClient extends Component {
             callingCode1: defaultCountry.code,
             callingCode2: defaultCountry.code,
             contactNumberCheck: '',
+            countries: []
         }
     }
     componentDidMount() {
@@ -51,13 +53,63 @@ class AddClient extends Component {
         navigation.setParams({ title: 'ADD CLIENT INFO' })
         if ('update' in route.params && route.params.update) {
             navigation.setParams({ title: 'UPDATE CLIENT INFO' })
-            this.updateFields()
+            getAllCountries().then((countries) => {
+                this.setState({ countries }, () => this.fetchCountryCode())
+            })
         }
+    }
+
+    fetchCountryCode = () => {
+        const { countries } = this.state
+        const { client } = this.props.route.params
+        let contact1 = client.contact1 ? client.contact1.substring(1) : null
+        let contact2 = client.contact2 ? client.contact1.substring(1) : null
+        let phone = client.phone ? client.phone.substring(1) : null
+        let countryCode = null
+        let countryCode1 = null
+        let countryCode2 = null
+        let cca2Contact = null
+        let cca2Contact1 = null
+        let cca2Contact2 = null
+        if (client.customerContacts.length) {
+            for (let i = 0; i < client.customerContacts.length; i++) {
+                if (i === 0) phone = client.customerContacts[i].phone.substring(1)
+                if (i === 1) contact1 = client.customerContacts[i].phone.substring(1)
+                if (i === 2) contact2 = client.customerContacts[i].phone.substring(1)
+            }
+        }
+        let result = _.map(
+            _.where(countries),
+            function (country) {
+                return { callingCode: country.callingCode, cca2: country.cca2 }
+            }
+        )
+        if (result.length) {
+            result.map(item => {
+                let callingCode = item.callingCode
+                if (callingCode.length) {
+                    callingCode.map(code => {
+                        if (phone && phone.startsWith(code)) { countryCode = '+' + code; cca2Contact = item.cca2 }
+                        if (contact1 && contact1.startsWith(code)) { countryCode1 = '+' + code; cca2Contact1 = item.cca2 }
+                        if (contact2 && contact2.startsWith(code)) { countryCode2 = '+' + code; cca2Contact2 = item.cca2 }
+                    })
+                }
+            })
+        }
+        this.setState({
+            countryCode: cca2Contact ? cca2Contact : 'PK',
+            countryCode1: cca2Contact1 ? cca2Contact1 : 'PK',
+            countryCode2: cca2Contact2 ? cca2Contact2 : 'PK',
+            callingCode: countryCode ? countryCode : '+92',
+            callingCode1: countryCode1 ? countryCode1 : '+92',
+            callingCode2: countryCode2 ? countryCode2 : '+92'
+        }, () => this.updateFields())
     }
 
     updateFields = () => {
         const { route } = this.props
         const { client } = route.params
+        const { callingCode, callingCode1, callingCode2 } = this.state
         let formData = {
             firstName: client.firstName,
             lastName: client.lastName,
@@ -70,9 +122,15 @@ class AddClient extends Component {
         }
         if (client.customerContacts.length) {
             for (let i = 0; i < client.customerContacts.length; i++) {
-                if (i === 0) formData.contactNumber = client.customerContacts[i].phone
-                if (i === 1) formData.contact1 = client.customerContacts[i].phone
-                if (i === 2) formData.contact2 = client.customerContacts[i].phone
+                if (i === 0) {
+                    formData.contactNumber = client.customerContacts[i].phone.replace(callingCode, '')
+                }
+                if (i === 1) {
+                    formData.contact1 = client.customerContacts[i].phone.replace(callingCode1, '')
+                }
+                if (i === 2) {
+                    formData.contact2 = client.customerContacts[i].phone.replace(callingCode2, '')
+                }
             }
         }
         this.setState({ formData })
@@ -116,7 +174,6 @@ class AddClient extends Component {
         }
         if (name == 'contact1') this.validateContact1(value)
         if (name == 'contact2') this.validateContact2(value)
-
         formData[name] = value
         this.setState({ formData, contactNumberCheck: name })
     }

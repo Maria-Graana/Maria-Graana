@@ -51,7 +51,7 @@ const PhoneInputComponent = (props) => {
 				autoCorrect={false}
 				maxLength={15}
 				autoCompleteType='cc-number'
-				value={props.phoneValue && props.phoneValue.substring(0, 3) == '+92' ? props.phoneValue.substring(3) : props.phoneValue}
+				value={props.phoneValue && props.phoneValue}
 				onChangeText={(value) => { onChangeHandle(value, name) }}
 
 			/>

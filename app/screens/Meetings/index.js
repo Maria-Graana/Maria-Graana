@@ -413,7 +413,10 @@ class Meetings extends Component {
       }).catch(error => {
         console.log(error);
       })
+    } else {
+      alert('Please select a reason for lead closure!')
     }
+
   }
 
   closedLead = () => {

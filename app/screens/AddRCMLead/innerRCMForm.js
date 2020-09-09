@@ -38,6 +38,7 @@ class InnerRCMForm extends Component {
 			priceList,
 			onSliderValueChange,
 			organizations,
+			loading,
 			sizeUnitList,
 			onSizeUnitSliderValueChange
 		} = this.props
@@ -172,11 +173,12 @@ class InnerRCMForm extends Component {
 
 				{/* **************************************** */}
 				<View style={[AppStyles.mainInputWrap]}>
-					<Button
-						onPress={() => { formSubmit(formData) }}
-						style={[AppStyles.formBtn, styles.addInvenBtn]}>
-						<Text style={AppStyles.btnText}>CREATE LEAD</Text>
-					</Button>
+					<TouchableButton
+						containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+						label={'CREATE LEAD'}
+						onPress={() => formSubmit(formData)}
+						loading={loading}
+					/>
 				</View>
 			</View>
 		)

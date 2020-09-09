@@ -71,7 +71,7 @@ class DetailForm extends Component {
             var max = 10;
             this.beds = [];
             for (var i = min; i <= max; i++) {
-                if (i == 0 || i == 1) this.beds.push({ name: i.toString() + ' Bedroom' })
+                if (i == 0 || i == 1) this.beds.push({ name: i.toString() + ' Bedroom', value: i })
                 else this.beds.push({ name: i.toString() + ' Bedroom(s)', value: i });
             }
             return this.beds;
@@ -81,7 +81,7 @@ class DetailForm extends Component {
             var max = 10;
             this.baths = [];
             for (var i = min; i <= max; i++) {
-                if (i == 0 || i == 1) this.baths.push({ name: i.toString() + ' Bathroom' })
+                if (i == 0 || i == 1) this.baths.push({ name: i.toString() + ' Bathroom', value: i })
                 this.baths.push({ name: i.toString() + ' Bathroom(s)', value: i });
             }
             return this.baths;
@@ -91,7 +91,7 @@ class DetailForm extends Component {
             var max = 10;
             this.parkings = [];
             for (var i = min; i <= max; i++) {
-                if (i == 0 || i == 1) this.parkings.push({ name: i.toString() + ' Parking Space' })
+                if (i == 0 || i == 1) this.parkings.push({ name: i.toString() + ' Parking Space', value: i })
                 this.parkings.push({ name: i.toString() + ' Parking Space(s)', value: i });
             }
             return this.parkings;

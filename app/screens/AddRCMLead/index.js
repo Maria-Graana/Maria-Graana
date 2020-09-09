@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { StyleProvider } from 'native-base';
 import RCMLeadFrom from './RCMLeadFrom';
 import AppStyles from '../../AppStyles';
@@ -293,32 +293,34 @@ class AddRCMLead extends Component {
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
                     <KeyboardAvoidingView enabled>
-                        <ScrollView>
-                            <View>
-                                <RCMLeadFrom
-                                    sizeUnitList={sizeUnitList}
-                                    organizations={_.clone(organizations)}
-                                    handleClientClick={this.handleClientClick}
-                                    selectedCity={selectedCity}
-                                    handleCityClick={this.handleCityClick}
-                                    clientName={clientName}
-                                    formSubmit={this.RCMFormSubmit}
-                                    checkValidation={checkValidation}
-                                    handleForm={this.handleRCMForm}
-                                    changeStatus={this.changeStatus}
-                                    size={StaticData.oneToTen}
-                                    sizeUnit={StaticData.sizeUnit}
-                                    propertyType={StaticData.type}
-                                    formData={RCMFormData}
-                                    formType={formType}
-                                    subType={selectSubType}
-                                    handleAreaClick={this.handleAreaClick}
-                                    priceList={priceList}
-                                    onSizeUnitSliderValueChange={(values) => this.onSizeUnitSliderValueChange(values)}
-                                    onSliderValueChange={(values) => this.onSliderValueChange(values)}
-                                    loading={loading}
-                                />
-                            </View>
+                        <ScrollView keyboardShouldPersistTaps="always">
+                            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                                <View>
+                                    <RCMLeadFrom
+                                        sizeUnitList={sizeUnitList}
+                                        organizations={_.clone(organizations)}
+                                        handleClientClick={this.handleClientClick}
+                                        selectedCity={selectedCity}
+                                        handleCityClick={this.handleCityClick}
+                                        clientName={clientName}
+                                        formSubmit={this.RCMFormSubmit}
+                                        checkValidation={checkValidation}
+                                        handleForm={this.handleRCMForm}
+                                        changeStatus={this.changeStatus}
+                                        size={StaticData.oneToTen}
+                                        sizeUnit={StaticData.sizeUnit}
+                                        propertyType={StaticData.type}
+                                        formData={RCMFormData}
+                                        formType={formType}
+                                        subType={selectSubType}
+                                        handleAreaClick={this.handleAreaClick}
+                                        priceList={priceList}
+                                        onSizeUnitSliderValueChange={(values) => this.onSizeUnitSliderValueChange(values)}
+                                        onSliderValueChange={(values) => this.onSliderValueChange(values)}
+                                        loading={loading}
+                                    />
+                                </View>
+                            </TouchableWithoutFeedback>
                         </ScrollView>
                     </KeyboardAvoidingView>
                 </StyleProvider>

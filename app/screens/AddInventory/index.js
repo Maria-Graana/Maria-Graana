@@ -218,7 +218,7 @@ class AddInventory extends Component {
             this.selectSubtype(formData.type)
         }
         if (formData.size === '') {
-            formData.size = null;
+            formData.size = 0;
             this.setState({ formData })
         }
     }

@@ -343,7 +343,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.inputWrap]}>
                             <TextInput placeholderTextColor={'#a8a8aa'}
                                 onChangeText={(text) => { handleForm(text, 'price') }}
-                                value={price && String(price)}
+                                value={price === 0 ? '' : String(price)}
                                 keyboardType='number-pad'
                                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                                 placeholder={'Demand Price'} />

@@ -13,7 +13,7 @@ import AppStyles from '../../AppStyles';
 import helper from '../../helper';
 import { connect } from 'react-redux';
 import _ from 'underscore';
-import { ImageBrowser } from 'expo-multiple-media-imagepicker';
+import ImageBrowser  from '../../components/ImageBrowser/ImageBrowser';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { uploadImage, addImage, flushImages, removeImage, setImageLoading } from '../../actions/property'
 

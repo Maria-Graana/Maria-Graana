@@ -301,7 +301,7 @@ class AddClient extends Component {
             <View style={[AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
                     <KeyboardAvoidingView enabled>
-                        <ScrollView>
+                        <ScrollView keyboardShouldPersistTaps="always">
                             <View>
                                 <DetailForm
                                     formSubmit={this.formSubmit}

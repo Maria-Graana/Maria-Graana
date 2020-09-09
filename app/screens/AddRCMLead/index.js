@@ -293,7 +293,7 @@ class AddRCMLead extends Component {
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
                     <KeyboardAvoidingView enabled>
-                        <ScrollView>
+                        <ScrollView  keyboardShouldPersistTaps="always">
                             <View>
                                 <RCMLeadFrom
                                     sizeUnitList={sizeUnitList}

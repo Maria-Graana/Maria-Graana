@@ -167,7 +167,7 @@ class AddCMLead extends Component {
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
                     <KeyboardAvoidingView enabled>
-                        <ScrollView>
+                        <ScrollView  keyboardShouldPersistTaps="always">
                             <View>
                                 <CMLeadFrom
                                     formSubmit={this.formSubmit}

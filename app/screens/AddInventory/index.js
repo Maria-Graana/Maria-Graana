@@ -558,7 +558,7 @@ class AddInventory extends Component {
                             />
                         </View>
                     </Modal>
-                    <ScrollView>
+                    <ScrollView  keyboardShouldPersistTaps="always">
                         {/* ********* Form Component */}
                         <View style={AppStyles.container}>
                             <DetailForm

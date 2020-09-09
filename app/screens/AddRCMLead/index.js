@@ -28,7 +28,7 @@ class AddRCMLead extends Component {
             sizeUnitList: [],
             selectSubType: [],
             loading: false,
-            sixKArray: helper.createArray(6000),
+            sixKArray: helper.createArray(60000),
             fifteenKArray: helper.createArray(15000),
             fiftyArray: helper.createArray(50),
             hundredArray: helper.createArray(100),

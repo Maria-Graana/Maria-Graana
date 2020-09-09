@@ -72,7 +72,7 @@ class DetailForm extends Component {
             this.beds = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.beds.push({ name: i.toString() + ' Bedroom', value: i })
-                else this.beds.push({ name: i.toString() + ' Bedroom(s)', value: i });
+                else this.beds.push({ name: i.toString() + ' Bedrooms', value: i });
             }
             return this.beds;
         }
@@ -82,7 +82,7 @@ class DetailForm extends Component {
             this.baths = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.baths.push({ name: i.toString() + ' Bathroom', value: i })
-                else this.baths.push({ name: i.toString() + ' Bathroom(s)', value: i });
+                else this.baths.push({ name: i.toString() + ' Bathrooms', value: i });
             }
             return this.baths;
         }
@@ -92,7 +92,7 @@ class DetailForm extends Component {
             this.parkings = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.parkings.push({ name: i.toString() + ' Parking Space', value: i })
-                else this.parkings.push({ name: i.toString() + ' Parking Space(s)', value: i });
+                else this.parkings.push({ name: i.toString() + ' Parking Spaces', value: i });
             }
             return this.parkings;
         }
@@ -102,7 +102,7 @@ class DetailForm extends Component {
             this.floors = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.floors.push({ name: i.toString() + ' Floor', value: i })
-                else this.floors.push({ name: i.toString() + ' Floor(s)', value: i });
+                else this.floors.push({ name: i.toString() + ' Floors', value: i });
             }
             return this.floors;
         }
@@ -147,6 +147,7 @@ class DetailForm extends Component {
                     <View style={[AppStyles.mainInputWrap]}>
                         <PickerComponent data={this._getYears()}
                             onValueChange={handleForm}
+                            clearOnChange={true}
                             selectedItem={formData.year_built}
                             name={'year_built'} placeholder='Build Year' />
                     </View>
@@ -156,6 +157,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.mainInputWrap]}>
                             <PickerComponent data={_renderBeds()}
                                 onValueChange={handleForm}
+                                clearOnChange={true}
                                 selectedItem={formData.bed}
                                 name={'bed'}
                                 placeholder='Select Total Bed(s)' />
@@ -164,6 +166,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.mainInputWrap]}>
                             <PickerComponent data={_renderBaths()}
                                 onValueChange={handleForm}
+                                clearOnChange={true}
                                 selectedItem={formData.bath}
                                 name={'bath'}
                                 placeholder='Select Total Bath(s)' />
@@ -172,6 +175,7 @@ class DetailForm extends Component {
                         <View style={[AppStyles.mainInputWrap]}>
                             <PickerComponent data={_renderParkings()}
                                 onValueChange={handleForm}
+                                clearOnChange={true}
                                 selectedItem={formData.parking_space}
                                 name={'parking_space'}
                                 placeholder='Select Total Parking Space(s)' />
@@ -183,6 +187,7 @@ class DetailForm extends Component {
                     <View style={[AppStyles.mainInputWrap]}>
                         <PickerComponent data={_renderFloors()}
                             onValueChange={handleForm}
+                            clearOnChange={true}
                             selectedItem={formData.floors}
                             name={'floors'}
                             placeholder='Select Total Floor(s)' />

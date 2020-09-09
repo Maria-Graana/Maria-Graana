@@ -480,6 +480,9 @@ class AddInventory extends Component {
         else if (typeof (val) === 'string' && val != '') {
             return parseInt(val);
         }
+        else if (val === ''){
+            return 0;
+        }
         else {
             return val;
         }

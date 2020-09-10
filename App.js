@@ -19,7 +19,9 @@ import { AsyncStorage, YellowBox } from 'react-native';
 import * as RootNavigation from './app/navigation/RootNavigation';
 import * as Notifications from 'expo-notifications';
 import { NavigationContainer } from '@react-navigation/native';
+import NetInfo from '@react-native-community/netinfo';
 import { navigationRef } from './app/navigation/RootNavigation';
+import { setInternetConnection } from './app/actions/user'
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -39,7 +41,12 @@ export default class App extends React.Component {
 	}
 
 	async componentDidMount() {
-		this.setState({ isReady: true })
+		this.setState({ isReady: true }, () => {
+			NetInfo.addEventListener(state => {
+				store.dispatch(setInternetConnection(state.isConnected));
+			});
+		})
+
 		setCustomTouchableOpacity({ activeOpacity: 0.8 })
 		SplashScreen.preventAutoHide();
 		axios.defaults.baseURL = config.apiPath
@@ -74,6 +81,7 @@ export default class App extends React.Component {
 			OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
 			...Ionicons.font,
 		})
+
 		YellowBox.ignoreWarnings(['Animated: `useNativeDriver` was not specified'])
 	}
 

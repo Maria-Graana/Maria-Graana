@@ -51,7 +51,7 @@ class Payments extends Component {
 				discount: lead.discount ? lead.discount : '',
 				commisionPayment: '',
 				downPayment: lead.downPayment ? lead.downPayment : '',
-				paymentType: '',
+				paymentType: lead && lead.possession_charges != null || lead.cmInstallments.length > 0 || lead.downPayment ? 'installments' : 'full_payment',
 				payment: '',
 				discountPercentage: lead.unit != null ? lead.unit.discount : '',
 				unitStatus: lead.unit != null ? lead.unit.bookingStatus : '',
@@ -126,12 +126,13 @@ class Payments extends Component {
 				token: data.token ? data.token : '',
 				discount: data.discount ? data.discount : '',
 				commisionPayment: '',
+				paymentType: lead && lead.possession_charges != null || lead.cmInstallments.length > 0 || lead.downPayment ? 'installments' : 'full_payment',
 				downPayment: data.downPayment ? data.downPayment : '',
 				discountPercentage: data.unit != null ? data.unit.discount : '',
 				installmentDue: lead && lead.installmentDue === null || lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
 			},
 			instalments: data.project != null && data.project.installment_plan != null ? this.noOfInstallments(data.project.installment_plan) : '',
-			possessionCharges: data.unit != null ? data.unit.possession_charges : '',
+			possessionCharges: data && data.possession_charges != null ? data.possession_charges : '',
 			checkForUnitAvail: data.unit && data.unit != null && data.unit.bookingStatus != 'Available' ? false : true,
 		}, () => {
 			let name = ''
@@ -485,6 +486,9 @@ class Payments extends Component {
 				this.setState({
 					modalVisible: !modalVisible,
 					checkPaymentTypeValue: value,
+					possessionCharges: '',
+				},() => {
+					this.discountPayment()
 				})
 			}
 			if (paymentFiledsArray.length === 0) {
@@ -597,7 +601,7 @@ class Payments extends Component {
 
 	formSubmit = () => {
 		const { lead } = this.props
-		const { formData, totalInstalments, remainingPayment, readOnly, paymentFiledsArray } = this.state
+		const { formData, totalInstalments, remainingPayment, readOnly, paymentFiledsArray,possessionCharges } = this.state
 		let body = {
 			discount: formData.discount ? parseInt(formData.discount) : null,
 			downPayment: formData.downPayment ? parseInt(formData.downPayment) : null,
@@ -607,16 +611,19 @@ class Payments extends Component {
 			installments: totalInstalments.length > 0 ? totalInstalments : paymentFiledsArray.length > 0 ? paymentFiledsArray : null,
 			no_of_installments: totalInstalments.length ? totalInstalments.length : null,
 			remainingPayment: remainingPayment,
+			possession_charges: possessionCharges,
 		}
-		axios.patch(`/api/leads/project?id=${lead.id}`, body)
+		var leadId = []
+		leadId.push(lead.id)
+		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
 			.then((res) => {
 				if (remainingPayment <= 0 && remainingPayment != 'no' && readOnly.totalPrice != '') {
 					this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 				} else {
 					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 				}
-			}).catch(() => {
-				console.log('Some thing went wrong!!')
+			}).catch((error) => {
+				console.log('Some thing went wrong!!!', error.message)
 			})
 	}
 
@@ -743,7 +750,7 @@ class Payments extends Component {
 									totalInstalments: newtotalInstallments
 								})
 							}
-							if(name === 'payments'){
+							if (name === 'payments') {
 								var newtotalPayments = resp.data.payment
 								this.setState({
 									paymentFiledsArray: newtotalPayments
@@ -782,8 +789,10 @@ class Payments extends Component {
 		let body = {
 			reasons: selectedReason
 		}
+		var leadId = []
+		leadId.push(lead.id)
 		if (selectedReason && selectedReason !== '') {
-			axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
+			axios.patch(`/api/leads/project`, body, { params: { id: leadId } }).then(res => {
 				this.setState({ isVisible: false }, () => {
 					helper.successToast(`Lead Closed`)
 					navigation.navigate('Leads');
@@ -839,7 +848,6 @@ class Payments extends Component {
 
 	deletePayments = (checkPaymentTypeValue) => {
 		const { lead } = this.props
-
 		if (checkPaymentTypeValue === 'installments') {
 			this.handleForm('installments', 'paymentType'), () => {
 				this.setState({
@@ -858,6 +866,7 @@ class Payments extends Component {
 					modalVisible: false,
 					totalInstalments: [],
 					instalments: '',
+					possessionCharges: '',
 				}, () => {
 					this.submitValues('payments')
 					this.discountPayment()

@@ -39,8 +39,8 @@ class AddInventory extends Component {
                 type: '',
                 subtype: '',
                 purpose: '',
-                bed: 0,
-                bath: 0,
+                bed: null,
+                bath: null,
                 size: 0,
                 city_id: '',
                 area_id: '',
@@ -61,8 +61,8 @@ class AddInventory extends Component {
                 address: '',
                 video: '',
                 year_built: null,
-                floors: 0,
-                parking_space: 0,
+                floors: null,
+                parking_space: null,
                 downpayment: 0,
             },
             showAdditional: false,
@@ -123,7 +123,7 @@ class AddInventory extends Component {
     setEditValues = () => {
         const { route } = this.props
         const { property } = route.params
-        let parsedFeatures = JSON.parse(property.features);
+        let parsedFeatures = property.features ? JSON.parse(property.features) : {};
         let amentities = _.isEmpty(parsedFeatures) ? [] : (_.keys(parsedFeatures));
         if (amentities.length) {
             amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
@@ -135,8 +135,8 @@ class AddInventory extends Component {
                 type: property.type,
                 subtype: property.subtype,
                 purpose: property.purpose,
-                bed: property.bed ? property.bed : 0,
-                bath: property.bath ? property.bath : 0,
+                bed: property.bed === null || property.bed === undefined ? null : property.bed,
+                bath: property.bath === null || property.bath === undefined ? null : property.bath,
                 size_unit: property.size_unit,
                 size: property.size ? property.size : 0,
                 city_id: property.city_id,
@@ -153,9 +153,9 @@ class AddInventory extends Component {
                 lat: property.lat,
                 lng: property.lng,
                 description: property.description,
-                year_built: parsedFeatures && parsedFeatures.year_built ? parsedFeatures.year_built : null,
-                floors: parsedFeatures && parsedFeatures.floors ? parsedFeatures.floors : 0,
-                parking_space: parsedFeatures && parsedFeatures.parking_space ? parsedFeatures.parking_space : 0,
+                year_built: parsedFeatures.year_built ? parsedFeatures.year_built : null,
+                floors: (parsedFeatures.floors === null || parsedFeatures.floors === undefined) ? null : parsedFeatures.floors,
+                parking_space: (parsedFeatures.parking_space === null || parsedFeatures.parking_space === undefined) ? null : parsedFeatures.parking_space,
                 downpayment: parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : 0,
                 general_size: null,
                 lisitng_type: 'mm',
@@ -252,7 +252,7 @@ class AddInventory extends Component {
         const { selectedFeatures } = this.state;
         if (formData.year_built) { features["year_built"] = formData.year_built };
         if (formData.floors) { features["floors"] = formData.floors };
-        if (formData.parking_space) { features["parking_space"] = formData.parking_space };
+        if (formData.parking_space !== null || formData.parking_space !== undefined) { features["parking_space"] = formData.parking_space };
         if (formData.downpayment) { features["downpayment"] = this.convertToIntegerForZero(formData.downpayment) };
         selectedFeatures && selectedFeatures.length ? selectedFeatures.map((amenity, index) => {
             features[amenity.replace(/\s+/g, '_').toLowerCase()] = true;
@@ -264,7 +264,7 @@ class AddInventory extends Component {
         formData.lng = this.convertLongitude(formData.lng);
         formData.size = this.convertToIntegerForZero(formData.size)
         formData.price = this.convertToIntegerForZero(formData.price)
-        formData.features = features || {};
+        formData.features = _.isEmpty(features) ? {} : features;
         formData.imageIds = _.pluck(images, 'id');
         // deleting these keys below from formdata as they are sent in features instead of seperately
         delete formData.parking_space;
@@ -480,7 +480,7 @@ class AddInventory extends Component {
         else if (typeof (val) === 'string' && val != '') {
             return parseInt(val);
         }
-        else if (val === ''){
+        else if (val === '') {
             return 0;
         }
         else {

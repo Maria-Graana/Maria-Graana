@@ -71,6 +71,9 @@ class AddClient extends Component {
         let cca2Contact = null
         let cca2Contact1 = null
         let cca2Contact2 = null
+        let contactBool = false
+        let contact1Bool = false
+        let contact2Bool = false
         if (client.customerContacts.length) {
             for (let i = 0; i < client.customerContacts.length; i++) {
                 if (i === 0) phone = client.customerContacts[i].phone.substring(1)
@@ -84,17 +87,60 @@ class AddClient extends Component {
                 return { callingCode: country.callingCode, cca2: country.cca2 }
             }
         )
+        let newResult = []
         if (result.length) {
             result.map(item => {
                 let callingCode = item.callingCode
                 if (callingCode.length) {
                     callingCode.map(code => {
-                        if (phone && phone.startsWith(code)) { countryCode = '+' + code; cca2Contact = item.cca2 }
-                        if (contact1 && contact1.startsWith(code)) { countryCode1 = '+' + code; cca2Contact1 = item.cca2 }
-                        if (contact2 && contact2.startsWith(code)) { countryCode2 = '+' + code; cca2Contact2 = item.cca2 }
+                        let obj = {
+                            cca2: item.cca2,
+                            callingCode: Number(code)
+                        }
+                        newResult.push(obj)
                     })
                 }
             })
+        }
+        newResult = _.sortBy(newResult, 'callingCode').reverse()
+        for (let i = 0; i < newResult.length; i++) {
+            if (phone && phone.startsWith(newResult[i].callingCode)) {
+                if (!contactBool) {
+                    if (!client.customerContacts[0].dialCode) {
+                        countryCode = '+' + newResult[i].callingCode;
+                        cca2Contact = newResult[i].cca2
+                        contactBool = true
+                    } else {
+                        countryCode = client.customerContacts[0].dialCode
+                        cca2Contact = client.customerContacts[0].countryCode
+                    }
+                }
+            }
+            if (contact1 && contact1.startsWith(newResult[i].callingCode)) {
+                if (!contact1Bool) {
+                    if (!client.customerContacts[1].dialCode) {
+                        countryCode1 = '+' + newResult[i].callingCode;
+                        cca2Contact1 = newResult[i].cca2
+                        contact1Bool = true
+                    } else {
+                        countryCode1 = client.customerContacts[1].dialCode
+                        cca2Contact1 = client.customerContacts[1].countryCode
+                    }
+                }
+            }
+            if (contact2 && contact2.startsWith(newResult[i].callingCode)) {
+                if (!contact2Bool) {
+                    if (!client.customerContacts[2].dialCode) {
+                        countryCode2 = '+' + newResult[i].callingCode;
+                        cca2Contact2 = newResult[i].cca2
+                        contact2Bool = true
+                    } else {
+                        countryCode2 = client.customerContacts[2].dialCode
+                        cca2Contact2 = client.customerContacts[2].countryCode
+                    }
+                }
+            }
+            if (contactBool && contact1Bool && contact2Bool) break;
         }
         this.setState({
             countryCode: cca2Contact ? cca2Contact : 'PK',
@@ -124,12 +170,15 @@ class AddClient extends Component {
             for (let i = 0; i < client.customerContacts.length; i++) {
                 if (i === 0) {
                     formData.contactNumber = client.customerContacts[i].phone.replace(callingCode, '')
+                    formData.contactNumber = client.customerContacts[i].phone.replace('+', '')
                 }
                 if (i === 1) {
                     formData.contact1 = client.customerContacts[i].phone.replace(callingCode1, '')
+                    formData.contact1 = client.customerContacts[i].phone.replace('+', '')
                 }
                 if (i === 2) {
                     formData.contact2 = client.customerContacts[i].phone.replace(callingCode2, '')
+                    formData.contact2 = client.customerContacts[i].phone.replace('+', '')
                 }
             }
         }
@@ -185,14 +234,94 @@ class AddClient extends Component {
         else console.log('Contact is Already Saved!')
     }
 
+    createPayload = () => {
+        const {
+            formData,
+            countryCode,
+            countryCode1,
+            countryCode2,
+            callingCode,
+            callingCode1,
+            callingCode2,
+        } = this.state
+
+        let body = {
+            first_name: helper.capitalize(formData.firstName),
+            last_name: helper.capitalize(formData.lastName),
+            email: formData.email,
+            cnic: formData.cnic,
+            phone: {
+                countryCode: countryCode,
+                phone: formData.contactNumber != '' ? callingCode + '' + formData.contactNumber : '',
+                dialCode: callingCode,
+            },
+            address: formData.address,
+            secondary_address: formData.secondaryAddress,
+            contact1: {
+                countryCode: countryCode1,
+                contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
+                dialCode: callingCode1,
+            },
+            contact2: {
+                countryCode: countryCode2,
+                contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
+                dialCode: callingCode2,
+            }
+        }
+        return body
+    }
+
+    updatePayload = () => {
+        const {
+            formData,
+            countryCode,
+            countryCode1,
+            countryCode2,
+            callingCode,
+            callingCode1,
+            callingCode2,
+        } = this.state
+        let checkForPlus = formData.contactNumber.substring(0, 1)
+        let checkForPlus2 = formData.contact1.substring(0, 1)
+        let checkForPlus3 = formData.contact2.substring(0, 1)
+        let body = {
+            first_name: helper.capitalize(formData.firstName),
+            last_name: helper.capitalize(formData.lastName),
+            email: formData.email,
+            cnic: formData.cnic,
+            phone: {
+                countryCode: countryCode,
+                phone: checkForPlus === '+' ? formData.contactNumber : callingCode + '' + formData.contactNumber,
+                dialCode: callingCode,
+            },
+            address: formData.address,
+            secondary_address: formData.secondaryAddress,
+            contact1: {
+                countryCode: countryCode1,
+                phone: checkForPlus2 == '+' ? formData.contact1 : formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : null,
+                dialCode: callingCode1,
+            },
+            contact2: {
+                countryCode: countryCode2,
+                phone: checkForPlus3 == '+' ? formData.contact2 : formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : null,
+                dialCode: callingCode2,
+            }
+        }
+        body.customersContacts = []
+        body.customersContacts.push(body.phone)
+        if (body.contact1.phone && body.contact1.phone !== '') body.customersContacts.push(body.contact1)
+        if (body.contact2.phone && body.contact2.phone !== '') body.customersContacts.push(body.contact2)
+        delete body.contact1
+        delete body.contact2
+        return body
+    }
+
     formSubmit = () => {
         const {
             formData,
             emailValidate,
             phoneValidate,
             cnicValidate,
-            contact1Validate,
-            contact2Validate,
             callingCode,
             callingCode1,
             callingCode2,
@@ -208,17 +337,7 @@ class AddClient extends Component {
             if (emailValidate && !phoneValidate && !cnicValidate) {
                 if (formData.cnic === '') formData.cnic = null
                 if (!update) {
-                    let body = {
-                        first_name: helper.capitalize(formData.firstName),
-                        last_name: helper.capitalize(formData.lastName),
-                        email: formData.email,
-                        cnic: formData.cnic,
-                        phone: formData.contactNumber != '' ? callingCode + '' + formData.contactNumber : '',
-                        address: formData.address,
-                        secondary_address: formData.secondaryAddress,
-                        contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
-                        contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
-                    }
+                    let body = this.createPayload()
                     this.setState({ loading: true })
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
@@ -255,24 +374,7 @@ class AddClient extends Component {
                             this.setState({ loading: false })
                         })
                 } else {
-                    var checkForPlus = formData.contactNumber.substring(0, 1)
-                    var checkForPlus2 = formData.contact1.substring(0, 1)
-                    var checkForPlus3 = formData.contact2.substring(0, 1)
-                    let body = {
-                        first_name: helper.capitalize(formData.firstName),
-                        last_name: helper.capitalize(formData.lastName),
-                        email: formData.email,
-                        cnic: formData.cnic,
-                        phone: checkForPlus === '+' ? formData.contactNumber : callingCode + '' + formData.contactNumber,
-                        address: formData.address,
-                        secondary_address: formData.secondaryAddress,
-                        contact1: checkForPlus2 == '+' ? formData.contact1 : formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
-                        contact2: checkForPlus3 == '+' ? formData.contact2 : formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
-                    }
-                    body.customersContacts = []
-                    body.customersContacts.push(body.phone)
-                    body.customersContacts.push(body.contact1)
-                    body.customersContacts.push(body.contact2)
+                    let body = this.updatePayload()
                     this.setState({ loading: true })
                     axios.patch(`/api/customer/update?id=${client.id}`, body)
                         .then((res) => {

@@ -47,24 +47,24 @@ class ClientDetail extends React.Component {
             }
         }, () => {
             const url = `api/customer/${client.id}`
-        axios.get(url)
-            .then((res) => {
-                let oneClient = res.data
-                const { clientPhones } = this.state
-                if (oneClient.customerContacts.length) {
-                    oneClient.customerContacts.map((item) => {
-                        if (item.phone !== oneClient.phone && !clientPhones.contact2) clientPhones.contact2 = item.phone
-                        if (item.phone !== oneClient.phone && clientPhones.contact2 && clientPhones.contact2 !== item.phone) clientPhones.contact3 = item.phone
-                    })
-                }
-                this.setState({ client: res.data, loading: false, clientPhones })
-            })
-            .catch((error) => {
-                console.log(`URL: ${url}`)
-                console.log(error)
-            })
+            axios.get(url)
+                .then((res) => {
+                    let oneClient = res.data
+                    const { clientPhones } = this.state
+                    if (oneClient.customerContacts.length) {
+                        oneClient.customerContacts.map((item) => {
+                            if (item.phone !== oneClient.phone && !clientPhones.contact2) clientPhones.contact2 = item.phone
+                            if (item.phone !== oneClient.phone && clientPhones.contact2 && clientPhones.contact2 !== item.phone) clientPhones.contact3 = item.phone
+                        })
+                    }
+                    this.setState({ client: res.data, loading: false, clientPhones })
+                })
+                .catch((error) => {
+                    console.log(`URL: ${url}`)
+                    console.log(error)
+                })
         })
-        
+
     }
 
     checkClient = () => {

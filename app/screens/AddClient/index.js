@@ -143,44 +143,48 @@ class AddClient extends Component {
             if (contactBool && contact1Bool && contact2Bool) break;
         }
         this.setState({
-            countryCode: cca2Contact ? cca2Contact : 'PK',
-            countryCode1: cca2Contact1 ? cca2Contact1 : 'PK',
-            countryCode2: cca2Contact2 ? cca2Contact2 : 'PK',
+            countryCode: cca2Contact ? cca2Contact.toUpperCase() : 'PK',
+            countryCode1: cca2Contact1 ? cca2Contact1.toUpperCase() : 'PK',
+            countryCode2: cca2Contact2 ? cca2Contact2.toUpperCase() : 'PK',
             callingCode: countryCode ? countryCode : '+92',
             callingCode1: countryCode1 ? countryCode1 : '+92',
             callingCode2: countryCode2 ? countryCode2 : '+92'
         }, () => this.updateFields())
     }
-
+    setDialCode = (callingCode) => {
+        return callingCode.startsWith('+') ? callingCode : "+" + callingCode
+    }
+    setPhoneNumber = (dialCode, phone) => {
+        let number = ''
+        let withoutPlus = dialCode.replace("+", "")
+        if (phone.startsWith("+")) {
+            if (phone.startsWith(dialCode)) number = phone.replace(dialCode, "")
+            else number = phone
+        } else {
+            if (phone.startsWith(withoutPlus)) number = number.replace(withoutPlus, "")
+            else number = phone
+        }
+        return number
+    }
     updateFields = () => {
         const { route } = this.props
         const { client } = route.params
-        const { callingCode, callingCode1, callingCode2 } = this.state
+        let { callingCode, callingCode1, callingCode2 } = this.state
+        let newCallingCode = this.setDialCode(callingCode)
+        let newCallingCode1 = this.setDialCode(callingCode1)
+        let newCallingCode2 = this.setDialCode(callingCode2)
+        let number = client.customerContacts.length ? this.setPhoneNumber(newCallingCode, client.customerContacts[0].phone) : ''
+        let number1 = client.customerContacts.length > 1 ? this.setPhoneNumber(newCallingCode1, client.customerContacts[1].phone) : ''
+        let number2 = client.customerContacts.length > 2 ? this.setPhoneNumber(newCallingCode2, client.customerContacts[2].phone) : ''
         let formData = {
             firstName: client.firstName,
             lastName: client.lastName,
             email: client.email,
             cnic: client.cnic,
-            contactNumber: client.phone,
+            contactNumber: number,
             address: client.address,
-            contact1: client.contact1 ? client.contact1 : '',
-            contact2: client.contact2 ? client.contact2 : '',
-        }
-        if (client.customerContacts.length) {
-            for (let i = 0; i < client.customerContacts.length; i++) {
-                if (i === 0) {
-                    formData.contactNumber = client.customerContacts[i].phone.replace(callingCode, '')
-                    formData.contactNumber = client.customerContacts[i].phone.replace('+', '')
-                }
-                if (i === 1) {
-                    formData.contact1 = client.customerContacts[i].phone.replace(callingCode1, '')
-                    formData.contact1 = client.customerContacts[i].phone.replace('+', '')
-                }
-                if (i === 2) {
-                    formData.contact2 = client.customerContacts[i].phone.replace(callingCode2, '')
-                    formData.contact2 = client.customerContacts[i].phone.replace('+', '')
-                }
-            }
+            contact1: number1,
+            contact2: number2,
         }
         this.setState({ formData })
     }
@@ -235,7 +239,7 @@ class AddClient extends Component {
     }
 
     createPayload = () => {
-        const {
+        let {
             formData,
             countryCode,
             countryCode1,
@@ -244,7 +248,9 @@ class AddClient extends Component {
             callingCode1,
             callingCode2,
         } = this.state
-
+        callingCode = callingCode.startsWith('+') ? callingCode : "+" + callingCode
+        callingCode1 = callingCode1.startsWith('+') ? callingCode1 : "+" + callingCode1
+        callingCode2 = callingCode2.startsWith('+') ? callingCode2 : "+" + callingCode2
         let body = {
             first_name: helper.capitalize(formData.firstName),
             last_name: helper.capitalize(formData.lastName),
@@ -259,31 +265,36 @@ class AddClient extends Component {
             secondary_address: formData.secondaryAddress,
             contact1: {
                 countryCode: countryCode1,
-                contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : '',
+                contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : null,
                 dialCode: callingCode1,
             },
             contact2: {
                 countryCode: countryCode2,
-                contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : '',
+                contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : null,
                 dialCode: callingCode2,
             }
         }
+        if (!body.contact1.contact1) delete body.contact1
+        if (!body.contact2.contact2) delete body.contact2
         return body
     }
 
     updatePayload = () => {
-        const {
+        let {
             formData,
             countryCode,
             countryCode1,
             countryCode2,
             callingCode,
             callingCode1,
-            callingCode2,
+            callingCode2
         } = this.state
         let checkForPlus = formData.contactNumber.substring(0, 1)
         let checkForPlus2 = formData.contact1.substring(0, 1)
         let checkForPlus3 = formData.contact2.substring(0, 1)
+        let newCallingCode = this.setDialCode(callingCode)
+        let newCallingCode1 = this.setDialCode(callingCode1)
+        let newCallingCode2 = this.setDialCode(callingCode2)
         let body = {
             first_name: helper.capitalize(formData.firstName),
             last_name: helper.capitalize(formData.lastName),
@@ -291,20 +302,20 @@ class AddClient extends Component {
             cnic: formData.cnic,
             phone: {
                 countryCode: countryCode,
-                phone: checkForPlus === '+' ? formData.contactNumber : callingCode + '' + formData.contactNumber,
-                dialCode: callingCode,
+                phone: checkForPlus === '+' ? formData.contactNumber : newCallingCode + '' + formData.contactNumber,
+                dialCode: newCallingCode,
             },
             address: formData.address,
             secondary_address: formData.secondaryAddress,
             contact1: {
                 countryCode: countryCode1,
-                phone: checkForPlus2 == '+' ? formData.contact1 : formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : null,
-                dialCode: callingCode1,
+                phone: checkForPlus2 == '+' ? formData.contact1 : formData.contact1 != '' ? newCallingCode1 + '' + formData.contact1 : null,
+                dialCode: newCallingCode1,
             },
             contact2: {
                 countryCode: countryCode2,
-                phone: checkForPlus3 == '+' ? formData.contact2 : formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : null,
-                dialCode: callingCode2,
+                phone: checkForPlus3 == '+' ? formData.contact2 : formData.contact2 != '' ? newCallingCode2 + '' + formData.contact2 : null,
+                dialCode: newCallingCode2,
             }
         }
         body.customersContacts = []

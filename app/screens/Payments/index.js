@@ -87,7 +87,7 @@ class Payments extends Component {
 			discountedPrice: lead.unit != null && lead.unit.discount != null && lead.unit.discounted_price,
 			getAllProject: [],
 			checkMonthlyOption: false,
-			possessionCharges: 'quarterly',
+			possessionCharges: null,
 			checkForUnitAvail: true,
 		}
 
@@ -132,7 +132,7 @@ class Payments extends Component {
 				installmentDue: lead && lead.installmentDue === null || lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
 			},
 			instalments: data.project != null && data.project.installment_plan != null ? this.noOfInstallments(data.project.installment_plan) : '',
-			possessionCharges: data && data.possession_charges != null ? data.possession_charges : '',
+			possessionCharges: data && data.possession_charges != null ? data.possession_charges : null,
 			checkForUnitAvail: data.unit && data.unit != null && data.unit.bookingStatus != 'Available' ? false : true,
 		}, () => {
 			let name = ''
@@ -486,7 +486,7 @@ class Payments extends Component {
 				this.setState({
 					modalVisible: !modalVisible,
 					checkPaymentTypeValue: value,
-					possessionCharges: '',
+					possessionCharges: null,
 				},() => {
 					this.discountPayment()
 				})
@@ -498,6 +498,8 @@ class Payments extends Component {
 		if (name === 'possessionCharges') {
 			this.setState({
 				possessionCharges: value
+			},()=>{
+				this.discountPayment()
 			})
 		}
 		if (name === 'discountPercentage' && unitDetailsData != '') {
@@ -535,9 +537,6 @@ class Payments extends Component {
 					this.instalmentsField(totalInstallments)
 				}
 				this.submitValues(name)
-			}
-			if (name === 'possessionCharges') {
-				this.discountPayment()
 			}
 			if (name === 'discountPercentage') {
 				this.discountPayment(newFormData)
@@ -771,7 +770,7 @@ class Payments extends Component {
 					dateStatusForPayments: newdateStatusForPayments,
 				})
 			}).catch((error) => {
-				console.log('Some thing went wrong!1!!', error)
+				console.log('Some thing went wrong!!!!', error)
 			})
 	}
 
@@ -800,6 +799,9 @@ class Payments extends Component {
 			}).catch(error => {
 				console.log(error);
 			})
+		}
+		else{
+			alert('Please select a reason for lead closure!')
 		}
 	}
 
@@ -866,7 +868,7 @@ class Payments extends Component {
 					modalVisible: false,
 					totalInstalments: [],
 					instalments: '',
-					possessionCharges: '',
+					possessionCharges: null,
 				}, () => {
 					this.submitValues('payments')
 					this.discountPayment()
@@ -1117,7 +1119,9 @@ class Payments extends Component {
 					if (name === 'possessionCharges') {
 						if (data.unit != null) {
 							this.setState({
-								possessionCharges: data.unit.possession_charges,
+								possessionCharges: data.possession_charges,
+							},()=>{
+								//console.log(this.state.possessionCharges)
 							})
 						}
 					}

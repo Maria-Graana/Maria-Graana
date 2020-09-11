@@ -88,8 +88,6 @@ export default class App extends React.Component {
 	_handleNotification = response => {
 		const { navigation } = this.props
 		let notification = response.notification
-		Sentry.captureException(`Notification Handler: ${JSON.stringify(notification)}`)
-
 		if (response.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER && notification.request) {
 			let content = notification.request && notification.request.content
 			setTimeout(() => { this.navigateRoutes(content) }, 300)
@@ -99,8 +97,6 @@ export default class App extends React.Component {
 	navigateRoutes = (content) => {
 		if (content) {
 			let data = content.data
-			Sentry.captureException(`Notification data: ${JSON.stringify(data)}`)
-			Sentry.captureException(`Notification RootNavigation: ${JSON.stringify(RootNavigation)}`)
 			if (data.type === 'local') RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
 			if (data.type === 'investLead') RootNavigation.navigateTo('Leads', { screen: 'Invest' })
 			if (data.type === 'buyLead') RootNavigation.navigateTo('Leads', { screen: 'Buy' })

@@ -300,25 +300,28 @@ class AddClient extends Component {
         let newCallingCode = this.setDialCode(callingCode)
         let newCallingCode1 = this.setDialCode(callingCode1)
         let newCallingCode2 = this.setDialCode(callingCode2)
+        newCallingCode = this.checkUndefined(callingCode)
+        newCallingCode1 = this.checkUndefined(newCallingCode1)
+        newCallingCode2 = this.checkUndefined(newCallingCode2)
         let body = {
             first_name: helper.capitalize(formData.firstName),
             last_name: helper.capitalize(formData.lastName),
             email: formData.email,
             cnic: formData.cnic,
             phone: {
-                countryCode: countryCode,
+                countryCode: newCallingCode === '+92' ? 'PK' : countryCode,
                 phone: checkForPlus === '+' ? formData.contactNumber : newCallingCode + '' + formData.contactNumber,
                 dialCode: newCallingCode,
             },
             address: formData.address,
             secondary_address: formData.secondaryAddress,
             contact1: {
-                countryCode: countryCode1,
+                countryCode: newCallingCode1 === '+92' ? 'PK' : countryCode1,
                 phone: checkForPlus2 == '+' ? formData.contact1 : formData.contact1 != '' ? newCallingCode1 + '' + formData.contact1 : null,
                 dialCode: newCallingCode1,
             },
             contact2: {
-                countryCode: countryCode2,
+                countryCode: newCallingCode2 === '+92' ? 'PK' : countryCode2,
                 phone: checkForPlus3 == '+' ? formData.contact2 : formData.contact2 != '' ? newCallingCode2 + '' + formData.contact2 : null,
                 dialCode: newCallingCode2,
             }
@@ -338,9 +341,6 @@ class AddClient extends Component {
             emailValidate,
             phoneValidate,
             cnicValidate,
-            callingCode,
-            callingCode1,
-            callingCode2,
         } = this.state
         const { route, navigation, contacts } = this.props
         const { update, client, isFromDropDown, screenName } = route.params

@@ -43,6 +43,20 @@ class LeadTile extends React.Component {
 			})
 	}
 
+	leadSize = () => {
+		const { data } = this.props
+		let minSize = !data.projectId && data.size && data.size !== 0 ? data.size : ''
+		let maxSize = !data.projectId && data.max_size && data.max_size !== 0 ? data.max_size : ''
+		let size = ''
+		if (minSize == maxSize) {
+			size = minSize + ' '
+		} else {
+			maxSize = maxSize !== '' ? ' - ' + maxSize : maxSize
+			size = minSize + maxSize + ' '
+		}
+		return size
+	}
+
 	render() {
 		const { data, navigateTo, callNumber, user, purposeTab, contacts } = this.props
 		var changeColor = data.assigned_to_armsuser_id == user.id ? styles.blueColor : AppStyles.darkColor
@@ -55,7 +69,7 @@ class LeadTile extends React.Component {
 			` (+${Number(data.armsLeadAreas.length) - 1} ${data.armsLeadAreas.length > 2 ? 'areas' : 'area'})`
 			:
 			''
-
+		let leadSize = this.leadSize()
 		return (
 			<TouchableOpacity onPress={() => { navigateTo(data) }}>
 				<View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
@@ -111,8 +125,7 @@ class LeadTile extends React.Component {
 									{
 										data.size != null && !data.projectId &&
 										<Text style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]} numberOfLines={1}>
-											{data.size !== 0 ? data.size + ' ' : null}
-											{data.max_size && data.max_size !== 0 ? '- ' + data.max_size + ' ' : null}
+											{leadSize}
 											{data.size_unit && data.size_unit !== null && data.size !== 0 ? helper.capitalize(data.size_unit) + ' ' : null}
 											{helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
 											{data.purpose === 'sale' ? 'Buy' : 'Rent'}

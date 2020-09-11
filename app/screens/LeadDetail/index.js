@@ -206,6 +206,20 @@ class LeadDetail extends React.Component {
         }
     }
 
+    leadSize = () => {
+        const { lead } = this.state
+        let minSize = !lead.projectId && lead.size && lead.size !== 0 ? lead.size : ''
+        let maxSize = !lead.projectId && lead.max_size && lead.max_size !== 0 ? lead.max_size : ''
+        let size = ''
+        if (minSize == maxSize) {
+            size = minSize + ' '
+        } else {
+            maxSize = maxSize !== '' ? ' - ' + maxSize : maxSize
+            size = minSize + maxSize + ' '
+        }
+        return size
+    }
+
     render() {
         const { type, lead, customerName, showAssignToButton, loading, editDes, description } = this.state
         const { user, route } = this.props;
@@ -213,7 +227,7 @@ class LeadDetail extends React.Component {
         let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
         const leadSource = this.checkLeadSource();
         const regex = /(<([^>]+)>)/ig
-
+        let leadSize = this.leadSize()
         return (
             !loading ?
                 <ScrollView showsVerticalScrollIndicator={false} style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
@@ -282,9 +296,8 @@ class LeadDetail extends React.Component {
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Requirement </Text>
                         <Text style={styles.labelText}>
-                            {!lead.projectId && lead.size && lead.size !== 0 ? lead.size + ' ' : ''}
-                            {!lead.projectId && lead.max_size && lead.max_size !== 0 ? '- ' + lead.max_size + ' ' : ''}
-                            {!lead.projectId && lead.size ? helper.capitalize(lead.size_unit)  + ' ' : ''}
+                            {leadSize}
+                            {!lead.projectId && lead.size ? helper.capitalize(lead.size_unit) + ' ' : ''}
                             {!lead.projectId && helper.capitalize(lead.subtype)}
                             {lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}
                         </Text>

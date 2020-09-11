@@ -513,9 +513,12 @@ export default StaticData = {
         { value: 'myTeam', name: 'My Team' },
         { value: 'others', name: 'Others' },
     ],
-    planOptions: [
+    rentalPlanOptions: [
         { name: 'Investment Plan', value: 'Sold on Investment Plan' },
         { name: 'Rental Plan', value: 'Sold on Rental Plan' },
+    ],
+    planOptions: [
+        { name: 'Investment Plan', value: 'Sold on Investment Plan' },
     ],
     installmentDue: [
         { name: 'Quarterly', value: 'quarterly' },

@@ -38,7 +38,6 @@ class AndroidNotifications extends React.Component {
             }
             // let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
             let expoPushToken = (await Notifications.getExpoPushTokenAsync()).data;
-            Sentry.captureException(`Expo Push Token: ${JSON.stringify(expoPushToken)}`)
             if (expoPushToken) {
                 let body = {
                     token: expoPushToken,
@@ -49,7 +48,6 @@ class AndroidNotifications extends React.Component {
                         this.setState({
                             expoPushToken: expoPushToken
                         })
-                        Sentry.captureException(`Expo Token Saved!: ${JSON.stringify(body)}`)
                     })
                     .catch((error) => {
                         console.log(error)

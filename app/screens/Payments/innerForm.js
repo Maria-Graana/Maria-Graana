@@ -59,14 +59,15 @@ class InnerForm extends Component {
       possessionCharges,
       possessionFormat,
       checkForUnitAvail,
+      lead
     } = this.props
-    let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false ? false : true
+    let checkForEdit = closedLeadEdit == false || checkForUnassignedLeadEdit == false || formData.unitId === '' ? false : true
     let remainingPay = remainingPayment && remainingPayment.toString()
     let no_installments = instalments.toString()
     var unitDetail = unitDetails && unitDetails != null && unitDetails != '' && unitDetails
     var installmentsPlans = formData.installmentDue === 'quarterly' ? StaticData.getInstallments : StaticData.getInstallmentsMonthly
     var installmentsDueOption = checkMonthlyOption === true ? StaticData.installmentDue : StaticData.onlyQuarterly
-    var checkForUnitAvailable = checkForEdit === false || checkForUnitAvail === false ? false : true
+    var checkForUnitAvailable = formData.unitId != '' && checkForEdit === false || checkForUnitAvail === false ? false : true
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -207,7 +208,7 @@ class InnerForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap]}>
                       <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={checkForEdit} name={'no_installments'} placeholder='Installment Plan' selectedItem={no_installments} />
+                        <PickerComponent onValueChange={handleForm} data={installmentsPlans} enabled={false} name={'no_installments'} placeholder='Installment Plan' selectedItem={no_installments} />
                       </View>
                     </View>
                     {/* **************************************** */}
@@ -282,7 +283,7 @@ class InnerForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap]}>
                       <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={StaticData.planOptions} name={'unitStatus'} enabled={checkForEdit} placeholder='Plan' selectedItem={formData.unitStatus} />
+                        <PickerComponent onValueChange={handleForm} data={lead.project && lead.project.rent_available === 'no' ? StaticData.planOptions : StaticData.rentalPlanOptions} name={'unitStatus'} enabled={checkForEdit} placeholder='Plan' selectedItem={formData.unitStatus} />
                       </View>
                     </View>
                     {
@@ -357,6 +358,7 @@ class InnerForm extends Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    lead: store.lead.lead
   }
 }
 

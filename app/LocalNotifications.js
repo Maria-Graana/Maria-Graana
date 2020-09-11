@@ -16,15 +16,14 @@ const submitNotification = (body, date) => {
         body: body.body,
         data: {
             type: 'local',
-            date: date
+            date: date,
+            id: body.id
         },
         sound: 'default'
     }
     console.log(' <<<<<<<<< Local Notification >>>>>>>>>>>')
     console.log(localNotification)
     console.log('trigger: ', trigger)
-    Sentry.captureException(`Local localNotification: ${JSON.stringify(localNotification)}`)
-    Sentry.captureException(`trigger: ${JSON.stringify(trigger)}`)
     Notifications.scheduleNotificationAsync({
         content: localNotification,
         trigger

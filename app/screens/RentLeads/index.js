@@ -188,6 +188,23 @@ class RentLeads extends React.Component {
 		})
 	}
 
+	updateStatus = (data) => {
+		var leadId = []
+		leadId.push(data.id)
+		if (data.status === 'open') {
+			axios.patch(`/api/leads`,
+				{
+					status: 'called'
+				}, { params: { id: leadId } })
+				.then((res) => {
+					this.fetchLeads()
+				})
+				.catch((error) => {
+					console.log(`ERROR: /api/leads/?id=${data.id}`, error)
+				})
+		}
+	}
+
 	render() {
 		const {
 			leadsData,
@@ -258,6 +275,7 @@ class RentLeads extends React.Component {
 							contentContainerStyle={styles.paddingHorizontal}
 							renderItem={({ item }) => (
 								<LeadTile
+									updateStatus={this.updateStatus}
 									dispatch={this.props.dispatch}
 									purposeTab={'rent'}
 									user={user}

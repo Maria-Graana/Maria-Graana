@@ -3,8 +3,8 @@ import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 export default styles = StyleSheet.create({
     wrapper: {
-        padding: 15, 
-        alignItems: 'center', 
+        padding: 15,
+        alignItems: 'center',
         borderRadius: 5
     },
     scrollViewWrapper: {
@@ -15,7 +15,7 @@ export default styles = StyleSheet.create({
         paddingLeft: 30,
         paddingRight: 30,
         paddingTop: 20,
-        flex:1
+        flex: 1
     },
     loginHeader: {
         fontSize: 28,
@@ -26,9 +26,9 @@ export default styles = StyleSheet.create({
     wrapper: {
         display: "flex"
     },
-    label: { 
-        fontWeight: "700", 
-        marginBottom: 10 
+    label: {
+        fontWeight: "700",
+        marginBottom: 10
     },
     inputFiled: {
         borderBottomWidth: 1,
@@ -50,7 +50,7 @@ export default styles = StyleSheet.create({
     },
     checkLogin: {
         textAlign: "center",
-        color: "black",
+        color: "#1d1d26",
         fontSize: 17,
         opacity: 1
     },
@@ -71,29 +71,41 @@ export default styles = StyleSheet.create({
         justifyContent: 'space-evenly'
     },
     requiredText: {
-        flexDirection: "row", 
-        flexGrow: 2, 
+        flexDirection: "row",
+        flexGrow: 2,
         marginLeft: "15%"
     },
     profileImage: {
-        width: 23, 
-        height: 25, 
+        width: 23,
+        height: 25,
         marginRight: "2%",
     },
     lockImage: {
-        width: 23, 
-        height: 25, 
+        width: 23,
+        height: 25,
         marginRight: "2%",
     },
     infoImage: {
         tintColor: '#ffffff',
-        width: 20, 
+        width: 20,
         height: 20,
-        resizeMode : 'stretch',
-        alignItems: 'center',        
+        resizeMode: 'stretch',
+        alignItems: 'center',
     },
     requiredTextColor: {
         color: "red",
         // paddingLeft : 
-    }
+    },
+    buttonContainer: {
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "white",
+        marginBottom: 12,
+        paddingVertical: 12,
+        borderColor: "rgba(255, 255, 255, 0.7)",
+        alignSelf: "center",
+        padding: 10,
+        height: 60,
+    },
 });

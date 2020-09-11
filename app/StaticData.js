@@ -178,6 +178,11 @@ export default StaticData = {
         { value: '12', name: '3 Years' },
         { value: '16', name: '4 Years' },
         { value: '20', name: '5 Years' },
+        { value: '24', name: '6 Years' },
+        { value: '28', name: '7 Years' },
+        { value: '32', name: '8 Years' },
+        { value: '36', name: '9 Years' },
+        { value: '40', name: '10 Years' },
     ],
     getInstallmentsMonthly: [
         { value: '12', name: '1 Year' },
@@ -186,6 +191,10 @@ export default StaticData = {
         { value: '48', name: '4 Years' },
         { value: '60', name: '5 Years' },
         { value: '72', name: '6 Years' },
+        { value: '84', name: '7 Years' },
+        { value: '96', name: '8 Years' },
+        { value: '108', name: '9 Years' },
+        { value: '120', name: '10 Years' },
     ],
     propsurePackages: [
         {
@@ -312,6 +321,7 @@ export default StaticData = {
     buyRentFilter: [
         { value: 'all', name: 'All' },
         { value: 'open', name: 'Open' },
+        { value: 'called', name: 'Called' },
         { value: 'viewing', name: 'Viewing' },
         { value: 'offer', name: 'Offer' },
         { value: 'propsure', name: 'Propsure' },
@@ -399,7 +409,7 @@ export default StaticData = {
         }]
     },
     rcmBarCharData: {
-        labels: ['Open', 'Viewing', 'Offer', 'Propsure', 'Token', 'Payment', 'Won', 'Lost'],
+        labels: ['Open', 'Called', 'Viewing', 'Offer', 'Propsure', 'Token', 'Payment', 'Won', 'Lost'],
         datasets: [{
             data: [
                 0,
@@ -418,10 +428,10 @@ export default StaticData = {
         { value: 'full_payment', name: 'Full Payment' },
         { value: 'installments', name: 'Installments' }
     ],
-    Constants:{
+    Constants: {
         lead_closed_won: 'closed_won',
-        lead_closed_lost:'closed_lost',
-         any_value:  10000000000,
+        lead_closed_lost: 'closed_lost',
+        any_value: 10000000000,
     },
     PricesProject: [
         500000,
@@ -447,29 +457,29 @@ export default StaticData = {
         1000000000,
         10000000000,
     ],
-    PricesBuy:[
-          0,
-          500000,
-          1000000,
-          2000000,
-          3000000,
-          4000000,
-          5000000,
-          6000000,
-          7000000,
-          8000000,
-          10000000,
-          15000000,
-          20000000,
-          25000000,
-          30000000,
-          40000000,
-          50000000,
-          100000000,
-          250000000,
-          500000000,
-          1000000000,
-          10000000000,
+    PricesBuy: [
+        0,
+        500000,
+        1000000,
+        2000000,
+        3000000,
+        4000000,
+        5000000,
+        6000000,
+        7000000,
+        8000000,
+        10000000,
+        15000000,
+        20000000,
+        25000000,
+        30000000,
+        40000000,
+        50000000,
+        100000000,
+        250000000,
+        500000000,
+        1000000000,
+        10000000000,
     ],
     PricesRent: [
         0,
@@ -497,22 +507,108 @@ export default StaticData = {
         500000,
         1000000,
         10000000000,
-        
+
     ],
-    searchTeamBy:[
+    searchTeamBy: [
         { value: 'myTeam', name: 'My Team' },
         { value: 'others', name: 'Others' },
     ],
-    planOptions:[
-        {name: 'Investment Plan', value: 'Sold on Investment Plan'},
-        {name: 'Rental Plan', value: 'Sold on Rental Plan'},
+    rentalPlanOptions: [
+        { name: 'Investment Plan', value: 'Sold on Investment Plan' },
+        { name: 'Rental Plan', value: 'Sold on Rental Plan' },
     ],
-    installmentDue:[
-        {name: 'Quarterly', value: 'quarterly'},
-        {name: 'Monthly', value: 'monthly'},
+    planOptions: [
+        { name: 'Investment Plan', value: 'Sold on Investment Plan' },
     ],
-    onlyQuarterly:[
-        {name: 'Quarterly', value: 'quarterly'},
+    installmentDue: [
+        { name: 'Quarterly', value: 'quarterly' },
+        { name: 'Monthly', value: 'monthly' },
+    ],
+    onlyQuarterly: [
+        { name: 'Quarterly', value: 'quarterly' },
+    ],
+    residentialFeatures: [
+        'Central Heating',
+        'TV Lounge',
+        'Dining Room',
+        'Drawing Room',
+        'Kitchen',
+        'Store Room',
+        'Central Cooling',
+        'Lawn',
+        'Swimming Pool',
+        'Fully Furnished',
+        'Semi Furnished',
+        'Wifi',
+        'Balcony',
+        'Laundry Room',
+        'Servant Quarter',
+        'Dirty Kitchen',
+        'Elevators',
+        'Study Room',
+        'Powder Room',
+        'Security Staff',
+        'Accessible For Specially-Abled Persons',
+        'Nearby Landmark'
+    ],
+    residentialUtilities: [
+        'Electricity',
+        'Gas',
+        'Maintenance',
+        'Water'
+    ],
+    plotFeatures: [
+        'Possession',
+        'Corner',
+        'Park Facing',
+        'Boundary Wall',
+        'Extra Land',
+        'Main Boulevard'
+    ],
+    plotUtilities: [
+        'Electricity',
+        'Gas',
+        'Sewerage',
+        'Water'
+    ],
+    facing: [
+        'North',
+        'North West',
+        'North East',
+        'South',
+        'South West',
+        'South East',
+        'East',
+        'West'
+    ],
+    commercialFeatures: [
+        'Central Heating',
+        'Central Cooling',
+        'Elevator/Lift',
+        'Public Parking',
+        'UnderGround Parking',
+        'Internet',
+        'CCTV Camera',
+        'Backup Generator'
+    ],
+    commercialUtilities: [
+        'Electricity',
+        'Gas',
+        'Maintenance',
+        'Water'
+    ],
+    bedBathList: [
+        { value: '1', name: '1' },
+        { value: '2', name: '2' },
+        { value: '3', name: '3' },
+        { value: '4', name: '4' },
+        { value: '5', name: '5' },
+        { value: '6', name: '6' },
+        { value: '7', name: '7' },
+        { value: '8', name: '8' },
+        { value: '9', name: '9' },
+        { value: '10', name: '10' }
     ],
 }
+
 

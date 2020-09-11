@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { StyleProvider } from 'native-base';
 import CMLeadFrom from './CMLeadFrom';
 import AppStyles from '../../AppStyles';
@@ -25,6 +25,7 @@ class AddCMLead extends Component {
             formType: 'sale',
             selectSubType: [],
             getAreas: [],
+            loading: false,
             formData: {
                 customerId: '',
                 cityId: '',
@@ -74,8 +75,8 @@ class AddCMLead extends Component {
         if (name === 'projectId') {
             this.getProductType(value)
         }
-        if(name === 'projectType'){
-            const getProName = getProductType.find((item)=>{return item.value === value})
+        if (name === 'projectType') {
+            const getProName = getProductType.find((item) => { return item.value === value })
             formData['armsProjectTypeId'] = value
             formData['projectType'] = getProName.name
         }
@@ -97,6 +98,7 @@ class AddCMLead extends Component {
                 let project = _.find(getProject, function (item) { return item.value === formData.projectId })
                 formData.projectName = project.name
             }
+            this.setState({ loading: true })
             axios.post(`/api/leads/project`, formData)
                 .then((res) => {
                     helper.successToast('Lead created successfully')
@@ -104,6 +106,8 @@ class AddCMLead extends Component {
                 })
                 .catch((error) => {
                     console.log(error)
+                }).finally(() => {
+                    this.setState({ loading: false })
                 })
         }
     }
@@ -155,30 +159,33 @@ class AddCMLead extends Component {
             checkValidation,
             selectedCity,
             clientName,
-            getProductType
+            getProductType,
+            loading,
         } = this.state
         const { route } = this.props
         return (
             <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
                 <StyleProvider style={getTheme(formTheme)}>
                     <KeyboardAvoidingView enabled>
-                        <ScrollView>
-                            <View>
-                                <CMLeadFrom
-                                    formSubmit={this.formSubmit}
-                                    checkValidation={checkValidation}
-                                    handleForm={this.handleForm}
-                                    clientName={clientName}
-                                    selectedCity={selectedCity}
-                                    handleCityClick={this.handleCityClick}
-                                    handleClientClick={this.handleClientClick}
-                                    formData={formData}
-                                    getProject={getProject}
-                                    onSliderValueChange={(values) => this.onSliderValueChange(values)}
-                                    getProductType={getProductType}
-                                />
-
-                            </View>
+                        <ScrollView keyboardShouldPersistTaps="always">
+                            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                                <View>
+                                    <CMLeadFrom
+                                        formSubmit={this.formSubmit}
+                                        checkValidation={checkValidation}
+                                        handleForm={this.handleForm}
+                                        clientName={clientName}
+                                        selectedCity={selectedCity}
+                                        handleCityClick={this.handleCityClick}
+                                        handleClientClick={this.handleClientClick}
+                                        formData={formData}
+                                        getProject={getProject}
+                                        onSliderValueChange={(values) => this.onSliderValueChange(values)}
+                                        getProductType={getProductType}
+                                        loading={loading}
+                                    />
+                                </View>
+                            </TouchableWithoutFeedback>
                         </ScrollView>
                     </KeyboardAvoidingView>
                 </StyleProvider>

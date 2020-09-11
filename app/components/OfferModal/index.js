@@ -37,7 +37,7 @@ class OfferModal extends React.Component {
 						<View style={styles.mainInputWrap}>
 							<Text style={styles.offerColor}>My Offers</Text>
 							<View style={styles.inputWrap}>
-								<TextInput value={leadData.my} keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'my') }} />
+								<TextInput placeholderTextColor={'#a8a8aa'} value={leadData.my} keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'my') }} />
 								<TouchableOpacity
 									disabled={disableButton}
 									onPress={placeMyOffer}
@@ -51,7 +51,7 @@ class OfferModal extends React.Component {
 						<View style={styles.mainInputWrap}>
 							<Text style={styles.offerColor}>Their Offers</Text>
 							<View style={styles.inputWrap}>
-								<TextInput value={leadData.their} keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'their') }} />
+								<TextInput placeholderTextColor={'#a8a8aa'} value={leadData.their} keyboardType={'numeric'} style={[styles.formControl]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'their') }} />
 								<TouchableOpacity
 									disabled={disableButton}
 									onPress={placeTheirOffer}
@@ -103,7 +103,7 @@ class OfferModal extends React.Component {
 					<View style={[{ marginHorizontal: 10, marginBottom: 20 }]}>
 						<Text style={styles.offerColorLast}>AGREED AMOUNT</Text>
 						<View style={styles.inputWrapLast}>
-							<TextInput keyboardType={'numeric'} style={[styles.formControlLast]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'agreed') }} />
+							<TextInput placeholderTextColor={'#a8a8aa'} keyboardType={'numeric'} style={[styles.formControlLast]} placeholder={'Amount'} onChangeText={(text) => { handleForm(text, 'agreed') }} />
 							<TouchableOpacity
 								disabled={disableButton}
 								onPress={placeAgreedOffer}

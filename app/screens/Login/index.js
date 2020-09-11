@@ -1,4 +1,4 @@
-import { Image, Keyboard, KeyboardAvoidingView, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Keyboard, KeyboardAvoidingView, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input, Item, Label } from 'native-base';
 import React, { Component } from 'react';
@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { setuser } from '../../actions/user';
 import styles from './style';
 import config from '../../config';
+import helper from '../../helper';
 
 class Login extends Component {
 
@@ -34,31 +35,37 @@ class Login extends Component {
 
     submitForm = () => {
         const { formData } = this.state
-        if (!formData.email || !formData.password) {
-            this.setState({
-                checkValidation: true
-            })
-        } else {
-            let creds = {
-                email: formData.email.toLocaleLowerCase(),
-                password: formData.password,
-            }
-            this.props.dispatch(setuser(creds))
-            .then((response) => {
-                if(!response.data) {
-                    this.setState({showError: true})
+        const { isInternetConnected } = this.props;
+        if (!isInternetConnected) {
+            this.showToast();
+        }
+        else {
+            if (!formData.email || !formData.password) {
+                this.setState({
+                    checkValidation: true
+                })
+            } else {
+                let creds = {
+                    email: formData.email.toLocaleLowerCase(),
+                    password: formData.password,
                 }
-            })
-            .catch((error) => {
-                // console.log('caughtError', error)
-            })
+                this.props.dispatch(setuser(creds))
+                    .then((response) => {
+                        if (!response.data) {
+                            this.setState({ showError: true })
+                        }
+                    })
+                    .catch((error) => {
+                        // console.log('caughtError', error)
+                    })
+            }
         }
     }
 
     handleForm = (value, name) => {
         const { formData, showError } = this.state
-        if(showError) {
-            this.setState({showError: false})
+        if (showError) {
+            this.setState({ showError: false })
         }
         formData[name] = value
         this.setState({ formData, checkLogin: false })
@@ -68,8 +75,10 @@ class Login extends Component {
         this.setState({ checkLogin: true, showError: false })
     }
 
+    showToast = () => { helper.internetToast('No Internet Connection!') }
+
     render() {
-        const { checkValidation, formData, checkLogin,showError } = this.state
+        const { checkValidation, formData, checkLogin, showError, isInternetConnected } = this.state
         let label = config.channel === 'development' ? 'Dev ' : ''
         return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -112,10 +121,11 @@ class Login extends Component {
                             {
                                 showError && <ErrorMessage errorMessage={'Invalid Username or Password'} />
                             }
-                            <View style={{ marginTop: 25 ,marginBottom:25}}>
+                            <View style={{ marginTop: 25, marginBottom: 25 }}>
                                 <TouchableButton
-                                    style={{}}
+                                    containerStyle={styles.buttonContainer}
                                     label='Sign In'
+                                    fontFamily={AppStyles.fonts.defaultFont}
                                     onPress={this.submitForm}
                                     loading={this.props.loading}
                                     color='white'
@@ -141,13 +151,6 @@ class Login extends Component {
         else return null;
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        // console.log('prevProps <<<<<>>>>>>>>>>>> ', prevProps)
-        // console.log('prevState <<<<<>>>>>>>>>>>> ', prevState)
-        //    if(prevState.id!==this.state.id){
-        //     this.props.navigation.navigate('drawer')
-        //    }
-    }
 }
 
 mapStateToProps = (store) => {
@@ -155,7 +158,8 @@ mapStateToProps = (store) => {
         loading: store.user.loading,
         store: store,
         storeData: store,
-        error: store.user.error
+        error: store.user.error,
+        isInternetConnected: store.user.isInternetConnected,
     }
 }
 

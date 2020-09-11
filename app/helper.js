@@ -1,5 +1,5 @@
 import { Linking } from 'react-native';
-import { Toast } from 'native-base';
+import { Toast, Content } from 'native-base';
 import moment from 'moment-timezone';
 import StaticData from './StaticData';
 import { formatPrice } from './PriceFormate';
@@ -14,6 +14,8 @@ import ClientsImg from '../assets/img/clients-icon-l.png'
 import * as Contacts from 'expo-contacts';
 import * as Sentry from 'sentry-expo';
 import _ from 'underscore';
+import * as Notifications from 'expo-notifications';
+import TimerNotification from './LocalNotifications';
 
 const helper = {
 	successToast(message) {
@@ -146,10 +148,10 @@ const helper = {
 				switch (val.response) {
 					case 'visited':
 						return 'Visited'
-					case 'expected_conversion':
-						return 'Meeting Expected Conversion'
+					case 'deal_expected':
+						return 'Deal Expected'
 					case 'deal_signed':
-						return 'Meeting Deal Signed'
+						return 'Deal Signed'
 					default:
 						break;
 				}
@@ -196,7 +198,7 @@ const helper = {
 				switch (val.response) {
 					case 'visited':
 						return 'green'
-					case 'expected_conversion':
+					case 'deal_expected':
 						return '#FDD835'
 					case 'deal_signed':
 						return 'green'
@@ -328,13 +330,13 @@ const helper = {
 				})
 		}
 	},
-	formatDate (date){
+	formatDate(date) {
 		return moment(date).format('YYYY-MM-DD')
 	},
-	formatTime (time){
-      return moment(time).format('hh:mm a');
+	formatTime(time) {
+		return moment(time).format('hh:mm a');
 	},
-	formatDateAndTime(date, time){
+	formatDateAndTime(date, time) {
 		return moment(date + moment(time).format('hh:mm a'), 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ssZ');
 	},
 	createContactPayload(customer) {
@@ -380,6 +382,37 @@ const helper = {
 			return contact
 		} else return contact
 	},
+	deleteAndUpdateNotification(data, start, id) {
+		Notifications.getAllScheduledNotificationsAsync().then(notifications => {
+			this.deleteNotification(notifications, id)
+			TimerNotification(data, start)
+		})
+
+	},
+	deleteLocalNotification(id) {
+		Notifications.getAllScheduledNotificationsAsync().then(notifications => {
+			this.deleteNotification(notifications, id)
+		})
+	},
+	deleteNotification(notifications, id) {
+		let identifier = null
+		if (notifications.length) {
+			notifications.map(item => {
+				if (item.content && item.content.data && item.content.data.id && item.content.data.id === id) {
+					identifier = item.identifier
+				}
+			})
+		}
+		if (identifier) {
+			Notifications.cancelScheduledNotificationAsync(identifier)
+				.then(notification => {
+				})
+				.catch(error => {
+					console.log(error)
+				})
+		}
+	},
+	createArray(N) { return Array.from({ length: N }, (_, index) => index + 1) }
 }
 
 

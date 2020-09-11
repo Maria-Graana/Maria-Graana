@@ -28,7 +28,7 @@ class AssignLead extends React.Component {
 
     fetchTeam = () => {
         const { route } = this.props;
-        const {searchBy} = this.state;
+        const { searchBy } = this.state;
         const { type } = route.params
         const url = type === 'Investment' ? `/api/user/agents?leads=${true}&searchBy=${searchBy}` : `/api/user/agents?leads=${true}&rcm=${true}&searchBy=${searchBy}`
         axios.get(url)
@@ -52,10 +52,10 @@ class AssignLead extends React.Component {
         const { leadId, type } = route.params;
         let body = {
             userId: selectedId,
+            leadId: [leadId],
             type: type ? type.toLowerCase() : ''
         }
-
-        axios.patch(`/api/leads/assign/${leadId}`, body)
+        axios.patch(`/api/leads/assign`, body)
             .then(response => {
                 if (response.status === 200) {
                     helper.successToast('LEAD ASSIGNED SUCCESSFULLY');
@@ -69,8 +69,6 @@ class AssignLead extends React.Component {
                 console.log(error);
                 helper.errorToast(error.message);
             })
-
-
     }
 
     onPressItem = (item) => {
@@ -86,7 +84,7 @@ class AssignLead extends React.Component {
     }
 
     changeSearchValue = (value) => {
-        this.setState({ searchBy: value },()=>{
+        this.setState({ searchBy: value }, () => {
             this.fetchTeam()
         })
     }
@@ -100,19 +98,19 @@ class AssignLead extends React.Component {
                 <View style={[AppStyles.container, styles.container]}>
                     {
                         user.role === 'admin 3' || user.role === 'sub_admin 1' ?
-                        <View style={styles.pickerMain}>
-                        <PickerComponent
-                            placeholder={'Search By'}
-                            data={StaticData.searchTeamBy}
-                            customStyle={styles.pickerStyle}
-                            customIconStyle={styles.customIconStyle}
-                            onValueChange={this.changeSearchValue}
-                            selectedItem={searchBy}
-                        />
-                    </View>
-                    : null
+                            <View style={styles.pickerMain}>
+                                <PickerComponent
+                                    placeholder={'Search By'}
+                                    data={StaticData.searchTeamBy}
+                                    customStyle={styles.pickerStyle}
+                                    customIconStyle={styles.customIconStyle}
+                                    onValueChange={this.changeSearchValue}
+                                    selectedItem={searchBy}
+                                />
+                            </View>
+                            : null
                     }
-                   
+
                     {
                         teamMembers.length ?
                             <FlatList

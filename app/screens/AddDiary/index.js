@@ -16,6 +16,7 @@ class AddDiary extends Component {
         this.state = {
             checkValidation: false,
             taskValues: [],
+            loading: false,
         }
     }
 
@@ -34,7 +35,9 @@ class AddDiary extends Component {
                 checkValidation: true
             })
         } else {
-            this.createDiary(data)
+            this.setState({ loading: true }, () => {
+                this.createDiary(data);
+            })
         }
     }
 
@@ -122,6 +125,7 @@ class AddDiary extends Component {
                         let start = new Date(res.data.start)
                         let end = new Date(res.data.end)
                         let data = {
+                            id: res.data.id,
                             title: res.data.subject,
                             body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
                         }
@@ -136,6 +140,8 @@ class AddDiary extends Component {
                 .catch((error) => {
                     helper.errorToast('ERROR: ADDING DIARY')
                     console.log('error', error.message)
+                }).finally(() => {
+                    this.setState({ loading: false });
                 })
 
         }
@@ -147,6 +153,7 @@ class AddDiary extends Component {
                         let start = new Date(res.data.start)
                         let end = new Date(res.data.end)
                         let data = {
+                            id: res.data.id,
                             title: res.data.subject,
                             body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
                         }
@@ -164,6 +171,8 @@ class AddDiary extends Component {
                 .catch((error) => {
                     helper.errorToast('ERROR: ADDING TASK')
                     console.log('error', error.message)
+                }).finally(() => {
+                    this.setState({ loading: false });
                 })
         }
 
@@ -177,21 +186,23 @@ class AddDiary extends Component {
                 let start = new Date(res.data.start)
                 let end = new Date(res.data.end)
                 let data = {
+                    id: res.data.id,
                     title: res.data.subject,
                     body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
                 }
-                TimerNotification(data, start)
+                helper.deleteAndUpdateNotification(data, start, res.data.id)
                 this.props.navigation.navigate('Diary', { update: false, 'agentId': this.props.route.params.agentId })
             })
             .catch((error) => {
-                //console.log('error', error)
                 helper.errorToast('ERROR: UPDATING TASK')
                 console.log(error)
+            }).finally(() => {
+                this.setState({ loading: false });
             })
     }
 
     render() {
-        const { checkValidation, taskValues } = this.state;
+        const { checkValidation, taskValues, loading } = this.state;
         const { route } = this.props;
         return (
             <KeyboardAwareScrollView style={[AppStyles.container]} keyboardShouldPersistTaps="always" enableOnAndroid>
@@ -203,6 +214,7 @@ class AddDiary extends Component {
                             editableData={route.params.update ? route.params.data : null}
                             taskValues={taskValues}
                             checkValidation={checkValidation}
+                            loading={loading}
                         />
                     </SafeAreaView>
                 </TouchableWithoutFeedback>

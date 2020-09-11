@@ -56,13 +56,13 @@ class Diary extends React.Component {
       }
       navigation.setOptions({ title: moment(dateSelected).format('DD MMMM YYYY') })
       if (route.params !== undefined && 'agentId' in route.params) {
-        this.setState({ agentId: route.params.agentId, selectedDate:dateSelected }, () => {
+        this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
           this.diaryMain();
           this.listData();
         });
       }
       else {
-        this.setState({ agentId: user.id, selectedDate:dateSelected }, () => {
+        this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
           this.diaryMain();
           this.listData();
         })
@@ -110,7 +110,6 @@ class Diary extends React.Component {
 
   getSelectedMonth = () => {
     const { selectedMonth } = this.state;
-    //console.log(selectedMonth);
     return selectedMonth;
   }
 
@@ -158,7 +157,6 @@ class Diary extends React.Component {
           this.setState({
             diaryData: diaryTasks,
           }, () => {
-            // console.log(diaryTasks);
             this.showTime();
           })
         }).catch((error) => {
@@ -309,6 +307,7 @@ class Diary extends React.Component {
     axios.delete(endPoint).then(function (response) {
       if (response.status === 200) {
         helper.successToast('TASK DELETED SUCCESSFULLY!')
+        helper.deleteLocalNotification(data.id)
         that.diaryMain();
       }
 
@@ -327,9 +326,10 @@ class Diary extends React.Component {
         axios.patch(endPoint, {
           status: type
         }).then(function (response) {
-          if (response.status == 200)
-            // console.log('responseSuccessCompleted');
-            that.diaryMain();
+          if (response.status == 200) {
+            helper.deleteLocalNotification(val.id)
+            that.diaryMain()
+          }
         })
         break;
       case 'inProgress':
@@ -337,14 +337,11 @@ class Diary extends React.Component {
           status: type
         }).then(function (response) {
           if (response.status == 200)
-            // console.log('responseSuccessInProgress');
             that.diaryMain();
         })
-
         break;
       default:
         break;
-
     }
   }
 
@@ -371,8 +368,6 @@ class Diary extends React.Component {
     else {
       helper.errorToast('Sorry, you are not authorized to delete this task.')
     }
-
-
   }
 
   showDeleteDialog(val) {
@@ -386,20 +381,17 @@ class Diary extends React.Component {
   handleLeadLinkPress = (diaryObject) => {
     let url = diaryObject.armsLeadId ? `/api/leads/byId?id=${diaryObject.armsLeadId}` :
       `/api/leads/project/byId?id=${diaryObject.armsProjectLeadId}`
-
     axios.get(url).then(response => {
       this.setState({ openPopup: false })
       this.props.navigation.navigate('LeadDetail', { lead: response.data, purposeTab: response.data.purpose ? response.data.purpose : 'invest' })
     }).catch(error => {
       console.log('error', error)
     })
-
   }
 
   render() {
     const { showCalendar, startDate, loading, selectedDiary, newDiaryData, diaryData, selectedDate } = this.state;
     const { user, route } = this.props;
-    //console.log(user.subRole);
     const { name } = route.params;
     return (
       !loading ?

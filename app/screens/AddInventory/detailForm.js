@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ImageBackground, FlatList, Dimensions, ActivityIndicator } from 'react-native';
-import { Button } from 'native-base';
-import { AntDesign } from '@expo/vector-icons';
+import { Button, Textarea } from 'native-base';
+import { Checkbox } from 'react-native-paper';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import PickerComponent from '../../components/Picker/index';
-import axios from 'axios'
 import styles from './style';
 import AppStyles from '../../AppStyles';
 import LocationImg from '../../../assets/img/location.png'
@@ -11,6 +11,7 @@ import ErrorMessage from '../../components/ErrorMessage'
 import RadioComponent from '../../components/RadioButton/index';
 import { formatPrice } from '../../PriceFormate'
 import TouchableInput from '../../components/TouchableInput';
+import TouchableButton from '../../components/TouchableButton'
 import { connect } from 'react-redux';
 import { YellowBox } from 'react-native';
 const { width } = Dimensions.get('window')
@@ -38,6 +39,181 @@ class DetailForm extends Component {
         return { length, offset: length * index, index }
     }
 
+    _getYears = () => {
+        var min = 1947;
+        var max = (new Date()).getFullYear();
+        this.years = [];
+        for (var i = min; i <= max; i++) {
+            this.years.push({ value: i, name: i.toString() });
+        }
+        return this.years.reverse();
+    }
+
+    _renderAdditionalView = () => {
+        const { formData, handleForm, features, utilities, facing, selectedFeatures, handleFeatures } = this.props;
+        let _renderFeatures = () => {
+            return (
+                features.map((item) => {
+                    return (
+                        <TouchableOpacity key={item.toString()} onPress={() => handleFeatures(item)} style={styles.featureOpacity}>
+                            <Checkbox color={AppStyles.colors.primaryColor}
+                                status={selectedFeatures.includes(item) ? 'checked' : 'unchecked'}
+                                onPress={() => handleFeatures(item)}
+                            />
+                            <Text style={styles.featureText}>{item}</Text>
+                        </TouchableOpacity>
+                    )
+                })
+            )
+        }
+        let _renderBeds = () => {
+            var min = 0;
+            var max = 10;
+            this.beds = [];
+            for (var i = min; i <= max; i++) {
+                if (i == 0 || i == 1) this.beds.push({ name: i.toString() + ' Bedroom', value: i })
+                else this.beds.push({ name: i.toString() + ' Bedrooms', value: i });
+            }
+            return this.beds;
+        }
+        let _renderBaths = () => {
+            var min = 0;
+            var max = 10;
+            this.baths = [];
+            for (var i = min; i <= max; i++) {
+                if (i == 0 || i == 1) this.baths.push({ name: i.toString() + ' Bathroom', value: i })
+                else this.baths.push({ name: i.toString() + ' Bathrooms', value: i });
+            }
+            return this.baths;
+        }
+        let _renderParkings = () => {
+            var min = 0;
+            var max = 10;
+            this.parkings = [];
+            for (var i = min; i <= max; i++) {
+                if (i == 0 || i == 1) this.parkings.push({ name: i.toString() + ' Parking Space', value: i })
+                else this.parkings.push({ name: i.toString() + ' Parking Spaces', value: i });
+            }
+            return this.parkings;
+        }
+        let _renderFloors = () => {
+            var min = 0;
+            var max = 30;
+            this.floors = [];
+            for (var i = min; i <= max; i++) {
+                if (i == 0 || i == 1) this.floors.push({ name: i.toString() + ' Floor', value: i })
+                else this.floors.push({ name: i.toString() + ' Floors', value: i });
+            }
+            return this.floors;
+        }
+
+        let _renderUtilities = () => {
+            return (
+                utilities.map((item) => {
+                    return (
+                        <TouchableOpacity key={item.toString()} onPress={() => handleFeatures(item)} style={styles.featureOpacity}>
+                            <Checkbox color={AppStyles.colors.primaryColor}
+                                status={selectedFeatures.includes(item) ? 'checked' : 'unchecked'}
+                                onPress={() => handleFeatures(item)}
+                            />
+                            <Text style={styles.featureText}>{item}</Text>
+                        </TouchableOpacity>
+                    )
+                })
+            )
+        }
+
+        let _renderFacing = () => {
+            return (
+                facing.map((item) => {
+                    return (
+                        <TouchableOpacity key={item.toString()} onPress={() => handleFeatures(item)} style={styles.featureOpacity}>
+                            <Checkbox color={AppStyles.colors.primaryColor}
+                                status={selectedFeatures.includes(item) ? 'checked' : 'unchecked'}
+                                onPress={() => handleFeatures(item)}
+                            />
+                            <Text style={styles.featureText}>{item}</Text>
+                        </TouchableOpacity>
+                    )
+                })
+            )
+        }
+
+        return (
+            <View style={styles.additionalViewMain}>
+                <Text style={styles.headings}>General Info</Text>
+                {formData.type === 'plot' ? null
+                    :
+                    <View style={[AppStyles.mainInputWrap]}>
+                        <PickerComponent data={this._getYears()}
+                            onValueChange={handleForm}
+                            clearOnChange={true}
+                            selectedItem={formData.year_built}
+                            name={'year_built'} placeholder='Build Year' />
+                    </View>
+                }
+                {
+                    formData.type === 'residential' ? <>
+                        <View style={[AppStyles.mainInputWrap]}>
+                            <PickerComponent data={_renderBeds()}
+                                onValueChange={handleForm}
+                                clearOnChange={true}
+                                selectedItem={formData.bed}
+                                name={'bed'}
+                                placeholder='Select Total Bed(s)' />
+                        </View>
+
+                        <View style={[AppStyles.mainInputWrap]}>
+                            <PickerComponent data={_renderBaths()}
+                                onValueChange={handleForm}
+                                clearOnChange={true}
+                                selectedItem={formData.bath}
+                                name={'bath'}
+                                placeholder='Select Total Bath(s)' />
+                        </View>
+
+                        <View style={[AppStyles.mainInputWrap]}>
+                            <PickerComponent data={_renderParkings()}
+                                onValueChange={handleForm}
+                                clearOnChange={true}
+                                selectedItem={formData.parking_space}
+                                name={'parking_space'}
+                                placeholder='Select Total Parking Space(s)' />
+                        </View>
+                    </>
+                        : null
+                }
+                {formData.type === 'commercial' ?
+                    <View style={[AppStyles.mainInputWrap]}>
+                        <PickerComponent data={_renderFloors()}
+                            onValueChange={handleForm}
+                            clearOnChange={true}
+                            selectedItem={formData.floors}
+                            name={'floors'}
+                            placeholder='Select Total Floor(s)' />
+                    </View>
+                    : null
+                }
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <TextInput onChangeText={(text) => { handleForm(text, 'downpayment') }}
+                            value={formData.downpayment && String(formData.downpayment)}
+                            placeholderTextColor={'#a8a8aa'}
+                            keyboardType='numeric'
+                            style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                            placeholder={'Down Payment is PKR (if any)'} />
+                    </View>
+                </View>
+                <Text style={[styles.headings, { marginBottom: 10 }]}>Property Features</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>{_renderFeatures()}</View>
+                <Text style={[styles.headings, { marginBottom: 10 }]}>Utilities</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>{_renderUtilities()}</View>
+                <Text style={[styles.headings, { marginBottom: 10 }]}>Facing</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>{_renderFacing()}</View>
+            </View>
+        )
+    }
+
     render() {
         const {
             formSubmit,
@@ -55,7 +231,8 @@ class DetailForm extends Component {
             selectedGrade,
             purpose,
             getCurrentLocation,
-            getImages,
+            getImagesFromGallery,
+            takePhotos,
             longitude,
             latitude,
             buttonText,
@@ -63,6 +240,9 @@ class DetailForm extends Component {
             imageLoading,
             clientName,
             handleClientClick,
+            showAdditional,
+            showAdditionalInformation,
+            loading,
         } = this.props
 
         const { size_unit } = this.props.formData;
@@ -81,14 +261,17 @@ class DetailForm extends Component {
                 </View>
 
                 {/* **************************************** */}
-                <View style={[AppStyles.mainInputWrap]}>
-                    <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={handleForm} data={selectSubType} selectedItem={formData.subtype} name={'subtype'} placeholder='Property Sub Type' />
-                        {
-                            checkValidation === true && formData.subtype === '' && <ErrorMessage errorMessage={'Required'} />
-                        }
+                {
+                    formData.type ? <View style={[AppStyles.mainInputWrap]}>
+                        <View style={[AppStyles.inputWrap]}>
+                            <PickerComponent onValueChange={handleForm} data={selectSubType} selectedItem={formData.subtype} name={'subtype'} placeholder='Property Sub Type' />
+                            {
+                                checkValidation === true && formData.subtype === '' && <ErrorMessage errorMessage={'Required'} />
+                            }
+                        </View>
                     </View>
-                </View>
+                        : null
+                }
 
                 {/* **************************************** */}
 
@@ -106,6 +289,15 @@ class DetailForm extends Component {
                     showError={checkValidation === true && formData.area_id === ''}
                     errorMessage="Required" />
 
+                <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                        <TextInput onChangeText={(text) => { handleForm(text, 'address') }}
+                            placeholderTextColor={'#a8a8aa'}
+                            value={formData.address}
+                            style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                            placeholder={'Address'} />
+                    </View>
+                </View>
                 {/* **************************************** */}
 
                 <View style={AppStyles.multiFormInput}>
@@ -113,9 +305,14 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm(text, 'size') }} value={formData.size} keyboardType='numeric' style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'size'} placeholder={'Size'} />
+                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm(text, 'size') }}
+                                value={formData.size == 0 ? '' : String(formData.size)}
+                                keyboardType='numeric'
+                                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                                name={'size'}
+                                placeholder={'Size'} />
                             {
-                                checkValidation === true && formData.size === null && <ErrorMessage errorMessage={'Required'} />
+                                checkValidation === true && formData.size === 0 && <ErrorMessage errorMessage={'Required'} />
                             }
                         </View>
                     </View>
@@ -153,8 +350,9 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[{ width: '75%' }, AppStyles.mainInputWrap, AppStyles.noMargin]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm(text, 'price') }}
-                                value={price}
+                            <TextInput placeholderTextColor={'#a8a8aa'}
+                                onChangeText={(text) => { handleForm(text, 'price') }}
+                                value={price === 0 ? '' : String(price)}
                                 keyboardType='number-pad'
                                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                                 placeholder={'Demand Price'} />
@@ -162,9 +360,19 @@ class DetailForm extends Component {
                     </View>
                     {/* **************************************** */}
 
-                    <Text style={[styles.countPrice, { textAlignVertical: 'center' }]}>{formatPrice(price)}</Text>
+                    <Text style={[styles.countPrice, { textAlignVertical: 'center' }]}>{price ? formatPrice(price) : ''}</Text>
 
 
+                </View>
+
+                <View style={[AppStyles.mainInputWrap]}>
+                    <Textarea
+                        placeholderTextColor={'#a8a8aa'}
+                        style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings, { height: 100, paddingTop: 10, }]} rowSpan={5}
+                        placeholder="Description"
+                        onChangeText={(text) => handleForm(text, 'description')}
+                        value={formData.description}
+                    />
                 </View>
 
 
@@ -183,22 +391,31 @@ class DetailForm extends Component {
                                     getItemLayout={this.getItemLayout}
                                 />
                                 {
-                                    imageLoading ?
-                                        <View style={styles.addMoreImg}>
-                                            <ActivityIndicator size="large" color={AppStyles.colors.primaryColor} />
-                                        </View>
-                                        :
-                                        <TouchableOpacity style={styles.addMoreImg} onPress={getImages}>
-                                            <Text style={styles.uploadImageText}>Add More</Text>
+                                    <View style={{ flexDirection: 'row', marginHorizontal: 15 }}>
+                                        <TouchableOpacity disabled={imageLoading} style={[styles.addMoreImg, styles.extraAddMore]} onPress={getImagesFromGallery}>
+                                            <Text style={styles.uploadImageText}>Add More From Gallery</Text>
                                         </TouchableOpacity>
+                                        <TouchableOpacity disabled={imageLoading} style={[styles.addMoreImg, styles.extraAddMore]} onPress={takePhotos}>
+                                            <Text style={styles.uploadImageText}>Take Photos</Text>
+                                        </TouchableOpacity>
+                                    </View>
+
                                 }
 
 
                             </View>
                             :
-                            <TouchableOpacity style={styles.uploadImg} onPress={getImages}>
-                                <Text style={styles.uploadImageText}>Upload Images</Text>
-                            </TouchableOpacity>
+                            <View style={styles.uploadImg}>
+                                <Button
+                                    style={[AppStyles.formBtn, styles.buttonWidth]} onPress={getImagesFromGallery}>
+                                    <Text style={AppStyles.btnText}>Upload From Gallery</Text>
+                                </Button>
+                                <Text style={{ marginVertical: 15 }}>OR</Text>
+                                <Button
+                                    style={[AppStyles.formBtn, styles.buttonWidth]} onPress={takePhotos}>
+                                    <Text style={AppStyles.btnText}>Take Photos</Text>
+                                </Button>
+                            </View>
                     }
 
                 </View>
@@ -226,38 +443,24 @@ class DetailForm extends Component {
                         </RadioComponent>
                 </View>
 
-                {/* **************************************** */}
+                {
+                    formData.type ?
+                        <TouchableOpacity onPress={showAdditionalInformation} style={[AppStyles.mainInputWrap, styles.additonalViewContainer]}>
+                            <Text style={styles.additionalInformationText}>
+                                Additional Details
+                         </Text>
+                            <View style={styles.additionalDetailsIconView} >
+                                <Ionicons name={showAdditional ? "ios-close-circle-outline" : "ios-add-circle-outline"} size={30} color={AppStyles.colors.textColor} />
+                            </View>
+                        </TouchableOpacity>
+                        : null
+                }
 
                 {
-                    formData.type === 'residential' ?
-                        <View style={AppStyles.multiFormInput}>
-
-                            {/* **************************************** */}
-                            <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
-                                <View style={[AppStyles.inputWrap]}>
-                                    <TextInput onChangeText={(text) => { handleForm(text, 'bed') }}
-                                        value={formData.bed === 0 ? '' : String(formData.bed)}
-                                        keyboardType='numeric'
-                                        style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                        name={'bed'}
-                                        placeholder={'Bed'} />
-                                </View>
-                            </View>
-
-                            {/* **************************************** */}
-                            <View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
-                                <View style={[AppStyles.inputWrap]}>
-                                    <TextInput onChangeText={(text) => { handleForm(text, 'bath') }}
-                                        value={formData.bath === 0 ? '' : String(formData.bath)}
-                                        keyboardType='numeric'
-                                        style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                        name={'bath'}
-                                        placeholder={'Bath'} />
-                                </View>
-                            </View>
-
-                        </View>
-                        : null
+                    showAdditional ?
+                        this._renderAdditionalView()
+                        :
+                        null
                 }
 
 
@@ -266,14 +469,14 @@ class DetailForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin, AppStyles.borderrightLat]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm((text), 'lat') }} value={latitude === null ? '' : String(latitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Latitude'} />
+                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm((text), 'lat') }} value={latitude === null ? '' : String(latitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Latitude'} />
                         </View>
                     </View>
 
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <TextInput onChangeText={(text) => { handleForm((text), 'lng') }} value={longitude === null ? '' : String(longitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Longitude'} />
+                            <TextInput placeholderTextColor={'#a8a8aa'} onChangeText={(text) => { handleForm((text), 'lng') }} value={longitude === null ? '' : String(longitude)} style={[AppStyles.formControl, AppStyles.inputPadLeft]} keyboardType='numeric' placeholder={'Longitude'} />
                         </View>
                     </View>
 
@@ -288,17 +491,17 @@ class DetailForm extends Component {
                 <TouchableInput placeholder="Owner Name"
                     onPress={() => handleClientClick()}
                     value={clientName}
-                    showError={checkValidation === true && formData.customerId === ''}
+                    showError={checkValidation === true && formData.customer_id === null}
                     errorMessage="Required" />
-
 
                 {/* **************************************** */}
                 <View style={[AppStyles.mainInputWrap]}>
-                    <Button
-                        disabled={imageLoading}
-                        style={[AppStyles.formBtn, styles.addInvenBtn]} onPress={() => { formSubmit() }}>
-                        <Text style={AppStyles.btnText}>{buttonText}</Text>
-                    </Button>
+                    <TouchableButton
+                        containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+                        label={buttonText}
+                        onPress={() => formSubmit()}
+                        loading={imageLoading || loading}
+                    />
                 </View>
 
             </View >

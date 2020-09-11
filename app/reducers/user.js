@@ -11,42 +11,51 @@ const userPayload = {
 }
 
 const user = (state = '', action) => {
-    switch(action.type) {
-        case types.SET_USER: 
-        return action.payload
+    switch (action.type) {
+        case types.SET_USER:
+            return action.payload
         case types.LOGOUT_USER:
-        return null; 
+            return null;
         default: return state
     }
 }
 
 const error = (state = '', action) => {
-    switch(action.type) {
-        case types.SET_USER_ERROR: 
-        return action.payload
-        case types.REMOVE_USER_ERROR: 
-        return ''
+    switch (action.type) {
+        case types.SET_USER_ERROR:
+            return action.payload
+        case types.REMOVE_USER_ERROR:
+            return ''
         default: return state
     }
 }
 
 const loading = (state = false, action) => {
-    switch(action.type) {
-        case types.USER_LOADING: 
-        return true;
-        case types.USER_LOADED: 
-        return false;
+    switch (action.type) {
+        case types.USER_LOADING:
+            return true;
+        case types.USER_LOADED:
+            return false;
         default: return state
     }
 }
 
-const token= (state= false, action) => {
-    switch(action.type) {
+const token = (state = false, action) => {
+    switch (action.type) {
         case types.SET_TOKEN_SUCCESS:
-        return true
+            return true
         case types.SET_TOKEN_ERROR:
-        return false
+            return false
         default: return state
+    }
+}
+
+const isInternetConnected = (state = false, action) => {
+    switch (action.type) {
+        case types.SET_INTERNET_CONNECTION:
+            return action.payload;
+        default:
+            return state
     }
 }
 
@@ -55,5 +64,6 @@ export default combineReducers({
     user,
     error,
     loading,
-    token
+    token,
+    isInternetConnected,
 })

@@ -189,6 +189,23 @@ class BuyLeads extends React.Component {
 		})
 	}
 
+	updateStatus = (data) => {
+		var leadId = []
+		leadId.push(data.id)
+		if (data.status === 'open') {
+			axios.patch(`/api/leads`,
+				{
+					status: 'called'
+				}, { params: { id: leadId } })
+				.then((res) => {
+					this.fetchLeads()
+				})
+				.catch((error) => {
+					console.log(`ERROR: /api/leads/?id=${data.id}`, error)
+				})
+		}
+	}
+
 	render() {
 		const {
 			leadsData,
@@ -262,6 +279,7 @@ class BuyLeads extends React.Component {
 							renderItem={({ item }) => (
 
 								<LeadTile
+									updateStatus={this.updateStatus}
 									dispatch={this.props.dispatch}
 									purposeTab={'buy'}
 									user={user}

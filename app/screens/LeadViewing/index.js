@@ -26,6 +26,7 @@ class LeadViewing extends React.Component {
 			isVisible: false,
 			open: false,
 			loading: true,
+			addLoading: false,
 			viewing: {
 				date: '',
 				time: ''
@@ -63,8 +64,6 @@ class LeadViewing extends React.Component {
 					loading: false,
 					matchData: matches,
 					progressValue: rcmProgressBar[lead.status]
-				},()=>{
-					// console.log(this.state.matchData);
 				})
 			})
 			.catch((error) => {
@@ -117,16 +116,15 @@ class LeadViewing extends React.Component {
 		var commissionPayment = this.props.lead.commissionPayment
 		if (user.id === lead.assigned_to_armsuser_id) {
 			if (commissionPayment !== null) {
-				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 			else {
-				this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 		}
 		else {
 			helper.leadNotAssignedToast()
 		}
-
 	}
 
 	onHandleCloseLead = () => {
@@ -134,14 +132,21 @@ class LeadViewing extends React.Component {
 		const { selectedReason } = this.state;
 		let payload = Object.create({});
 		payload.reasons = selectedReason;
-		axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
-			this.setState({ isVisible: false }, () => {
-				helper.successToast(`Lead Closed`)
-				navigation.navigate('Leads');
-			});
-		}).catch(error => {
-			console.log(error);
-		})
+		if (selectedReason !== '') {
+			var leadId = []
+			leadId.push(lead.id)
+			axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
+				this.setState({ isCloseLeadVisible: false }, () => {
+					helper.successToast(`Lead Closed`)
+					navigation.navigate('Leads');
+				});
+			}).catch(error => {
+				console.log(error);
+			})
+		}
+		else {
+			alert('Please select a reason for lead closure!')
+		}
 	}
 
 	handleReasonChange = (value) => {
@@ -174,7 +179,7 @@ class LeadViewing extends React.Component {
 	}
 
 	setProperty = (property) => {
-		const {viewing} = this.state;
+		const { viewing } = this.state;
 		viewing['date'] = '';
 		viewing['time'] = '';
 		this.setState({ currentProperty: property, updateViewing: false })
@@ -184,7 +189,6 @@ class LeadViewing extends React.Component {
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'pending') {
 				let diary = property.diaries[0]
-				// console.log(diary);
 				let date = moment(diary.date);
 				this.setState({
 					currentProperty: property,
@@ -211,6 +215,7 @@ class LeadViewing extends React.Component {
 				checkValidation: true
 			})
 		} else {
+			this.setState({ addLoading: true })
 			if (updateViewing) this.updateViewing()
 			else this.createViewing()
 		}
@@ -221,7 +226,7 @@ class LeadViewing extends React.Component {
 		const { lead } = this.props
 		if (currentProperty.diaries.length) {
 			let diary = currentProperty.diaries[0]
-			let start = helper.formatDateAndTime(helper.formatDate(viewing.date),viewing.time);
+			let start = helper.formatDateAndTime(helper.formatDate(viewing.date), viewing.time);
 			let end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
 			let body = {
 				date: start,
@@ -240,15 +245,18 @@ class LeadViewing extends React.Component {
 					let start = new Date(res.data.start)
 					let end = new Date(res.data.end)
 					let data = {
+						id: res.data.id,
 						title: res.data.subject,
 						body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
 					}
-					TimerNotification(data, start)
+					helper.deleteAndUpdateNotification(data, start, res.data.id)
 					this.fetchLead()
 					this.fetchProperties()
 				})
 				.catch((error) => {
 					console.log(error)
+				}).finally(() => {
+					this.setState({ addLoading: false })
 				})
 		}
 	}
@@ -259,7 +267,7 @@ class LeadViewing extends React.Component {
 		let customer = lead.customer && lead.customer.customerName && helper.capitalize(lead.customer.customerName) || ''
 		let areaName = currentProperty.area && currentProperty.area.name && currentProperty.area.name || ''
 		let customerId = lead.customer && lead.customer.id
-		let start = helper.formatDateAndTime(helper.formatDate(viewing.date),viewing.time);
+		let start = helper.formatDateAndTime(helper.formatDate(viewing.date), viewing.time);
 		let end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
 		let body = {
 			date: start,
@@ -274,23 +282,25 @@ class LeadViewing extends React.Component {
 		}
 		axios.post(`/api/leads/viewing`, body)
 			.then((res) => {
-				// console.log(res.data);
 				this.setState({
 					isVisible: false,
 					loading: true,
 				})
-                let start = new Date(res.data.start)
-                let end = new Date(res.data.end)
-                let data = {
-                    title: res.data.subject,
-                    body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
-                }
-                TimerNotification(data, start)
+				let start = new Date(res.data.start)
+				let end = new Date(res.data.end)
+				let data = {
+					id: res.data.id,
+					title: res.data.subject,
+					body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+				}
+				TimerNotification(data, start)
 				this.fetchLead()
 				this.fetchProperties()
 			})
 			.catch((error) => {
 				console.log(error)
+			}).finally(() => {
+				this.setState({ addLoading: false })
 			})
 	}
 
@@ -397,6 +407,7 @@ class LeadViewing extends React.Component {
 				axios.delete(`/api/diary/delete?id=${property.diaries[0].id}&propertyId=${property.id}&leadId=${lead.id}`)
 					.then((res) => {
 						this.setState({ loading: true })
+						helper.deleteLocalNotification(property.diaries[0].id)
 						this.fetchProperties()
 					})
 					.catch((error) => {
@@ -441,7 +452,7 @@ class LeadViewing extends React.Component {
 
 
 	render() {
-		const { loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+		const { loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
 		const { lead, user } = this.props;
 		const showMenuItem = this.showMenuItem();
 		return (
@@ -457,6 +468,7 @@ class LeadViewing extends React.Component {
 								onPress={this.submitViewing}
 								handleForm={this.handleForm}
 								openModal={this.openModal}
+								loading={addLoading}
 								viewing={viewing}
 								checkValidation={checkValidation}
 								isVisible={isVisible} />
@@ -518,9 +530,9 @@ class LeadViewing extends React.Component {
 							closedLeadEdit={closedLeadEdit}
 							callButton={true}
 							customer={lead.customer}
+							lead={lead}
 						/>
 					</View>
-
 					<LeadRCMPaymentPopup
 						reasons={reasons}
 						selectedReason={selectedReason}

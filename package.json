@@ -24,7 +24,6 @@
     "expo-file-system": "~9.0.1",
     "expo-image-manipulator": "~8.2.1",
     "expo-image-picker": "~8.3.0",
-    "expo-multiple-media-imagepicker": "^1.2.1",
     "expo-network": "~2.2.1",
     "expo-notifications": "~0.3.3",
     "expo-permissions": "~9.0.1",
@@ -39,6 +38,7 @@
     "react-native-appearance": "~0.3.3",
     "react-native-calendars": "^1.264.0",
     "react-native-chart-kit": "^5.5.0",
+    "react-native-country-picker-modal": "^2.0.0",
     "react-native-datepicker": "^1.7.2",
     "react-native-gesture-handler": "~1.6.0",
     "react-native-global-props": "^1.1.5",
@@ -62,7 +62,8 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
     "sentry-expo": "^2.0.3",
-    "underscore": "^1.9.2"
+    "underscore": "^1.9.2",
+    "expo-media-library": "~8.2.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^8.2.3",

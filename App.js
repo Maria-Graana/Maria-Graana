@@ -19,7 +19,9 @@ import { AsyncStorage, YellowBox } from 'react-native';
 import * as RootNavigation from './app/navigation/RootNavigation';
 import * as Notifications from 'expo-notifications';
 import { NavigationContainer } from '@react-navigation/native';
+import NetInfo from '@react-native-community/netinfo';
 import { navigationRef } from './app/navigation/RootNavigation';
+import { setInternetConnection } from './app/actions/user'
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -39,7 +41,12 @@ export default class App extends React.Component {
 	}
 
 	async componentDidMount() {
-		this.setState({ isReady: true })
+		this.setState({ isReady: true }, () => {
+			NetInfo.addEventListener(state => {
+				store.dispatch(setInternetConnection(state.isConnected));
+			});
+		})
+
 		setCustomTouchableOpacity({ activeOpacity: 0.8 })
 		SplashScreen.preventAutoHide();
 		axios.defaults.baseURL = config.apiPath
@@ -74,14 +81,13 @@ export default class App extends React.Component {
 			OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
 			...Ionicons.font,
 		})
+
 		YellowBox.ignoreWarnings(['Animated: `useNativeDriver` was not specified'])
 	}
 
 	_handleNotification = response => {
 		const { navigation } = this.props
 		let notification = response.notification
-		Sentry.captureException(`Notification Handler: ${JSON.stringify(notification)}`)
-
 		if (response.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER && notification.request) {
 			let content = notification.request && notification.request.content
 			setTimeout(() => { this.navigateRoutes(content) }, 300)
@@ -91,8 +97,6 @@ export default class App extends React.Component {
 	navigateRoutes = (content) => {
 		if (content) {
 			let data = content.data
-			Sentry.captureException(`Notification data: ${JSON.stringify(data)}`)
-			Sentry.captureException(`Notification RootNavigation: ${JSON.stringify(RootNavigation)}`)
 			if (data.type === 'local') RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
 			if (data.type === 'investLead') RootNavigation.navigateTo('Leads', { screen: 'Invest' })
 			if (data.type === 'buyLead') RootNavigation.navigateTo('Leads', { screen: 'Buy' })

@@ -68,12 +68,13 @@ class FilterModal extends React.Component {
             submitFilter,
             getAreas,
             onSliderValueChange,
-            selectedCity
+            selectedCity,
+            sizeUnitList,
+            onSizeUnitSliderValueChange
         } = this.props;
         const { showAreaPicker, showCityPicker } = this.state
         const { sizeUnit, type } = StaticData
         let prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
-
         return (
             <Modal visible={openPopup}
                 animationType="slide"
@@ -148,19 +149,23 @@ class FilterModal extends React.Component {
                         <View style={styles.pickerView}>
                             <PickerComponent selectedItem={formData.propertySubType} onValueChange={(text) => { handleForm(text, 'propertySubType') }} data={subTypVal} name={'type'} placeholder='Property Sub Type' />
                         </View>
-                        <View style={styles.textInputView}>
-                            <View style={styles.textView}>
-                                <TextInput onChangeText={(text) => { handleForm(text, 'size') }}
-                                    value={formData.size ? String(formData.size) : ''}
-                                    keyboardType='numeric'
-                                    style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                                    name={'size'}
-                                    placeholder={'Size'} />
-                            </View>
-                            <View style={AppStyles.mb1}>
-                                <PickerComponent selectedItem={formData.sizeUnit} onValueChange={(text) => { handleForm(text, 'sizeUnit') }} data={sizeUnit} name={'type'} placeholder='Size Unit' />
-                            </View>
+                        <View style={styles.pickerView}>
+                            <PickerComponent selectedItem={formData.sizeUnit} onValueChange={(text) => { handleForm(text, 'sizeUnit') }} data={sizeUnit} name={'type'} placeholder='Size Unit' />
                         </View>
+                        <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15 }]}>
+                            <TextInput placeholder='Size Min'
+                                value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.size)}
+                                style={[AppStyles.formControl, styles.priceStyle]}
+                                editable={false}
+                            />
+                            <Text style={styles.toText}>to</Text>
+                            <TextInput placeholder='Size Max'
+                                value={formatPrice(formData.maxSize)}
+                                style={[AppStyles.formControl, styles.priceStyle]}
+                                editable={false}
+                            />
+                        </View>
+                        <PriceSlider priceValues={sizeUnitList} initialValue={sizeUnitList.indexOf(Number(formData.size) || 0)} finalValue={sizeUnitList.indexOf(Number(formData.maxSize) || 0)} onSliderValueChange={(values) => onSizeUnitSliderValueChange(values)} />
                         {
                             maxCheck ?
                                 <View style={styles.errorView}>
@@ -170,29 +175,30 @@ class FilterModal extends React.Component {
                                 null
                         }
                         <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15 }]}>
-
-                            <TextInput placeholder='Price Min'
+                            <TextInput
+                                placeholderTextColor={'#a8a8aa'}
+                                placeholder='Price Min'
                                 value={formData.minPrice == StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice || 0)}
                                 style={[AppStyles.formControl, styles.priceStyle]}
                                 editable={false}
                             />
                             <Text style={styles.toText}>to</Text>
-                            <TextInput placeholder='Price Max'
+                            <TextInput
+                                placeholderTextColor={'#a8a8aa'}
+                                placeholder='Price Max'
                                 value={formData.maxPrice == StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice || 0)}
                                 style={[AppStyles.formControl, styles.priceStyle]}
                                 style={[AppStyles.formControl, styles.priceStyle]}
                                 editable={false}
                             />
                         </View>
-
                         <PriceSlider priceValues={prices} initialValue={prices.indexOf(Number(formData.minPrice) || 0)} finalValue={prices.indexOf(Number(formData.maxPrice) || 0)} onSliderValueChange={(values) => onSliderValueChange(values)} />
-
                         <View style={styles.textInputView}>
                             <View style={styles.textView}>
-                                <TextInput keyboardType={'numeric'} value={formData.bed ? String(formData.bed) : ''} onChangeText={(text) => { handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
+                                <TextInput placeholderTextColor={'#a8a8aa'} keyboardType={'numeric'} value={formData.bed ? String(formData.bed) : ''} onChangeText={(text) => { handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
                             </View>
                             <View style={AppStyles.mb1}>
-                                <TextInput keyboardType={'numeric'} value={formData.bath ? String(formData.bath) : ''} onChangeText={(text) => { handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
+                                <TextInput placeholderTextColor={'#a8a8aa'} keyboardType={'numeric'} value={formData.bath ? String(formData.bath) : ''} onChangeText={(text) => { handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
                             </View>
                         </View>
                         <View style={[AppStyles.mainInputWrap, styles.matchBtn]}>

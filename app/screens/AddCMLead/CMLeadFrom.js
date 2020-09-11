@@ -10,6 +10,7 @@ import StaticData from '../../StaticData'
 import { formatPrice } from '../../PriceFormate'
 import PriceSlider from '../../components/PriceSlider';
 import TouchableInput from '../../components/TouchableInput';
+import TouchableButton from '../../components/TouchableButton';
 
 class CMLeadFrom extends Component {
   constructor(props) {
@@ -32,6 +33,7 @@ class CMLeadFrom extends Component {
       getProject,
       onSliderValueChange,
       getProductType,
+      loading,
     } = this.props
 
     return (
@@ -62,7 +64,7 @@ class CMLeadFrom extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent onValueChange={handleForm} data={getProductType} selectedItem={formData.projectType} name={'projectType'} value={''} placeholder='Product Type' />
+            <PickerComponent onValueChange={handleForm} data={getProductType} name={'projectType'} value={''} placeholder='Product Type' />
             {/* {
               checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
             } */}
@@ -70,13 +72,13 @@ class CMLeadFrom extends Component {
         </View>
         <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
 
-          <TextInput placeholder='Price Min'
+          <TextInput placeholderTextColor={'#a8a8aa'} placeholder='Price Min'
             value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice)}
             style={[AppStyles.formControl, styles.priceStyle]}
             editable={false}
           />
           <Text style={styles.toText}>to</Text>
-          <TextInput placeholder='Price Max'
+          <TextInput placeholderTextColor={'#a8a8aa'} placeholder='Price Max'
             value={formData.maxPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice)}
             style={[AppStyles.formControl, styles.priceStyle]}
             editable={false}
@@ -95,11 +97,12 @@ class CMLeadFrom extends Component {
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
-          <Button
-            onPress={() => { formSubmit(formData) }}
-            style={[AppStyles.formBtn, styles.addInvenBtn]}>
-            <Text style={AppStyles.btnText}>CREATE LEAD</Text>
-          </Button>
+          <TouchableButton
+            containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+            label={'CREATE LEAD'}
+            onPress={() => formSubmit(formData)}
+            loading={loading}
+          />
         </View>
       </View>
     )

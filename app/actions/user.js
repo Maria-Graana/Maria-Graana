@@ -170,3 +170,12 @@ export function getCurrentUser() {
         })
     }
 }
+
+export function setInternetConnection(value) {
+    return (dispatch, getsState) => {
+        dispatch({
+            type: types.SET_INTERNET_CONNECTION,
+            payload: value,
+        })
+    }
+}

@@ -36,7 +36,7 @@ class TargetTile extends React.Component {
 
         </View>
         <View style={styles.inputTarget}>
-          <TextInput style={styles.formControl} placeholder={'Set New Target'} onChangeText={(text) => handleForm(text, 'targetAmount')} keyboardType={"number-pad"} />
+          <TextInput placeholderTextColor={'#a8a8aa'} style={styles.formControl} placeholder={'Set New Target'} onChangeText={(text) => handleForm(text, 'targetAmount')} keyboardType={"number-pad"} />
           <TouchableOpacity onPress={() => onPress(data.armsUserTargets.length > 0 ? data.armsUserTargets[0].id : null)} style={styles.arrowIcon}>
             <Image source={arrowIcon} style={styles.arrowImgWidth} />
           </TouchableOpacity>

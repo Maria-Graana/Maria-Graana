@@ -54,7 +54,8 @@ class LeadMatch extends React.Component {
                 propertySubType: '',
                 propertyType: '',
                 purpose: '',
-                leadAreas: []
+                leadAreas: [],
+                maxSize: ''
             },
             checkCount: {
                 'true': 0,
@@ -70,6 +71,11 @@ class LeadMatch extends React.Component {
             maxCheck: false,
             cities: [],
             areas: [],
+            sixKArray: helper.createArray(60000),
+            fifteenKArray: helper.createArray(15000),
+            fiftyArray: helper.createArray(50),
+            hundredArray: helper.createArray(100),
+            sizeUnitList: [],
             // for the lead close dialog
             isVisible: false,
             checkReasonValidation: false,
@@ -128,12 +134,33 @@ class LeadMatch extends React.Component {
             })
     }
 
+    setSizeUnitList = (sizeUnit) => {
+        const { formData, fifteenKArray, fiftyArray, sixKArray, hundredArray, lead } = this.state
+        let priceList = []
+        if (sizeUnit === 'marla') priceList = fiftyArray
+        if (sizeUnit === 'kanal') priceList = hundredArray
+        if (sizeUnit === 'sqft') priceList = fifteenKArray
+        if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') priceList = sixKArray
+        formData.size = priceList[0];
+        formData.maxSize = priceList[priceList.length - 1];
+        if (!lead.max_size) lead.max_size = priceList[priceList.length - 1]
+        this.setState({ formData, sizeUnitList: priceList })
+    }
+
     onSliderValueChange = (values) => {
         const { formData } = this.state;
         const prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
         formData.minPrice = prices[values[0]].toString()
         formData.maxPrice = prices[values[values.length - 1]].toString()
         this.setState({ formData })
+    }
+
+    onSizeUnitSliderValueChange = (values) => {
+        const { formData, sizeUnitList } = this.state;
+        const copyObject = { ...formData };
+        copyObject.size = sizeUnitList[values[0]];
+        copyObject.maxSize = sizeUnitList[values[values.length - 1]];
+        this.setState({ formData: copyObject });
     }
 
     handleForm = (value, name) => {
@@ -146,6 +173,7 @@ class LeadMatch extends React.Component {
             formData.leadAreas = []
             formData[name] = value.value
         }
+        if (name === 'sizeUnit') this.setSizeUnitList(value)
         this.setState({ formData })
     }
 
@@ -228,7 +256,10 @@ class LeadMatch extends React.Component {
                 })
             }
         }
-        if (!lead.size_unit) lead.size_unit = 'marla'
+        if (!lead.size_unit) {
+            lead.size_unit = 'marla'
+            this.setSizeUnitList('marla')
+        } else this.setSizeUnitList(lead.size_unit)
         if (lead.type) this.getSubType(lead.type)
         if (lead.min_price) {
             if (!_.contains(prices, Number(lead.min_price))) {
@@ -253,6 +284,7 @@ class LeadMatch extends React.Component {
                 propertySubType: lead.subtype,
                 propertyType: lead.type,
                 purpose: lead.purpose,
+                maxSize: lead.max_size
             },
             showFilter: false,
             loading: true,
@@ -297,6 +329,7 @@ class LeadMatch extends React.Component {
             bath: formData.bath,
             size: formData.size,
             unit: formData.sizeUnit,
+            max_size: formData.maxSize,
             all: true
         }
 
@@ -394,12 +427,15 @@ class LeadMatch extends React.Component {
     ownProperty = (property) => {
         const { user } = this.props
         const { organization } = this.state
-        if (property.assigned_to_armsuser_id) {
-            return user.id === property.assigned_to_armsuser_id
-        }
-        else {
-            return false
-        }
+        if (organization === 'arms') {
+            if (property.assigned_to_armsuser_id) {
+                return user.id === property.assigned_to_armsuser_id
+            }
+            else {
+                return false
+            }
+        } else return true
+
     }
 
     displayChecks = () => {
@@ -535,7 +571,9 @@ class LeadMatch extends React.Component {
         const { selectedReason } = this.state;
         let payload = Object.create({});
         payload.reasons = selectedReason;
-        axios.patch(`/api/leads/?id=${lead.id}`, payload).then(response => {
+        var leadId = []
+        leadId.push(lead.id)
+        axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
             this.setState({ isVisible: false }, () => {
                 helper.successToast(`Lead Closed`)
                 navigation.navigate('Leads');
@@ -596,7 +634,7 @@ class LeadMatch extends React.Component {
 
     render() {
         const { lead, user } = this.props
-        const { selectedCity, visible, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { sizeUnitList, selectedCity, visible, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
 
         return (
             !loading ?
@@ -615,8 +653,10 @@ class LeadMatch extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <FilterModal
+                            sizeUnitList={sizeUnitList}
                             onRef={ref => (this.filterModalRef = ref)}
                             selectedCity={selectedCity}
+                            onSizeUnitSliderValueChange={this.onSizeUnitSliderValueChange}
                             onSliderValueChange={this.onSliderValueChange}
                             getAreas={this.getAreas}
                             subTypVal={subTypVal}
@@ -728,6 +768,7 @@ class LeadMatch extends React.Component {
                             closedLeadEdit={closedLeadEdit}
                             callButton={true}
                             customer={lead.customer}
+                            lead={lead}
                         />
                     </View>
                     <LeadRCMPaymentPopup

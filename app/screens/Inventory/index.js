@@ -86,11 +86,13 @@ class Inventory extends React.Component {
 		axios.delete(endPoint).then(function (response) {
 			if (response.status === 200) {
 				helper.successToast('PROPERTY DELETED SUCCESSFULLY!')
-				that.getPropertyListing();
+				that.setState({ loading: true }, () => {
+					that.getPropertyListing();
+				})
 			}
 
 		}).catch(function (error) {
-			this.setState({ loading: false })
+			that.setState({ loading: false })
 			helper.successToast(error.message)
 		})
 

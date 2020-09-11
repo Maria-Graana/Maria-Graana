@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView, Alert, Modal } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Modal, Keyboard } from 'react-native';
 import { StyleProvider } from 'native-base';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -13,7 +13,7 @@ import AppStyles from '../../AppStyles';
 import helper from '../../helper';
 import { connect } from 'react-redux';
 import _ from 'underscore';
-import { ImageBrowser } from 'expo-multiple-media-imagepicker';
+import ImageBrowser from '../../components/ImageBrowser/ImageBrowser';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { uploadImage, addImage, flushImages, removeImage, setImageLoading } from '../../actions/property'
 
@@ -34,18 +34,19 @@ class AddInventory extends Component {
             selectedCity: null,
             selectedArea: null,
             isModalOpen: false,
+            loading: false,
             formData: {
                 type: '',
                 subtype: '',
                 purpose: '',
-                bed: 0,
-                bath: 0,
-                size: null,
+                bed: null,
+                bath: null,
+                size: 0,
                 city_id: '',
                 area_id: '',
                 size_unit: 'marla',
-                customer_id: '',
-                price: '',
+                customer_id: null,
+                price: 0,
                 grade: '',
                 status: 'pending',
                 imageIds: [],
@@ -54,11 +55,21 @@ class AddInventory extends Component {
                 description: '',
                 general_size: null,
                 lisitng_type: 'mm',
-                features: JSON.stringify({}),
+                features: {},
                 custom_title: '',
                 show_address: true,
+                address: '',
                 video: '',
-            }
+                year_built: null,
+                floors: null,
+                parking_space: null,
+                downpayment: 0,
+            },
+            showAdditional: false,
+            features: StaticData.residentialFeatures,
+            facing: StaticData.facing,
+            utilities: StaticData.residentialUtilities,
+            selectedFeatures: [],
         }
     }
 
@@ -112,20 +123,27 @@ class AddInventory extends Component {
     setEditValues = () => {
         const { route } = this.props
         const { property } = route.params
+        let parsedFeatures = property.features ? JSON.parse(property.features) : {};
+        let amentities = _.isEmpty(parsedFeatures) ? [] : (_.keys(parsedFeatures));
+        if (amentities.length) {
+            amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
+            amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
+        }
         this.setState({
             formData: {
                 id: property.id,
                 type: property.type,
                 subtype: property.subtype,
                 purpose: property.purpose,
-                bed: property.bed ? String(property.bed) : '',
-                bath: property.bath ? String(property.bath) : '',
+                bed: property.bed === null || property.bed === undefined ? null : property.bed,
+                bath: property.bath === null || property.bath === undefined ? null : property.bath,
                 size_unit: property.size_unit,
-                size: String(property.size),
+                size: property.size ? property.size : 0,
                 city_id: property.city_id,
                 area_id: property.area_id,
-                customer_id: property.customer_id ? property.customer_id : '',
-                price: property.price != 0 ? String(property.price) : '',
+                address: property.address,
+                customer_id: property.customer_id ? property.customer_id : null,
+                price: property.price ? property.price : 0,
                 imageIds: property.armsPropertyImages.length === 0 || property.armsPropertyImages === undefined
                     ?
                     []
@@ -135,20 +153,25 @@ class AddInventory extends Component {
                 lat: property.lat,
                 lng: property.lng,
                 description: property.description,
+                year_built: parsedFeatures.year_built ? parsedFeatures.year_built : null,
+                floors: (parsedFeatures.floors === null || parsedFeatures.floors === undefined) ? null : parsedFeatures.floors,
+                parking_space: (parsedFeatures.parking_space === null || parsedFeatures.parking_space === undefined) ? null : parsedFeatures.parking_space,
+                downpayment: parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : 0,
                 general_size: null,
                 lisitng_type: 'mm',
-                features: JSON.stringify({}),
                 custom_title: '',
                 show_address: true,
                 video: property.video,
             },
             selectedClient: property.customer ? property.customer : null,
             selectedCity: property.city ? { ...property.city, value: property.city.id } : null,
+            selectedFeatures: amentities,
             selectedArea: property.area ? { ...property.area, value: property.area.id } : null,
             clientName: property.customer && property.customer.first_name + ' ' + property.customer.last_name,
             buttonText: 'UPDATE PROPERTY'
         }, () => {
             this.selectSubtype(property.type);
+            this.setFeatures(property.type);
             // this.getAreas(property.city_id);
             this.state.formData.imageIds.length > 0 && this.setImagesForEditMode();
         })
@@ -171,15 +194,31 @@ class AddInventory extends Component {
         this.setState({ selectSubType: StaticData.subType[type] })
     }
 
+    setFeatures = (type) => {
+        if (type !== '') {
+            if (type === 'residential') {
+                this.setState({ features: StaticData.residentialFeatures, utilities: StaticData.residentialUtilities })
+            }
+            else if (type === 'plot') {
+                this.setState({ features: StaticData.plotFeatures, utilities: StaticData.plotUtilities })
+            }
+            else if (type === 'commercial') {
+                this.setState({ features: StaticData.commercialFeatures, utilities: StaticData.commercialUtilities })
+            }
+        }
+    }
+
     // ********* Form Handle Function
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
-        this.setState({ formData }, () => {
-        })
-        if (formData.type != '') { this.selectSubtype(formData.type) }
+        this.setState({ formData })
+        if (formData.type !== '') {
+            this.setFeatures(formData.type);
+            this.selectSubtype(formData.type)
+        }
         if (formData.size === '') {
-            formData.size = null;
+            formData.size = 0;
             this.setState({ formData })
         }
     }
@@ -187,14 +226,12 @@ class AddInventory extends Component {
     // ********* On form Submit Function
     formSubmit = () => {
         const { formData } = this.state
-
         // ********* Form Validation Check
         if (!formData.type ||
             !formData.subtype ||
             !formData.city_id ||
             !formData.purpose ||
             !formData.area_id ||
-            !formData.size_unit ||
             !formData.size ||
             !formData.customer_id
         ) {
@@ -203,39 +240,58 @@ class AddInventory extends Component {
             })
         } else {
             // ********* Call Add Inventory API here :)
-            this.createOrEditProperty(formData);
+            this.setState({ loading: true }, () => {
+                this.createOrEditProperty(formData);
+            })
         }
     }
 
     createOrEditProperty = (formData) => {
+        let features = {};
         const { navigation, route, dispatch } = this.props;
+        const { selectedFeatures } = this.state;
+        if (formData.year_built) { features["year_built"] = formData.year_built };
+        if (formData.floors) { features["floors"] = formData.floors };
+        if (formData.parking_space !== null || formData.parking_space !== undefined) { features["parking_space"] = formData.parking_space };
+        if (formData.downpayment) { features["downpayment"] = this.convertToIntegerForZero(formData.downpayment) };
+        selectedFeatures && selectedFeatures.length ? selectedFeatures.map((amenity, index) => {
+            features[amenity.replace(/\s+/g, '_').toLowerCase()] = true;
+        })
+            : {}
         const { property } = route.params;
         const { images } = this.props;
         formData.lat = this.convertLatitude(formData.lat);
         formData.lng = this.convertLongitude(formData.lng);
-        formData.size = this.convertToInteger(formData.size)
-        formData.bed = this.convertToIntegerForZero(formData.bed)
-        formData.bath = this.convertToIntegerForZero(formData.bath)
+        formData.size = this.convertToIntegerForZero(formData.size)
         formData.price = this.convertToIntegerForZero(formData.price)
+        formData.features = _.isEmpty(features) ? {} : features;
         formData.imageIds = _.pluck(images, 'id');
-
+        // deleting these keys below from formdata as they are sent in features instead of seperately
+        delete formData.parking_space;
+        delete formData.floors;
+        delete formData.year_built;
+        delete formData.downpayment;
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        navigation.navigate('Inventory', { update: false })
+                        navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
                     }
                     else {
-                        console.log('wrong');
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')
                     }
+                    this.setState({ loading: false })
 
                 })
                 .catch((error) => {
+                    this.setState({ loading: false })
                     helper.errorToast('ERROR: UPDATING PROPERTY')
                     console.log('error', error.message)
+                })
+                .finally(() => {
+                    this.setState({ loading: false })
                 })
         }
         else {
@@ -244,19 +300,22 @@ class AddInventory extends Component {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        navigation.goBack();
+                        navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
                     }
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')
                     }
-
+                    this.setState({ loading: false })
                 })
                 .catch((error) => {
+                    this.setState({ loading: false })
                     helper.errorToast('ERROR: ADDING PROPERTY')
                     console.log('error', error.message)
                 })
+                .finally(() => {
+                    this.setState({ loading: false })
+                })
         }
-
     }
 
     getPermissionAsync = async () => {
@@ -272,7 +331,7 @@ class AddInventory extends Component {
         return true;
     };
 
-    getImages = () => {
+    getImagesFromGallery = () => {
         this.getPermissionAsync().then(result => {
             if (result === true) {
                 this.setState({ isModalOpen: true })
@@ -281,6 +340,24 @@ class AddInventory extends Component {
                 // Perimission denied, perform action or display alert
             }
         });
+    }
+
+    takePhotos = async () => {
+        let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA);
+        if (camStatus !== 'granted') {
+            const status = await Permissions.askAsync(Permissions.CAMERA).status;
+            if (status !== 'granted') {
+                return;
+            }
+        }
+
+        let result = await ImagePicker.launchCameraAsync({
+            quality: 0.5,
+        });
+
+        if (!result.cancelled) {
+            this._compressImageAndUpload(result.uri, result)
+        }
     }
 
     imageBrowserCallback = mediaAssets => {
@@ -292,7 +369,6 @@ class AddInventory extends Component {
                         isModalOpen: false,
                     },
                     () => {
-                        // console.log('@@@', photos)
                         if (photos.length > 0) {
                             dispatch((setImageLoading(true)));
                             this._uploadMultipleImages(photos);
@@ -404,6 +480,12 @@ class AddInventory extends Component {
         else if (typeof (val) === 'string' && val != '') {
             return parseInt(val);
         }
+        else if (val === '') {
+            return 0;
+        }
+        else {
+            return val;
+        }
     }
 
     handleClientClick = () => {
@@ -430,6 +512,18 @@ class AddInventory extends Component {
         }
     }
 
+    handleFeatures(feature) {
+        if (this.state.selectedFeatures.includes(feature)) {
+            let temp = this.state.selectedFeatures;
+            delete temp[temp.indexOf(feature)];
+            this.setState({ selectedFeatures: temp })
+        } else {
+            let temp = this.state.selectedFeatures;
+            temp.push(feature);
+            this.setState({ selectedFeatures: temp })
+        }
+    }
+
     render() {
         const {
             formData,
@@ -442,6 +536,13 @@ class AddInventory extends Component {
             selectedCity,
             selectedArea,
             isModalOpen,
+            showAdditional,
+            additionalInformation,
+            features,
+            utilities,
+            facing,
+            selectedFeatures,
+            loading,
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
@@ -460,38 +561,51 @@ class AddInventory extends Component {
                             />
                         </View>
                     </Modal>
-                    <ScrollView>
+                    <ScrollView keyboardShouldPersistTaps="always">
                         {/* ********* Form Component */}
-                        <View style={AppStyles.container}>
-                            <DetailForm
-                                formSubmit={this.formSubmit}
-                                checkValidation={checkValidation}
-                                handleForm={this.handleForm}
-                                formData={formData}
-                                purpose={StaticData.purpose}
-                                selectedCity={selectedCity}
-                                selectedArea={selectedArea}
-                                handleCityClick={this.handleCityClick}
-                                handleAreaClick={this.handleAreaClick}
-                                buttonText={buttonText}
-                                clientName={clientName}
-                                handleClientClick={this.handleClientClick}
-                                propertyType={StaticData.type}
-                                getCurrentLocation={this._getLocationAsync}
-                                getImages={() => this.getImages()}
-                                selectSubType={selectSubType}
-                                sizeUnit={sizeUnit}
-                                selectedGrade={formData.grade}
-                                size={StaticData.oneToTen}
-                                latitude={formData.lat}
-                                longitude={formData.lng}
-                                price={formData.price}
-                                deleteImage={(image, index) => this.deleteImage(image, index)}
-                                buttonDisabled={buttonDisabled}
-                            />
-                        </View>
+                        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                            <View style={AppStyles.container}>
+                                <DetailForm
+                                    formSubmit={this.formSubmit}
+                                    checkValidation={checkValidation}
+                                    handleForm={this.handleForm}
+                                    formData={formData}
+                                    purpose={StaticData.purpose}
+                                    selectedCity={selectedCity}
+                                    selectedArea={selectedArea}
+                                    handleCityClick={this.handleCityClick}
+                                    handleAreaClick={this.handleAreaClick}
+                                    buttonText={buttonText}
+                                    clientName={clientName}
+                                    handleClientClick={this.handleClientClick}
+                                    propertyType={StaticData.type}
+                                    getCurrentLocation={this._getLocationAsync}
+                                    getImagesFromGallery={() => this.getImagesFromGallery()}
+                                    takePhotos={() => this.takePhotos()}
+                                    selectSubType={selectSubType}
+                                    sizeUnit={sizeUnit}
+                                    selectedGrade={formData.grade}
+                                    size={StaticData.oneToTen}
+                                    latitude={formData.lat}
+                                    longitude={formData.lng}
+                                    price={formData.price}
+                                    deleteImage={(image, index) => this.deleteImage(image, index)}
+                                    buttonDisabled={buttonDisabled}
+                                    showAdditional={showAdditional}
+                                    showAdditionalInformation={() => this.setState({ showAdditional: !showAdditional })}
+                                    additionalInformation={additionalInformation}
+                                    features={features}
+                                    utilities={utilities}
+                                    facing={facing}
+                                    selectedFeatures={selectedFeatures}
+                                    handleFeatures={(value) => this.handleFeatures(value)}
+                                    loading={loading}
+                                />
+                            </View>
+                        </TouchableWithoutFeedback>
                     </ScrollView>
                 </KeyboardAvoidingView>
+
             </StyleProvider>
         )
     }

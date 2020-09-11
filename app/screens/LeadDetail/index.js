@@ -11,8 +11,6 @@ import axios from 'axios';
 import Ability from '../../hoc/Ability'
 import Loader from '../../components/loader';
 import StaticData from '../../StaticData';
-import { createPortal } from 'react-dom';
-// import { TextInput } from 'react-native-paper';
 
 const _format = 'YYYY-MM-DD';
 
@@ -176,15 +174,17 @@ class LeadDetail extends React.Component {
         const { description } = this.state;
         const { purposeTab, lead } = route.params
         var endPoint = ''
+        var leadId = []
+        leadId.push(lead.id)
         var body = {
             description: description,
         }
         if (purposeTab == 'invest') {
-            endPoint = `/api/leads/project?id=${lead.id}`
+            endPoint = `/api/leads/project`
         } else {
-            endPoint = `/api/leads/?id=${lead.id}`
+            endPoint = `/api/leads`
         }
-        axios.patch(endPoint, body)
+        axios.patch(endPoint, body, { params: { id: leadId } })
             .then((res) => {
                 this.purposeTab()
                 this.editDescription(false)
@@ -206,6 +206,20 @@ class LeadDetail extends React.Component {
         }
     }
 
+    leadSize = () => {
+        const { lead } = this.state
+        let minSize = !lead.projectId && lead.size && lead.size !== 0 ? lead.size : ''
+        let maxSize = !lead.projectId && lead.max_size && lead.max_size !== 0 ? lead.max_size : ''
+        let size = ''
+        if (minSize == maxSize) {
+            size = minSize + ' '
+        } else {
+            maxSize = maxSize !== '' ? ' - ' + maxSize : maxSize
+            size = minSize + maxSize + ' '
+        }
+        return size
+    }
+
     render() {
         const { type, lead, customerName, showAssignToButton, loading, editDes, description } = this.state
         const { user, route } = this.props;
@@ -213,7 +227,7 @@ class LeadDetail extends React.Component {
         let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
         const leadSource = this.checkLeadSource();
         const regex = /(<([^>]+)>)/ig
-
+        let leadSize = this.leadSize()
         return (
             !loading ?
                 <ScrollView showsVerticalScrollIndicator={false} style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
@@ -252,7 +266,7 @@ class LeadDetail extends React.Component {
                                 {
                                     editDes === true ?
                                         <View>
-                                            <TextInput style={styles.inputDes} placeholder={`Edit Description`} value={description} onChangeText={(text) => { this.handleDes(text) }} />
+                                            <TextInput placeholderTextColor={'#a8a8aa'} style={styles.inputDes} placeholder={`Edit Description`} value={description} onChangeText={(text) => { this.handleDes(text) }} />
                                             <TouchableOpacity onPress={() => this.submitDes()} style={styles.roundButtonViewTwo} activeOpacity={0.6}>
                                                 <Text style={{ textAlign: 'center', color: '#fff' }}>Submit</Text>
                                             </TouchableOpacity>
@@ -282,14 +296,26 @@ class LeadDetail extends React.Component {
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Requirement </Text>
                         <Text style={styles.labelText}>
-                            {!lead.projectId && lead.size && lead.size !== 0 ? lead.size + ' ' : ''}
-                            {!lead.projectId && lead.size ? lead.size_unit + ' ' : ''}
+                            {leadSize}
+                            {!lead.projectId && lead.size ? helper.capitalize(lead.size_unit) + ' ' : ''}
                             {!lead.projectId && helper.capitalize(lead.subtype)}
                             {lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}
                         </Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
-                        <Text style={styles.labelText}>{!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ? lead.armsLeadAreas[0].area && lead.armsLeadAreas[0].area.name + ', ' : ''}{!lead.projectId && lead.city && lead.city.name}{purposeTab === 'invest' && projectName}</Text>
+                        <Text style={styles.labelText}>
+                            {
+                                !lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length ?
+                                    lead.armsLeadAreas[0].area &&
+                                    // lead.armsLeadAreas[0].area.name 
+                                    lead.armsLeadAreas.map((item, index) => {
+                                        var comma = index > 0 ? ', ' : ''
+                                        return comma + (item.area.name)
+                                    })
+                                    :
+                                    ''
+                            }
+                            {!lead.projectId && lead.city && ' - ' + lead.city.name}{purposeTab === 'invest' && projectName}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Price Range </Text>
                         <Text style={styles.labelText}>

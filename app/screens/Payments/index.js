@@ -37,7 +37,7 @@ class Payments extends Component {
 			downPaymentTime: lead.paymentTime ? moment(lead.paymentTime).format('hh:mm a') + ' ' + moment(lead.paymentTime).format('MMM DD') : '',
 			totalInstalments: lead.cmInstallments.length > 0 ? lead.cmInstallments : [],
 			units: [],
-			remainingPayment: 'no',
+			remainingPayment: '',
 			readOnly: {
 				totalSize: '',
 				rate: '',
@@ -51,11 +51,11 @@ class Payments extends Component {
 				discount: lead.discount ? lead.discount : '',
 				commisionPayment: '',
 				downPayment: lead.downPayment ? lead.downPayment : '',
-				paymentType: '',
+				paymentType: lead && lead.possession_charges != null || lead.cmInstallments.length > 0 || lead.downPayment ? 'installments' : 'full_payment',
 				payment: '',
 				discountPercentage: lead.unit != null ? lead.unit.discount : '',
 				unitStatus: lead.unit != null ? lead.unit.bookingStatus : '',
-				installmentDue: 'quarterly',
+				installmentDue: lead && lead.installmentDue === null || lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
 			},
 			instalments: lead.no_of_installments ? lead.no_of_installments : '',
 			reasons: [],
@@ -87,7 +87,7 @@ class Payments extends Component {
 			discountedPrice: lead.unit != null && lead.unit.discount != null && lead.unit.discounted_price,
 			getAllProject: [],
 			checkMonthlyOption: false,
-			possessionCharges: 'quarterly',
+			possessionCharges: null,
 			checkForUnitAvail: true,
 		}
 
@@ -111,6 +111,7 @@ class Payments extends Component {
 		let data = lead
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
+
 		this.setState({
 			readOnly: {
 				totalSize: '',
@@ -125,28 +126,29 @@ class Payments extends Component {
 				token: data.token ? data.token : '',
 				discount: data.discount ? data.discount : '',
 				commisionPayment: '',
+				paymentType: lead && lead.possession_charges != null || lead.cmInstallments.length > 0 || lead.downPayment ? 'installments' : 'full_payment',
 				downPayment: data.downPayment ? data.downPayment : '',
 				discountPercentage: data.unit != null ? data.unit.discount : '',
-				installmentDue: lead && lead.installmentDue != 'monthly' ? 'quarterly' : 'monthly',
+				installmentDue: lead && lead.installmentDue === null || lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
 			},
-			instalments: data.project && data.project.installment_plan ? this.noOfInstallments(data.project.installment_plan) : '',
-			possessionCharges: data.unit != null ? data.unit.possession_charges : '',
+			instalments: data.project != null && data.project.installment_plan != null ? this.noOfInstallments(data.project.installment_plan) : '',
+			possessionCharges: data && data.possession_charges != null ? data.possession_charges : null,
 			checkForUnitAvail: data.unit && data.unit != null && data.unit.bookingStatus != 'Available' ? false : true,
 		}, () => {
 			let name = ''
 			if (data.projectId != null) {
 				this.getFloors(data.projectId)
-				this.discountPayment()
+				// this.discountPayment()
 			}
 			if (data.floorId != null) {
 				this.getUnits(data.projectId, data.floorId)
-				this.discountPayment()
+				// this.discountPayment()
 			}
 			if (data.unitId != null) {
 				this.readOnly(data.unitId)
 				this.discountPayment()
 			}
-			if (data.discount != null) {
+			if (data.discount != null && data.unitId != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 
@@ -158,7 +160,7 @@ class Payments extends Component {
 				this.discountPayment()
 				this.formatStatusChange(name, true)
 			}
-			if (data.token != null) {
+			if (data.token != null && data.unitId != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 				name = 'token'
@@ -167,7 +169,7 @@ class Payments extends Component {
 				newtokenDateStatus['name'] = name
 				newtokenDateStatus['status'] = true
 			}
-			if (data.downPayment != null) {
+			if (data.downPayment != null && data.unitId != null) {
 				this.discountPayment(formData)
 				this.discountPayment()
 				name = 'downPayment'
@@ -177,12 +179,12 @@ class Payments extends Component {
 				newdownPaymentDateStatus['status'] = true
 
 			}
-			if (data.project.installment_plan != null) {
+			if (data.project != null && data.project.installment_plan != null && data.unitId != null) {
 				var totalInstallments = this.noOfInstallments(data.project.installment_plan)
 				this.instalmentsField(totalInstallments)
 				this.discountPayment()
 			}
-			if (data.cmInstallments.length) {
+			if (data.cmInstallments.length && data.unitId != null) {
 				name = 'installments'
 				arrowCheck[name] = false
 				this.setInstallmentsDateArray(data.no_of_installments);
@@ -194,7 +196,7 @@ class Payments extends Component {
 				})
 			}
 
-			if (data.payment && data.payment.length) {
+			if (data.payment && data.payment.length && data.unitId != null) {
 				name = 'payments'
 				arrowCheck[name] = false
 				this.setPaymentDateArray(data.payment.length);
@@ -245,7 +247,7 @@ class Payments extends Component {
 		const { getAllProject } = this.state
 		var getSpecific = getAllProject && getAllProject.items.filter((item) => { return item.id == id && item })
 		this.setState({
-			checkMonthlyOption: getSpecific && getSpecific[0].monthly_installment_availablity === 'yes' ? true : false
+			checkMonthlyOption: getSpecific && getSpecific.length && getSpecific[0].monthly_installment_availablity === 'yes' ? true : false
 		})
 	}
 
@@ -453,10 +455,12 @@ class Payments extends Component {
 			totalInstalments,
 			unitDetailsData
 		} = this.state
+		const { lead } = this.props
 		let newFormData = { ...formData }
 		newFormData[name] = value
 		if (name === 'projectId') {
 			this.getSpecificProject(value)
+			this.apiCallForNewDetails('', 'noOfInstallments')
 		}
 		if (name === 'discount') {
 			arrowCheck[name] = true
@@ -482,6 +486,9 @@ class Payments extends Component {
 				this.setState({
 					modalVisible: !modalVisible,
 					checkPaymentTypeValue: value,
+					possessionCharges: null,
+				},() => {
+					this.discountPayment()
 				})
 			}
 			if (paymentFiledsArray.length === 0) {
@@ -491,6 +498,8 @@ class Payments extends Component {
 		if (name === 'possessionCharges') {
 			this.setState({
 				possessionCharges: value
+			},()=>{
+				this.discountPayment()
 			})
 		}
 		if (name === 'discountPercentage' && unitDetailsData != '') {
@@ -499,6 +508,9 @@ class Payments extends Component {
 				discountAmount: discountAmount,
 				discountedPrice: unitDetailsData.unit_price - discountAmount
 			})
+		}
+		if (name === 'installmentDue') {
+
 		}
 
 		this.setState({ formData: newFormData, arrowCheck }, () => {
@@ -514,12 +526,17 @@ class Payments extends Component {
 				this.readOnly(value)
 				this.submitValues('unitId')
 				this.getUnitDetailsThroughId(value)
+				if (lead.project != null && lead.project.installment_plan != null) {
+					var totalInstallments = this.noOfInstallments(lead.project.installment_plan)
+					this.instalmentsField(totalInstallments)
+				}
 			}
 			if (name === 'installmentDue') {
+				if (lead.project != null && lead.project.installment_plan != null) {
+					var totalInstallments = this.noOfInstallments(lead.project.installment_plan)
+					this.instalmentsField(totalInstallments)
+				}
 				this.submitValues(name)
-			}
-			if (name === 'possessionCharges') {
-				this.discountPayment()
 			}
 			if (name === 'discountPercentage') {
 				this.discountPayment(newFormData)
@@ -583,7 +600,7 @@ class Payments extends Component {
 
 	formSubmit = () => {
 		const { lead } = this.props
-		const { formData, totalInstalments, remainingPayment, readOnly, paymentFiledsArray } = this.state
+		const { formData, totalInstalments, remainingPayment, readOnly, paymentFiledsArray,possessionCharges } = this.state
 		let body = {
 			discount: formData.discount ? parseInt(formData.discount) : null,
 			downPayment: formData.downPayment ? parseInt(formData.downPayment) : null,
@@ -593,16 +610,19 @@ class Payments extends Component {
 			installments: totalInstalments.length > 0 ? totalInstalments : paymentFiledsArray.length > 0 ? paymentFiledsArray : null,
 			no_of_installments: totalInstalments.length ? totalInstalments.length : null,
 			remainingPayment: remainingPayment,
+			possession_charges: possessionCharges,
 		}
-		axios.patch(`/api/leads/project?id=${lead.id}`, body)
+		var leadId = []
+		leadId.push(lead.id)
+		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
 			.then((res) => {
 				if (remainingPayment <= 0 && remainingPayment != 'no' && readOnly.totalPrice != '') {
 					this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 				} else {
 					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 				}
-			}).catch(() => {
-				console.log('Some thing went wrong!!')
+			}).catch((error) => {
+				console.log('Some thing went wrong!!!', error.message)
 			})
 	}
 
@@ -633,17 +653,19 @@ class Payments extends Component {
 		let newdownPaymentDateStatus = downPaymentDateStatus
 		let newdateStatusForPayments = [...dateStatusForPayments]
 		let newdateStatusForInstallments = [...dateStatusForInstallments]
+		var leadId = []
+		leadId.push(lead.id)
 		if (name === 'projectId') {
-			body = { projectId: formData[name] }
+			body = { projectId: formData[name], }
 		}
 		if (name === 'floorId') {
-			body = { floorId: formData[name] }
+			body = { floorId: formData[name], }
 		}
 		if (name === 'unitId') {
-			body = { unitId: formData[name] }
+			body = { unitId: formData[name], }
 		}
 		if (name === 'discount') {
-			body = { discount: formData[name] ? formData[name] : null, remainingPayment: remainingPayment }
+			body = { discount: formData[name] ? formData[name] : null, remainingPayment: remainingPayment, }
 			newArrowCheck[name] = false
 			this.formatStatusChange(name, true)
 		}
@@ -654,7 +676,8 @@ class Payments extends Component {
 			body = {
 				possession_charges: possessionCharges,
 				unitId: formData['unitId'],
-				remainingPayment: remainingPayment
+				remainingPayment: remainingPayment,
+
 			}
 			this.formatStatusChange(name, true)
 		}
@@ -668,6 +691,7 @@ class Payments extends Component {
 				discounted_price: discountedPrice ? discountedPrice : null,
 				unitStatus: 'Token',
 				unitId: formData['unitId'],
+
 			}
 			this.currentDate(name)
 			newArrowCheck[name] = false
@@ -682,7 +706,8 @@ class Payments extends Component {
 				downPayment: formData[name] ? formData[name] : null,
 				remainingPayment: remainingPayment,
 				unitStatus: formData['installmentDue'] === 'quarterly' ? 'Sold on Installment Plan' : 'Sold on Monthly Installments',
-				unitId: formData['unitId']
+				unitId: formData['unitId'],
+
 			}
 			this.currentDate(name)
 			newArrowCheck[name] = false
@@ -691,10 +716,15 @@ class Payments extends Component {
 			this.formatStatusChange(name, true)
 		}
 		if (name === 'no_installments') {
-			body = { no_of_installments: instalments, remainingPayment: remainingPayment }
+			body = { no_of_installments: instalments, remainingPayment: remainingPayment, }
 		}
 		if (name === 'payments') {
-			body = { installments: paymentFiledsArray.length ? paymentFiledsArray : null, remainingPayment: remainingPayment, unitStatus: formData.unitStatus, unitId: unitDetailsData.id }
+			body = {
+				installments: paymentFiledsArray.length ? paymentFiledsArray : null,
+				remainingPayment: remainingPayment,
+				unitStatus: formData.unitStatus,
+				unitId: unitDetailsData.id,
+			}
 			newArrowCheck[name] = false
 			newdateStatusForPayments[arrayName].name = arrayName
 			newdateStatusForPayments[arrayName].status = true
@@ -704,19 +734,27 @@ class Payments extends Component {
 			newdateStatusForInstallments[arrayName].name = arrayName
 			newdateStatusForInstallments[arrayName].status = true
 			this.formatStatusChange(arrayName, true, name);
-			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment }
+			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment, }
 			newArrowCheck[name] = false
 		}
 		// console.log(body)
-		axios.patch(`/api/leads/project?id=${lead.id}`, body)
+		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
 			.then((res) => {
-				if (name === 'installments') {
+				if (name === 'installments' || name === 'payments') {
 					axios.get(`/api/leads/project/byId?id=${lead.id}`)
 						.then((resp) => {
-							var newtotalInstallments = resp.data.cmInstallments
-							this.setState({
-								totalInstalments: newtotalInstallments
-							})
+							if (name === 'installments') {
+								var newtotalInstallments = resp.data.cmInstallments
+								this.setState({
+									totalInstalments: newtotalInstallments
+								})
+							}
+							if (name === 'payments') {
+								var newtotalPayments = resp.data.payment
+								this.setState({
+									paymentFiledsArray: newtotalPayments
+								})
+							}
 						})
 				}
 
@@ -732,7 +770,7 @@ class Payments extends Component {
 					dateStatusForPayments: newdateStatusForPayments,
 				})
 			}).catch((error) => {
-				console.log('Some thing went wrong!1!!', error)
+				console.log('Some thing went wrong!!!!', error)
 			})
 	}
 
@@ -750,8 +788,10 @@ class Payments extends Component {
 		let body = {
 			reasons: selectedReason
 		}
+		var leadId = []
+		leadId.push(lead.id)
 		if (selectedReason && selectedReason !== '') {
-			axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
+			axios.patch(`/api/leads/project`, body, { params: { id: leadId } }).then(res => {
 				this.setState({ isVisible: false }, () => {
 					helper.successToast(`Lead Closed`)
 					navigation.navigate('Leads');
@@ -759,6 +799,9 @@ class Payments extends Component {
 			}).catch(error => {
 				console.log(error);
 			})
+		}
+		else{
+			alert('Please select a reason for lead closure!')
 		}
 	}
 
@@ -807,7 +850,6 @@ class Payments extends Component {
 
 	deletePayments = (checkPaymentTypeValue) => {
 		const { lead } = this.props
-
 		if (checkPaymentTypeValue === 'installments') {
 			this.handleForm('installments', 'paymentType'), () => {
 				this.setState({
@@ -826,6 +868,7 @@ class Payments extends Component {
 					modalVisible: false,
 					totalInstalments: [],
 					instalments: '',
+					possessionCharges: null,
 				}, () => {
 					this.submitValues('payments')
 					this.discountPayment()
@@ -835,7 +878,9 @@ class Payments extends Component {
 		}
 
 		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
-			.then((res) => { })
+			.then((res) => {
+				this.navigateTo();
+			 })
 
 	}
 
@@ -1074,7 +1119,9 @@ class Payments extends Component {
 					if (name === 'possessionCharges') {
 						if (data.unit != null) {
 							this.setState({
-								possessionCharges: data.unit.possession_charges,
+								possessionCharges: data.possession_charges,
+							},()=>{
+								//console.log(this.state.possessionCharges)
 							})
 						}
 					}
@@ -1106,7 +1153,7 @@ class Payments extends Component {
 							this.discountPayment(formData)
 						})
 					}
-					
+
 
 					if (arrayName === 'payments') {
 						newpaymentFiledsArray[name].installmentAmount = data.payment && data.payment.length > name ? data.payment[name].installmentAmount : ''
@@ -1117,6 +1164,12 @@ class Payments extends Component {
 						this.setState({
 							dateStatusForPayments: newdateStatusForPayments,
 							paymentFiledsArray: newpaymentFiledsArray,
+						})
+					}
+
+					if (name === 'noOfInstallments') {
+						this.setState({
+							installments: data.project != null && data.project.installment_plan != null ? data.project.installment_plan : ''
 						})
 					}
 

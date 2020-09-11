@@ -876,7 +876,9 @@ class Payments extends Component {
 		}
 
 		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
-			.then((res) => { })
+			.then((res) => {
+				this.props.navigation.navigate('Leads');
+			 })
 
 	}
 

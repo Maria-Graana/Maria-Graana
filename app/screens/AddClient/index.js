@@ -230,14 +230,19 @@ class AddClient extends Component {
         formData[name] = value
         this.setState({ formData, contactNumberCheck: name })
     }
-
     call = (body) => {
         const { contacts } = this.props
         let response = helper.contacts(body.phone, contacts)
         if (!response) helper.addContact(body)
         else console.log('Contact is Already Saved!')
     }
-
+    checkUndefined = (callingCode) => {
+        if (callingCode) {
+            let withoutPlus = callingCode.replace('+', '')
+            callingCode = callingCode.startsWith('+') ? callingCode : "+" + callingCode
+            return withoutPlus === 'undefined' || !withoutPlus ? '+92' : callingCode
+        } else return callingCode = '+92'
+    }
     createPayload = () => {
         let {
             formData,
@@ -248,28 +253,28 @@ class AddClient extends Component {
             callingCode1,
             callingCode2,
         } = this.state
-        callingCode = callingCode.startsWith('+') ? callingCode : "+" + callingCode
-        callingCode1 = callingCode1.startsWith('+') ? callingCode1 : "+" + callingCode1
-        callingCode2 = callingCode2.startsWith('+') ? callingCode2 : "+" + callingCode2
+        callingCode = this.checkUndefined(callingCode)
+        callingCode1 = this.checkUndefined(callingCode1)
+        callingCode2 = this.checkUndefined(callingCode2)
         let body = {
             first_name: helper.capitalize(formData.firstName),
             last_name: helper.capitalize(formData.lastName),
             email: formData.email,
             cnic: formData.cnic,
             phone: {
-                countryCode: countryCode,
+                countryCode: callingCode === '+92' ? 'PK' : countryCode,
                 phone: formData.contactNumber != '' ? callingCode + '' + formData.contactNumber : '',
                 dialCode: callingCode,
             },
             address: formData.address,
             secondary_address: formData.secondaryAddress,
             contact1: {
-                countryCode: countryCode1,
+                countryCode: callingCode1 === '+92' ? 'PK' : countryCode1,
                 contact1: formData.contact1 != '' ? callingCode1 + '' + formData.contact1 : null,
                 dialCode: callingCode1,
             },
             contact2: {
-                countryCode: countryCode2,
+                countryCode: callingCode2 === '+92' ? 'PK' : countryCode2,
                 contact2: formData.contact2 != '' ? callingCode2 + '' + formData.contact2 : null,
                 dialCode: callingCode2,
             }

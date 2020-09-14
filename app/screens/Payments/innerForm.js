@@ -283,7 +283,6 @@ class InnerForm extends Component {
                     {/* **************************************** */}
                     <View style={[AppStyles.mainInputWrap]}>
                       <View style={[AppStyles.inputWrap]}>
-                        {console.log('+++++++++===',formData.unitStatus)}
                         <PickerComponent onValueChange={handleForm} data={lead.project && lead.project.rent_available === 'no' ? StaticData.planOptions : StaticData.rentalPlanOptions} name={'unitStatus'} enabled={checkForEdit} placeholder='Plan' selectedItem={formData.unitStatus} />
                       </View>
                     </View>

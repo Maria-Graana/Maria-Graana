@@ -569,18 +569,24 @@ class LeadMatch extends React.Component {
     onHandleCloseLead = () => {
         const { navigation, lead } = this.props
         const { selectedReason } = this.state;
-        let payload = Object.create({});
-        payload.reasons = selectedReason;
-        var leadId = []
-        leadId.push(lead.id)
-        axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
-            this.setState({ isVisible: false }, () => {
-                helper.successToast(`Lead Closed`)
-                navigation.navigate('Leads');
-            });
-        }).catch(error => {
-            console.log(error);
-        })
+        if(selectedReason){
+            let payload = Object.create({});
+            payload.reasons = selectedReason;
+            var leadId = []
+            leadId.push(lead.id)
+            axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
+                this.setState({ isVisible: false }, () => {
+                    helper.successToast(`Lead Closed`)
+                    navigation.navigate('Leads');
+                });
+            }).catch(error => {
+                console.log(error);
+            })
+        }
+        else{
+            alert('Please select a reason for lead closure!')
+        }
+       
     }
 
     handleReasonChange = (value) => {

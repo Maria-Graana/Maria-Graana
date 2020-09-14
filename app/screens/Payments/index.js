@@ -111,7 +111,6 @@ class Payments extends Component {
 		let data = lead
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
-		console.log(data)
 		this.setState({
 			readOnly: {
 				totalSize: '',

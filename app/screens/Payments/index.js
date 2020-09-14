@@ -111,7 +111,7 @@ class Payments extends Component {
 		let data = lead
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
-
+		console.log(data)
 		this.setState({
 			readOnly: {
 				totalSize: '',
@@ -126,7 +126,7 @@ class Payments extends Component {
 				token: data.token ? data.token : '',
 				discount: data.discount ? data.discount : '',
 				commisionPayment: '',
-				unitStatus: data.unit != null && data.unit.bookingStatus != 'Available' ? data.unit.bookingStatus : 'Sold on Investment Plan',
+				unitStatus: data.unit != null && data.payment != null && data.payment.length > 0 ? data.unit.bookingStatus : 'Sold on Investment Plan',
 				paymentType: lead && lead.possession_charges != null || lead.cmInstallments.length > 0 || lead.downPayment ? 'installments' : 'full_payment',
 				downPayment: data.downPayment ? data.downPayment : '',
 				discountPercentage: data.unit != null ? data.unit.discount : '',

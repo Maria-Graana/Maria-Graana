@@ -38,6 +38,7 @@ class LeadOffer extends React.Component {
 			selectedReason: '',
 			reasons: [],
 			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+			isVisible: false,
 		}
 	}
 
@@ -177,11 +178,13 @@ class LeadOffer extends React.Component {
 	closeLead = () => {
 		const { user, lead } = this.props;
 		var commissionPayment = this.props.lead.commissionPayment
+		console.log('hhh', commissionPayment)
 		if (user.id === lead.assigned_to_armsuser_id) {
 			if (commissionPayment !== null) {
 				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
 			}
 			else {
+			console.log('close')
 				this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
 			}
 		}
@@ -219,7 +222,7 @@ class LeadOffer extends React.Component {
 
 
 	closeModal = () => {
-		this.setState({ isCloseLeadVisible: false })
+		this.setState({ isVisible: false })
 	}
 
 
@@ -423,7 +426,7 @@ class LeadOffer extends React.Component {
 						selectedReason={selectedReason}
 						changeReason={(value) => this.handleReasonChange(value)}
 						checkValidation={checkReasonValidation}
-						isVisible={isCloseLeadVisible}
+						isVisible={this.state.isVisible}
 						closeModal={() => this.closeModal()}
 						onPress={() => this.onHandleCloseLead()}
 					/>

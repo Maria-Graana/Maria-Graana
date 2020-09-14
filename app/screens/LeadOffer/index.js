@@ -38,7 +38,6 @@ class LeadOffer extends React.Component {
 			selectedReason: '',
 			reasons: [],
 			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
-			isVisible: false,
 		}
 	}
 
@@ -178,14 +177,12 @@ class LeadOffer extends React.Component {
 	closeLead = () => {
 		const { user, lead } = this.props;
 		var commissionPayment = this.props.lead.commissionPayment
-		console.log('hhh', commissionPayment)
 		if (user.id === lead.assigned_to_armsuser_id) {
 			if (commissionPayment !== null) {
-				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 			else {
-			console.log('close')
-				this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 		}
 		else {
@@ -203,7 +200,7 @@ class LeadOffer extends React.Component {
 			var leadId = []
 			leadId.push(lead.id)
 			axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
-				this.setState({ isVisible: false }, () => {
+				this.setState({ isCloseLeadVisible: false }, () => {
 					helper.successToast(`Lead Closed`)
 					navigation.navigate('Leads');
 				});
@@ -222,7 +219,7 @@ class LeadOffer extends React.Component {
 
 
 	closeModal = () => {
-		this.setState({ isVisible: false })
+		this.setState({ isCloseLeadVisible: false })
 	}
 
 
@@ -426,7 +423,7 @@ class LeadOffer extends React.Component {
 						selectedReason={selectedReason}
 						changeReason={(value) => this.handleReasonChange(value)}
 						checkValidation={checkReasonValidation}
-						isVisible={this.state.isVisible}
+						isVisible={isCloseLeadVisible}
 						closeModal={() => this.closeModal()}
 						onPress={() => this.onHandleCloseLead()}
 					/>

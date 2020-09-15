@@ -98,7 +98,7 @@ class SingleSelectionPickerComp extends Component {
 
         let data = [];
         if (searchText !== '' && data.length === 0) {
-            data = fuzzy.filter(searchText, mode === 'city' ? cities : areas, { extract: (e) => e.name })
+            data = fuzzy.filter(searchText, mode === 'city' ? cities : areas, { extract: (e) => e.name + ' ' })
             data = data.map((item) => item.original)
         }
         else {

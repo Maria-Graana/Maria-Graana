@@ -103,11 +103,15 @@ class LeadPropsure extends React.Component {
     ownProperty = (property) => {
         const { user } = this.props
         const { organization } = this.state
-        if (property.assigned_to_armsuser_id) {
-            return user.id === property.assigned_to_armsuser_id
-        }
-        else {
-            return false
+        if (property.arms_id) {
+            if (property.assigned_to_armsuser_id) {
+                return user.id === property.assigned_to_armsuser_id
+            }
+            else {
+                return false
+            }
+        } else {
+            return true
         }
     }
 

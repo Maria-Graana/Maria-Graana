@@ -14,7 +14,7 @@ class MatchTile extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			menuShow: false
+			menuShow: false,
 		}
 	}
 
@@ -68,28 +68,49 @@ class MatchTile extends React.Component {
 		helper.callNumber(newContact, contacts)
 	}
 
-	render() {
-		const { data, isMenuVisible, showCheckBoxes, organization } = this.props
-		const { menuShow } = this.state
+	checkImages = () => {
+		const { data, organization } = this.props
 		let imagesList = []
-		let show = isMenuVisible
-		let phoneNumber = null
-		let totalImages = 0
-		if (organization === 'arms') {
-			if (data.images.length > 0) {
-				totalImages = data.armsPropertyImages && data.armsPropertyImages.length
-				imagesList = data.images.map((item) => {
-					return item.url
-				})
+		if (organization) {
+			if (organization === 'arms') {
+				if (data.images.length > 0) {
+					imagesList = data.images.map((item) => {
+						return item.url
+					})
+				}
+			} else {
+				if (data.property_images.length > 0) {
+					imagesList = data.property_images.map((item) => {
+						return item.url
+					})
+				}
 			}
 		} else {
-			if (data.property_images.length > 0) {
-				totalImages = data.property_images.length
-				imagesList = data.property_images.map((item) => {
-					return item.url
-				})
+			if (data.arms_id) {
+				if (data.images.length > 0) {
+					imagesList = data.images.map((item) => {
+						return item.url
+					})
+				}
+			} else {
+				if (data.property_images.length > 0) {
+					imagesList = data.property_images.map((item) => {
+						return item.url
+					})
+				}
 			}
 		}
+		return imagesList
+	}
+
+	render() {
+		const { data, isMenuVisible, showCheckBoxes } = this.props
+		const { menuShow } = this.state
+		let imagesList = this.checkImages()
+		let show = isMenuVisible
+		let phoneNumber = null
+		let totalImages = imagesList.length
+
 		if (isMenuVisible) {
 			if (data.diaries && data.diaries.length) {
 				if (data.diaries[0].status === 'completed') show = false

@@ -435,7 +435,6 @@ class LeadMatch extends React.Component {
                 return false
             }
         } else return true
-
     }
 
     displayChecks = () => {

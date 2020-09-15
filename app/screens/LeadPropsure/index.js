@@ -111,9 +111,7 @@ class LeadPropsure extends React.Component {
         }
     }
 
-    closeModal = () => {
-        this.setState({ isCloseLeadVisible: false })
-    }
+    closeModal = () => { this.setState({ isVisible: false }) }
 
     showPackageModal = (propertyId) => {
         const { lead, user } = this.props

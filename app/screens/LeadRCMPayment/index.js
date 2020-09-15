@@ -260,8 +260,8 @@ class LeadRCMPayment extends React.Component {
         }
         else {
             Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
-                { text: 'No', style: 'cancel' },
                 { text: 'Yes', onPress: () => this.selectDifferentProperty() },
+                { text: 'No', style: 'cancel' },
             ],
                 { cancelable: false })
         }

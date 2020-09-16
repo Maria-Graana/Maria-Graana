@@ -1,74 +1,14 @@
 import { StyleSheet } from 'react-native'
 
 export default styles = StyleSheet.create({
+  mainFormWrap: {
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
   customTop: {
     top: 7,
     right: 30,
     width: 100,
-  },
-  customRight: {
-    right: 60,
-  },
-  paymentLine: {
-    width: '100%',
-  },
-  dateTextTwo: {
-    position: 'relative',
-    top: 6,
-  },
-  arrowImg: {
-    width: 20,
-    height: 20,
-    resizeMode: 'contain'
-  },
-  checkBtnMain: {
-    position: 'absolute',
-    right: 15,
-    top: 3,
-    zIndex: 2,
-  },
-  customArrowRight: {
-    right: 10,
-  },
-  addMore: {
-    backgroundColor: '#0f73ee',
-    marginTop: 5,
-    marginBottom: 5,
-    width: 150,
-    color: '#fff',
-    textAlign: 'center',
-    padding: 8,
-  },
-  bottomNavMain: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    paddingBottom: 15,
-    paddingTop: 15,
-    marginTop: 15,
-    elevation: -3,
-    shadowOffset: { width: -1, height: -1 },
-    shadowColor: '#33333312',
-    shadowOpacity: 1,
-  },
-  bottomNavBtn: {
-    width: '20%',
-    alignItems: 'center'
-  },
-  bottomNavImg: {
-    resizeMode: 'contain',
-    width: 20,
-    height: 20
-  },
-  bottomNavBtnText: {
-    marginTop: 5,
-    color: '#4E4E4E',
-    fontSize: 12,
-  },
-  heightContainer: {
-    height: '20%'
-  },
-  marginBottomFrom: {
-    paddingBottom: 80,
   },
   maiinDetailBtn: {
     flexDirection: 'row',
@@ -98,5 +38,36 @@ export default styles = StyleSheet.create({
   },
   addMoreBtnMain: {
     flexDirection: 'row'
+  },
+  backgroundBlue: {
+    backgroundColor: '#0070f1',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 8,
+    paddingTop: 8,
+    borderRadius: 4,
+    position: 'relative',
+  },
+  priceValue: {
+    color: '#fff',
+    fontSize: 18,
+    marginTop: 0,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+  },
+  finalPrice: {
+    marginBottom: 2,
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+  },
+  sidePriceFormat: {
+    position: 'absolute',
+    right: 20,
+    bottom: 12,
+    color: '#fff',
+    fontWeight: 'bold',
+    letterSpacing: 2,
   },
 });

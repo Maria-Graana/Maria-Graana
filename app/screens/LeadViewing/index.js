@@ -40,6 +40,7 @@ class LeadViewing extends React.Component {
 			// for the lead close dialog
 			isCloseLeadVisible: false,
 			checkReasonValidation: false,
+			organization: 'arms',
 			selectedReason: '',
 			reasons: [],
 			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
@@ -99,11 +100,15 @@ class LeadViewing extends React.Component {
 	ownProperty = (property) => {
 		const { user } = this.props
 		const { organization } = this.state
-		if (property.assigned_to_armsuser_id) {
-			return user.id === property.assigned_to_armsuser_id
-		}
-		else {
-			return false
+		if (property.arms_id) {
+			if (property.assigned_to_armsuser_id) {
+				return user.id === property.assigned_to_armsuser_id
+			}
+			else {
+				return false
+			}
+		} else {
+			return true
 		}
 	}
 

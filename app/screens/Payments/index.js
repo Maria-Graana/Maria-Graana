@@ -54,7 +54,7 @@ class Payments extends Component {
 				paymentType: lead && lead.possession_charges != null || lead.cmInstallments.length > 0 || lead.downPayment ? 'installments' : 'full_payment',
 				payment: '',
 				discountPercentage: lead.unit != null ? lead.unit.discount : '',
-				unitStatus: lead.unit != null ? lead.unit.bookingStatus : '',
+				unitStatus: lead.unit != null ? lead.unit.bookingStatus : 'Sold on Investment Plan',
 				installmentDue: lead && lead.installmentDue === null || lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
 			},
 			instalments: lead.no_of_installments ? lead.no_of_installments : '',
@@ -111,7 +111,6 @@ class Payments extends Component {
 		let data = lead
 		let newtokenDateStatus = tokenDateStatus
 		let newdownPaymentDateStatus = downPaymentDateStatus
-
 		this.setState({
 			readOnly: {
 				totalSize: '',
@@ -126,6 +125,7 @@ class Payments extends Component {
 				token: data.token ? data.token : '',
 				discount: data.discount ? data.discount : '',
 				commisionPayment: '',
+				unitStatus: data.unit != null && data.payment != null && data.payment.length > 0 ? data.unit.bookingStatus : 'Sold on Investment Plan',
 				paymentType: lead && lead.possession_charges != null || lead.cmInstallments.length > 0 || lead.downPayment ? 'installments' : 'full_payment',
 				downPayment: data.downPayment ? data.downPayment : '',
 				discountPercentage: data.unit != null ? data.unit.discount : '',

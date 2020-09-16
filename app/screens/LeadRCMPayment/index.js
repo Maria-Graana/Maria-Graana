@@ -61,6 +61,7 @@ class LeadRCMPayment extends React.Component {
             comissionDateStatus: false,
             comissionPriceFromat: true,
             monthlyFormatStatus: true,
+            organization: 'arms',
         }
     }
 
@@ -182,11 +183,15 @@ class LeadRCMPayment extends React.Component {
     ownProperty = (property) => {
         const { user } = this.props
         const { organization } = this.state
-        if (property.assigned_to_armsuser_id) {
-            return user.id === property.assigned_to_armsuser_id
-        }
-        else {
-            return false
+        if (property.arms_id) {
+            if (property.assigned_to_armsuser_id) {
+                return user.id === property.assigned_to_armsuser_id
+            }
+            else {
+                return false
+            }
+        } else {
+            return true
         }
     }
 
@@ -399,7 +404,7 @@ class LeadRCMPayment extends React.Component {
         const { lead, selectedReason } = this.state;
         let payload = Object.create({});
         payload.reasons = selectedReason;
-        if(selectedReason!==''){
+        if (selectedReason !== '') {
             var leadId = []
             leadId.push(lead.id)
             axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
@@ -410,10 +415,10 @@ class LeadRCMPayment extends React.Component {
                 console.log(error);
             })
         }
-        else{
+        else {
             alert('Please select a reason for lead closure!')
         }
-      
+
     }
 
     handleForm = (value, name) => {

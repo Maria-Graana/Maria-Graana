@@ -31,6 +31,7 @@ class LeadPropsure extends React.Component {
             selectedPackage: '',
             packages: StaticData.propsurePackages,
             selectedPropertyId: null,
+            selectedProperty: null,
             selectedPropsureId: null,
             matchData: [],
             file: null,
@@ -64,20 +65,19 @@ class LeadPropsure extends React.Component {
                 .then((res) => {
                     matches = helper.propertyCheck(res.data.rows)
                     this.setState({
-                        loading: false,
                         matchData: matches,
-                        selectedPropertyId: null,
-                        selctedPropsureId: null,
-                        selectedPackage: '',
                         progressValue: rcmProgressBar[lead.status]
                     })
                 })
                 .catch((error) => {
                     console.log(error)
+
+                }).finally(() => {
                     this.setState({
                         loading: false,
                         selectedPropertyId: null,
                         selctedPropsureId: null,
+                        selectedProperty: null,
                         selectedPackage: ''
                     })
                 })
@@ -117,7 +117,7 @@ class LeadPropsure extends React.Component {
 
     closeModal = () => { this.setState({ isVisible: false }) }
 
-    showPackageModal = (propertyId) => {
+    showPackageModal = (property) => {
         const { lead, user } = this.props
         if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
             helper.leadClosedToast();
@@ -126,15 +126,14 @@ class LeadPropsure extends React.Component {
             helper.leadNotAssignedToast();
         }
         else {
-            this.setState({ isVisible: true, selectedPropertyId: propertyId, checkPackageValidation: false });
+            this.setState({ isVisible: true, selectedPropertyId: property.id, selectedProperty: property, checkPackageValidation: false });
         }
     }
 
 
     onHandleRequestVerification = () => {
         const { lead } = this.props
-        const { selectedPackage, selectedPropertyId } = this.state;
-
+        const { selectedPackage, selectedPropertyId, selectedProperty } = this.state;
         if (selectedPackage === '') {
             this.setState({
                 checkPackageValidation: true
@@ -144,14 +143,18 @@ class LeadPropsure extends React.Component {
             this.closeModal();
             const body = {
                 packageName: selectedPackage,
-                propertyId: selectedPropertyId
+                propertyId: selectedPropertyId,
+                pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
+                org : selectedProperty.arms_id ? 'arms' : 'graana',
+                name: selectedProperty.arms_id ? selectedProperty.armsuser.firstName + ' ' + selectedProperty.armsuser.lastName : selectedProperty.user.first_name + ' ' + selectedProperty.user.last_name,
+                contact: selectedProperty.arms_id ? selectedProperty.armsuser.phoneNumber : selectedProperty.user.phone,
             }
             axios.post(`api/leads/propsure/${lead.id}`, body).then(response => {
                 this.fetchLead()
                 this.fetchProperties();
             }).catch(error => {
                 console.log(error);
-                this.setState({ selectedPropertyId: null, selectedPackage: '' });
+                this.setState({ selectedPropertyId: null, selectedPackage: '', selectedProperty: null });
             })
 
         }
@@ -234,7 +237,7 @@ class LeadPropsure extends React.Component {
 
     renderPropsureVerificationView = (item) => {
         return (
-            <TouchableOpacity key={item.id.toString()} onPress={() => this.showPackageModal(item.id)}
+            <TouchableOpacity key={item.id.toString()} onPress={() => this.showPackageModal(item)}
                 style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]} activeOpacity={0.7}>
                 <Text style={styles.propsureVerificationTextStyle}>
                     PROPSURE VERIFICATION

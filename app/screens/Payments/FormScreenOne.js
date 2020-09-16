@@ -31,6 +31,9 @@ class InnerForm extends Component {
       handleForm,
       openUnitDetailsModal,
       paymentPlan,
+      unitPrice,
+      currencyConvert,
+      submitFirstScreen,
     } = this.props
     return (
       <SafeAreaView style={styles.removePad}>
@@ -67,10 +70,11 @@ class InnerForm extends Component {
             {/* **************************************** */}
             <SimpleInputText
               name={'unitPrice'}
+              fromatName={'unitPrice'}
               placeholder={'Unit Price'}
               label={'UNIT PRICE'}
-              value={formData.unitPrice}
-              formatValue={formData.unitPrice}
+              value={unitPrice}
+              formatValue={unitPrice}
               editable={false}
               keyboardType={'numeric'}
             />
@@ -82,26 +86,46 @@ class InnerForm extends Component {
               label={'DISCOUNT'}
               value={formData.discount}
               keyboardType={'numeric'}
-              formatValue={'2000000'}
+              onChangeHandle={handleForm}
+              formatValue={formData.discountedPrice}
+              fromatName={false}
             />
 
             <View>
 
             </View>
+
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
-              <View style={styles.backgroundBlue}>
-                <Text style={styles.finalPrice}>FINAL PRICE</Text>
-                <Text style={styles.priceValue}>100,00,00</Text>
-                <Text style={styles.sidePriceFormat}>{formatPrice('10000000')}</Text>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent onValueChange={handleForm} data={paymentPlan} name={'paymentPlan'} placeholder='Payment Plan' selectedItem={formData.paymentPlan} />
               </View>
             </View>
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
-              <View style={[AppStyles.inputWrap]}>
-                <PickerComponent onValueChange={handleForm} data={paymentPlan} name={'floorId'} placeholder='Payment Plan' selectedItem={formData.floorId} />
-              </View>
+
+              {
+                formData.finalPrice === null ?
+                  <View style={styles.backgroundBlue}>
+                    <Text style={styles.finalPrice}>FINAL PRICE</Text>
+                    <Text style={styles.priceValue}>{currencyConvert(unitPrice != null ? unitPrice : '')}</Text>
+                    <Text style={styles.sidePriceFormat}>{formatPrice(unitPrice != null ? unitPrice : '')}</Text>
+                  </View>
+                  :
+                  <View style={styles.backgroundBlue}>
+                    <Text style={styles.finalPrice}>FINAL PRICE</Text>
+                    <Text style={styles.priceValue}>{currencyConvert(formData.finalPrice != null ? formData.finalPrice : '')}</Text>
+                    <Text style={styles.sidePriceFormat}>{formatPrice(formData.finalPrice != null ? formData.finalPrice : '')}</Text>
+                  </View>
+              }
+            </View>
+
+            {/* **************************************** */}
+            <View style={[AppStyles.mainInputWrap]}>
+              <TouchableOpacity style={styles.bookNowBtn} onPress={() => { submitFirstScreen() }}>
+                <Text style={styles.bookNowBtnText}>BOOK NOW</Text>
+              </TouchableOpacity>
             </View>
 
 

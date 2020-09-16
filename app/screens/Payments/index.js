@@ -14,6 +14,7 @@ import { setlead } from '../../actions/lead';
 // import PaymentAlert from '../../components/PaymentAlert'
 import CMBottomNav from '../../components/CMBottomNav'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
+import { cos } from 'react-native-reanimated';
 
 
 class Payments extends Component {
@@ -29,12 +30,13 @@ class Payments extends Component {
 			formData: {
 				projectId: null,
 				floorId: null,
-				unitId: null,
 				discount: null,
-				unitPrice: '1200000',
+				discountedPrice: null,
+				finalPrice: null,
+				paymentPlan: null,
 			},
-			showStyling: '',
-			discountFormat: true,
+			unitId: null,
+			unitPrice: null,
 			checkPaymentPlan: {
 				years: lead.project != null && lead.project.installment_plan != null || '' ? lead.project.installment_plan : null,
 				monthly: lead.project != null && lead.project.monthly_installment_availablity === 'yes' ? true : false,
@@ -50,7 +52,7 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects()
 		this.setPaymentPlanArray()
-		// console.log(this.props.lead)
+		// console.log(this.props.lead.unit)
 	}
 
 	fetchLead = () => {
@@ -102,7 +104,6 @@ class Payments extends Component {
 				this.setState({
 					getUnit: array,
 					allUnits: res.data.rows,
-					unitDetailsData: res.data.rows,
 				})
 			})
 	}
@@ -114,6 +115,16 @@ class Payments extends Component {
 		this.setState({
 			unitDetailModal: status,
 			unitDetailsData: object,
+		})
+	}
+
+
+	setUnitPrice = (id) => {
+		const { allUnits } = this.state
+		let object = {};
+		object = allUnits.find((item) => { return item.id == id && item })
+		this.setState({
+			unitPrice: object.unit_price,
 		})
 	}
 
@@ -139,7 +150,7 @@ class Payments extends Component {
 	}
 
 	handleForm = (value, name) => {
-		const { formData } = this.state
+		const { formData, unitPrice } = this.state
 
 		// Set Values In form Data
 		const newFormData = { ...formData }
@@ -155,6 +166,66 @@ class Payments extends Component {
 			this.getUnits(value, formData.projectId)
 		}
 
+		//Set Selected Unit Details
+		if (name === 'unitId') {
+			this.setUnitPrice(value)
+		}
+
+		//Set Discount Price
+		if (name === 'discount') {
+			var percentFormula = this.percentFormula(this.state.unitPrice, value)
+			var discountedPrice = unitPrice - percentFormula
+			newFormData['discountedPrice'] = discountedPrice
+			newFormData['finalPrice'] = percentFormula
+		}
+
+		this.setState({
+			formData: newFormData,
+		}, () => {
+
+			// when Project id chnage the unit filed will be refresh
+			if (name === 'projectId' && formData.projectId != null) {
+				this.refreshUnitPrice(name)
+			}
+
+			// when floor id chnage the unit filed will be refresh
+			if (name === 'floorId' && formData.floorId != null) {
+				this.refreshUnitPrice(name)
+			}
+
+			// when floor id chnage the unit filed will be refresh
+			if (name === 'unitId' && formData.unitId != null) {
+				this.refreshUnitPrice(name)
+			}
+		})
+	}
+
+	refreshUnitPrice = (name) => {
+		const { formData } = this.state
+		var newFormData = { ...formData }
+		if (name === 'projectId') {
+			newFormData['floorId'] = 'no'
+			newFormData['unitId'] = 'no'
+			newFormData['discount'] = null
+			newFormData['finalPrice'] = null
+			newFormData['discountedPrice'] = null
+			this.setState({ unitPrice: null, })
+		}
+
+		if (name === 'floorId') {
+			newFormData['unitId'] = 'no'
+			newFormData['discount'] = null
+			newFormData['finalPrice'] = null
+			newFormData['discountedPrice'] = null
+			this.setState({ unitPrice: null, })
+		}
+
+		if (name === 'unitId') {
+			newFormData['discount'] = null
+			newFormData['finalPrice'] = null
+			newFormData['discountedPrice'] = null
+		}
+
 		this.setState({
 			formData: newFormData,
 		})
@@ -165,7 +236,30 @@ class Payments extends Component {
 		return parseInt(result);
 	}
 
+	currencyConvert = (x) => {
+		x = x.toString();
+		var lastThree = x.substring(x.length - 3);
+		var otherNumbers = x.substring(0, x.length - 3);
+		if (otherNumbers != '')
+			lastThree = ',' + lastThree;
+		var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+		return res;
+	}
 
+	submitFirstScreen = () => {
+		const { lead } = this.props
+		var body = {
+			...this.state.formData,
+			unitPrice: this.state.unitPrice,
+			unitStatus: 'Hold'
+		}
+		var leadId = []
+		leadId.push(lead.id)
+		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+			.then((res) => {
+				console.log('done')
+			})
+	}
 
 	render() {
 		const {
@@ -177,9 +271,8 @@ class Payments extends Component {
 			unitDetailsData,
 			formData,
 			paymentPlan,
-			checkPaymentPlan,
+			unitPrice,
 		} = this.state
-		console.log(paymentPlan)
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -187,9 +280,12 @@ class Payments extends Component {
 					getProject={getProject}
 					getFloors={getFloors}
 					getUnit={getUnit}
+					unitPrice={unitPrice}
 					formData={formData}
 					paymentPlan={paymentPlan}
+					currencyConvert={this.currencyConvert}
 					handleForm={this.handleForm}
+					submitFirstScreen={this.submitFirstScreen}
 					openUnitDetailsModal={this.openUnitDetailsModal}
 				/>
 				{

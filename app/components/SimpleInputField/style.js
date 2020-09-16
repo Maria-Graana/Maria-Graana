@@ -7,10 +7,10 @@ export default styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 10,
     marginTop: 10,
-    elevation: 5,
-    shadowOffset: { width: 5, height: 5 },
-    shadowColor: '#33333312',
-    shadowOpacity: 0.5,
+    // elevation: 5,
+    // shadowOffset: { width: 5, height: 5 },
+    // shadowColor: '#33333312',
+    // shadowOpacity: 0.5,
   },
   paddingTopBottom: {
     paddingTop: 15,
@@ -35,7 +35,7 @@ export default styles = StyleSheet.create({
   },
   inputTextStyle: {
     width: '100%',
-    height: 15,
+    height: 20,
     borderBottomLeftRadius: 6,
     borderTopLeftRadius: 6,
     letterSpacing: 2,

@@ -90,13 +90,12 @@ class AreaPickerScreen extends React.Component {
         let data = [];
 
         if (searchText !== '' && data.length === 0) {
-            data = fuzzy.filter(searchText, areas, { extract: (e) => e.name })
+            data = fuzzy.filter(searchText, areas, { extract: (e) => e.name + ' ' })
             data = data.map((item) => item.original)
         }
         else {
             data = areas;
         }
-
         return (
             !loading ?
                 <View style={[AppStyles.container, { paddingHorizontal: 0, backgroundColor: AppStyles.bgcWhite.backgroundColor }]}>

@@ -131,11 +131,11 @@ class Payments extends Component {
 	setPaymentPlanArray = () => {
 		const { paymentPlan, checkPaymentPlan } = this.state
 		const array = [];
-		if (checkPaymentPlan.rental === true) {
-			array.push({ value: 'Sold on Rental Plan', name: 'Rental Plan' })
-		}
 		if (checkPaymentPlan.investment === true) {
 			array.push({ value: 'Sold on Investment Plan', name: 'Investment Plan' })
+		}
+		if (checkPaymentPlan.rental === true) {
+			array.push({ value: 'Sold on Rental Plan', name: 'Rental Plan' })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -171,17 +171,16 @@ class Payments extends Component {
 			this.setUnitPrice(value)
 		}
 
-		//Set Discount Price
-		if (name === 'discount') {
-			var percentFormula = this.percentFormula(this.state.unitPrice, value)
-			var discountedPrice = unitPrice - percentFormula
-			newFormData['discountedPrice'] = discountedPrice
-			newFormData['finalPrice'] = percentFormula
-		}
+
 
 		this.setState({
 			formData: newFormData,
 		}, () => {
+
+			//Set Discount Price
+			if (name === 'discount' || name === 'paymentPlan') {
+				this.calculatedPercentFormula(name, value)
+			}
 
 			// when Project id chnage the unit filed will be refresh
 			if (name === 'projectId' && formData.projectId != null) {
@@ -197,6 +196,39 @@ class Payments extends Component {
 			if (name === 'unitId' && formData.unitId != null) {
 				this.refreshUnitPrice(name)
 			}
+		})
+	}
+
+	calculatedPercentFormula = (name, value) => {
+		const { formData, unitPrice, paymentPlan } = this.state
+		const { lead } = this.props
+
+		const newFormData = { ...formData }
+		newFormData[name] = value
+
+		var totalPrice = unitPrice
+		var frontDiscount = formData.discount
+		var backendDiscount = lead.project.full_payment_discount
+		var grandTotal = ''
+
+		if (name === 'discount') {
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
+			if (value != '') {
+				newFormData['discountedPrice'] = grandTotal
+			} else {
+				newFormData['discountedPrice'] = ''
+			}
+		}
+
+		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
+		} else {
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
+		}
+
+		newFormData['finalPrice'] = grandTotal
+		this.setState({
+			formData: newFormData,
 		})
 	}
 
@@ -259,10 +291,10 @@ class Payments extends Component {
 		}
 		var leadId = []
 		leadId.push(lead.id)
-		// axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
-		// 	.then((res) => {
-		// 		console.log('done')
-		// 	})
+		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+			.then((res) => {
+				console.log('done')
+			})
 	}
 
 	render() {

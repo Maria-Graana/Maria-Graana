@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style'
-import { View, FlatList, Alert } from 'react-native';
+import { View, FlatList, Alert, Keyboard,TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
 import ClientTile from '../../components/ClientTile'
 import AppStyles from '../../AppStyles'
@@ -159,7 +159,7 @@ class Client extends React.Component {
         const { user } = this.props
         let data = [];
         if (searchText !== '' && data && data.length === 0) {
-            data = fuzzy.filter(searchText, customers, { extract: (e) => (e.firstName ? e.firstName + e.lastName : '') })
+            data = fuzzy.filter(searchText, customers, { extract: (e) => (e.firstName ? (e.firstName + ' ' + e.lastName) : '') })
             data = data.map((item) => item.original)
         }
         else {
@@ -167,48 +167,50 @@ class Client extends React.Component {
         }
         return (
             !loading ?
-                <View style={[AppStyles.container, styles.container]}>
-                    <Search placeholder='Search clients here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
-                    {
-                        Ability.canAdd(user.subRole, 'Client') ?
-                            <Fab
-                                active='true'
-                                containerStyle={{ zIndex: 20 }}
-                                style={{ backgroundColor: AppStyles.colors.primaryColor }}
-                                position="bottomRight"
-                                onPress={this.addClient}
-                            >
-                                <Ionicons name="md-add" color="#ffffff" />
-                            </Fab>
-                            :
-                            null
-                    }
-                    {
-                        data && data.length > 0 ?
-                            <FlatList
-                                data={data}
-                                renderItem={(item, index) => (
-                                    <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
-                                )}
-                                onEndReached={() => {
-                                    if (customers.length < totalCustomers) {
-                                        this.setState({
-                                            page: this.state.page + 1,
-                                            onEndReachedLoader: true
-                                        }, () => {
-                                            this.fetchCustomer();
-                                        });
-                                    }
-                                }}
-                                onEndReachedThreshold={0.5}
-                                keyExtractor={(item, index) => item.id.toString()}
-                            />
-                            :
-                            <NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />
-                    }
+                <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                    <View style={[AppStyles.container, styles.container]}>
+                        <Search placeholder='Search clients here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
+                        {
+                            Ability.canAdd(user.subRole, 'Client') ?
+                                <Fab
+                                    active='true'
+                                    containerStyle={{ zIndex: 20 }}
+                                    style={{ backgroundColor: AppStyles.colors.primaryColor }}
+                                    position="bottomRight"
+                                    onPress={this.addClient}
+                                >
+                                    <Ionicons name="md-add" color="#ffffff" />
+                                </Fab>
+                                :
+                                null
+                        }
+                        {
+                            data && data.length > 0 ?
+                                <FlatList
+                                    data={data}
+                                    renderItem={(item, index) => (
+                                        <ClientTile data={item} handleLongPress={this.handleLongPress} onPress={this.navigateTo} />
+                                    )}
+                                    onEndReached={() => {
+                                        if (customers.length < totalCustomers) {
+                                            this.setState({
+                                                page: this.state.page + 1,
+                                                onEndReachedLoader: true
+                                            }, () => {
+                                                this.fetchCustomer();
+                                            });
+                                        }
+                                    }}
+                                    onEndReachedThreshold={0.5}
+                                    keyExtractor={(item, index) => item.id.toString()}
+                                />
+                                :
+                                <NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />
+                        }
 
-                    <OnLoadMoreComponent style={{ backgroundColor: 'white' }} onEndReached={onEndReachedLoader} />
-                </View>
+                        <OnLoadMoreComponent style={{ backgroundColor: 'white' }} onEndReached={onEndReachedLoader} />
+                    </View>
+                </TouchableWithoutFeedback>
                 :
                 <Loader loading={loading} />
         )

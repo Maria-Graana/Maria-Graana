@@ -97,10 +97,12 @@ export default class App extends React.Component {
 	navigateRoutes = (content) => {
 		if (content) {
 			let data = content.data
+			let leadId = data && data.leadId && data.leadId
+			let lead = { id: leadId }
 			if (data.type === 'local') RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
-			if (data.type === 'investLead') RootNavigation.navigateTo('Leads', { screen: 'Invest' })
-			if (data.type === 'buyLead') RootNavigation.navigateTo('Leads', { screen: 'Buy' })
-			if (data.type === 'rentLead') RootNavigation.navigateTo('Leads', { screen: 'Rent' })
+			if (data.type === 'investLead') RootNavigation.navigateTo('LeadDetail', { screen: 'Invest', purposeTab: 'invest', lead: lead })
+			if (data.type === 'buyLead') RootNavigation.navigateTo('LeadDetail', { screen: 'Buy', purposeTab: 'sale', lead: lead })
+			if (data.type === 'rentLead') RootNavigation.navigateTo('LeadDetail', { screen: 'Rent', purposeTab: 'rent', lead: lead })
 			if (data.type === 'diary') RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
 		}
 	}

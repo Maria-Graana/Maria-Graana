@@ -137,6 +137,7 @@ class CMBottomNav extends React.Component {
 							}>
 							<Menu.Item onPress={() => { goToComments() }} icon={require('../../../assets/img/msg.png')} title="Comments" />
 							<Menu.Item onPress={() => { goToAttachments() }} icon={require('../../../assets/img/files.png')} title="Files" />
+							<Menu.Item onPress={() => { goToAttachments() }} icon={require('../../../assets/img/callIcon.png')} title="Call History" />
 						</Menu>
 					</View>
 

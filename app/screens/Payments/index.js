@@ -14,6 +14,7 @@ import { setlead } from '../../actions/lead';
 // import PaymentAlert from '../../components/PaymentAlert'
 import CMBottomNav from '../../components/CMBottomNav'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
+import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import { cos } from 'react-native-reanimated';
 
 
@@ -25,6 +26,7 @@ class Payments extends Component {
 			progressValue: 0,
 			getProject: [],
 			getFloors: [],
+			getAllFloors: [],
 			getUnit: [],
 			allUnits: [],
 			formData: {
@@ -45,6 +47,9 @@ class Payments extends Component {
 				quartarly: true,
 			},
 			paymentPlan: [],
+			openFirstScreenModal: false,
+			firstScreenValidate: false,
+			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Hold' ? false : true,
 		}
 	}
 
@@ -52,7 +57,7 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects()
 		this.setPaymentPlanArray()
-		// console.log(this.props.lead.project)
+		console.log(this.props.lead.unit)
 	}
 
 	fetchLead = () => {
@@ -77,7 +82,7 @@ class Payments extends Component {
 				res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name })) })
 				this.setState({
 					getProject: projectArray,
-					getAllProject: res.data
+					getAllProject: res.data.items
 				})
 			}).catch((error) => {
 				console.log('project')
@@ -91,6 +96,7 @@ class Payments extends Component {
 				res && res.data.rows.map((item, index) => { return (Array.push({ value: item.id, name: item.name })) })
 				this.setState({
 					getFloors: Array,
+					getAllFloors: res.data.rows,
 				})
 			})
 	}
@@ -130,12 +136,14 @@ class Payments extends Component {
 
 	setPaymentPlanArray = () => {
 		const { paymentPlan, checkPaymentPlan } = this.state
+		const { lead } = this.props
 		const array = [];
+
 		if (checkPaymentPlan.investment === true) {
-			array.push({ value: 'Sold on Investment Plan', name: 'Investment Plan' })
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc. ${lead.project.full_payment_discount}%)` })
 		}
 		if (checkPaymentPlan.rental === true) {
-			array.push({ value: 'Sold on Rental Plan', name: 'Rental Plan' })
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc. ${lead.project.full_payment_discount}%)` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -170,8 +178,6 @@ class Payments extends Component {
 		if (name === 'unitId') {
 			this.setUnitPrice(value)
 		}
-
-
 
 		this.setState({
 			formData: newFormData,
@@ -280,8 +286,11 @@ class Payments extends Component {
 
 	submitFirstScreen = () => {
 		const { lead } = this.props
-		const { formData } = this.state
+		const { formData, unitId } = this.state
 		var body = {
+			unitId: unitId,
+			projectId: formData.projectId,
+			floorId: formData.floorId,
 			unitDiscount: formData.discount,
 			discounted_price: formData.discountedPrice,
 			discount_amount: formData.finalPrice,
@@ -291,45 +300,92 @@ class Payments extends Component {
 		}
 		var leadId = []
 		leadId.push(lead.id)
+		console.log(body)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
 			.then((res) => {
-				console.log('done')
+				this.setState({
+					openFirstScreenModal: false,
+					firstScreenDone: false,
+				}, () => {
+					helper.successToast('Lead Booked')
+				})
 			})
+	}
+
+	firstScreenConfirmModal = (status) => {
+		const { formData } = this.state
+		if (formData.projectId != null && formData.floorId != null && formData.unitId != null && formData.paymentPlan != null) {
+			this.setState({
+				openFirstScreenModal: status,
+			})
+		} else {
+			this.setState({
+				firstScreenValidate: true,
+			})
+		}
+
 	}
 
 	render() {
 		const {
 			progressValue,
+			getAllProject,
 			getProject,
 			getFloors,
 			getUnit,
+			allUnits,
 			unitDetailModal,
 			unitDetailsData,
 			formData,
 			paymentPlan,
 			unitPrice,
+			openFirstScreenModal,
+			getAllFloors,
+			firstScreenValidate,
+			unitId,
+			firstScreenDone,
 		} = this.state
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
-				<FormScreenOne
-					getProject={getProject}
-					getFloors={getFloors}
-					getUnit={getUnit}
-					unitPrice={unitPrice}
-					formData={formData}
-					paymentPlan={paymentPlan}
-					currencyConvert={this.currencyConvert}
-					handleForm={this.handleForm}
-					submitFirstScreen={this.submitFirstScreen}
-					openUnitDetailsModal={this.openUnitDetailsModal}
-				/>
+				{
+					firstScreenDone === true &&
+					<FormScreenOne
+						getProject={getProject}
+						getFloors={getFloors}
+						getUnit={getUnit}
+						unitPrice={unitPrice}
+						unitId={unitId}
+						formData={formData}
+						paymentPlan={paymentPlan}
+						firstScreenValidate={firstScreenValidate}
+						currencyConvert={this.currencyConvert}
+						handleForm={this.handleForm}
+						submitFirstScreen={this.submitFirstScreen}
+						openUnitDetailsModal={this.openUnitDetailsModal}
+						firstScreenConfirmModal={this.firstScreenConfirmModal}
+					/>
+				}
+
 				{
 					unitDetailsData &&
 					<UnitDetailsModal
 						active={unitDetailModal}
 						openUnitDetailsModal={this.openUnitDetailsModal}
 						data={unitDetailsData}
+					/>
+				}
+
+				{
+					getAllFloors != '' && getAllProject != '' && allUnits != '' &&
+					<FirstScreenConfirmModal
+						active={openFirstScreenModal}
+						data={formData}
+						getAllProject={getAllProject}
+						getAllFloors={getAllFloors}
+						allUnits={allUnits}
+						firstScreenConfirmModal={this.firstScreenConfirmModal}
+						submitFirstScreen={this.submitFirstScreen}
 					/>
 				}
 			</View>

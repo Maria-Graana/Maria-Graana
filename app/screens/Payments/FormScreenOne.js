@@ -7,8 +7,8 @@ import { connect } from 'react-redux';
 import moment from 'moment'
 import SimpleInputText from '../../components/SimpleInputField'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import StaticData from '../../StaticData';
 import { formatPrice } from '../../PriceFormate';
+import ErrorMessage from '../../components/ErrorMessage'
 
 
 class InnerForm extends Component {
@@ -33,7 +33,9 @@ class InnerForm extends Component {
       paymentPlan,
       unitPrice,
       currencyConvert,
-      submitFirstScreen,
+      firstScreenValidate,
+      firstScreenConfirmModal,
+      unitId,
     } = this.props
     return (
       <SafeAreaView style={styles.removePad}>
@@ -43,6 +45,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
                 <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} placeholder='Project' selectedItem={formData.projectId} />
+                {firstScreenValidate === true && formData.projectId === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
 
@@ -50,6 +53,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
                 <PickerComponent onValueChange={handleForm} data={getFloors} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} />
+                {firstScreenValidate === true && formData.floorId === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
 
@@ -58,6 +62,7 @@ class InnerForm extends Component {
               <View style={styles.maiinDetailBtn}>
                 <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
                   <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} />
+                  {firstScreenValidate === true && unitId === null && <ErrorMessage errorMessage={'Required'} />}
                 </View>
                 <View style={styles.mainDetailViewBtn}>
                   <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.unitId != null && openUnitDetailsModal(formData.unitId, true) }}>
@@ -90,15 +95,13 @@ class InnerForm extends Component {
               formatValue={formData.discountedPrice}
               fromatName={false}
             />
-
-            <View>
-
-            </View>
+            {/* {firstScreenValidate === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />} */}
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
                 <PickerComponent onValueChange={handleForm} data={paymentPlan} name={'paymentPlan'} placeholder='Payment Plan' selectedItem={formData.paymentPlan} />
+                {firstScreenValidate === true && formData.paymentPlan === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
 
@@ -123,7 +126,7 @@ class InnerForm extends Component {
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
-              <TouchableOpacity style={styles.bookNowBtn} onPress={() => { submitFirstScreen() }}>
+              <TouchableOpacity style={styles.bookNowBtn} onPress={() => { firstScreenConfirmModal(true) }}>
                 <Text style={styles.bookNowBtnText}>BOOK NOW</Text>
               </TouchableOpacity>
             </View>

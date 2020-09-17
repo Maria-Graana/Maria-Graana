@@ -67,11 +67,13 @@ export default class App extends React.Component {
 				resolve(config)
 			})
 		)
-		Sentry.init({
-			enableInExpoDevelopment: true,
-			dsn: 'https://d23d9b7296fa43a1ab41150269693c2f@o375514.ingest.sentry.io/5195102',
-		})
-		Sentry.setRelease(Constants.manifest.revisionId)
+		if (config.channel === 'production') {
+			Sentry.init({
+				enableInExpoDevelopment: false,
+				dsn: 'http://95bf407ef0f042b1b985d4efe8a8a75f@ec2-34-229-137-31.compute-1.amazonaws.com/8',
+			})
+			Sentry.setRelease(Constants.manifest.revisionId)
+		}
 		await Font.loadAsync({
 			Roboto: require('native-base/Fonts/Roboto.ttf'),
 			Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
@@ -81,7 +83,6 @@ export default class App extends React.Component {
 			OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
 			...Ionicons.font,
 		})
-
 		YellowBox.ignoreWarnings(['Animated: `useNativeDriver` was not specified'])
 	}
 

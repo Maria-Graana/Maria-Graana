@@ -52,7 +52,7 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects()
 		this.setPaymentPlanArray()
-		// console.log(this.props.lead.unit)
+		// console.log(this.props.lead.project)
 	}
 
 	fetchLead = () => {
@@ -248,17 +248,21 @@ class Payments extends Component {
 
 	submitFirstScreen = () => {
 		const { lead } = this.props
+		const { formData } = this.state
 		var body = {
-			...this.state.formData,
-			unitPrice: this.state.unitPrice,
-			unitStatus: 'Hold'
+			unitDiscount: formData.discount,
+			discounted_price: formData.discountedPrice,
+			discount_amount: formData.finalPrice,
+			unitStatus: 'Hold',
+			installmentDue: formData.paymentPlan,
+			finalPrice: formData.finalPrice,
 		}
 		var leadId = []
 		leadId.push(lead.id)
-		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
-			.then((res) => {
-				console.log('done')
-			})
+		// axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+		// 	.then((res) => {
+		// 		console.log('done')
+		// 	})
 	}
 
 	render() {

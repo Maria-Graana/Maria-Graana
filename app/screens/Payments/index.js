@@ -51,8 +51,8 @@ class Payments extends Component {
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
-			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Hold' ? false : true,
-			// firstScreenDone: false,
+			// firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Hold' ? false : true,
+			firstScreenDone: false,
 			secondScreenData: lead,
 		}
 	}

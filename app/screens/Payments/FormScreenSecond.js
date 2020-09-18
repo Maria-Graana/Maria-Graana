@@ -60,7 +60,7 @@ class FormScreenSecond extends Component {
                   Unit
                 </Text>
                 <Text style={styles.rightDetailsText}>
-                  {data.unit.name}
+                  {data.unit && data.unit.name}
                 </Text>
               </View>
 
@@ -70,7 +70,7 @@ class FormScreenSecond extends Component {
                   Final Price
                 </Text>
                 <Text style={styles.rightDetailsText}>
-                  {formatPrice(data.unit.finalPrice ? data.unit.finalPrice : '')}
+                  {formatPrice(data.unit ? data.unit.finalPrice : '')}
                 </Text>
               </View>
 

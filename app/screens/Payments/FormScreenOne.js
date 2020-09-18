@@ -62,7 +62,7 @@ class InnerForm extends Component {
               <View style={styles.maiinDetailBtn}>
                 <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
                   <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} />
-                  {firstScreenValidate === true && unitId === null && <ErrorMessage errorMessage={'Required'} />}
+                  {firstScreenValidate === true && formData.unitId === null && <ErrorMessage errorMessage={'Required'} />}
                 </View>
                 <View style={styles.mainDetailViewBtn}>
                   <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.unitId != null && openUnitDetailsModal(formData.unitId, true) }}>

@@ -15,6 +15,7 @@ import { setlead } from '../../actions/lead';
 // import PaymentAlert from '../../components/PaymentAlert'
 import CMBottomNav from '../../components/CMBottomNav'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
+import AddPaymentModal from '../../components/AddPaymentModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import { cos } from 'react-native-reanimated';
 
@@ -52,8 +53,9 @@ class Payments extends Component {
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
 			// firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Hold' ? false : true,
-			firstScreenDone: false,
+			firstScreenDone: true,
 			secondScreenData: lead,
+			addPaymentModalToggleState: false,
 		}
 	}
 
@@ -334,6 +336,12 @@ class Payments extends Component {
 
 	}
 
+	addPaymentModalToggle = (status) => {
+		this.setState({
+			addPaymentModalToggleState: status
+		})
+	}
+
 	render() {
 		const {
 			progressValue,
@@ -353,6 +361,7 @@ class Payments extends Component {
 			unitId,
 			firstScreenDone,
 			secondScreenData,
+			addPaymentModalToggleState
 		} = this.state
 		return (
 			<View>
@@ -380,6 +389,8 @@ class Payments extends Component {
 					firstScreenDone === false &&
 					<FormScreenSecond
 						data={secondScreenData}
+						addPaymentModalToggle={this.addPaymentModalToggle}
+						currencyConvert={this.currencyConvert}
 					/>
 				}
 
@@ -387,8 +398,8 @@ class Payments extends Component {
 					unitDetailsData &&
 					<UnitDetailsModal
 						active={unitDetailModal}
-						openUnitDetailsModal={this.openUnitDetailsModal}
 						data={unitDetailsData}
+						openUnitDetailsModal={this.openUnitDetailsModal}
 					/>
 				}
 
@@ -404,6 +415,11 @@ class Payments extends Component {
 						submitFirstScreen={this.submitFirstScreen}
 					/>
 				}
+
+				<AddPaymentModal
+					active={addPaymentModalToggleState}
+					addPaymentModalToggle={this.addPaymentModalToggle}
+				/>
 			</View>
 		)
 	}

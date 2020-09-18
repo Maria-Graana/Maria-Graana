@@ -173,4 +173,7 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
   },
+  scrollHeight: {
+    height: 205,
+  },
 });

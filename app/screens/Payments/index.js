@@ -4,6 +4,7 @@ import axios from 'axios'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
 import FormScreenOne from './FormScreenOne';
+import FormScreenSecond from './FormScreenSecond';
 import StaticData from '../../StaticData';
 import moment from 'moment'
 import { ProgressBar } from 'react-native-paper';
@@ -30,12 +31,13 @@ class Payments extends Component {
 			getUnit: [],
 			allUnits: [],
 			formData: {
-				projectId: null,
+				projectId: lead.project != null ? lead.project.id : null,
 				floorId: null,
 				discount: null,
 				discountedPrice: null,
 				finalPrice: null,
 				paymentPlan: null,
+				unitId: null,
 			},
 			unitId: null,
 			unitPrice: null,
@@ -50,14 +52,18 @@ class Payments extends Component {
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
 			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Hold' ? false : true,
+			// firstScreenDone: false,
+			secondScreenData: lead,
 		}
 	}
 
 	componentDidMount() {
+		const { formData } = this.state
 		this.fetchLead()
 		this.getAllProjects()
 		this.setPaymentPlanArray()
-		console.log(this.props.lead.unit)
+		this.handleForm(formData.projectId, 'projectId')
+		// console.log('hello ============================',this.props.lead.unit)
 	}
 
 	fetchLead = () => {
@@ -123,7 +129,6 @@ class Payments extends Component {
 			unitDetailsData: object,
 		})
 	}
-
 
 	setUnitPrice = (id) => {
 		const { allUnits } = this.state
@@ -288,7 +293,7 @@ class Payments extends Component {
 		const { lead } = this.props
 		const { formData, unitId } = this.state
 		var body = {
-			unitId: unitId,
+			unitId: formData.unitId,
 			projectId: formData.projectId,
 			floorId: formData.floorId,
 			unitDiscount: formData.discount,
@@ -300,15 +305,18 @@ class Payments extends Component {
 		}
 		var leadId = []
 		leadId.push(lead.id)
-		console.log(body)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
 			.then((res) => {
-				this.setState({
-					openFirstScreenModal: false,
-					firstScreenDone: false,
-				}, () => {
-					helper.successToast('Lead Booked')
-				})
+				axios.get(`/api/leads/project/byId?id=${lead.id}`)
+					.then((res) => {
+						this.props.dispatch(setlead(res.data))
+						this.setState({
+							openFirstScreenModal: false,
+							firstScreenDone: false,
+						}, () => {
+							helper.successToast('Lead Booked')
+						})
+					})
 			})
 	}
 
@@ -344,6 +352,7 @@ class Payments extends Component {
 			firstScreenValidate,
 			unitId,
 			firstScreenDone,
+			secondScreenData,
 		} = this.state
 		return (
 			<View>
@@ -364,6 +373,13 @@ class Payments extends Component {
 						submitFirstScreen={this.submitFirstScreen}
 						openUnitDetailsModal={this.openUnitDetailsModal}
 						firstScreenConfirmModal={this.firstScreenConfirmModal}
+					/>
+				}
+
+				{
+					firstScreenDone === false &&
+					<FormScreenSecond
+						data={secondScreenData}
 					/>
 				}
 

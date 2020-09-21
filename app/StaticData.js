@@ -609,6 +609,14 @@ export default StaticData = {
         { value: '9', name: '9' },
         { value: '10', name: '10' }
     ],
+    fullPaymentType: [
+        { value: 'cash', name: 'Cash' },
+        { value: 'cheque', name: 'Cheque' },
+        { value: 'pay-Order', name: 'Pay-Order' },
+        { value: 'Remittance', name: 'Remittance' },
+        { value: 'bank-Transfer', name: 'Back-Transfer' },
+        { value: 'e-Gateyway', name: 'E-Gateyway' },
+    ]
 }
 
 

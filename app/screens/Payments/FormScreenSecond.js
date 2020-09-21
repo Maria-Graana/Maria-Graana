@@ -24,110 +24,116 @@ class FormScreenSecond extends Component {
       data,
       currencyConvert,
       addPaymentModalToggle,
+      editTile,
+      remainingPayment,
     } = this.props
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
           <ScrollView>
-            <View style={styles.firstContainer}>
-              {/* Top Booked Text */}
-              <View style={styles.bookedBtn}>
-                <Text style={styles.bookedBtnText}>
-                  <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> BOOKED
+            <View style={styles.secondContainer}>
+              <View style={[styles.firstContainer]}>
+                {/* Top Booked Text */}
+                <View style={styles.bookedBtn}>
+                  <Text style={styles.bookedBtnText}>
+                    <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> BOOKED
                 </Text>
+                </View>
+
+                {/* Top Details Wrap */}
+                <View style={styles.mainTopDetailsWrap}>
+                  <View style={styles.detailsRow}>
+                    <Text style={styles.leftDetailsText}>
+                      Project
+                      </Text>
+                    <Text style={styles.rightDetailsText}>
+                      {data.project.name}
+                    </Text>
+                  </View>
+
+                  {/* ================================= */}
+                  <View style={styles.detailsRow}>
+                    <Text style={styles.leftDetailsText}>
+                      Floor
+                    </Text>
+                    <Text style={styles.rightDetailsText}>
+                      {data.floor && data.floor.name}
+                    </Text>
+                  </View>
+
+                  {/* ================================= */}
+                  <View style={styles.detailsRow}>
+                    <Text style={styles.leftDetailsText}>
+                      Unit
+                    </Text>
+                    <Text style={styles.rightDetailsText}>
+                      {data.unit && data.unit.name}
+                    </Text>
+                  </View>
+
+                  {/* ================================= */}
+                  <View style={styles.detailsRow}>
+                    <Text style={styles.leftDetailsText}>
+                      Final Price
+                    </Text>
+                    <Text style={styles.rightDetailsText}>
+                      {formatPrice(data.unit ? data.unit.finalPrice : '')}
+                    </Text>
+                  </View>
+
+                  {/* ================================= */}
+                  <View style={styles.detailsRow}>
+                    <Text style={styles.leftDetailsText}>
+                      Payment Plan
+                    </Text>
+                    <Text style={styles.rightDetailsText}>
+                      {data.installmentDue}
+                    </Text>
+                  </View>
+                </View>
+
               </View>
 
-              {/* Top Details Wrap */}
-              <View style={styles.mainTopDetailsWrap}>
-                <View style={styles.detailsRow}>
-                  <Text style={styles.leftDetailsText}>
-                    Project
-                </Text>
-                  <Text style={styles.rightDetailsText}>
-                    {data.project.name}
-                  </Text>
+              <Text style={styles.paymentsHeading}>
+                PAYMENTS
+              </Text>
+
+              <View style={styles.mainPaymentWrap}>
+
+                <View style={styles.paymentTileMain}>
+                  <View style={[styles.tileWrap, styles.scrollHeight]}>
+                    <ScrollView>
+                      {
+                        data && data.payment && data.payment.length > 0 &&
+                        data.payment.map((item, index) => {
+                          return (
+                            <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
+                          )
+                        })
+                      }
+                    </ScrollView>
+                  </View>
                 </View>
 
-                {/* ================================= */}
-                <View style={styles.detailsRow}>
-                  <Text style={styles.leftDetailsText}>
-                    Floor
-                </Text>
-                  <Text style={styles.rightDetailsText}>
-                    {data.floor && data.floor.name}
-                  </Text>
-                </View>
-
-                {/* ================================= */}
-                <View style={styles.detailsRow}>
-                  <Text style={styles.leftDetailsText}>
-                    Unit
-                </Text>
-                  <Text style={styles.rightDetailsText}>
-                    {data.unit && data.unit.name}
-                  </Text>
-                </View>
-
-                {/* ================================= */}
-                <View style={styles.detailsRow}>
-                  <Text style={styles.leftDetailsText}>
-                    Final Price
-                </Text>
-                  <Text style={styles.rightDetailsText}>
-                    {formatPrice(data.unit ? data.unit.finalPrice : '')}
-                  </Text>
-                </View>
-
-                {/* ================================= */}
-                <View style={styles.detailsRow}>
-                  <Text style={styles.leftDetailsText}>
-                    Payment Plan
-                </Text>
-                  <Text style={styles.rightDetailsText}>
-                    {data.installmentDue}
-                  </Text>
-                </View>
+                <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true) }}>
+                  <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                  <Text style={styles.addPaymentBtnText}>ADD {data.payment && data.payment.length > 0 ? "MORE" : ''} PAYMENT</Text>
+                </TouchableOpacity>
               </View>
 
-            </View>
-
-            <Text style={styles.paymentsHeading}>
-              PAYMENTS
-            </Text>
-
-            <View style={styles.mainPaymentWrap}>
-
-              <View style={styles.paymentTileMain}>
-                <View style={[styles.tileWrap, styles.scrollHeight]}>
-                  <ScrollView>
-                    <PaymentTile status={"approved"} currencyConvert={currencyConvert} />
-                    <PaymentTile status={"cancel"} currencyConvert={currencyConvert} />
-                    <PaymentTile status={"approved"} currencyConvert={currencyConvert} />
-                    <PaymentTile status={"pendding"} currencyConvert={currencyConvert} />
-                    <PaymentTile status={"approved"} currencyConvert={currencyConvert} />
-                  </ScrollView>
-                </View>
+              <View style={styles.firstContainer}>
+                <SimpleInputText
+                  name={'remainingPayment'}
+                  fromatName={'remainingPayment'}
+                  placeholder={'Remaining Payment'}
+                  label={'REMAINING PAYMENT'}
+                  value={remainingPayment}
+                  formatValue={remainingPayment}
+                  editable={false}
+                  keyboardType={'numeric'}
+                />
               </View>
-
-              <TouchableOpacity style={styles.addPaymentBtn} onPress={() => {addPaymentModalToggle(true)}}>
-                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                <Text style={styles.addPaymentBtnText}>ADD PAYMENT</Text>
-              </TouchableOpacity>
             </View>
-
-            <View style={styles.firstContainer}>
-              <SimpleInputText
-                name={'remainingPayment'}
-                fromatName={'remainingPayment'}
-                placeholder={'Remaining Payment'}
-                label={'REMAINING PAYMENT'}
-                value={'133344444'}
-                formatValue={'133344444'}
-                editable={false}
-                keyboardType={'numeric'}
-              />
-            </View>
-
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>

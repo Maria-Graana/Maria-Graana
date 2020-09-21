@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, } from 'react-native'
 import styles from './style'
 import { connect } from 'react-redux';
 import { formatPrice } from '../../PriceFormate';
+import moment from 'moment'
 
 class PaymentTile extends React.Component {
 	constructor(props) {
@@ -13,20 +14,24 @@ class PaymentTile extends React.Component {
 	}
 
 	render() {
-		const { status, currencyConvert } = this.props
-		var statusColor = status === 'approved' ? styles.statusGreen : status === 'cancel' ?  styles.statusRed : styles.statusYellow
-		console.log(statusColor)
+		const {
+			currencyConvert,
+			data,
+			count,
+			editTile,
+		} = this.props
+		var statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
 		return (
-			<TouchableOpacity>
+			<TouchableOpacity onPress={() => { editTile(data.id) }}>
 				<View style={styles.tileTopWrap}>
 					<View style={styles.upperLayer}>
-						<Text style={styles.paymnetHeading}>PAYMENT 01 (CHEQUE)</Text>
-						<Text style={[styles.tileStatus, statusColor]}>APPROVED</Text>
+						<Text style={styles.paymnetHeading}>PAYMENT {count + 1} (CHEQUE)</Text>
+						<Text style={[styles.tileStatus, statusColor]}>{data.status}</Text>
 					</View>
 					<View style={styles.bottomLayer}>
-						<Text style={styles.formatPrice}>{currencyConvert('133344444')}</Text>
-						<Text style={styles.totalPrice}>{formatPrice('133344444')}</Text>
-						<Text style={styles.priceDate}>09.9.2020 / 04:06 PM</Text>
+						<Text style={styles.formatPrice}>{currencyConvert(data.installmentAmount)}</Text>
+						<Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
+						<Text style={styles.priceDate}>{moment(data.createdAt).format('MM.DD.YYYY / h:mm a')}</Text>
 					</View>
 				</View>
 			</TouchableOpacity>

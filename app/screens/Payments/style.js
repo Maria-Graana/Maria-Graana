@@ -176,4 +176,10 @@ export default styles = StyleSheet.create({
   scrollHeight: {
     height: 205,
   },
+  secondContainer:{
+    height: '86%',
+  },
+  fullHeight:{
+    height: '100%'
+  },
 });

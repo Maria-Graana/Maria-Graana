@@ -18,6 +18,7 @@ import UnitDetailsModal from '../../components/UnitDetailsModal'
 import AddPaymentModal from '../../components/AddPaymentModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import { cos } from 'react-native-reanimated';
+import { formatPrice } from '../../PriceFormate';
 
 
 class Payments extends Component {
@@ -40,6 +41,12 @@ class Payments extends Component {
 				paymentPlan: null,
 				unitId: null,
 			},
+			secondFormData: {
+				installmentAmount: null,
+				type: '',
+				cmLeadId: lead.id,
+				details: '',
+			},
 			unitId: null,
 			unitPrice: null,
 			checkPaymentPlan: {
@@ -52,10 +59,15 @@ class Payments extends Component {
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
-			// firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Hold' ? false : true,
-			firstScreenDone: true,
+			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Hold' ? false : true,
+			// firstScreenDone: true,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
+			secondCheckValidation: false,
+			editaAble: false,
+			paymentId: null,
+			remainingPayment: lead.remainingPayment != null ? lead.remainingPayment : '',
+			paymentOldValue: null,
 		}
 	}
 
@@ -65,7 +77,6 @@ class Payments extends Component {
 		this.getAllProjects()
 		this.setPaymentPlanArray()
 		this.handleForm(formData.projectId, 'projectId')
-		// console.log('hello ============================',this.props.lead.unit)
 	}
 
 	fetchLead = () => {
@@ -75,7 +86,8 @@ class Payments extends Component {
 			.then((res) => {
 				this.props.dispatch(setlead(res.data))
 				this.setState({
-					progressValue: cmProgressBar[res.data.status] || 0
+					progressValue: cmProgressBar[res.data.status] || 0,
+					secondScreenData: res.data,
 				})
 			})
 			.catch((error) => {
@@ -242,6 +254,7 @@ class Payments extends Component {
 		newFormData['finalPrice'] = grandTotal
 		this.setState({
 			formData: newFormData,
+			remainingPayment: grandTotal,
 		})
 	}
 
@@ -304,6 +317,7 @@ class Payments extends Component {
 			unitStatus: 'Hold',
 			installmentDue: formData.paymentPlan,
 			finalPrice: formData.finalPrice,
+			remainingPayment: formData.finalPrice,
 		}
 		var leadId = []
 		leadId.push(lead.id)
@@ -313,6 +327,7 @@ class Payments extends Component {
 					.then((res) => {
 						this.props.dispatch(setlead(res.data))
 						this.setState({
+							secondScreenData: res.data,
 							openFirstScreenModal: false,
 							firstScreenDone: false,
 						}, () => {
@@ -342,6 +357,130 @@ class Payments extends Component {
 		})
 	}
 
+	secondHandleForm = (value, name) => {
+		const { secondFormData } = this.state
+		const newSecondFormData = secondFormData
+		newSecondFormData[name] = value
+		this.setState({
+			secondFormData: newSecondFormData,
+		})
+	}
+
+	secondFormSubmit = () => {
+		const {
+			secondFormData,
+			editaAble,
+			paymentId,
+			formData,
+			remainingPayment,
+			paymentOldValue,
+		} = this.state
+
+
+		if (secondFormData.installmentAmount != null || secondFormData.type != '') {
+			if (editaAble === false) {
+				var body = {
+					...secondFormData,
+					remainingPayment: remainingPayment - secondFormData.installmentAmount,
+				}
+				axios.post(`/api/leads/project/payments`, body)
+					.then((res) => {
+						this.fetchLead();
+						this.setState({
+							addPaymentModalToggleState: false,
+							secondFormData: {
+								installmentAmount: null,
+								type: '',
+								details: '',
+							},
+							remainingPayment: remainingPayment - secondFormData.installmentAmount,
+						}, () => {
+							helper.successToast('Payment Added')
+						})
+					})
+			} else {
+				var total = ''
+				if (paymentOldValue > secondFormData.installmentAmount) {
+					total = paymentOldValue - secondFormData.installmentAmount
+					total = remainingPayment + total
+				} else {
+					total = secondFormData.installmentAmount - paymentOldValue
+					total = remainingPayment - total
+				}
+				var body = {
+					...secondFormData,
+					remainingPayment: total,
+				}
+				console.log(body)
+				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
+					.then((res) => {
+						this.fetchLead();
+						this.setState({
+							addPaymentModalToggleState: false,
+							secondFormData: {
+								installmentAmount: null,
+								type: '',
+								details: '',
+							},
+							remainingPayment: total,
+							editaAble: false,
+						}, () => {
+							helper.successToast('Payment Edit Success')
+						})
+					})
+			}
+		} else {
+			this.setState({
+				secondCheckValidation: true,
+			})
+		}
+	}
+	editTile = (id) => {
+		axios.get(`/api/leads/project/byId?id=${this.props.lead.id}`)
+			.then((res) => {
+				let editLeadData = [];
+				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
+				this.setState({
+					secondFormData: {
+						installmentAmount: editLeadData.installmentAmount,
+						type: editLeadData.type,
+						cmLeadId: this.props.lead.id,
+						details: editLeadData.details,
+					},
+					addPaymentModalToggleState: true,
+					editaAble: true,
+					paymentId: id,
+					paymentOldValue: editLeadData.installmentAmount,
+				})
+			})
+	}
+
+	goToComments = () => {
+		const { navigation, route } = this.props;
+		navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
+	}
+
+	goToAttachments = () => {
+		const { navigation, route } = this.props;
+		navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
+	}
+
+	goToDiaryForm = (taskType) => {
+		const { navigation, route, user } = this.props;
+		navigation.navigate('AddDiary', {
+			update: false,
+			agentId: user.id,
+			cmLeadId: this.props.lead.id,
+			addedBy: 'self',
+			tasksList: StaticData.taskValuesCMLead,
+			taskType: taskType != '' ? taskType : null
+		});
+	}
+
+	navigateTo = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
+	}
+
 	render() {
 		const {
 			progressValue,
@@ -361,7 +500,11 @@ class Payments extends Component {
 			unitId,
 			firstScreenDone,
 			secondScreenData,
-			addPaymentModalToggleState
+			addPaymentModalToggleState,
+			secondFormData,
+			secondCheckValidation,
+			remainingPayment,
+			paymentOldValue,
 		} = this.state
 		return (
 			<View>
@@ -389,8 +532,10 @@ class Payments extends Component {
 					firstScreenDone === false &&
 					<FormScreenSecond
 						data={secondScreenData}
+						remainingPayment={remainingPayment}
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						currencyConvert={this.currencyConvert}
+						editTile={this.editTile}
 					/>
 				}
 
@@ -418,8 +563,27 @@ class Payments extends Component {
 
 				<AddPaymentModal
 					active={addPaymentModalToggleState}
+					secondFormData={secondFormData}
+					secondCheckValidation={secondCheckValidation}
 					addPaymentModalToggle={this.addPaymentModalToggle}
+					secondHandleForm={this.secondHandleForm}
+					secondFormSubmit={this.secondFormSubmit}
 				/>
+
+				<View style={AppStyles.mainCMBottomNav}>
+					<CMBottomNav
+						goToAttachments={this.goToAttachments}
+						navigateTo={this.navigateTo}
+						goToDiaryForm={this.goToDiaryForm}
+						goToComments={this.goToComments}
+					// alreadyClosedLead={this.closedLead}
+					// closedLeadEdit={leadClosedCheck}
+					// closeLead={this.closeLead}
+					/>
+					{/* <CMBottomNav
+						
+					/> */}
+				</View>
 			</View>
 		)
 	}

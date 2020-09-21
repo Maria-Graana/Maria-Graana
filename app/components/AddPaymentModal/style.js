@@ -50,6 +50,7 @@ export default styles = StyleSheet.create({
     borderColor: '#006ff1',
     borderRadius: 4,
     borderWidth: 1,
+    backgroundColor: '#fff',
     color: '#006ff1',
     textAlign: 'center',
     paddingTop: 15,

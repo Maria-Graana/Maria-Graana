@@ -1,12 +1,12 @@
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native'
-import { Button, } from 'native-base';
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal';
-import times from '../../../assets/img/times.png'
 import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index';
+import StaticData from '../../StaticData';
+import ErrorMessage from '../../components/ErrorMessage'
 
 class AddPaymentModal extends React.Component {
   constructor(props) {
@@ -16,8 +16,11 @@ class AddPaymentModal extends React.Component {
   render() {
     const {
       active,
-      handleForm,
+      secondHandleForm,
       addPaymentModalToggle,
+      secondFormData,
+      secondFormSubmit,
+      secondCheckValidation,
     } = this.props
     return (
 
@@ -29,19 +32,22 @@ class AddPaymentModal extends React.Component {
           <ScrollView>
             <View style={styles.moreViewContainer}>
               <SimpleInputText
-                name={'amount'}
-                fromatName={'amount'}
+                name={'installmentAmount'}
+                fromatName={false}
                 placeholder={'Enter Amount'}
                 label={'ENTER AMOUNT'}
-                value={''}
-                formatValue={''}
-                editable={false}
+                value={secondFormData.installmentAmount != null ? secondFormData.installmentAmount : null}
+                formatValue={secondFormData.installmentAmount != null ? secondFormData.installmentAmount : null}
+                editable={true}
                 keyboardType={'numeric'}
+                onChangeHandle={secondHandleForm}
               />
+              {secondCheckValidation === true && secondFormData.installmentAmount === null && <ErrorMessage errorMessage={'Required'} />}
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent onValueChange={handleForm} data={''} name={'type'} placeholder='Type' selectedItem={''} />
+                  <PickerComponent onValueChange={secondHandleForm} data={StaticData.fullPaymentType} name={'type'} placeholder='Type' selectedItem={secondFormData.type} />
+                  {secondCheckValidation === true && secondFormData.type === '' && <ErrorMessage errorMessage={'Required'} />}
                 </View>
               </View>
 
@@ -50,10 +56,10 @@ class AddPaymentModal extends React.Component {
                 fromatName={false}
                 placeholder={'Details'}
                 label={'DETIALS'}
-                value={''}
+                value={secondFormData.details != '' ? secondFormData.details : ''}
                 formatValue={''}
-                editable={false}
-                keyboardType={'numeric'}
+                editable={true}
+                onChangeHandle={secondHandleForm}
               />
 
               <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(false) }}>
@@ -61,7 +67,7 @@ class AddPaymentModal extends React.Component {
                 <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.bookedBtn}>
+              <TouchableOpacity style={styles.bookedBtn} onPress={() => {secondFormSubmit()}}>
                 <Text style={styles.bookedBtnText}>
                   <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> OK
                 </Text>

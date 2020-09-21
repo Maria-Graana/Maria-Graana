@@ -131,7 +131,6 @@ class InnerForm extends Component {
               </TouchableOpacity>
             </View>
 
-
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

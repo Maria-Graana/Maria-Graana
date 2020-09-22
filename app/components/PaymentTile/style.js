@@ -22,13 +22,15 @@ export default styles = StyleSheet.create({
   tileStatus: {
     position: 'absolute',
     right: 0,
-    fontSize: 11,
+    fontSize: 10,
     paddingTop: 3,
     paddingBottom: 2,
     borderWidth: 1,
     borderRadius: 20,
     paddingLeft: 10,
     paddingRight: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   statusRed: {
     borderColor: '#b38f8d',

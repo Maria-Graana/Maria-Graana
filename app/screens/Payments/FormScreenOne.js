@@ -36,7 +36,9 @@ class InnerForm extends Component {
       firstScreenValidate,
       firstScreenConfirmModal,
       unitId,
+      tokenModalToggle,
     } = this.props
+    const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -93,6 +95,7 @@ class InnerForm extends Component {
               keyboardType={'numeric'}
               onChangeHandle={handleForm}
               formatValue={formData.discountedPrice}
+              // editable={checkForTokenEdit}
               fromatName={false}
             />
             {/* {firstScreenValidate === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />} */}
@@ -100,10 +103,24 @@ class InnerForm extends Component {
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
-                <PickerComponent onValueChange={handleForm} data={paymentPlan} name={'paymentPlan'} placeholder='Payment Plan' selectedItem={formData.paymentPlan} />
+                <PickerComponent
+                  onValueChange={handleForm}
+                  data={paymentPlan}
+                  name={'paymentPlan'}
+                  placeholder='Payment Plan'
+                  selectedItem={formData.paymentPlan}
+                  // enabled={checkForTokenEdit}
+                />
                 {firstScreenValidate === true && formData.paymentPlan === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
+
+            {/* **************************************** */}
+            {/* <View style={[AppStyles.mainInputWrap]}>
+              <TouchableOpacity style={styles.bookNowBtn} onPress={() => { tokenModalToggle(true) }}>
+                <Text style={styles.bookNowBtnText}>{formData.token != '' ? 'TOKEN ADDED' : 'ADD TOKEN'}</Text>
+              </TouchableOpacity>
+            </View> */}
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>

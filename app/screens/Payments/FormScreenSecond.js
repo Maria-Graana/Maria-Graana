@@ -27,6 +27,7 @@ class FormScreenSecond extends Component {
       editTile,
       remainingPayment,
       paymentPreviewLoading,
+      checkLeadClosedOrNot,
     } = this.props
     return (
       <SafeAreaView style={styles.removePad}>
@@ -44,7 +45,7 @@ class FormScreenSecond extends Component {
               <View style={styles.detailsRow}>
                 <Text style={styles.leftDetailsText}>
                   Project
-                      </Text>
+                </Text>
                 <Text style={styles.rightDetailsText}>
                   {data.project.name}
                 </Text>
@@ -107,22 +108,27 @@ class FormScreenSecond extends Component {
                     paymentPreviewLoading === true ?
                       <Text style={{ padding: 10, }}>Loading...</Text>
                       :
-                      data && data.payment && data.payment.length > 0 &&
+                      data && data.payment && data.payment.length > 0 ?
                       data.payment.map((item, index) => {
 
                         return (
                           <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
                         )
                       })
+                      : <Text style={{ padding: 10, }}>No Data Find!</Text>
                   }
                 </ScrollView>
               </View>
             </View>
 
-            <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true) }}>
-              <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-              <Text style={styles.addPaymentBtnText}>ADD {data.payment && data.payment.length > 0 ? "MORE" : ''} PAYMENT</Text>
-            </TouchableOpacity>
+            {
+              checkLeadClosedOrNot === false &&
+              <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true) }}>
+                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                <Text style={styles.addPaymentBtnText}>ADD {data.payment && data.payment.length > 0 ? "MORE" : ''} PAYMENT</Text>
+              </TouchableOpacity>
+            }
+
           </View>
 
           <View style={styles.firstContainer}>

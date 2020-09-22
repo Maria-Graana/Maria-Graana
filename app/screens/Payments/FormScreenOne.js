@@ -37,8 +37,10 @@ class InnerForm extends Component {
       firstScreenConfirmModal,
       unitId,
       tokenModalToggle,
+      remainingPayment,
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
+    console.log(remainingPayment)
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -125,20 +127,20 @@ class InnerForm extends Component {
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
 
-              {
-                formData.finalPrice === null ?
+              {/* {
+                formData.finalPrice === null ? */}
                   <View style={styles.backgroundBlue}>
                     <Text style={styles.finalPrice}>FINAL PRICE</Text>
-                    <Text style={styles.priceValue}>{currencyConvert(unitPrice != null ? unitPrice : '')}</Text>
-                    <Text style={styles.sidePriceFormat}>{formatPrice(unitPrice != null ? unitPrice : '')}</Text>
+                    <Text style={styles.priceValue}>{currencyConvert(remainingPayment != null ? remainingPayment : '')}</Text>
+                    <Text style={styles.sidePriceFormat}>{formatPrice(remainingPayment != null ? remainingPayment : '')}</Text>
                   </View>
-                  :
-                  <View style={styles.backgroundBlue}>
-                    <Text style={styles.finalPrice}>FINAL PRICE</Text>
-                    <Text style={styles.priceValue}>{currencyConvert(formData.finalPrice != null ? formData.finalPrice : '')}</Text>
-                    <Text style={styles.sidePriceFormat}>{formatPrice(formData.finalPrice != null ? formData.finalPrice : '')}</Text>
-                  </View>
-              }
+              {/* //     :
+              //     <View style={styles.backgroundBlue}>
+              //       <Text style={styles.finalPrice}>FINAL PRICE F</Text>
+              //       <Text style={styles.priceValue}>{currencyConvert(formData.finalPrice != null ? formData.finalPrice : '')}</Text>
+              //       <Text style={styles.sidePriceFormat}>{formatPrice(formData.finalPrice != null ? formData.finalPrice : '')}</Text>
+              //     </View>
+              // } */}
             </View>
 
             {/* **************************************** */}

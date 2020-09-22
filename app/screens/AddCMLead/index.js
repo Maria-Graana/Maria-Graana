@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import { StyleProvider } from 'native-base';
 import CMLeadFrom from './CMLeadFrom';
 import AppStyles from '../../AppStyles';
@@ -101,7 +101,15 @@ class AddCMLead extends Component {
             this.setState({ loading: true })
             axios.post(`/api/leads/project`, formData)
                 .then((res) => {
-                    helper.successToast('Lead created successfully')
+                    if (res.data.message) {
+                        Alert.alert(
+                            'Lead cannot be created as same lead already exists:',
+                            `Lead id: ${res.data.leadId}\nAgent Name: ${res.data.agent}\nContact: ${res.data.contact}`,
+                            [
+                                { text: 'OK', style: 'cancel' },
+                            ],
+                            { cancelable: false })
+                    } else helper.successToast('Lead created successfully')
                     RootNavigation.navigate('Leads')
                 })
                 .catch((error) => {

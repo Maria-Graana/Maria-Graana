@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.1.136",
+    "version": "1.1.138",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "splash": {
@@ -69,9 +69,10 @@
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
-            "organization": "arms-app",
-            "project": "graana-nn",
-            "authToken": "e5d6a14f07604b4faa3c556a168912fc67c04de714464b8bbc408bed6356c193"
+            "organization": "graana",
+            "project": "arms-app",
+            "authToken": "5d6896d009064e5a9e31c249b59b359a96153dbf77a84b55bb9f0b7a8db5b05b",
+            "url": "https://sentry.graana.rocks"
           }
         }
       ]

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import { StyleProvider } from 'native-base';
 import RCMLeadFrom from './RCMLeadFrom';
 import AppStyles from '../../AppStyles';
@@ -242,7 +242,16 @@ class AddRCMLead extends Component {
         }
         axios.post(`/api/leads`, payLoad)
             .then((res) => {
-                helper.successToast('Lead created successfully')
+                console.log(res.data)
+                if (res.data.message) {
+                    Alert.alert(
+                        'Lead cannot be created as same lead already exists:',
+                        `Lead id: ${res.data.leadId}\nAgent Name: ${res.data.agent}\nContact: ${res.data.contact}`,
+                        [
+                            { text: 'OK', style: 'cancel' },
+                        ],
+                        { cancelable: false })
+                } else helper.successToast('Lead created successfully')
                 RootNavigation.navigate('Leads')
             }).finally(() => {
                 this.setState({ loading: false })

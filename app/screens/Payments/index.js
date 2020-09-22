@@ -1,25 +1,20 @@
 import React, { Component } from 'react';
-import { View, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import axios from 'axios'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
 import FormScreenOne from './FormScreenOne';
 import FormScreenSecond from './FormScreenSecond';
 import StaticData from '../../StaticData';
-import moment from 'moment'
 import { ProgressBar } from 'react-native-paper';
 import helper from '../../helper';
 import { setlead } from '../../actions/lead';
-// delete Items
-// import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-// import PaymentAlert from '../../components/PaymentAlert'
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import AddPaymentModal from '../../components/AddPaymentModal'
 import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
-import { cos } from 'react-native-reanimated';
-import { formatPrice } from '../../PriceFormate';
 import styles from './style';
 import AddAttachmentPopup from '../../components/AddAttachmentPopup'
 import * as DocumentPicker from 'expo-document-picker';
@@ -28,7 +23,7 @@ import * as DocumentPicker from 'expo-document-picker';
 class Payments extends Component {
 	constructor(props) {
 		super(props)
-		const { lead } = this.props
+		const { lead, user } = this.props
 		this.state = {
 			progressValue: 0,
 			getProject: [],
@@ -86,6 +81,11 @@ class Payments extends Component {
 				size: null,
 			},
 			tokenModalVisible: false,
+			reasons: [],
+			isVisible: false,
+			selectedReason: '',
+			checkLeadClosedOrNot: lead.status === 'closed_won' || lead.status === 'closed_lost' || lead.assigned_to_armsuser_id != user.id ? true : false,
+			remarks: lead.payment != null ? lead.remarks : null,
 		}
 	}
 
@@ -170,11 +170,13 @@ class Payments extends Component {
 	}
 
 	setUnitPrice = (id) => {
-		const { allUnits } = this.state
+		const { allUnits, formData } = this.state
 		let object = {};
+		var newFormdata = { ...formData }
 		object = allUnits.find((item) => { return item.id == id && item })
 		this.setState({
 			unitPrice: object.unit_price,
+			remainingPayment: object.unit_price,
 		})
 	}
 
@@ -283,7 +285,7 @@ class Payments extends Component {
 		if (name === 'token') {
 			if (grandTotal != '') {
 				grandTotal = Number(grandTotal) - Number(formData.token)
-			} 
+			}
 		}
 
 		newFormData['finalPrice'] = grandTotal
@@ -457,23 +459,40 @@ class Payments extends Component {
 				}
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
-						axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
-							.then((res) => {
-								this.fetchLead();
-								this.setState({
-									addPaymentModalToggleState: false,
-									secondFormData: {
-										installmentAmount: null,
-										type: '',
-										details: '',
-										cmLeadId: this.props.lead.id,
-									},
-									remainingPayment: remainingPayment - secondFormData.installmentAmount,
-									addPaymentLoading: false,
-								}, () => {
-									helper.successToast('Payment Added')
+						if (attachmentData.fileName != '') {
+							axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
+								.then((res) => {
+									this.fetchLead();
+									this.setState({
+										addPaymentModalToggleState: false,
+										secondFormData: {
+											installmentAmount: null,
+											type: '',
+											details: '',
+											cmLeadId: this.props.lead.id,
+										},
+										remainingPayment: remainingPayment - secondFormData.installmentAmount,
+										addPaymentLoading: false,
+									}, () => {
+										helper.successToast('Payment Added')
+									})
 								})
+						} else {
+							this.fetchLead();
+							this.setState({
+								addPaymentModalToggleState: false,
+								secondFormData: {
+									installmentAmount: null,
+									type: '',
+									details: '',
+									cmLeadId: this.props.lead.id,
+								},
+								remainingPayment: remainingPayment - secondFormData.installmentAmount,
+								addPaymentLoading: false,
+							}, () => {
+								helper.successToast('Payment Added')
 							})
+						}
 					}).catch(() => {
 						helper.errorToast('Payment Not Added')
 						this.setState({
@@ -529,6 +548,7 @@ class Payments extends Component {
 			.then((res) => {
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
+				console.log(editLeadData)
 				this.setState({
 					secondFormData: {
 						installmentAmount: editLeadData.installmentAmount,
@@ -612,6 +632,60 @@ class Payments extends Component {
 		})
 	}
 
+	onHandleCloseLead = (reason) => {
+		const { lead, navigation } = this.props
+		const { selectedReason } = this.state;
+		let body = {
+			reasons: selectedReason
+		}
+		var leadId = []
+		leadId.push(lead.id)
+		if (selectedReason && selectedReason !== '') {
+			axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+				.then(res => {
+					this.setState({ isVisible: false }, () => {
+						helper.successToast(`Lead Closed`)
+						navigation.navigate('Leads');
+					});
+				}).catch(error => {
+					console.log(error);
+				})
+		}
+		else {
+			alert('Please select a reason for lead closure!')
+		}
+	}
+
+	handleReasonChange = (value) => {
+		this.setState({ selectedReason: value });
+	}
+
+	closeModal = () => {
+		this.setState({ isVisible: false })
+	}
+
+	formSubmit = () => {
+		const { lead } = this.props
+		const { formData, remainingPayment, unitPrice } = this.state
+		let body = {
+			reasons: 'dd'
+		}
+		var leadId = []
+		leadId.push(lead.id)
+		if (remainingPayment <= 0 && formData.unitId != null) {
+			this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+		} else {
+			this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+		}
+	}
+
+	closedLead = () => {
+		const { lead, user } = this.props
+		// lead.status != StaticData.Constants.lead_closed_won || lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
+		 this.state.checkLeadClosedOrNot === true && helper.leadClosedToast()
+		lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
+	}
+
 	render() {
 		const {
 			progressValue,
@@ -642,13 +716,20 @@ class Payments extends Component {
 			attachmentVisible,
 			attachmentData,
 			tokenModalVisible,
+			reasons,
+			selectedReason,
+			checkReasonValidation,
+			isVisible,
+			checkLeadClosedOrNot,
+			remarks,
 		} = this.state
+		
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 				<View style={styles.mainParent}>
 					{
-						firstScreenDone === true &&
+						firstScreenDone === true && checkLeadClosedOrNot === false ?
 						<ScrollView>
 							<View style={styles.fullHeight}>
 								<FormScreenOne
@@ -660,6 +741,7 @@ class Payments extends Component {
 									formData={formData}
 									paymentPlan={paymentPlan}
 									firstScreenValidate={firstScreenValidate}
+									remainingPayment={remainingPayment}
 									currencyConvert={this.currencyConvert}
 									handleForm={this.handleForm}
 									submitFirstScreen={this.submitFirstScreen}
@@ -669,22 +751,25 @@ class Payments extends Component {
 								/>
 							</View>
 						</ScrollView>
+						: null
 					}
 
 					{
-						firstScreenDone === false &&
+						firstScreenDone === false || checkLeadClosedOrNot === true ?
 						<ScrollView>
 							<View style={styles.secondContainer}>
 								<FormScreenSecond
 									data={secondScreenData}
 									paymentPreviewLoading={paymentPreviewLoading}
 									remainingPayment={remainingPayment}
+									checkLeadClosedOrNot={checkLeadClosedOrNot}
 									addPaymentModalToggle={this.addPaymentModalToggle}
 									currencyConvert={this.currencyConvert}
 									editTile={this.editTile}
 								/>
 							</View>
 						</ScrollView>
+						: null
 					}
 
 					{
@@ -716,6 +801,7 @@ class Payments extends Component {
 						secondCheckValidation={secondCheckValidation}
 						modalLoading={modalLoading}
 						addPaymentLoading={addPaymentLoading}
+						remarks={remarks}
 						attechmentModalToggle={this.attechmentModalToggle}
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						secondHandleForm={this.secondHandleForm}
@@ -740,15 +826,28 @@ class Payments extends Component {
 					/>
 
 				</View>
+
+				<LeadRCMPaymentPopup
+					reasons={reasons}
+					selectedReason={selectedReason}
+					isVisible={isVisible}
+					CMlead={true}
+					// checkValidation={checkReasonValidation}
+					closeModal={() => this.closeModal()}
+					changeReason={this.handleReasonChange}
+					onPress={this.onHandleCloseLead}
+				/>
+
 				<View style={AppStyles.mainCMBottomNav}>
 					<CMBottomNav
 						goToAttachments={this.goToAttachments}
 						navigateTo={this.navigateTo}
 						goToDiaryForm={this.goToDiaryForm}
 						goToComments={this.goToComments}
-					// alreadyClosedLead={this.closedLead}
-					// closedLeadEdit={leadClosedCheck}
-					// closeLead={this.closeLead}
+						closedLeadEdit={!checkLeadClosedOrNot}
+						alreadyClosedLead={this.closedLead}
+						// closedLeadEdit={leadClosedCheck}
+						closeLead={this.formSubmit}
 					/>
 				</View>
 

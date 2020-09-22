@@ -96,7 +96,7 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
     borderRadius: 4,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   bookedBtnImage: {
     resizeMode: 'contain',
@@ -112,11 +112,11 @@ export default styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 4,
     padding: 10,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   detailsRow: {
     flexDirection: 'row',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   leftDetailsText: {
     fontSize: 16,
@@ -157,7 +157,7 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
     borderRadius: 4,
-    marginBottom: 15,
+    marginBottom: 0,
     justifyContent: 'center',
     marginTop: 15,
   },
@@ -174,7 +174,7 @@ export default styles = StyleSheet.create({
     letterSpacing: 2,
   },
   scrollHeight: {
-    height: 205,
+    height: 183,
   },
   secondContainer: {
     minHeight: '100%',

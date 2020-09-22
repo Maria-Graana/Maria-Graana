@@ -176,10 +176,18 @@ export default styles = StyleSheet.create({
   scrollHeight: {
     height: 205,
   },
-  secondContainer:{
-    height: '86%',
+  secondContainer: {
+    minHeight: '100%',
+    position: 'relative',
+    paddingBottom: 100,
   },
-  fullHeight:{
-    height: '100%'
+  fullHeight: {
+    minHeight: '100%',
+    position: 'relative',
+    paddingBottom: 100,
+},
+  mainParent: {
+    position: 'relative',
+    height: '99.4%',
   },
 });

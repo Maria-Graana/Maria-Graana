@@ -19,6 +19,8 @@ import AddPaymentModal from '../../components/AddPaymentModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import { cos } from 'react-native-reanimated';
 import { formatPrice } from '../../PriceFormate';
+import styles from './style';
+
 
 
 class Payments extends Component {
@@ -60,7 +62,7 @@ class Payments extends Component {
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
 			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Hold' ? false : true,
-			// firstScreenDone: true,
+			// firstScreenDone: false,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
 			secondCheckValidation: false,
@@ -68,6 +70,10 @@ class Payments extends Component {
 			paymentId: null,
 			remainingPayment: lead.remainingPayment != null ? lead.remainingPayment : '',
 			paymentOldValue: null,
+			modalLoading: false,
+			firstScreenConfirmLoading: false,
+			addPaymentLoading: false,
+			paymentPreviewLoading: false,
 		}
 	}
 
@@ -82,16 +88,23 @@ class Payments extends Component {
 	fetchLead = () => {
 		const { lead } = this.props
 		const { cmProgressBar } = StaticData
+		this.setState({
+			paymentPreviewLoading: true,
+		})
 		axios.get(`/api/leads/project/byId?id=${lead.id}`)
 			.then((res) => {
 				this.props.dispatch(setlead(res.data))
 				this.setState({
 					progressValue: cmProgressBar[res.data.status] || 0,
+					paymentPreviewLoading: false,
 					secondScreenData: res.data,
 				})
 			})
 			.catch((error) => {
 				console.log(error)
+				this.setState({
+					paymentPreviewLoading: false,
+				})
 			})
 	}
 
@@ -307,6 +320,9 @@ class Payments extends Component {
 	submitFirstScreen = () => {
 		const { lead } = this.props
 		const { formData, unitId } = this.state
+		this.setState({
+			firstScreenConfirmLoading: true,
+		})
 		var body = {
 			unitId: formData.unitId,
 			projectId: formData.projectId,
@@ -330,8 +346,13 @@ class Payments extends Component {
 							secondScreenData: res.data,
 							openFirstScreenModal: false,
 							firstScreenDone: false,
+							firstScreenConfirmLoading: false,
 						}, () => {
 							helper.successToast('Lead Booked')
+						})
+					}).catch(() => {
+						this.setState({
+							firstScreenConfirmLoading: false,
 						})
 					})
 			})
@@ -352,9 +373,21 @@ class Payments extends Component {
 	}
 
 	addPaymentModalToggle = (status) => {
-		this.setState({
-			addPaymentModalToggleState: status
-		})
+		if (status === true) {
+			this.setState({
+				addPaymentModalToggleState: status,
+			})
+		} else if (status === false) {
+			this.setState({
+				addPaymentModalToggleState: status,
+				secondFormData: {
+					installmentAmount: null,
+					type: '',
+					details: '',
+				},
+			})
+		}
+
 	}
 
 	secondHandleForm = (value, name) => {
@@ -378,6 +411,9 @@ class Payments extends Component {
 
 
 		if (secondFormData.installmentAmount != null || secondFormData.type != '') {
+			this.setState({
+				addPaymentLoading: true,
+			})
 			if (editaAble === false) {
 				var body = {
 					...secondFormData,
@@ -394,8 +430,13 @@ class Payments extends Component {
 								details: '',
 							},
 							remainingPayment: remainingPayment - secondFormData.installmentAmount,
+							addPaymentLoading: false,
 						}, () => {
 							helper.successToast('Payment Added')
+						})
+					}).catch(() => {
+						this.setState({
+							addPaymentLoading: false,
 						})
 					})
 			} else {
@@ -424,8 +465,13 @@ class Payments extends Component {
 							},
 							remainingPayment: total,
 							editaAble: false,
+							addPaymentLoading: false,
 						}, () => {
 							helper.successToast('Payment Edit Success')
+						})
+					}).catch(() => {
+						this.setState({
+							addPaymentLoading: false,
 						})
 					})
 			}
@@ -435,7 +481,9 @@ class Payments extends Component {
 			})
 		}
 	}
+
 	editTile = (id) => {
+		this.setState({ addPaymentModalToggleState: true, modalLoading: true })
 		axios.get(`/api/leads/project/byId?id=${this.props.lead.id}`)
 			.then((res) => {
 				let editLeadData = [];
@@ -451,6 +499,7 @@ class Payments extends Component {
 					editaAble: true,
 					paymentId: id,
 					paymentOldValue: editLeadData.installmentAmount,
+					modalLoading: false,
 				})
 			})
 	}
@@ -504,72 +553,89 @@ class Payments extends Component {
 			secondFormData,
 			secondCheckValidation,
 			remainingPayment,
-			paymentOldValue,
+			modalLoading,
+			firstScreenConfirmLoading,
+			addPaymentLoading,
+			paymentPreviewLoading,
 		} = this.state
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
-				{
-					firstScreenDone === true &&
-					<FormScreenOne
-						getProject={getProject}
-						getFloors={getFloors}
-						getUnit={getUnit}
-						unitPrice={unitPrice}
-						unitId={unitId}
-						formData={formData}
-						paymentPlan={paymentPlan}
-						firstScreenValidate={firstScreenValidate}
-						currencyConvert={this.currencyConvert}
-						handleForm={this.handleForm}
-						submitFirstScreen={this.submitFirstScreen}
-						openUnitDetailsModal={this.openUnitDetailsModal}
-						firstScreenConfirmModal={this.firstScreenConfirmModal}
-					/>
-				}
+				<View style={styles.mainParent}>
+					{
+						firstScreenDone === true &&
+						<ScrollView>
+							<View style={styles.fullHeight}>
+								<FormScreenOne
+									getProject={getProject}
+									getFloors={getFloors}
+									getUnit={getUnit}
+									unitPrice={unitPrice}
+									unitId={unitId}
+									formData={formData}
+									paymentPlan={paymentPlan}
+									firstScreenValidate={firstScreenValidate}
+									currencyConvert={this.currencyConvert}
+									handleForm={this.handleForm}
+									submitFirstScreen={this.submitFirstScreen}
+									openUnitDetailsModal={this.openUnitDetailsModal}
+									firstScreenConfirmModal={this.firstScreenConfirmModal}
+								/>
+							</View>
+						</ScrollView>
+					}
 
-				{
-					firstScreenDone === false &&
-					<FormScreenSecond
-						data={secondScreenData}
-						remainingPayment={remainingPayment}
+					{
+						firstScreenDone === false &&
+						<ScrollView>
+							<View style={styles.secondContainer}>
+								<FormScreenSecond
+									data={secondScreenData}
+									paymentPreviewLoading={paymentPreviewLoading}
+									remainingPayment={remainingPayment}
+									addPaymentModalToggle={this.addPaymentModalToggle}
+									currencyConvert={this.currencyConvert}
+									editTile={this.editTile}
+								/>
+							</View>
+						</ScrollView>
+					}
+
+					{
+						unitDetailsData &&
+						<UnitDetailsModal
+							active={unitDetailModal}
+							data={unitDetailsData}
+							openUnitDetailsModal={this.openUnitDetailsModal}
+						/>
+					}
+
+					{
+						getAllFloors != '' && getAllProject != '' && allUnits != '' &&
+						<FirstScreenConfirmModal
+							active={openFirstScreenModal}
+							data={formData}
+							getAllProject={getAllProject}
+							getAllFloors={getAllFloors}
+							allUnits={allUnits}
+							firstScreenConfirmLoading={firstScreenConfirmLoading}
+							firstScreenConfirmModal={this.firstScreenConfirmModal}
+							submitFirstScreen={this.submitFirstScreen}
+						/>
+					}
+
+					<AddPaymentModal
+						active={addPaymentModalToggleState}
+						secondFormData={secondFormData}
+						secondCheckValidation={secondCheckValidation}
+						modalLoading={modalLoading}
+						addPaymentLoading={addPaymentLoading}
 						addPaymentModalToggle={this.addPaymentModalToggle}
-						currencyConvert={this.currencyConvert}
-						editTile={this.editTile}
+						secondHandleForm={this.secondHandleForm}
+						secondFormSubmit={this.secondFormSubmit}
 					/>
-				}
 
-				{
-					unitDetailsData &&
-					<UnitDetailsModal
-						active={unitDetailModal}
-						data={unitDetailsData}
-						openUnitDetailsModal={this.openUnitDetailsModal}
-					/>
-				}
-
-				{
-					getAllFloors != '' && getAllProject != '' && allUnits != '' &&
-					<FirstScreenConfirmModal
-						active={openFirstScreenModal}
-						data={formData}
-						getAllProject={getAllProject}
-						getAllFloors={getAllFloors}
-						allUnits={allUnits}
-						firstScreenConfirmModal={this.firstScreenConfirmModal}
-						submitFirstScreen={this.submitFirstScreen}
-					/>
-				}
-
-				<AddPaymentModal
-					active={addPaymentModalToggleState}
-					secondFormData={secondFormData}
-					secondCheckValidation={secondCheckValidation}
-					addPaymentModalToggle={this.addPaymentModalToggle}
-					secondHandleForm={this.secondHandleForm}
-					secondFormSubmit={this.secondFormSubmit}
-				/>
-
+				</View>
 				<View style={AppStyles.mainCMBottomNav}>
 					<CMBottomNav
 						goToAttachments={this.goToAttachments}
@@ -580,10 +646,8 @@ class Payments extends Component {
 					// closedLeadEdit={leadClosedCheck}
 					// closeLead={this.closeLead}
 					/>
-					{/* <CMBottomNav
-						
-					/> */}
 				</View>
+
 			</View>
 		)
 	}

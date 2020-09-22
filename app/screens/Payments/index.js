@@ -261,10 +261,10 @@ class Payments extends Component {
 		var backendDiscount = lead.project.full_payment_discount
 		var grandTotal = ''
 
-		
+
 
 		if (name === 'discount') {
-			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100))) - Number(formData.token)
 			if (value != '') {
 				newFormData['discountedPrice'] = grandTotal
 			} else {
@@ -274,25 +274,27 @@ class Payments extends Component {
 
 		if (name === 'paymentPlan') {
 			if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
-				grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
+				grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100))) - Number(formData.token)
 			} else {
-				grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
+				grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100))) - Number(formData.token)
 			}
 		}
 
-		// if (name === 'token') {
-		// 	if (grandTotal != '') {
-		// 		grandTotal = Number(grandTotal) - Number(formData.token)
-		// 	} 
-		// }
+		if (name === 'token') {
+			if (grandTotal != '') {
+				grandTotal = Number(grandTotal) - Number(formData.token)
+			} 
+		}
 
 		newFormData['finalPrice'] = grandTotal
-		console.log('newFormData', newFormData)
-
 		this.setState({
 			formData: newFormData,
 			remainingPayment: grandTotal,
 		})
+	}
+
+	allCalculations = (totalPrice, frontDiscount, backendDiscount) => {
+
 	}
 
 	refreshUnitPrice = (name) => {
@@ -442,18 +444,21 @@ class Payments extends Component {
 				addPaymentLoading: true,
 			})
 			if (editaAble === false) {
+				var attachmentDataBOdy = {
+					name: attachmentData.fileName,
+					type: 'file/' + attachmentData.fileName.split('.').pop(),
+					uri: attachmentData.uri
+				}
 				var fd = new FormData()
-				fd.append('file', attachmentData)
+				fd.append('file', attachmentDataBOdy)
 				var body = {
 					...secondFormData,
 					remainingPayment: remainingPayment - secondFormData.installmentAmount,
 				}
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
-						console.log('done 1', res.data.id)
 						axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
 							.then((res) => {
-								console.log('done 2')
 								this.fetchLead();
 								this.setState({
 									addPaymentModalToggleState: false,
@@ -468,8 +473,6 @@ class Payments extends Component {
 								}, () => {
 									helper.successToast('Payment Added')
 								})
-							}).catch(() => {
-								helper.errorToast('Attachment Not Added')
 							})
 					}).catch(() => {
 						helper.errorToast('Payment Not Added')
@@ -490,7 +493,6 @@ class Payments extends Component {
 					...secondFormData,
 					remainingPayment: total,
 				}
-				console.log(body)
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
 						this.fetchLead();
@@ -527,7 +529,6 @@ class Payments extends Component {
 			.then((res) => {
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
-				console.log(editLeadData)
 				this.setState({
 					secondFormData: {
 						installmentAmount: editLeadData.installmentAmount,
@@ -572,7 +573,6 @@ class Payments extends Component {
 
 	getAttachmentFromStorage = () => {
 		const { title } = this.state;
-		// console.log('pickDocment')
 		let options = {
 			type: '*/*',
 			copyToCacheDirectory: true,

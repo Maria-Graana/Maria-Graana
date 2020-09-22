@@ -116,11 +116,11 @@ class InnerForm extends Component {
             </View>
 
             {/* **************************************** */}
-            {/* <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.mainInputWrap]}>
               <TouchableOpacity style={styles.bookNowBtn} onPress={() => { tokenModalToggle(true) }}>
                 <Text style={styles.bookNowBtnText}>{formData.token != '' ? 'TOKEN ADDED' : 'ADD TOKEN'}</Text>
               </TouchableOpacity>
-            </View> */}
+            </View>
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>

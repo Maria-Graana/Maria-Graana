@@ -20,7 +20,8 @@ class FirstScreenConfirmModal extends React.Component {
       getAllProject,
       getAllFloors,
       allUnits,
-      submitFirstScreen
+      submitFirstScreen,
+      firstScreenConfirmLoading,
     } = this.props
 
     var project = getAllProject.find((item) => { return data.projectId === item.id && item })
@@ -42,7 +43,7 @@ class FirstScreenConfirmModal extends React.Component {
           <Text style={styles.noramlText}>Final Price: <Text style={styles.mainTextLarge}>{formatPrice(data.finalPrice ? data.finalPrice : '')}</Text></Text>
           <View style={styles.confirmBtnView}>
             <TouchableOpacity style={[styles.confirmBtn]}  onPress={() => { submitFirstScreen() }}> 
-              <Text style={[styles.textCenter]}>Yes</Text>
+              <Text style={[styles.textCenter]}>{firstScreenConfirmLoading === true ? 'Wait...' :'Yes'}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.confirmBtn]}> 

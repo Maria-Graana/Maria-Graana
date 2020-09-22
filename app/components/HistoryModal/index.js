@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles';
 import HistoryTile from '../HistoryTile';
 import backArrow from '../../../assets/img/backArrow.png'
+import LoadingNoResult from '../LoadingNoResult';
 
 class HistoryModal extends React.Component {
     constructor(props) {
@@ -27,15 +28,20 @@ class HistoryModal extends React.Component {
                             <Text style={styles.headerText}>CALL HISTORY</Text>
                         </View>
                     </View>
-                    <FlatList
-                        data={data}
-                        renderItem={({ item }, index) => (
-                            <HistoryTile
-                                data={item}
+                    {
+                        data.length ?
+                            <FlatList
+                                data={data}
+                                renderItem={({ item }, index) => (
+                                    <HistoryTile
+                                        data={item}
+                                    />
+                                )}
+                                keyExtractor={(_, index) => index}
                             />
-                        )}
-                        keyExtractor={(_, index) => index}
-                    />
+                            :
+                            <LoadingNoResult loading={false} />
+                    }
                 </SafeAreaView>
             </Modal>
         )

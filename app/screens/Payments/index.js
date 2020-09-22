@@ -16,12 +16,12 @@ import { setlead } from '../../actions/lead';
 import CMBottomNav from '../../components/CMBottomNav'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import AddPaymentModal from '../../components/AddPaymentModal'
+import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import { cos } from 'react-native-reanimated';
 import { formatPrice } from '../../PriceFormate';
 import styles from './style';
 import AddAttachmentPopup from '../../components/AddAttachmentPopup'
-import AttachmentTile from '../../components/AttachmentTile';
 import * as DocumentPicker from 'expo-document-picker';
 
 
@@ -44,6 +44,9 @@ class Payments extends Component {
 				finalPrice: null,
 				paymentPlan: null,
 				unitId: null,
+				token: null,
+				type: '',
+				details: '',
 			},
 			secondFormData: {
 				installmentAmount: null,
@@ -81,7 +84,8 @@ class Payments extends Component {
 				fileName: '',
 				uri: '',
 				size: null,
-			}
+			},
+			tokenModalVisible: false,
 		}
 	}
 
@@ -257,6 +261,8 @@ class Payments extends Component {
 		var backendDiscount = lead.project.full_payment_discount
 		var grandTotal = ''
 
+		
+
 		if (name === 'discount') {
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
 			if (value != '') {
@@ -266,13 +272,23 @@ class Payments extends Component {
 			}
 		}
 
-		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
-			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
-		} else {
-			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
+		if (name === 'paymentPlan') {
+			if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
+				grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
+			} else {
+				grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
+			}
 		}
 
+		// if (name === 'token') {
+		// 	if (grandTotal != '') {
+		// 		grandTotal = Number(grandTotal) - Number(formData.token)
+		// 	} 
+		// }
+
 		newFormData['finalPrice'] = grandTotal
+		console.log('newFormData', newFormData)
+
 		this.setState({
 			formData: newFormData,
 			remainingPayment: grandTotal,
@@ -580,8 +596,20 @@ class Payments extends Component {
 			attachmentVisible: status,
 		})
 	}
+
 	submitAttachment = () => {
 		this.attechmentModalToggle(false)
+	}
+
+	tokenModalToggle = (status) => {
+		const { formData } = this.state
+		if (formData.token != '') {
+			this.calculatedPercentFormula('token', formData.token)
+			this.setState({ tokenModalVisible: status })
+		}
+		this.setState({
+			tokenModalVisible: status,
+		})
 	}
 
 	render() {
@@ -613,6 +641,7 @@ class Payments extends Component {
 			paymentPreviewLoading,
 			attachmentVisible,
 			attachmentData,
+			tokenModalVisible,
 		} = this.state
 		return (
 			<View>
@@ -636,6 +665,7 @@ class Payments extends Component {
 									submitFirstScreen={this.submitFirstScreen}
 									openUnitDetailsModal={this.openUnitDetailsModal}
 									firstScreenConfirmModal={this.firstScreenConfirmModal}
+									tokenModalToggle={this.tokenModalToggle}
 								/>
 							</View>
 						</ScrollView>
@@ -686,20 +716,25 @@ class Payments extends Component {
 						secondCheckValidation={secondCheckValidation}
 						modalLoading={modalLoading}
 						addPaymentLoading={addPaymentLoading}
-
 						attechmentModalToggle={this.attechmentModalToggle}
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						secondHandleForm={this.secondHandleForm}
 						secondFormSubmit={this.secondFormSubmit}
 					/>
 
+
+					<AddTokenModal
+						active={tokenModalVisible}
+						formData={formData}
+						firstScreenValidate={firstScreenValidate}
+						handleForm={this.handleForm}
+						tokenModalToggle={this.tokenModalToggle}
+					/>
+
 					<AddAttachmentPopup
 						isVisible={attachmentVisible}
 						formData={attachmentData}
-						// title={title}
-						// setTitle={(title) => this.setTitle(title)}
 						formSubmit={this.submitAttachment}
-						// checkValidation={checkValidation}
 						getAttachmentFromStorage={this.getAttachmentFromStorage}
 						closeModal={() => this.attechmentModalToggle(false)}
 					/>

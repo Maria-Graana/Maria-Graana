@@ -34,6 +34,7 @@
         "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
+      "usesIcloudStorage": true,
       "userInterfaceStyle": "automatic",
       "buildNumber": "6"
     },

@@ -18,12 +18,15 @@ export default styles = StyleSheet.create({
   },
   timesBtn: {
     position: 'absolute',
-    right: 15,
-    top: 15,
+    right: 10,
+    top: 10,
+    backgroundColor: '#fff',
+    padding: 5,
+    borderRadius: 50,
   },
   timesImg: {
-    width: 20,
-    height: 20,
+    width: 10,
+    height: 10,
     resizeMode: 'contain',
   },
   MainTileView: {

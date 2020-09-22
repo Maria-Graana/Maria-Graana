@@ -7,6 +7,7 @@ import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index';
 import StaticData from '../../StaticData';
 import ErrorMessage from '../../components/ErrorMessage'
+import times from '../../../assets/img/times.png'
 
 class AddPaymentModal extends React.Component {
   constructor(props) {
@@ -21,59 +22,74 @@ class AddPaymentModal extends React.Component {
       secondFormData,
       secondFormSubmit,
       secondCheckValidation,
+      modalLoading,
+      addPaymentLoading,
     } = this.props
     return (
 
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
-          <View style={styles.topHeader}>
-            <Text style={styles.headingText}>Enter Details</Text>
-          </View>
-          <ScrollView>
-            <View style={styles.moreViewContainer}>
-              <SimpleInputText
-                name={'installmentAmount'}
-                fromatName={false}
-                placeholder={'Enter Amount'}
-                label={'ENTER AMOUNT'}
-                value={secondFormData.installmentAmount != null ? secondFormData.installmentAmount : null}
-                formatValue={secondFormData.installmentAmount != null ? secondFormData.installmentAmount : null}
-                editable={true}
-                keyboardType={'numeric'}
-                onChangeHandle={secondHandleForm}
-              />
-              {secondCheckValidation === true && secondFormData.installmentAmount === null && <ErrorMessage errorMessage={'Required'} />}
 
-              <View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent onValueChange={secondHandleForm} data={StaticData.fullPaymentType} name={'type'} placeholder='Type' selectedItem={secondFormData.type} />
-                  {secondCheckValidation === true && secondFormData.type === '' && <ErrorMessage errorMessage={'Required'} />}
-                </View>
+          {
+            modalLoading === false ?
+              <View style={styles.topHeader}>
+                <Text style={styles.headingText}>Enter Details</Text>
+                <TouchableOpacity style={styles.timesBtn} onPress={() => { addPaymentModalToggle(false) }}>
+                  <Image source={times} style={styles.timesImg} />
+                </TouchableOpacity>
               </View>
+              : <Text style={{padding: 10,}}>Fetching Data...</Text>
+          }
+          {
+            modalLoading === false ?
+              <ScrollView>
+                <View style={styles.moreViewContainer}>
+                  <SimpleInputText
+                    name={'installmentAmount'}
+                    fromatName={false}
+                    placeholder={'Enter Amount'}
+                    label={'ENTER AMOUNT'}
+                    value={secondFormData.installmentAmount != null ? secondFormData.installmentAmount : null}
+                    formatValue={secondFormData.installmentAmount != null ? secondFormData.installmentAmount : null}
+                    editable={true}
+                    keyboardType={'numeric'}
+                    onChangeHandle={secondHandleForm}
+                  />
+                  {secondCheckValidation === true && secondFormData.installmentAmount === null && <ErrorMessage errorMessage={'Required'} />}
 
-              <SimpleInputText
-                name={'details'}
-                fromatName={false}
-                placeholder={'Details'}
-                label={'DETIALS'}
-                value={secondFormData.details != '' ? secondFormData.details : ''}
-                formatValue={''}
-                editable={true}
-                onChangeHandle={secondHandleForm}
-              />
+                  <View style={[AppStyles.mainInputWrap]}>
+                    <View style={[AppStyles.inputWrap]}>
+                      <PickerComponent onValueChange={secondHandleForm} data={StaticData.fullPaymentType} name={'type'} placeholder='Type' selectedItem={secondFormData.type} />
+                      {secondCheckValidation === true && secondFormData.type === '' && <ErrorMessage errorMessage={'Required'} />}
+                    </View>
+                  </View>
 
-              <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(false) }}>
-                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
-              </TouchableOpacity>
+                  <SimpleInputText
+                    name={'details'}
+                    fromatName={false}
+                    placeholder={'Details'}
+                    label={'DETIALS'}
+                    value={secondFormData.details != '' ? secondFormData.details : ''}
+                    formatValue={''}
+                    editable={true}
+                    onChangeHandle={secondHandleForm}
+                  />
 
-              <TouchableOpacity style={styles.bookedBtn} onPress={() => {secondFormSubmit()}}>
-                <Text style={styles.bookedBtnText}>
-                  <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> OK
+                  <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(false) }}>
+                    <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                    <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.bookedBtn} onPress={() => { secondFormSubmit() }}>
+                    <Text style={styles.bookedBtnText}>
+                      <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> {addPaymentLoading === true ? 'Wait...' : 'OK'}
                 </Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
+              : null
+          }
+
         </View>
       </Modal>
     )

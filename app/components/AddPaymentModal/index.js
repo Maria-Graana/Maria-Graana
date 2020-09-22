@@ -25,6 +25,7 @@ class AddPaymentModal extends React.Component {
       modalLoading,
       addPaymentLoading,
       attechmentModalToggle,
+      remarks,
     } = this.props
     return (
 
@@ -77,12 +78,25 @@ class AddPaymentModal extends React.Component {
                   />
 
                   {
+                    remarks != null &&
+                    <SimpleInputText
+                      name={'remarks'}
+                      fromatName={false}
+                      placeholder={'Remarks'}
+                      label={'REMARKS'}
+                      value={remarks}
+                      formatValue={''}
+                      editable={false}
+                    />
+                  }
+
+                  {/* {
                     secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' &&
                     <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { attechmentModalToggle(true) }}>
                       <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
                       <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
                     </TouchableOpacity>
-                  }
+                  } */}
 
 
 

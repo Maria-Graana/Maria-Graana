@@ -22,6 +22,7 @@ class AddTokenModal extends React.Component {
       firstScreenValidate,
       addPaymentLoading,
       tokenModalToggle,
+      remarks,
     } = this.props
     return (
 

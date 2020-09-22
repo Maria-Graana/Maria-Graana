@@ -24,6 +24,7 @@ class AddPaymentModal extends React.Component {
       secondCheckValidation,
       modalLoading,
       addPaymentLoading,
+      attechmentModalToggle,
     } = this.props
     return (
 
@@ -38,7 +39,7 @@ class AddPaymentModal extends React.Component {
                   <Image source={times} style={styles.timesImg} />
                 </TouchableOpacity>
               </View>
-              : <Text style={{padding: 10,}}>Fetching Data...</Text>
+              : <Text style={{ padding: 10, }}>Fetching Data...</Text>
           }
           {
             modalLoading === false ?
@@ -55,7 +56,7 @@ class AddPaymentModal extends React.Component {
                     keyboardType={'numeric'}
                     onChangeHandle={secondHandleForm}
                   />
-                  {secondCheckValidation === true && secondFormData.installmentAmount === null && <ErrorMessage errorMessage={'Required'} />}
+                  {secondCheckValidation === true && secondFormData.installmentAmount === null || secondFormData.installmentAmount === '' ? <ErrorMessage errorMessage={'Required'} /> : null}
 
                   <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
@@ -75,15 +76,20 @@ class AddPaymentModal extends React.Component {
                     onChangeHandle={secondHandleForm}
                   />
 
-                  <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(false) }}>
-                    <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                    <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
-                  </TouchableOpacity>
+                  {
+                    secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' &&
+                    <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { attechmentModalToggle(true) }}>
+                      <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                      <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
+                    </TouchableOpacity>
+                  }
+
+
 
                   <TouchableOpacity style={styles.bookedBtn} onPress={() => { secondFormSubmit() }}>
                     <Text style={styles.bookedBtnText}>
                       <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> {addPaymentLoading === true ? 'Wait...' : 'OK'}
-                </Text>
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </ScrollView>

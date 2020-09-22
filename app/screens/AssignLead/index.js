@@ -10,6 +10,8 @@ import axios from 'axios';
 import helper from '../../helper'
 import PickerComponent from '../../components/Picker';
 import StaticData from '../../StaticData';
+import Search from '../../components/Search';
+import fuzzy from 'fuzzy'
 class AssignLead extends React.Component {
     constructor(props) {
         super(props)
@@ -19,6 +21,7 @@ class AssignLead extends React.Component {
             selected: false,
             selectedId: null,
             searchBy: 'myTeam',
+            searchText: '',
         }
     }
 
@@ -71,6 +74,10 @@ class AssignLead extends React.Component {
             })
     }
 
+    shareLead = () => {
+        console.log('share lead');
+    }
+
     onPressItem = (item) => {
         this.setSelected(item.id);
     }
@@ -84,18 +91,28 @@ class AssignLead extends React.Component {
     }
 
     changeSearchValue = (value) => {
-        this.setState({ searchBy: value }, () => {
+        this.setState({ searchBy: value, searchText: '' }, () => {
             this.fetchTeam()
         })
     }
 
 
     render() {
-        const { teamMembers, loading, selected, selectedId, searchBy } = this.state
-        const { user } = this.props;
+        const { teamMembers, loading, selected, selectedId, searchBy, searchText } = this.state
+        const { user, route } = this.props;
+        const { screen } = route.params;
+        let data = [];
+        if (searchText !== '' && data && data.length === 0) {
+            data = fuzzy.filter(searchText, teamMembers, { extract: (e) => (e.firstName ? (e.firstName + ' ' + e.lastName) : '') })
+            data = data.map((item) => item.original)
+        }
+        else {
+            data = teamMembers;
+        }
         return (
             !loading ?
                 <View style={[AppStyles.container, styles.container]}>
+                    <Search placeholder='Search team members here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
                     {
                         user.role === 'admin 3' || user.role === 'sub_admin 1' ?
                             <View style={styles.pickerMain}>
@@ -112,9 +129,9 @@ class AssignLead extends React.Component {
                     }
 
                     {
-                        teamMembers.length ?
+                        data.length ?
                             <FlatList
-                                data={teamMembers}
+                                data={data}
                                 renderItem={(item, index) => (
                                     <TeamTile
                                         data={item}
@@ -131,9 +148,9 @@ class AssignLead extends React.Component {
 
                     <TouchableOpacity
                         disabled={!selected}
-                        onPress={() => this.assignLeadToSelectedMember()}
+                        onPress={() => screen == 'LeadDetail' ? this.assignLeadToSelectedMember() : this.shareLead()}
                         style={styles.assignButtonStyle}>
-                        <Text style={AppStyles.btnText}> ASSIGN LEAD </Text>
+                        <Text style={AppStyles.btnText}> {screen == 'LeadDetail' ? 'ASSIGN LEAD' : 'SHARE LEAD'} </Text>
                     </TouchableOpacity>
                 </View>
                 :

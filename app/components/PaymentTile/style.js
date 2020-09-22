@@ -7,7 +7,7 @@ export default styles = StyleSheet.create({
     borderColor: '#dddddd',
     borderRadius: 6,
     padding: 5,
-    marginBottom: 15,
+    marginBottom: 5,
   },
   upperLayer: {
     position: 'relative',

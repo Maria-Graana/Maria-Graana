@@ -20,7 +20,9 @@ import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import { cos } from 'react-native-reanimated';
 import { formatPrice } from '../../PriceFormate';
 import styles from './style';
-
+import AddAttachmentPopup from '../../components/AddAttachmentPopup'
+import AttachmentTile from '../../components/AttachmentTile';
+import * as DocumentPicker from 'expo-document-picker';
 
 
 class Payments extends Component {
@@ -74,6 +76,12 @@ class Payments extends Component {
 			firstScreenConfirmLoading: false,
 			addPaymentLoading: false,
 			paymentPreviewLoading: false,
+			attachmentVisible: false,
+			attachmentData: {
+				fileName: '',
+				uri: '',
+				size: null,
+			}
 		}
 	}
 
@@ -171,10 +179,10 @@ class Payments extends Component {
 		const { lead } = this.props
 		const array = [];
 
-		if (checkPaymentPlan.investment === true) {
+		if (checkPaymentPlan.investment === true && lead.project != null) {
 			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc. ${lead.project.full_payment_discount}%)` })
 		}
-		if (checkPaymentPlan.rental === true) {
+		if (checkPaymentPlan.rental === true && lead.project != null) {
 			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc. ${lead.project.full_payment_discount}%)` })
 		}
 		if (checkPaymentPlan.years != null) {
@@ -384,7 +392,9 @@ class Payments extends Component {
 					installmentAmount: null,
 					type: '',
 					details: '',
+					cmLeadId: this.props.lead.id,
 				},
+				editaAble: false,
 			})
 		}
 
@@ -407,34 +417,46 @@ class Payments extends Component {
 			formData,
 			remainingPayment,
 			paymentOldValue,
+			attachmentData,
 		} = this.state
 
 
-		if (secondFormData.installmentAmount != null || secondFormData.type != '') {
+		if (secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' && secondFormData.type != '') {
 			this.setState({
 				addPaymentLoading: true,
 			})
 			if (editaAble === false) {
+				var fd = new FormData()
+				fd.append('file', attachmentData)
 				var body = {
 					...secondFormData,
 					remainingPayment: remainingPayment - secondFormData.installmentAmount,
 				}
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
-						this.fetchLead();
-						this.setState({
-							addPaymentModalToggleState: false,
-							secondFormData: {
-								installmentAmount: null,
-								type: '',
-								details: '',
-							},
-							remainingPayment: remainingPayment - secondFormData.installmentAmount,
-							addPaymentLoading: false,
-						}, () => {
-							helper.successToast('Payment Added')
-						})
+						console.log('done 1', res.data.id)
+						axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
+							.then((res) => {
+								console.log('done 2')
+								this.fetchLead();
+								this.setState({
+									addPaymentModalToggleState: false,
+									secondFormData: {
+										installmentAmount: null,
+										type: '',
+										details: '',
+										cmLeadId: this.props.lead.id,
+									},
+									remainingPayment: remainingPayment - secondFormData.installmentAmount,
+									addPaymentLoading: false,
+								}, () => {
+									helper.successToast('Payment Added')
+								})
+							}).catch(() => {
+								helper.errorToast('Attachment Not Added')
+							})
 					}).catch(() => {
+						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
 						})
@@ -462,6 +484,7 @@ class Payments extends Component {
 								installmentAmount: null,
 								type: '',
 								details: '',
+								cmLeadId: this.props.lead.id
 							},
 							remainingPayment: total,
 							editaAble: false,
@@ -488,6 +511,7 @@ class Payments extends Component {
 			.then((res) => {
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
+				console.log(editLeadData)
 				this.setState({
 					secondFormData: {
 						installmentAmount: editLeadData.installmentAmount,
@@ -530,6 +554,36 @@ class Payments extends Component {
 		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
 	}
 
+	getAttachmentFromStorage = () => {
+		const { title } = this.state;
+		// console.log('pickDocment')
+		let options = {
+			type: '*/*',
+			copyToCacheDirectory: true,
+		}
+		DocumentPicker.getDocumentAsync(options).then(item => {
+			if (item.type === 'cancel') {
+				Alert.alert('Pick File', 'Please pick a file from documents!')
+			}
+			else {
+				this.setState({ attachmentData: { fileName: item.name, size: item.size, uri: item.uri, } }, () => {
+				})
+			}
+
+		}).catch(error => {
+			console.log(error);
+		})
+	}
+
+	attechmentModalToggle = (status) => {
+		this.setState({
+			attachmentVisible: status,
+		})
+	}
+	submitAttachment = () => {
+		this.attechmentModalToggle(false)
+	}
+
 	render() {
 		const {
 			progressValue,
@@ -557,6 +611,8 @@ class Payments extends Component {
 			firstScreenConfirmLoading,
 			addPaymentLoading,
 			paymentPreviewLoading,
+			attachmentVisible,
+			attachmentData,
 		} = this.state
 		return (
 			<View>
@@ -630,9 +686,22 @@ class Payments extends Component {
 						secondCheckValidation={secondCheckValidation}
 						modalLoading={modalLoading}
 						addPaymentLoading={addPaymentLoading}
+
+						attechmentModalToggle={this.attechmentModalToggle}
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						secondHandleForm={this.secondHandleForm}
 						secondFormSubmit={this.secondFormSubmit}
+					/>
+
+					<AddAttachmentPopup
+						isVisible={attachmentVisible}
+						formData={attachmentData}
+						// title={title}
+						// setTitle={(title) => this.setTitle(title)}
+						formSubmit={this.submitAttachment}
+						// checkValidation={checkValidation}
+						getAttachmentFromStorage={this.getAttachmentFromStorage}
+						closeModal={() => this.attechmentModalToggle(false)}
 					/>
 
 				</View>

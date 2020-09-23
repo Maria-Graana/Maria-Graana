@@ -228,6 +228,7 @@ class LeadDetail extends React.Component {
         const leadSource = this.checkLeadSource();
         const regex = /(<([^>]+)>)/ig
         let leadSize = this.leadSize()
+
         return (
             !loading ?
                 <ScrollView showsVerticalScrollIndicator={false} style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
@@ -335,7 +336,7 @@ class LeadDetail extends React.Component {
                         <Text style={styles.labelText}>{moment(lead.updatedAt).format("MMM DD YYYY, hh:mm A")} </Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Lead Source </Text>
-                        <Text style={styles.labelText}>{leadSource} </Text>
+                        <Text numberOfLines={1} style={styles.labelText}>{leadSource} {lead.projectId && lead.bulk && '(Bulk uploaded)'}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Assigned To </Text>
                         <Text style={styles.labelText}>{(lead.armsuser && lead.armsuser.firstName) ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName : '-'}</Text>

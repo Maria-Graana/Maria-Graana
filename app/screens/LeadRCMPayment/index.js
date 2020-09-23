@@ -20,6 +20,7 @@ import { setlead } from '../../actions/lead';
 import CMBottomNav from '../../components/CMBottomNav'
 import RentPaymentView from './rentPaymentView';
 import { ProgressBar } from 'react-native-paper';
+import HistoryModal from '../../components/HistoryModal/index';
 
 class LeadRCMPayment extends React.Component {
     constructor(props) {
@@ -62,11 +63,14 @@ class LeadRCMPayment extends React.Component {
             comissionPriceFromat: true,
             monthlyFormatStatus: true,
             organization: 'arms',
+            callModal: false,
+            meetings: []
         }
     }
 
     componentDidMount = () => {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            this.getCallHistory()
             this.getSelectedProperty(this.state.lead)
         })
     }
@@ -630,6 +634,18 @@ class LeadRCMPayment extends React.Component {
             })
     }
 
+    goToHistory = () => {
+        const { callModal } = this.state
+        this.setState({ callModal: !callModal })
+    }
+
+    getCallHistory = () => {
+        const { lead } = this.props
+        axios.get(`/api/diary/all?armsLeadId=${lead.id}`)
+            .then((res) => {
+                this.setState({ meetings: res.data.rows })
+            })
+    }
 
     render() {
         const { loading,
@@ -658,6 +674,8 @@ class LeadRCMPayment extends React.Component {
             comissionPriceFromat,
             agreeAmountFromat,
             monthlyFormatStatus,
+            meetings,
+            callModal,
         } = this.state;
 
         return (
@@ -672,6 +690,11 @@ class LeadRCMPayment extends React.Component {
                         isVisible={isVisible}
                         closeModal={() => this.closeModal()}
                         onPress={() => this.onHandleCloseLead()}
+                    />
+                    <HistoryModal
+                        data={meetings}
+                        closePopup={this.goToHistory}
+                        openPopup={callModal}
                     />
                     <View style={{ flex: 1, minHeight: '100%', paddingBottom: 100 }}>
                         {
@@ -784,6 +807,8 @@ class LeadRCMPayment extends React.Component {
                                 callButton={true}
                                 customer={lead.customer}
                                 lead={lead}
+                                goToHistory={this.goToHistory}
+                                getCallHistory={this.getCallHistory}
                             />
                         </View>
 

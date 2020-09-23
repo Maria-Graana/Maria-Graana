@@ -45,10 +45,7 @@ class AddCMLead extends Component {
             const { client, name, selectedCity } = this.props.route.params;
             const { formData } = this.state;
             let copyObject = Object.assign({}, formData);
-            if (client && name) {
-                copyObject.customerId = client.id;
-                this.setState({ formData: copyObject, clientName: name, selectedClient: client })
-            }
+            if (client && name) this.setClient()
             if (selectedCity) {
                 copyObject.cityId = selectedCity.value;
                 this.setState({ formData: copyObject, selectedCity })
@@ -57,6 +54,18 @@ class AddCMLead extends Component {
         this.getAllProjects();
     }
 
+    setClient = () => {
+        const { formData } = this.state
+        const { client, name } = this.props.route.params
+        let copyObject = Object.assign({}, formData)
+        let phones = []
+        if (client.customerContacts && client.customerContacts.length) {
+            client.customerContacts.map(item => { phones.push(item.phone) })
+        }
+        copyObject.customerId = client.id
+        copyObject.phones = phones
+        this.setState({ formData: copyObject, clientName: name, selectedClient: client })
+    }
 
     getAllProjects = () => {
         axios.get(`/api/project/all`)

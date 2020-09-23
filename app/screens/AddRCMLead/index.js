@@ -81,19 +81,29 @@ class AddRCMLead extends Component {
         const { client, name, selectedCity } = this.props.route.params;
         const { RCMFormData } = this.state;
         let copyObject = Object.assign({}, RCMFormData);
-        if (client && name) {
-            copyObject.customerId = client.id;
-            this.setState({ RCMFormData: copyObject, clientName: name, selectedClient: client })
-        }
+        if (client && name) this.setClient()
         if (selectedCity) {
             copyObject.city_id = selectedCity.value;
             this.setState({ formData: copyObject, selectedCity })
+            setTimeout(() => {
+                const { selectedAreasIds } = this.props;
+                copyObject.leadAreas = selectedAreasIds;
+                this.setState({ RCMFormData: copyObject, selectedCity })
+            }, 1000)
         }
-        setTimeout(() => {
-            const { selectedAreasIds } = this.props;
-            copyObject.leadAreas = selectedAreasIds;
-            this.setState({ RCMFormData: copyObject })
-        }, 1000)
+    }
+
+    setClient = () => {
+        const { RCMFormData } = this.state
+        const { client, name } = this.props.route.params
+        let copyObject = Object.assign({}, RCMFormData)
+        let phones = []
+        if (client.customerContacts && client.customerContacts.length) {
+            client.customerContacts.map(item => { phones.push(item.phone) })
+        }
+        copyObject.customerId = client.id
+        copyObject.phones = phones
+        this.setState({ RCMFormData: copyObject, clientName: name, selectedClient: client })
     }
 
     fetchOrganizations = () => {
@@ -234,7 +244,8 @@ class AddRCMLead extends Component {
             price: RCMFormData.maxPrice,
             min_price: RCMFormData.minPrice,
             description: RCMFormData.description,
-            max_size: RCMFormData.maxSize
+            max_size: RCMFormData.maxSize,
+            phones: RCMFormData.phones
         }
         if (user.subRole === 'group_management') {
             let newOrg = _.find(organizations, function (item) { return item.value === formData.org })
@@ -242,7 +253,6 @@ class AddRCMLead extends Component {
         }
         axios.post(`/api/leads`, payLoad)
             .then((res) => {
-                console.log(res.data)
                 if (res.data.message) {
                     Alert.alert(
                         'Lead cannot be created as same lead already exists:',

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
+import HistoryModal from '../../components/HistoryModal/index';
 import axios from 'axios';
 import Loader from '../../components/loader';
 import AddViewing from '../../components/AddViewing/index';
@@ -44,12 +45,15 @@ class LeadViewing extends React.Component {
 			selectedReason: '',
 			reasons: [],
 			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+			callModal: false,
+			meetings: []
 		}
 	}
 
 	componentDidMount = () => {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.fetchLead()
+			this.getCallHistory()
 			this.fetchProperties()
 		})
 	}
@@ -452,12 +456,23 @@ class LeadViewing extends React.Component {
 		else {
 			return true;
 		}
-
 	}
 
+	goToHistory = () => {
+		const { callModal } = this.state
+		this.setState({ callModal: !callModal })
+	}
+
+	getCallHistory = () => {
+		const { lead } = this.props
+		axios.get(`/api/diary/all?armsLeadId=${lead.id}`)
+			.then((res) => {
+				this.setState({ meetings: res.data.rows })
+			})
+	}
 
 	render() {
-		const { loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
+		const { meetings, callModal, loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
 		const { lead, user } = this.props;
 		const showMenuItem = this.showMenuItem();
 		return (
@@ -466,6 +481,11 @@ class LeadViewing extends React.Component {
 					<View>
 						<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					</View>
+					<HistoryModal
+						data={meetings}
+						closePopup={this.goToHistory}
+						openPopup={callModal}
+					/>
 					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
 						<View style={{ paddingBottom: 100 }}>
 							<AddViewing
@@ -536,6 +556,8 @@ class LeadViewing extends React.Component {
 							callButton={true}
 							customer={lead.customer}
 							lead={lead}
+							goToHistory={this.goToHistory}
+							getCallHistory={this.getCallHistory}
 						/>
 					</View>
 					<LeadRCMPaymentPopup

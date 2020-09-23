@@ -40,6 +40,7 @@ class InnerForm extends Component {
       remainingPayment,
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
+    const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' ? true : false
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -96,7 +97,7 @@ class InnerForm extends Component {
               keyboardType={'numeric'}
               onChangeHandle={handleForm}
               formatValue={formData.discountedPrice}
-              // editable={checkForTokenEdit}
+              editable={checkForUnitIdavail}
               fromatName={false}
             />
             {/* {firstScreenValidate === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />} */}
@@ -110,7 +111,7 @@ class InnerForm extends Component {
                   name={'paymentPlan'}
                   placeholder='Payment Plan'
                   selectedItem={formData.paymentPlan}
-                // enabled={checkForTokenEdit}
+                  enabled={checkForUnitIdavail}
                 />
                 {firstScreenValidate === true && formData.paymentPlan === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
@@ -133,7 +134,7 @@ class InnerForm extends Component {
                 />
                 :
                 <View style={[AppStyles.mainInputWrap]}>
-                  <TouchableOpacity style={styles.bookNowBtn} onPress={() => { tokenModalToggle(true) }}>
+                  <TouchableOpacity style={styles.bookNowBtn} onPress={() => { checkForUnitIdavail === true && tokenModalToggle(true) }}>
                     <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
                   </TouchableOpacity>
                   {

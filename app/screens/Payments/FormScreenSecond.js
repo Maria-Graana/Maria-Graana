@@ -28,6 +28,7 @@ class FormScreenSecond extends Component {
       remainingPayment,
       paymentPreviewLoading,
       checkLeadClosedOrNot,
+      onlyReadFormData,
     } = this.props
     return (
       <SafeAreaView style={styles.removePad}>
@@ -68,6 +69,16 @@ class FormScreenSecond extends Component {
                     </Text>
                 <Text style={styles.rightDetailsText}>
                   {data.unit && data.unit.name}
+                </Text>
+              </View>
+
+              {/* ================================= */}
+              <View style={styles.detailsRow}>
+                <Text style={styles.leftDetailsText}>
+                  Final Price
+                    </Text>
+                <Text style={styles.rightDetailsText}>
+                  {formatPrice(data.unit ? data.unit.finalPrice : '')}
                 </Text>
               </View>
 

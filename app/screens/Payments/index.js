@@ -39,7 +39,7 @@ class Payments extends Component {
 				finalPrice: null,
 				paymentPlan: null,
 				unitId: null,
-				token: null,
+				token: lead.token != null ? lead.token : null,
 				type: '',
 				details: '',
 			},
@@ -749,6 +749,7 @@ class Payments extends Component {
 										paymentPreviewLoading={paymentPreviewLoading}
 										remainingPayment={remainingPayment}
 										checkLeadClosedOrNot={checkLeadClosedOrNot}
+										onlyReadFormData={formData}
 										addPaymentModalToggle={this.addPaymentModalToggle}
 										currencyConvert={this.currencyConvert}
 										editTile={this.editTile}

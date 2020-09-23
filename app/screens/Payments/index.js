@@ -61,7 +61,7 @@ class Payments extends Component {
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
-			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Hold' ? false : true,
+			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Token' || lead.unit.bookingStatus === 'payment' ? false : true,
 			// firstScreenDone: false,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
@@ -95,6 +95,7 @@ class Payments extends Component {
 		this.getAllProjects()
 		this.setPaymentPlanArray()
 		this.handleForm(formData.projectId, 'projectId')
+		console.log(this.props.lead.unit)
 	}
 
 	fetchLead = () => {
@@ -339,7 +340,7 @@ class Payments extends Component {
 			unitDiscount: formData.discount,
 			discounted_price: formData.discountedPrice,
 			discount_amount: formData.finalPrice,
-			unitStatus: 'Hold',
+			unitStatus: 'Token',
 			installmentDue: formData.paymentPlan,
 			finalPrice: formData.finalPrice,
 			remainingPayment: formData.finalPrice,
@@ -369,7 +370,15 @@ class Payments extends Component {
 
 	firstScreenConfirmModal = (status) => {
 		const { formData } = this.state
-		if (formData.projectId != null && formData.floorId != null && formData.unitId != null && formData.paymentPlan != null) {
+		if (
+			formData.projectId != null &&
+			formData.floorId != null &&
+			formData.unitId != null &&
+			formData.paymentPlan != null &&
+			formData.paymentPlan != '' &&
+			formData.token != null &&
+			formData.token != ''
+		) {
 			this.setState({
 				openFirstScreenModal: status,
 			})

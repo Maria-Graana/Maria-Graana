@@ -26,7 +26,16 @@ class AssignLead extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchTeam()
+        const { route } = this.props;
+        const { screen } = route.params;
+        if (screen == 'LeadDetail') {
+            // for Lead Assigning this function is used
+            this.fetchTeam()
+        }
+        else {
+            // For lead sharing we call this function
+            this.fetchShareTeam();
+        }
     }
 
     fetchTeam = () => {
@@ -74,8 +83,43 @@ class AssignLead extends React.Component {
             })
     }
 
+    fetchShareTeam = () => {
+        const url = `/api/user/agents?sharing=${true}`;
+        axios.get(url).then((res) => {
+            this.setState({ teamMembers: res.data }, () => {
+                this.setState({ loading: false });
+            });
+        }).catch((error) => {
+            console.log(error)
+            this.setState({ loading: false });
+            return null
+        })
+    }
+
     shareLead = () => {
-        console.log('share lead');
+        const { navigation, route } = this.props;
+        const { user } = this.props;
+        const { selectedId } = this.state;
+        const { leadId, type } = route.params;
+        var leadid = []
+        leadid.push(leadId)
+        const url = type == 'Investment' ? `/api/leads/project` : `/api/leads`;
+        const body = {
+            sharedAt: new Date(),
+            shared_with_armsuser_id: selectedId,
+            last_edited_by: user.id,
+        }
+        axios.patch(url, body, { params: { id: leadid } }).then((res) => {
+            if (res.data) {
+                helper.successToast('LEAD SHARED SUCCESSFULLY');
+                navigation.navigate('Leads');
+            }
+            else {
+                helper.errorToast('SOMETHING WENT WRONG');
+            }
+        }).catch((error) => {
+            helper.errorToast(error.message);
+        })
     }
 
     onPressItem = (item) => {
@@ -114,7 +158,7 @@ class AssignLead extends React.Component {
                 <View style={[AppStyles.container, styles.container]}>
                     <Search placeholder='Search team members here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
                     {
-                        user.role === 'admin 3' || user.role === 'sub_admin 1' ?
+                        screen == 'LeadDetail' && user.role === 'admin 3' || user.role === 'sub_admin 1' ?
                             <View style={styles.pickerMain}>
                                 <PickerComponent
                                     placeholder={'Search By'}

@@ -58,7 +58,7 @@ class LeadTile extends React.Component {
 	}
 
 	render() {
-		const { data, navigateTo, callNumber, user, purposeTab, contacts } = this.props
+		const { data, navigateTo, callNumber, user, purposeTab, contacts, handleLongPress } = this.props
 		var changeColor = data.assigned_to_armsuser_id == user.id ? styles.blueColor : AppStyles.darkColor
 		var changeStatusColor = data.assigned_to_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
 		var descriptionColor = data.assigned_to_armsuser_id == user.id ? styles.desBlue : styles.desDark
@@ -71,7 +71,7 @@ class LeadTile extends React.Component {
 			''
 		let leadSize = this.leadSize()
 		return (
-			<TouchableOpacity onPress={() => { navigateTo(data) }}>
+			<TouchableOpacity onLongPress={() => handleLongPress(data)} onPress={() => { navigateTo(data) }}>
 				<View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
 					<View style={[styles.rightContentView]}>
 						<View style={styles.topIcons}>
@@ -85,6 +85,12 @@ class LeadTile extends React.Component {
 											data.status.split('_').join(' ').toUpperCase()
 									}
 								</Text>
+
+								{data.shared_with_armsuser_id &&
+									<View style={styles.sharedLead}>
+										<Text style={[AppStyles.mrFive, styles.viewStyle, {color:AppStyles.colors.primaryColor, fontSize: AppStyles.noramlSize.fontSize, fontFamily: AppStyles.fonts.lightFont}]}>Shared Lead</Text>
+									</View>
+								}
 							</View>
 						</View>
 						<View style={[styles.contentMainWrap]}>
@@ -109,10 +115,10 @@ class LeadTile extends React.Component {
 								{
 									purposeTab != 'invest' &&
 									<View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-										<Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor]}>
+										<Text style={[styles.priceText, AppStyles.darkColor]}>
 											PKR
                     					</Text>
-										<Text style={[styles.priceText, styles.multiColumn, changeColor]}>
+										<Text style={[styles.priceText, changeColor]}>
 											{` ${!data.projectId && data.min_price ? helper.checkPrice(data.min_price) + ' - ' : ''}`}
 											{!data.projectId && data.price ? helper.checkPrice(data.price) : ''}
 											{data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}

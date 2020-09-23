@@ -86,9 +86,13 @@ export default styles = StyleSheet.create({
     fontSize: 18,
   },
   // Second Screen Styling
-  bookedBtnText: {
+  bookedBtn: {
+    flexDirection: 'row',
+    borderColor: '#006ff1',
     backgroundColor: '#006ff1',
-    color: '#fff',
+    borderRadius: 4,
+    borderWidth: 1,
+    color: '#006ff1',
     textAlign: 'center',
     paddingTop: 15,
     paddingBottom: 15,
@@ -96,13 +100,25 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
     borderRadius: 4,
+    marginBottom: 0,
+    justifyContent: 'center',
     marginBottom: 10,
+  },
+  bookedBtnText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    borderRadius: 4,
   },
   bookedBtnImage: {
     resizeMode: 'contain',
-    width: 20,
+    width: 17,
     marginRight: 10,
-    height: 19,
+    height: 17,
+    position: 'relative',
+    top: 2,
   },
   firstContainer: {
     paddingLeft: 10,
@@ -179,7 +195,7 @@ export default styles = StyleSheet.create({
   scrollHeight: {
     height: 183,
   },
-  scrollHeightAuto:{
+  scrollHeightAuto: {
     height: 'auto',
   },
   secondContainer: {
@@ -191,7 +207,7 @@ export default styles = StyleSheet.create({
     minHeight: '100%',
     position: 'relative',
     paddingBottom: 100,
-},
+  },
   mainParent: {
     position: 'relative',
     height: '99.4%',

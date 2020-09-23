@@ -36,9 +36,8 @@ class FormScreenSecond extends Component {
           <View style={[styles.firstContainer]}>
             {/* Top Booked Text */}
             <View style={styles.bookedBtn}>
-              <Text style={styles.bookedBtnText}>
-                <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> BOOKED
-                </Text>
+              <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
+              <Text style={styles.bookedBtnText}>BOOKED</Text>
             </View>
 
             {/* Top Details Wrap */}
@@ -110,13 +109,13 @@ class FormScreenSecond extends Component {
                       <Text style={{ padding: 10, }}>Loading...</Text>
                       :
                       data && data.payment && data.payment.length > 0 ?
-                      data.payment.map((item, index) => {
+                        data.payment.map((item, index) => {
 
-                        return (
-                          <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
-                        )
-                      })
-                      : <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center'}}></Text>
+                          return (
+                            <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
+                          )
+                        })
+                        : <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>
                   }
                 </ScrollView>
               </View>

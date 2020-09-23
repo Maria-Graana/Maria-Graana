@@ -101,7 +101,7 @@ class FormScreenSecond extends Component {
           <View style={styles.mainPaymentWrap}>
 
             <View style={styles.paymentTileMain}>
-              <View style={[styles.tileWrap, styles.scrollHeight]}>
+              <View style={[styles.tileWrap, styles.scrollHeight, data.payment != null && data.payment.length < 3 ? styles.scrollHeightAuto : null]}>
                 <ScrollView>
 
                   {

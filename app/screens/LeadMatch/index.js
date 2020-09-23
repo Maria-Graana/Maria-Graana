@@ -128,7 +128,7 @@ class LeadMatch extends React.Component {
     }
 
     getAreas = (cityId) => {
-        axios.get(`/api/areas?city_id=${cityId}&&all=${true}`)
+        axios.get(`/api/areas?city_id=${cityId}&&all=${true}&minimal=true`)
             .then((res) => {
                 let areas = [];
                 res && res.data.items.map((item, index) => { return (areas.push({ value: item.id, name: item.name })) })
@@ -354,6 +354,7 @@ class LeadMatch extends React.Component {
         let params = this.setParams()
         let callApi = this.canCallApi()
         if (callApi || !showCheckBoxes) {
+            console.log('params: ', params)
             axios.get(`/api/leads/matches`,
                 {
                     params: params

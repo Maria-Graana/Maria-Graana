@@ -90,8 +90,8 @@ class InnerForm extends Component {
             {/* **************************************** */}
             <SimpleInputText
               name={'discount'}
-              placeholder={'Discount'}
-              label={'DISCOUNT'}
+              placeholder={'Approved Discount'}
+              label={'APPROVED DISCOUNT'}
               value={formData.discount}
               keyboardType={'numeric'}
               onChangeHandle={handleForm}

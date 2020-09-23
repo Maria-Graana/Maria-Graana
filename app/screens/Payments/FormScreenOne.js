@@ -40,7 +40,6 @@ class InnerForm extends Component {
       remainingPayment,
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
-    console.log(remainingPayment)
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -111,7 +110,7 @@ class InnerForm extends Component {
                   name={'paymentPlan'}
                   placeholder='Payment Plan'
                   selectedItem={formData.paymentPlan}
-                  // enabled={checkForTokenEdit}
+                // enabled={checkForTokenEdit}
                 />
                 {firstScreenValidate === true && formData.paymentPlan === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
@@ -122,25 +121,22 @@ class InnerForm extends Component {
               <TouchableOpacity style={styles.bookNowBtn} onPress={() => { tokenModalToggle(true) }}>
                 <Text style={styles.bookNowBtnText}>{formData.token != '' ? 'TOKEN ADDED' : 'ADD TOKEN'}</Text>
               </TouchableOpacity>
+              {
+                firstScreenValidate === true ?
+                  formData.token === null || formData.token === '' ?
+                    <ErrorMessage errorMessage={'Token Required'} />
+                    : null
+                  : null
+              }
             </View>
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
-
-              {/* {
-                formData.finalPrice === null ? */}
-                  <View style={styles.backgroundBlue}>
-                    <Text style={styles.finalPrice}>FINAL PRICE</Text>
-                    <Text style={styles.priceValue}>{currencyConvert(remainingPayment != null ? remainingPayment : '')}</Text>
-                    <Text style={styles.sidePriceFormat}>{formatPrice(remainingPayment != null ? remainingPayment : '')}</Text>
-                  </View>
-              {/* //     :
-              //     <View style={styles.backgroundBlue}>
-              //       <Text style={styles.finalPrice}>FINAL PRICE F</Text>
-              //       <Text style={styles.priceValue}>{currencyConvert(formData.finalPrice != null ? formData.finalPrice : '')}</Text>
-              //       <Text style={styles.sidePriceFormat}>{formatPrice(formData.finalPrice != null ? formData.finalPrice : '')}</Text>
-              //     </View>
-              // } */}
+              <View style={styles.backgroundBlue}>
+                <Text style={styles.finalPrice}>FINAL PRICE</Text>
+                <Text style={styles.priceValue}>{currencyConvert(remainingPayment != null ? remainingPayment : '')}</Text>
+                <Text style={styles.sidePriceFormat}>{formatPrice(remainingPayment != null ? remainingPayment : '')}</Text>
+              </View>
             </View>
 
             {/* **************************************** */}

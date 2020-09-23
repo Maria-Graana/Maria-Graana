@@ -123,7 +123,6 @@ class Payments extends Component {
 					responseData.paidProject = responseData.project;
 				}
 				this.props.dispatch(setlead(responseData));
-				console.log('responseData',responseData)
 
 				this.setdefaultFields(responseData)
 				this.setState({
@@ -279,9 +278,6 @@ class Payments extends Component {
 
 	changeProject = (id) => {
 		const { lead } = this.props
-		this.setState({
-			firstScreenConfirmLoading: true,
-		})
 		var body = {
 			paymentProject: id
 		}
@@ -369,6 +365,7 @@ class Payments extends Component {
 		this.setState({
 			firstScreenConfirmLoading: true,
 		})
+
 		var body = {
 			unitId: formData.unitId,
 			projectId: formData.projectId,
@@ -380,6 +377,8 @@ class Payments extends Component {
 			installmentDue: formData.paymentPlan,
 			finalPrice: formData.finalPrice,
 			remainingPayment: formData.finalPrice,
+			installmentAmount: formData.token,
+			type: formData.type,
 		}
 		var leadId = []
 		leadId.push(lead.id)
@@ -387,7 +386,11 @@ class Payments extends Component {
 			.then((res) => {
 				axios.get(`/api/leads/project/byId?id=${lead.id}`)
 					.then((res) => {
-						this.props.dispatch(setlead(res.data))
+						let responseData = res.data;
+						if (!responseData.paidProject) {
+							responseData.paidProject = responseData.project;
+						}
+						this.props.dispatch(setlead(responseData));
 						this.setState({
 							secondScreenData: res.data,
 							openFirstScreenModal: false,

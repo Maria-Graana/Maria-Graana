@@ -110,7 +110,6 @@ class FormScreenSecond extends Component {
                       :
                       data && data.payment && data.payment.length > 0 ?
                         data.payment.map((item, index) => {
-
                           return (
                             <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
                           )

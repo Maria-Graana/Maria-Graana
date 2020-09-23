@@ -61,7 +61,7 @@ class Payments extends Component {
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
-			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Token' || lead.unit.bookingStatus === 'payment' ? false : true,
+			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Token' ? false : true,
 			// firstScreenDone: false,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
@@ -95,7 +95,6 @@ class Payments extends Component {
 		this.getAllProjects()
 		this.setPaymentPlanArray()
 		this.handleForm(formData.projectId, 'projectId')
-		console.log(this.props.lead.unit)
 	}
 
 	fetchLead = () => {

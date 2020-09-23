@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export function getAreas(cityId) {
     return (dispatch, getsState) => {
-        axios.get(`/api/areas?city_id=${cityId}&all=true`)
+        axios.get(`/api/areas?city_id=${cityId}&all=true&minimal=true`)
             .then((res) => {
                 let areas = [];
                 res && res.data.items.map((item, index) => { return areas.push({ value: item.id, name: item.name }) })
@@ -20,7 +20,7 @@ export function getAreas(cityId) {
 export function getAreasByZone() {
     return (dispatch, getsState) => {
         const user = getsState().user.user;
-        axios.get(`/api/areas?zone_id=${user.zoneId}&roleId=${user.armsUserRole.id}&all=true`)
+        axios.get(`/api/areas?zone_id=${user.zoneId}&roleId=${user.armsUserRole.id}&all=true&minimal=true`)
             .then((res) => {
                 let areaArray = [];
                 res && res.data.items.map((item, index) => { return (areaArray.push({ value: item.id, name: item.name })) })

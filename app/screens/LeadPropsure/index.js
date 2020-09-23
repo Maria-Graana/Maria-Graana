@@ -17,6 +17,7 @@ import { ProgressBar } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 import CMBottomNav from '../../components/CMBottomNav'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import HistoryModal from '../../components/HistoryModal/index';
 
 class LeadPropsure extends React.Component {
     constructor(props) {
@@ -42,12 +43,15 @@ class LeadPropsure extends React.Component {
             selectedReason: '',
             reasons: [],
             closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+            callModal: false,
+            meetings: []
         }
     }
 
     componentDidMount = () => {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.fetchLead()
+            this.getCallHistory()
             this.fetchProperties()
         })
     }
@@ -140,7 +144,7 @@ class LeadPropsure extends React.Component {
                 packageName: selectedPackage,
                 propertyId: selectedPropertyId,
                 pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
-                org : selectedProperty.arms_id ? 'arms' : 'graana',
+                org: selectedProperty.arms_id ? 'arms' : 'graana',
             }
             axios.post(`api/leads/propsure/${lead.id}`, body).then(response => {
                 this.fetchLead()
@@ -324,14 +328,32 @@ class LeadPropsure extends React.Component {
         this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
     }
 
+    goToHistory = () => {
+        const { callModal } = this.state
+        this.setState({ callModal: !callModal })
+    }
+
+    getCallHistory = () => {
+        const { lead } = this.props
+        axios.get(`/api/diary/all?armsLeadId=${lead.id}`)
+            .then((res) => {
+                this.setState({ meetings: res.data.rows })
+            })
+    }
+
     render() {
-        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { meetings, callModal, loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
         const { lead } = this.props
 
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
                     <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
+                    <HistoryModal
+                        data={meetings}
+                        closePopup={this.goToHistory}
+                        openPopup={callModal}
+                    />
                     <PropsurePackagePopup
                         packages={packages}
                         selectedPackage={selectedPackage}
@@ -402,6 +424,8 @@ class LeadPropsure extends React.Component {
                             callButton={true}
                             customer={lead.customer}
                             lead={lead}
+                            goToHistory={this.goToHistory}
+                            getCallHistory={this.getCallHistory}
                         />
                     </View>
                     <LeadRCMPaymentPopup

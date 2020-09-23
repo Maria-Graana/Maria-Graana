@@ -63,7 +63,11 @@ class LeadDetail extends React.Component {
         const that = this;
         axios.get(`${url}?id=${lead.id}`)
             .then((res) => {
-                this.props.dispatch(setlead(res.data))
+                let responseData = res.data;
+				if(!responseData.paidProject){
+					responseData.paidProject = responseData.project;
+				}
+                this.props.dispatch(setlead(responseData));
                 const regex = /(<([^>]+)>)/ig
                 let text = res.data.description && res.data.description !== '' ? res.data.description.replace(regex, '') : null
                 this.setState({ lead: res.data, loading: false, description: text }, () => {
@@ -228,6 +232,7 @@ class LeadDetail extends React.Component {
         const leadSource = this.checkLeadSource();
         const regex = /(<([^>]+)>)/ig
         let leadSize = this.leadSize()
+
         return (
             !loading ?
                 <ScrollView showsVerticalScrollIndicator={false} style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
@@ -365,7 +370,7 @@ class LeadDetail extends React.Component {
                         }
 
                         <Text style={styles.headingText}>Lead Source </Text>
-                        <Text style={styles.labelText}>{leadSource} </Text>
+                        <Text numberOfLines={1} style={styles.labelText}>{leadSource} {lead.projectId && lead.bulk && '(Bulk uploaded)'}</Text>
                         <View style={styles.underLine} />
                         <Text style={styles.headingText}>Assigned To </Text>
                         <Text style={styles.labelText}>{(lead.armsuser && lead.armsuser.firstName) ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName : '-'}</Text>

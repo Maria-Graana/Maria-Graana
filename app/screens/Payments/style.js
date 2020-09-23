@@ -128,6 +128,7 @@ export default styles = StyleSheet.create({
     flex: 1,
     color: '#006ff1',
     fontWeight: 'bold',
+    textTransform: 'capitalize',
   },
   paymentsHeading: {
     backgroundColor: '#006ff1',
@@ -163,9 +164,11 @@ export default styles = StyleSheet.create({
   },
   addPaymentBtnImg: {
     resizeMode: 'contain',
-    width: 20,
+    width: 15,
     marginRight: 10,
-    height: 19,
+    height: 15,
+    position: 'relative',
+    top: 3,
   },
   addPaymentBtnText: {
     color: '#006ff1',
@@ -175,6 +178,9 @@ export default styles = StyleSheet.create({
   },
   scrollHeight: {
     height: 183,
+  },
+  scrollHeightAuto:{
+    height: 'auto',
   },
   secondContainer: {
     minHeight: '100%',

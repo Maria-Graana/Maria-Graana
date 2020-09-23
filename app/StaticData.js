@@ -614,7 +614,7 @@ export default StaticData = {
         { value: 'cheque', name: 'Cheque' },
         { value: 'pay-Order', name: 'Pay-Order' },
         { value: 'Remittance', name: 'Remittance' },
-        { value: 'bank-Transfer', name: 'Back-Transfer' },
+        { value: 'bank-Transfer', name: 'Bank-Transfer' },
         { value: 'e-Gateyway', name: 'E-Gateyway' },
     ]
 }

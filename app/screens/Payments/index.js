@@ -93,8 +93,23 @@ class Payments extends Component {
 		const { formData } = this.state
 		this.fetchLead()
 		this.getAllProjects()
-		this.setPaymentPlanArray()
+		this.setdefaultFields(this.props.lead)
 		this.handleForm(formData.projectId, 'projectId')
+	}
+
+	setdefaultFields = (lead) => {
+		const { checkPaymentPlan } = this.state
+		var newcheckPaymentPlan = { ...checkPaymentPlan }
+
+		newcheckPaymentPlan['years'] = lead.paidProject != null && lead.paidProject.installment_plan != null || '' ? lead.paidProject.installment_plan : null
+		newcheckPaymentPlan['monthly'] = lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes' ? true : false
+		newcheckPaymentPlan['rental'] = lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false,
+
+			this.setState({
+				checkPaymentPlan: newcheckPaymentPlan,
+			}, () => {
+				this.setPaymentPlanArray(lead)
+			})
 	}
 
 	fetchLead = () => {
@@ -103,7 +118,14 @@ class Payments extends Component {
 		this.setState({ paymentPreviewLoading: true, })
 		axios.get(`/api/leads/project/byId?id=${lead.id}`)
 			.then((res) => {
-				this.props.dispatch(setlead(res.data))
+				let responseData = res.data;
+				if (!responseData.paidProject) {
+					responseData.paidProject = responseData.project;
+				}
+				this.props.dispatch(setlead(responseData));
+				console.log('responseData',responseData)
+
+				this.setdefaultFields(responseData)
 				this.setState({
 					progressValue: cmProgressBar[res.data.status] || 0,
 					paymentPreviewLoading: false,
@@ -178,12 +200,10 @@ class Payments extends Component {
 		})
 	}
 
-	setPaymentPlanArray = () => {
+	setPaymentPlanArray = (lead) => {
 		const { paymentPlan, checkPaymentPlan } = this.state
-		const { lead } = this.props
+		// const { lead } = this.props
 		const array = [];
-
-		console.log(lead)
 
 		if (checkPaymentPlan.investment === true && lead.paidProject != null) {
 			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc, ${lead.paidProject.full_payment_discount}%)` })
@@ -212,12 +232,13 @@ class Payments extends Component {
 
 		// Get Floor base on Project Id
 		if (name === 'projectId') {
+			this.changeProject(value)
 			this.getFloors(value)
 		}
 
 		// Get Floor base on Floor ID & Project Id
 		if (name === 'floorId') {
-			this.getUnits(value, formData.projectId)
+			this.getUnits(formData.projectId, value)
 		}
 
 		//Set Selected Unit Details
@@ -254,6 +275,22 @@ class Payments extends Component {
 				this.refreshUnitPrice(name)
 			}
 		})
+	}
+
+	changeProject = (id) => {
+		const { lead } = this.props
+		this.setState({
+			firstScreenConfirmLoading: true,
+		})
+		var body = {
+			paymentProject: id
+		}
+		var leadId = []
+		leadId.push(lead.id)
+		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+			.then((res) => {
+				this.fetchLead()
+			})
 	}
 
 	allCalculations = () => {

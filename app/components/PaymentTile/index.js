@@ -29,7 +29,7 @@ class PaymentTile extends React.Component {
 						<Text style={[styles.tileStatus, statusColor]}>{data.status}</Text>
 					</View>
 					<View style={styles.bottomLayer}>
-						<Text style={styles.formatPrice}>{currencyConvert(data.installmentAmount)}</Text>
+						<Text style={styles.formatPrice}>{currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>
 						<Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
 						<Text style={styles.priceDate}>{moment(data.createdAt).format('MM.DD.YYYY / h:mm a')}</Text>
 					</View>

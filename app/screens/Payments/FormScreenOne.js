@@ -119,7 +119,7 @@ class InnerForm extends Component {
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
               <TouchableOpacity style={styles.bookNowBtn} onPress={() => { tokenModalToggle(true) }}>
-                <Text style={styles.bookNowBtnText}>{formData.token != '' ? 'TOKEN ADDED' : 'ADD TOKEN'}</Text>
+                <Text style={styles.bookNowBtnText}>{formData.token != '' && formData.token != null? 'TOKEN AMOUNT ' + formatPrice(formData.token) : 'ADD TOKEN'}</Text>
               </TouchableOpacity>
               {
                 firstScreenValidate === true ?

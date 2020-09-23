@@ -66,11 +66,11 @@ const styles = StyleSheet.create({
     header: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: "center"
+        alignItems: "center",
     },
     headerText: {
         paddingRight: 30,
-        fontFamily: AppStyles.fonts.semiBoldFont,
+        fontFamily: AppStyles.fonts.boldFont,
         fontSize: 16
     },
 });

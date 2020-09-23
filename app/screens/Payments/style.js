@@ -115,7 +115,7 @@ export default styles = StyleSheet.create({
   bookedBtnImage: {
     resizeMode: 'contain',
     width: 17,
-    marginRight: 10,
+    marginRight: 5,
     height: 17,
     position: 'relative',
     top: 2,
@@ -181,7 +181,7 @@ export default styles = StyleSheet.create({
   addPaymentBtnImg: {
     resizeMode: 'contain',
     width: 15,
-    marginRight: 10,
+    marginRight: 5,
     height: 15,
     position: 'relative',
     top: 3,

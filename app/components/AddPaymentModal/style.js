@@ -107,7 +107,7 @@ export default styles = StyleSheet.create({
   bookedBtnImage: {
     resizeMode: 'contain',
     width: 17,
-    marginRight: 10,
+    marginRight: 5,
     height: 17,
     position: 'relative',
     top: 2,

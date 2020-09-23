@@ -335,7 +335,7 @@ class LeadDetail extends React.Component {
                         <Text style={styles.labelText}>{moment(lead.updatedAt).format("MMM DD YYYY, hh:mm A")} </Text>
                         <View style={styles.underLine} />
                         {
-                            lead.shared_with_armsuser_id &&  user.id !== lead.shared_with_armsuser_id && lead.shareUser ?
+                            lead.shared_with_armsuser_id && user.id !== lead.shared_with_armsuser_id && lead.shareUser ?
                                 <>
                                     <Text style={styles.headingText}>Shared with</Text>
                                     <Text style={styles.labelText}>{lead.shareUser.firstName + ' ' + lead.shareUser.lastName + ', ' + lead.shareUser.phoneNumber} </Text>
@@ -354,9 +354,16 @@ class LeadDetail extends React.Component {
                                 :
                                 null
                         }
-                        <Text style={styles.headingText}>Shared at</Text>
-                        <Text style={styles.labelText}>{lead.sharedAt ? moment(lead.sharedAt).format("MMM DD YYYY, hh:mm A") : '-'} </Text>
-                        <View style={styles.underLine} />
+                        {
+                            lead.sharedAt ?
+                                <>
+                                    <Text style={styles.headingText}>Shared at</Text>
+                                    <Text style={styles.labelText}>{moment(lead.sharedAt).format("MMM DD YYYY, hh:mm A")} </Text>
+                                    <View style={styles.underLine} />
+                                </>
+                                : null
+                        }
+
                         <Text style={styles.headingText}>Lead Source </Text>
                         <Text style={styles.labelText}>{leadSource} </Text>
                         <View style={styles.underLine} />

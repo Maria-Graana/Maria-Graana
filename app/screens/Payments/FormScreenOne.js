@@ -117,18 +117,34 @@ class InnerForm extends Component {
             </View>
 
             {/* **************************************** */}
-            <View style={[AppStyles.mainInputWrap]}>
-              <TouchableOpacity style={styles.bookNowBtn} onPress={() => { tokenModalToggle(true) }}>
-                <Text style={styles.bookNowBtnText}>{formData.token != '' && formData.token != null? 'TOKEN AMOUNT ' + formatPrice(formData.token) : 'ADD TOKEN'}</Text>
-              </TouchableOpacity>
-              {
-                firstScreenValidate === true ?
-                  formData.token === null || formData.token === '' ?
-                    <ErrorMessage errorMessage={'Token Required'} />
-                    : null
-                  : null
-              }
-            </View>
+
+            {/* **************************************** */}
+            {
+              formData.token != '' && formData.token != null ?
+                <SimpleInputText
+                  name={'token'}
+                  fromatName={'token'}
+                  placeholder={'Token'}
+                  label={'TOKEN'}
+                  value={formData.token}
+                  formatValue={formData.token}
+                  editable={false}
+                  keyboardType={'numeric'}
+                />
+                :
+                <View style={[AppStyles.mainInputWrap]}>
+                  <TouchableOpacity style={styles.bookNowBtn} onPress={() => { tokenModalToggle(true) }}>
+                    <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
+                  </TouchableOpacity>
+                  {
+                    firstScreenValidate === true ?
+                      formData.token === null || formData.token === '' ?
+                        <ErrorMessage errorMessage={'Token Required'} />
+                        : null
+                      : null
+                  }
+                </View>
+            }
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>

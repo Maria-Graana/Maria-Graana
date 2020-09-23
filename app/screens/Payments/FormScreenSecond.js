@@ -75,16 +75,6 @@ class FormScreenSecond extends Component {
               {/* ================================= */}
               <View style={styles.detailsRow}>
                 <Text style={styles.leftDetailsText}>
-                  Token
-                    </Text>
-                <Text style={styles.rightDetailsText}>
-                  {formatPrice(onlyReadFormData.token != null ? onlyReadFormData.token : '')}
-                </Text>
-              </View>
-
-              {/* ================================= */}
-              <View style={styles.detailsRow}>
-                <Text style={styles.leftDetailsText}>
                   Final Price
                     </Text>
                 <Text style={styles.rightDetailsText}>
@@ -126,7 +116,7 @@ class FormScreenSecond extends Component {
                           <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
                         )
                       })
-                      : <Text style={{ padding: 10, fontWeight: 'bold', textAlign: 'center'}}>No Data Found!</Text>
+                      : <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center'}}></Text>
                   }
                 </ScrollView>
               </View>

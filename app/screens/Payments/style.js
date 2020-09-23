@@ -185,7 +185,7 @@ export default styles = StyleSheet.create({
   secondContainer: {
     minHeight: '100%',
     position: 'relative',
-    paddingBottom: 100,
+    paddingBottom: 65,
   },
   fullHeight: {
     minHeight: '100%',

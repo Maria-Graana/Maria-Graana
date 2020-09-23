@@ -59,9 +59,9 @@ class LeadTile extends React.Component {
 
 	render() {
 		const { data, navigateTo, callNumber, user, purposeTab, contacts, handleLongPress } = this.props
-		var changeColor = data.assigned_to_armsuser_id == user.id ? styles.blueColor : AppStyles.darkColor
-		var changeStatusColor = data.assigned_to_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
-		var descriptionColor = data.assigned_to_armsuser_id == user.id ? styles.desBlue : styles.desDark
+		var changeColor = data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id   ? styles.blueColor : AppStyles.darkColor
+		var changeStatusColor =data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
+		var descriptionColor = data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id ? styles.desBlue : styles.desDark
 		let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
 		let customerName = data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
 		let areasLength = !data.projectId && data.armsLeadAreas &&

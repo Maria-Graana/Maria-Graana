@@ -354,7 +354,6 @@ class LeadMatch extends React.Component {
         let params = this.setParams()
         let callApi = this.canCallApi()
         if (callApi || !showCheckBoxes) {
-            console.log('params: ', params)
             axios.get(`/api/leads/matches`,
                 {
                     params: params

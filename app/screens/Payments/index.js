@@ -231,7 +231,12 @@ class Payments extends Component {
 
 			//Set Discount Price
 			if (name === 'discount' || name === 'paymentPlan') {
-				this.calculatedPercentFormula(name, value)
+				this.allCalculations()
+			}
+
+			// Set Discount for Token
+			if (name === 'token') {
+				this.allCalculations()
 			}
 
 			// when Project id chnage the unit filed will be refresh
@@ -251,41 +256,21 @@ class Payments extends Component {
 		})
 	}
 
-	calculatedPercentFormula = (name, value) => {
-		const { formData, unitPrice, paymentPlan } = this.state
+	allCalculations = () => {
+		const { formData, unitPrice } = this.state
 		const { lead } = this.props
 
 		const newFormData = { ...formData }
-		newFormData[name] = value
 
 		var totalPrice = unitPrice
 		var frontDiscount = formData.discount
-		var backendDiscount = lead.project != null && lead.project.full_payment_discount 
+		var backendDiscount = lead.project != null && lead.project.full_payment_discount
 		var grandTotal = ''
 
-
-
-		if (name === 'discount') {
+		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100))) - Number(formData.token)
+		} else {
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100))) - Number(formData.token)
-			if (value != '') {
-				newFormData['discountedPrice'] = grandTotal
-			} else {
-				newFormData['discountedPrice'] = ''
-			}
-		}
-
-		if (name === 'paymentPlan') {
-			if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
-				grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100))) - Number(formData.token)
-			} else {
-				grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100))) - Number(formData.token)
-			}
-		}
-
-		if (name === 'token') {
-			if (grandTotal != '') {
-				grandTotal = Number(grandTotal) - Number(formData.token)
-			}
 		}
 
 		newFormData['finalPrice'] = grandTotal
@@ -293,10 +278,6 @@ class Payments extends Component {
 			formData: newFormData,
 			remainingPayment: grandTotal,
 		})
-	}
-
-	allCalculations = (totalPrice, frontDiscount, backendDiscount) => {
-
 	}
 
 	refreshUnitPrice = (name) => {
@@ -548,7 +529,6 @@ class Payments extends Component {
 			.then((res) => {
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
-				console.log(editLeadData)
 				this.setState({
 					secondFormData: {
 						installmentAmount: editLeadData.installmentAmount,
@@ -624,7 +604,6 @@ class Payments extends Component {
 	tokenModalToggle = (status) => {
 		const { formData } = this.state
 		if (formData.token != '') {
-			this.calculatedPercentFormula('token', formData.token)
 			this.setState({ tokenModalVisible: status })
 		}
 		this.setState({
@@ -667,9 +646,6 @@ class Payments extends Component {
 	formSubmit = () => {
 		const { lead } = this.props
 		const { formData, remainingPayment, unitPrice } = this.state
-		let body = {
-			reasons: 'dd'
-		}
 		var leadId = []
 		leadId.push(lead.id)
 		if (remainingPayment <= 0 && formData.unitId != null) {
@@ -682,7 +658,7 @@ class Payments extends Component {
 	closedLead = () => {
 		const { lead, user } = this.props
 		// lead.status != StaticData.Constants.lead_closed_won || lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
-		 this.state.checkLeadClosedOrNot === true && helper.leadClosedToast()
+		this.state.checkLeadClosedOrNot === true && helper.leadClosedToast()
 		lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
 	}
 
@@ -723,53 +699,53 @@ class Payments extends Component {
 			checkLeadClosedOrNot,
 			remarks,
 		} = this.state
-		
+
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 				<View style={styles.mainParent}>
 					{
 						firstScreenDone === true && checkLeadClosedOrNot === false ?
-						<ScrollView>
-							<View style={styles.fullHeight}>
-								<FormScreenOne
-									getProject={getProject}
-									getFloors={getFloors}
-									getUnit={getUnit}
-									unitPrice={unitPrice}
-									unitId={unitId}
-									formData={formData}
-									paymentPlan={paymentPlan}
-									firstScreenValidate={firstScreenValidate}
-									remainingPayment={remainingPayment}
-									currencyConvert={this.currencyConvert}
-									handleForm={this.handleForm}
-									submitFirstScreen={this.submitFirstScreen}
-									openUnitDetailsModal={this.openUnitDetailsModal}
-									firstScreenConfirmModal={this.firstScreenConfirmModal}
-									tokenModalToggle={this.tokenModalToggle}
-								/>
-							</View>
-						</ScrollView>
-						: null
+							<ScrollView>
+								<View style={styles.fullHeight}>
+									<FormScreenOne
+										getProject={getProject}
+										getFloors={getFloors}
+										getUnit={getUnit}
+										unitPrice={unitPrice}
+										unitId={unitId}
+										formData={formData}
+										paymentPlan={paymentPlan}
+										firstScreenValidate={firstScreenValidate}
+										remainingPayment={remainingPayment}
+										currencyConvert={this.currencyConvert}
+										handleForm={this.handleForm}
+										submitFirstScreen={this.submitFirstScreen}
+										openUnitDetailsModal={this.openUnitDetailsModal}
+										firstScreenConfirmModal={this.firstScreenConfirmModal}
+										tokenModalToggle={this.tokenModalToggle}
+									/>
+								</View>
+							</ScrollView>
+							: null
 					}
 
 					{
 						firstScreenDone === false || checkLeadClosedOrNot === true ?
-						<ScrollView>
-							<View style={styles.secondContainer}>
-								<FormScreenSecond
-									data={secondScreenData}
-									paymentPreviewLoading={paymentPreviewLoading}
-									remainingPayment={remainingPayment}
-									checkLeadClosedOrNot={checkLeadClosedOrNot}
-									addPaymentModalToggle={this.addPaymentModalToggle}
-									currencyConvert={this.currencyConvert}
-									editTile={this.editTile}
-								/>
-							</View>
-						</ScrollView>
-						: null
+							<ScrollView>
+								<View style={styles.secondContainer}>
+									<FormScreenSecond
+										data={secondScreenData}
+										paymentPreviewLoading={paymentPreviewLoading}
+										remainingPayment={remainingPayment}
+										checkLeadClosedOrNot={checkLeadClosedOrNot}
+										addPaymentModalToggle={this.addPaymentModalToggle}
+										currencyConvert={this.currencyConvert}
+										editTile={this.editTile}
+									/>
+								</View>
+							</ScrollView>
+							: null
 					}
 
 					{

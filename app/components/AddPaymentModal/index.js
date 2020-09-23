@@ -57,7 +57,13 @@ class AddPaymentModal extends React.Component {
                     keyboardType={'numeric'}
                     onChangeHandle={secondHandleForm}
                   />
-                  {secondCheckValidation === true && secondFormData.installmentAmount === null || secondFormData.installmentAmount === '' ? <ErrorMessage errorMessage={'Required'} /> : null}
+                  {
+                    secondCheckValidation === true ?
+                      secondFormData.installmentAmount === null || secondFormData.installmentAmount === '' ?
+                        <ErrorMessage errorMessage={'Required'} />
+                        : null
+                      : null
+                  }
 
                   <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>

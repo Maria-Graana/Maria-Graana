@@ -440,13 +440,8 @@ class LeadMatch extends React.Component {
     displayChecks = () => {
         const { showCheckBoxes } = this.state
         const { lead, user } = this.props
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast();
-        }
-        else if (user.id !== lead.assigned_to_armsuser_id) {
-            helper.leadNotAssignedToast()
-        }
-        else {
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
             if (showCheckBoxes) {
                 this.unSelectAll()
             } else {
@@ -460,16 +455,12 @@ class LeadMatch extends React.Component {
         }
     }
 
+
     addProperty = (property) => {
         const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-        const { lead, user } = this.props
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast();
-        }
-        else if (user.id !== lead.assigned_to_armsuser_id) {
-            helper.leadNotAssignedToast()
-        }
-        else {
+        const {user, lead} = this.props;
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
             if (showCheckBoxes) {
                 if (showCheckBoxes) this.changeComBool()
                 let properties = matchData.data.map((item) => {
@@ -516,8 +507,7 @@ class LeadMatch extends React.Component {
                     })
                 }
             }
-        }
-
+        }   
     }
 
     unSelectAll = () => {
@@ -551,7 +541,8 @@ class LeadMatch extends React.Component {
     closeLead = () => {
         const { user, lead } = this.props;
         var commissionPayment = this.props.lead.commissionPayment
-        if (user.id === lead.assigned_to_armsuser_id) {
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if (leadAssignedSharedStatus) {
             if (commissionPayment !== null) {
                 this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
             }
@@ -559,10 +550,6 @@ class LeadMatch extends React.Component {
                 this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
             }
         }
-        else {
-            helper.leadNotAssignedToast()
-        }
-
     }
 
     onHandleCloseLead = () => {

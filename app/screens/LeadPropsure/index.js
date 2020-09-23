@@ -119,13 +119,8 @@ class LeadPropsure extends React.Component {
 
     showPackageModal = (property) => {
         const { lead, user } = this.props
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast();
-        }
-        else if (user.id !== lead.assigned_to_armsuser_id) {
-            helper.leadNotAssignedToast();
-        }
-        else {
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
             this.setState({ isVisible: true, selectedPropertyId: property.id, selectedProperty: property, checkPackageValidation: false });
         }
     }
@@ -165,13 +160,8 @@ class LeadPropsure extends React.Component {
 
     showDocumentModal = (propsureId) => {
         const { lead, user } = this.props
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast();
-        }
-        else if (user.id !== lead.assigned_to_armsuser_id) {
-            helper.leadNotAssignedToast();
-        }
-        else {
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
             this.setState({ documentModalVisible: true, selectedPropsureId: propsureId, checkValidation: false });
         }
     }
@@ -268,7 +258,8 @@ class LeadPropsure extends React.Component {
     closeLead = () => {
         const { user, lead } = this.props;
         var commissionPayment = this.props.lead.commissionPayment
-        if (user.id === lead.assigned_to_armsuser_id) {
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
             if (commissionPayment !== null) {
                 this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
             }
@@ -276,10 +267,6 @@ class LeadPropsure extends React.Component {
                 this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
             }
         }
-        else {
-            helper.leadNotAssignedToast()
-        }
-
     }
 
     onHandleCloseLead = () => {

@@ -151,8 +151,8 @@ class InnerForm extends Component {
             <View style={[AppStyles.mainInputWrap]}>
               <View style={styles.backgroundBlue}>
                 <Text style={styles.finalPrice}>FINAL PRICE</Text>
-                <Text style={styles.priceValue}>{currencyConvert(remainingPayment != null ? remainingPayment : '')}</Text>
-                <Text style={styles.sidePriceFormat}>{formatPrice(remainingPayment != null ? remainingPayment : '')}</Text>
+                <Text style={styles.priceValue}>{remainingPayment != null ?currencyConvert( remainingPayment ): null}</Text>
+                <Text style={styles.sidePriceFormat}>{remainingPayment != null ?formatPrice( remainingPayment ): null}</Text>
               </View>
             </View>
 

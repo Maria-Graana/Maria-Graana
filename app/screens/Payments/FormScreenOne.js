@@ -40,6 +40,7 @@ class InnerForm extends Component {
       remainingPayment,
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
+    const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' ? true : false
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -90,13 +91,13 @@ class InnerForm extends Component {
             {/* **************************************** */}
             <SimpleInputText
               name={'discount'}
-              placeholder={'Discount'}
-              label={'DISCOUNT'}
+              placeholder={'Approved Discount'}
+              label={'APPROVED DISCOUNT'}
               value={formData.discount}
               keyboardType={'numeric'}
               onChangeHandle={handleForm}
               formatValue={formData.discountedPrice}
-              // editable={checkForTokenEdit}
+              editable={checkForUnitIdavail}
               fromatName={false}
             />
             {/* {firstScreenValidate === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />} */}
@@ -110,25 +111,41 @@ class InnerForm extends Component {
                   name={'paymentPlan'}
                   placeholder='Payment Plan'
                   selectedItem={formData.paymentPlan}
-                // enabled={checkForTokenEdit}
+                  enabled={checkForUnitIdavail}
                 />
                 {firstScreenValidate === true && formData.paymentPlan === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
 
             {/* **************************************** */}
-            <View style={[AppStyles.mainInputWrap]}>
-              <TouchableOpacity style={styles.bookNowBtn} onPress={() => { tokenModalToggle(true) }}>
-                <Text style={styles.bookNowBtnText}>{formData.token != '' && formData.token != null? 'TOKEN AMOUNT ' + formatPrice(formData.token) : 'ADD TOKEN'}</Text>
-              </TouchableOpacity>
-              {
-                firstScreenValidate === true ?
-                  formData.token === null || formData.token === '' ?
-                    <ErrorMessage errorMessage={'Token Required'} />
-                    : null
-                  : null
-              }
-            </View>
+
+            {/* **************************************** */}
+            {
+              formData.token != '' && formData.token != null ?
+                <SimpleInputText
+                  name={'token'}
+                  fromatName={'token'}
+                  placeholder={'Token'}
+                  label={'TOKEN'}
+                  value={formData.token}
+                  formatValue={formData.token}
+                  editable={false}
+                  keyboardType={'numeric'}
+                />
+                :
+                <View style={[AppStyles.mainInputWrap]}>
+                  <TouchableOpacity style={styles.bookNowBtn} onPress={() => { checkForUnitIdavail === true && tokenModalToggle(true) }}>
+                    <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
+                  </TouchableOpacity>
+                  {
+                    firstScreenValidate === true ?
+                      formData.token === null || formData.token === '' ?
+                        <ErrorMessage errorMessage={'Token Required'} />
+                        : null
+                      : null
+                  }
+                </View>
+            }
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>

@@ -28,6 +28,7 @@ class FormScreenSecond extends Component {
       remainingPayment,
       paymentPreviewLoading,
       checkLeadClosedOrNot,
+      onlyReadFormData,
     } = this.props
     return (
       <SafeAreaView style={styles.removePad}>
@@ -35,9 +36,8 @@ class FormScreenSecond extends Component {
           <View style={[styles.firstContainer]}>
             {/* Top Booked Text */}
             <View style={styles.bookedBtn}>
-              <Text style={styles.bookedBtnText}>
-                <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> BOOKED
-                </Text>
+              <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
+              <Text style={styles.bookedBtnText}>BOOKED</Text>
             </View>
 
             {/* Top Details Wrap */}
@@ -101,7 +101,7 @@ class FormScreenSecond extends Component {
           <View style={styles.mainPaymentWrap}>
 
             <View style={styles.paymentTileMain}>
-              <View style={[styles.tileWrap, styles.scrollHeight]}>
+              <View style={[styles.tileWrap, styles.scrollHeight, data.payment != null && data.payment.length < 3 ? styles.scrollHeightAuto : null]}>
                 <ScrollView>
 
                   {
@@ -109,13 +109,13 @@ class FormScreenSecond extends Component {
                       <Text style={{ padding: 10, }}>Loading...</Text>
                       :
                       data && data.payment && data.payment.length > 0 ?
-                      data.payment.map((item, index) => {
+                        data.payment.map((item, index) => {
 
-                        return (
-                          <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
-                        )
-                      })
-                      : <Text style={{ padding: 10, fontWeight: 'bold'}}>No Data Found!</Text>
+                          return (
+                            <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
+                          )
+                        })
+                        : <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>
                   }
                 </ScrollView>
               </View>

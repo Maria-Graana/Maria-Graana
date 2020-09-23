@@ -76,7 +76,7 @@ class AddPaymentModal extends React.Component {
                     name={'details'}
                     fromatName={false}
                     placeholder={'Details'}
-                    label={'DETIALS'}
+                    label={'DETAILS'}
                     value={secondFormData.details != '' ? secondFormData.details : ''}
                     formatValue={''}
                     editable={true}
@@ -107,8 +107,9 @@ class AddPaymentModal extends React.Component {
 
 
                   <TouchableOpacity style={styles.bookedBtn} onPress={() => { secondFormSubmit() }}>
+                    <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
                     <Text style={styles.bookedBtnText}>
-                      <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> {addPaymentLoading === true ? 'Wait...' : 'OK'}
+                      {addPaymentLoading === true ? 'Wait...' : 'OK'}
                     </Text>
                   </TouchableOpacity>
                 </View>

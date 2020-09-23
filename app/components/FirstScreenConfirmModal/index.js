@@ -38,7 +38,7 @@ class FirstScreenConfirmModal extends React.Component {
           <Text style={styles.noramlText}>Project: <Text style={styles.mainTextLarge}>{project && project.name}</Text></Text>
           <Text style={styles.noramlText}>Floor: <Text style={styles.mainTextLarge}>{floors && floors.name}</Text></Text>
           <Text style={styles.noramlText}>Unit: <Text style={styles.mainTextLarge}>{units && units.name}</Text></Text>
-          <Text style={styles.noramlText}>Discount: <Text style={styles.mainTextLarge}>{data.discount ? data.discount : 'N/A'}</Text></Text>
+          <Text style={styles.noramlText}>Approved Discount: <Text style={styles.mainTextLarge}>{data.discount ? data.discount+'%' : 'N/A'}</Text></Text>
           <Text style={styles.noramlText}>Payment Plan: <Text style={styles.mainTextLarge}>{data.paymentPlan}</Text></Text>
           <Text style={styles.noramlText}>Final Price: <Text style={styles.mainTextLarge}>{formatPrice(data.finalPrice ? data.finalPrice : '')}</Text></Text>
           <View style={styles.confirmBtnView}>

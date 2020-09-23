@@ -39,7 +39,7 @@ class Payments extends Component {
 				finalPrice: null,
 				paymentPlan: null,
 				unitId: null,
-				token: null,
+				token: lead.token != null ? lead.token : null,
 				type: '',
 				details: '',
 			},
@@ -185,11 +185,13 @@ class Payments extends Component {
 		const { lead } = this.props
 		const array = [];
 
+		console.log(lead)
+
 		if (checkPaymentPlan.investment === true && lead.project != null) {
-			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc. ${lead.project.full_payment_discount}%)` })
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc, ${lead.project.full_payment_discount}%)` })
 		}
 		if (checkPaymentPlan.rental === true && lead.project != null) {
-			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc. ${lead.project.full_payment_discount}%)` })
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc, ${lead.project.full_payment_discount}%)` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -393,6 +395,7 @@ class Payments extends Component {
 		if (status === true) {
 			this.setState({
 				addPaymentModalToggleState: status,
+				secondCheckValidation: false,
 			})
 		} else if (status === false) {
 			this.setState({
@@ -665,7 +668,6 @@ class Payments extends Component {
 
 	closedLead = () => {
 		const { lead, user } = this.props
-		// lead.status != StaticData.Constants.lead_closed_won || lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
 		this.state.checkLeadClosedOrNot === true && helper.leadClosedToast()
 		lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
 	}
@@ -747,6 +749,7 @@ class Payments extends Component {
 										paymentPreviewLoading={paymentPreviewLoading}
 										remainingPayment={remainingPayment}
 										checkLeadClosedOrNot={checkLeadClosedOrNot}
+										onlyReadFormData={formData}
 										addPaymentModalToggle={this.addPaymentModalToggle}
 										currencyConvert={this.currencyConvert}
 										editTile={this.editTile}

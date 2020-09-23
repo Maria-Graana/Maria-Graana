@@ -1,18 +1,23 @@
 import React, { Component } from 'react';
-import { View, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import axios from 'axios'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
-import InnerForm from './innerForm';
+import FormScreenOne from './FormScreenOne';
+import FormScreenSecond from './FormScreenSecond';
 import StaticData from '../../StaticData';
-import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import moment from 'moment'
 import { ProgressBar } from 'react-native-paper';
-import { setlead } from '../../actions/lead';
 import helper from '../../helper';
-import PaymentAlert from '../../components/PaymentAlert'
+import { setlead } from '../../actions/lead';
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
+import AddPaymentModal from '../../components/AddPaymentModal'
+import AddTokenModal from '../../components/AddTokenModal'
+import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
+import styles from './style';
+import AddAttachmentPopup from '../../components/AddAttachmentPopup'
+import * as DocumentPicker from 'expo-document-picker';
 
 
 class Payments extends Component {
@@ -20,211 +25,100 @@ class Payments extends Component {
 		super(props)
 		const { lead, user } = this.props
 		this.state = {
+			progressValue: 0,
 			getProject: [],
-			checkValidation: false,
-			getUnit: [],
-			unitDetailModal: false,
-			arrowCheck: {
-				discount: false,
-				token: false,
-				downPayment: false,
-				installments: false,
-				payments: false,
-			},
 			getFloors: [],
-			paymentDate: '',
-			tokenDate: lead.tokenPaymentTime ? moment(lead.tokenPaymentTime).format('hh:mm a') + ' ' + moment(lead.tokenPaymentTime).format('MMM DD') : '',
-			downPaymentTime: lead.paymentTime ? moment(lead.paymentTime).format('hh:mm a') + ' ' + moment(lead.paymentTime).format('MMM DD') : '',
-			totalInstalments: lead.cmInstallments.length > 0 ? lead.cmInstallments : [],
-			units: [],
-			remainingPayment: '',
-			readOnly: {
-				totalSize: '',
-				rate: '',
-				totalPrice: '',
-			},
+			getAllFloors: [],
+			getUnit: [],
+			allUnits: [],
 			formData: {
-				projectId: lead.projectId ? lead.projectId : '',
-				floorId: lead.floorId ? lead.floorId : '',
-				unitId: lead.unitId ? lead.unitId : '',
-				token: lead.token ? lead.token : '',
-				discount: lead.discount ? lead.discount : '',
-				commisionPayment: '',
-				downPayment: lead.downPayment ? lead.downPayment : '',
-				paymentType: lead && lead.possession_charges != null || lead.cmInstallments.length > 0 || lead.downPayment ? 'installments' : 'full_payment',
-				payment: '',
-				discountPercentage: lead.unit != null ? lead.unit.discount : '',
-				unitStatus: lead.unit != null ? lead.unit.bookingStatus : 'Sold on Investment Plan',
-				installmentDue: lead && lead.installmentDue === null || lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
+				projectId: lead.project != null ? lead.project.id : null,
+				floorId: null,
+				discount: null,
+				discountedPrice: null,
+				finalPrice: null,
+				paymentPlan: null,
+				unitId: null,
+				token: null,
+				type: '',
+				details: '',
 			},
-			instalments: lead.no_of_installments ? lead.no_of_installments : '',
+			secondFormData: {
+				installmentAmount: null,
+				type: '',
+				cmLeadId: lead.id,
+				details: '',
+			},
+			unitId: null,
+			unitPrice: null,
+			checkPaymentPlan: {
+				years: lead.project != null && lead.project.installment_plan != null || '' ? lead.project.installment_plan : null,
+				monthly: lead.project != null && lead.project.monthly_installment_availablity === 'yes' ? true : false,
+				rental: lead.project != null && lead.project.rent_available === 'yes' ? true : false,
+				investment: true,
+				quartarly: true,
+			},
+			paymentPlan: [],
+			openFirstScreenModal: false,
+			firstScreenValidate: false,
+			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Token' || lead.unit.bookingStatus === 'payment' ? false : true,
+			// firstScreenDone: false,
+			secondScreenData: lead,
+			addPaymentModalToggleState: false,
+			secondCheckValidation: false,
+			editaAble: false,
+			paymentId: null,
+			remainingPayment: lead.remainingPayment != null ? lead.remainingPayment : '',
+			paymentOldValue: null,
+			modalLoading: false,
+			firstScreenConfirmLoading: false,
+			addPaymentLoading: false,
+			paymentPreviewLoading: false,
+			attachmentVisible: false,
+			attachmentData: {
+				fileName: '',
+				uri: '',
+				size: null,
+			},
+			tokenModalVisible: false,
 			reasons: [],
 			isVisible: false,
 			selectedReason: '',
-			checkReasonValidation: false,
-			progressValue: 0,
-			fullPaymentCount: 1,
-			paymentFiledsArray: lead.payment && lead.payment.length > 0 ? lead.payment : [],
-			// checkPaymentTypeValue: ''
-			closedLeadEdit:
-				lead.status != StaticData.Constants.lead_closed_won &&
-				lead.status != StaticData.Constants.lead_closed_lost,
-			showStyling: '',
-			showDate: false,
-			promotionDiscountFormat: false,
-			tokenFormat: false,
-			tokenDateStatus: { name: '', status: false },
-			downPaymentDateStatus: { name: '', status: false },
-			downPaymentFormat: false,
-			dateStatusForPayments: [],
-			paymentFromat: [],
-			dateStatusForInstallments: [],
-			installmentsFromat: [],
-			possessionFormat: false,
-			checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false,
-			cancelNewData: '',
-			discountAmount: lead.unit != null && lead.unit.discount != null && lead.unit.discount_amount,
-			discountedPrice: lead.unit != null && lead.unit.discount != null && lead.unit.discounted_price,
-			getAllProject: [],
-			checkMonthlyOption: false,
-			possessionCharges: null,
-			checkForUnitAvail: true,
+			checkLeadClosedOrNot: lead.status === 'closed_won' || lead.status === 'closed_lost' || lead.assigned_to_armsuser_id != user.id ? true : false,
+			remarks: lead.payment != null ? lead.remarks : null,
 		}
-
 	}
 
 	componentDidMount() {
-		this.fetchLead()
-		this.getAllProjects();
-		this.setFields();
-	}
-
-	setFields = () => {
-		const {
-			formData,
-			arrowCheck,
-			tokenDateStatus,
-			downPaymentDateStatus,
-			totalInstalments,
-		} = this.state
-		const { lead } = this.props
-		let data = lead
-		let newtokenDateStatus = tokenDateStatus
-		let newdownPaymentDateStatus = downPaymentDateStatus
-		this.setState({
-			readOnly: {
-				totalSize: '',
-				rate: '',
-				totalPrice: '',
-			},
-			totalInstalments: data.cmInstallments.length > 0 ? data.cmInstallments : [],
-			formData: {
-				projectId: data.projectId ? data.projectId : '',
-				floorId: data.floorId ? data.floorId : '',
-				unitId: data.unitId ? data.unitId : '',
-				token: data.token ? data.token : '',
-				discount: data.discount ? data.discount : '',
-				commisionPayment: '',
-				unitStatus: data.unit != null && data.payment != null && data.payment.length > 0 ? data.unit.bookingStatus : 'Sold on Investment Plan',
-				paymentType: lead && lead.possession_charges != null || lead.cmInstallments.length > 0 || lead.downPayment ? 'installments' : 'full_payment',
-				downPayment: data.downPayment ? data.downPayment : '',
-				discountPercentage: data.unit != null ? data.unit.discount : '',
-				installmentDue: lead && lead.installmentDue === null || lead.installmentDue === 'quarterly' ? 'quarterly' : 'monthly',
-			},
-			instalments: data.project != null && data.project.installment_plan != null ? this.noOfInstallments(data.project.installment_plan) : '',
-			possessionCharges: data && data.possession_charges != null ? data.possession_charges : null,
-			checkForUnitAvail: data.unit && data.unit != null && data.unit.bookingStatus != 'Available' ? false : true,
-		}, () => {
-			let name = ''
-			if (data.projectId != null) {
-				this.getFloors(data.projectId)
-				// this.discountPayment()
-			}
-			if (data.floorId != null) {
-				this.getUnits(data.projectId, data.floorId)
-				// this.discountPayment()
-			}
-			if (data.unitId != null) {
-				this.readOnly(data.unitId)
-				this.discountPayment()
-			}
-			if (data.discount != null && data.unitId != null) {
-				this.discountPayment(formData)
-				this.discountPayment()
-
-				arrowCheck[name] = false
-				this.formatStatusChange(name, true)
-			}
-			if (data.unit != null && data.unit.possession_charges != null) {
-				name = 'possessionCharges'
-				this.discountPayment()
-				this.formatStatusChange(name, true)
-			}
-			if (data.token != null && data.unitId != null) {
-				this.discountPayment(formData)
-				this.discountPayment()
-				name = 'token'
-				arrowCheck[name] = false
-				this.formatStatusChange(name, true)
-				newtokenDateStatus['name'] = name
-				newtokenDateStatus['status'] = true
-			}
-			if (data.downPayment != null && data.unitId != null) {
-				this.discountPayment(formData)
-				this.discountPayment()
-				name = 'downPayment'
-				arrowCheck[name] = false
-				this.formatStatusChange(name, true)
-				newdownPaymentDateStatus['name'] = name
-				newdownPaymentDateStatus['status'] = true
-
-			}
-			if (data.project != null && data.project.installment_plan != null && data.unitId != null) {
-				var totalInstallments = this.noOfInstallments(data.project.installment_plan)
-				this.instalmentsField(totalInstallments)
-				this.discountPayment()
-			}
-			if (data.cmInstallments.length && data.unitId != null) {
-				name = 'installments'
-				arrowCheck[name] = false
-				this.setInstallmentsDateArray(data.no_of_installments);
-				this.setState({
-					formData: {
-						...formData,
-						paymentType: 'installments'
-					}
-				})
-			}
-
-			if (data.payment && data.payment.length && data.unitId != null) {
-				name = 'payments'
-				arrowCheck[name] = false
-				this.setPaymentDateArray(data.payment.length);
-				this.setState({
-					formData: {
-						...formData,
-						paymentType: 'full_payment'
-					}
-				})
-			}
-
-			this.setState({
-				arrowCheck,
-				tokenDateStatus: newtokenDateStatus,
-			})
-
-		})
-	}
-
-	noOfInstallments = (noOfInstallments) => {
 		const { formData } = this.state
-		var total = ''
-		if (formData.installmentDue === 'quarterly') {
-			total = noOfInstallments * 4
-		} else {
-			total = noOfInstallments * 12
-		}
-		return total
+		this.fetchLead()
+		this.getAllProjects()
+		this.setPaymentPlanArray()
+		this.handleForm(formData.projectId, 'projectId')
+		console.log(this.props.lead.unit)
+	}
+
+	fetchLead = () => {
+		const { lead } = this.props
+		const { cmProgressBar } = StaticData
+		this.setState({
+			paymentPreviewLoading: true,
+		})
+		axios.get(`/api/leads/project/byId?id=${lead.id}`)
+			.then((res) => {
+				this.props.dispatch(setlead(res.data))
+				this.setState({
+					progressValue: cmProgressBar[res.data.status] || 0,
+					paymentPreviewLoading: false,
+					secondScreenData: res.data,
+				})
+			})
+			.catch((error) => {
+				console.log(error)
+				this.setState({
+					paymentPreviewLoading: false,
+				})
+			})
 	}
 
 	getAllProjects = () => {
@@ -234,35 +128,10 @@ class Payments extends Component {
 				res && res.data.items.map((item, index) => { return (projectArray.push({ value: item.id, name: item.name })) })
 				this.setState({
 					getProject: projectArray,
-					getAllProject: res.data
-				}, () => {
-					this.getSpecificProject(this.state.formData.projectId)
+					getAllProject: res.data.items
 				})
 			}).catch((error) => {
 				console.log('project')
-			})
-	}
-
-	getSpecificProject = (id) => {
-		const { getAllProject } = this.state
-		var getSpecific = getAllProject && getAllProject.items.filter((item) => { return item.id == id && item })
-		this.setState({
-			checkMonthlyOption: getSpecific && getSpecific.length && getSpecific[0].monthly_installment_availablity === 'yes' ? true : false
-		})
-	}
-
-	fetchLead = () => {
-		const { lead } = this.props
-		const { cmProgressBar } = StaticData
-		axios.get(`/api/leads/project/byId?id=${lead.id}`)
-			.then((res) => {
-				this.props.dispatch(setlead(res.data))
-				this.setState({
-					progressValue: cmProgressBar[res.data.status] || 0
-				})
-			})
-			.catch((error) => {
-				console.log(error)
 			})
 	}
 
@@ -273,513 +142,482 @@ class Payments extends Component {
 				res && res.data.rows.map((item, index) => { return (Array.push({ value: item.id, name: item.name })) })
 				this.setState({
 					getFloors: Array,
+					getAllFloors: res.data.rows,
 				})
 			})
 	}
 
 	getUnits = (projectId, floorId) => {
 		const { lead } = this.props
-		if (lead.unit != null) {
-			if (lead.unit.bookingStatus === 'Available') {
-				axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
-					.then((res) => {
-						let array = [];
-						res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
-						this.setState({
-							getUnit: array,
-							units: res.data.rows
-						}, () => {
-							if (lead.unitId != null) {
-								this.readOnly(lead.unitId)
-								this.getUnitDetailsThroughId(lead.unitId)
-							}
-						})
-					})
-			} else {
+		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
+			.then((res) => {
+				let array = [];
+				res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
 				this.setState({
-					getUnit: [{ value: lead.unit.id, name: lead.unit.name }],
-					unitDetailsData: lead.unit
+					getUnit: array,
+					allUnits: res.data.rows,
 				})
-			}
-		} else {
-			axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
-				.then((res) => {
-					let array = [];
-					res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
-					this.setState({
-						getUnit: array,
-						units: res.data.rows
-					}, () => {
-						if (lead.unitId != null) {
-							this.readOnly(lead.unitId)
-							this.getUnitDetailsThroughId(lead.unitId)
-						}
-					})
-				})
-		}
+			})
 	}
 
-	setPaymentDateArray = (length) => {
-		const { dateStatusForPayments, paymentFromat } = this.state
-		var arrayDate = [...dateStatusForPayments]
-		var arrayFormat = [...paymentFromat]
-		for (var i = 0; i < length; i++) {
-			arrayDate.push({ name: i, status: true })
-			arrayFormat.push({ name: i, status: true })
-		}
+	openUnitDetailsModal = (id, status) => {
+		const { allUnits } = this.state
+		let object = {};
+		object = allUnits.find((item) => { return item.id == id && item })
 		this.setState({
-			dateStatusForPayments: arrayDate,
-			paymentFromat: arrayFormat,
+			unitDetailModal: status,
+			unitDetailsData: object,
 		})
 	}
 
-	setInstallmentsDateArray = (length) => {
-		const { dateStatusForInstallments, installmentsFromat } = this.state
-		var arrayDate = [...dateStatusForInstallments]
-		var arrayFormat = [...installmentsFromat]
-		var newLength = length
-		newLength = length < 4 ? 4 : length
-		for (var i = 0; i < newLength; i++) {
-			arrayDate.push({ name: i, status: true })
-			arrayFormat.push({ name: i, status: true })
-		}
+	setUnitPrice = (id) => {
+		const { allUnits, formData } = this.state
+		let object = {};
+		var newFormdata = { ...formData }
+		object = allUnits.find((item) => { return item.id == id && item })
 		this.setState({
-			dateStatusForInstallments: arrayDate,
-			installmentsFromat: arrayFormat,
+			unitPrice: object.unit_price,
+			remainingPayment: object.unit_price,
 		})
 	}
 
-	instalmentsField = (value) => {
-		const { dateStatusForInstallments, installmentsFromat } = this.state
+	setPaymentPlanArray = () => {
+		const { paymentPlan, checkPaymentPlan } = this.state
 		const { lead } = this.props
-		let array = []
-		let newdateStatusForInstallments = [...dateStatusForInstallments]
-		let newinstallmentsFromat = [...installmentsFromat]
-		for (var i = 0; i < value; i++) {
-			newdateStatusForInstallments.push({ name: '', status: false })
-			newinstallmentsFromat.push({ name: '', status: false })
-			array.push({
-				id: lead.cmInstallments.length > i ?
-					lead.cmInstallments[i].id
-					:
-					null,
-				installmentAmount: lead.cmInstallments.length > i ?
-					lead.cmInstallments[i].installmentAmount
-					:
-					null,
-				installmentAmountDate: lead.cmInstallments.length > i ?
-					lead.cmInstallments[i].installmentAmount != null && moment(lead.cmInstallments[i].updatedAt).format('hh:mm a') + ' ' + moment(lead.cmInstallments[i].updatedAt).format('MMM DD')
-					:
-					null,
-			})
+		const array = [];
+
+		if (checkPaymentPlan.investment === true && lead.project != null) {
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc. ${lead.project.full_payment_discount}%)` })
 		}
+		if (checkPaymentPlan.rental === true && lead.project != null) {
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc. ${lead.project.full_payment_discount}%)` })
+		}
+		if (checkPaymentPlan.years != null) {
+			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
+		}
+		if (checkPaymentPlan.monthly === true) {
+			array.push({ value: 'Sold on Monthly Installments Plan', name: checkPaymentPlan.years + ' Years Monthly Installments' })
+		}
+
 		this.setState({
-			totalInstalments: array,
-			instalments: value,
-			dateStatusForInstallments: newdateStatusForInstallments,
-			installmentsFromat: newinstallmentsFromat
-		}, () => {
-			this.submitValues('no_installments')
-			this.discountPayment();
+			paymentPlan: array,
 		})
-	}
-
-	readOnly = (unitId) => {
-		const { units } = this.state
-		let array = {};
-		array = units && units.filter((item) => { return item.id === unitId && item })
-		let data = array.length ? array[0] : ''
-		if (unitId != null || units.length > 0) {
-			this.setState({
-				readOnly: {
-					totalSize: data.area + ' ' + data.area_unit,
-					rate: data.pricePerSqFt,
-					totalPrice: data.area * data.pricePerSqFt,
-				},
-				remainingPayment: data.area * data.pricePerSqFt,
-			}, () => {
-				this.discountPayment()
-			})
-		}
-	}
-
-	discountPayment = () => {
-		const { readOnly, unitDetailsData, formData, totalInstalments, paymentFiledsArray, discountedPrice, possessionCharges } = this.state
-		let totalPrice = unitDetailsData && unitDetailsData.unit_price
-		let totalInstallments = ''
-		let totalPayment = ''
-		totalInstalments.map((item, index) => {
-			if (item.installmentAmount) {
-				totalInstallments = Number(totalInstallments) + Number(item.installmentAmount)
-			}
-		})
-		paymentFiledsArray.map((item, index) => {
-			if (item.installmentAmount) {
-				totalPayment = Number(totalPayment) + Number(item.installmentAmount)
-			}
-		})
-		let remaining = ''
-		if (totalPrice != '') {
-			remaining = totalPrice - Number(possessionCharges) - Number(discountedPrice) - formData['downPayment'] - formData['token'] - Number(totalInstallments) - Number(totalPayment)
-		}
-		this.setState({ remainingPayment: remaining })
-	}
-
-	currentDate = (name) => {
-		var date = new Date()
-		if (name === 'downPayment') {
-			this.setState({
-				downPaymentTime: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
-			})
-		}
-
-		if (name === 'token') {
-			this.setState({
-				tokenDate: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
-			})
-		}
-
-		if (name === 'payment') {
-			this.setState({
-				paymentDate: moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
-			})
-		}
 	}
 
 	handleForm = (value, name) => {
-		const {
-			formData,
-			arrowCheck,
-			paymentFiledsArray,
-			modalVisible,
-			totalInstalments,
-			unitDetailsData
-		} = this.state
-		const { lead } = this.props
-		let newFormData = { ...formData }
+		const { formData, unitPrice } = this.state
+
+		// Set Values In form Data
+		const newFormData = { ...formData }
 		newFormData[name] = value
+
+		// Get Floor base on Project Id
 		if (name === 'projectId') {
-			this.getSpecificProject(value)
-			this.apiCallForNewDetails('', 'noOfInstallments')
-		}
-		if (name === 'discount') {
-			arrowCheck[name] = true
-		}
-		if (name == 'token') {
-			arrowCheck[name] = true
-		}
-		if (name === 'downPayment') {
-			arrowCheck[name] = true
-		}
-		if (name === 'payment') {
-			arrowCheck[name] = true
-		}
-		if (name === 'paymentType') {
-			if (value === 'installments' && paymentFiledsArray.length > 0) {
-				this.setState({
-					modalVisible: !modalVisible,
-					checkPaymentTypeValue: value,
-				})
-			}
-
-			if (value === 'full_payment' && totalInstalments.length > 0) {
-				this.setState({
-					modalVisible: !modalVisible,
-					checkPaymentTypeValue: value,
-					possessionCharges: null,
-				},() => {
-					this.discountPayment()
-				})
-			}
-			if (paymentFiledsArray.length === 0) {
-				this.addFullpaymentFields()
-			}
-		}
-		if (name === 'possessionCharges') {
-			this.setState({
-				possessionCharges: value
-			},()=>{
-				this.discountPayment()
-			})
-		}
-		if (name === 'discountPercentage' && unitDetailsData != '') {
-			var discountAmount = this.percentFormula(unitDetailsData.unit_price, value)
-			this.setState({
-				discountAmount: discountAmount,
-				discountedPrice: unitDetailsData.unit_price - discountAmount
-			})
-		}
-		if (name === 'installmentDue') {
-
+			this.getFloors(value)
 		}
 
-		this.setState({ formData: newFormData, arrowCheck }, () => {
-			if (name === 'projectId' && value != '') {
-				this.getFloors(newFormData.projectId)
-				this.submitValues('projectId')
-			}
-			if (name === 'floorId' && value != '') {
-				this.getUnits(newFormData.projectId, newFormData.floorId)
-				this.submitValues('floorId')
-			}
-			if (name === 'unitId' && value != '') {
-				this.readOnly(value)
-				this.submitValues('unitId')
-				this.getUnitDetailsThroughId(value)
-				if (lead.project != null && lead.project.installment_plan != null) {
-					var totalInstallments = this.noOfInstallments(lead.project.installment_plan)
-					this.instalmentsField(totalInstallments)
-				}
-			}
-			if (name === 'installmentDue') {
-				if (lead.project != null && lead.project.installment_plan != null) {
-					var totalInstallments = this.noOfInstallments(lead.project.installment_plan)
-					this.instalmentsField(totalInstallments)
-				}
-				this.submitValues(name)
-			}
-			if (name === 'discountPercentage') {
-				this.discountPayment(newFormData)
-			}
-			if (name == 'token') {
-				this.currentDate(name)
-				this.discountPayment(newFormData)
-			}
-			if (name === 'downPayment') {
-				this.currentDate(name)
-				this.discountPayment(newFormData)
-			}
-			if (name === 'no_installments') {
-				this.instalmentsField(value)
-				this.submitValues(name)
-			}
-			if (name === 'payment') {
-				this.currentDate(name)
-				this.submitValues('payment')
-				// this.discountPayment(newFormData)
-			}
-		})
-	}
+		// Get Floor base on Floor ID & Project Id
+		if (name === 'floorId') {
+			this.getUnits(value, formData.projectId)
+		}
 
-	getUnitDetailsThroughId = (id) => {
-		const { units, formData } = this.state
-		var getObject = units && units.filter((item) => { return item.id == id ? item : null })
-		var newFormData = { ...formData }
-		newFormData['discountPercentage'] = ''
+		//Set Selected Unit Details
+		if (name === 'unitId') {
+			this.setUnitPrice(value)
+		}
+
 		this.setState({
-			unitDetailsData: getObject[0],
 			formData: newFormData,
-			discountAmount: '',
-			discountedPrice: '',
+		}, () => {
+
+			//Set Discount Price
+			if (name === 'discount' || name === 'paymentPlan') {
+				this.allCalculations()
+			}
+
+			// Set Discount for Token
+			if (name === 'token') {
+				this.allCalculations()
+			}
+
+			// when Project id chnage the unit filed will be refresh
+			if (name === 'projectId' && formData.projectId != null) {
+				this.refreshUnitPrice(name)
+			}
+
+			// when floor id chnage the unit filed will be refresh
+			if (name === 'floorId' && formData.floorId != null) {
+				this.refreshUnitPrice(name)
+			}
+
+			// when floor id chnage the unit filed will be refresh
+			if (name === 'unitId' && formData.unitId != null) {
+				this.refreshUnitPrice(name)
+			}
 		})
 	}
 
-	handleInstalments = (value, index) => {
-		const { totalInstalments, arrowCheck } = this.state
-		var date = new Date()
-		arrowCheck['installments'] = true
-		let newInstallments = [...totalInstalments]
-		newInstallments[index].installmentAmount = parseInt(value)
-		newInstallments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
-		this.setState({ totalInstalments: newInstallments, arrowCheck }, () => {
-			this.discountPayment()
-		})
-	}
-
-	handlePayments = (value, index) => {
-		const { paymentFiledsArray, arrowCheck } = this.state
-		var date = new Date()
-		arrowCheck['payments'] = true
-		let newPayments = [...paymentFiledsArray]
-		newPayments[index].installmentAmount = value
-		newPayments[index].installmentDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
-		this.setState({ paymentFiledsArray: newPayments, arrowCheck }, () => {
-			this.discountPayment()
-		})
-	}
-
-	formSubmit = () => {
+	allCalculations = () => {
+		const { formData, unitPrice } = this.state
 		const { lead } = this.props
-		const { formData, totalInstalments, remainingPayment, readOnly, paymentFiledsArray,possessionCharges } = this.state
-		let body = {
-			discount: formData.discount ? parseInt(formData.discount) : null,
-			downPayment: formData.downPayment ? parseInt(formData.downPayment) : null,
-			floorId: formData.floorId ? formData.floorId : null,
-			token: formData.token ? parseInt(formData.token) : null,
-			unitId: formData.unitId ? formData.unitId : null,
-			installments: totalInstalments.length > 0 ? totalInstalments : paymentFiledsArray.length > 0 ? paymentFiledsArray : null,
-			no_of_installments: totalInstalments.length ? totalInstalments.length : null,
-			remainingPayment: remainingPayment,
-			possession_charges: possessionCharges,
+
+		const newFormData = { ...formData }
+
+		var totalPrice = unitPrice
+		var frontDiscount = formData.discount
+		var backendDiscount = lead.project != null && lead.project.full_payment_discount
+		var grandTotal = ''
+
+		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100))) - Number(formData.token)
+		} else {
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100))) - Number(formData.token)
+		}
+
+		newFormData['finalPrice'] = grandTotal
+		this.setState({
+			formData: newFormData,
+			remainingPayment: grandTotal,
+		})
+	}
+
+	refreshUnitPrice = (name) => {
+		const { formData } = this.state
+		var newFormData = { ...formData }
+		if (name === 'projectId') {
+			newFormData['floorId'] = 'no'
+			newFormData['unitId'] = 'no'
+			newFormData['discount'] = null
+			newFormData['finalPrice'] = null
+			newFormData['discountedPrice'] = null
+			this.setState({ unitPrice: null, })
+		}
+
+		if (name === 'floorId') {
+			newFormData['unitId'] = 'no'
+			newFormData['discount'] = null
+			newFormData['finalPrice'] = null
+			newFormData['discountedPrice'] = null
+			this.setState({ unitPrice: null, })
+		}
+
+		if (name === 'unitId') {
+			newFormData['discount'] = null
+			newFormData['finalPrice'] = null
+			newFormData['discountedPrice'] = null
+		}
+
+		this.setState({
+			formData: newFormData,
+		})
+	}
+
+	percentFormula = (total, percent) => {
+		var result = total - ((percent / 100) * total)
+		return parseInt(result);
+	}
+
+	currencyConvert = (x) => {
+		x = x.toString();
+		var lastThree = x.substring(x.length - 3);
+		var otherNumbers = x.substring(0, x.length - 3);
+		if (otherNumbers != '')
+			lastThree = ',' + lastThree;
+		var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+		return res;
+	}
+
+	submitFirstScreen = () => {
+		const { lead } = this.props
+		const { formData, unitId } = this.state
+		this.setState({
+			firstScreenConfirmLoading: true,
+		})
+		var body = {
+			unitId: formData.unitId,
+			projectId: formData.projectId,
+			floorId: formData.floorId,
+			unitDiscount: formData.discount,
+			discounted_price: formData.discountedPrice,
+			discount_amount: formData.finalPrice,
+			unitStatus: 'Token',
+			installmentDue: formData.paymentPlan,
+			finalPrice: formData.finalPrice,
+			remainingPayment: formData.finalPrice,
 		}
 		var leadId = []
 		leadId.push(lead.id)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
 			.then((res) => {
-				if (remainingPayment <= 0 && remainingPayment != 'no' && readOnly.totalPrice != '') {
-					this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
-				} else {
-					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
-				}
-			}).catch((error) => {
-				console.log('Some thing went wrong!!!', error.message)
+				axios.get(`/api/leads/project/byId?id=${lead.id}`)
+					.then((res) => {
+						this.props.dispatch(setlead(res.data))
+						this.setState({
+							secondScreenData: res.data,
+							openFirstScreenModal: false,
+							firstScreenDone: false,
+							firstScreenConfirmLoading: false,
+						}, () => {
+							helper.successToast('Lead Booked')
+						})
+					}).catch(() => {
+						this.setState({
+							firstScreenConfirmLoading: false,
+						})
+					})
 			})
 	}
 
-	submitValues = (name, arrayName) => {
+	firstScreenConfirmModal = (status) => {
+		const { formData } = this.state
+		if (
+			formData.projectId != null &&
+			formData.floorId != null &&
+			formData.unitId != null &&
+			formData.paymentPlan != null &&
+			formData.paymentPlan != '' &&
+			formData.token != null &&
+			formData.token != ''
+		) {
+			this.setState({
+				openFirstScreenModal: status,
+			})
+		} else {
+			this.setState({
+				firstScreenValidate: true,
+			})
+		}
+
+	}
+
+	addPaymentModalToggle = (status) => {
+		if (status === true) {
+			this.setState({
+				addPaymentModalToggleState: status,
+			})
+		} else if (status === false) {
+			this.setState({
+				addPaymentModalToggleState: status,
+				secondFormData: {
+					installmentAmount: null,
+					type: '',
+					details: '',
+					cmLeadId: this.props.lead.id,
+				},
+				editaAble: false,
+			})
+		}
+
+	}
+
+	secondHandleForm = (value, name) => {
+		const { secondFormData } = this.state
+		const newSecondFormData = secondFormData
+		newSecondFormData[name] = value
+		this.setState({
+			secondFormData: newSecondFormData,
+		})
+	}
+
+	secondFormSubmit = () => {
 		const {
+			secondFormData,
+			editaAble,
+			paymentId,
 			formData,
-			instalments,
-			totalInstalments,
-			tokenDate,
-			arrowCheck,
-			paymentFiledsArray,
 			remainingPayment,
-			tokenDateStatus,
-			downPaymentDateStatus,
-			dateStatusForPayments,
-			dateStatusForInstallments,
-			unitDetailsData,
-			discountAmount,
-			discountedPrice,
-			possessionCharges,
+			paymentOldValue,
+			attachmentData,
 		} = this.state
 
-		const { lead } = this.props
-		formData[name] = formData[name]
-		let body = {};
-		let newArrowCheck = { ...arrowCheck }
-		let newtokenDateStatus = tokenDateStatus
-		let newdownPaymentDateStatus = downPaymentDateStatus
-		let newdateStatusForPayments = [...dateStatusForPayments]
-		let newdateStatusForInstallments = [...dateStatusForInstallments]
-		var leadId = []
-		leadId.push(lead.id)
-		if (name === 'projectId') {
-			body = { projectId: formData[name], }
-		}
-		if (name === 'floorId') {
-			body = { floorId: formData[name], }
-		}
-		if (name === 'unitId') {
-			body = { unitId: formData[name], }
-		}
-		if (name === 'discount') {
-			body = { discount: formData[name] ? formData[name] : null, remainingPayment: remainingPayment, }
-			newArrowCheck[name] = false
-			this.formatStatusChange(name, true)
-		}
-		if (name === 'installmentDue') {
-			body = { installmentDue: formData[name], remainingPayment: remainingPayment, }
-		}
-		if (name === 'possessionCharges') {
-			body = {
-				possession_charges: possessionCharges,
-				unitId: formData['unitId'],
-				remainingPayment: remainingPayment,
 
-			}
-			this.formatStatusChange(name, true)
-		}
-		if (name === 'token' || name === 'discountPercentage' && formData['token'] != '') {
-			body = {
-				token: formData['token'] ? formData['token'] : null,
-				tokenPaymentTime: tokenDate,
-				remainingPayment: remainingPayment,
-				unitDiscount: formData['discountPercentage'] ? formData['discountPercentage'] : null,
-				discount_amount: discountAmount ? discountAmount : null,
-				discounted_price: discountedPrice ? discountedPrice : null,
-				unitStatus: 'Token',
-				unitId: formData['unitId'],
-
-			}
-			this.currentDate(name)
-			newArrowCheck[name] = false
-			newtokenDateStatus['name'] = name
-			newtokenDateStatus['status'] = true
-			this.formatStatusChange(name, true)
-
-		}
-		if (name === 'downPayment') {
-
-			body = {
-				downPayment: formData[name] ? formData[name] : null,
-				remainingPayment: remainingPayment,
-				unitStatus: formData['installmentDue'] === 'quarterly' ? 'Sold on Installment Plan' : 'Sold on Monthly Installments',
-				unitId: formData['unitId'],
-
-			}
-			this.currentDate(name)
-			newArrowCheck[name] = false
-			newdownPaymentDateStatus['name'] = name
-			newdownPaymentDateStatus['status'] = true
-			this.formatStatusChange(name, true)
-		}
-		if (name === 'no_installments') {
-			body = { no_of_installments: instalments, remainingPayment: remainingPayment, }
-		}
-		if (name === 'payments') {
-			body = {
-				installments: paymentFiledsArray.length ? paymentFiledsArray : null,
-				remainingPayment: remainingPayment,
-				unitStatus: formData.unitStatus,
-				unitId: unitDetailsData.id,
-			}
-			newArrowCheck[name] = false
-			newdateStatusForPayments[arrayName].name = arrayName
-			newdateStatusForPayments[arrayName].status = true
-			this.formatStatusChange(arrayName, true, name);
-		}
-		if (name === 'installments') {
-			newdateStatusForInstallments[arrayName].name = arrayName
-			newdateStatusForInstallments[arrayName].status = true
-			this.formatStatusChange(arrayName, true, name);
-			body = { installments: totalInstalments ? totalInstalments : null, remainingPayment: remainingPayment, }
-			newArrowCheck[name] = false
-		}
-		// console.log(body)
-		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
-			.then((res) => {
-				if (name === 'installments' || name === 'payments') {
-					axios.get(`/api/leads/project/byId?id=${lead.id}`)
-						.then((resp) => {
-							if (name === 'installments') {
-								var newtotalInstallments = resp.data.cmInstallments
-								this.setState({
-									totalInstalments: newtotalInstallments
+		if (secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' && secondFormData.type != '') {
+			this.setState({
+				addPaymentLoading: true,
+			})
+			if (editaAble === false) {
+				var attachmentDataBOdy = {
+					name: attachmentData.fileName,
+					type: 'file/' + attachmentData.fileName.split('.').pop(),
+					uri: attachmentData.uri
+				}
+				var fd = new FormData()
+				fd.append('file', attachmentDataBOdy)
+				var body = {
+					...secondFormData,
+					remainingPayment: remainingPayment - secondFormData.installmentAmount,
+				}
+				axios.post(`/api/leads/project/payments`, body)
+					.then((res) => {
+						if (attachmentData.fileName != '') {
+							axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
+								.then((res) => {
+									this.fetchLead();
+									this.setState({
+										addPaymentModalToggleState: false,
+										secondFormData: {
+											installmentAmount: null,
+											type: '',
+											details: '',
+											cmLeadId: this.props.lead.id,
+										},
+										remainingPayment: remainingPayment - secondFormData.installmentAmount,
+										addPaymentLoading: false,
+									}, () => {
+										helper.successToast('Payment Added')
+									})
 								})
-							}
-							if (name === 'payments') {
-								var newtotalPayments = resp.data.payment
-								this.setState({
-									paymentFiledsArray: newtotalPayments
-								})
-							}
+						} else {
+							this.fetchLead();
+							this.setState({
+								addPaymentModalToggleState: false,
+								secondFormData: {
+									installmentAmount: null,
+									type: '',
+									details: '',
+									cmLeadId: this.props.lead.id,
+								},
+								remainingPayment: remainingPayment - secondFormData.installmentAmount,
+								addPaymentLoading: false,
+							}, () => {
+								helper.successToast('Payment Added')
+							})
+						}
+					}).catch(() => {
+						helper.errorToast('Payment Not Added')
+						this.setState({
+							addPaymentLoading: false,
 						})
+					})
+			} else {
+				var total = ''
+				if (paymentOldValue > secondFormData.installmentAmount) {
+					total = paymentOldValue - secondFormData.installmentAmount
+					total = remainingPayment + total
+				} else {
+					total = secondFormData.installmentAmount - paymentOldValue
+					total = remainingPayment - total
 				}
-
-				if (name === 'token') {
-					this.setState({ checkForUnitAvail: false })
+				var body = {
+					...secondFormData,
+					remainingPayment: total,
 				}
+				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
+					.then((res) => {
+						this.fetchLead();
+						this.setState({
+							addPaymentModalToggleState: false,
+							secondFormData: {
+								installmentAmount: null,
+								type: '',
+								details: '',
+								cmLeadId: this.props.lead.id
+							},
+							remainingPayment: total,
+							editaAble: false,
+							addPaymentLoading: false,
+						}, () => {
+							helper.successToast('Payment Edit Success')
+						})
+					}).catch(() => {
+						this.setState({
+							addPaymentLoading: false,
+						})
+					})
+			}
+		} else {
+			this.setState({
+				secondCheckValidation: true,
+			})
+		}
+	}
 
+	editTile = (id) => {
+		this.setState({ addPaymentModalToggleState: true, modalLoading: true })
+		axios.get(`/api/leads/project/byId?id=${this.props.lead.id}`)
+			.then((res) => {
+				let editLeadData = [];
+				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
 				this.setState({
-					arrowCheck: newArrowCheck,
-					showStyling: '',
-					tokenDateStatus: newtokenDateStatus,
-					downPaymentDateStatus: newdownPaymentDateStatus,
-					dateStatusForPayments: newdateStatusForPayments,
+					secondFormData: {
+						installmentAmount: editLeadData.installmentAmount,
+						type: editLeadData.type,
+						cmLeadId: this.props.lead.id,
+						details: editLeadData.details,
+					},
+					addPaymentModalToggleState: true,
+					editaAble: true,
+					paymentId: id,
+					paymentOldValue: editLeadData.installmentAmount,
+					modalLoading: false,
 				})
-			}).catch((error) => {
-				console.log('Some thing went wrong!!!!', error)
 			})
 	}
 
-	handleReasonChange = (value) => {
-		this.setState({ selectedReason: value });
+	goToComments = () => {
+		const { navigation, route } = this.props;
+		navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
 	}
 
-	closeModal = () => {
-		this.setState({ isVisible: false })
+	goToAttachments = () => {
+		const { navigation, route } = this.props;
+		navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
+	}
+
+	goToDiaryForm = (taskType) => {
+		const { navigation, route, user } = this.props;
+		navigation.navigate('AddDiary', {
+			update: false,
+			agentId: user.id,
+			cmLeadId: this.props.lead.id,
+			addedBy: 'self',
+			tasksList: StaticData.taskValuesCMLead,
+			taskType: taskType != '' ? taskType : null
+		});
+	}
+
+	navigateTo = () => {
+		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
+	}
+
+	getAttachmentFromStorage = () => {
+		const { title } = this.state;
+		let options = {
+			type: '*/*',
+			copyToCacheDirectory: true,
+		}
+		DocumentPicker.getDocumentAsync(options).then(item => {
+			if (item.type === 'cancel') {
+				Alert.alert('Pick File', 'Please pick a file from documents!')
+			}
+			else {
+				this.setState({ attachmentData: { fileName: item.name, size: item.size, uri: item.uri, } }, () => {
+				})
+			}
+
+		}).catch(error => {
+			console.log(error);
+		})
+	}
+
+	attechmentModalToggle = (status) => {
+		this.setState({
+			attachmentVisible: status,
+		})
+	}
+
+	submitAttachment = () => {
+		this.attechmentModalToggle(false)
+	}
+
+	tokenModalToggle = (status) => {
+		const { formData } = this.state
+		if (formData.token != '') {
+			this.setState({ tokenModalVisible: status })
+		}
+		this.setState({
+			tokenModalVisible: status,
+		})
 	}
 
 	onHandleCloseLead = (reason) => {
@@ -791,596 +629,213 @@ class Payments extends Component {
 		var leadId = []
 		leadId.push(lead.id)
 		if (selectedReason && selectedReason !== '') {
-			axios.patch(`/api/leads/project`, body, { params: { id: leadId } }).then(res => {
-				this.setState({ isVisible: false }, () => {
-					helper.successToast(`Lead Closed`)
-					navigation.navigate('Leads');
-				});
-			}).catch(error => {
-				console.log(error);
-			})
+			axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+				.then(res => {
+					this.setState({ isVisible: false }, () => {
+						helper.successToast(`Lead Closed`)
+						navigation.navigate('Leads');
+					});
+				}).catch(error => {
+					console.log(error);
+				})
 		}
-		else{
+		else {
 			alert('Please select a reason for lead closure!')
+		}
+	}
+
+	handleReasonChange = (value) => {
+		this.setState({ selectedReason: value });
+	}
+
+	closeModal = () => {
+		this.setState({ isVisible: false })
+	}
+
+	formSubmit = () => {
+		const { lead } = this.props
+		const { formData, remainingPayment, unitPrice } = this.state
+		var leadId = []
+		leadId.push(lead.id)
+		if (remainingPayment <= 0 && formData.unitId != null) {
+			this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+		} else {
+			this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 		}
 	}
 
 	closedLead = () => {
 		const { lead, user } = this.props
-		lead.status != StaticData.Constants.lead_closed_won ||
-			lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
+		// lead.status != StaticData.Constants.lead_closed_won || lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
+		this.state.checkLeadClosedOrNot === true && helper.leadClosedToast()
 		lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
-	}
-
-	addFullpaymentFields = () => {
-		const { lead } = this.props
-		const { paymentFiledsArray, dateStatusForPayments, paymentFromat } = this.state
-		let array = [...paymentFiledsArray]
-		let newdateStatusForPayments = [...dateStatusForPayments]
-		let newpaymentFromat = [...paymentFromat]
-
-		array.push({ installmentAmount: '', type: 'payment', installmentDate: '' })
-		newdateStatusForPayments.push({ name: '', status: false })
-		newpaymentFromat.push({ name: '', status: false })
-
-		this.setState({
-			paymentFiledsArray: array,
-			dateStatusForPayments: newdateStatusForPayments,
-			paymentFromat: newpaymentFromat,
-		})
-	}
-
-	openModal = () => {
-		this.setState({
-			modalVisible: !this.state.modalVisible
-		})
-	}
-
-	cancelDeletePayments = (checkPaymentTypeValue) => {
-		if (checkPaymentTypeValue == 'installments') {
-			this.handleForm('full_payment', 'paymentType')
-		}
-		if (checkPaymentTypeValue == 'full_payment') {
-			this.handleForm('installments', 'paymentType')
-		}
-		this.setState({
-			modalVisible: !this.state.modalVisible
-		})
-	}
-
-	deletePayments = (checkPaymentTypeValue) => {
-		const { lead } = this.props
-		if (checkPaymentTypeValue === 'installments') {
-			this.handleForm('installments', 'paymentType'), () => {
-				this.setState({
-					modalVisible: false,
-					paymentFiledsArray: [],
-				}, () => {
-					this.submitValues('installments');
-					this.discountPayment()
-				})
-			}
-
-		}
-		if (checkPaymentTypeValue === 'full_payment') {
-			this.handleForm('full_payment', 'paymentType'), () => {
-				this.setState({
-					modalVisible: false,
-					totalInstalments: [],
-					instalments: '',
-					possessionCharges: null,
-				}, () => {
-					this.submitValues('payments')
-					this.discountPayment()
-				})
-			}
-
-		}
-
-		axios.delete(`/api/leads/project/installments?leadId=${lead.id}`)
-			.then((res) => {
-				this.navigateTo();
-			 })
-
-	}
-
-	goToComments = () => {
-		const { navigation } = this.props;
-		navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
-	}
-
-	goToAttachments = () => {
-		const { navigation } = this.props;
-		navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
-	}
-
-	goToDiaryForm = () => {
-		const { navigation, user } = this.props;
-		navigation.navigate('AddDiary', {
-			update: false,
-			cmLeadId: this.props.lead.id,
-			addedBy: 'self',
-			tasksList: StaticData.taskValuesCMLead,
-			agentId: user.id,
-		});
-	}
-
-	navigateTo = () => {
-		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
-	}
-
-	showAndHideStyling = (name, clear, arrayName) => {
-		const { tokenDateStatus, formData, tokenDate, downPaymentDateStatus, dateStatusForPayments, dateStatusForInstallments } = this.state
-		let newtokenDateStatus = tokenDateStatus
-		let newdownPaymentDateStatus = downPaymentDateStatus
-		let newdateStatusForPayments = dateStatusForPayments
-		let newdateStatusForInstallments = [...dateStatusForInstallments]
-
-		if (clear === true) {
-			this.clearTimes(name, clear, arrayName)
-		} else {
-
-			if (name === 'discount') {
-				this.formatStatusChange(name, false);
-			}
-
-			if (name != 'discount' && tokenDate != '') {
-				this.formatStatusChange('discount', true)
-			}
-
-			if (name === 'token') {
-				newtokenDateStatus['name'] = ''
-				newtokenDateStatus['status'] = false
-				this.formatStatusChange(name, false);
-			}
-
-			if (name != 'token' && tokenDate != '') {
-				newtokenDateStatus['name'] = 'token'
-				newtokenDateStatus['status'] = true
-				this.formatStatusChange('token', true)
-			}
-
-			if (name === 'downPayment') {
-				newdownPaymentDateStatus['name'] = ''
-				newdownPaymentDateStatus['status'] = false
-				this.formatStatusChange(name, false);
-			}
-
-			if (name != 'downPayment' && tokenDate != '') {
-				newdownPaymentDateStatus['name'] = 'downPayment'
-				newdownPaymentDateStatus['status'] = true
-				this.formatStatusChange('downPayment', true)
-			}
-
-			if (name === 'possessionCharges') {
-				this.formatStatusChange('possessionCharges', false);
-			}
-
-			if (name != 'possessionCharges') {
-				this.formatStatusChange('possessionCharges', true);
-			}
-
-			if (arrayName === 'payments') {
-				newdateStatusForPayments[name].name = name
-				newdateStatusForPayments[name].status = false
-				this.formatStatusChange(name, false, arrayName);
-				for (var i = 0; i < dateStatusForPayments.length; i++) {
-					if (i != name) {
-						newdateStatusForPayments[i].name = name
-						newdateStatusForPayments[i].status = true
-						this.formatStatusChange(i, true, 'payments');
-					}
-				}
-			}
-
-			if (arrayName != 'payments') {
-				for (var i = 0; i < dateStatusForPayments.length; i++) {
-					newdateStatusForPayments[i].name = name
-					newdateStatusForPayments[i].status = true
-					this.formatStatusChange(i, true, 'payments');
-				}
-			}
-
-			if (arrayName === 'installments') {
-				dateStatusForInstallments[name].name = name
-				dateStatusForInstallments[name].status = false
-				this.formatStatusChange(name, false, arrayName);
-				for (var i = 0; i < dateStatusForInstallments.length; i++) {
-					if (i != name) {
-						dateStatusForInstallments[i].name = name
-						dateStatusForInstallments[i].status = true
-						this.formatStatusChange(i, true, 'installments');
-					}
-				}
-			}
-
-			if (arrayName != 'installments') {
-				for (var i = 0; i < dateStatusForInstallments.length; i++) {
-					dateStatusForInstallments[i].name = name
-					dateStatusForInstallments[i].status = true
-					this.formatStatusChange(i, true, 'installments');
-				}
-			}
-
-			this.setState({
-				showStyling: clear === false ? name : '',
-				showDate: false,
-				tokenDateStatus: newtokenDateStatus,
-				downPaymentDateStatus: newdownPaymentDateStatus,
-				dateStatusForPayments: newdateStatusForPayments,
-			})
-		}
-	}
-
-	clearTimes = (name, clear, arrayName) => {
-		const { formData, tokenDate, downPaymentTime, dateStatusForPayments, paymentFiledsArray, totalInstalments, dateStatusForInstallments } = this.state
-		let newtokenDate = tokenDate
-		let newdownPaymentTime = downPaymentTime
-		let newdateStatusForPayments = [...dateStatusForPayments]
-		let newpaymentFiledsArray = paymentFiledsArray
-		let newFormData = { ...formData }
-		let newdateStatusForInstallments = [...dateStatusForInstallments]
-		let newtotalInstalments = [...totalInstalments]
-		if (name === 'discount') {
-			this.formatStatusChange(name, false);
-			this.apiCallForNewDetails(arrayName, name)
-		}
-
-		if (name === 'discountPercentage') {
-			this.formatStatusChange(name, false);
-			this.apiCallForNewDetails(arrayName, name)
-		}
-
-		if (name === 'token') {
-			newtokenDate = ''
-			this.formatStatusChange(name, false);
-			this.apiCallForNewDetails(arrayName, name)
-		}
-
-		if (name === 'downPayment') {
-			newdownPaymentTime = ''
-			this.formatStatusChange(name, false);
-			this.apiCallForNewDetails(arrayName, name)
-		}
-
-		if (arrayName === 'payments') {
-			this.formatStatusChange(name, false, arrayName);
-			this.apiCallForNewDetails(arrayName, name)
-		}
-
-		if (arrayName === 'installments') {
-			this.formatStatusChange(name, false, arrayName);
-			this.apiCallForNewDetails(arrayName, name)
-		}
-
-		if (name === 'possessionCharges') {
-			this.formatStatusChange(name, false, '');
-			this.apiCallForNewDetails('possessionCharges', name)
-		}
-
-		this.setState({
-			showStyling: clear === false ? name : '',
-			tokenDate: newtokenDate,
-			downPaymentTime: newdownPaymentTime,
-			dateStatusForPayments: newdateStatusForPayments,
-			dateStatusForInstallments: newdateStatusForInstallments,
-			totalInstallments: newtotalInstalments,
-			formData: newFormData,
-		})
-	}
-
-	apiCallForNewDetails = (arrayName, name) => {
-		const {
-			tokenDateStatus,
-			formData,
-			downPaymentDateStatus,
-			totalInstalments,
-			paymentFiledsArray,
-			dateStatusForPayments,
-			dateStatusForInstallments,
-			totalInstallments,
-		} = this.state
-		const { lead } = this.props
-		var newFormData = { ...formData }
-		axios.get(`/api/leads/project/byId?id=${lead.id}`)
-			.then((res) => {
-				this.setState({
-					cancelNewData: res.data
-				}, () => {
-					var data = res.data
-					let newdownPaymentDateStatus = downPaymentDateStatus
-					let newtokenDateStatus = tokenDateStatus
-					let newpaymentFiledsArray = paymentFiledsArray
-					let newdateStatusForPayments = [...dateStatusForPayments]
-					let newtotalInstalments = [...totalInstalments]
-					let newdateStatusForInstallments = [...dateStatusForInstallments]
-
-					if (name === 'discount') {
-						newFormData[name] = data.discount != null ? data.discount : ''
-						this.formatStatusChange(name, true)
-						this.setState({
-							formData: newFormData,
-						}, () => {
-							this.discountPayment(formData)
-						})
-					}
-
-					if (name === 'discountPercentage') {
-						if (data.unit != null) {
-							newFormData[name] = data.unit.discount != null ? data.unit.discount : ''
-							this.setState({
-								formData: newFormData,
-								discountAmount: data.unit.discount_amount != null ? data.unit.discount_amount : '',
-								discountedPrice: data.unit.discounted_price != null ? data.unit.discounted_price : '',
-							})
-						}
-					}
-
-					if (name === 'possessionCharges') {
-						if (data.unit != null) {
-							this.setState({
-								possessionCharges: data.possession_charges,
-							},()=>{
-								//console.log(this.state.possessionCharges)
-							})
-						}
-					}
-
-					if (name === 'token') {
-						newFormData[name] = data.token != null ? data.token : ''
-						this.formatStatusChange(name, true)
-						newtokenDateStatus['name'] = name
-						newtokenDateStatus['status'] = true
-						this.setState({
-							formData: newFormData,
-							tokenDateStatus: newtokenDateStatus,
-							tokenDate: data.tokenPaymentTime ? moment(data.tokenPaymentTime).format('hh:mm a') + ' ' + moment(data.tokenPaymentTime).format('MMM DD') : '',
-						}, () => {
-							this.discountPayment(formData)
-						})
-					}
-
-					if (name === 'downPayment') {
-						newFormData[name] = data.downPayment != null ? data.downPayment : ''
-						this.formatStatusChange(name, true)
-						newdownPaymentDateStatus['name'] = name
-						newdownPaymentDateStatus['status'] = true
-						this.setState({
-							formData: newFormData,
-							downPaymentDateStatus: newdownPaymentDateStatus,
-							downPaymentTime: data.paymentTime ? moment(data.paymentTime).format('hh:mm a') + ' ' + moment(data.paymentTime).format('MMM DD') : '',
-						}, () => {
-							this.discountPayment(formData)
-						})
-					}
-
-
-					if (arrayName === 'payments') {
-						newpaymentFiledsArray[name].installmentAmount = data.payment && data.payment.length > name ? data.payment[name].installmentAmount : ''
-						newpaymentFiledsArray[name].createdAt = data.payment && data.payment.length > name ? data.payment[name].createdAt : ''
-						newdateStatusForPayments[name].name = name
-						newdateStatusForPayments[name].status = true
-						this.formatStatusChange(name, true, arrayName);
-						this.setState({
-							dateStatusForPayments: newdateStatusForPayments,
-							paymentFiledsArray: newpaymentFiledsArray,
-						})
-					}
-
-					if (name === 'noOfInstallments') {
-						this.setState({
-							installments: data.project != null && data.project.installment_plan != null ? data.project.installment_plan : ''
-						})
-					}
-
-					if (arrayName === 'installments') {
-						var installmentTime = data.cmInstallments && data.cmInstallments.length > name ? data.cmInstallments[name].createdAt : ''
-						newtotalInstalments[name].installmentAmount = data.cmInstallments && data.cmInstallments.length > name ? data.cmInstallments[name].installmentAmount : ''
-						newtotalInstalments[name].installmentAmountDate = moment(installmentTime).format('hh:mm a') + ' ' + moment(installmentTime).format('MMM DD')
-						newdateStatusForInstallments[name].name = true
-						newdateStatusForInstallments[name].status = true
-						this.formatStatusChange(name, true, arrayName);
-						this.setState({
-							dateStatusForInstallments: newdateStatusForInstallments,
-							totalInstalments: newtotalInstalments,
-						})
-					}
-
-
-				})
-
-			})
-	}
-
-	formatStatusChange = (name, status, arrayName) => {
-		const { tokenDateStatus, formData, paymentFromat, installmentsFromat } = this.state
-		let newpaymentFromat = [...paymentFromat]
-		let newinstallmentsFromat = [...installmentsFromat]
-		if (name === 'discount') {
-			this.setState({ promotionDiscountFormat: status })
-		}
-		if (name === 'token') {
-			this.setState({ tokenFormat: status })
-		}
-		if (name === 'downPayment') {
-			this.setState({ downPaymentFormat: status })
-		}
-		if (name === 'possessionCharges') {
-			this.setState({ possessionFormat: status })
-		}
-		if (arrayName === 'payments') {
-			newpaymentFromat[name].name = name
-			newpaymentFromat[name].status = status
-			this.setState({ paymentFromat: newpaymentFromat })
-		}
-		if (arrayName === 'installments') {
-			newinstallmentsFromat[name].name = name
-			newinstallmentsFromat[name].status = status
-			this.setState({ installmentsFromat: newinstallmentsFromat })
-		}
-	}
-
-	openUnitDetailsModal = (status) => {
-		this.setState({
-			unitDetailModal: status,
-		})
-	}
-
-	percentFormula = (total, percent) => {
-		var result = total - ((percent / 100) * total)
-		return parseInt(result);
 	}
 
 	render() {
 		const {
+			progressValue,
+			getAllProject,
 			getProject,
-			formData,
 			getFloors,
 			getUnit,
-			totalInstalments,
-			checkValidation,
+			allUnits,
+			unitDetailModal,
+			unitDetailsData,
+			formData,
+			paymentPlan,
+			unitPrice,
+			openFirstScreenModal,
+			getAllFloors,
+			firstScreenValidate,
+			unitId,
+			firstScreenDone,
+			secondScreenData,
+			addPaymentModalToggleState,
+			secondFormData,
+			secondCheckValidation,
+			remainingPayment,
+			modalLoading,
+			firstScreenConfirmLoading,
+			addPaymentLoading,
+			paymentPreviewLoading,
+			attachmentVisible,
+			attachmentData,
+			tokenModalVisible,
 			reasons,
 			selectedReason,
 			checkReasonValidation,
 			isVisible,
-			remainingPayment,
-			readOnly,
-			downPaymentTime,
-			tokenDate,
-			instalments,
-			progressValue,
-			arrowCheck,
-			paymentDate,
-			paymentFiledsArray,
-			fullPaymentCount,
-			modalVisible,
-			checkPaymentTypeValue,
-			closedLeadEdit,
-			showStyling,
-			promotionDiscountFormat,
-			tokenFormat,
-			tokenDateStatus,
-			downPaymentDateStatus,
-			downPaymentFormat,
-			dateStatusForPayments,
-			paymentFromat,
-			checkForUnassignedLeadEdit,
-			dateStatusForInstallments,
-			installmentsFromat,
-			unitDetailModal,
-			unitDetailsData,
-			discountAmount,
-			discountedPrice,
-			getAllProject,
-			checkMonthlyOption,
-			possessionCharges,
-			possessionFormat,
-			checkForUnitAvail,
+			checkLeadClosedOrNot,
+			remarks,
 		} = this.state
-		let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
+
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
-				<ScrollView>
+				<View style={styles.mainParent}>
+					{
+						firstScreenDone === true && checkLeadClosedOrNot === false ?
+							<ScrollView>
+								<View style={styles.fullHeight}>
+									<FormScreenOne
+										getProject={getProject}
+										getFloors={getFloors}
+										getUnit={getUnit}
+										unitPrice={unitPrice}
+										unitId={unitId}
+										formData={formData}
+										paymentPlan={paymentPlan}
+										firstScreenValidate={firstScreenValidate}
+										remainingPayment={remainingPayment}
+										currencyConvert={this.currencyConvert}
+										handleForm={this.handleForm}
+										submitFirstScreen={this.submitFirstScreen}
+										openUnitDetailsModal={this.openUnitDetailsModal}
+										firstScreenConfirmModal={this.firstScreenConfirmModal}
+										tokenModalToggle={this.tokenModalToggle}
+									/>
+								</View>
+							</ScrollView>
+							: null
+					}
 
-					<View style={[AppStyles.container]}>
-						<LeadRCMPaymentPopup
-							reasons={reasons}
-							selectedReason={selectedReason}
-							changeReason={this.handleReasonChange}
-							checkValidation={checkReasonValidation}
-							isVisible={isVisible}
-							closeModal={() => this.closeModal()}
-							onPress={this.onHandleCloseLead}
-							CMlead={true}
-						/>
-						<InnerForm
-							getFloor={getFloors}
-							getUnit={getUnit}
-							getProject={getProject}
-							getInstallments={StaticData.getInstallments}
-							totalInstalments={totalInstalments}
-							instalments={instalments}
-							checkValidation={checkValidation}
-							handleInstalments={this.handleInstalments}
-							handleForm={this.handleForm}
-							formSubmit={this.formSubmit}
-							readOnly={readOnly}
-							remainingPayment={remainingPayment}
-							formData={formData}
-							tokenDate={tokenDate}
-							downPaymentTime={downPaymentTime}
-							submitValues={this.submitValues}
-							arrowCheck={arrowCheck}
-							paymentOptions={StaticData.paymentOptions}
-							paymentDate={paymentDate}
-							fullPaymentCount={fullPaymentCount}
-							addFullpaymentFields={this.addFullpaymentFields}
-							paymentFiledsArray={paymentFiledsArray}
-							handlePayments={this.handlePayments}
-							closedLeadEdit={closedLeadEdit}
-							closedLead={this.closedLead}
-							goToDiaryForm={this.goToDiaryForm}
-							goToAttachments={this.goToAttachments}
-							goToComments={this.goToComments}
-							navigateTo={this.navigateTo}
-							//Component Props
-							showAndHideStyling={this.showAndHideStyling}
-							showStylingState={showStyling}
-							promotionDiscountFormat={promotionDiscountFormat}
-							tokenFormat={tokenFormat}
-							tokenDateStatus={tokenDateStatus}
-							downPaymentDateStatus={downPaymentDateStatus}
-							downPaymentFormat={downPaymentFormat}
-							dateStatusForPayments={dateStatusForPayments}
-							paymentFromat={paymentFromat}
-							dateStatusForInstallments={dateStatusForInstallments}
-							installmentsFromat={installmentsFromat}
-							checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
-							possessionFormat={possessionFormat}
-							//Unit Details Modal Props
+					{
+						firstScreenDone === false || checkLeadClosedOrNot === true ?
+							<ScrollView>
+								<View style={styles.secondContainer}>
+									<FormScreenSecond
+										data={secondScreenData}
+										paymentPreviewLoading={paymentPreviewLoading}
+										remainingPayment={remainingPayment}
+										checkLeadClosedOrNot={checkLeadClosedOrNot}
+										addPaymentModalToggle={this.addPaymentModalToggle}
+										currencyConvert={this.currencyConvert}
+										editTile={this.editTile}
+									/>
+								</View>
+							</ScrollView>
+							: null
+					}
+
+					{
+						unitDetailsData &&
+						<UnitDetailsModal
+							active={unitDetailModal}
+							data={unitDetailsData}
 							openUnitDetailsModal={this.openUnitDetailsModal}
-							unitDetails={unitDetailsData}
-							// New Fields Props
-							discountAmount={discountAmount}
-							discountedPrice={discountedPrice}
-							checkMonthlyOption={checkMonthlyOption}
-							possessionCharges={possessionCharges}
-							checkForUnitAvail={checkForUnitAvail}
 						/>
-					</View>
-				</ScrollView>
+					}
+
+					{
+						getAllFloors != '' && getAllProject != '' && allUnits != '' &&
+						<FirstScreenConfirmModal
+							active={openFirstScreenModal}
+							data={formData}
+							getAllProject={getAllProject}
+							getAllFloors={getAllFloors}
+							allUnits={allUnits}
+							firstScreenConfirmLoading={firstScreenConfirmLoading}
+							firstScreenConfirmModal={this.firstScreenConfirmModal}
+							submitFirstScreen={this.submitFirstScreen}
+						/>
+					}
+
+					<AddPaymentModal
+						active={addPaymentModalToggleState}
+						secondFormData={secondFormData}
+						secondCheckValidation={secondCheckValidation}
+						modalLoading={modalLoading}
+						addPaymentLoading={addPaymentLoading}
+						remarks={remarks}
+						attechmentModalToggle={this.attechmentModalToggle}
+						addPaymentModalToggle={this.addPaymentModalToggle}
+						secondHandleForm={this.secondHandleForm}
+						secondFormSubmit={this.secondFormSubmit}
+					/>
+
+
+					<AddTokenModal
+						active={tokenModalVisible}
+						formData={formData}
+						firstScreenValidate={firstScreenValidate}
+						handleForm={this.handleForm}
+						tokenModalToggle={this.tokenModalToggle}
+					/>
+
+					<AddAttachmentPopup
+						isVisible={attachmentVisible}
+						formData={attachmentData}
+						formSubmit={this.submitAttachment}
+						getAttachmentFromStorage={this.getAttachmentFromStorage}
+						closeModal={() => this.attechmentModalToggle(false)}
+					/>
+
+				</View>
+
+				<LeadRCMPaymentPopup
+					reasons={reasons}
+					selectedReason={selectedReason}
+					isVisible={isVisible}
+					CMlead={true}
+					// checkValidation={checkReasonValidation}
+					closeModal={() => this.closeModal()}
+					changeReason={this.handleReasonChange}
+					onPress={this.onHandleCloseLead}
+				/>
+
 				<View style={AppStyles.mainCMBottomNav}>
 					<CMBottomNav
 						goToAttachments={this.goToAttachments}
 						navigateTo={this.navigateTo}
 						goToDiaryForm={this.goToDiaryForm}
 						goToComments={this.goToComments}
-						closedLeadEdit={leadClosedCheck}
-						closeLead={this.formSubmit}
+						closedLeadEdit={!checkLeadClosedOrNot}
 						alreadyClosedLead={this.closedLead}
-						checkForUnassignedLeadEdit={checkForUnassignedLeadEdit}
+						// closedLeadEdit={leadClosedCheck}
+						closeLead={this.formSubmit}
 					/>
 				</View>
-				{
-					unitDetailsData &&
-					<UnitDetailsModal
-						active={unitDetailModal}
-						openUnitDetailsModal={this.openUnitDetailsModal}
-						data={unitDetailsData}
-					/>
-				}
 
-				{
-					modalVisible &&
-					<PaymentAlert
-						active={modalVisible}
-						openModal={this.openModal}
-						deletePayments={this.deletePayments}
-						cancelDeletePayments={this.cancelDeletePayments}
-						checkPaymentTypeValue={checkPaymentTypeValue}
-					/>
-				}
 			</View>
 		)
 	}

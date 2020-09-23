@@ -76,7 +76,7 @@ class AddPaymentModal extends React.Component {
                     name={'details'}
                     fromatName={false}
                     placeholder={'Details'}
-                    label={'DETIALS'}
+                    label={'DETAILS'}
                     value={secondFormData.details != '' ? secondFormData.details : ''}
                     formatValue={''}
                     editable={true}

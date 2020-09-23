@@ -63,7 +63,11 @@ class LeadDetail extends React.Component {
         const that = this;
         axios.get(`${url}?id=${lead.id}`)
             .then((res) => {
-                this.props.dispatch(setlead(res.data))
+                let responseData = res.data;
+				if(!responseData.paidProject){
+					responseData.paidProject = responseData.project;
+				}
+                this.props.dispatch(setlead(responseData));
                 const regex = /(<([^>]+)>)/ig
                 let text = res.data.description && res.data.description !== '' ? res.data.description.replace(regex, '') : null
                 this.setState({ lead: res.data, loading: false, description: text }, () => {

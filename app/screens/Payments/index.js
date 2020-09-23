@@ -32,7 +32,7 @@ class Payments extends Component {
 			getUnit: [],
 			allUnits: [],
 			formData: {
-				projectId: lead.project != null ? lead.project.id : null,
+				projectId: lead.paidProject != null ? lead.paidProject.id : null,
 				floorId: null,
 				discount: null,
 				discountedPrice: null,
@@ -52,9 +52,9 @@ class Payments extends Component {
 			unitId: null,
 			unitPrice: null,
 			checkPaymentPlan: {
-				years: lead.project != null && lead.project.installment_plan != null || '' ? lead.project.installment_plan : null,
-				monthly: lead.project != null && lead.project.monthly_installment_availablity === 'yes' ? true : false,
-				rental: lead.project != null && lead.project.rent_available === 'yes' ? true : false,
+				years: lead.paidProject != null && lead.paidProject.installment_plan != null || '' ? lead.paidProject.installment_plan : null,
+				monthly: lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes' ? true : false,
+				rental: lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false,
 				investment: true,
 				quartarly: true,
 			},
@@ -93,19 +93,38 @@ class Payments extends Component {
 		const { formData } = this.state
 		this.fetchLead()
 		this.getAllProjects()
-		this.setPaymentPlanArray()
+		this.setdefaultFields(this.props.lead)
 		this.handleForm(formData.projectId, 'projectId')
+	}
+
+	setdefaultFields = (lead) => {
+		const { checkPaymentPlan } = this.state
+		var newcheckPaymentPlan = { ...checkPaymentPlan }
+
+		newcheckPaymentPlan['years'] = lead.paidProject != null && lead.paidProject.installment_plan != null || '' ? lead.paidProject.installment_plan : null
+		newcheckPaymentPlan['monthly'] = lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes' ? true : false
+		newcheckPaymentPlan['rental'] = lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false,
+
+			this.setState({
+				checkPaymentPlan: newcheckPaymentPlan,
+			}, () => {
+				this.setPaymentPlanArray(lead)
+			})
 	}
 
 	fetchLead = () => {
 		const { lead } = this.props
 		const { cmProgressBar } = StaticData
-		this.setState({
-			paymentPreviewLoading: true,
-		})
+		this.setState({ paymentPreviewLoading: true, })
 		axios.get(`/api/leads/project/byId?id=${lead.id}`)
 			.then((res) => {
-				this.props.dispatch(setlead(res.data))
+				let responseData = res.data;
+				if (!responseData.paidProject) {
+					responseData.paidProject = responseData.project;
+				}
+				this.props.dispatch(setlead(responseData));
+
+				this.setdefaultFields(responseData)
 				this.setState({
 					progressValue: cmProgressBar[res.data.status] || 0,
 					paymentPreviewLoading: false,
@@ -180,18 +199,16 @@ class Payments extends Component {
 		})
 	}
 
-	setPaymentPlanArray = () => {
+	setPaymentPlanArray = (lead) => {
 		const { paymentPlan, checkPaymentPlan } = this.state
-		const { lead } = this.props
+		// const { lead } = this.props
 		const array = [];
 
-		console.log(lead)
-
-		if (checkPaymentPlan.investment === true && lead.project != null) {
-			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc, ${lead.project.full_payment_discount}%)` })
+		if (checkPaymentPlan.investment === true && lead.paidProject != null) {
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc, ${lead.paidProject.full_payment_discount}%)` })
 		}
-		if (checkPaymentPlan.rental === true && lead.project != null) {
-			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc, ${lead.project.full_payment_discount}%)` })
+		if (checkPaymentPlan.rental === true && lead.paidProject != null) {
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc, ${lead.paidProject.full_payment_discount}%)` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -214,12 +231,13 @@ class Payments extends Component {
 
 		// Get Floor base on Project Id
 		if (name === 'projectId') {
+			this.changeProject(value)
 			this.getFloors(value)
 		}
 
 		// Get Floor base on Floor ID & Project Id
 		if (name === 'floorId') {
-			this.getUnits(value, formData.projectId)
+			this.getUnits(formData.projectId, value)
 		}
 
 		//Set Selected Unit Details
@@ -258,6 +276,19 @@ class Payments extends Component {
 		})
 	}
 
+	changeProject = (id) => {
+		const { lead } = this.props
+		var body = {
+			paymentProject: id
+		}
+		var leadId = []
+		leadId.push(lead.id)
+		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+			.then((res) => {
+				this.fetchLead()
+			})
+	}
+
 	allCalculations = () => {
 		const { formData, unitPrice } = this.state
 		const { lead } = this.props
@@ -266,7 +297,7 @@ class Payments extends Component {
 
 		var totalPrice = unitPrice
 		var frontDiscount = formData.discount
-		var backendDiscount = lead.project != null && lead.project.full_payment_discount
+		var backendDiscount = lead.paidProject != null && lead.paidProject.full_payment_discount
 		var grandTotal = ''
 
 		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
@@ -334,6 +365,7 @@ class Payments extends Component {
 		this.setState({
 			firstScreenConfirmLoading: true,
 		})
+
 		var body = {
 			unitId: formData.unitId,
 			projectId: formData.projectId,
@@ -345,6 +377,8 @@ class Payments extends Component {
 			installmentDue: formData.paymentPlan,
 			finalPrice: formData.finalPrice,
 			remainingPayment: formData.finalPrice,
+			installmentAmount: formData.token,
+			type: formData.type,
 		}
 		var leadId = []
 		leadId.push(lead.id)
@@ -352,7 +386,11 @@ class Payments extends Component {
 			.then((res) => {
 				axios.get(`/api/leads/project/byId?id=${lead.id}`)
 					.then((res) => {
-						this.props.dispatch(setlead(res.data))
+						let responseData = res.data;
+						if (!responseData.paidProject) {
+							responseData.paidProject = responseData.project;
+						}
+						this.props.dispatch(setlead(responseData));
 						this.setState({
 							secondScreenData: res.data,
 							openFirstScreenModal: false,

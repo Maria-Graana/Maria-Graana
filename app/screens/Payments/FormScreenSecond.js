@@ -115,7 +115,7 @@ class FormScreenSecond extends Component {
                           <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
                         )
                       })
-                      : <Text style={{ padding: 10, }}>No Data Find!</Text>
+                      : <Text style={{ padding: 10, fontWeight: 'bold'}}>No Data Found!</Text>
                   }
                 </ScrollView>
               </View>

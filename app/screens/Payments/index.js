@@ -260,7 +260,7 @@ class Payments extends Component {
 
 		var totalPrice = unitPrice
 		var frontDiscount = formData.discount
-		var backendDiscount = lead.project.full_payment_discount
+		var backendDiscount = lead.project != null && lead.project.full_payment_discount 
 		var grandTotal = ''
 
 

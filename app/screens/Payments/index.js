@@ -32,7 +32,7 @@ class Payments extends Component {
 			getUnit: [],
 			allUnits: [],
 			formData: {
-				projectId: lead.project != null ? lead.project.id : null,
+				projectId: lead.paidProject != null ? lead.paidProject.id : null,
 				floorId: null,
 				discount: null,
 				discountedPrice: null,
@@ -52,9 +52,9 @@ class Payments extends Component {
 			unitId: null,
 			unitPrice: null,
 			checkPaymentPlan: {
-				years: lead.project != null && lead.project.installment_plan != null || '' ? lead.project.installment_plan : null,
-				monthly: lead.project != null && lead.project.monthly_installment_availablity === 'yes' ? true : false,
-				rental: lead.project != null && lead.project.rent_available === 'yes' ? true : false,
+				years: lead.paidProject != null && lead.paidProject.installment_plan != null || '' ? lead.paidProject.installment_plan : null,
+				monthly: lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes' ? true : false,
+				rental: lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false,
 				investment: true,
 				quartarly: true,
 			},
@@ -100,9 +100,7 @@ class Payments extends Component {
 	fetchLead = () => {
 		const { lead } = this.props
 		const { cmProgressBar } = StaticData
-		this.setState({
-			paymentPreviewLoading: true,
-		})
+		this.setState({ paymentPreviewLoading: true, })
 		axios.get(`/api/leads/project/byId?id=${lead.id}`)
 			.then((res) => {
 				this.props.dispatch(setlead(res.data))
@@ -187,11 +185,11 @@ class Payments extends Component {
 
 		console.log(lead)
 
-		if (checkPaymentPlan.investment === true && lead.project != null) {
-			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc, ${lead.project.full_payment_discount}%)` })
+		if (checkPaymentPlan.investment === true && lead.paidProject != null) {
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc, ${lead.paidProject.full_payment_discount}%)` })
 		}
-		if (checkPaymentPlan.rental === true && lead.project != null) {
-			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc, ${lead.project.full_payment_discount}%)` })
+		if (checkPaymentPlan.rental === true && lead.paidProject != null) {
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc, ${lead.paidProject.full_payment_discount}%)` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -266,7 +264,7 @@ class Payments extends Component {
 
 		var totalPrice = unitPrice
 		var frontDiscount = formData.discount
-		var backendDiscount = lead.project != null && lead.project.full_payment_discount
+		var backendDiscount = lead.paidProject != null && lead.paidProject.full_payment_discount
 		var grandTotal = ''
 
 		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {

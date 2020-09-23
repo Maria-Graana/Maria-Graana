@@ -123,4 +123,7 @@ export default styles = StyleSheet.create({
   desDark:{
     color: '#000'
   },
+  sharedLead:{
+    paddingVertical:5
+  }
 });

@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Image, SafeAreaView, Linking, FlatList } 
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import PickerComponent from '../../components/Picker/index';
-import { Fab, Button, Icon } from 'native-base';
+import { ActionSheet } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import SortImg from '../../../assets/img/sort.png'
 import LoadingNoResult from '../../components/LoadingNoResult'
@@ -20,9 +20,12 @@ import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { getItem, storeItem } from '../../actions/user';
 
+var BUTTONS = ['Share lead with other agent', 'Cancel'];
+var CANCEL_INDEX = 1;
+
 class InvestLeads extends React.Component {
 	constructor(props) {
-		super(props)
+		super(props);
 		this.state = {
 			leadsData: [],
 			purposeTab: 'invest',
@@ -143,6 +146,37 @@ class InvestLeads extends React.Component {
 		}
 	}
 
+	handleLongPress = (val) => {
+		ActionSheet.show(
+			{
+				options: BUTTONS,
+				cancelButtonIndex: CANCEL_INDEX,
+				title: 'Select an Option',
+			},
+			buttonIndex => {
+				if (buttonIndex === 0) {
+					//Share
+					this.navigateToShareScreen(val);
+				}
+			}
+		);
+	}
+
+	navigateToShareScreen = (data) => {
+		const { user } = this.props;
+		if (data.status === StaticData.Constants.lead_closed_lost || data.status === StaticData.Constants.lead_closed_won) {
+			helper.errorToast('Closed leads cannot be shared with other agents')
+			return;
+		}
+		if (user.id === data.assigned_to_armsuser_id) {
+			const { navigation } = this.props;
+			navigation.navigate('AssignLead', { leadId: data.id, type: 'Investment', screen: 'InvestLeads' })
+		}
+		else {
+			helper.errorToast('Only the leads assigned to you can be shared')
+		}
+	}
+
 	callNumber = (url) => {
 		if (url != 'tel:null') {
 			Linking.canOpenURL(url)
@@ -258,6 +292,7 @@ class InvestLeads extends React.Component {
 									data={item}
 									navigateTo={this.navigateTo}
 									callNumber={this.callNumber}
+									handleLongPress={this.handleLongPress}
 								/>
 							)}
 							onEndReached={() => {

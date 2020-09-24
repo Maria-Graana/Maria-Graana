@@ -123,16 +123,14 @@ class LeadViewing extends React.Component {
 	closeLead = () => {
 		const { user, lead } = this.props;
 		var commissionPayment = this.props.lead.commissionPayment
-		if (user.id === lead.assigned_to_armsuser_id) {
+		const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+		if (leadAssignedSharedStatus) {
 			if (commissionPayment !== null) {
 				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 			else {
 				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
-		}
-		else {
-			helper.leadNotAssignedToast()
 		}
 	}
 
@@ -315,6 +313,7 @@ class LeadViewing extends React.Component {
 
 	checkStatus = (property) => {
 		const { lead, user } = this.props;
+		const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'completed') {
 				return (
@@ -343,12 +342,7 @@ class LeadViewing extends React.Component {
 							alignItems: "center"
 						}}
 						onPress={() => {
-							if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-								helper.leadClosedToast();
-							} else if (user.id !== lead.assigned_to_armsuser_id) {
-								helper.leadNotAssignedToast();
-							}
-							else {
+							if(leadAssignedSharedStatus){
 								this.openModal();
 								this.updateProperty(property)
 							}
@@ -370,18 +364,10 @@ class LeadViewing extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={() => {
-						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-							helper.leadClosedToast();
-
-						}
-						else if (user.id !== lead.assigned_to_armsuser_id) {
-							helper.leadNotAssignedToast();
-						}
-						else {
+						if(leadAssignedSharedStatus){
 							this.openModal();
 							this.setProperty(property)
 						}
-
 					}}
 				>
 					<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>BOOK VIEWING</Text>
@@ -396,7 +382,6 @@ class LeadViewing extends React.Component {
 				let body = {
 					status: 'completed'
 				}
-
 				axios.patch(`/api/diary/update?id=${property.diaries[0].id}`, body)
 					.then((res) => {
 						this.setState({ loading: true })
@@ -448,16 +433,6 @@ class LeadViewing extends React.Component {
 		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
 	}
 
-	showMenuItem = () => {
-		const { lead, user } = this.props;
-		if ((lead.status === StaticData.Constants.lead_closed_won || lead.status === StaticData.Constants.lead_closed_lost) || user.id !== lead.assigned_to_armsuser_id) {
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-
 	goToHistory = () => {
 		const { callModal } = this.state
 		this.setState({ callModal: !callModal })
@@ -474,7 +449,7 @@ class LeadViewing extends React.Component {
 	render() {
 		const { meetings, callModal, loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
 		const { lead, user } = this.props;
-		const showMenuItem = this.showMenuItem();
+		const showMenuItem =  helper.checkAssignedSharedStatus(user, lead);
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>

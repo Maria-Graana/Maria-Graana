@@ -185,7 +185,8 @@ class LeadOffer extends React.Component {
 	closeLead = () => {
 		const { user, lead } = this.props;
 		var commissionPayment = this.props.lead.commissionPayment
-		if (user.id === lead.assigned_to_armsuser_id) {
+		const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+		if(leadAssignedSharedStatus){
 			if (commissionPayment !== null) {
 				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
@@ -193,10 +194,6 @@ class LeadOffer extends React.Component {
 				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 		}
-		else {
-			helper.leadNotAssignedToast()
-		}
-
 	}
 
 	onHandleCloseLead = () => {
@@ -273,6 +270,7 @@ class LeadOffer extends React.Component {
 
 	checkStatus = (property) => {
 		const { lead, user } = this.props;
+		const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
 		if (property.agreedOffer.length) {
 			return (
 				<TouchableOpacity
@@ -300,17 +298,10 @@ class LeadOffer extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={() => {
-						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-							helper.leadClosedToast();
-						}
-						else if (user.id !== lead.assigned_to_armsuser_id) {
-							helper.leadNotAssignedToast()
-						}
-						else {
+						if(leadAssignedSharedStatus){
 							this.openChatModal();
 							this.setProperty(property)
 						}
-
 					}}
 				>
 					<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>View <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>Offers</Text></Text>
@@ -328,13 +319,7 @@ class LeadOffer extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={() => {
-						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-							helper.leadClosedToast();
-						}
-						else if (user.id !== lead.assigned_to_armsuser_id) {
-							helper.leadNotAssignedToast()
-						}
-						else {
+						if(leadAssignedSharedStatus){
 							this.openChatModal();
 							this.setProperty(property)
 						}

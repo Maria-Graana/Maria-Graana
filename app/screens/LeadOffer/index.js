@@ -20,6 +20,7 @@ import HistoryModal from '../../components/HistoryModal/index';
 class LeadOffer extends React.Component {
 	constructor(props) {
 		super(props)
+		const {user, lead} = this.props;
 		this.state = {
 			open: false,
 			loading: true,
@@ -38,7 +39,7 @@ class LeadOffer extends React.Component {
 			checkReasonValidation: false,
 			selectedReason: '',
 			reasons: [],
-			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+			closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
 			callModal: false,
 			meetings: []
 		}
@@ -183,17 +184,13 @@ class LeadOffer extends React.Component {
 	}
 
 	closeLead = () => {
-		const { user, lead } = this.props;
 		var commissionPayment = this.props.lead.commissionPayment
-		const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
-		if(leadAssignedSharedStatus){
 			if (commissionPayment !== null) {
 				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 			else {
 				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
-		}
 	}
 
 	onHandleCloseLead = () => {

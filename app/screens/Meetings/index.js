@@ -50,8 +50,8 @@ class Meetings extends Component {
       isVisible: false,
       selectedReason: '',
       checkReasonValidation: false,
-      closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost,
-      checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false,
+      closedLeadEdit:  helper.checkAssignedSharedStatus(user, lead),
+      checkForUnassignedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
       diaryForm: false,
       diaryTask: {
         subject: '',
@@ -405,7 +405,10 @@ class Meetings extends Component {
       reasons: selectedReason
     }
     if (selectedReason && selectedReason !== '') {
-      axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
+      var leadId = []
+			leadId.push(lead.id)
+    	axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then(res => {
         this.setState({ isVisible: false }, () => {
           helper.successToast(`Lead Closed`)
           navigation.navigate('Leads');

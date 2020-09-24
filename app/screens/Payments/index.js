@@ -123,7 +123,6 @@ class Payments extends Component {
 					responseData.paidProject = responseData.project;
 				}
 				this.props.dispatch(setlead(responseData));
-
 				this.setdefaultFields(responseData)
 				this.setState({
 					progressValue: cmProgressBar[res.data.status] || 0,
@@ -397,7 +396,7 @@ class Payments extends Component {
 							firstScreenDone: false,
 							firstScreenConfirmLoading: false,
 						}, () => {
-							helper.successToast('Lead Booked')
+							helper.successToast('Unit Has Been Booked')
 						})
 					}).catch(() => {
 						this.setState({
@@ -557,7 +556,7 @@ class Payments extends Component {
 							editaAble: false,
 							addPaymentLoading: false,
 						}, () => {
-							helper.successToast('Payment Edit Success')
+							helper.successToast('Payment Updated')
 						})
 					}).catch(() => {
 						this.setState({

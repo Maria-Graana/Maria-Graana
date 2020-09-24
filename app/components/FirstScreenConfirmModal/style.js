@@ -7,7 +7,7 @@ export default styles = StyleSheet.create({
     // borderRadius: 10,
     padding: 15,
     paddingTop: 30,
-    paddingBottom: 50,
+    paddingBottom: 15,
     borderRadius: 4,
     zIndex: 5,
     position: 'relative',
@@ -61,6 +61,7 @@ export default styles = StyleSheet.create({
   confirmBtnView: {
     flexDirection: 'row',
     marginTop: 15,
+    justifyContent: 'flex-end'
   },
   confirmBtn: {
     marginRight: 10,

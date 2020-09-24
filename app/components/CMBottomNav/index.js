@@ -160,9 +160,9 @@ class CMBottomNav extends React.Component {
 									<Text style={[styles.bottomNavBtnText, visible === true && styles.colorWhite]}>Menu</Text>
 								</TouchableOpacity>
 							}>
-							<Menu.Item onPress={() => { goToComments() }} icon={require('../../../assets/img/msg.png')} title="Comments" />
-							<Menu.Item onPress={() => { goToAttachments() }} icon={require('../../../assets/img/files.png')} title="Files" />
-							<Menu.Item onPress={() => { goToHistory() }} icon={require('../../../assets/img/callIcon.png')} title="Call History" />
+							<Menu.Item onPress={() => { goToComments(); this.openMenu(false) }} icon={require('../../../assets/img/msg.png')} title="Comments" />
+							<Menu.Item onPress={() => { goToAttachments(); this.openMenu(false) }} icon={require('../../../assets/img/files.png')} title="Files" />
+							<Menu.Item onPress={() => { goToHistory(); this.openMenu(false) }} icon={require('../../../assets/img/callIcon.png')} title="Call History" />
 						</Menu>
 					</View>
 

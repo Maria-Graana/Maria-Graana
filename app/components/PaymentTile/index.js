@@ -22,7 +22,7 @@ class PaymentTile extends React.Component {
 		} = this.props
 		var statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
 		return (
-			<TouchableOpacity onPress={() => { editTile(data.id) }}>
+			<TouchableOpacity onPress={() => { data.status != 'approved' && editTile(data.id) }}>
 				<View style={styles.tileTopWrap}>
 					<View style={styles.upperLayer}>
 						<Text style={styles.paymnetHeading}>PAYMENT {count + 1} ({data.type})</Text>

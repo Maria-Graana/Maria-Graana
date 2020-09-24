@@ -29,6 +29,7 @@ class FormScreenSecond extends Component {
       paymentPreviewLoading,
       checkLeadClosedOrNot,
       onlyReadFormData,
+      tileForToken,
     } = this.props
     return (
       <SafeAreaView style={styles.removePad}>
@@ -111,7 +112,7 @@ class FormScreenSecond extends Component {
                       data && data.payment && data.payment.length > 0 ?
                         data.payment.map((item, index) => {
                           return (
-                            <PaymentTile status={"approved"} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
+                            <PaymentTile tileForToken={false} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
                           )
                         })
                         : <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>

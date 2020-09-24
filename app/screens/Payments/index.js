@@ -86,6 +86,7 @@ class Payments extends Component {
 			selectedReason: '',
 			checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead),
 			remarks: lead.payment != null ? lead.remarks : null,
+			editaAbleForTokenScreenOne: false,
 		}
 	}
 
@@ -571,6 +572,19 @@ class Payments extends Component {
 		}
 	}
 
+	editTileForscreenOne = () => {
+		const { formData } = this.state
+		var newformData = { ...formData }
+		newformData['token'] = formData.token
+		newformData['type'] = formData.type
+		newformData['details'] = formData.details
+		this.setState({
+			formData: newformData,
+			tokenModalVisible: true,
+			editaAbleForTokenScreenOne: true,
+		})
+	}
+
 	editTile = (id) => {
 		this.setState({ addPaymentModalToggleState: true, modalLoading: true })
 		axios.get(`/api/leads/project/byId?id=${this.props.lead.id}`)
@@ -752,7 +766,7 @@ class Payments extends Component {
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 				<View style={styles.mainParent}>
 					{
-						firstScreenDone === true  ?
+						firstScreenDone === true ?
 							<ScrollView>
 								<View style={styles.fullHeight}>
 									<FormScreenOne
@@ -772,6 +786,7 @@ class Payments extends Component {
 										openUnitDetailsModal={this.openUnitDetailsModal}
 										firstScreenConfirmModal={this.firstScreenConfirmModal}
 										tokenModalToggle={this.tokenModalToggle}
+										editTileForscreenOne={this.editTileForscreenOne}
 									/>
 								</View>
 							</ScrollView>
@@ -779,7 +794,7 @@ class Payments extends Component {
 					}
 
 					{
-						firstScreenDone === false || checkLeadClosedOrNot === true ?
+						firstScreenDone === false ?
 							<ScrollView>
 								<View style={styles.secondContainer}>
 									<FormScreenSecond

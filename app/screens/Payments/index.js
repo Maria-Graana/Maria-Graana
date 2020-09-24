@@ -38,7 +38,7 @@ class Payments extends Component {
 				discountedPrice: null,
 				finalPrice: null,
 				paymentPlan: null,
-				unitId: null,
+				unitId: lead.unit != null ? lead.unit.id : null,
 				token: lead.token != null ? lead.token : null,
 				type: '',
 				details: '',
@@ -707,10 +707,13 @@ class Payments extends Component {
 
 	formSubmit = () => {
 		const { lead } = this.props
-		const { formData, remainingPayment, unitPrice } = this.state
+		const { formData, remainingPayment, secondScreenData } = this.state
+		var approvedPaymentDone = secondScreenData && secondScreenData.payment != null &&
+			secondScreenData.payment.map((item) => { return item.status === 'approved' ? true : false })
+			approvedPaymentDone = approvedPaymentDone[0]
 		var leadId = []
 		leadId.push(lead.id)
-		if (remainingPayment <= 0 && formData.unitId != null) {
+		if (Number(remainingPayment) <= 0 && formData.unitId != null && approvedPaymentDone != false) {
 			this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 		} else {
 			this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
@@ -760,7 +763,6 @@ class Payments extends Component {
 			checkLeadClosedOrNot,
 			remarks,
 		} = this.state
-
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />

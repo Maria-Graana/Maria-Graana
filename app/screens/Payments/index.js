@@ -708,15 +708,31 @@ class Payments extends Component {
 	formSubmit = () => {
 		const { lead } = this.props
 		const { formData, remainingPayment, secondScreenData } = this.state
-		var approvedPaymentDone = secondScreenData && secondScreenData.payment != null &&
-			secondScreenData.payment.map((item) => { return item.status === 'approved' ? true : false })
-			approvedPaymentDone = approvedPaymentDone[0]
-		var leadId = []
-		leadId.push(lead.id)
-		if (Number(remainingPayment) <= 0 && formData.unitId != null && approvedPaymentDone != false) {
-			this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
-		} else {
-			this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+		if (secondScreenData && secondScreenData != '') {
+
+			// Check For Any pending and rejected Status
+			var approvedPaymentDone = []
+			secondScreenData && secondScreenData.payment != null &&
+				secondScreenData.payment.filter((item, index) => {
+					return item.status === 'pending' || item.status === 'rejected' ?
+						approvedPaymentDone.push(true) : approvedPaymentDone.push(false)
+				})
+
+			// If there is any true in the bottom array PAYMENT DONE option will be hide
+			var checkForPenddingNrjected = []
+			approvedPaymentDone && approvedPaymentDone.length > 0 &&
+				approvedPaymentDone.filter((item) => { item === true && checkForPenddingNrjected.push(true) })
+
+
+			var leadId = []
+			leadId.push(lead.id)
+
+			// Check for Payment Done option 
+			if (Number(remainingPayment) <= 0 && formData.unitId != null && checkForPenddingNrjected.length === 0) {
+				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+			} else {
+				this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+			}
 		}
 	}
 

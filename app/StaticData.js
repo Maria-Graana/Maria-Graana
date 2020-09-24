@@ -383,7 +383,7 @@ export default StaticData = {
         meeting_visited: 0.5,
         meeting_expected_conversion: 0.5,
         meeting_deal_signed: 0.5,
-        Token: 1,
+        token: 1,
         payment: 1,
         closed: 1,
     },

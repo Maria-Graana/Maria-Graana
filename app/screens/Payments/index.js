@@ -84,7 +84,7 @@ class Payments extends Component {
 			reasons: [],
 			isVisible: false,
 			selectedReason: '',
-			checkLeadClosedOrNot: lead.status === 'closed_won' || lead.status === 'closed_lost' || lead.assigned_to_armsuser_id != user.id ? true : false,
+			checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead),
 			remarks: lead.payment != null ? lead.remarks : null,
 		}
 	}
@@ -204,7 +204,7 @@ class Payments extends Component {
 		const array = [];
 
 		if (checkPaymentPlan.investment === true && lead.paidProject != null) {
-			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan  ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
 		}
 		if (checkPaymentPlan.rental === true && lead.paidProject != null) {
 			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
@@ -752,7 +752,7 @@ class Payments extends Component {
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 				<View style={styles.mainParent}>
 					{
-						firstScreenDone === true && checkLeadClosedOrNot === false ?
+						firstScreenDone === true  ?
 							<ScrollView>
 								<View style={styles.fullHeight}>
 									<FormScreenOne
@@ -765,6 +765,7 @@ class Payments extends Component {
 										paymentPlan={paymentPlan}
 										firstScreenValidate={firstScreenValidate}
 										remainingPayment={remainingPayment}
+										checkLeadClosedOrNot={checkLeadClosedOrNot}
 										currencyConvert={this.currencyConvert}
 										handleForm={this.handleForm}
 										submitFirstScreen={this.submitFirstScreen}
@@ -867,7 +868,7 @@ class Payments extends Component {
 						navigateTo={this.navigateTo}
 						goToDiaryForm={this.goToDiaryForm}
 						goToComments={this.goToComments}
-						closedLeadEdit={!checkLeadClosedOrNot}
+						closedLeadEdit={checkLeadClosedOrNot}
 						alreadyClosedLead={this.closedLead}
 						// closedLeadEdit={leadClosedCheck}
 						closeLead={this.formSubmit}

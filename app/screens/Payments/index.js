@@ -84,8 +84,9 @@ class Payments extends Component {
 			reasons: [],
 			isVisible: false,
 			selectedReason: '',
-			checkLeadClosedOrNot: lead.status === 'closed_won' || lead.status === 'closed_lost' || lead.assigned_to_armsuser_id != user.id ? true : false,
+			checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead),
 			remarks: lead.payment != null ? lead.remarks : null,
+			editaAbleForTokenScreenOne: false,
 		}
 	}
 
@@ -204,7 +205,7 @@ class Payments extends Component {
 		const array = [];
 
 		if (checkPaymentPlan.investment === true && lead.paidProject != null) {
-			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan  ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
 		}
 		if (checkPaymentPlan.rental === true && lead.paidProject != null) {
 			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
@@ -571,6 +572,19 @@ class Payments extends Component {
 		}
 	}
 
+	editTileForscreenOne = () => {
+		const { formData } = this.state
+		var newformData = { ...formData }
+		newformData['token'] = formData.token
+		newformData['type'] = formData.type
+		newformData['details'] = formData.details
+		this.setState({
+			formData: newformData,
+			tokenModalVisible: true,
+			editaAbleForTokenScreenOne: true,
+		})
+	}
+
 	editTile = (id) => {
 		this.setState({ addPaymentModalToggleState: true, modalLoading: true })
 		axios.get(`/api/leads/project/byId?id=${this.props.lead.id}`)
@@ -752,7 +766,7 @@ class Payments extends Component {
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 				<View style={styles.mainParent}>
 					{
-						firstScreenDone === true && checkLeadClosedOrNot === false ?
+						firstScreenDone === true ?
 							<ScrollView>
 								<View style={styles.fullHeight}>
 									<FormScreenOne
@@ -765,12 +779,14 @@ class Payments extends Component {
 										paymentPlan={paymentPlan}
 										firstScreenValidate={firstScreenValidate}
 										remainingPayment={remainingPayment}
+										checkLeadClosedOrNot={checkLeadClosedOrNot}
 										currencyConvert={this.currencyConvert}
 										handleForm={this.handleForm}
 										submitFirstScreen={this.submitFirstScreen}
 										openUnitDetailsModal={this.openUnitDetailsModal}
 										firstScreenConfirmModal={this.firstScreenConfirmModal}
 										tokenModalToggle={this.tokenModalToggle}
+										editTileForscreenOne={this.editTileForscreenOne}
 									/>
 								</View>
 							</ScrollView>
@@ -778,7 +794,7 @@ class Payments extends Component {
 					}
 
 					{
-						firstScreenDone === false || checkLeadClosedOrNot === true ?
+						firstScreenDone === false ?
 							<ScrollView>
 								<View style={styles.secondContainer}>
 									<FormScreenSecond
@@ -867,7 +883,7 @@ class Payments extends Component {
 						navigateTo={this.navigateTo}
 						goToDiaryForm={this.goToDiaryForm}
 						goToComments={this.goToComments}
-						closedLeadEdit={!checkLeadClosedOrNot}
+						closedLeadEdit={checkLeadClosedOrNot}
 						alreadyClosedLead={this.closedLead}
 						// closedLeadEdit={leadClosedCheck}
 						closeLead={this.formSubmit}

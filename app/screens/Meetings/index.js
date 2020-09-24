@@ -50,8 +50,8 @@ class Meetings extends Component {
       isVisible: false,
       selectedReason: '',
       checkReasonValidation: false,
-      closedLeadEdit: this.props.lead.status != StaticData.Constants.lead_closed_won && this.props.lead.status != StaticData.Constants.lead_closed_lost,
-      checkForUnassignedLeadEdit: lead.assigned_to_armsuser_id == user.id ? true : false,
+      closedLeadEdit:  helper.checkAssignedSharedStatus(user, lead),
+      checkForUnassignedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
       diaryForm: false,
       diaryTask: {
         subject: '',

@@ -23,6 +23,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 class LeadViewing extends React.Component {
 	constructor(props) {
 		super(props)
+		const {user, lead} = this.props;
 		this.state = {
 			isVisible: false,
 			open: false,
@@ -44,7 +45,7 @@ class LeadViewing extends React.Component {
 			organization: 'arms',
 			selectedReason: '',
 			reasons: [],
-			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+			closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
 			callModal: false,
 			meetings: []
 		}

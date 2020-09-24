@@ -172,17 +172,28 @@ class RentLeads extends React.Component {
 
 	navigateToShareScreen = (data) => {
 		const { user } = this.props;
-		if (data.status === StaticData.Constants.lead_closed_lost || data.status === StaticData.Constants.lead_closed_won) {
-			helper.errorToast('Closed leads cannot be shared with other agents')
-			return;
+		if(data){
+			if (data.status === StaticData.Constants.lead_closed_lost || data.status === StaticData.Constants.lead_closed_won) {
+				helper.errorToast('Closed leads cannot be shared with other agents')
+				return;
+			}
+			if (user.id === data.assigned_to_armsuser_id) {
+				if (data.shared_with_armsuser_id) {
+					helper.errorToast('lead is already shared')
+				}
+				else {
+					const { navigation } = this.props;
+					navigation.navigate('AssignLead', { leadId: data.id, type: 'Rent', screen: 'RentLeads' })
+				}
+			}
+			else {
+				helper.errorToast('Only the leads assigned to you can be shared')
+			}
 		}
-		if (user.id === data.assigned_to_armsuser_id) {
-			const { navigation } = this.props;
-			navigation.navigate('AssignLead', { leadId: data.id, type: 'Rent', screen: 'RentLeads' })
+		else{
+			helper.errorToast('Something went wrong!')
 		}
-		else {
-			helper.errorToast('Only the leads assigned to you can be shared')
-		}
+		
 	}
 
 	callNumber = (url) => {

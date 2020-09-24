@@ -20,6 +20,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 import { Platform } from 'react-native'
 import { setContacts } from '../../actions/contacts';
 import TimerNotification from '../../LocalNotifications';
+import { cos } from 'react-native-reanimated';
 
 class Meetings extends Component {
   constructor(props) {
@@ -78,6 +79,7 @@ class Meetings extends Component {
     const { cmProgressBar } = StaticData
     axios.get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
+        console.log(res.data.status)
         this.props.dispatch(setlead(res.data))
         this.setState({
           progressValue: cmProgressBar[res.data.status] || 0

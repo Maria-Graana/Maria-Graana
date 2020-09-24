@@ -147,7 +147,7 @@ class LeadPropsure extends React.Component {
                 pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
                 org: selectedProperty.arms_id ? 'arms' : 'graana',
             }
-            axios.post(`api/leads/propsure/${lead.id}`, body).then(response => {
+            axios.post(`/api/leads/propsure/${lead.id}`, body).then(response => {
                 this.fetchLead()
                 this.fetchProperties();
             }).catch(error => {

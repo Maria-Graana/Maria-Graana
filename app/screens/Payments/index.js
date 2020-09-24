@@ -205,10 +205,10 @@ class Payments extends Component {
 		const array = [];
 
 		if (checkPaymentPlan.investment === true && lead.paidProject != null) {
-			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan (Full Payment Disc, ${lead.paidProject.full_payment_discount}%)` })
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan  ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
 		}
 		if (checkPaymentPlan.rental === true && lead.paidProject != null) {
-			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan (Full Payment Disc, ${lead.paidProject.full_payment_discount}%)` })
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })

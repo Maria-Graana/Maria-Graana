@@ -451,10 +451,6 @@ class Meetings extends Component {
       approvedPaymentDone && approvedPaymentDone.length > 0 &&
         approvedPaymentDone.filter((item) => { item === true && checkForPenddingNrjected.push(true) })
 
-
-      var leadId = []
-      leadId.push(lead.id)
-
       var remainingPayment = this.props.lead.remainingPayment
       if (remainingPayment <= 0 && remainingPayment != null && checkForPenddingNrjected.length === 0) {
         this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })

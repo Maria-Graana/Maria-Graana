@@ -9,6 +9,7 @@ import SimpleInputText from '../../components/SimpleInputField'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatPrice } from '../../PriceFormate';
 import ErrorMessage from '../../components/ErrorMessage'
+import PaymentTile from '../../components/PaymentTile'
 
 
 class InnerForm extends Component {
@@ -39,9 +40,11 @@ class InnerForm extends Component {
       tokenModalToggle,
       remainingPayment,
       checkLeadClosedOrNot,
+      editTileForscreenOne,
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
     const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' && checkLeadClosedOrNot === true ? true : false
+    const dataForPaymentTile = { installmentAmount: formData.token, id: null, status: 'Pending', details: formData.details, type: formData.type }
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -57,7 +60,7 @@ class InnerForm extends Component {
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
-                <PickerComponent onValueChange={handleForm} data={getFloors} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={checkLeadClosedOrNot}/>
+                <PickerComponent onValueChange={handleForm} data={getFloors} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={checkLeadClosedOrNot} />
                 {firstScreenValidate === true && formData.floorId === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
@@ -66,7 +69,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.mainInputWrap]}>
               <View style={styles.maiinDetailBtn}>
                 <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
-                  <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkLeadClosedOrNot}/>
+                  <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkLeadClosedOrNot} />
                   {firstScreenValidate === true && formData.unitId === null && <ErrorMessage errorMessage={'Required'} />}
                 </View>
                 <View style={styles.mainDetailViewBtn}>
@@ -123,15 +126,12 @@ class InnerForm extends Component {
             {/* **************************************** */}
             {
               formData.token != '' && formData.token != null ?
-                <SimpleInputText
-                  name={'token'}
-                  fromatName={'token'}
-                  placeholder={'Token'}
-                  label={'TOKEN'}
-                  value={formData.token}
-                  formatValue={formData.token}
-                  editable={false}
-                  keyboardType={'numeric'}
+                <PaymentTile
+                  currencyConvert={currencyConvert}
+                  count={''}
+                  data={dataForPaymentTile}
+                  editTileForscreenOne={editTileForscreenOne}
+                  tileForToken={true}
                 />
                 :
                 <View style={[AppStyles.mainInputWrap]}>
@@ -152,14 +152,14 @@ class InnerForm extends Component {
             <View style={[AppStyles.mainInputWrap]}>
               <View style={styles.backgroundBlue}>
                 <Text style={styles.finalPrice}>FINAL PRICE</Text>
-                <Text style={styles.priceValue}>{remainingPayment != null ?currencyConvert( remainingPayment ): null}</Text>
-                <Text style={styles.sidePriceFormat}>{remainingPayment != null ?formatPrice( remainingPayment ): null}</Text>
+                <Text style={styles.priceValue}>{remainingPayment != null ? currencyConvert(remainingPayment) : null}</Text>
+                <Text style={styles.sidePriceFormat}>{remainingPayment != null ? formatPrice(remainingPayment) : null}</Text>
               </View>
             </View>
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
-              <TouchableOpacity style={styles.bookNowBtn} onPress={() => {checkLeadClosedOrNot === true && firstScreenConfirmModal(true) }}>
+              <TouchableOpacity style={styles.bookNowBtn} onPress={() => { checkLeadClosedOrNot === true && firstScreenConfirmModal(true) }}>
                 <Text style={styles.bookNowBtnText}>BOOK NOW</Text>
               </TouchableOpacity>
             </View>

@@ -261,17 +261,13 @@ class LeadPropsure extends React.Component {
     }
 
     closeLead = () => {
-        const { user, lead } = this.props;
         var commissionPayment = this.props.lead.commissionPayment
-        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
-        if(leadAssignedSharedStatus){
             if (commissionPayment !== null) {
                 this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
             }
             else {
                 this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
             }
-        }
     }
 
     onHandleCloseLead = () => {

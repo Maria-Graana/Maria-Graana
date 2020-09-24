@@ -214,17 +214,13 @@ class LeadRCMPayment extends React.Component {
 
     showLeadPaymentModal = () => {
         const { lead } = this.state;
-        const { user } = this.props;
         var commissionPayment = lead.commissionPayment
-        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
-        if(leadAssignedSharedStatus){
             if (commissionPayment !== null) {
                 this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
             }
             else {
                 this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
             }
-        }
     }
 
 

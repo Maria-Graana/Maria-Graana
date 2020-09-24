@@ -51,7 +51,7 @@ class Meetings extends Component {
       isVisible: false,
       selectedReason: '',
       checkReasonValidation: false,
-      closedLeadEdit:  helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
       checkForUnassignedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
       diaryForm: false,
       diaryTask: {
@@ -65,6 +65,7 @@ class Meetings extends Component {
         leadId: this.props.lead.id,
       },
       loading: false,
+      secondScreenData: {},
     }
   }
 
@@ -79,10 +80,10 @@ class Meetings extends Component {
     const { cmProgressBar } = StaticData
     axios.get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
-        console.log(res.data.status)
         this.props.dispatch(setlead(res.data))
         this.setState({
-          progressValue: cmProgressBar[res.data.status] || 0
+          progressValue: cmProgressBar[res.data.status] || 0,
+          secondScreenData: res.data
         })
       })
       .catch((error) => {
@@ -408,16 +409,16 @@ class Meetings extends Component {
     }
     if (selectedReason && selectedReason !== '') {
       var leadId = []
-			leadId.push(lead.id)
-    	axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
-      .then(res => {
-        this.setState({ isVisible: false }, () => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads');
-        });
-      }).catch(error => {
-        console.log(error);
-      })
+      leadId.push(lead.id)
+      axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+        .then(res => {
+          this.setState({ isVisible: false }, () => {
+            helper.successToast(`Lead Closed`)
+            navigation.navigate('Leads');
+          });
+        }).catch(error => {
+          console.log(error);
+        })
     } else {
       alert('Please select a reason for lead closure!')
     }
@@ -432,12 +433,38 @@ class Meetings extends Component {
   }
 
   closeLead = () => {
-    var remainingPayment = this.props.lead.remainingPayment
-    if (remainingPayment <= 0 && remainingPayment != null) {
-      this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
-    } else {
-      this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+
+
+    const { secondScreenData } = this.state
+    if (secondScreenData && secondScreenData != '') {
+
+      // Check For Any pending and rejected Status
+      var approvedPaymentDone = []
+      secondScreenData && secondScreenData.payment != null &&
+        secondScreenData.payment.filter((item, index) => {
+          return item.status === 'pending' || item.status === 'rejected' ?
+            approvedPaymentDone.push(true) : approvedPaymentDone.push(false)
+        })
+
+      // If there is any true in the bottom array PAYMENT DONE option will be hide
+      var checkForPenddingNrjected = []
+      approvedPaymentDone && approvedPaymentDone.length > 0 &&
+        approvedPaymentDone.filter((item) => { item === true && checkForPenddingNrjected.push(true) })
+
+      var remainingPayment = this.props.lead.remainingPayment
+      if (remainingPayment <= 0 && remainingPayment != null && checkForPenddingNrjected.length === 0) {
+        this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+      } else {
+        this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+      }
+
+
     }
+
+
+
+
+
   }
 
   render() {

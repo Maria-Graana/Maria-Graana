@@ -832,7 +832,6 @@ class Payments extends Component {
 						secondFormSubmit={this.secondFormSubmit}
 					/>
 
-
 					<AddTokenModal
 						active={tokenModalVisible}
 						formData={formData}

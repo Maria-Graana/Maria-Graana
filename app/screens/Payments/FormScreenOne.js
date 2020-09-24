@@ -38,9 +38,10 @@ class InnerForm extends Component {
       unitId,
       tokenModalToggle,
       remainingPayment,
+      checkLeadClosedOrNot,
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
-    const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' ? true : false
+    const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' && checkLeadClosedOrNot === true ? true : false
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -48,7 +49,7 @@ class InnerForm extends Component {
 
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
-                <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} placeholder='Project' selectedItem={formData.projectId} />
+                <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} placeholder='Project' selectedItem={formData.projectId} enabled={checkLeadClosedOrNot} />
                 {firstScreenValidate === true && formData.projectId === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
@@ -56,7 +57,7 @@ class InnerForm extends Component {
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
-                <PickerComponent onValueChange={handleForm} data={getFloors} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} />
+                <PickerComponent onValueChange={handleForm} data={getFloors} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={checkLeadClosedOrNot}/>
                 {firstScreenValidate === true && formData.floorId === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
@@ -65,7 +66,7 @@ class InnerForm extends Component {
             <View style={[AppStyles.mainInputWrap]}>
               <View style={styles.maiinDetailBtn}>
                 <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
-                  <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} />
+                  <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkLeadClosedOrNot}/>
                   {firstScreenValidate === true && formData.unitId === null && <ErrorMessage errorMessage={'Required'} />}
                 </View>
                 <View style={styles.mainDetailViewBtn}>
@@ -158,7 +159,7 @@ class InnerForm extends Component {
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
-              <TouchableOpacity style={styles.bookNowBtn} onPress={() => { firstScreenConfirmModal(true) }}>
+              <TouchableOpacity style={styles.bookNowBtn} onPress={() => {checkLeadClosedOrNot === true && firstScreenConfirmModal(true) }}>
                 <Text style={styles.bookNowBtnText}>BOOK NOW</Text>
               </TouchableOpacity>
             </View>

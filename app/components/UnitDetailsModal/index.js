@@ -31,7 +31,7 @@ class UnitDetailsModal extends React.Component {
         {
           data && data != '' &&
           <View style={[styles.modalMain]}>
-            <TouchableOpacity style={styles.timesBtn} onPress={() => { openUnitDetailsModal(false) }}>
+            <TouchableOpacity style={styles.timesBtn} onPress={() => { openUnitDetailsModal(null, false) }}>
               <Image source={times} style={styles.timesImg} />
             </TouchableOpacity>
             <ScrollView>

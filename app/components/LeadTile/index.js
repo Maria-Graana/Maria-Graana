@@ -17,16 +17,17 @@ class LeadTile extends React.Component {
 	call = (data) => {
 		const { contacts, purposeTab, updateStatus, user } = this.props
 		let newContact = helper.createContactPayload(data.customer)
-		if (purposeTab === 'invest') this.sendCallStatus(data)
-		else {
+		this.sendCallStatus(data)
+		if (purposeTab !== 'invest')
 			if (data.assigned_to_armsuser_id === user.id) updateStatus(data)
-		}
 		helper.callNumber(newContact, contacts)
 	}
 
 	sendCallStatus = (data) => {
 		const start = moment().format();
-		let body = {
+		const { purposeTab } = this.props
+		let body = {}
+		body = {
 			start: start,
 			end: start,
 			time: start,
@@ -35,9 +36,11 @@ class LeadTile extends React.Component {
 			response: 'Called',
 			subject: 'Call to client ' + data.customer.customerName,
 			cutomerId: data.customer.id,
-			leadId: data.id,
 			taskCategory: 'leadTask',
 		}
+		if (purposeTab === 'invest') body.leadId = data.id
+		else body.armsLeadId = data.id
+
 		axios.post(`api/leads/project/meeting`, body)
 			.then((res) => {
 			})

@@ -70,7 +70,7 @@ export default class App extends React.Component {
 		if (config.channel === 'production') {
 			Sentry.init({
 				enableInExpoDevelopment: false,
-				dsn: 'http://95bf407ef0f042b1b985d4efe8a8a75f@ec2-34-229-137-31.compute-1.amazonaws.com/8',
+				dsn: 'http://95bf407ef0f042b1b985d4efe8a8a75f@sentry.graana.rocks/8',
 			})
 			Sentry.setRelease(Constants.manifest.revisionId)
 		}

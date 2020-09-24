@@ -405,7 +405,10 @@ class Meetings extends Component {
       reasons: selectedReason
     }
     if (selectedReason && selectedReason !== '') {
-      axios.patch(`/api/leads/project?id=${lead.id}`, body).then(res => {
+      var leadId = []
+			leadId.push(lead.id)
+    	axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then(res => {
         this.setState({ isVisible: false }, () => {
           helper.successToast(`Lead Closed`)
           navigation.navigate('Leads');

@@ -44,7 +44,14 @@ class InnerForm extends Component {
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
     const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' && checkLeadClosedOrNot === true ? true : false
-    const dataForPaymentTile = { installmentAmount: formData.token, id: null, status: 'Pending', details: formData.details, type: formData.type }
+    const dataForPaymentTile = {
+      installmentAmount: formData.token,
+      id: null,
+      status: 'Pending',
+      details: formData.details,
+      type: formData.type,
+      createdAt: new Date(),
+    }
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>

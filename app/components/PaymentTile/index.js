@@ -19,10 +19,12 @@ class PaymentTile extends React.Component {
 			data,
 			count,
 			editTile,
+			tileForToken,
+			editTileForscreenOne,
 		} = this.props
 		var statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
 		return (
-			<TouchableOpacity onPress={() => { data.status != 'approved' && editTile(data.id) }}>
+			<TouchableOpacity onPress={() => { data.status != 'approved' ? tileForToken === true ? editTileForscreenOne() :editTile(data.id): null }}>
 				<View style={styles.tileTopWrap}>
 					<View style={styles.upperLayer}>
 						<Text style={styles.paymnetHeading}>PAYMENT {count + 1} ({data.type})</Text>
@@ -31,7 +33,7 @@ class PaymentTile extends React.Component {
 					<View style={styles.bottomLayer}>
 						<Text style={styles.formatPrice}>{currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>
 						<Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
-						<Text style={styles.priceDate}>{moment(data.createdAt).format('MM.DD.YYYY / h:mm a')}</Text>
+						<Text style={styles.priceDate}>{tileForToken === false ? moment(data.createdAt).format('MM.DD.YYYY / h:mm a') : null}</Text>
 					</View>
 				</View>
 			</TouchableOpacity>

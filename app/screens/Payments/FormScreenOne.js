@@ -133,13 +133,22 @@ class InnerForm extends Component {
             {/* **************************************** */}
             {
               formData.token != '' && formData.token != null ?
-                <PaymentTile
-                  currencyConvert={currencyConvert}
-                  count={''}
-                  data={dataForPaymentTile}
-                  editTileForscreenOne={editTileForscreenOne}
-                  tileForToken={true}
-                />
+                <View>
+                  <PaymentTile
+                    currencyConvert={currencyConvert}
+                    count={''}
+                    data={dataForPaymentTile}
+                    editTileForscreenOne={editTileForscreenOne}
+                    tileForToken={true}
+                  />
+                  {
+                    firstScreenValidate === true ?
+                      formData.token === null || formData.token === '' || formData.type === '' ?
+                        <ErrorMessage errorMessage={'Token Required'} />
+                        : null
+                      : null
+                  }
+                </View>
                 :
                 <View style={[AppStyles.mainInputWrap]}>
                   <TouchableOpacity style={styles.bookNowBtn} onPress={() => { checkForUnitIdavail === true && tokenModalToggle(true) }}>
@@ -147,8 +156,8 @@ class InnerForm extends Component {
                   </TouchableOpacity>
                   {
                     firstScreenValidate === true ?
-                      formData.token === null || formData.token === '' ?
-                        <ErrorMessage errorMessage={'Token Required'} />
+                      formData.token === null || formData.token === '' || formData.type === '' ?
+                        <ErrorMessage errorMessage={'Required'} />
                         : null
                       : null
                   }

@@ -416,7 +416,8 @@ class Payments extends Component {
 			formData.paymentPlan != null &&
 			formData.paymentPlan != '' &&
 			formData.token != null &&
-			formData.token != ''
+			formData.token != '' &&
+			formData.type != ''
 		) {
 			this.setState({
 				openFirstScreenModal: status,

@@ -92,7 +92,7 @@ class InnerForm extends Component {
             <SimpleInputText
               name={'discount'}
               placeholder={'Approved Discount'}
-              label={'APPROVED DISCOUNT'}
+              label={'APPROVED DISCOUNT%'}
               value={formData.discount}
               keyboardType={'numeric'}
               onChangeHandle={handleForm}

@@ -43,11 +43,11 @@ class FirstScreenConfirmModal extends React.Component {
           <Text style={styles.noramlText}>Final Price: <Text style={styles.mainTextLarge}>{formatPrice(data.finalPrice ? data.finalPrice : '')}</Text></Text>
           <View style={styles.confirmBtnView}>
             <TouchableOpacity style={[styles.confirmBtn]}  onPress={() => { submitFirstScreen() }}> 
-              <Text style={[styles.textCenter]}>{firstScreenConfirmLoading === true ? 'Wait...' :'Yes'}</Text>
+              <Text style={[styles.textCenter, styles.activeBtn]}>{firstScreenConfirmLoading === true ? 'Wait...' :'BOOK'}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.confirmBtn]}> 
-              <Text style={[styles.textCenter, styles.activeBtn]} onPress={() => { firstScreenConfirmModal(false) }}>Cancel</Text>
+              <Text style={[styles.textCenter]} onPress={() => { firstScreenConfirmModal(false) }}>CANCEL</Text>
             </TouchableOpacity>
           </View>
         </View>

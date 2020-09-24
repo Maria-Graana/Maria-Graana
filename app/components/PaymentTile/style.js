@@ -18,6 +18,7 @@ export default styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: 'bold',
     letterSpacing: 2,
+    textTransform: 'uppercase'
   },
   tileStatus: {
     position: 'absolute',

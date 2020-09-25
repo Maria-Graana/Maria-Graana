@@ -61,7 +61,7 @@ class Payments extends Component {
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
-			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Token' ? false : true,
+			firstScreenDone: lead.unit != null && lead.unit.bookingStatus != 'Available' ? false : true,
 			// firstScreenDone: false,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
@@ -256,7 +256,7 @@ class Payments extends Component {
 
 			// Set Discount for Token
 			if (name === 'token') {
-				this.allCalculations()
+				this.allCalculations(name)
 			}
 
 			// when Project id chnage the unit filed will be refresh
@@ -289,7 +289,7 @@ class Payments extends Component {
 			})
 	}
 
-	allCalculations = () => {
+	allCalculations = (name) => {
 		const { formData, unitPrice } = this.state
 		const { lead } = this.props
 
@@ -301,16 +301,24 @@ class Payments extends Component {
 		var grandTotal = ''
 
 		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
-			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100))) - Number(formData.token)
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
 		} else {
-			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100))) - Number(formData.token)
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
+			newFormData['discountedPrice'] = totalPrice - grandTotal
 		}
 
 		newFormData['finalPrice'] = grandTotal
-		this.setState({
-			formData: newFormData,
-			remainingPayment: grandTotal,
-		})
+		if (name === 'token') {
+			this.setState({
+				remainingPayment: Number(grandTotal) - Number(formData.token),
+			})
+			
+		} else {
+			this.setState({
+				formData: newFormData,
+				remainingPayment: grandTotal,
+			})
+		}
 	}
 
 	refreshUnitPrice = (name) => {
@@ -361,7 +369,7 @@ class Payments extends Component {
 
 	submitFirstScreen = () => {
 		const { lead } = this.props
-		const { formData, unitId } = this.state
+		const { formData, remainingPayment } = this.state
 		this.setState({
 			firstScreenConfirmLoading: true,
 		})
@@ -376,7 +384,7 @@ class Payments extends Component {
 			unitStatus: 'Token',
 			installmentDue: formData.paymentPlan,
 			finalPrice: formData.finalPrice,
-			remainingPayment: formData.finalPrice,
+			remainingPayment: remainingPayment,
 			installmentAmount: formData.token,
 			type: formData.type,
 		}
@@ -487,6 +495,8 @@ class Payments extends Component {
 				var body = {
 					...secondFormData,
 					remainingPayment: remainingPayment - secondFormData.installmentAmount,
+					unitStatus: this.props.lead.installmentDue,
+					unitId: this.props.lead.unitId,
 				}
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
@@ -729,7 +739,7 @@ class Payments extends Component {
 			leadId.push(lead.id)
 
 			// Check for Payment Done option 
-			if (Number(remainingPayment) <= 0 && formData.unitId != null && checkForPenddingNrjected.length === 0) {
+			if (Number(remainingPayment) <= 0 && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 			} else {
 				this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })

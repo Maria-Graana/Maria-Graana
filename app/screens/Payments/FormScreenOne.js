@@ -166,11 +166,23 @@ class InnerForm extends Component {
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
-              <View style={styles.backgroundBlue}>
-                <Text style={styles.finalPrice}>FINAL PRICE</Text>
-                <Text style={styles.priceValue}>{formData.finalPrice != null ? currencyConvert(formData.finalPrice) : null}</Text>
-                <Text style={styles.sidePriceFormat}>{formData.finalPrice != null ? formatPrice(formData.finalPrice) : null}</Text>
-              </View>
+              {
+                formData.finalPrice === null ?
+                  <View style={styles.backgroundBlue}>
+                    <Text style={styles.finalPrice}>FINAL PRICE</Text>
+
+                    <Text style={styles.priceValue}>{unitPrice != null ? currencyConvert(unitPrice) : null}</Text>
+                    <Text style={styles.sidePriceFormat}>{unitPrice != null ? formatPrice(unitPrice) : null}</Text>
+                  </View>
+                  :
+                  <View style={styles.backgroundBlue}>
+                    <Text style={styles.finalPrice}>FINAL PRICE</Text>
+
+                    <Text style={styles.priceValue}>{formData.finalPrice != null ? currencyConvert(formData.finalPrice) : null}</Text>
+                    <Text style={styles.sidePriceFormat}>{formData.finalPrice != null ? formatPrice(formData.finalPrice) : null}</Text>
+                  </View>
+              }
+
             </View>
 
             {/* **************************************** */}

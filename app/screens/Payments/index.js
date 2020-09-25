@@ -251,12 +251,12 @@ class Payments extends Component {
 
 			//Set Discount Price
 			if (name === 'discount' || name === 'paymentPlan') {
-				this.allCalculations()
+				this.allCalculations(name)
 			}
 
 			// Set Discount for Token
 			if (name === 'token') {
-				this.allCalculations(name)
+				this.allCalculations('token')
 			}
 
 			// when Project id chnage the unit filed will be refresh
@@ -299,24 +299,28 @@ class Payments extends Component {
 		var frontDiscount = formData.discount
 		var backendDiscount = lead.paidProject != null && lead.paidProject.full_payment_discount
 		var grandTotal = ''
+		var totalToken = ''
 
 		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
 		} else {
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
-			newFormData['discountedPrice'] = totalPrice - grandTotal
 		}
 
+		if(name === 'discount') {
+			newFormData['discountedPrice'] = formData.discount != ''  ? totalPrice - grandTotal : ''
+		}
 		newFormData['finalPrice'] = grandTotal
+		
 		if (name === 'token') {
+			totalToken = Number(grandTotal) - Number(formData.token)
 			this.setState({
-				remainingPayment: Number(grandTotal) - Number(formData.token),
+				remainingPayment: totalToken,
 			})
-			
 		} else {
 			this.setState({
 				formData: newFormData,
-				remainingPayment: grandTotal,
+				remainingPayment:  Number(grandTotal) - Number(formData.token) ,
 			})
 		}
 	}

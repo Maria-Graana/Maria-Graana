@@ -104,7 +104,6 @@ class CMReport extends React.Component {
 
     checkRole = () => {
         const { user } = this.props
-
         let { regionFormData, agentFormData, zoneFormData } = this.state
         if (user.subRole === 'regional_head') {
             if ('region' in user && user.region) {
@@ -231,7 +230,6 @@ class CMReport extends React.Component {
         const { user } = this.props
         let armsZone = false
         let org = {}
-
         if (check === 'zone') org = this.organizationName(zoneFormData.organization)
         if (check === 'agent') org = this.organizationName(agentFormData.organization)
         if (org.name === 'Agency21') armsZone = true
@@ -365,6 +363,7 @@ class CMReport extends React.Component {
             agentFormData.agent = ''
             this.fetchRegions(value)
         }
+        if (name === 'zone') agentFormData.agent = ''
         agentFormData[name] = value
         this.setState({ agentFormData })
     }

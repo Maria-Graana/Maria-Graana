@@ -64,9 +64,9 @@ class LeadDetail extends React.Component {
         axios.get(`${url}?id=${lead.id}`)
             .then((res) => {
                 let responseData = res.data;
-				if(!responseData.paidProject){
-					responseData.paidProject = responseData.project;
-				}
+                if (!responseData.paidProject) {
+                    responseData.paidProject = responseData.project;
+                }
                 this.props.dispatch(setlead(responseData));
                 const regex = /(<([^>]+)>)/ig
                 let text = res.data.description && res.data.description !== '' ? res.data.description.replace(regex, '') : null
@@ -143,14 +143,16 @@ class LeadDetail extends React.Component {
     }
 
     checkCustomerName = (lead) => {
-        if (lead.customer)
-            // for  CM LEAD
-            this.setState({ customerName: helper.capitalize(lead.customer.customerName) })
-        else {
-            // FOR RCM LEAD
-            this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
+        if (lead.projectId) {
+            if (lead.customer && lead.customer.customerName) {
+                this.setState({ customerName: helper.capitalize(lead.customer.customerName) })
+            }
         }
-
+        else {
+            if (lead.customer && lead.customer.first_name) {
+                this.setState({ customerName: helper.capitalize(lead.customer.first_name) + ' ' + helper.capitalize(lead.customer.last_name) })
+            }
+        }
     }
 
     goToClientsDetail = () => {

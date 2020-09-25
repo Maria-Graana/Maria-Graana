@@ -364,6 +364,7 @@ class RCMReport extends React.Component {
             agentFormData.agent = ''
             this.fetchRegions(value)
         }
+        if (name === 'zone') agentFormData.agent = ''
         agentFormData[name] = value
         this.setState({ agentFormData })
     }

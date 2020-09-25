@@ -20,10 +20,12 @@ import { setlead } from '../../actions/lead';
 import CMBottomNav from '../../components/CMBottomNav'
 import RentPaymentView from './rentPaymentView';
 import { ProgressBar } from 'react-native-paper';
+import HistoryModal from '../../components/HistoryModal/index';
 
 class LeadRCMPayment extends React.Component {
     constructor(props) {
         super(props)
+        const {user, lead} = this.props;
         this.state = {
             loading: true,
             isVisible: false,
@@ -53,7 +55,7 @@ class LeadRCMPayment extends React.Component {
             checkReasonValidation: false,
             selectedReason: '',
             reasons: [],
-            closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+            closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
             showStyling: '',
             tokenDateStatus: false,
             tokenPriceFromat: true,
@@ -62,11 +64,14 @@ class LeadRCMPayment extends React.Component {
             comissionPriceFromat: true,
             monthlyFormatStatus: true,
             organization: 'arms',
+            callModal: false,
+            meetings: []
         }
     }
 
     componentDidMount = () => {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            this.getCallHistory()
             this.getSelectedProperty(this.state.lead)
         })
     }
@@ -209,18 +214,13 @@ class LeadRCMPayment extends React.Component {
 
     showLeadPaymentModal = () => {
         const { lead } = this.state;
-        const { user } = this.props;
         var commissionPayment = lead.commissionPayment
-        if (user.id === lead.assigned_to_armsuser_id) {
             if (commissionPayment !== null) {
                 this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
             }
             else {
                 this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
             }
-        } else {
-            helper.leadNotAssignedToast()
-        }
     }
 
 
@@ -257,20 +257,14 @@ class LeadRCMPayment extends React.Component {
     showConfirmationDialog = (item) => {
         const { lead } = this.state;
         const { user } = this.props;
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast()
-        }
-        else if (user.id !== lead.assigned_to_armsuser_id) {
-            helper.leadNotAssignedToast();
-        }
-        else {
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
             Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
-                { text: 'No', style: 'cancel' },
                 { text: 'Yes', onPress: () => this.selectDifferentProperty() },
+                { text: 'No', style: 'cancel' },
             ],
                 { cancelable: false })
         }
-
     }
 
     renderSelectPaymentView = (item) => {
@@ -630,6 +624,18 @@ class LeadRCMPayment extends React.Component {
             })
     }
 
+    goToHistory = () => {
+        const { callModal } = this.state
+        this.setState({ callModal: !callModal })
+    }
+
+    getCallHistory = () => {
+        const { lead } = this.props
+        axios.get(`/api/diary/all?armsLeadId=${lead.id}`)
+            .then((res) => {
+                this.setState({ meetings: res.data.rows })
+            })
+    }
 
     render() {
         const { loading,
@@ -658,6 +664,8 @@ class LeadRCMPayment extends React.Component {
             comissionPriceFromat,
             agreeAmountFromat,
             monthlyFormatStatus,
+            meetings,
+            callModal,
         } = this.state;
 
         return (
@@ -672,6 +680,11 @@ class LeadRCMPayment extends React.Component {
                         isVisible={isVisible}
                         closeModal={() => this.closeModal()}
                         onPress={() => this.onHandleCloseLead()}
+                    />
+                    <HistoryModal
+                        data={meetings}
+                        closePopup={this.goToHistory}
+                        openPopup={callModal}
                     />
                     <View style={{ flex: 1, minHeight: '100%', paddingBottom: 100 }}>
                         {
@@ -784,6 +797,8 @@ class LeadRCMPayment extends React.Component {
                                 callButton={true}
                                 customer={lead.customer}
                                 lead={lead}
+                                goToHistory={this.goToHistory}
+                                getCallHistory={this.getCallHistory}
                             />
                         </View>
 

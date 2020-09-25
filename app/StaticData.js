@@ -383,7 +383,7 @@ export default StaticData = {
         meeting_visited: 0.5,
         meeting_expected_conversion: 0.5,
         meeting_deal_signed: 0.5,
-        Token: 1,
+        token: 1,
         payment: 1,
         closed: 1,
     },
@@ -609,6 +609,14 @@ export default StaticData = {
         { value: '9', name: '9' },
         { value: '10', name: '10' }
     ],
+    fullPaymentType: [
+        { value: 'cash', name: 'Cash' },
+        { value: 'cheque', name: 'Cheque' },
+        { value: 'pay-Order', name: 'Pay-Order' },
+        { value: 'Remittance', name: 'Remittance' },
+        { value: 'bank-Transfer', name: 'Bank-Transfer' },
+        { value: 'e-Gateway', name: 'E-Gateway' },
+    ]
 }
 
 

@@ -412,6 +412,19 @@ const helper = {
 				})
 		}
 	},
+	checkAssignedSharedStatus(user, lead) {
+		if (user && lead) {
+			if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
+				this.leadClosedToast();
+				return false;
+			}
+			if (user.id === lead.assigned_to_armsuser_id || user.id === lead.shared_with_armsuser_id) return true
+			else {
+				this.leadNotAssignedToast()
+				return false
+			}
+		} else return false
+	},
 	createArray(N) { return Array.from({ length: N }, (_, index) => index + 1) }
 }
 

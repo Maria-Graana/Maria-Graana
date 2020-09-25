@@ -17,16 +17,17 @@ class LeadTile extends React.Component {
 	call = (data) => {
 		const { contacts, purposeTab, updateStatus, user } = this.props
 		let newContact = helper.createContactPayload(data.customer)
-		if (purposeTab === 'invest') this.sendCallStatus(data)
-		else {
+		this.sendCallStatus(data)
+		if (purposeTab !== 'invest')
 			if (data.assigned_to_armsuser_id === user.id) updateStatus(data)
-		}
 		helper.callNumber(newContact, contacts)
 	}
 
 	sendCallStatus = (data) => {
 		const start = moment().format();
-		let body = {
+		const { purposeTab } = this.props
+		let body = {}
+		body = {
 			start: start,
 			end: start,
 			time: start,
@@ -35,9 +36,11 @@ class LeadTile extends React.Component {
 			response: 'Called',
 			subject: 'Call to client ' + data.customer.customerName,
 			cutomerId: data.customer.id,
-			leadId: data.id,
 			taskCategory: 'leadTask',
 		}
+		if (purposeTab === 'invest') body.leadId = data.id
+		else body.armsLeadId = data.id
+
 		axios.post(`api/leads/project/meeting`, body)
 			.then((res) => {
 			})
@@ -58,10 +61,10 @@ class LeadTile extends React.Component {
 	}
 
 	render() {
-		const { data, navigateTo, callNumber, user, purposeTab, contacts } = this.props
-		var changeColor = data.assigned_to_armsuser_id == user.id ? styles.blueColor : AppStyles.darkColor
-		var changeStatusColor = data.assigned_to_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
-		var descriptionColor = data.assigned_to_armsuser_id == user.id ? styles.desBlue : styles.desDark
+		const { data, navigateTo, callNumber, user, purposeTab, contacts, handleLongPress } = this.props
+		var changeColor = data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id   ? styles.blueColor : AppStyles.darkColor
+		var changeStatusColor =data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
+		var descriptionColor = data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id ? styles.desBlue : styles.desDark
 		let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
 		let customerName = data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
 		let areasLength = !data.projectId && data.armsLeadAreas &&
@@ -71,7 +74,7 @@ class LeadTile extends React.Component {
 			''
 		let leadSize = this.leadSize()
 		return (
-			<TouchableOpacity onPress={() => { navigateTo(data) }}>
+			<TouchableOpacity onLongPress={() => handleLongPress(data)} onPress={() => { navigateTo(data) }}>
 				<View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
 					<View style={[styles.rightContentView]}>
 						<View style={styles.topIcons}>
@@ -85,6 +88,12 @@ class LeadTile extends React.Component {
 											data.status.split('_').join(' ').toUpperCase()
 									}
 								</Text>
+
+								{data.shared_with_armsuser_id &&
+									<View style={styles.sharedLead}>
+										<Text style={[AppStyles.mrFive, styles.viewStyle, {color:AppStyles.colors.primaryColor, fontSize: AppStyles.noramlSize.fontSize, fontFamily: AppStyles.fonts.lightFont}]}>Shared Lead</Text>
+									</View>
+								}
 							</View>
 						</View>
 						<View style={[styles.contentMainWrap]}>
@@ -109,10 +118,10 @@ class LeadTile extends React.Component {
 								{
 									purposeTab != 'invest' &&
 									<View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-										<Text style={[styles.priceText, styles.multiColumn, AppStyles.darkColor]}>
+										<Text style={[styles.priceText, AppStyles.darkColor]}>
 											PKR
                     					</Text>
-										<Text style={[styles.priceText, styles.multiColumn, changeColor]}>
+										<Text style={[styles.priceText, changeColor]}>
 											{` ${!data.projectId && data.min_price ? helper.checkPrice(data.min_price) + ' - ' : ''}`}
 											{!data.projectId && data.price ? helper.checkPrice(data.price) : ''}
 											{data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}

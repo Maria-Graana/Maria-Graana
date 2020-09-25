@@ -17,10 +17,12 @@ import { ProgressBar } from 'react-native-paper';
 import { setlead } from '../../actions/lead';
 import CMBottomNav from '../../components/CMBottomNav'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import HistoryModal from '../../components/HistoryModal/index';
 
 class LeadPropsure extends React.Component {
     constructor(props) {
         super(props)
+        const {user, lead} = this.props;
         this.state = {
             loading: true,
             open: false,
@@ -31,6 +33,7 @@ class LeadPropsure extends React.Component {
             selectedPackage: '',
             packages: StaticData.propsurePackages,
             selectedPropertyId: null,
+            selectedProperty: null,
             selectedPropsureId: null,
             matchData: [],
             file: null,
@@ -40,13 +43,16 @@ class LeadPropsure extends React.Component {
             checkReasonValidation: false,
             selectedReason: '',
             reasons: [],
-            closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+            closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+            callModal: false,
+            meetings: []
         }
     }
 
     componentDidMount = () => {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.fetchLead()
+            this.getCallHistory()
             this.fetchProperties()
         })
     }
@@ -64,20 +70,19 @@ class LeadPropsure extends React.Component {
                 .then((res) => {
                     matches = helper.propertyCheck(res.data.rows)
                     this.setState({
-                        loading: false,
                         matchData: matches,
-                        selectedPropertyId: null,
-                        selctedPropsureId: null,
-                        selectedPackage: '',
                         progressValue: rcmProgressBar[lead.status]
                     })
                 })
                 .catch((error) => {
                     console.log(error)
+
+                }).finally(() => {
                     this.setState({
                         loading: false,
                         selectedPropertyId: null,
                         selctedPropsureId: null,
+                        selectedProperty: null,
                         selectedPackage: ''
                     })
                 })
@@ -117,24 +122,18 @@ class LeadPropsure extends React.Component {
 
     closeModal = () => { this.setState({ isVisible: false }) }
 
-    showPackageModal = (propertyId) => {
+    showPackageModal = (property) => {
         const { lead, user } = this.props
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast();
-        }
-        else if (user.id !== lead.assigned_to_armsuser_id) {
-            helper.leadNotAssignedToast();
-        }
-        else {
-            this.setState({ isVisible: true, selectedPropertyId: propertyId, checkPackageValidation: false });
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
+            this.setState({ isVisible: true, selectedPropertyId: property.id, selectedProperty: property, checkPackageValidation: false });
         }
     }
 
 
     onHandleRequestVerification = () => {
         const { lead } = this.props
-        const { selectedPackage, selectedPropertyId } = this.state;
-
+        const { selectedPackage, selectedPropertyId, selectedProperty } = this.state;
         if (selectedPackage === '') {
             this.setState({
                 checkPackageValidation: true
@@ -144,14 +143,16 @@ class LeadPropsure extends React.Component {
             this.closeModal();
             const body = {
                 packageName: selectedPackage,
-                propertyId: selectedPropertyId
+                propertyId: selectedPropertyId,
+                pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
+                org: selectedProperty.arms_id ? 'arms' : 'graana',
             }
-            axios.post(`api/leads/propsure/${lead.id}`, body).then(response => {
+            axios.post(`/api/leads/propsure/${lead.id}`, body).then(response => {
                 this.fetchLead()
                 this.fetchProperties();
             }).catch(error => {
                 console.log(error);
-                this.setState({ selectedPropertyId: null, selectedPackage: '' });
+                this.setState({ selectedPropertyId: null, selectedPackage: '', selectedProperty: null });
             })
 
         }
@@ -164,13 +165,8 @@ class LeadPropsure extends React.Component {
 
     showDocumentModal = (propsureId) => {
         const { lead, user } = this.props
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast();
-        }
-        else if (user.id !== lead.assigned_to_armsuser_id) {
-            helper.leadNotAssignedToast();
-        }
-        else {
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
             this.setState({ documentModalVisible: true, selectedPropsureId: propsureId, checkValidation: false });
         }
     }
@@ -234,7 +230,7 @@ class LeadPropsure extends React.Component {
 
     renderPropsureVerificationView = (item) => {
         return (
-            <TouchableOpacity key={item.id.toString()} onPress={() => this.showPackageModal(item.id)}
+            <TouchableOpacity key={item.id.toString()} onPress={() => this.showPackageModal(item)}
                 style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]} activeOpacity={0.7}>
                 <Text style={styles.propsureVerificationTextStyle}>
                     PROPSURE VERIFICATION
@@ -265,20 +261,13 @@ class LeadPropsure extends React.Component {
     }
 
     closeLead = () => {
-        const { user, lead } = this.props;
         var commissionPayment = this.props.lead.commissionPayment
-        if (user.id === lead.assigned_to_armsuser_id) {
             if (commissionPayment !== null) {
                 this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
             }
             else {
                 this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
             }
-        }
-        else {
-            helper.leadNotAssignedToast()
-        }
-
     }
 
     onHandleCloseLead = () => {
@@ -336,14 +325,32 @@ class LeadPropsure extends React.Component {
         this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
     }
 
+    goToHistory = () => {
+        const { callModal } = this.state
+        this.setState({ callModal: !callModal })
+    }
+
+    getCallHistory = () => {
+        const { lead } = this.props
+        axios.get(`/api/diary/all?armsLeadId=${lead.id}`)
+            .then((res) => {
+                this.setState({ meetings: res.data.rows })
+            })
+    }
+
     render() {
-        const { loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { meetings, callModal, loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
         const { lead } = this.props
 
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
                     <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
+                    <HistoryModal
+                        data={meetings}
+                        closePopup={this.goToHistory}
+                        openPopup={callModal}
+                    />
                     <PropsurePackagePopup
                         packages={packages}
                         selectedPackage={selectedPackage}
@@ -414,6 +421,8 @@ class LeadPropsure extends React.Component {
                             callButton={true}
                             customer={lead.customer}
                             lead={lead}
+                            goToHistory={this.goToHistory}
+                            getCallHistory={this.getCallHistory}
                         />
                     </View>
                     <LeadRCMPaymentPopup

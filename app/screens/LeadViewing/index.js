@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
+import HistoryModal from '../../components/HistoryModal/index';
 import axios from 'axios';
 import Loader from '../../components/loader';
 import AddViewing from '../../components/AddViewing/index';
@@ -22,6 +23,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 class LeadViewing extends React.Component {
 	constructor(props) {
 		super(props)
+		const {user, lead} = this.props;
 		this.state = {
 			isVisible: false,
 			open: false,
@@ -43,13 +45,16 @@ class LeadViewing extends React.Component {
 			organization: 'arms',
 			selectedReason: '',
 			reasons: [],
-			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+			closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+			callModal: false,
+			meetings: []
 		}
 	}
 
 	componentDidMount = () => {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.fetchLead()
+			this.getCallHistory()
 			this.fetchProperties()
 		})
 	}
@@ -117,19 +122,13 @@ class LeadViewing extends React.Component {
 	}
 
 	closeLead = () => {
-		const { user, lead } = this.props;
 		var commissionPayment = this.props.lead.commissionPayment
-		if (user.id === lead.assigned_to_armsuser_id) {
 			if (commissionPayment !== null) {
 				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 			else {
 				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
-		}
-		else {
-			helper.leadNotAssignedToast()
-		}
 	}
 
 	onHandleCloseLead = () => {
@@ -311,6 +310,7 @@ class LeadViewing extends React.Component {
 
 	checkStatus = (property) => {
 		const { lead, user } = this.props;
+		const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
 		if (property.diaries.length) {
 			if (property.diaries[0].status === 'completed') {
 				return (
@@ -339,12 +339,7 @@ class LeadViewing extends React.Component {
 							alignItems: "center"
 						}}
 						onPress={() => {
-							if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-								helper.leadClosedToast();
-							} else if (user.id !== lead.assigned_to_armsuser_id) {
-								helper.leadNotAssignedToast();
-							}
-							else {
+							if(leadAssignedSharedStatus){
 								this.openModal();
 								this.updateProperty(property)
 							}
@@ -366,18 +361,10 @@ class LeadViewing extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={() => {
-						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-							helper.leadClosedToast();
-
-						}
-						else if (user.id !== lead.assigned_to_armsuser_id) {
-							helper.leadNotAssignedToast();
-						}
-						else {
+						if(leadAssignedSharedStatus){
 							this.openModal();
 							this.setProperty(property)
 						}
-
 					}}
 				>
 					<Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>BOOK VIEWING</Text>
@@ -392,7 +379,6 @@ class LeadViewing extends React.Component {
 				let body = {
 					status: 'completed'
 				}
-
 				axios.patch(`/api/diary/update?id=${property.diaries[0].id}`, body)
 					.then((res) => {
 						this.setState({ loading: true })
@@ -444,28 +430,34 @@ class LeadViewing extends React.Component {
 		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
 	}
 
-	showMenuItem = () => {
-		const { lead, user } = this.props;
-		if ((lead.status === StaticData.Constants.lead_closed_won || lead.status === StaticData.Constants.lead_closed_lost) || user.id !== lead.assigned_to_armsuser_id) {
-			return false;
-		}
-		else {
-			return true;
-		}
-
+	goToHistory = () => {
+		const { callModal } = this.state
+		this.setState({ callModal: !callModal })
 	}
 
+	getCallHistory = () => {
+		const { lead } = this.props
+		axios.get(`/api/diary/all?armsLeadId=${lead.id}`)
+			.then((res) => {
+				this.setState({ meetings: res.data.rows })
+			})
+	}
 
 	render() {
-		const { loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
+		const { meetings, callModal, loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
 		const { lead, user } = this.props;
-		const showMenuItem = this.showMenuItem();
+		const showMenuItem =  helper.checkAssignedSharedStatus(user, lead);
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
 					<View>
 						<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					</View>
+					<HistoryModal
+						data={meetings}
+						closePopup={this.goToHistory}
+						openPopup={callModal}
+					/>
 					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
 						<View style={{ paddingBottom: 100 }}>
 							<AddViewing
@@ -536,6 +528,8 @@ class LeadViewing extends React.Component {
 							callButton={true}
 							customer={lead.customer}
 							lead={lead}
+							goToHistory={this.goToHistory}
+							getCallHistory={this.getCallHistory}
 						/>
 					</View>
 					<LeadRCMPaymentPopup

@@ -9,6 +9,7 @@ import AgentTile from '../../components/AgentTile/index';
 import axios from 'axios';
 import Loader from '../../components/loader';
 import FilterModal from '../../components/FilterModal/index';
+import HistoryModal from '../../components/HistoryModal/index';
 import _ from 'underscore';
 import helper from '../../helper';
 import { setlead } from '../../actions/lead';
@@ -22,6 +23,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 class LeadMatch extends React.Component {
     constructor(props) {
         super(props)
+        const {user, lead} = this.props;
         this.state = {
             open: false,
             organization: 'arms',
@@ -81,13 +83,16 @@ class LeadMatch extends React.Component {
             checkReasonValidation: false,
             selectedReason: '',
             reasons: [],
-            closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+            closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+            callModal: false,
+            meetings: []
         }
     }
 
     componentDidMount() {
         const { lead } = this.props
         this.fetchLead()
+        this.getCallHistory()
         this.props.dispatch(setlead(lead))
     }
 
@@ -124,7 +129,7 @@ class LeadMatch extends React.Component {
     }
 
     getAreas = (cityId) => {
-        axios.get(`/api/areas?city_id=${cityId}&&all=${true}`)
+        axios.get(`/api/areas?city_id=${cityId}&&all=${true}&minimal=true`)
             .then((res) => {
                 let areas = [];
                 res && res.data.items.map((item, index) => { return (areas.push({ value: item.id, name: item.name })) })
@@ -440,13 +445,8 @@ class LeadMatch extends React.Component {
     displayChecks = () => {
         const { showCheckBoxes } = this.state
         const { lead, user } = this.props
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast();
-        }
-        else if (user.id !== lead.assigned_to_armsuser_id) {
-            helper.leadNotAssignedToast()
-        }
-        else {
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
             if (showCheckBoxes) {
                 this.unSelectAll()
             } else {
@@ -460,16 +460,12 @@ class LeadMatch extends React.Component {
         }
     }
 
+
     addProperty = (property) => {
         const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-        const { lead, user } = this.props
-        if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-            helper.leadClosedToast();
-        }
-        else if (user.id !== lead.assigned_to_armsuser_id) {
-            helper.leadNotAssignedToast()
-        }
-        else {
+        const {user, lead} = this.props;
+        const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
+        if(leadAssignedSharedStatus){
             if (showCheckBoxes) {
                 if (showCheckBoxes) this.changeComBool()
                 let properties = matchData.data.map((item) => {
@@ -516,8 +512,7 @@ class LeadMatch extends React.Component {
                     })
                 }
             }
-        }
-
+        }   
     }
 
     unSelectAll = () => {
@@ -549,26 +544,19 @@ class LeadMatch extends React.Component {
     }
 
     closeLead = () => {
-        const { user, lead } = this.props;
         var commissionPayment = this.props.lead.commissionPayment
-        if (user.id === lead.assigned_to_armsuser_id) {
             if (commissionPayment !== null) {
                 this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
             }
             else {
                 this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
             }
-        }
-        else {
-            helper.leadNotAssignedToast()
-        }
-
     }
 
     onHandleCloseLead = () => {
         const { navigation, lead } = this.props
         const { selectedReason } = this.state;
-        if(selectedReason){
+        if (selectedReason) {
             let payload = Object.create({});
             payload.reasons = selectedReason;
             var leadId = []
@@ -582,10 +570,10 @@ class LeadMatch extends React.Component {
                 console.log(error);
             })
         }
-        else{
+        else {
             alert('Please select a reason for lead closure!')
         }
-       
+
     }
 
     handleReasonChange = (value) => {
@@ -637,9 +625,22 @@ class LeadMatch extends React.Component {
 
     _onStateChange = ({ open }) => this.setState({ open });
 
+    goToHistory = () => {
+        const { callModal } = this.state
+        this.setState({ callModal: !callModal })
+    }
+
+    getCallHistory = () => {
+        const { lead } = this.props
+        axios.get(`/api/diary/all?armsLeadId=${lead.id}`)
+            .then((res) => {
+                this.setState({ meetings: res.data.rows })
+            })
+    }
+
     render() {
         const { lead, user } = this.props
-        const { sizeUnitList, selectedCity, visible, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { meetings, callModal, sizeUnitList, selectedCity, visible, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
 
         return (
             !loading ?
@@ -657,6 +658,11 @@ class LeadMatch extends React.Component {
                                 <Text style={[(organization === 'agency21') ? styles.tokenLabelBlue : styles.tokenLabel, AppStyles.mrFive]}> Agency21 </Text>
                             </TouchableOpacity>
                         </View>
+                        <HistoryModal
+                            data={meetings}
+                            closePopup={this.goToHistory}
+                            openPopup={callModal}
+                        />
                         <FilterModal
                             sizeUnitList={sizeUnitList}
                             onRef={ref => (this.filterModalRef = ref)}
@@ -774,6 +780,8 @@ class LeadMatch extends React.Component {
                             callButton={true}
                             customer={lead.customer}
                             lead={lead}
+                            goToHistory={this.goToHistory}
+                            getCallHistory={this.getCallHistory}
                         />
                     </View>
                     <LeadRCMPaymentPopup

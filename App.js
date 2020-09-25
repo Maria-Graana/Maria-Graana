@@ -67,11 +67,13 @@ export default class App extends React.Component {
 				resolve(config)
 			})
 		)
-		Sentry.init({
-			enableInExpoDevelopment: true,
-			dsn: 'https://d23d9b7296fa43a1ab41150269693c2f@o375514.ingest.sentry.io/5195102',
-		})
-		Sentry.setRelease(Constants.manifest.revisionId)
+		if (config.channel === 'production') {
+			Sentry.init({
+				enableInExpoDevelopment: false,
+				dsn: 'http://95bf407ef0f042b1b985d4efe8a8a75f@sentry.graana.rocks/8',
+			})
+			Sentry.setRelease(Constants.manifest.revisionId)
+		}
 		await Font.loadAsync({
 			Roboto: require('native-base/Fonts/Roboto.ttf'),
 			Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
@@ -81,7 +83,6 @@ export default class App extends React.Component {
 			OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
 			...Ionicons.font,
 		})
-
 		YellowBox.ignoreWarnings(['Animated: `useNativeDriver` was not specified'])
 	}
 
@@ -97,10 +98,12 @@ export default class App extends React.Component {
 	navigateRoutes = (content) => {
 		if (content) {
 			let data = content.data
+			let leadId = data && data.leadId && data.leadId
+			let lead = { id: leadId }
 			if (data.type === 'local') RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
-			if (data.type === 'investLead') RootNavigation.navigateTo('Leads', { screen: 'Invest' })
-			if (data.type === 'buyLead') RootNavigation.navigateTo('Leads', { screen: 'Buy' })
-			if (data.type === 'rentLead') RootNavigation.navigateTo('Leads', { screen: 'Rent' })
+			if (data.type === 'investLead') RootNavigation.navigateTo('LeadDetail', { screen: 'Invest', purposeTab: 'invest', lead: lead })
+			if (data.type === 'buyLead') RootNavigation.navigateTo('LeadDetail', { screen: 'Buy', purposeTab: 'sale', lead: lead })
+			if (data.type === 'rentLead') RootNavigation.navigateTo('LeadDetail', { screen: 'Rent', purposeTab: 'rent', lead: lead })
 			if (data.type === 'diary') RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
 		}
 	}

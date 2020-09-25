@@ -15,10 +15,12 @@ import CMBottomNav from '../../components/CMBottomNav'
 import StaticData from '../../StaticData';
 import helper from '../../helper';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import HistoryModal from '../../components/HistoryModal/index';
 
 class LeadOffer extends React.Component {
 	constructor(props) {
 		super(props)
+		const {user, lead} = this.props;
 		this.state = {
 			open: false,
 			loading: true,
@@ -37,13 +39,16 @@ class LeadOffer extends React.Component {
 			checkReasonValidation: false,
 			selectedReason: '',
 			reasons: [],
-			closedLeadEdit: this.props.lead.status !== StaticData.Constants.lead_closed_lost && this.props.lead.status !== StaticData.Constants.lead_closed_won,
+			closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+			callModal: false,
+			meetings: []
 		}
 	}
 
 	componentDidMount = () => {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.fetchLead()
+			this.getCallHistory()
 			this.fetchProperties()
 		})
 	}
@@ -179,20 +184,13 @@ class LeadOffer extends React.Component {
 	}
 
 	closeLead = () => {
-		const { user, lead } = this.props;
 		var commissionPayment = this.props.lead.commissionPayment
-		if (user.id === lead.assigned_to_armsuser_id) {
 			if (commissionPayment !== null) {
 				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
 			else {
 				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
 			}
-		}
-		else {
-			helper.leadNotAssignedToast()
-		}
-
 	}
 
 	onHandleCloseLead = () => {
@@ -269,6 +267,7 @@ class LeadOffer extends React.Component {
 
 	checkStatus = (property) => {
 		const { lead, user } = this.props;
+		const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
 		if (property.agreedOffer.length) {
 			return (
 				<TouchableOpacity
@@ -296,17 +295,10 @@ class LeadOffer extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={() => {
-						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-							helper.leadClosedToast();
-						}
-						else if (user.id !== lead.assigned_to_armsuser_id) {
-							helper.leadNotAssignedToast()
-						}
-						else {
+						if(leadAssignedSharedStatus){
 							this.openChatModal();
 							this.setProperty(property)
 						}
-
 					}}
 				>
 					<Text style={{ fontFamily: AppStyles.fonts.lightFont }}>View <Text style={{ color: AppStyles.colors.primaryColor, fontFamily: AppStyles.fonts.defaultFont }}>Offers</Text></Text>
@@ -324,13 +316,7 @@ class LeadOffer extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={() => {
-						if (lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won) {
-							helper.leadClosedToast();
-						}
-						else if (user.id !== lead.assigned_to_armsuser_id) {
-							helper.leadNotAssignedToast()
-						}
-						else {
+						if(leadAssignedSharedStatus){
 							this.openChatModal();
 							this.setProperty(property)
 						}
@@ -346,15 +332,33 @@ class LeadOffer extends React.Component {
 		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
 	}
 
+	goToHistory = () => {
+		const { callModal } = this.state
+		this.setState({ callModal: !callModal })
+	}
+
+	getCallHistory = () => {
+		const { lead } = this.props
+		axios.get(`/api/diary/all?armsLeadId=${lead.id}`)
+			.then((res) => {
+				this.setState({ meetings: res.data.rows })
+			})
+	}
+
 	render() {
 
-		const { loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton, leadData, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+		const { meetings, callModal, loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton, leadData, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
 		const { lead } = this.props
 
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
 					<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
+					<HistoryModal
+						data={meetings}
+						closePopup={this.goToHistory}
+						openPopup={callModal}
+					/>
 					<View style={[AppStyles.container, styles.container, { backgroundColor: AppStyles.colors.backgroundColor }]}>
 						<View style={{ paddingBottom: 100 }}>
 							{
@@ -419,6 +423,8 @@ class LeadOffer extends React.Component {
 							callButton={true}
 							customer={lead.customer}
 							lead={lead}
+							goToHistory={this.goToHistory}
+							getCallHistory={this.getCallHistory}
 						/>
 					</View>
 

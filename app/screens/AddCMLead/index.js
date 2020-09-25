@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import { StyleProvider } from 'native-base';
 import CMLeadFrom from './CMLeadFrom';
 import AppStyles from '../../AppStyles';
@@ -45,10 +45,7 @@ class AddCMLead extends Component {
             const { client, name, selectedCity } = this.props.route.params;
             const { formData } = this.state;
             let copyObject = Object.assign({}, formData);
-            if (client && name) {
-                copyObject.customerId = client.id;
-                this.setState({ formData: copyObject, clientName: name, selectedClient: client })
-            }
+            if (client && name) this.setClient()
             if (selectedCity) {
                 copyObject.cityId = selectedCity.value;
                 this.setState({ formData: copyObject, selectedCity })
@@ -57,6 +54,18 @@ class AddCMLead extends Component {
         this.getAllProjects();
     }
 
+    setClient = () => {
+        const { formData } = this.state
+        const { client, name } = this.props.route.params
+        let copyObject = Object.assign({}, formData)
+        let phones = []
+        if (client.customerContacts && client.customerContacts.length) {
+            client.customerContacts.map(item => { phones.push(item.phone) })
+        }
+        copyObject.customerId = client.id
+        copyObject.phones = phones
+        this.setState({ formData: copyObject, clientName: name, selectedClient: client })
+    }
 
     getAllProjects = () => {
         axios.get(`/api/project/all`)
@@ -101,7 +110,15 @@ class AddCMLead extends Component {
             this.setState({ loading: true })
             axios.post(`/api/leads/project`, formData)
                 .then((res) => {
-                    helper.successToast('Lead created successfully')
+                    if (res.data.message) {
+                        Alert.alert(
+                            'Lead cannot be created as same lead already exists:',
+                            `Lead id: ${res.data.leadId}\nAgent Name: ${res.data.agent}\nContact: ${res.data.contact}`,
+                            [
+                                { text: 'OK', style: 'cancel' },
+                            ],
+                            { cancelable: false })
+                    } else helper.successToast('Lead created successfully')
                     RootNavigation.navigate('Leads')
                 })
                 .catch((error) => {

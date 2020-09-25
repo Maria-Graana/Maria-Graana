@@ -7,6 +7,7 @@ import Avatar from '../Avatar';
 import helper from '../../helper';
 import { Button, Menu, Divider, Provider } from 'react-native-paper';
 import axios from 'axios';
+import moment from 'moment'
 
 class CMBottomNav extends React.Component {
 	constructor(props) {
@@ -24,6 +25,7 @@ class CMBottomNav extends React.Component {
 					if (!supported) {
 						console.log("Can't handle url: " + url);
 					} else {
+						this.sendCallStatus()
 						return Linking.openURL(url)
 					}
 				}).catch(err => console.error('An error occurred', err));
@@ -42,7 +44,29 @@ class CMBottomNav extends React.Component {
 		const { contacts, customer } = this.props
 		let newContact = helper.createContactPayload(customer)
 		this.updateStatus()
+		this.sendCallStatus()
+		this.props.getCallHistory()
 		helper.callNumber(newContact, contacts)
+	}
+
+	sendCallStatus = () => {
+		const start = moment().format();
+		let body = {
+			start: start,
+			end: start,
+			time: start,
+			date: start,
+			taskType: 'called',
+			response: 'Called',
+			subject: 'Call to client ' + this.props.lead.customer.customerName,
+			cutomerId: this.props.lead.customer.id,
+			armsLeadId: this.props.lead.id,
+			taskCategory: 'leadTask',
+		}
+		axios.post(`api/leads/project/meeting`, body)
+			.then((res) => {
+				// console.log('sendCallStatus: ', res.data)
+			})
 	}
 
 	updateStatus = () => {
@@ -75,6 +99,7 @@ class CMBottomNav extends React.Component {
 			closeLead,
 			alreadyClosedLead,
 			callButton,
+			goToHistory
 		} = this.props
 		const { visible } = this.state
 
@@ -135,8 +160,9 @@ class CMBottomNav extends React.Component {
 									<Text style={[styles.bottomNavBtnText, visible === true && styles.colorWhite]}>Menu</Text>
 								</TouchableOpacity>
 							}>
-							<Menu.Item onPress={() => { goToComments() }} icon={require('../../../assets/img/msg.png')} title="Comments" />
-							<Menu.Item onPress={() => { goToAttachments() }} icon={require('../../../assets/img/files.png')} title="Files" />
+							<Menu.Item onPress={() => { goToComments(); this.openMenu(false) }} icon={require('../../../assets/img/msg.png')} title="Comments" />
+							<Menu.Item onPress={() => { goToAttachments(); this.openMenu(false) }} icon={require('../../../assets/img/files.png')} title="Files" />
+							<Menu.Item onPress={() => { goToHistory(); this.openMenu(false) }} icon={require('../../../assets/img/callIcon.png')} title="Call History" />
 						</Menu>
 					</View>
 
@@ -151,6 +177,7 @@ mapStateToProps = (store) => {
 	return {
 		user: store.user.user,
 		contacts: store.contacts.contacts,
+		lead: store.lead.lead
 	}
 }
 

@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Image, ScrollView, Linking, FlatList } fr
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import PickerComponent from '../../components/Picker/index';
-import { Fab, Button, Icon } from 'native-base';
+import { ActionSheet } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import SortImg from '../../../assets/img/sort.png'
 import LoadingNoResult from '../../components/LoadingNoResult'
@@ -19,6 +19,9 @@ import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { storeItem, getItem } from '../../actions/user';
+
+var BUTTONS = ['Share lead with other agent', 'Cancel'];
+var CANCEL_INDEX = 1;
 
 class BuyLeads extends React.Component {
 	constructor(props) {
@@ -152,6 +155,47 @@ class BuyLeads extends React.Component {
 		}
 	}
 
+	handleLongPress = (val) => {
+		ActionSheet.show(
+			{
+				options: BUTTONS,
+				cancelButtonIndex: CANCEL_INDEX,
+				title: 'Select an Option',
+			},
+			buttonIndex => {
+				if (buttonIndex === 0) {
+					//Share
+					this.navigateToShareScreen(val);
+				}
+			}
+		);
+	}
+
+	navigateToShareScreen = (data) => {
+		const { user } = this.props;
+		if (data) {
+			if (data.status === StaticData.Constants.lead_closed_lost || data.status === StaticData.Constants.lead_closed_won) {
+				helper.errorToast('Closed leads cannot be shared with other agents')
+				return;
+			}
+			if (user.id === data.assigned_to_armsuser_id) {
+				if (data.shared_with_armsuser_id) {
+					helper.errorToast('lead is already shared')
+				}
+				else {
+					const { navigation } = this.props;
+					navigation.navigate('AssignLead', { leadId: data.id, type: 'Buy', screen: 'BuyLead' })
+				}
+			}
+			else {
+				helper.errorToast('Only the leads assigned to you can be shared')
+			}
+		}
+		else {
+			helper.errorToast('Something went wrong!')
+		}
+	}
+
 	callNumber = (url) => {
 		if (url != 'tel:null') {
 			Linking.canOpenURL(url)
@@ -277,7 +321,6 @@ class BuyLeads extends React.Component {
 							data={leadsData}
 							contentContainerStyle={styles.paddingHorizontal}
 							renderItem={({ item }) => (
-
 								<LeadTile
 									updateStatus={this.updateStatus}
 									dispatch={this.props.dispatch}
@@ -286,6 +329,7 @@ class BuyLeads extends React.Component {
 									data={item}
 									navigateTo={this.navigateTo}
 									callNumber={this.callNumber}
+									handleLongPress={this.handleLongPress}
 								/>
 							)}
 							onEndReached={() => {

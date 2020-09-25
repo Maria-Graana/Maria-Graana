@@ -1,0 +1,215 @@
+import React, { Component } from 'react';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, TextInput } from 'react-native';
+import styles from './style'
+import PickerComponent from '../../components/Picker/index';
+import AppStyles from '../../AppStyles'
+import { connect } from 'react-redux';
+import moment from 'moment'
+import SimpleInputText from '../../components/SimpleInputField'
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { formatPrice } from '../../PriceFormate';
+import ErrorMessage from '../../components/ErrorMessage'
+import PaymentTile from '../../components/PaymentTile'
+
+
+class InnerForm extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+  dateFormateForFields = (date) => {
+    var newDate = moment(date).format('hh:mm a') + ' ' + moment(date).format('MMM DD')
+    return newDate
+  }
+
+  render() {
+
+    const {
+      getProject,
+      getFloors,
+      getUnit,
+      formData,
+      handleForm,
+      openUnitDetailsModal,
+      paymentPlan,
+      unitPrice,
+      currencyConvert,
+      firstScreenValidate,
+      firstScreenConfirmModal,
+      unitId,
+      tokenModalToggle,
+      remainingPayment,
+      checkLeadClosedOrNot,
+      editTileForscreenOne,
+    } = this.props
+    const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
+    const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' && checkLeadClosedOrNot === true ? true : false
+    const dataForPaymentTile = {
+      installmentAmount: formData.token,
+      id: null,
+      status: 'Pending',
+      details: formData.details,
+      type: formData.type,
+      createdAt: new Date(),
+    }
+    var checkForPaymentPlan = formData.paymentPlan === '' || formData.paymentPlan === null || checkForUnitIdavail === false? false : true
+    return (
+      <SafeAreaView style={styles.removePad}>
+        <KeyboardAvoidingView>
+          <View style={styles.mainFormWrap}>
+
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent onValueChange={handleForm} data={getProject} name={'projectId'} placeholder='Project' selectedItem={formData.projectId} enabled={checkLeadClosedOrNot} />
+                {firstScreenValidate === true && formData.projectId === null && <ErrorMessage errorMessage={'Required'} />}
+              </View>
+            </View>
+
+            {/* **************************************** */}
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent onValueChange={handleForm} data={getFloors} name={'floorId'} placeholder='Floor' selectedItem={formData.floorId} enabled={checkLeadClosedOrNot} />
+                {firstScreenValidate === true && formData.floorId === null && <ErrorMessage errorMessage={'Required'} />}
+              </View>
+            </View>
+
+            {/* **************************************** */}
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={styles.maiinDetailBtn}>
+                <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
+                  <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkLeadClosedOrNot} />
+                  {firstScreenValidate === true && formData.unitId === null && <ErrorMessage errorMessage={'Required'} />}
+                </View>
+                <View style={styles.mainDetailViewBtn}>
+                  <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.unitId != null && openUnitDetailsModal(formData.unitId, true) }}>
+                    <Text style={styles.detailBtnText}>Details</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+
+            {/* **************************************** */}
+            <SimpleInputText
+              name={'unitPrice'}
+              fromatName={'unitPrice'}
+              placeholder={'Unit Price'}
+              label={'UNIT PRICE'}
+              value={unitPrice}
+              formatValue={unitPrice}
+              editable={false}
+              keyboardType={'numeric'}
+            />
+
+            {/* **************************************** */}
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent
+                  onValueChange={handleForm}
+                  data={paymentPlan}
+                  name={'paymentPlan'}
+                  placeholder='Payment Plan'
+                  selectedItem={formData.paymentPlan}
+                  enabled={checkForUnitIdavail}
+                />
+                {firstScreenValidate === true && formData.paymentPlan === null && <ErrorMessage errorMessage={'Required'} />}
+              </View>
+            </View>
+
+            {/* **************************************** */}
+            <SimpleInputText
+              name={'discount'}
+              placeholder={'Approved Discount'}
+              label={'APPROVED DISCOUNT%'}
+              value={formData.discount}
+              keyboardType={'numeric'}
+              onChangeHandle={handleForm}
+              formatValue={formData.discountedPrice}
+              editable={checkForPaymentPlan}
+              fromatName={false}
+            />
+            {/* {firstScreenValidate === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />} */}
+
+            
+
+            {/* **************************************** */}
+
+            {/* **************************************** */}
+            {
+              formData.token != '' && formData.token != null ?
+                <View>
+                  <PaymentTile
+                    currencyConvert={currencyConvert}
+                    count={''}
+                    data={dataForPaymentTile}
+                    editTileForscreenOne={editTileForscreenOne}
+                    tileForToken={true}
+                  />
+                  {
+                    firstScreenValidate === true ?
+                      formData.token === null || formData.token === '' || formData.type === '' ?
+                        <ErrorMessage errorMessage={'Token Required'} />
+                        : null
+                      : null
+                  }
+                </View>
+                :
+                <View style={[AppStyles.mainInputWrap]}>
+                  <TouchableOpacity style={styles.bookNowBtn} onPress={() => { checkForUnitIdavail === true && tokenModalToggle(true) }}>
+                    <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
+                  </TouchableOpacity>
+                  {
+                    firstScreenValidate === true ?
+                      formData.token === null || formData.token === '' || formData.type === '' ?
+                        <ErrorMessage errorMessage={'Required'} />
+                        : null
+                      : null
+                  }
+                </View>
+            }
+
+            {/* **************************************** */}
+            <View style={[AppStyles.mainInputWrap]}>
+              {
+                formData.finalPrice === null ?
+                  <View style={styles.backgroundBlue}>
+                    <Text style={styles.finalPrice}>FINAL PRICE</Text>
+
+                    <Text style={styles.priceValue}>{unitPrice != null ? currencyConvert(unitPrice) : null}</Text>
+                    <Text style={styles.sidePriceFormat}>{unitPrice != null ? formatPrice(unitPrice) : null}</Text>
+                  </View>
+                  :
+                  <View style={styles.backgroundBlue}>
+                    <Text style={styles.finalPrice}>FINAL PRICE</Text>
+
+                    <Text style={styles.priceValue}>{formData.finalPrice != null ? currencyConvert(formData.finalPrice) : null}</Text>
+                    <Text style={styles.sidePriceFormat}>{formData.finalPrice != null ? formatPrice(formData.finalPrice) : null}</Text>
+                  </View>
+              }
+
+            </View>
+
+            {/* **************************************** */}
+            <View style={[AppStyles.mainInputWrap]}>
+              <TouchableOpacity style={styles.bookNowBtn} onPress={() => { checkLeadClosedOrNot === true && firstScreenConfirmModal(true) }}>
+                <Text style={styles.bookNowBtnText}>BOOK NOW</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    )
+  }
+}
+
+
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
+    lead: store.lead.lead
+  }
+}
+
+export default connect(mapStateToProps)(InnerForm)
+
+

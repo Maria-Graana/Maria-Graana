@@ -164,16 +164,26 @@ class InvestLeads extends React.Component {
 
 	navigateToShareScreen = (data) => {
 		const { user } = this.props;
-		if (data.status === StaticData.Constants.lead_closed_lost || data.status === StaticData.Constants.lead_closed_won) {
-			helper.errorToast('Closed leads cannot be shared with other agents')
-			return;
-		}
-		if (user.id === data.assigned_to_armsuser_id) {
-			const { navigation } = this.props;
-			navigation.navigate('AssignLead', { leadId: data.id, type: 'Investment', screen: 'InvestLeads' })
+		if (data) {
+			if (data.status === StaticData.Constants.lead_closed_lost || data.status === StaticData.Constants.lead_closed_won) {
+				helper.errorToast('Closed leads cannot be shared with other agents')
+				return;
+			}
+			if (user.id === data.assigned_to_armsuser_id) {
+				if (data.shared_with_armsuser_id) {
+					helper.errorToast('lead is already shared')
+				}
+				else {
+					const { navigation } = this.props;
+					navigation.navigate('AssignLead', { leadId: data.id, type: 'Investment', screen: 'InvestLeads' })
+				}
+			}
+			else {
+				helper.errorToast('Only the leads assigned to you can be shared')
+			}
 		}
 		else {
-			helper.errorToast('Only the leads assigned to you can be shared')
+			helper.errorToast('Something went wrong!')
 		}
 	}
 

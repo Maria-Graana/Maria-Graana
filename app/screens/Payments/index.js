@@ -96,6 +96,7 @@ class Payments extends Component {
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
 		this.handleForm(formData.projectId, 'projectId')
+		console.log(this.props.lead.installmentDue)
 	}
 
 	setdefaultFields = (lead) => {
@@ -256,7 +257,7 @@ class Payments extends Component {
 
 			// Set Discount for Token
 			if (name === 'token') {
-				this.allCalculations()
+				this.allCalculations(name)
 			}
 
 			// when Project id chnage the unit filed will be refresh
@@ -289,7 +290,7 @@ class Payments extends Component {
 			})
 	}
 
-	allCalculations = () => {
+	allCalculations = (name) => {
 		const { formData, unitPrice } = this.state
 		const { lead } = this.props
 
@@ -301,16 +302,26 @@ class Payments extends Component {
 		var grandTotal = ''
 
 		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
-			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100))) - Number(formData.token)
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
 		} else {
-			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100))) - Number(formData.token)
+			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
+			newFormData['discountedPrice'] = totalPrice - grandTotal
 		}
 
 		newFormData['finalPrice'] = grandTotal
-		this.setState({
-			formData: newFormData,
-			remainingPayment: grandTotal,
-		})
+		if (name === 'token') {
+			this.setState({
+				remainingPayment: Number(grandTotal) - Number(formData.token),
+			},()=>{
+				console.log(this.state.remainingPayment)
+			})
+			
+		} else {
+			this.setState({
+				formData: newFormData,
+				remainingPayment: grandTotal,
+			})
+		}
 	}
 
 	refreshUnitPrice = (name) => {
@@ -487,7 +498,10 @@ class Payments extends Component {
 				var body = {
 					...secondFormData,
 					remainingPayment: remainingPayment - secondFormData.installmentAmount,
+					unitStatus: this.props.lead.installmentDue,
+					unitId: this.props.lead.unitId,
 				}
+				console.log(body)
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
 						if (attachmentData.fileName != '') {

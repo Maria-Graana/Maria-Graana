@@ -61,7 +61,7 @@ class Payments extends Component {
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
-			firstScreenDone: lead.unit != null && lead.unit.bookingStatus === 'Token' ? false : true,
+			firstScreenDone: lead.unit != null && lead.unit.bookingStatus != 'Available' ? false : true,
 			// firstScreenDone: false,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
@@ -369,7 +369,7 @@ class Payments extends Component {
 
 	submitFirstScreen = () => {
 		const { lead } = this.props
-		const { formData, unitId } = this.state
+		const { formData, remainingPayment } = this.state
 		this.setState({
 			firstScreenConfirmLoading: true,
 		})
@@ -384,7 +384,7 @@ class Payments extends Component {
 			unitStatus: 'Token',
 			installmentDue: formData.paymentPlan,
 			finalPrice: formData.finalPrice,
-			remainingPayment: formData.finalPrice,
+			remainingPayment: remainingPayment,
 			installmentAmount: formData.token,
 			type: formData.type,
 		}
@@ -739,7 +739,7 @@ class Payments extends Component {
 			leadId.push(lead.id)
 
 			// Check for Payment Done option 
-			if (Number(remainingPayment) <= 0 && formData.unitId != null && checkForPenddingNrjected.length === 0) {
+			if (Number(remainingPayment) <= 0 && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 			} else {
 				this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })

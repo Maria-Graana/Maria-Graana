@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.1.165",
+    "version": "1.1.166",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "splash": {
@@ -24,6 +24,7 @@
     "ios": {
       "bundleIdentifier": "com.agency21.arms",
       "supportsTablet": true,
+      "usesIcloudStorage": true,
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -34,9 +35,8 @@
         "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
-      "usesIcloudStorage": true,
       "userInterfaceStyle": "automatic",
-      "buildNumber": "6"
+      "buildNumber": "7"
     },
     "android": {
       "package": "com.agency21.arms",

@@ -307,6 +307,7 @@ class Payments extends Component {
 		var backendDiscount = lead.paidProject != null && lead.paidProject.full_payment_discount
 		var grandTotal = ''
 		var oldGrandTotal = ''
+		var totalToken = ''
 
 		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
 			oldGrandTotal = (Number(totalPrice)) * (1 - Number((backendDiscount / 100)));
@@ -321,11 +322,11 @@ class Payments extends Component {
 			var formula = (oldGrandTotal / 100 ) * frontDiscount
 			newFormData['discountedPrice'] = formula
 		}
-		
+
 		newFormData['finalPrice'] = parseInt(grandTotal,10)
 		
 		if (name === 'token') {
-			totalToken = Number(grandTotal) - Number(formData)
+			totalToken = Number(grandTotal) - Number(formData.token)
 			this.setState({
 				remainingPayment: totalToken,
 			})

@@ -96,7 +96,6 @@ class Payments extends Component {
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
 		this.handleForm(formData.projectId, 'projectId')
-		console.log(this.props.lead.installmentDue)
 	}
 
 	setdefaultFields = (lead) => {
@@ -312,8 +311,6 @@ class Payments extends Component {
 		if (name === 'token') {
 			this.setState({
 				remainingPayment: Number(grandTotal) - Number(formData.token),
-			},()=>{
-				console.log(this.state.remainingPayment)
 			})
 			
 		} else {
@@ -501,7 +498,6 @@ class Payments extends Component {
 					unitStatus: this.props.lead.installmentDue,
 					unitId: this.props.lead.unitId,
 				}
-				console.log(body)
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
 						if (attachmentData.fileName != '') {

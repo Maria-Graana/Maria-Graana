@@ -52,6 +52,7 @@ class InnerForm extends Component {
       type: formData.type,
       createdAt: new Date(),
     }
+    var checkForPaymentPlan = formData.paymentPlan === '' || formData.paymentPlan === null || checkForUnitIdavail === false? false : true
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -100,20 +101,6 @@ class InnerForm extends Component {
             />
 
             {/* **************************************** */}
-            <SimpleInputText
-              name={'discount'}
-              placeholder={'Approved Discount'}
-              label={'APPROVED DISCOUNT%'}
-              value={formData.discount}
-              keyboardType={'numeric'}
-              onChangeHandle={handleForm}
-              formatValue={formData.discountedPrice}
-              editable={checkForUnitIdavail}
-              fromatName={false}
-            />
-            {/* {firstScreenValidate === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />} */}
-
-            {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
                 <PickerComponent
@@ -127,6 +114,22 @@ class InnerForm extends Component {
                 {firstScreenValidate === true && formData.paymentPlan === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
+
+            {/* **************************************** */}
+            <SimpleInputText
+              name={'discount'}
+              placeholder={'Approved Discount'}
+              label={'APPROVED DISCOUNT%'}
+              value={formData.discount}
+              keyboardType={'numeric'}
+              onChangeHandle={handleForm}
+              formatValue={formData.discountedPrice}
+              editable={checkForPaymentPlan}
+              fromatName={false}
+            />
+            {/* {firstScreenValidate === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />} */}
+
+            
 
             {/* **************************************** */}
 

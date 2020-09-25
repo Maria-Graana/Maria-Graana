@@ -18,6 +18,7 @@ import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style';
 import AddAttachmentPopup from '../../components/AddAttachmentPopup'
 import * as DocumentPicker from 'expo-document-picker';
+import { cos } from 'react-native-reanimated';
 
 
 class Payments extends Component {
@@ -245,6 +246,11 @@ class Payments extends Component {
 			this.setUnitPrice(value)
 		}
 
+		if(name === 'paymentPlan'){
+			newFormData['discountedPrice'] = ''
+			newFormData['discount'] = ''
+		}
+
 		this.setState({
 			formData: newFormData,
 		}, () => {
@@ -253,6 +259,8 @@ class Payments extends Component {
 			if (name === 'discount' || name === 'paymentPlan') {
 				this.allCalculations(name)
 			}
+
+			
 
 			// Set Discount for Token
 			if (name === 'token') {
@@ -292,28 +300,32 @@ class Payments extends Component {
 	allCalculations = (name) => {
 		const { formData, unitPrice } = this.state
 		const { lead } = this.props
-
 		const newFormData = { ...formData }
 
 		var totalPrice = unitPrice
 		var frontDiscount = formData.discount
 		var backendDiscount = lead.paidProject != null && lead.paidProject.full_payment_discount
 		var grandTotal = ''
-		var totalToken = ''
+		var oldGrandTotal = ''
 
 		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
+			oldGrandTotal = (Number(totalPrice)) * (1 - Number((backendDiscount / 100)));
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
-		} else {
+		} 
+		else {
+			oldGrandTotal = Number(totalPrice);
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
 		}
 
 		if(name === 'discount') {
-			newFormData['discountedPrice'] = formData.discount != ''  ? totalPrice - grandTotal : ''
+			var formula = (oldGrandTotal / 100 ) * frontDiscount
+			newFormData['discountedPrice'] = formula
 		}
-		newFormData['finalPrice'] = grandTotal
+		
+		newFormData['finalPrice'] = parseInt(grandTotal,10)
 		
 		if (name === 'token') {
-			totalToken = Number(grandTotal) - Number(formData.token)
+			totalToken = Number(grandTotal) - Number(formData)
 			this.setState({
 				remainingPayment: totalToken,
 			})
@@ -357,7 +369,7 @@ class Payments extends Component {
 	}
 
 	percentFormula = (total, percent) => {
-		var result = total - ((percent / 100) * total)
+		var result =  (total / 100) * percent
 		return parseInt(result);
 	}
 

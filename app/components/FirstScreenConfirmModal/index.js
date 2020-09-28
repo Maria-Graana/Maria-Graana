@@ -42,7 +42,7 @@ class FirstScreenConfirmModal extends React.Component {
           <Text style={styles.noramlText}>Payment Plan: <Text style={styles.mainTextLarge}>{data.paymentPlan}</Text></Text>
           <Text style={styles.noramlText}>Final Price: <Text style={styles.mainTextLarge}>{formatPrice(data.finalPrice ? data.finalPrice : '')}</Text></Text>
           <View style={styles.confirmBtnView}>
-            <TouchableOpacity style={[styles.confirmBtn]}  onPress={() => { submitFirstScreen() }}> 
+            <TouchableOpacity style={[styles.confirmBtn]}  onPress={() => { firstScreenConfirmLoading != true && submitFirstScreen() }}> 
               <Text style={[styles.textCenter, styles.activeBtn]}>{firstScreenConfirmLoading === true ? 'Wait...' :'BOOK'}</Text>
             </TouchableOpacity>
 

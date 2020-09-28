@@ -394,17 +394,16 @@ class Payments extends Component {
 			unitId: formData.unitId,
 			projectId: formData.projectId,
 			floorId: formData.floorId,
-			unitDiscount: formData.discount === null ? null : formData.discount,
-			discounted_price: formData.discountedPrice === null ? null : formData.discountedPrice,
-			discount_amount: formData.finalPrice === null ? null : formData.finalPrice,
+			unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
+			discounted_price: formData.discountedPrice === null || formData.discountedPrice === '' ? null : formData.discountedPrice,
+			discount_amount: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
 			unitStatus: 'Token',
 			installmentDue: formData.paymentPlan,
-			finalPrice: formData.finalPrice,
+			finalPrice: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
 			remainingPayment: remainingPayment,
 			installmentAmount: formData.token,
 			type: formData.type,
 		}
-
 		var leadId = []
 		leadId.push(lead.id)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })

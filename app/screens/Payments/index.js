@@ -92,7 +92,7 @@ class Payments extends Component {
 	}
 
 	componentDidMount() {
-		const { formData,remarks } = this.state
+		const { formData, remarks } = this.state
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
@@ -205,11 +205,15 @@ class Payments extends Component {
 		// const { lead } = this.props
 		const array = [];
 
-		if (checkPaymentPlan.investment === true && lead.paidProject != null) {
-			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
+		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null ) {
+			if (lead.paidProject.full_payment_discount != 0) {
+				array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+			}
 		}
-		if (checkPaymentPlan.rental === true && lead.paidProject != null) {
-			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 && `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`}` })
+		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null ) {
+			if (lead.paidProject.full_payment_discount != 0) {
+				array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+			}
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -247,7 +251,7 @@ class Payments extends Component {
 		}
 
 		// If user select payment drop down so discount and discounted price will be refresh
-		if(name === 'paymentPlan'){
+		if (name === 'paymentPlan') {
 			newFormData['discountedPrice'] = ''
 			newFormData['discount'] = ''
 		}
@@ -311,19 +315,19 @@ class Payments extends Component {
 		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
 			oldGrandTotal = (Number(totalPrice)) * (1 - Number((backendDiscount / 100)));
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
-		} 
+		}
 		else {
 			oldGrandTotal = Number(totalPrice);
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((0 / 100)))
 		}
 
-		if(name === 'discount') {
-			var formula = (oldGrandTotal / 100 ) * frontDiscount
+		if (name === 'discount') {
+			var formula = (oldGrandTotal / 100) * frontDiscount
 			newFormData['discountedPrice'] = formula
 		}
 
-		newFormData['finalPrice'] = parseInt(grandTotal,10)
-		
+		newFormData['finalPrice'] = parseInt(grandTotal, 10)
+
 		if (name === 'token') {
 			totalToken = Number(grandTotal) - Number(formData.token)
 			this.setState({
@@ -332,7 +336,7 @@ class Payments extends Component {
 		} else {
 			this.setState({
 				formData: newFormData,
-				remainingPayment:  Number(grandTotal) - Number(formData.token) ,
+				remainingPayment: Number(grandTotal) - Number(formData.token),
 			})
 		}
 	}
@@ -369,7 +373,7 @@ class Payments extends Component {
 	}
 
 	percentFormula = (total, percent) => {
-		var result =  (total / 100) * percent
+		var result = (total / 100) * percent
 		return parseInt(result);
 	}
 
@@ -653,6 +657,11 @@ class Payments extends Component {
 		navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
 	}
 
+	goToPayAttachments = () => {
+		const { navigation, lead } = this.props;
+		navigation.navigate('Attachments', { rcmLeadId: lead.id });
+	}
+
 	goToDiaryForm = (taskType) => {
 		const { navigation, route, user } = this.props;
 		navigation.navigate('AddDiary', {
@@ -900,6 +909,7 @@ class Payments extends Component {
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						secondHandleForm={this.secondHandleForm}
 						secondFormSubmit={this.secondFormSubmit}
+						goToPayAttachments={this.goToPayAttachments}
 					/>
 
 					<AddTokenModal

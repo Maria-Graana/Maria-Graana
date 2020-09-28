@@ -158,7 +158,7 @@ class AssignLead extends React.Component {
                 <View style={[AppStyles.container, styles.container]}>
                     <Search placeholder='Search team members here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
                     {
-                        screen == 'LeadDetail' && user.role === 'admin 3' || user.role === 'sub_admin 1' ?
+                        screen === 'LeadDetail' && (user.role === 'admin 3' || user.role === 'sub_admin 1') ?
                             <View style={styles.pickerMain}>
                                 <PickerComponent
                                     placeholder={'Search By'}

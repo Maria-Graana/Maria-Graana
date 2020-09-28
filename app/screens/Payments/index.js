@@ -86,13 +86,13 @@ class Payments extends Component {
 			isVisible: false,
 			selectedReason: '',
 			checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead),
-			remarks: lead.payment != null ? lead.remarks : null,
+			remarks: null,
 			editaAbleForTokenScreenOne: false,
 		}
 	}
 
 	componentDidMount() {
-		const { formData } = this.state
+		const { formData,remarks } = this.state
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
@@ -475,6 +475,7 @@ class Payments extends Component {
 					details: '',
 					cmLeadId: this.props.lead.id,
 				},
+				remarks: null,
 				editaAble: false,
 			})
 		}
@@ -630,12 +631,14 @@ class Payments extends Component {
 						type: editLeadData.type,
 						cmLeadId: this.props.lead.id,
 						details: editLeadData.details,
+						remarks: editLeadData.remarks
 					},
 					addPaymentModalToggleState: true,
 					editaAble: true,
 					paymentId: id,
 					paymentOldValue: editLeadData.installmentAmount,
 					modalLoading: false,
+					remarks: editLeadData.remarks
 				})
 			})
 	}

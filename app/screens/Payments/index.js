@@ -246,6 +246,7 @@ class Payments extends Component {
 			this.setUnitPrice(value)
 		}
 
+		// If user select payment drop down so discount and discounted price will be refresh
 		if(name === 'paymentPlan'){
 			newFormData['discountedPrice'] = ''
 			newFormData['discount'] = ''
@@ -259,8 +260,6 @@ class Payments extends Component {
 			if (name === 'discount' || name === 'paymentPlan') {
 				this.allCalculations(name)
 			}
-
-			
 
 			// Set Discount for Token
 			if (name === 'token') {
@@ -395,12 +394,12 @@ class Payments extends Component {
 			unitId: formData.unitId,
 			projectId: formData.projectId,
 			floorId: formData.floorId,
-			unitDiscount: formData.discount,
-			discounted_price: formData.discountedPrice,
-			discount_amount: formData.finalPrice,
+			unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
+			discounted_price: formData.discountedPrice === null || formData.discountedPrice === '' ? null : formData.discountedPrice,
+			discount_amount: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
 			unitStatus: 'Token',
 			installmentDue: formData.paymentPlan,
-			finalPrice: formData.finalPrice,
+			finalPrice: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
 			remainingPayment: remainingPayment,
 			installmentAmount: formData.token,
 			type: formData.type,
@@ -425,10 +424,16 @@ class Payments extends Component {
 							helper.successToast('Unit Has Been Booked')
 						})
 					}).catch(() => {
+						helper.errorToast('Something went wrong!!!')
 						this.setState({
 							firstScreenConfirmLoading: false,
 						})
 					})
+			}).catch(() => {
+				helper.errorToast('Something went wrong!!')
+				this.setState({
+					firstScreenConfirmLoading: false,
+				})
 			})
 	}
 

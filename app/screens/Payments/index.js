@@ -86,7 +86,7 @@ class Payments extends Component {
 			isVisible: false,
 			selectedReason: '',
 			checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead),
-			remarks: lead.payment != null ? lead.remarks : null,
+			remarks: lead.unit != null ? lead.unit.remarks : null,
 			editaAbleForTokenScreenOne: false,
 		}
 	}

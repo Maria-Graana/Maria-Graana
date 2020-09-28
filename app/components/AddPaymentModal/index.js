@@ -106,7 +106,7 @@ class AddPaymentModal extends React.Component {
 
 
 
-                  <TouchableOpacity style={styles.bookedBtn} onPress={() => { secondFormSubmit() }}>
+                  <TouchableOpacity style={styles.bookedBtn} onPress={() => {addPaymentLoading != true && secondFormSubmit() }}>
                     <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
                     <Text style={styles.bookedBtnText}>
                       {addPaymentLoading === true ? 'Wait...' : 'OK'}

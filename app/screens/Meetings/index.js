@@ -13,7 +13,7 @@ import helper from '../../helper';
 import AppStyles from '../../AppStyles';
 import { ProgressBar, Colors } from 'react-native-paper';
 import { FAB } from 'react-native-paper';
-import { setlead } from '../../actions/lead';
+import { setlead, setLeadRes } from '../../actions/lead';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import StaticData from '../../StaticData';
 import CMBottomNav from '../../components/CMBottomNav'
@@ -66,24 +66,30 @@ class Meetings extends Component {
       },
       loading: false,
       secondScreenData: {},
+      checkForNewLeadData: false,
     }
   }
 
   componentDidMount() {
+    const { navigation } = this.props
     this.fetchLead()
     this.getMeetingLead()
     this.props.dispatch(setContacts())
+    this._unsubscribe = navigation.addListener('focus', () => {
+      this.fetchLead();
+    })
   }
 
-  fetchLead = () => {
+  fetchLead = (newLeadDataStatus) => {
     const { lead } = this.props
     const { cmProgressBar } = StaticData
     axios.get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
-        this.props.dispatch(setlead(res.data))
+        this.props.dispatch(setLeadRes(res.data))
         this.setState({
           progressValue: cmProgressBar[res.data.status] || 0,
-          secondScreenData: res.data
+          secondScreenData: res.data,
+          checkForNewLeadData: newLeadDataStatus,
         })
       })
       .catch((error) => {
@@ -433,10 +439,10 @@ class Meetings extends Component {
   }
 
   closeLead = () => {
+    this.fetchLead(true)
 
-
-    const { secondScreenData } = this.state
-    if (secondScreenData && secondScreenData != '') {
+    const { secondScreenData, checkForNewLeadData } = this.state
+    if (secondScreenData && secondScreenData != '' && checkForNewLeadData === true) {
 
       // Check For Any pending and rejected Status
       var approvedPaymentDone = []
@@ -450,12 +456,12 @@ class Meetings extends Component {
       var checkForPenddingNrjected = []
       approvedPaymentDone && approvedPaymentDone.length > 0 &&
         approvedPaymentDone.filter((item) => { item === true && checkForPenddingNrjected.push(true) })
-
+        
       var remainingPayment = this.props.lead.remainingPayment
       if (remainingPayment <= 0 && remainingPayment != null && checkForPenddingNrjected.length === 0) {
-        this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
+        this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '', checkForNewLeadData: false })
       } else {
-        this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+        this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '', checkForNewLeadData: false })
       }
 
 

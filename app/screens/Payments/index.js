@@ -206,14 +206,10 @@ class Payments extends Component {
 		const array = [];
 
 		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null ) {
-			if (lead.paidProject.full_payment_discount != 0) {
 				array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
-			}
 		}
 		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null ) {
-			if (lead.paidProject.full_payment_discount != 0) {
 				array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
-			}
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })

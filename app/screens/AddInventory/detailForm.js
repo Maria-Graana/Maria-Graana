@@ -88,7 +88,7 @@ class DetailForm extends Component {
         }
         let _renderParkings = () => {
             var min = 0;
-            var max = 10;
+            var max = 30;
             this.parkings = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.parkings.push({ name: i.toString() + ' Parking Space', value: i })

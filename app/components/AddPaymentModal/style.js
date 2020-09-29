@@ -129,4 +129,21 @@ export default styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
   },
+  reSubmiitBtnMain: {
+    flexDirection: 'row'
+  },
+  reSubmitBtns: {
+    marginRight: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  reSubmitText: {
+    fontSize: 16,
+  },
+  reSubmitLight: {
+    backgroundColor: '#fff'
+  },
+  reSubmitTextDark: {
+    color: '#006ff1',
+  },
 });

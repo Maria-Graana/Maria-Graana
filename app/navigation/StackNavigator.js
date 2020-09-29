@@ -278,7 +278,7 @@ function MainStack() {
             />
             <Stack.Screen name='AssignLead' component={AssignLead}
                 options={({ navigation, route }) => ({
-                    title: 'SELECT TEAM MEMBER',
+                    title: '',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

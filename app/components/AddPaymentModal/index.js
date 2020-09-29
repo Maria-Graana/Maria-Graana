@@ -109,7 +109,7 @@ class AddPaymentModal extends React.Component {
                   {
                     secondFormLeadData.status === 'rejected' ?
                       <View style={styles.reSubmiitBtnMain}> 
-                        <TouchableOpacity style={[styles.bookedBtn, styles.reSubmitBtns]} onPress={() => {  addPaymentModalToggle(false) }}>
+                        <TouchableOpacity style={[styles.bookedBtn, styles.reSubmitBtns, styles.cancelLight]} onPress={() => {  addPaymentModalToggle(false) }}>
                           {/* <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> */}
                           <Text style={[styles.bookedBtnText, styles.reSubmitText]}>
                             CANCEL

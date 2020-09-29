@@ -466,6 +466,7 @@ class Payments extends Component {
 			this.setState({
 				addPaymentModalToggleState: status,
 				secondCheckValidation: false,
+				secondFormLeadData:{},
 			})
 		} else if (status === false) {
 			this.setState({

@@ -44,6 +44,7 @@ class Payments extends Component {
 				token: lead.token != null ? lead.token : null,
 				type: '',
 				details: '',
+				cnic: null,
 			},
 			secondFormData: {
 				installmentAmount: null,
@@ -61,6 +62,7 @@ class Payments extends Component {
 				investment: true,
 				quartarly: true,
 			},
+			cnicValidate: false,
 			secondFormLeadData: {},
 			paymentPlan: [],
 			openFirstScreenModal: false,
@@ -228,12 +230,26 @@ class Payments extends Component {
 		})
 	}
 
+	validateCnic = (value) => {
+		if (value.length < 15 || value === '') {
+			this.setState({ cnicValidate: true })
+		} else { this.setState({ cnicValidate: false }) }
+	}
+
 	handleForm = (value, name) => {
 		const { formData, unitPrice } = this.state
 
-		// Set Values In form Data
+
 		const newFormData = { ...formData }
+
+		if (name === 'cnic') {
+			value = helper.normalizeCnic(value)
+			this.validateCnic(value)
+		}
+
+		// Set Values In form Data
 		newFormData[name] = value
+
 
 		// Get Floor base on Project Id
 		if (name === 'projectId') {
@@ -390,56 +406,62 @@ class Payments extends Component {
 
 	submitFirstScreen = () => {
 		const { lead } = this.props
-		const { formData, remainingPayment } = this.state
-		this.setState({
-			firstScreenConfirmLoading: true,
-		})
-
-		var body = {
-			unitId: formData.unitId,
-			projectId: formData.projectId,
-			floorId: formData.floorId,
-			unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
-			discounted_price: formData.discountedPrice === null || formData.discountedPrice === '' ? null : formData.discountedPrice,
-			discount_amount: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
-			unitStatus: 'Token',
-			installmentDue: formData.paymentPlan,
-			finalPrice: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
-			remainingPayment: remainingPayment,
-			installmentAmount: formData.token,
-			type: formData.type,
-		}
-		var leadId = []
-		leadId.push(lead.id)
-		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
-			.then((res) => {
-				axios.get(`/api/leads/project/byId?id=${lead.id}`)
-					.then((res) => {
-						let responseData = res.data;
-						if (!responseData.paidProject) {
-							responseData.paidProject = responseData.project;
-						}
-						this.props.dispatch(setlead(responseData));
-						this.setState({
-							secondScreenData: res.data,
-							openFirstScreenModal: false,
-							firstScreenDone: false,
-							firstScreenConfirmLoading: false,
-						}, () => {
-							helper.successToast('Unit Has Been Booked')
-						})
-					}).catch(() => {
-						helper.errorToast('Something went wrong!!!')
-						this.setState({
-							firstScreenConfirmLoading: false,
-						})
-					})
-			}).catch(() => {
-				helper.errorToast('Something went wrong!!')
-				this.setState({
-					firstScreenConfirmLoading: false,
-				})
+		const { formData, remainingPayment, cnicValidate } = this.state
+		if (formData.cnic === null || formData.cnic === '' || cnicValidate === true) {
+			this.setState({
+				firstScreenValidate: true,
 			})
+		} else {
+			this.setState({
+				firstScreenConfirmLoading: true,
+			})
+
+			var body = {
+				unitId: formData.unitId,
+				projectId: formData.projectId,
+				floorId: formData.floorId,
+				unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
+				discounted_price: formData.discountedPrice === null || formData.discountedPrice === '' ? null : formData.discountedPrice,
+				discount_amount: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
+				unitStatus: 'Token',
+				installmentDue: formData.paymentPlan,
+				finalPrice: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
+				remainingPayment: remainingPayment,
+				installmentAmount: formData.token,
+				type: formData.type,
+			}
+			var leadId = []
+			leadId.push(lead.id)
+			axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+				.then((res) => {
+					axios.get(`/api/leads/project/byId?id=${lead.id}`)
+						.then((res) => {
+							let responseData = res.data;
+							if (!responseData.paidProject) {
+								responseData.paidProject = responseData.project;
+							}
+							this.props.dispatch(setlead(responseData));
+							this.setState({
+								secondScreenData: res.data,
+								openFirstScreenModal: false,
+								firstScreenDone: false,
+								firstScreenConfirmLoading: false,
+							}, () => {
+								helper.successToast('Unit Has Been Booked')
+							})
+						}).catch(() => {
+							helper.errorToast('Something went wrong!!!')
+							this.setState({
+								firstScreenConfirmLoading: false,
+							})
+						})
+				}).catch(() => {
+					helper.errorToast('Something went wrong!!')
+					this.setState({
+						firstScreenConfirmLoading: false,
+					})
+				})
+		}
 	}
 
 	firstScreenConfirmModal = (status) => {
@@ -830,6 +852,7 @@ class Payments extends Component {
 			checkLeadClosedOrNot,
 			remarks,
 			secondFormLeadData,
+			cnicValidate,
 		} = this.state
 		return (
 			<View>
@@ -900,6 +923,8 @@ class Payments extends Component {
 							getAllFloors={getAllFloors}
 							allUnits={allUnits}
 							firstScreenConfirmLoading={firstScreenConfirmLoading}
+							firstScreenValidate={firstScreenValidate}
+							handleForm={this.handleForm}
 							firstScreenConfirmModal={this.firstScreenConfirmModal}
 							submitFirstScreen={this.submitFirstScreen}
 						/>

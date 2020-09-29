@@ -41,6 +41,8 @@ class InnerForm extends Component {
       remainingPayment,
       checkLeadClosedOrNot,
       editTileForscreenOne,
+      cnicValidate,
+      cnicEditable,
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
     const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' && checkLeadClosedOrNot === true ? true : false
@@ -52,7 +54,7 @@ class InnerForm extends Component {
       type: formData.type,
       createdAt: new Date(),
     }
-    var checkForPaymentPlan = formData.paymentPlan === '' || formData.paymentPlan === null || checkForUnitIdavail === false? false : true
+    var checkForPaymentPlan = formData.paymentPlan === '' || formData.paymentPlan === null || checkForUnitIdavail === false ? false : true
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -129,7 +131,7 @@ class InnerForm extends Component {
             />
             {/* {firstScreenValidate === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />} */}
 
-            
+
 
             {/* **************************************** */}
 
@@ -165,6 +167,25 @@ class InnerForm extends Component {
                       : null
                   }
                 </View>
+            }
+
+
+            <SimpleInputText
+              name={'cnic'}
+              placeholder={'Client CNIC'}
+              label={'CLIENT CNIC'}
+              value={formData.cnic}
+              keyboardType={'numeric'}
+              onChangeHandle={handleForm}
+              formatValue={''}
+              editable={cnicEditable}
+              fromatName={false}
+            />
+            {
+              firstScreenValidate === true && formData.cnic === null || formData.cnic === '' ?
+                <ErrorMessage errorMessage={'Required'} />
+                :
+                formData.cnic && formData.cnic.length < 15 && firstScreenValidate === true ? <ErrorMessage errorMessage={'Enter Valid CNIC'} /> : null
             }
 
             {/* **************************************** */}

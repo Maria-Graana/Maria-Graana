@@ -44,8 +44,9 @@ class Payments extends Component {
 				token: lead.token != null ? lead.token : null,
 				type: '',
 				details: '',
-				cnic: null,
+				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
 			},
+			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
 			secondFormData: {
 				installmentAmount: null,
 				type: '',
@@ -102,14 +103,11 @@ class Payments extends Component {
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
 		this.handleForm(formData.projectId, 'projectId')
-		console.log('CMAttachment: ', this.props.CMAttachment)
-		console.log('CMPayment: ', this.props.CMPayment)
 	}
 
 	setdefaultFields = (lead) => {
 		const { checkPaymentPlan } = this.state
 		var newcheckPaymentPlan = { ...checkPaymentPlan }
-
 		newcheckPaymentPlan['years'] = lead.paidProject != null && lead.paidProject.installment_plan != null || '' ? lead.paidProject.installment_plan : null
 		newcheckPaymentPlan['monthly'] = lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes' ? true : false
 		newcheckPaymentPlan['rental'] = lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false,
@@ -465,7 +463,7 @@ class Payments extends Component {
 	}
 
 	firstScreenConfirmModal = (status) => {
-		const { formData } = this.state
+		const { formData, cnicValidate } = this.state
 		if (
 			formData.projectId != null &&
 			formData.floorId != null &&
@@ -474,7 +472,10 @@ class Payments extends Component {
 			formData.paymentPlan != '' &&
 			formData.token != null &&
 			formData.token != '' &&
-			formData.type != ''
+			formData.type != '' &&
+			formData.cnic != null &&
+			formData.cnic != '' &&
+			cnicValidate != true
 		) {
 			this.setState({
 				openFirstScreenModal: status,
@@ -515,7 +516,6 @@ class Payments extends Component {
 		const { secondFormData } = this.state
 		const newSecondFormData = secondFormData
 		newSecondFormData[name] = value
-		console.log(value, name)
 		this.setState({
 			secondFormData: newSecondFormData,
 		})
@@ -853,6 +853,7 @@ class Payments extends Component {
 			remarks,
 			secondFormLeadData,
 			cnicValidate,
+			cnicEditable,
 		} = this.state
 		return (
 			<View>
@@ -873,6 +874,8 @@ class Payments extends Component {
 										firstScreenValidate={firstScreenValidate}
 										remainingPayment={remainingPayment}
 										checkLeadClosedOrNot={checkLeadClosedOrNot}
+										cnicValidate={cnicValidate}
+										cnicEditable={cnicEditable}
 										currencyConvert={this.currencyConvert}
 										handleForm={this.handleForm}
 										submitFirstScreen={this.submitFirstScreen}

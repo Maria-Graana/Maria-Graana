@@ -98,13 +98,13 @@ class AddPaymentModal extends React.Component {
                     />
                   }
 
-                  {/* {
+                  {
                     secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' &&
-                    <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { goToPayAttachments(true) }}>
+                    <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { attechmentModalToggle(true) }}>
                       <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
                       <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
                     </TouchableOpacity>
-                  } */}
+                  }
 
                   {
                     secondFormLeadData.status === 'rejected' ?

@@ -23,7 +23,6 @@ import LeadDetail from '../screens/LeadDetail';
 import AppStyles from '../AppStyles';
 import RCMLeadTabs from './RCMTabNavigator';
 import CMLeadTabs from './CMTabNavigator';
-import AttachmentsForPayments from '../screens/AttachmentsForPayments';
 import Attachments from '../screens/Attachments';
 import Comments from '../screens/Comments';
 import Targets from '../screens/Targets';
@@ -195,13 +194,6 @@ function MainStack() {
             <Stack.Screen name='Attachments' component={Attachments}
                 options={({ navigation, route }) => ({
                     title: 'ATTACHMENTS',
-                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-                    headerTitleAlign: 'center',
-                })}
-            />
-            <Stack.Screen name='AttachmentsForPayments' component={AttachmentsForPayments}
-                options={({ navigation, route }) => ({
-                    title: 'ATTACHMENTS FOR PAYMENT',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

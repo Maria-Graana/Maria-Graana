@@ -141,9 +141,17 @@ export default styles = StyleSheet.create({
     fontSize: 16,
   },
   reSubmitLight: {
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    flex: 1,
+    marginRight: 0,
   },
   reSubmitTextDark: {
     color: '#006ff1',
+  },
+  cancelLight: {
+    backgroundColor: '#cbcbcb',
+    borderColor: '#bbb',
+    flex: 1,
+    color: '#e7ecf0'
   },
 });

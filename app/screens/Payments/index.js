@@ -405,61 +405,56 @@ class Payments extends Component {
 	submitFirstScreen = () => {
 		const { lead } = this.props
 		const { formData, remainingPayment, cnicValidate } = this.state
-		if (formData.cnic === null || formData.cnic === '' || cnicValidate === true) {
-			this.setState({
-				firstScreenValidate: true,
-			})
-		} else {
-			this.setState({
-				firstScreenConfirmLoading: true,
-			})
 
-			var body = {
-				unitId: formData.unitId,
-				projectId: formData.projectId,
-				floorId: formData.floorId,
-				unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
-				discounted_price: formData.discountedPrice === null || formData.discountedPrice === '' ? null : formData.discountedPrice,
-				discount_amount: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
-				unitStatus: 'Token',
-				installmentDue: formData.paymentPlan,
-				finalPrice: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
-				remainingPayment: remainingPayment,
-				installmentAmount: formData.token,
-				type: formData.type,
-			}
-			var leadId = []
-			leadId.push(lead.id)
-			axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
-				.then((res) => {
-					axios.get(`/api/leads/project/byId?id=${lead.id}`)
-						.then((res) => {
-							let responseData = res.data;
-							if (!responseData.paidProject) {
-								responseData.paidProject = responseData.project;
-							}
-							this.props.dispatch(setlead(responseData));
-							this.setState({
-								secondScreenData: res.data,
-								openFirstScreenModal: false,
-								firstScreenDone: false,
-								firstScreenConfirmLoading: false,
-							}, () => {
-								helper.successToast('Unit Has Been Booked')
-							})
-						}).catch(() => {
-							helper.errorToast('Something went wrong!!!')
-							this.setState({
-								firstScreenConfirmLoading: false,
-							})
-						})
-				}).catch(() => {
-					helper.errorToast('Something went wrong!!')
-					this.setState({
-						firstScreenConfirmLoading: false,
-					})
-				})
+		this.setState({
+			firstScreenConfirmLoading: true,
+		})
+
+		var body = {
+			unitId: formData.unitId,
+			projectId: formData.projectId,
+			floorId: formData.floorId,
+			unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
+			discounted_price: formData.discountedPrice === null || formData.discountedPrice === '' ? null : formData.discountedPrice,
+			discount_amount: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
+			unitStatus: 'Token',
+			installmentDue: formData.paymentPlan,
+			finalPrice: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
+			remainingPayment: remainingPayment,
+			installmentAmount: formData.token,
+			type: formData.type,
 		}
+		var leadId = []
+		leadId.push(lead.id)
+		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
+			.then((res) => {
+				axios.get(`/api/leads/project/byId?id=${lead.id}`)
+					.then((res) => {
+						let responseData = res.data;
+						if (!responseData.paidProject) {
+							responseData.paidProject = responseData.project;
+						}
+						this.props.dispatch(setlead(responseData));
+						this.setState({
+							secondScreenData: res.data,
+							openFirstScreenModal: false,
+							firstScreenDone: false,
+							firstScreenConfirmLoading: false,
+						}, () => {
+							helper.successToast('Unit Has Been Booked')
+						})
+					}).catch(() => {
+						helper.errorToast('Something went wrong!!!')
+						this.setState({
+							firstScreenConfirmLoading: false,
+						})
+					})
+			}).catch(() => {
+				helper.errorToast('Something went wrong!!')
+				this.setState({
+					firstScreenConfirmLoading: false,
+				})
+			})
 	}
 
 	firstScreenConfirmModal = (status) => {
@@ -926,8 +921,6 @@ class Payments extends Component {
 							getAllFloors={getAllFloors}
 							allUnits={allUnits}
 							firstScreenConfirmLoading={firstScreenConfirmLoading}
-							firstScreenValidate={firstScreenValidate}
-							handleForm={this.handleForm}
 							firstScreenConfirmModal={this.firstScreenConfirmModal}
 							submitFirstScreen={this.submitFirstScreen}
 						/>

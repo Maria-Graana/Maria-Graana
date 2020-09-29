@@ -24,8 +24,6 @@ class FirstScreenConfirmModal extends React.Component {
       allUnits,
       submitFirstScreen,
       firstScreenConfirmLoading,
-      firstScreenValidate,
-      handleForm,
     } = this.props
 
     var project = getAllProject.find((item) => { return data.projectId === item.id && item })
@@ -47,23 +45,6 @@ class FirstScreenConfirmModal extends React.Component {
             <Text style={styles.noramlText}>Payment Plan: <Text style={styles.mainTextLarge}>{data.paymentPlan}</Text></Text>
             <Text style={styles.noramlText}>Final Price: <Text style={styles.mainTextLarge}>{formatPrice(data.finalPrice ? data.finalPrice : '')}</Text></Text>
           </View>
-          <SimpleInputText
-            name={'cnic'}
-            placeholder={'Client CNIC'}
-            label={'CLIENT CNIC'}
-            value={data.cnic}
-            keyboardType={'numeric'}
-            onChangeHandle={handleForm}
-            formatValue={''}
-            editable={true}
-            fromatName={false}
-          />
-          {
-            firstScreenValidate === true && data.cnic === null || data.cnic === '' ?
-              <ErrorMessage errorMessage={'Required'} />
-              :
-              data.cnic && data.cnic.length < 15 && firstScreenValidate === true ? <ErrorMessage errorMessage={'Enter Valid CNIC'} /> : null
-          }
           <View style={styles.confirmBtnView}>
             <TouchableOpacity style={[styles.confirmBtn]} onPress={() => { firstScreenConfirmLoading != true && submitFirstScreen() }}>
               <Text style={[styles.textCenter, styles.activeBtn]}>{firstScreenConfirmLoading === true ? 'Wait...' : 'BOOK'}</Text>

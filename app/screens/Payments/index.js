@@ -19,6 +19,7 @@ import styles from './style';
 import AddAttachmentPopup from '../../components/AddAttachmentPopup'
 import * as DocumentPicker from 'expo-document-picker';
 import { cos } from 'react-native-reanimated';
+import { setCMPaymennt } from '../../actions/addCMPayment';
 
 
 class Payments extends Component {
@@ -49,6 +50,7 @@ class Payments extends Component {
 				type: '',
 				cmLeadId: lead.id,
 				details: '',
+				visible: false
 			},
 			unitId: null,
 			unitPrice: null,
@@ -98,6 +100,8 @@ class Payments extends Component {
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
 		this.handleForm(formData.projectId, 'projectId')
+		console.log('CMAttachment: ', this.props.CMAttachment)
+		console.log('CMPayment: ', this.props.CMPayment)
 	}
 
 	setdefaultFields = (lead) => {
@@ -206,11 +210,11 @@ class Payments extends Component {
 		// const { lead } = this.props
 		const array = [];
 
-		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null ) {
-				array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null) {
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
 		}
-		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null ) {
-				array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null) {
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -462,11 +466,12 @@ class Payments extends Component {
 	}
 
 	addPaymentModalToggle = (status) => {
+		const { secondFormData } = this.state
 		if (status === true) {
 			this.setState({
 				addPaymentModalToggleState: status,
 				secondCheckValidation: false,
-				secondFormLeadData:{},
+				secondFormLeadData: {},
 			})
 		} else if (status === false) {
 			this.setState({
@@ -488,6 +493,7 @@ class Payments extends Component {
 		const { secondFormData } = this.state
 		const newSecondFormData = secondFormData
 		newSecondFormData[name] = value
+		console.log(value, name)
 		this.setState({
 			secondFormData: newSecondFormData,
 		})
@@ -658,6 +664,7 @@ class Payments extends Component {
 
 	goToPayAttachments = () => {
 		const { navigation, lead } = this.props;
+		this.addPaymentModalToggle(false)
 		navigation.navigate('Attachments', { rcmLeadId: lead.id });
 	}
 
@@ -964,7 +971,9 @@ class Payments extends Component {
 mapStateToProps = (store) => {
 	return {
 		user: store.user.user,
-		lead: store.lead.lead
+		lead: store.lead.lead,
+		CMPayment: store.CMPayment.CMPayment,
+		CMAttachment: store.CMAttachment.CMAttachment,
 	}
 }
 

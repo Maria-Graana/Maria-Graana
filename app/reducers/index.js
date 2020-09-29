@@ -6,6 +6,8 @@ import sale from './sale';
 import listings from './listings'
 import areasReducer from './areas'
 import property from './property';
+import CMAttachment from './CMAttachment';
+import CMPayment from './addCMPayment';
 
 export default combineReducers({
     lead,
@@ -14,5 +16,7 @@ export default combineReducers({
     listings,
     areasReducer,
     property,
-    contacts
+    contacts,
+    CMAttachment,
+    CMPayment
 })

@@ -656,6 +656,11 @@ class Payments extends Component {
 		navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
 	}
 
+	goToPayAttachments = () => {
+		const { navigation, lead } = this.props;
+		navigation.navigate('Attachments', { rcmLeadId: lead.id });
+	}
+
 	goToDiaryForm = (taskType) => {
 		const { navigation, route, user } = this.props;
 		navigation.navigate('AddDiary', {
@@ -693,7 +698,6 @@ class Payments extends Component {
 	}
 
 	attechmentModalToggle = (status) => {
-		console.log(status)
 		this.setState({
 			attachmentVisible: status,
 		})

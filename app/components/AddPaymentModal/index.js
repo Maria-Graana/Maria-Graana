@@ -25,6 +25,8 @@ class AddPaymentModal extends React.Component {
       modalLoading,
       addPaymentLoading,
       attechmentModalToggle,
+      goToPayAttachments,
+      secondFormLeadData,
       remarks,
     } = this.props
     return (
@@ -98,20 +100,39 @@ class AddPaymentModal extends React.Component {
 
                   {/* {
                     secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' &&
-                    <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { attechmentModalToggle(true) }}>
+                    <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { goToPayAttachments(true) }}>
                       <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
                       <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
                     </TouchableOpacity>
                   } */}
 
+                  {
+                    secondFormLeadData.status === 'rejected' ?
+                      <View style={styles.reSubmiitBtnMain}> 
+                        <TouchableOpacity style={[styles.bookedBtn, styles.reSubmitBtns]} onPress={() => {  addPaymentModalToggle(false) }}>
+                          {/* <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> */}
+                          <Text style={[styles.bookedBtnText, styles.reSubmitText]}>
+                            CANCEL
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={[styles.bookedBtn, styles.reSubmitBtns, styles.reSubmitLight]} onPress={() => { addPaymentLoading != true && secondFormSubmit() }}>
+                          {/* <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> */}
+                          <Text style={[styles.bookedBtnText, styles.reSubmitText, styles.reSubmitTextDark]}>
+                            {addPaymentLoading === true ? 'Wait...' : 'RE-SUBMIT'}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                      :
+                      <TouchableOpacity style={styles.bookedBtn} onPress={() => { addPaymentLoading != true && secondFormSubmit() }}>
+                        <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
+                        <Text style={styles.bookedBtnText}>
+                          {addPaymentLoading === true ? 'Wait...' : 'OK'}
+                        </Text>
+                      </TouchableOpacity>
+                  }
 
 
-                  <TouchableOpacity style={styles.bookedBtn} onPress={() => {addPaymentLoading != true && secondFormSubmit() }}>
-                    <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
-                    <Text style={styles.bookedBtnText}>
-                      {addPaymentLoading === true ? 'Wait...' : 'OK'}
-                    </Text>
-                  </TouchableOpacity>
                 </View>
               </ScrollView>
               : null

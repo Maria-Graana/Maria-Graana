@@ -146,12 +146,9 @@ export default styles = StyleSheet.create({
     marginRight: 0,
   },
   reSubmitTextDark: {
-    color: '#006ff1',
+    color: '#006ff1'
   },
   cancelLight: {
-    backgroundColor: '#cbcbcb',
-    borderColor: '#bbb',
     flex: 1,
-    color: '#e7ecf0'
   },
 });

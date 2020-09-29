@@ -59,6 +59,7 @@ class Payments extends Component {
 				investment: true,
 				quartarly: true,
 			},
+			secondFormLeadData: {},
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
@@ -638,7 +639,8 @@ class Payments extends Component {
 					paymentId: id,
 					paymentOldValue: editLeadData.installmentAmount,
 					modalLoading: false,
-					remarks: editLeadData.remarks
+					remarks: editLeadData.remarks,
+					secondFormLeadData: editLeadData,
 				})
 			})
 	}
@@ -819,6 +821,7 @@ class Payments extends Component {
 			isVisible,
 			checkLeadClosedOrNot,
 			remarks,
+			secondFormLeadData,
 		} = this.state
 		return (
 			<View>
@@ -901,6 +904,7 @@ class Payments extends Component {
 						modalLoading={modalLoading}
 						addPaymentLoading={addPaymentLoading}
 						remarks={remarks}
+						secondFormLeadData={secondFormLeadData}
 						attechmentModalToggle={this.attechmentModalToggle}
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						secondHandleForm={this.secondHandleForm}

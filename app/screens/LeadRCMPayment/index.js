@@ -25,7 +25,7 @@ import HistoryModal from '../../components/HistoryModal/index';
 class LeadRCMPayment extends React.Component {
     constructor(props) {
         super(props)
-        const {user, lead} = this.props;
+        const { user, lead } = this.props;
         this.state = {
             loading: true,
             isVisible: false,
@@ -215,12 +215,12 @@ class LeadRCMPayment extends React.Component {
     showLeadPaymentModal = () => {
         const { lead } = this.state;
         var commissionPayment = lead.commissionPayment
-            if (commissionPayment !== null) {
-                this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
-            }
-            else {
-                this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
-            }
+        if (commissionPayment !== null) {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+        }
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+        }
     }
 
 
@@ -232,9 +232,11 @@ class LeadRCMPayment extends React.Component {
         var leadId = []
         leadId.push(lead.id)
         axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
-            this.setState({ lead: response.data }, () => {
-                this.getSelectedProperty(lead);
-            });
+            if (response.data) {
+                this.setState({ lead: response.data }, () => {
+                    this.getSelectedProperty(response.data);
+                });
+            }
         }).catch(error => {
             console.log(error);
         })
@@ -258,7 +260,7 @@ class LeadRCMPayment extends React.Component {
         const { lead } = this.state;
         const { user } = this.props;
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
-        if(leadAssignedSharedStatus){
+        if (leadAssignedSharedStatus) {
             Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
                 { text: 'Yes', onPress: () => this.selectDifferentProperty() },
                 { text: 'No', style: 'cancel' },

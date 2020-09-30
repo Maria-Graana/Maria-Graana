@@ -18,7 +18,6 @@ import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style';
 import AddAttachmentPopup from '../../components/AddAttachmentPopup'
 import * as DocumentPicker from 'expo-document-picker';
-import { cos } from 'react-native-reanimated';
 import { setCMPaymennt } from '../../actions/addCMPayment';
 
 
@@ -47,13 +46,7 @@ class Payments extends Component {
 				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
 			},
 			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
-			secondFormData: {
-				installmentAmount: null,
-				type: '',
-				cmLeadId: lead.id,
-				details: '',
-				visible: false
-			},
+			secondFormData: { ...this.props.CMPayment },
 			unitId: null,
 			unitPrice: null,
 			checkPaymentPlan: {
@@ -99,10 +92,44 @@ class Payments extends Component {
 
 	componentDidMount() {
 		const { formData, remarks } = this.state
+		const { navigation } = this.props
+
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
 		this.handleForm(formData.projectId, 'projectId')
+		this._unsubscribe = navigation.addListener('focus', () => {
+			this.reopenPaymentModal();
+		})
+	}
+
+	componentWillUnmount() {
+		this.clearPaymentsValuesFromRedux()
+	}
+
+	reopenPaymentModal = () => {
+		this.setState({
+			addPaymentModalToggleState: this.props.CMPayment.visible
+		})
+	}
+
+	clearPaymentsValuesFromRedux = (status) => {
+		const newObject = {
+			installmentAmount: null,
+			type: '',
+			cmLeadId: null,
+			details: '',
+			visible: status,
+			//	fileName: '',
+
+			// uri: '',
+			// size: null,
+			// title: '',
+			attachments: [],
+		}
+		this.setState({ secondFormData: newObject }, () => {
+			this.props.dispatch(setCMPaymennt(newObject))
+		})
 	}
 
 	setdefaultFields = (lead) => {
@@ -484,22 +511,18 @@ class Payments extends Component {
 	}
 
 	addPaymentModalToggle = (status) => {
-		const { secondFormData } = this.state
+		const { secondFormData, attachmentData } = this.state
 		if (status === true) {
+			this.clearPaymentsValuesFromRedux(status)
 			this.setState({
 				addPaymentModalToggleState: status,
 				secondCheckValidation: false,
 				secondFormLeadData: {},
 			})
 		} else if (status === false) {
+			this.clearPaymentsValuesFromRedux(status)
 			this.setState({
 				addPaymentModalToggleState: status,
-				secondFormData: {
-					installmentAmount: null,
-					type: '',
-					details: '',
-					cmLeadId: this.props.lead.id,
-				},
 				remarks: null,
 				editaAble: false,
 			})
@@ -508,14 +531,16 @@ class Payments extends Component {
 	}
 
 	secondHandleForm = (value, name) => {
-		const { secondFormData } = this.state
-		const newSecondFormData = secondFormData
+		const { secondFormData, attachmentData, addPaymentModalToggleState } = this.state
+		const newSecondFormData = { ...secondFormData, ...attachmentData, visible: addPaymentModalToggleState }
 		newSecondFormData[name] = value
+		this.props.dispatch(setCMPaymennt(newSecondFormData))
 		this.setState({
 			secondFormData: newSecondFormData,
 		})
 	}
 
+	// ====================== Function for submit second Screen *******
 	secondFormSubmit = () => {
 		const {
 			secondFormData,
@@ -527,45 +552,57 @@ class Payments extends Component {
 			attachmentData,
 		} = this.state
 
+		const { CMPayment } = this.props
+
 
 		if (secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' && secondFormData.type != '') {
 			this.setState({
 				addPaymentLoading: true,
 			})
 			if (editaAble === false) {
-				var attachmentDataBOdy = {
-					name: attachmentData.fileName,
-					type: 'file/' + attachmentData.fileName.split('.').pop(),
-					uri: attachmentData.uri
-				}
-				var fd = new FormData()
-				fd.append('file', attachmentDataBOdy)
+				
 				var body = {
 					...secondFormData,
+					cmLeadId: this.props.lead.id,
 					remainingPayment: remainingPayment - secondFormData.installmentAmount,
 					unitStatus: this.props.lead.installmentDue,
 					unitId: this.props.lead.unitId,
 				}
+
+				// ====================== API call for added attachments
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
-						if (attachmentData.fileName != '') {
-							axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
-								.then((res) => {
-									this.fetchLead();
-									this.setState({
-										addPaymentModalToggleState: false,
-										secondFormData: {
-											installmentAmount: null,
-											type: '',
-											details: '',
-											cmLeadId: this.props.lead.id,
-										},
-										remainingPayment: remainingPayment - secondFormData.installmentAmount,
-										addPaymentLoading: false,
-									}, () => {
-										helper.successToast('Payment Added')
+
+						// ====================== If have attachments then this check will b execute
+						if (CMPayment.attachments.length > 0) {
+
+							// ====================== Using map for Uploading Attachments
+							CMPayment.attachments.map((item, index) => {
+
+								// ====================== attachment payload requirments
+								var attachmentDataBOdy = {
+									name: item.fileName,
+									type: 'file/' + item.fileName.split('.').pop(),
+									uri: item.uri,
+									title: item.title
+								}
+								var fd = new FormData()
+								fd.append('file', attachmentDataBOdy)
+
+								// ====================== API call for Attachments base on Payment ID
+								axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
+									.then((res) => {
+										this.fetchLead();
+										this.setState({
+											addPaymentModalToggleState: false,
+											remainingPayment: remainingPayment - secondFormData.installmentAmount,
+											addPaymentLoading: false,
+										}, () => {
+											helper.successToast('Payment Added')
+										})
 									})
-								})
+							})
+
 						} else {
 							this.fetchLead();
 							this.setState({
@@ -600,6 +637,7 @@ class Payments extends Component {
 				var body = {
 					...secondFormData,
 					remainingPayment: total,
+					cmLeadId: this.props.lead.id,
 				}
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
@@ -650,6 +688,18 @@ class Payments extends Component {
 			.then((res) => {
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
+				
+				var setValuesForRedux =  {
+					attachments: [...editLeadData.paymentAttachments],
+					cmLeadId: this.props.lead.id,
+					details: editLeadData.details,
+					installmentAmount: null,
+					type: editLeadData.type,
+					visible: true,
+				}
+
+				this.props.dispatch(setCMPaymennt(setValuesForRedux))
+				
 				this.setState({
 					secondFormData: {
 						installmentAmount: editLeadData.installmentAmount,
@@ -681,8 +731,10 @@ class Payments extends Component {
 
 	goToPayAttachments = () => {
 		const { navigation, lead } = this.props;
-		this.addPaymentModalToggle(false)
-		navigation.navigate('Attachments', { rcmLeadId: lead.id });
+		this.setState({
+			addPaymentModalToggleState: false,
+		})
+		navigation.navigate('AttachmentsForPayments', { rcmLeadId: lead.id });
 	}
 
 	goToDiaryForm = (taskType) => {

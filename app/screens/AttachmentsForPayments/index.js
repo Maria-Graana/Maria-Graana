@@ -8,50 +8,55 @@ import _ from 'underscore';
 import AddAttachment from './addAttachment';
 import axios from 'axios';
 import Loader from '../../components/loader'
+import { connect } from 'react-redux';
+import { setCMPaymennt } from '../../actions/addCMPayment';
+
 
 class AttachmentsForPayments extends Component {
 
+    attachments = [];
     constructor(props) {
         super(props);
         this.state = {
-            attachmentRows: [],
             isVisible: false,
             checkValidation: false,
-            loading: true,
             title: '',
-            formData: {
-                size: '',
-                title: '',
-                fileName: '',
-                uri: '',
-            }
+            formData: { ...this.props.CMPayment }
         }
     }
 
     componentDidMount() {
-        this.getAttachmentsFromServer();
+        //this.getAttachmentsFromServer();
     }
 
     showModal = () => {
-        this.setState({ isVisible: true, checkValidation: false })
+        const { formData } = this.state;
+        this.setState({ isVisible: true, checkValidation: false, formData: { title: '', fileName: '', size: '', uri: '' }, title: '' })
+    }
+
+    setValues = (value) => {
+        this.props.dispatch(setCMPaymennt(value));
     }
 
     closeModal = () => {
-        const { isVisible } = this.state;
+        const { isVisible, formData } = this.state;
+        const { CMPayment } = this.props;
+        const copyFormData = { ...formData };
+        copyFormData.fileName = '';
+        copyFormData.size = null;
+        copyFormData.uri = '';
+        copyFormData.title = '';
         this.setState({
             isVisible: !isVisible,
-            title: '',
-            formData: { fileName: '', size: '', uri: '', title: '' }
-        });
-    }
-
-    setTitle = (title) => {
-        this.setState({ title: title });
+        }, () => {
+            this.setValues({ ...CMPayment, copyFormData });
+        })
     }
 
     getAttachmentFromStorage = () => {
-        const { title } = this.state;
-        // console.log('pickDocment')
+        const { title, formData } = this.state;
+        var newFormData = { ...formData }
+
         let options = {
             type: '*/*',
             copyToCacheDirectory: true,
@@ -61,90 +66,43 @@ class AttachmentsForPayments extends Component {
                 Alert.alert('Pick File', 'Please pick a file from documents!')
             }
             else {
-                this.setState({ formData: { fileName: item.name, size: item.size, uri: item.uri, title: title } }, () => {
+                newFormData.fileName = item.name;
+                newFormData.size = item.size;
+                newFormData.uri = item.uri;
+                // console.log(newFormData)
+
+                this.setState({
+                    formData: newFormData,
                 })
             }
-
         }).catch(error => {
             console.log(error);
         })
     }
 
-    getAttachmentsFromServer = () => {
-        const { route } = this.props;
-        const { rcmLeadId, cmLeadId } = route.params;
-        // url is based if coming for rcmlead or cmlead
-        const url = rcmLeadId ? `/api/leads/comments?rcmLeadId=${rcmLeadId}&type=attachment` :
-            `/api/leads/comments?cmLeadId=${cmLeadId}&type=attachment`;
 
-        axios.get(url).then(response => {
-            this.setState({
-                attachmentRows: response.data,
-                formData:
-                    { title: '', fileName: '', size: '', uri: '' },
-                title: '',
-                loading: false
-            });
-        }).catch(error => {
-            console.log(error);
-            this.setState({ loading: false });
-        })
-    }
 
-    addAttachmentToList = () => {
-        const { formData } = this.state;
-        let document = {
-            name: formData.fileName,
-            type: 'file/' + formData.fileName.split('.').pop(),
-            uri: formData.uri
-        }
-        this.uploadAttachment(document);
-    }
-
-    uploadAttachment(data) {
-        const { title } = this.state;
-        const { route } = this.props;
-        const { rcmLeadId, cmLeadId } = route.params;
-        const url = rcmLeadId ? `/api/leads/attachment?rcmLeadId=${rcmLeadId}&title=${title}` :
-            `/api/leads/attachment?cmLeadId=${cmLeadId}&title=${title}`
-
-        let fd = new FormData()
-        fd.append('file', data);
-        this.setState({ loading: true });
-        axios.post(url, fd).then(response => {
-            this.getAttachmentsFromServer();
-        }).catch(error => {
-            console.log('error=>', error.message);
-        })
-    }
-
-    deleteAttachment = (item) => {
-        this.deleteAttachmentFromServer(item.id);
+    deleteAttachmentLocally = (item) => {
+        const { CMPayment } = this.props;
+        let newPaymentArray = { ...CMPayment };
+        newPaymentArray = _.without(newPaymentArray.attachments, item);
+        this.setValues({ ...CMPayment, attachments: newPaymentArray })
     }
 
     showDeleteDialog(item) {
         Alert.alert('Delete attachment', 'Are you sure you want to delete this attachment ?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', onPress: () => this.deleteAttachment(item) },
+            { text: 'Delete', onPress: () => this.deleteAttachmentLocally(item) },
         ],
             { cancelable: false })
     }
 
 
-    deleteAttachmentFromServer(attachmentId) {
-        this.setState({ loading: true });
-        axios.delete(`/api/leads/comments/remove?id=${attachmentId}`)
-            .then((res) => {
-                this.getAttachmentsFromServer();
-            })
-            .catch((error) => {
-                console.log('error', error.message)
-            })
-    }
-
     // ********* On form Submit Function
     formSubmit = () => {
         const { formData, title } = this.state
+        const { CMPayment } = this.props;
+        console.log(CMPayment)
 
         // ********* Form Validation Check
         if (!title ||
@@ -155,47 +113,66 @@ class AttachmentsForPayments extends Component {
             })
         } else {
             // ********* Call Add Attachment API here :)
-            this.setState({ isVisible: false })
-            this.addAttachmentToList();
+            var objectForAttachment = {
+                fileName: '',
+                uri: '',
+                size: null,
+                title: '',
+            }
+            objectForAttachment.fileName = formData.fileName;
+            objectForAttachment.size = formData.size;
+            objectForAttachment.uri = formData.uri;
+            objectForAttachment.title = title;
+            CMPayment.attachments.push(objectForAttachment);
+            var payload = {
+                ...CMPayment,
+            }
+            console.log('8|==========================> ~~~', payload)
+            this.setState({ isVisible: false }, () => {
+                this.setValues(payload);
+            })
+
         }
     }
 
     render() {
-        const { attachmentRows, isVisible, formData, checkValidation, title, loading } = this.state;
+        const { isVisible, formData, checkValidation, title, loading } = this.state;
+        const { CMPayment } = this.props;
         return (
-            !loading ?
-                <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
-                    <AddAttachmentPopup
-                        isVisible={isVisible}
-                        formData={formData}
-                        title={title}
-                        setTitle={(title) => this.setTitle(title)}
-                        formSubmit={this.formSubmit}
-                        checkValidation={checkValidation}
-                        getAttachmentFromStorage={this.getAttachmentFromStorage}
-                        closeModal={() => this.closeModal()}
-                    />
-                    <FlatList
-                        ref={ref => { this.flatList = ref }}
-                        contentContainerStyle={{ flexGrow: 1 }}
-                        onContentSizeChange={() => this.flatList.scrollToEnd({ animated: true })}
-                        data={attachmentRows}
+            <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
+                <AddAttachmentPopup
+                    isVisible={isVisible}
+                    formData={formData}
+                    title={title}
+                    setTitle={(title) => this.setState({ title: title })}
+                    formSubmit={this.formSubmit}
+                    checkValidation={checkValidation}
+                    getAttachmentFromStorage={this.getAttachmentFromStorage}
+                    closeModal={() => this.closeModal()}
+                />
+                <FlatList
+                    ref={ref => { this.flatList = ref }}
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    onContentSizeChange={() => this.flatList.scrollToEnd({ animated: true })}
+                    data={CMPayment.attachments ? CMPayment.attachments : []}
+                    renderItem={({ item }) => (
+                        <AttachmentTile
+                            data={item}
+                            deleteAttachment={(item) => this.showDeleteDialog(item)} />
+                    )}
+                    ListFooterComponent={<AddAttachment onPress={this.showModal} />}
+                    keyExtractor={(item, index) => index.toString()}
+                />
 
-                        renderItem={({ item }) => (
-                            <AttachmentTile
-                                data={item}
-                                deleteAttachment={(item) => this.showDeleteDialog(item)} />
-                        )}
-                        ListFooterComponent={<AddAttachment onPress={this.showModal} />}
-                        keyExtractor={(item, index) => index.toString()}
-                    />
-
-                </View>
-                :
-                <Loader loading={loading} />
+            </View>
         )
     }
 }
-export default AttachmentsForPayments;
+mapStateToProps = (store) => {
+    return {
+        CMPayment: store.CMPayment.CMPayment,
+    }
+}
+export default connect(mapStateToProps)(AttachmentsForPayments)
 
 

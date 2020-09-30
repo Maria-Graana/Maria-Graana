@@ -582,12 +582,13 @@ class Payments extends Component {
 								// ====================== attachment payload requirments
 								var attachmentDataBOdy = {
 									name: item.fileName,
-									fileType: 'file/' + item.fileName.split('.').pop(),
+									type: 'file/' + item.fileName.split('.').pop(),
 									uri: item.uri,
 									title: item.title
 								}
 								var fd = new FormData()
 								fd.append('file', attachmentDataBOdy)
+								console.log(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
 
 								// ====================== API call for Attachments base on Payment ID
 								axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)

@@ -201,7 +201,7 @@ function MainStack() {
             />
             <Stack.Screen name='AttachmentsForPayments' component={AttachmentsForPayments}
                 options={({ navigation, route }) => ({
-                    title: 'ATTACHMENTS FOR PAYMENT',
+                    title: 'ATTACHMENTS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

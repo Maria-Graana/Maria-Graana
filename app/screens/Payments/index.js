@@ -582,7 +582,7 @@ class Payments extends Component {
 								// ====================== attachment payload requirments
 								var attachmentDataBOdy = {
 									name: item.fileName,
-									type: 'file/' + item.fileName.split('.').pop(),
+									fileType: 'file/' + item.fileName.split('.').pop(),
 									uri: item.uri,
 									title: item.title
 								}
@@ -686,9 +686,10 @@ class Payments extends Component {
 		this.setState({ addPaymentModalToggleState: true, modalLoading: true })
 		axios.get(`/api/leads/project/byId?id=${this.props.lead.id}`)
 			.then((res) => {
+
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
-				
+				console.log(editLeadData)
 				var setValuesForRedux =  {
 					attachments: [...editLeadData.paymentAttachments],
 					cmLeadId: this.props.lead.id,

@@ -19,6 +19,7 @@ import styles from './style';
 import AddAttachmentPopup from '../../components/AddAttachmentPopup'
 import * as DocumentPicker from 'expo-document-picker';
 import { cos } from 'react-native-reanimated';
+import { setCMPaymennt } from '../../actions/addCMPayment';
 
 
 class Payments extends Component {
@@ -43,12 +44,15 @@ class Payments extends Component {
 				token: lead.token != null ? lead.token : null,
 				type: '',
 				details: '',
+				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
 			},
+			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
 			secondFormData: {
 				installmentAmount: null,
 				type: '',
 				cmLeadId: lead.id,
 				details: '',
+				visible: false
 			},
 			unitId: null,
 			unitPrice: null,
@@ -59,6 +63,8 @@ class Payments extends Component {
 				investment: true,
 				quartarly: true,
 			},
+			cnicValidate: false,
+			secondFormLeadData: {},
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
@@ -102,7 +108,6 @@ class Payments extends Component {
 	setdefaultFields = (lead) => {
 		const { checkPaymentPlan } = this.state
 		var newcheckPaymentPlan = { ...checkPaymentPlan }
-
 		newcheckPaymentPlan['years'] = lead.paidProject != null && lead.paidProject.installment_plan != null || '' ? lead.paidProject.installment_plan : null
 		newcheckPaymentPlan['monthly'] = lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes' ? true : false
 		newcheckPaymentPlan['rental'] = lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false,
@@ -205,11 +210,11 @@ class Payments extends Component {
 		// const { lead } = this.props
 		const array = [];
 
-		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null ) {
-				array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null) {
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
 		}
-		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null ) {
-				array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null) {
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -223,12 +228,26 @@ class Payments extends Component {
 		})
 	}
 
+	validateCnic = (value) => {
+		if (value.length < 15 || value === '') {
+			this.setState({ cnicValidate: true })
+		} else { this.setState({ cnicValidate: false }) }
+	}
+
 	handleForm = (value, name) => {
 		const { formData, unitPrice } = this.state
 
-		// Set Values In form Data
+
 		const newFormData = { ...formData }
+
+		if (name === 'cnic') {
+			value = helper.normalizeCnic(value)
+			this.validateCnic(value)
+		}
+
+		// Set Values In form Data
 		newFormData[name] = value
+
 
 		// Get Floor base on Project Id
 		if (name === 'projectId') {
@@ -385,7 +404,8 @@ class Payments extends Component {
 
 	submitFirstScreen = () => {
 		const { lead } = this.props
-		const { formData, remainingPayment } = this.state
+		const { formData, remainingPayment, cnicValidate } = this.state
+
 		this.setState({
 			firstScreenConfirmLoading: true,
 		})
@@ -438,7 +458,7 @@ class Payments extends Component {
 	}
 
 	firstScreenConfirmModal = (status) => {
-		const { formData } = this.state
+		const { formData, cnicValidate } = this.state
 		if (
 			formData.projectId != null &&
 			formData.floorId != null &&
@@ -447,7 +467,10 @@ class Payments extends Component {
 			formData.paymentPlan != '' &&
 			formData.token != null &&
 			formData.token != '' &&
-			formData.type != ''
+			formData.type != '' &&
+			formData.cnic != null &&
+			formData.cnic != '' &&
+			cnicValidate != true
 		) {
 			this.setState({
 				openFirstScreenModal: status,
@@ -461,10 +484,12 @@ class Payments extends Component {
 	}
 
 	addPaymentModalToggle = (status) => {
+		const { secondFormData } = this.state
 		if (status === true) {
 			this.setState({
 				addPaymentModalToggleState: status,
 				secondCheckValidation: false,
+				secondFormLeadData: {},
 			})
 		} else if (status === false) {
 			this.setState({
@@ -638,7 +663,8 @@ class Payments extends Component {
 					paymentId: id,
 					paymentOldValue: editLeadData.installmentAmount,
 					modalLoading: false,
-					remarks: editLeadData.remarks
+					remarks: editLeadData.remarks,
+					secondFormLeadData: editLeadData,
 				})
 			})
 	}
@@ -655,6 +681,7 @@ class Payments extends Component {
 
 	goToPayAttachments = () => {
 		const { navigation, lead } = this.props;
+		this.addPaymentModalToggle(false)
 		navigation.navigate('Attachments', { rcmLeadId: lead.id });
 	}
 
@@ -819,6 +846,9 @@ class Payments extends Component {
 			isVisible,
 			checkLeadClosedOrNot,
 			remarks,
+			secondFormLeadData,
+			cnicValidate,
+			cnicEditable,
 		} = this.state
 		return (
 			<View>
@@ -839,6 +869,8 @@ class Payments extends Component {
 										firstScreenValidate={firstScreenValidate}
 										remainingPayment={remainingPayment}
 										checkLeadClosedOrNot={checkLeadClosedOrNot}
+										cnicValidate={cnicValidate}
+										cnicEditable={cnicEditable}
 										currencyConvert={this.currencyConvert}
 										handleForm={this.handleForm}
 										submitFirstScreen={this.submitFirstScreen}
@@ -901,6 +933,7 @@ class Payments extends Component {
 						modalLoading={modalLoading}
 						addPaymentLoading={addPaymentLoading}
 						remarks={remarks}
+						secondFormLeadData={secondFormLeadData}
 						attechmentModalToggle={this.attechmentModalToggle}
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						secondHandleForm={this.secondHandleForm}
@@ -959,7 +992,9 @@ class Payments extends Component {
 mapStateToProps = (store) => {
 	return {
 		user: store.user.user,
-		lead: store.lead.lead
+		lead: store.lead.lead,
+		CMPayment: store.CMPayment.CMPayment,
+		CMAttachment: store.CMAttachment.CMAttachment,
 	}
 }
 

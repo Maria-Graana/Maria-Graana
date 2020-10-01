@@ -248,7 +248,6 @@ class LeadRCMPayment extends React.Component {
             this.props.dispatch(setlead(response.data));
             this.setState({ lead: response.data }, () => {
                 this.getSelectedProperty(response.data);
-
             });
 
         }).catch(error => {

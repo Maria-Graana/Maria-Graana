@@ -22,6 +22,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
 import { navigationRef } from './app/navigation/RootNavigation';
 import { setInternetConnection } from './app/actions/user'
+import * as Updates from 'expo-updates';
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -67,13 +68,11 @@ export default class App extends React.Component {
 				resolve(config)
 			})
 		)
-		if (config.channel === 'production') {
-			Sentry.init({
-				enableInExpoDevelopment: false,
-				dsn: 'http://95bf407ef0f042b1b985d4efe8a8a75f@sentry.graana.rocks/8',
-			})
-			Sentry.setRelease(Constants.manifest.revisionId)
-		}
+		Sentry.init({
+			enableInExpoDevelopment: false,
+			dsn: 'http://95bf407ef0f042b1b985d4efe8a8a75f@sentry.graana.rocks/8',
+		})
+		Sentry.setRelease(Constants.manifest.revisionId)
 		await Font.loadAsync({
 			Roboto: require('native-base/Fonts/Roboto.ttf'),
 			Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),

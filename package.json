@@ -63,7 +63,8 @@
     "redux-thunk": "^2.3.0",
     "sentry-expo": "^2.0.3",
     "underscore": "^1.9.2",
-    "expo-media-library": "~8.2.1"
+    "expo-media-library": "~8.2.1",
+    "expo-updates": "~0.2.8"
   },
   "devDependencies": {
     "babel-preset-expo": "^8.2.3",

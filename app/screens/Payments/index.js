@@ -62,7 +62,6 @@ class Payments extends Component {
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
 			firstScreenDone: lead.unit != null && lead.unit.bookingStatus != 'Available' ? false : true,
-			// firstScreenDone: false,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
 			secondCheckValidation: false,
@@ -74,12 +73,6 @@ class Payments extends Component {
 			firstScreenConfirmLoading: false,
 			addPaymentLoading: false,
 			paymentPreviewLoading: false,
-			attachmentVisible: false,
-			attachmentData: {
-				fileName: '',
-				uri: '',
-				size: null,
-			},
 			tokenModalVisible: false,
 			reasons: [],
 			isVisible: false,
@@ -120,11 +113,6 @@ class Payments extends Component {
 			cmLeadId: null,
 			details: '',
 			visible: status,
-			//	fileName: '',
-
-			// uri: '',
-			// size: null,
-			// title: '',
 			attachments: [],
 		}
 		this.setState({ secondFormData: newObject }, () => {
@@ -511,7 +499,6 @@ class Payments extends Component {
 	}
 
 	addPaymentModalToggle = (status) => {
-		const { secondFormData, attachmentData } = this.state
 		if (status === true) {
 			this.clearPaymentsValuesFromRedux(status)
 			this.setState({
@@ -546,10 +533,8 @@ class Payments extends Component {
 			secondFormData,
 			editaAble,
 			paymentId,
-			formData,
 			remainingPayment,
 			paymentOldValue,
-			attachmentData,
 		} = this.state
 
 		const { CMPayment } = this.props
@@ -580,16 +565,15 @@ class Payments extends Component {
 							CMPayment.attachments.map((item, index) => {
 
 								// ====================== attachment payload requirments
-								var attachmentDataBOdy = {
+								let attachment = {
 									name: item.fileName,
 									type: 'file/' + item.fileName.split('.').pop(),
 									uri: item.uri,
-									title: item.title
 								}
-								var fd = new FormData()
-								fd.append('file', attachmentDataBOdy)
-								console.log(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
-
+								let fd = new FormData()
+								fd.append('file', attachment)
+								fd.append('title', item.title);
+								fd.append('type', 'file/' + item.fileName.split('.').pop())
 								// ====================== API call for Attachments base on Payment ID
 								axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
 									.then((res) => {
@@ -600,6 +584,7 @@ class Payments extends Component {
 											addPaymentLoading: false,
 										}, () => {
 											helper.successToast('Payment Added')
+											this.clearPaymentsValuesFromRedux(false);
 										})
 									})
 							})
@@ -755,36 +740,6 @@ class Payments extends Component {
 		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
 	}
 
-	getAttachmentFromStorage = () => {
-		const { title } = this.state;
-		let options = {
-			type: '*/*',
-			copyToCacheDirectory: true,
-		}
-		DocumentPicker.getDocumentAsync(options).then(item => {
-			if (item.type === 'cancel') {
-				Alert.alert('Pick File', 'Please pick a file from documents!')
-			}
-			else {
-				this.setState({ attachmentData: { fileName: item.name, size: item.size, uri: item.uri, } }, () => {
-				})
-			}
-
-		}).catch(error => {
-			console.log(error);
-		})
-	}
-
-	attechmentModalToggle = (status) => {
-		this.setState({
-			attachmentVisible: status,
-		})
-	}
-
-	submitAttachment = () => {
-		this.attechmentModalToggle(false)
-	}
-
 	tokenModalToggle = (status) => {
 		const { formData } = this.state
 		if (formData.token != '') {
@@ -891,8 +846,6 @@ class Payments extends Component {
 			firstScreenConfirmLoading,
 			addPaymentLoading,
 			paymentPreviewLoading,
-			attachmentVisible,
-			attachmentData,
 			tokenModalVisible,
 			reasons,
 			selectedReason,
@@ -1002,17 +955,7 @@ class Payments extends Component {
 						handleForm={this.handleForm}
 						tokenModalToggle={this.tokenModalToggle}
 					/>
-
-					<AddAttachmentPopup
-						isVisible={attachmentVisible}
-						formData={attachmentData}
-						formSubmit={this.submitAttachment}
-						getAttachmentFromStorage={this.getAttachmentFromStorage}
-						closeModal={() => this.attechmentModalToggle(false)}
-					/>
-
 				</View>
-
 				<LeadRCMPaymentPopup
 					reasons={reasons}
 					selectedReason={selectedReason}

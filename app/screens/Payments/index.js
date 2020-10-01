@@ -990,7 +990,6 @@ mapStateToProps = (store) => {
 		user: store.user.user,
 		lead: store.lead.lead,
 		CMPayment: store.CMPayment.CMPayment,
-		CMAttachment: store.CMAttachment.CMAttachment,
 	}
 }
 

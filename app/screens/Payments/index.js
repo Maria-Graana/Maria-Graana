@@ -675,7 +675,6 @@ class Payments extends Component {
 
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
-				console.log(editLeadData)
 				var setValuesForRedux =  {
 					attachments: [...editLeadData.paymentAttachments],
 					cmLeadId: this.props.lead.id,

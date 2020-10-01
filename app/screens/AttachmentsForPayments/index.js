@@ -89,10 +89,20 @@ class AttachmentsForPayments extends Component {
         this.setValues({ ...CMPayment, attachments: newPaymentArray })
     }
 
+    deleteAttachmentFromServer = (item) => {
+        axios.delete(`/api/leads/payment/attachment?attachmentId=${item.id}`)
+            .then((res) => {
+                this.deleteAttachmentLocally(item);
+            })
+            .catch((error) => {
+                console.log('error', error.message)
+            })
+    }
+
     showDeleteDialog(item) {
         Alert.alert('Delete attachment', 'Are you sure you want to delete this attachment ?', [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', onPress: () => this.deleteAttachmentLocally(item) },
+            { text: 'Delete', onPress: () => item.id ? this.deleteAttachmentFromServer(item) : this.deleteAttachmentLocally(item) },
         ],
             { cancelable: false })
     }
@@ -102,7 +112,7 @@ class AttachmentsForPayments extends Component {
     formSubmit = () => {
         const { formData, title } = this.state
         const { CMPayment } = this.props;
-       // console.log(CMPayment)
+        // console.log(CMPayment)
 
         // ********* Form Validation Check
         if (!title ||
@@ -127,7 +137,7 @@ class AttachmentsForPayments extends Component {
             var payload = {
                 ...CMPayment,
             }
-           // console.log('8|==========================> ~~~', payload)
+            // console.log('8|==========================> ~~~', payload)
             this.setState({ isVisible: false }, () => {
                 this.setValues(payload);
             })

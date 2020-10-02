@@ -100,14 +100,11 @@ const helper = {
 			data.map((item, index) => {
 				if (item.graana_id) {
 					item.images = item.property_images || []
-				} else {
-					item.images = item.armsPropertyImages || []
-				}
-				if ('armsuser' in item) {
-					item.user = item.armsuser
 					item.checkBox = false
 					return (matches.push(item))
 				} else {
+					item.images = item.armsPropertyImages || []
+					item.user = item.armsuser
 					item.checkBox = false
 					return (matches.push(item))
 				}

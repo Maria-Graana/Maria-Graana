@@ -18,9 +18,6 @@ class BuyPaymentView extends React.Component {
             handleAgreedAmountChange,
             handleTokenAmountChange,
             handleCommissionAmountChange,
-            showAgreedAmountArrow,
-            showTokenAmountArrow,
-            showCommissionAmountArrow,
             handleAgreedAmountPress,
             handleTokenAmountPress,
             handleCommissionAmountPress,
@@ -52,21 +49,6 @@ class BuyPaymentView extends React.Component {
                     showDate={false}
                 />
 
-                {/* <View style={[styles.mainBlackWrap]}>
-                    <View style={{ width: "50%", justifyContent: "center" }}>
-                        <Text style={[styles.blackInputText]}>AGREED AMOUNT</Text>
-                        <TextInput style={[styles.blackInput]} editable={!isLeadClosed} placeholder={'Enter Agreed Amount'} value={agreedAmount} keyboardType={'number-pad'} onChangeText={(text) => handleAgreedAmountChange(text)} />
-                    </View>
-                    <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(agreedAmount)} PKR`}</Text>
-                    {
-                        showAgreedAmountArrow &&
-                        <TouchableOpacity onPress={handleAgreedAmountPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center', justifyContent: "center" }]}>
-                            <Ionicons style={{ alignSelf: 'flex-end', marginRight: 10 }} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
-                        </TouchableOpacity>
-                    }
-
-                </View> */}
-
                 <InputField
                     label={'TOKEN'}
                     placeholder={'Enter Token Amount'}
@@ -84,32 +66,8 @@ class BuyPaymentView extends React.Component {
                     showDate={true}
                     dateStatus={{ status: tokenDateStatus, name: 'token' }}
                 />
-                {/* <View style={[styles.mainBlackWrap]}>
-                    <View style={{ width: "50%" }}>
-                        <Text style={[styles.blackInputText]}>TOKEN</Text>
-                        <TextInput style={[styles.blackInput]} editable={!isLeadClosed} placeholder={'Enter Token Amount'} value={(token)} keyboardType={'number-pad'} onChangeText={(text) => handleTokenAmountChange(text)} />
-                    </View>
-                    <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(token)} PKR`}</Text>
-                    {
-                        showTokenAmountArrow ?
-                            <TouchableOpacity onPress={handleTokenAmountPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center' }]}>
-                                <Ionicons style={{ alignSelf: 'flex-end', marginRight: 10 }} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
-                            </TouchableOpacity>
-                            :
-                            <View style={[styles.blackInputdate, { justifyContent: 'center' }]}>
-                                <Text style={{
-                                    letterSpacing: 0.5,
-                                    minHeight: 30,
-                                    marginLeft: 10,
-                                    fontSize: 10,
-                                    alignSelf: 'flex-end',
-                                    marginRight: 10
-                                }}>{lead.tokenPaymentTime && moment(lead.tokenPaymentTime).format('hh:mm A, MMMM DD')}</Text>
-                            </View>
-                    }
-
-                </View> */}
-                <InputField
+                
+                {/* <InputField
                     label={'COMMISSION PAYMENT'}
                     placeholder={'Enter Comission Payment'}
                     name={'commissionPayment'}
@@ -125,33 +83,8 @@ class BuyPaymentView extends React.Component {
                     editable={!isLeadClosed}
                     showDate={true}
                     dateStatus={{ status: comissionDateStatus, name: 'commissionPayment' }}
-                />
+                /> */}
 
-                {/* <View style={[styles.mainBlackWrap]}>
-                    <View style={{ width: "50%" }}>
-                        <Text style={[styles.blackInputText]}>COMMISSION PAYMENT</Text>
-                        <TextInput style={[styles.blackInput]} editable={!isLeadClosed} keyboardType={'number-pad'} value={(commissionPayment)} onChangeText={(text) => handleCommissionAmountChange(text)} />
-                    </View>
-                    <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(commissionPayment)} PKR`}</Text>
-                    {
-                        showCommissionAmountArrow ?
-                            <TouchableOpacity onPress={handleCommissionAmountPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center' }]} >
-                                <Ionicons style={{ alignSelf: 'flex-end', marginRight: 10 }} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
-                            </TouchableOpacity>
-                            :
-                            <View style={[styles.blackInputdate, { justifyContent: 'center' }]}>
-                                <Text style={{
-                                    letterSpacing: 0.5,
-                                    minHeight: 30,
-                                    marginLeft: 10,
-                                    fontSize: 10,
-                                    alignSelf: 'flex-end',
-                                    marginRight: 10
-                                }}>{lead.commissionTime && moment(lead.commissionTime).format('hh:mm A, MMMM DD')}</Text>
-                            </View>
-                    }
-
-                </View> */}
             </View >
         )
     }

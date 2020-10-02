@@ -180,7 +180,7 @@ class AddClient extends Component {
             firstName: client.firstName,
             lastName: client.lastName,
             email: client.email,
-            cnic: client.cnic,
+            cnic: String(client.cnic),
             contactNumber: number,
             address: client.address,
             contact1: number1,

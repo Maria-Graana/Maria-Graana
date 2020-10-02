@@ -82,7 +82,7 @@ class Landing extends React.Component {
 	render() {
 		const { tiles } = this.state
 		const { user, navigation } = this.props
-
+		
 		return (
 			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor, paddingHorizontal: wp('0%'), paddingLeft: 0 }]}>
 				<AndroidNotifications navigation={navigation} />

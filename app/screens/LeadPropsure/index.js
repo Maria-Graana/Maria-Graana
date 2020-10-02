@@ -68,7 +68,7 @@ class LeadPropsure extends React.Component {
         this.setState({ loading: true }, () => {
             axios.get(`/api/leads/${lead.id}/shortlist`)
                 .then((res) => {
-                    matches = helper.propertyCheck(res.data.rows)
+                    matches = helper.propertyIdCheck(res.data.rows)
                     this.setState({
                         matchData: matches,
                         progressValue: rcmProgressBar[lead.status]

@@ -59,7 +59,7 @@ class LeadOffer extends React.Component {
 		let matches = []
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
-				matches = helper.propertyCheck(res.data.rows)
+				matches = helper.propertyIdCheck(res.data.rows)
 				this.setState({
 					disableButton: false,
 					loading: false,

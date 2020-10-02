@@ -95,7 +95,7 @@ class LeadRCMPayment extends React.Component {
                 else {
                     if (response.data.paymentProperty) {
                         properties.push(response.data.paymentProperty);
-                        properties = helper.propertyCheck(properties)
+                        properties = helper.propertyIdCheck(properties)
                         this.setState({
                             loading: false,
                             allProperties: properties.length > 0 && properties,

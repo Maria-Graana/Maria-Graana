@@ -19,7 +19,7 @@ export default class SuccessModal extends React.Component {
                     <View style={{ justifyContent: "center", alignSelf: "center", alignItems: "center" }}>
                         <Text style={{ fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 20 }}>SUCCESSFULLY</Text>
                         <Text style={{ fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 20, color: AppStyles.colors.primaryColor }}>UPDATED!!</Text>
-                        <Text style={{ fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16 }}>{label}v{AppJson.expo.version}</Text>
+                        <Text style={{ fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16 }}>{label}v{this.props.expoVersion}</Text>
                     </View>
                     <View style={[AppStyles.mainInputWrap]}>
                         <TouchableButton

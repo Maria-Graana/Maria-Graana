@@ -17,7 +17,8 @@ class UpdateApp extends React.Component {
             appState: AppState.currentState,
             visible: false,
             loading: false,
-            successModal: false
+            successModal: false,
+            expoVersion: ''
         }
     }
 
@@ -34,7 +35,11 @@ class UpdateApp extends React.Component {
     async checkUpdates() {
         try {
             const canUpdate = await Updates.checkForUpdateAsync();
-            if (canUpdate.isAvailable) this.setState({ visible: true })
+            if (canUpdate.isAvailable) {
+                Sentry.captureException(`canUpdate.manifest.expo ! ${JSON.stringify(canUpdate.manifest.expo)}`)
+                expoVersion = canUpdate.manifest.expo.version
+                this.setState({ visible: true, expoVersion: expoVersion })
+            }
         } catch (e) {
             Sentry.captureException(`Error ! ${JSON.stringify(e)}`)
         }
@@ -61,7 +66,7 @@ class UpdateApp extends React.Component {
         return (
             <View>
                 <UpdateModal active={this.state.visible} click={this.updateSubmit} loading={this.state.loading} />
-                <SuccessModal active={this.state.successModal} click={this.reloadApp} loading={false} />
+                <SuccessModal version={this.state.expoVersion} active={this.state.successModal} click={this.reloadApp} loading={false} />
             </View>
 
         )

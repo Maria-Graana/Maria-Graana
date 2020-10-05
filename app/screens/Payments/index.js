@@ -545,7 +545,7 @@ class Payments extends Component {
 				addPaymentLoading: true,
 			})
 			if (editaAble === false) {
-				
+
 				var body = {
 					...secondFormData,
 					cmLeadId: this.props.lead.id,
@@ -554,57 +554,13 @@ class Payments extends Component {
 					unitId: this.props.lead.unitId,
 				}
 
-				// ====================== API call for added attachments
+				// ====================== API call for added Payments
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
 
 						// ====================== If have attachments then this check will b execute
-						if (CMPayment.attachments.length > 0) {
+						this.submitAttachment(res.data.id, false)
 
-							// ====================== Using map for Uploading Attachments
-							CMPayment.attachments.map((item, index) => {
-
-								// ====================== attachment payload requirments
-								let attachment = {
-									name: item.fileName,
-									type: 'file/' + item.fileName.split('.').pop(),
-									uri: item.uri,
-								}
-								let fd = new FormData()
-								fd.append('file', attachment)
-								fd.append('title', item.title);
-								fd.append('type', 'file/' + item.fileName.split('.').pop())
-								// ====================== API call for Attachments base on Payment ID
-								axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
-									.then((res) => {
-										this.fetchLead();
-										this.setState({
-											addPaymentModalToggleState: false,
-											remainingPayment: remainingPayment - secondFormData.installmentAmount,
-											addPaymentLoading: false,
-										}, () => {
-											helper.successToast('Payment Added')
-											this.clearPaymentsValuesFromRedux(false);
-										})
-									})
-							})
-
-						} else {
-							this.fetchLead();
-							this.setState({
-								addPaymentModalToggleState: false,
-								secondFormData: {
-									installmentAmount: null,
-									type: '',
-									details: '',
-									cmLeadId: this.props.lead.id,
-								},
-								remainingPayment: remainingPayment - secondFormData.installmentAmount,
-								addPaymentLoading: false,
-							}, () => {
-								helper.successToast('Payment Added')
-							})
-						}
 					}).catch(() => {
 						helper.errorToast('Payment Not Added')
 						this.setState({
@@ -627,21 +583,10 @@ class Payments extends Component {
 				}
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
-						this.fetchLead();
-						this.setState({
-							addPaymentModalToggleState: false,
-							secondFormData: {
-								installmentAmount: null,
-								type: '',
-								details: '',
-								cmLeadId: this.props.lead.id
-							},
-							remainingPayment: total,
-							editaAble: false,
-							addPaymentLoading: false,
-						}, () => {
-							helper.successToast('Payment Updated')
-						})
+
+						// ====================== If have attachments then this check will b execute
+						this.submitAttachment(paymentId, true)
+
 					}).catch(() => {
 						this.setState({
 							addPaymentLoading: false,
@@ -651,6 +596,67 @@ class Payments extends Component {
 		} else {
 			this.setState({
 				secondCheckValidation: true,
+			})
+		}
+	}
+
+	submitAttachment = (paymentId, checkForEdit) => {
+
+		const {
+			secondFormData,
+			remainingPayment,
+		} = this.state
+
+		const { CMPayment } = this.props
+
+		var message = checkForEdit === true ? 'Payment Updated' : 'Payment Added'
+
+		// ====================== If have attachments then this check will b execute
+		if (CMPayment.attachments.length > 0) {
+
+			// ====================== Using map for Uploading Attachments
+			CMPayment.attachments.map((item, index) => {
+
+				// ====================== attachment payload requirments
+				let attachment = {
+					name: item.fileName,
+					type: 'file/' + item.fileName.split('.').pop(),
+					uri: item.uri,
+				}
+				let fd = new FormData()
+				fd.append('file', attachment)
+				fd.append('title', item.title);
+				fd.append('type', 'file/' + item.fileName.split('.').pop())
+
+				// ====================== API call for Attachments base on Payment ID
+				axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
+					.then((res) => {
+						this.fetchLead();
+						this.setState({
+							addPaymentModalToggleState: false,
+							remainingPayment: remainingPayment - secondFormData.installmentAmount,
+							addPaymentLoading: false,
+						}, () => {
+							helper.successToast(message)
+							this.clearPaymentsValuesFromRedux(false);
+						})
+					})
+			})
+
+		} else {
+			this.fetchLead();
+			this.setState({
+				addPaymentModalToggleState: false,
+				secondFormData: {
+					installmentAmount: null,
+					type: '',
+					details: '',
+					cmLeadId: this.props.lead.id,
+				},
+				remainingPayment: remainingPayment - secondFormData.installmentAmount,
+				addPaymentLoading: false,
+			}, () => {
+				helper.successToast(message)
 			})
 		}
 	}
@@ -675,7 +681,7 @@ class Payments extends Component {
 
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
-				var setValuesForRedux =  {
+				var setValuesForRedux = {
 					attachments: [...editLeadData.paymentAttachments],
 					cmLeadId: this.props.lead.id,
 					details: editLeadData.details,
@@ -685,7 +691,7 @@ class Payments extends Component {
 				}
 
 				this.props.dispatch(setCMPaymennt(setValuesForRedux))
-				
+
 				this.setState({
 					secondFormData: {
 						installmentAmount: editLeadData.installmentAmount,

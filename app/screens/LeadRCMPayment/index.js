@@ -276,7 +276,7 @@ class LeadRCMPayment extends React.Component {
         const { user } = this.props;
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
         if (leadAssignedSharedStatus) {
-            if(lead.commissions) {
+            if (lead.commissions) {
                 helper.errorToast('Payment already added, cannot select another property');
                 return;
             }
@@ -641,20 +641,38 @@ class LeadRCMPayment extends React.Component {
                 // for commission addition
                 let body = { ...rcmPayment, rcmLeadId: lead.id }
                 delete body.visible;
-                //console.log('addBody=>', body);
-                axios.post(`/api/leads/project/payments`, body).then(response => {
-                    if (response.data) {
-                        // console.log('response => ', response.data)
-                        this.fetchLead();
-                        helper.successToast('Commission Payment Added')
+                axios.post(`/api/leads/project/payments`, body)
+                    .then(response => {
+                        if (response.data) {
+                            this.fetchLead();
+                            helper.successToast('Commission Payment Added')
+                        }
+                    })
+                    .catch(error => {
+                        helper.errorToast('Commission Payment Not Added');
+                    })
+                    .finally(() => {
                         this.clearReduxAndStateValues();
-                    }
-
-                });
+                    });
             }
             else {
                 // commission update mode 
-                console.log('edit mode');
+                //console.log('addBody=>', body);' 
+                let body = { ...rcmPayment, rcmLeadId: lead.id }
+                console.log(body)
+                delete body.visible;
+                axios.patch(`/api/leads/project/payment?id=${body.id}`, body)
+                    .then(response => {
+                        if (response.data) {
+                            this.fetchLead();
+                            helper.successToast('Commission Payment Updated')
+                        }
+                    })
+                    .catch(error => {
+                        helper.errorToast('Error Updating Commission Payment');
+                    }).finally(() => {
+                        this.clearReduxAndStateValues();
+                    });
             }
         }
         else {

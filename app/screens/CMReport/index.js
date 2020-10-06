@@ -724,17 +724,14 @@ class CMReport extends React.Component {
 
                                     {
                                         filterLabel === 'Daily' ?
-                                            <RectangleDaily targetNumber={dashBoardData.revenue} />
+                                            <RectangleDaily label={'Revenue'} targetNumber={dashBoardData.revenue} />
                                             :
                                             <RectangleContainer targetPercent={60} targetNumber={dashBoardData.revenue} totalTarget={dashBoardData.totalTarget} />
                                     }
                                     <View style={styles.sqaureView}>
-                                        <SquareContainer containerStyle={styles.squareRight} imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
-                                        <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
-                                    </View>
-                                    <View style={styles.sqaureView}>
-                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
-                                        <SquareContainer imagePath={amountPendingImg} label={'Amount Pending'} total={dashBoardData.pendingAmount} />
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                                        <SquareContainer imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
+
                                     </View>
                                     <View style={styles.graphContainer}>
                                         <Text style={styles.labelStyle}>Total Leads</Text>

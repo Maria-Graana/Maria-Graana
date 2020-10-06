@@ -28,6 +28,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { BarChart } from "react-native-chart-kit";
 import Loader from '../../components/loader';
+import RectangleDaily from '../../components/RectangleDaily';
 
 const _today = moment(new Date().dateString).format(_format);
 const _format = 'YYYY-MM-DD';
@@ -729,13 +730,10 @@ class RCMReport extends React.Component {
                             <ScrollView style={styles.scrollContainer}>
                                 <View style={{
                                 }}>
+                                    <RectangleDaily label={'Commission Revenue'} targetNumber={dashBoardData.totalRevenue} />
                                     <View style={styles.sqaureView}>
-                                        <SquareContainer containerStyle={styles.squareRight} imagePath={comissionRevenueImg} label={'Commission Revenue'} total={dashBoardData.totalRevenue} />
-                                        <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
-                                    </View>
-                                    <View style={styles.sqaureView}>
-                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
-                                        <SquareContainer imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                                        <SquareContainer imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
                                     </View>
                                     <View style={styles.sqaureView}>
                                         <SquareContainer containerStyle={styles.squareRight} imagePath={viewingConductedImg} label={'Viewings Conducted'} total={dashBoardData.viewingConducted} />

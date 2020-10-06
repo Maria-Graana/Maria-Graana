@@ -6,6 +6,5 @@ export function setRCMPayment(payment) {
 			type: types.SET_RCM_PAYMENT,
 			payload: payment
 		})
-		return payment
 	}
 }

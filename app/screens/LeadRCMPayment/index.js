@@ -15,12 +15,15 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import _ from 'underscore';
 import StaticData from '../../StaticData';
 import helper from '../../helper';
-import { formatPrice } from '../../PriceFormate'
 import { setlead } from '../../actions/lead';
+import { setRCMPayment, } from '../../actions/rcmPayment'
 import CMBottomNav from '../../components/CMBottomNav'
 import RentPaymentView from './rentPaymentView';
 import { ProgressBar } from 'react-native-paper';
 import HistoryModal from '../../components/HistoryModal/index';
+import AddCommissionModal from '../../components/AddCommissionModal';
+import { displayName } from 'react-native/Libraries/ReactNative/RootTagContext';
+
 
 class LeadRCMPayment extends React.Component {
     constructor(props) {
@@ -61,7 +64,10 @@ class LeadRCMPayment extends React.Component {
             monthlyFormatStatus: true,
             organization: 'arms',
             callModal: false,
-            meetings: []
+            meetings: [],
+            modalValidation: false,
+            addPaymentLoading: false,
+            editable: false,
         }
     }
 
@@ -72,7 +78,26 @@ class LeadRCMPayment extends React.Component {
         })
     }
 
+    clearReduxAndStateValues = () => {
+        const { dispatch } = this.props;
+        const newData = {
+            installmentAmount: null,
+            type: '',
+            rcmLeadId: null,
+            details: '',
+            visible: false,
+            paymentAttachments: [],
+        }
+        this.setState({
+            modalValidation: false,
+            addPaymentLoading: false,
+            editable: false
+        })
+        dispatch(setRCMPayment(newData));
+    }
+
     componentWillUnmount() {
+        this.clearReduxAndStateValues();
         this._unsubscribe();
     }
 
@@ -99,7 +124,7 @@ class LeadRCMPayment extends React.Component {
                             checkReasonValidation: '',
                             agreedAmount: lead.payment ? String(lead.payment) : '',
                             token: lead.token ? String(lead.token) : '',
-                            // commissionPayment: lead.commissionPayment ? String(lead.commissionPayment) : '',
+                            commissions: lead.commissions ? (lead.commissions) : null,
                             formData: {
                                 contract_months: lead.contract_months ? String(lead.contract_months) : '',
                                 security: lead.security ? String(lead.security) : '',
@@ -153,7 +178,7 @@ class LeadRCMPayment extends React.Component {
                         monthlyRent: lead.monthlyRent ? String(lead.monthlyRent) : ''
                     }
                 }, () => {
-                   // this.checkCommissionPayment(response.data);
+                    // this.checkCommissionPayment(response.data);
                 })
             })
             .catch((error) => {
@@ -206,13 +231,12 @@ class LeadRCMPayment extends React.Component {
 
     showLeadPaymentModal = () => {
         const { lead } = this.state;
-        // var commissionPayment = lead.commissionPayment
-        // if (commissionPayment !== null) {
-        //     this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
-        // }
-        // else {
-        //     this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
-        // }
+        if (lead.commissions && lead.commissions.installmentAmount) {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+        }
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+        }
     }
 
 
@@ -252,6 +276,10 @@ class LeadRCMPayment extends React.Component {
         const { user } = this.props;
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
         if (leadAssignedSharedStatus) {
+            if(lead.commissions) {
+                helper.errorToast('Payment already added, cannot select another property');
+                return;
+            }
             Alert.alert('WARNING', 'Selecting a different property will remove all payments, do you want to continue?', [
                 { text: 'Yes', onPress: () => this.selectDifferentProperty() },
                 { text: 'No', style: 'cancel' },
@@ -304,6 +332,7 @@ class LeadRCMPayment extends React.Component {
         var leadId = []
         leadId.push(lead.id)
         axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
+            //console.log(response);
             this.props.dispatch(setlead(response.data));
             this.setState({
                 showTokenAmountArrow: false,
@@ -575,6 +604,85 @@ class LeadRCMPayment extends React.Component {
             })
     }
 
+    onAddCommissionPayment = () => {
+        const { dispatch, rcmPayment } = this.props;
+        dispatch(setRCMPayment({ ...rcmPayment, visible: true }))
+    }
+
+    onModalCloseClick = () => {
+        this.clearReduxAndStateValues();
+    }
+
+    handleCommissionChange = (value, name) => {
+        const { rcmPayment, dispatch } = this.props
+        const newSecondFormData = { ...rcmPayment, visible: rcmPayment.visible }
+        newSecondFormData[name] = value
+        dispatch(setRCMPayment(newSecondFormData))
+    }
+
+    setCommissionEditData = (data) => {
+        const { dispatch } = this.props;
+        this.setState({ editable: true })
+        dispatch(setRCMPayment({ ...data, visible: true }))
+    }
+
+    goToPayAttachments = () => {
+        console.log('go to pay attachments');
+    }
+
+    submitCommissionPayment = () => {
+        const { rcmPayment, dispatch } = this.props;
+        const { lead, editable } = this.state;
+        if (rcmPayment.installmentAmount != null && rcmPayment.installmentAmount != '' && rcmPayment.type != '') {
+            this.setState({
+                addPaymentLoading: true,
+            })
+            if (editable === false) {
+                // for commission addition
+                let body = { ...rcmPayment, rcmLeadId: lead.id }
+                delete body.visible;
+                //console.log('addBody=>', body);
+                axios.post(`/api/leads/project/payments`, body).then(response => {
+                    if (response.data) {
+                        // console.log('response => ', response.data)
+                        this.fetchLead();
+                        helper.successToast('Commission Payment Added')
+                        this.clearReduxAndStateValues();
+                    }
+
+                });
+            }
+            else {
+                // commission update mode 
+                console.log('edit mode');
+            }
+        }
+        else {
+            // Installment amount or type is missing so validation goes true, show error
+            this.setState({
+                modalValidation: true,
+            })
+        }
+    }
+
+
+    fetchLead = () => {
+        const { dispatch, lead } = this.props;
+        const { rcmProgressBar } = StaticData
+        this.setState({ loading: true }, () => {
+            axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
+                if (response.data) {
+                    dispatch(setlead(response.data));
+                    this.setState({ progressValue: rcmProgressBar[response.data.status], loading: false, lead: response.data })
+                }
+                else {
+                    console.log('something went wrong in api')
+                }
+
+            })
+        });
+    }
+
     render() {
         const { loading,
             allProperties,
@@ -600,8 +708,9 @@ class LeadRCMPayment extends React.Component {
             monthlyFormatStatus,
             meetings,
             callModal,
+            modalValidation,
+            addPaymentLoading,
         } = this.state;
-
         return (
             !loading ?
                 <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
@@ -615,6 +724,17 @@ class LeadRCMPayment extends React.Component {
                         closeModal={() => this.closeModal()}
                         onPress={() => this.onHandleCloseLead()}
                     />
+
+                    <AddCommissionModal
+                        onModalCloseClick={this.onModalCloseClick}
+                        handleCommissionChange={this.handleCommissionChange}
+                        modalValidation={modalValidation}
+                        goToPayAttachments={() => this.goToPayAttachments()}
+                        submitCommissionPayment={() => this.submitCommissionPayment()}
+                        addPaymentLoading={addPaymentLoading}
+                        lead={lead}
+                    />
+
                     <HistoryModal
                         data={meetings}
                         closePopup={this.goToHistory}
@@ -674,6 +794,9 @@ class LeadRCMPayment extends React.Component {
                                                             tokenDateStatus={tokenDateStatus}
                                                             tokenPriceFromat={tokenPriceFromat}
                                                             agreeAmountFromat={agreeAmountFromat}
+
+                                                            onAddCommissionPayment={this.onAddCommissionPayment}
+                                                            editTile={this.setCommissionEditData}
 
                                                         />
                                                         :
@@ -736,7 +859,8 @@ class LeadRCMPayment extends React.Component {
 mapStateToProps = (store) => {
     return {
         user: store.user.user,
-        lead: store.lead.lead
+        lead: store.lead.lead,
+        rcmPayment: store.RCMPayment.RCMPayment,
     }
 }
 

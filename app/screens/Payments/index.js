@@ -16,8 +16,6 @@ import AddPaymentModal from '../../components/AddPaymentModal'
 import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style';
-import AddAttachmentPopup from '../../components/AddAttachmentPopup'
-import * as DocumentPicker from 'expo-document-picker';
 import { setCMPaymennt } from '../../actions/addCMPayment';
 
 
@@ -940,7 +938,6 @@ class Payments extends Component {
 						addPaymentLoading={addPaymentLoading}
 						remarks={remarks}
 						secondFormLeadData={secondFormLeadData}
-						attechmentModalToggle={this.attechmentModalToggle}
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						secondHandleForm={this.secondHandleForm}
 						secondFormSubmit={this.secondFormSubmit}

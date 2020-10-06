@@ -1,28 +1,39 @@
-import React from 'react'
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native'
+import React,{Component} from 'react'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { formatPrice } from '../../PriceFormate';
+import moment from 'moment';
 
-const CommissionTile = (
-    data,
-    currencyConvert,
-    data,
-    editTile,
-) => {
-    var statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
+class CommissionTile extends Component {
+
+  currencyConvert = (x) => {
+    x = x.toString();
+    var lastThree = x.substring(x.length - 3);
+    var otherNumbers = x.substring(0, x.length - 3);
+    if (otherNumbers != '')
+      lastThree = ',' + lastThree;
+    var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    return res;
+  }
+
+  render() {
+    const { data, editTile } = this.props;
+    let statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
     return (
-        <TouchableOpacity onPress={() => { data.status != 'approved' ? editTile(data.id): null }}>
-            <View style={styles.tileTopWrap}>
-                <View style={styles.upperLayer}>
-                    <Text style={styles.paymnetHeading}>Commission Payment</Text>
-                    <Text style={[styles.tileStatus, statusColor]}>{data.status === 'pending' ? 'pending clearance' : data.status}</Text>
-                </View>
-                <View style={styles.bottomLayer}>
-                    <Text style={styles.formatPrice}>{currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>
-                    <Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
-                    <Text style={styles.priceDate}>{moment(data.createdAt).format('MM.DD.YYYY / h:mm a')}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => { data.status != 'approved' ? editTile(data) : null }}>
+        <View style={styles.tileTopWrap}>
+          <View style={styles.upperLayer}>
+            <Text style={styles.paymnetHeading}>Commission Payment</Text>
+            <Text style={[styles.tileStatus, statusColor]}>{data.status === 'pending' ? 'pending clearance' : data.status}</Text>
+          </View>
+          <View style={styles.bottomLayer}>
+            <Text style={styles.formatPrice}>{this.currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>
+            <Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
+            <Text style={styles.priceDate}>{moment(data.createdAt).format('MM.DD.YYYY / h:mm a')}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
     )
+  }
 }
 
 export default CommissionTile
@@ -34,6 +45,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 5,
     marginBottom: 5,
+    marginTop: 10,
     backgroundColor: '#fff'
   },
   upperLayer: {

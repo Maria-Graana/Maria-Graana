@@ -2,12 +2,12 @@ import { combineReducers } from "redux";
 import * as types from '../types';
 
 const rcmPayment = {
-	commissionPayment: null,
+	installmentAmount: null,
 	type: '',
 	rcmLeadId: null,
 	details: '',
 	visible: false,
-	attachments : [],
+	paymentAttachments: [],
 }
 
 const RCMPayment = (state = rcmPayment, action) => {

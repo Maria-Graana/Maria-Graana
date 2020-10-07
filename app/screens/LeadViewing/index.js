@@ -47,7 +47,8 @@ class LeadViewing extends React.Component {
 			reasons: [],
 			closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
 			callModal: false,
-			meetings: []
+			meetings: [],
+			matchData: []
 		}
 	}
 
@@ -445,8 +446,9 @@ class LeadViewing extends React.Component {
 
 	render() {
 		const { meetings, callModal, loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
-		const { lead, user } = this.props;
+		const { lead, user, navigation } = this.props;
 		const showMenuItem = helper.checkAssignedSharedStatus(user, lead);
+
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
@@ -454,6 +456,8 @@ class LeadViewing extends React.Component {
 						<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					</View>
 					<HistoryModal
+						getCallHistory={this.getCallHistory}
+						navigation={navigation}
 						data={meetings}
 						closePopup={this.goToHistory}
 						openPopup={callModal}
@@ -470,7 +474,7 @@ class LeadViewing extends React.Component {
 								checkValidation={checkValidation}
 								isVisible={isVisible} />
 							{
-								matchData.length ?
+								matchData.length !== 0 ?
 									<FlatList
 										data={matchData}
 										renderItem={(item, index) => (

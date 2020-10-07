@@ -65,7 +65,8 @@ class LeadRCMPayment extends React.Component {
             monthlyFormatStatus: true,
             organization: 'arms',
             callModal: false,
-            meetings: []
+            meetings: [],
+            matchData: []
         }
     }
 
@@ -669,7 +670,7 @@ class LeadRCMPayment extends React.Component {
             meetings,
             callModal,
         } = this.state;
-
+        const { navigation } = this.props
         return (
             !loading ?
                 <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
@@ -684,6 +685,8 @@ class LeadRCMPayment extends React.Component {
                         onPress={() => this.onHandleCloseLead()}
                     />
                     <HistoryModal
+                        getCallHistory={this.getCallHistory}
+                        navigation={navigation}
                         data={meetings}
                         closePopup={this.goToHistory}
                         openPopup={callModal}

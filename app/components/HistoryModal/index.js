@@ -44,12 +44,7 @@ class HistoryModal extends React.Component {
             modalLoading: false,
             loading: false,
             diaryForm: false,
-            data: []
         }
-    }
-
-    componentDidMount() {
-        this.getCallHistory()
     }
 
     openStatus = (data) => {
@@ -57,14 +52,6 @@ class HistoryModal extends React.Component {
             visibleStatus: !this.state.visibleStatus,
             doneStatusId: data,
         })
-    }
-
-    getCallHistory = () => {
-        const { lead } = this.props
-        axios.get(`/api/diary/all?armsLeadId=${lead.id}`)
-            .then((res) => {
-                this.setState({ data: res.data.rows, modalLoading: false })
-            })
     }
 
     sendStatus = (status) => {
@@ -76,7 +63,7 @@ class HistoryModal extends React.Component {
         }
         axios.patch(`/api/diary/update?id=${doneStatusId.id}`, body)
             .then((res) => {
-                this.getCallHistory()
+                this.props.getCallHistory()
                 this.setState({
                     visibleStatus: !this.state.visibleStatus
                 }, () => {
@@ -117,13 +104,13 @@ class HistoryModal extends React.Component {
             }
             axios.post(`/api/leads/project/meeting`, body)
                 .then((res) => {
-                    helper.successToast(`Follow up task added to the Diary`)
+                    // helper.successToast(`Follow up task added to the Diary`)
                     this.setState({
                         active: false,
                         modalLoading: true,
                         loading: false
                     })
-                    this.getCallHistory()
+                    this.props.getCallHistory()
                 }).catch((error) => {
                     console.log(error)
                     helper.errorToast(`Some thing went wrong!!!`)
@@ -160,66 +147,63 @@ class HistoryModal extends React.Component {
     }
 
     render() {
-        const { openPopup, closePopup, lead, user } = this.props
-        const { doneStatusId, visibleStatus, formData, checkValidation, diaryForm, loading, diaryTask, active, modalLoading, data } = this.state
+        const { openPopup, closePopup, lead, user, data } = this.props
+        const { doneStatusId, visibleStatus, formData, checkValidation, diaryForm, loading, diaryTask, active, modalLoading } = this.state
         let leadAssign = helper.checkAssignedSharedStatus(user, lead)
         return (
-            !modalLoading ?
-                <Modal
-                    visible={openPopup}
-                    animationType="slide"
-                    onRequestClose={this.props.closePopup}>
-                    <SafeAreaView style={[AppStyles.mb1, styles.container]}>
-                        <View style={styles.topHeader}>
-                            <TouchableOpacity
-                                onPress={() => { this.props.closePopup() }}>
-                                <Image source={backArrow} style={[styles.backImg]} />
-                            </TouchableOpacity>
-                            <View style={styles.header}>
-                                <Text style={styles.headerText}>CALL HISTORY</Text>
-                            </View>
+            <Modal
+                visible={openPopup}
+                animationType="slide"
+                onRequestClose={this.props.closePopup}>
+                <SafeAreaView style={[AppStyles.mb1, styles.container]}>
+                    <View style={styles.topHeader}>
+                        <TouchableOpacity
+                            onPress={() => { this.props.closePopup() }}>
+                            <Image source={backArrow} style={[styles.backImg]} />
+                        </TouchableOpacity>
+                        <View style={styles.header}>
+                            <Text style={styles.headerText}>CALL HISTORY</Text>
                         </View>
-                        {
-                            data.length ?
-                                <FlatList
-                                    style={styles.flatStyle}
-                                    data={data}
-                                    renderItem={({ item }, index) => (
-                                        <HistoryTile
-                                            data={item}
-                                            openStatus={this.openStatus}
-                                            sendStatus={this.sendStatus}
-                                            doneStatus={visibleStatus}
-                                            doneStatusId={doneStatusId}
-                                            editFunction={this.editFunction}
-                                            leadClosedCheck={leadAssign}
-                                        />
-                                    )}
-                                    keyExtractor={(_, index) => index}
-                                />
-                                :
-                                <LoadingNoResult loading={false} />
-                        }
-                        <HistoryStatusModal
-                            visibleStatus={visibleStatus}
-                            sendStatus={this.sendStatus}
-                            openStatus={this.openStatus}
-                        />
-                        <MeetingModal
-                            active={active}
-                            formData={formData}
-                            checkValidation={checkValidation}
-                            openModal={this.openModal}
-                            diaryForm={true}
-                            diaryTask={diaryTask}
-                            handleFormDiary={this.handleFormDiary}
-                            formSubmitDiary={this.formSubmitDiary}
-                            loading={loading}
-                        />
-                    </SafeAreaView>
-                </Modal>
-                :
-                <Loader loading={loading} />
+                    </View>
+                    {
+                        data.length ?
+                            <FlatList
+                                style={styles.flatStyle}
+                                data={data}
+                                renderItem={({ item }, index) => (
+                                    <HistoryTile
+                                        data={item}
+                                        openStatus={this.openStatus}
+                                        sendStatus={this.sendStatus}
+                                        doneStatus={visibleStatus}
+                                        doneStatusId={doneStatusId}
+                                        editFunction={this.editFunction}
+                                        leadClosedCheck={leadAssign}
+                                    />
+                                )}
+                                keyExtractor={(_, index) => index}
+                            />
+                            :
+                            <LoadingNoResult loading={false} />
+                    }
+                    <HistoryStatusModal
+                        visibleStatus={visibleStatus}
+                        sendStatus={this.sendStatus}
+                        openStatus={this.openStatus}
+                    />
+                    <MeetingModal
+                        active={active}
+                        formData={formData}
+                        checkValidation={checkValidation}
+                        openModal={this.openModal}
+                        diaryForm={true}
+                        diaryTask={diaryTask}
+                        handleFormDiary={this.handleFormDiary}
+                        formSubmitDiary={this.formSubmitDiary}
+                        loading={loading}
+                    />
+                </SafeAreaView>
+            </Modal>
         )
     }
 }

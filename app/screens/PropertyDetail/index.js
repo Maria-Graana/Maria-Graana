@@ -200,7 +200,10 @@ class PropertyDetail extends React.Component {
                                 </View> :
                                 null
                         }
-
+                        <View>
+                            <Text style={styles.headingText}> ID </Text>
+                            <Text style={styles.labelText}> {property.id}</Text>
+                        </View>
                         {
                             amentities && amentities.length ? <>
 
@@ -220,7 +223,6 @@ class PropertyDetail extends React.Component {
                                 : null
 
                         }
-
                     </View>
                     <View style={styles.pad}>
                         {

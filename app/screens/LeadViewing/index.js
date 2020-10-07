@@ -23,7 +23,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 class LeadViewing extends React.Component {
 	constructor(props) {
 		super(props)
-		const {user, lead} = this.props;
+		const { user, lead } = this.props;
 		this.state = {
 			isVisible: false,
 			open: false,
@@ -47,7 +47,8 @@ class LeadViewing extends React.Component {
 			reasons: [],
 			closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
 			callModal: false,
-			meetings: []
+			meetings: [],
+			matchData: []
 		}
 	}
 
@@ -65,7 +66,7 @@ class LeadViewing extends React.Component {
 		let matches = []
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
-				matches = helper.propertyCheck(res.data.rows)
+				matches = helper.propertyIdCheck(res.data.rows)
 				this.setState({
 					loading: false,
 					matchData: matches,
@@ -123,12 +124,12 @@ class LeadViewing extends React.Component {
 
 	closeLead = () => {
 		var commissionPayment = this.props.lead.commissionPayment
-			if (commissionPayment !== null) {
-				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
-			}
-			else {
-				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
-			}
+		if (commissionPayment !== null) {
+			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
+		else {
+			this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
 	}
 
 	onHandleCloseLead = () => {
@@ -339,7 +340,7 @@ class LeadViewing extends React.Component {
 							alignItems: "center"
 						}}
 						onPress={() => {
-							if(leadAssignedSharedStatus){
+							if (leadAssignedSharedStatus) {
 								this.openModal();
 								this.updateProperty(property)
 							}
@@ -361,7 +362,7 @@ class LeadViewing extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={() => {
-						if(leadAssignedSharedStatus){
+						if (leadAssignedSharedStatus) {
 							this.openModal();
 							this.setProperty(property)
 						}
@@ -445,8 +446,9 @@ class LeadViewing extends React.Component {
 
 	render() {
 		const { meetings, callModal, loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
-		const { lead, user } = this.props;
-		const showMenuItem =  helper.checkAssignedSharedStatus(user, lead);
+		const { lead, user, navigation } = this.props;
+		const showMenuItem = helper.checkAssignedSharedStatus(user, lead);
+
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
@@ -454,6 +456,8 @@ class LeadViewing extends React.Component {
 						<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					</View>
 					<HistoryModal
+						getCallHistory={this.getCallHistory}
+						navigation={navigation}
 						data={meetings}
 						closePopup={this.goToHistory}
 						openPopup={callModal}
@@ -470,7 +474,7 @@ class LeadViewing extends React.Component {
 								checkValidation={checkValidation}
 								isVisible={isVisible} />
 							{
-								matchData.length ?
+								matchData.length !== 0 ?
 									<FlatList
 										data={matchData}
 										renderItem={(item, index) => (

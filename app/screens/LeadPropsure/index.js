@@ -22,7 +22,7 @@ import HistoryModal from '../../components/HistoryModal/index';
 class LeadPropsure extends React.Component {
     constructor(props) {
         super(props)
-        const {user, lead} = this.props;
+        const { user, lead } = this.props;
         this.state = {
             loading: true,
             open: false,
@@ -68,7 +68,7 @@ class LeadPropsure extends React.Component {
         this.setState({ loading: true }, () => {
             axios.get(`/api/leads/${lead.id}/shortlist`)
                 .then((res) => {
-                    matches = helper.propertyCheck(res.data.rows)
+                    matches = helper.propertyIdCheck(res.data.rows)
                     this.setState({
                         matchData: matches,
                         progressValue: rcmProgressBar[lead.status]
@@ -125,7 +125,7 @@ class LeadPropsure extends React.Component {
     showPackageModal = (property) => {
         const { lead, user } = this.props
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
-        if(leadAssignedSharedStatus){
+        if (leadAssignedSharedStatus) {
             this.setState({ isVisible: true, selectedPropertyId: property.id, selectedProperty: property, checkPackageValidation: false });
         }
     }
@@ -166,7 +166,7 @@ class LeadPropsure extends React.Component {
     showDocumentModal = (propsureId) => {
         const { lead, user } = this.props
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
-        if(leadAssignedSharedStatus){
+        if (leadAssignedSharedStatus) {
             this.setState({ documentModalVisible: true, selectedPropsureId: propsureId, checkValidation: false });
         }
     }
@@ -262,12 +262,12 @@ class LeadPropsure extends React.Component {
 
     closeLead = () => {
         var commissionPayment = this.props.lead.commissionPayment
-            if (commissionPayment !== null) {
-                this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
-            }
-            else {
-                this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
-            }
+        if (commissionPayment !== null) {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+        }
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+        }
     }
 
     onHandleCloseLead = () => {
@@ -340,13 +340,15 @@ class LeadPropsure extends React.Component {
 
     render() {
         const { meetings, callModal, loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
-        const { lead } = this.props
+        const { lead, navigation } = this.props
 
         return (
             !loading ?
                 <View style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 }]}>
                     <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
                     <HistoryModal
+                        getCallHistory={this.getCallHistory}
+                        navigation={navigation}
                         data={meetings}
                         closePopup={this.goToHistory}
                         openPopup={callModal}

@@ -68,6 +68,7 @@ class LeadRCMPayment extends React.Component {
             modalValidation: false,
             addPaymentLoading: false,
             editable: false,
+            matchData: []
         }
     }
 
@@ -118,7 +119,7 @@ class LeadRCMPayment extends React.Component {
                 else {
                     if (response.data.paymentProperty) {
                         properties.push(response.data.paymentProperty);
-                        properties = helper.propertyCheck(properties)
+                        properties = helper.propertyIdCheck(properties)
                         this.setState({
                             loading: false,
                             allProperties: properties.length > 0 && properties,
@@ -766,6 +767,7 @@ class LeadRCMPayment extends React.Component {
             modalValidation,
             addPaymentLoading,
         } = this.state;
+        const { navigation } = this.props
         return (
             !loading ?
                 <KeyboardAvoidingView style={[AppStyles.container, { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0, marginBottom: 30 }]} behavior={Platform.OS == "ios" ? "padding" : "height"} keyboardVerticalOffset={120}>
@@ -791,6 +793,8 @@ class LeadRCMPayment extends React.Component {
                     />
 
                     <HistoryModal
+                        getCallHistory={this.getCallHistory}
+                        navigation={navigation}
                         data={meetings}
                         closePopup={this.goToHistory}
                         openPopup={callModal}

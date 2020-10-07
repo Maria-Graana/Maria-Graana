@@ -28,6 +28,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { BarChart } from "react-native-chart-kit";
 import Loader from '../../components/loader';
+import RectangleDaily from '../../components/RectangleDaily';
 
 const _today = moment(new Date().dateString).format(_format);
 const _format = 'YYYY-MM-DD';
@@ -383,10 +384,12 @@ class RCMReport extends React.Component {
     }
 
     agentUrl = () => {
-        const { agentFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
+        let { agentFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-
-        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
+        if (filterLabel === 'Monthly') {
+            if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
+            url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
+        }
         if (filterLabel === 'Daily') url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
         if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -428,10 +431,12 @@ class RCMReport extends React.Component {
     }
 
     teamUrl = () => {
-        const { zoneFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
+        let { zoneFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-
-        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
+        if (filterLabel === 'Monthly') {
+            if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
+            url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
+        }
         if (filterLabel === 'Daily') url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
         if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -471,10 +476,12 @@ class RCMReport extends React.Component {
     }
 
     regionUrl = () => {
-        const { regionFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
+        let { regionFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-
-        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
+        if (filterLabel === 'Monthly') {
+            if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
+            url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
+        }
         if (filterLabel === 'Daily') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
         if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -516,10 +523,12 @@ class RCMReport extends React.Component {
     }
 
     organizationUrl = () => {
-        const { selectedOrganization, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
+        let { selectedOrganization, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-
-        if (filterLabel === 'Monthly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
+        if (filterLabel === 'Monthly') {
+            if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
+            url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
+        }
         if (filterLabel === 'Daily') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
         if (filterLabel === 'Weekly') url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -721,13 +730,10 @@ class RCMReport extends React.Component {
                             <ScrollView style={styles.scrollContainer}>
                                 <View style={{
                                 }}>
+                                    <RectangleDaily label={'Commission Revenue'} targetNumber={dashBoardData.totalRevenue} />
                                     <View style={styles.sqaureView}>
-                                        <SquareContainer containerStyle={styles.squareRight} imagePath={comissionRevenueImg} label={'Commission Revenue'} total={dashBoardData.totalRevenue} />
-                                        <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
-                                    </View>
-                                    <View style={styles.sqaureView}>
-                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
-                                        <SquareContainer imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                                        <SquareContainer imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
                                     </View>
                                     <View style={styles.sqaureView}>
                                         <SquareContainer containerStyle={styles.squareRight} imagePath={viewingConductedImg} label={'Viewings Conducted'} total={dashBoardData.viewingConducted} />

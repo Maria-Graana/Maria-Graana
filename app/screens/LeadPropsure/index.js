@@ -262,7 +262,7 @@ class LeadPropsure extends React.Component {
 
 	closeLead = () => {
 		const {lead} = this.props;
-		if (lead.commissions && lead.commissions.installmentAmount) {
+		if (lead.commissions && lead.commissions.status === 'approved') {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
         }
         else {

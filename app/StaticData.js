@@ -616,6 +616,13 @@ export default StaticData = {
         { value: 'Remittance', name: 'Remittance' },
         { value: 'bank-Transfer', name: 'Bank-Transfer' },
         { value: 'e-Gateway', name: 'E-Gateway' },
+    ],
+    unitType: [
+        { value: 'fullUnit', name: 'Full Unit' },
+        { value: 'pearl', name: 'Pearl' }
+    ],
+    onlyUnitType: [
+        { value: 'fullUnit', name: 'Full Unit' },
     ]
 }
 

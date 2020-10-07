@@ -325,14 +325,15 @@ class Payments extends Component {
 
 			// when floor id chnage the unit filed will be refresh
 			if (name === 'floorId' && formData.floorId != null) {
-				this.refreshUnitPrice(name)
 				let object = {};
 				object = getAllFloors.find((item) => { return item.id == value && item })
 				var totalPrice = newFormData.pearl * object && object.pricePerSqFt
 				// if(object.pearlArea <  50){
 				// 	StaticData.unitType = StaticData.onlyUnitType
 				// }
-				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object })
+				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object },() => {
+					this.refreshUnitPrice(name)
+				})
 			}
 
 			// when floor id chnage the unit filed will be refresh
@@ -447,7 +448,7 @@ class Payments extends Component {
 			newFormData['discount'] = null
 			newFormData['finalPrice'] = null
 			newFormData['discountedPrice'] = null
-			newFormData['paymentPlan'] = ''
+			newFormData['paymentPlan'] = 'no'
 			this.setState({ unitPrice: null, })
 		}
 

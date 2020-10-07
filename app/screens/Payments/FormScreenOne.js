@@ -59,7 +59,6 @@ class InnerForm extends Component {
     }
     let checkForPearlArea = unitPearlDetailsData.pearlArea < 50 ? StaticData.onlyUnitType : StaticData.unitType
     let checkForPaymentPlan = formData.paymentPlan === '' || formData.paymentPlan === null || checkForUnitIdavail === false ? false : true
-    
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -155,8 +154,8 @@ class InnerForm extends Component {
               fromatName={'unitPrice'}
               placeholder={'Unit Price'}
               label={'UNIT PRICE'}
-              value={unitPrice}
-              formatValue={unitPrice}
+              value={unitPrice != null ? unitPrice : ''}
+              formatValue={unitPrice != null ? unitPrice : ''}
               editable={false}
               keyboardType={'numeric'}
             />

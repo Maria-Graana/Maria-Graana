@@ -85,7 +85,7 @@ const AddCommissionModal = ({
 
                     {
                         lead.commissions && lead.commissions.status === 'rejected' ?
-                            <View style={styles.reSubmiitBtnMain}>
+                            <View style={styles.reSubmitBtnMain}>
                                 <TouchableOpacity style={[styles.bookedBtn, styles.reSubmitBtns, styles.cancelLight]} onPress={() => { onModalCloseClick() }}>
                                     <Text style={[styles.bookedBtnText, styles.reSubmitText]}>
                                         CANCEL

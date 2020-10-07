@@ -644,7 +644,7 @@ class LeadRCMPayment extends React.Component {
         fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
         // ====================== API call for Attachments base on Payment ID
         axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd).then(res => {
-            if(res.data){
+            if (res.data) {
                 this.fetchLead();
                 this.clearReduxAndStateValues();
             }
@@ -674,7 +674,7 @@ class LeadRCMPayment extends React.Component {
                                     this.uploadAttachment(paymentAttachment, response.data.id)
                                 ))
                             }
-                            else{
+                            else {
                                 this.fetchLead();
                                 this.clearReduxAndStateValues();
                                 helper.successToast('Commission Payment Added')
@@ -692,13 +692,15 @@ class LeadRCMPayment extends React.Component {
                 delete body.visible;
                 axios.patch(`/api/leads/project/payment?id=${body.id}`, body)
                     .then(response => {
-                        if (rcmPayment.paymentAttachments.length > 0) {
-                            rcmPayment.paymentAttachments.map((item,index) => (
+                        // upload only the new attachments that do not have id with them in object.
+                        const filterAttachmentsWithoutId = rcmPayment.paymentAttachments ? _.filter(rcmPayment.paymentAttachments, (item) => { return !_.has(item, 'id') }) : []
+                        if (filterAttachmentsWithoutId.length > 0) {
+                            filterAttachmentsWithoutId.map((item, index) => {
                                 // payment attachments
                                 this.uploadAttachment(item, body.id)
-                            ));
+                            });
                         }
-                        else{
+                        else {
                             this.fetchLead();
                             this.clearReduxAndStateValues();
                             helper.successToast('Commission Payment Updated')

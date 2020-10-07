@@ -653,7 +653,7 @@ class Payments extends Component {
 				this.setState({
 					firstScreenValidate: true,
 				})
-			} Î
+			} 
 		}
 
 	}
@@ -704,6 +704,7 @@ class Payments extends Component {
 			this.setState({
 				addPaymentLoading: true,
 			})
+			
 			if (editaAble === false) {
 
 				var body = {

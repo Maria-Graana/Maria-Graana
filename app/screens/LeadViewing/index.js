@@ -123,13 +123,13 @@ class LeadViewing extends React.Component {
 	}
 
 	closeLead = () => {
-		var commissionPayment = this.props.lead.commissionPayment
-		if (commissionPayment !== null) {
-			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
-		}
-		else {
-			this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
-		}
+		const {lead} = this.props;
+		if (lead.commissions && lead.commissions.status === 'approved') {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+        }
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+        }
 	}
 
 	onHandleCloseLead = () => {

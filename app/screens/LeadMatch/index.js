@@ -544,14 +544,14 @@ class LeadMatch extends React.Component {
     }
 
     closeLead = () => {
-        var commissionPayment = this.props.lead.commissionPayment
-        if (commissionPayment !== null) {
+		const {lead} = this.props;
+		if (lead.commissions && lead.commissions.status === 'approved') {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
         }
         else {
             this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
         }
-    }
+	}
 
     onHandleCloseLead = () => {
         const { navigation, lead } = this.props

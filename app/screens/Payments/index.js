@@ -16,8 +16,6 @@ import AddPaymentModal from '../../components/AddPaymentModal'
 import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style';
-import AddAttachmentPopup from '../../components/AddAttachmentPopup'
-import * as DocumentPicker from 'expo-document-picker';
 import { setCMPaymennt } from '../../actions/addCMPayment';
 
 
@@ -716,11 +714,11 @@ class Payments extends Component {
 	}
 
 	goToPayAttachments = () => {
-		const { navigation, lead } = this.props;
+		const { navigation } = this.props;
 		this.setState({
 			addPaymentModalToggleState: false,
 		})
-		navigation.navigate('AttachmentsForPayments', { rcmLeadId: lead.id });
+		navigation.navigate('AttachmentsForPayments');
 	}
 
 	goToDiaryForm = (taskType) => {
@@ -940,7 +938,6 @@ class Payments extends Component {
 						addPaymentLoading={addPaymentLoading}
 						remarks={remarks}
 						secondFormLeadData={secondFormLeadData}
-						attechmentModalToggle={this.attechmentModalToggle}
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						secondHandleForm={this.secondHandleForm}
 						secondFormSubmit={this.secondFormSubmit}
@@ -990,7 +987,6 @@ mapStateToProps = (store) => {
 		user: store.user.user,
 		lead: store.lead.lead,
 		CMPayment: store.CMPayment.CMPayment,
-		CMAttachment: store.CMAttachment.CMAttachment,
 	}
 }
 

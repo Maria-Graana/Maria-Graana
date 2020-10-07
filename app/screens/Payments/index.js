@@ -620,7 +620,7 @@ class Payments extends Component {
 					})
 
 				} else {
-					
+
 					this.setState({
 						openFirstScreenModal: status,
 					})
@@ -653,7 +653,7 @@ class Payments extends Component {
 				this.setState({
 					firstScreenValidate: true,
 				})
-			} 
+			}
 		}
 
 	}
@@ -704,7 +704,7 @@ class Payments extends Component {
 			this.setState({
 				addPaymentLoading: true,
 			})
-			
+
 			if (editaAble === false) {
 
 				var body = {
@@ -790,26 +790,31 @@ class Payments extends Component {
 				fd.append('title', item.title);
 				fd.append('type', 'file/' + item.fileName.split('.').pop())
 
-				// ====================== API call for Attachments base on Payment ID
-				axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
-					.then((res) => {
-						this.fetchLead();
-						this.setState({
-							addPaymentModalToggleState: false,
-							remainingPayment: remainingPayment - secondFormData.installmentAmount,
-							addPaymentLoading: false,
-						}, () => {
-							helper.successToast(message)
-							this.clearPaymentsValuesFromRedux(false);
+
+
+				if (item && !item.id) {
+					// ====================== API call for Attachments base on Payment ID
+					axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
+						.then((res) => {
+							this.fetchLead();
+							this.setState({
+								addPaymentModalToggleState: false,
+								remainingPayment: remainingPayment - secondFormData.installmentAmount,
+								addPaymentLoading: false,
+							}, () => {
+								helper.successToast(message)
+								this.clearPaymentsValuesFromRedux(false);
+							})
+						}).catch((error) => {
+							console.log('/api/leads/paymentAttachment?id - Error', error)
+							helper.errorToast('Attachment Not Added')
+							his.setState({
+								addPaymentModalToggleState: false,
+								addPaymentLoading: false,
+							})
 						})
-					}).catch((error) => {
-						console.log('/api/leads/paymentAttachment?id - Error', error)
-						helper.errorToast('Attachment Not Added')
-						his.setState({
-							addPaymentModalToggleState: false,
-							addPaymentLoading: false,
-						})
-					})
+				}
+
 			})
 
 		} else {

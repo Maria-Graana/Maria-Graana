@@ -69,7 +69,6 @@ class AttachmentsForPayments extends Component {
                 newFormData.fileName = item.name;
                 newFormData.size = item.size;
                 newFormData.uri = item.uri;
-                // console.log(newFormData)
 
                 this.setState({
                     formData: newFormData,
@@ -112,7 +111,6 @@ class AttachmentsForPayments extends Component {
     formSubmit = () => {
         const { formData, title } = this.state
         const { CMPayment } = this.props;
-        // console.log(CMPayment)
 
         // ********* Form Validation Check
         if (!title ||
@@ -137,7 +135,6 @@ class AttachmentsForPayments extends Component {
             var payload = {
                 ...CMPayment,
             }
-            // console.log('8|==========================> ~~~', payload)
             this.setState({ isVisible: false }, () => {
                 this.setValues(payload);
             })

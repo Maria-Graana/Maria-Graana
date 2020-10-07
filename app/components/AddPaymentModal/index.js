@@ -24,6 +24,8 @@ class AddPaymentModal extends React.Component {
       secondCheckValidation,
       modalLoading,
       addPaymentLoading,
+      attechmentModalToggle,
+      formData,
       goToPayAttachments,
       secondFormLeadData,
       remarks,

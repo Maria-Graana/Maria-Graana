@@ -260,15 +260,15 @@ class LeadPropsure extends React.Component {
         helper.leadClosedToast()
     }
 
-    closeLead = () => {
-        var commissionPayment = this.props.lead.commissionPayment
-        if (commissionPayment !== null) {
+	closeLead = () => {
+		const {lead} = this.props;
+		if (lead.commissions && lead.commissions.installmentAmount) {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
         }
         else {
             this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
         }
-    }
+	}
 
     onHandleCloseLead = () => {
         const { navigation, lead } = this.props

@@ -609,9 +609,14 @@ class Payments extends Component {
 
 	firstScreenConfirmModal = (status) => {
 		const { formData, cnicValidate, leftSqft, unitPearlDetailsData } = this.state
-
 		if (formData.pearl != null) {
-			if (formData.pearl <= unitPearlDetailsData.pearlArea && formData.pearl >= 50) {
+			if (
+				formData.pearl <= unitPearlDetailsData.pearlArea &&
+				formData.pearl >= 50 &&
+				formData.cnic != null &&
+				formData.cnic != '' &&
+				cnicValidate === false
+			) {
 
 				if (leftSqft < 50 && leftSqft > 0) {
 
@@ -644,7 +649,8 @@ class Payments extends Component {
 				formData.token != '' &&
 				formData.type != '' &&
 				formData.cnic != null &&
-				formData.cnic != ''
+				formData.cnic != '' &&
+				cnicValidate === false
 			) {
 				this.setState({
 					openFirstScreenModal: status,

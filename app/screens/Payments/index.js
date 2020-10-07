@@ -43,7 +43,9 @@ class Payments extends Component {
 				token: lead.token != null ? lead.token : null,
 				type: '',
 				details: '',
+				pearl: null,
 				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
+				unitType: '',
 			},
 			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
 			secondFormData: { ...this.props.CMPayment },
@@ -57,7 +59,9 @@ class Payments extends Component {
 				quartarly: true,
 			},
 			cnicValidate: false,
+			leftSqft: null,
 			secondFormLeadData: {},
+			unitPearlDetailsData: {},
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
@@ -85,7 +89,7 @@ class Payments extends Component {
 
 	componentDidMount() {
 		const { formData, remarks } = this.state
-		const { navigation } = this.props
+		const { navigation, lead } = this.props
 
 		this.fetchLead()
 		this.getAllProjects()
@@ -153,7 +157,7 @@ class Payments extends Component {
 				})
 			})
 			.catch((error) => {
-				console.log(error)
+				console.log('/api/leads/project/byId?id - Error', error)
 				this.setState({
 					paymentPreviewLoading: false,
 				})
@@ -170,7 +174,7 @@ class Payments extends Component {
 					getAllProject: res.data.items
 				})
 			}).catch((error) => {
-				console.log('project')
+				console.log('/api/project/all - Error', error)
 			})
 	}
 
@@ -183,6 +187,8 @@ class Payments extends Component {
 					getFloors: Array,
 					getAllFloors: res.data.rows,
 				})
+			}).catch((error) => {
+				console.log('/api/project/floors?projectId - Error', error)
 			})
 	}
 
@@ -196,6 +202,8 @@ class Payments extends Component {
 					getUnit: array,
 					allUnits: res.data.rows,
 				})
+			}).catch((error) => {
+				console.log('/api/project/shops?projectId & floorId & status - Error', error)
 			})
 	}
 
@@ -206,6 +214,16 @@ class Payments extends Component {
 		this.setState({
 			unitDetailModal: status,
 			unitDetailsData: object,
+		})
+	}
+
+	openPearlDetailsModal = (status) => {
+		const { formData, getAllFloors } = this.state
+		let object = {};
+		object = getAllFloors.find((item) => { return item.id == formData.floorId && item })
+		this.setState({
+			unitDetailModal: status,
+			unitPearlDetailsData: object,
 		})
 	}
 
@@ -222,7 +240,6 @@ class Payments extends Component {
 
 	setPaymentPlanArray = (lead) => {
 		const { paymentPlan, checkPaymentPlan } = this.state
-		// const { lead } = this.props
 		const array = [];
 
 		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null) {
@@ -250,7 +267,7 @@ class Payments extends Component {
 	}
 
 	handleForm = (value, name) => {
-		const { formData, unitPrice } = this.state
+		const { formData, unitPrice, getAllFloors } = this.state
 
 
 		const newFormData = { ...formData }
@@ -286,6 +303,7 @@ class Payments extends Component {
 			newFormData['discount'] = ''
 		}
 
+
 		this.setState({
 			formData: newFormData,
 		}, () => {
@@ -308,11 +326,38 @@ class Payments extends Component {
 			// when floor id chnage the unit filed will be refresh
 			if (name === 'floorId' && formData.floorId != null) {
 				this.refreshUnitPrice(name)
+				let object = {};
+				object = getAllFloors.find((item) => { return item.id == value && item })
+				var totalPrice = newFormData.pearl * object && object.pricePerSqFt
+				// if(object.pearlArea <  50){
+				// 	StaticData.unitType = StaticData.onlyUnitType
+				// }
+				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object })
 			}
 
 			// when floor id chnage the unit filed will be refresh
 			if (name === 'unitId' && formData.unitId != null) {
 				this.refreshUnitPrice(name)
+			}
+
+			//Checks for PEARl values
+			if (name === 'unitType') {
+				this.refreshUnitPrice(name)
+			}
+
+			if (name === 'pearl') {
+				this.setState({ leftSqft: null })
+				let object = {};
+				object = getAllFloors.find((item) => { return item.id == formData.floorId && item })
+				var totalSqft = object.pearlArea
+				var minusSqft = value
+
+				var leftSqft = totalSqft - minusSqft
+				if (leftSqft < 50) {
+					this.setState({ leftSqft: leftSqft })
+				}
+				var totalPrice = newFormData.pearl * object.pricePerSqFt
+				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object })
 			}
 		})
 	}
@@ -397,6 +442,15 @@ class Payments extends Component {
 			newFormData['discountedPrice'] = null
 		}
 
+		if (name === 'unitType') {
+			newFormData['unitId'] = 'no'
+			newFormData['discount'] = null
+			newFormData['finalPrice'] = null
+			newFormData['discountedPrice'] = null
+			newFormData['paymentPlan'] = ''
+			this.setState({ unitPrice: null, })
+		}
+
 		this.setState({
 			formData: newFormData,
 		})
@@ -419,14 +473,89 @@ class Payments extends Component {
 
 	submitFirstScreen = () => {
 		const { lead } = this.props
-		const { formData, remainingPayment, cnicValidate } = this.state
+		const { formData, unitPrice, unitPearlDetailsData, unitType } = this.state
 
 		this.setState({
 			firstScreenConfirmLoading: true,
 		})
 
+		var downPayment = lead.paidProject != null ? lead.paidProject.down_payment : 0
+		var totalDownPayment = (downPayment / 100) * unitPrice
+
+		var fullPaymentDiscount = lead.paidProject != null ? lead.paidProject.full_payment_discount : 0
+		var totalFullpaymentDiscount = (1 - fullPaymentDiscount / 100) * unitPrice
+
+		var possessionCharges = lead.paidProject != null ? lead.paidProject.possession_charges : 0
+		var totalpossessionCharges = (possessionCharges / 100) * unitPrice
+
+		var installmentAmount = unitPrice - totalDownPayment - totalpossessionCharges
+
+		var installmentPlan = lead.paidProject != null ? lead.paidProject.installment_plan : 1
+
+		var numberOfQuarterlyInstallments = installmentPlan * 4
+		var quarterlyInstallmentsAmount = installmentAmount / numberOfQuarterlyInstallments
+
+		var numberOfMonthlyInstallments = installmentPlan * 12
+		var monthlyInstallmentsAmount = installmentAmount / numberOfMonthlyInstallments
+
+		var totalRent = unitPearlDetailsData.rentPerSqFt * formData.pearl
+
+		var pearlBody = {
+			area: formData.pearl,
+			area_unit: 'sqft',
+			bookingStatus: "Available",
+			category_charges: 0,
+			unit_price: unitPrice,
+			discount: 0,
+			discount_amount: 0,
+			discounted_price: unitPrice,
+			down_payment: totalDownPayment,
+			floorId: formData.floorId,
+			full_payment_price: totalFullpaymentDiscount,
+			possession_charges: totalpossessionCharges,
+			installment_amount: installmentAmount,
+			quarterly_installments: quarterlyInstallmentsAmount,
+			monthly_installments: monthlyInstallmentsAmount,
+			name: "Shop # 4892",
+			optional_fields: "{}",
+			pricePerSqFt: unitPearlDetailsData.pricePerSqFt,
+			projectId: formData.projectId,
+			rate_per_sqft: unitPearlDetailsData.pricePerSqFt,
+			remarks: "",
+			rent: totalRent,
+			rentPerSqFt: unitPearlDetailsData.rentPerSqFt,
+			reservation: unitPearlDetailsData.project.reservation_charges,
+			type: "pearl",
+			userId: this.props.user.id,
+			name: 'name',
+		}
+
+		if (formData.unitType === 'pearl') {
+			axios.post(`/api/project/shop/create`, pearlBody)
+				.then((res) => {
+					unitId = res.data.id
+					this.firstScreenApiCall(res.data.id)
+				}).catch((error) => {
+					console.log('/api/project/shop/create - Error', error)
+					helper.errorToast('Something went wrong!!')
+					this.setState({
+						firstScreenConfirmLoading: false,
+					})
+				})
+		} else {
+			var unitId = formData.unitId === null || formData.unitId === '' || formData.unitId === 'no' ? null : formData.unitId
+			this.firstScreenApiCall(unitId)
+		}
+
+	}
+
+
+	firstScreenApiCall = (unitId) => {
+		const { lead } = this.props
+		const { formData, remainingPayment } = this.state
+
 		var body = {
-			unitId: formData.unitId,
+			unitId: unitId,
 			projectId: formData.projectId,
 			floorId: formData.floorId,
 			unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
@@ -438,7 +567,9 @@ class Payments extends Component {
 			remainingPayment: remainingPayment,
 			installmentAmount: formData.token,
 			type: formData.type,
+			pearl: formData.pearl === null || formData.pearl === '' ? null : formData.pearl,
 		}
+
 		var leadId = []
 		leadId.push(lead.id)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
@@ -459,12 +590,14 @@ class Payments extends Component {
 							helper.successToast('Unit Has Been Booked')
 						})
 					}).catch(() => {
+						console.log('/api/leads/project/byId?id - Error', error)
 						helper.errorToast('Something went wrong!!!')
 						this.setState({
 							firstScreenConfirmLoading: false,
 						})
 					})
-			}).catch(() => {
+			}).catch((error) => {
+				console.log('/api/leads/project - Error', error)
 				helper.errorToast('Something went wrong!!')
 				this.setState({
 					firstScreenConfirmLoading: false,
@@ -473,7 +606,8 @@ class Payments extends Component {
 	}
 
 	firstScreenConfirmModal = (status) => {
-		const { formData, cnicValidate } = this.state
+		const { formData, cnicValidate, leftSqft, unitPearlDetailsData } = this.state
+
 		if (
 			formData.projectId != null &&
 			formData.floorId != null &&
@@ -485,11 +619,19 @@ class Payments extends Component {
 			formData.type != '' &&
 			formData.cnic != null &&
 			formData.cnic != '' &&
-			cnicValidate != true
+			cnicValidate != true ||
+			formData.pearl <= unitPearlDetailsData.pearlArea &&
+			formData.pearl >= 50
 		) {
-			this.setState({
-				openFirstScreenModal: status,
-			})
+			if (leftSqft < 50 && leftSqft > 0) {
+				this.setState({
+					firstScreenValidate: true,
+				})
+			} else {
+				this.setState({
+					openFirstScreenModal: status,
+				})
+			}
 		} else {
 			this.setState({
 				firstScreenValidate: true,
@@ -557,11 +699,10 @@ class Payments extends Component {
 				// ====================== API call for added Payments
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
-
 						// ====================== If have attachments then this check will b execute
 						this.submitAttachment(res.data.id, false)
-
 					}).catch(() => {
+						console.log('/api/leads/project/payments - Error', error)
 						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
@@ -587,7 +728,9 @@ class Payments extends Component {
 						// ====================== If have attachments then this check will b execute
 						this.submitAttachment(paymentId, true)
 
-					}).catch(() => {
+					}).catch((error) => {
+						console.log('/api/leads/project/payments?id - Error', error)
+						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
 						})
@@ -612,7 +755,7 @@ class Payments extends Component {
 		var message = checkForEdit === true ? 'Payment Updated' : 'Payment Added'
 
 		// ====================== If have attachments then this check will b execute
-		if (CMPayment.attachments.length > 0) {
+		if (CMPayment.attachments && CMPayment.attachments.length > 0) {
 
 			// ====================== Using map for Uploading Attachments
 			CMPayment.attachments.map((item, index) => {
@@ -640,6 +783,13 @@ class Payments extends Component {
 							helper.successToast(message)
 							this.clearPaymentsValuesFromRedux(false);
 						})
+					}).catch((error) => {
+						console.log('/api/leads/paymentAttachment?id - Error', error)
+						helper.errorToast('Attachment Not Added')
+						his.setState({
+							addPaymentModalToggleState: false,
+							addPaymentLoading: false,
+						})
 					})
 			})
 
@@ -656,6 +806,7 @@ class Payments extends Component {
 				remainingPayment: remainingPayment - secondFormData.installmentAmount,
 				addPaymentLoading: false,
 			}, () => {
+				this.clearPaymentsValuesFromRedux(false);
 				helper.successToast(message)
 			})
 		}
@@ -707,6 +858,13 @@ class Payments extends Component {
 					modalLoading: false,
 					remarks: editLeadData.remarks,
 					secondFormLeadData: editLeadData,
+				})
+			}).catch((error) => {
+				console.log('/api/leads/project/byId?id= - Error', error)
+				helper.errorToast('No edit data found!!')
+				this.setState({
+					editaAble: false,
+					modalLoading: false,
 				})
 			})
 	}
@@ -771,7 +929,8 @@ class Payments extends Component {
 						navigation.navigate('Leads');
 					});
 				}).catch(error => {
-					console.log(error);
+					console.log('/api/leads/project - Error', error);
+					helper.errorToast('Closed lead API failed!!')
 				})
 		}
 		else {
@@ -854,13 +1013,14 @@ class Payments extends Component {
 			tokenModalVisible,
 			reasons,
 			selectedReason,
-			checkReasonValidation,
+			unitPearlDetailsData,
 			isVisible,
 			checkLeadClosedOrNot,
 			remarks,
 			secondFormLeadData,
 			cnicValidate,
 			cnicEditable,
+			leftSqft,
 		} = this.state
 		return (
 			<View>
@@ -882,11 +1042,14 @@ class Payments extends Component {
 										remainingPayment={remainingPayment}
 										checkLeadClosedOrNot={checkLeadClosedOrNot}
 										cnicValidate={cnicValidate}
+										leftSqft={leftSqft}
 										cnicEditable={cnicEditable}
+										unitPearlDetailsData={unitPearlDetailsData}
 										currencyConvert={this.currencyConvert}
 										handleForm={this.handleForm}
 										submitFirstScreen={this.submitFirstScreen}
 										openUnitDetailsModal={this.openUnitDetailsModal}
+										openPearlDetailsModal={this.openPearlDetailsModal}
 										firstScreenConfirmModal={this.firstScreenConfirmModal}
 										tokenModalToggle={this.tokenModalToggle}
 										editTileForscreenOne={this.editTileForscreenOne}
@@ -921,6 +1084,18 @@ class Payments extends Component {
 							active={unitDetailModal}
 							data={unitDetailsData}
 							openUnitDetailsModal={this.openUnitDetailsModal}
+						/>
+					}
+
+					{
+						unitPearlDetailsData &&
+						<UnitDetailsModal
+							active={unitDetailModal}
+							data={unitPearlDetailsData}
+							formData={formData}
+							unitPrice={unitPrice}
+							openUnitDetailsModal={this.openPearlDetailsModal}
+							pearlModal={true}
 						/>
 					}
 

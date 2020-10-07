@@ -331,7 +331,7 @@ class Payments extends Component {
 				// if(object.pearlArea <  50){
 				// 	StaticData.unitType = StaticData.onlyUnitType
 				// }
-				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object },() => {
+				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object }, () => {
 					this.refreshUnitPrice(name)
 				})
 			}
@@ -449,6 +449,7 @@ class Payments extends Component {
 			newFormData['finalPrice'] = null
 			newFormData['discountedPrice'] = null
 			newFormData['paymentPlan'] = 'no'
+			newFormData['pearl'] = null
 			this.setState({ unitPrice: null, })
 		}
 
@@ -609,34 +610,50 @@ class Payments extends Component {
 	firstScreenConfirmModal = (status) => {
 		const { formData, cnicValidate, leftSqft, unitPearlDetailsData } = this.state
 
-		if (
-			formData.projectId != null &&
-			formData.floorId != null &&
-			formData.unitId != null &&
-			formData.paymentPlan != null &&
-			formData.paymentPlan != '' &&
-			formData.token != null &&
-			formData.token != '' &&
-			formData.type != '' &&
-			formData.cnic != null &&
-			formData.cnic != '' &&
-			cnicValidate != true ||
-			formData.pearl <= unitPearlDetailsData.pearlArea &&
-			formData.pearl >= 50
-		) {
-			if (leftSqft < 50 && leftSqft > 0) {
+		if (formData.pearl != null) {
+			if (formData.pearl <= unitPearlDetailsData.pearlArea && formData.pearl >= 50) {
+
+				if (leftSqft < 50 && leftSqft > 0) {
+
+					this.setState({
+						firstScreenValidate: true,
+					})
+
+				} else {
+					
+					this.setState({
+						openFirstScreenModal: status,
+					})
+
+				}
+			} else {
+
 				this.setState({
 					firstScreenValidate: true,
 				})
-			} else {
+
+			}
+		} else {
+			if (
+				formData.projectId != null &&
+				formData.floorId != null &&
+				formData.unitId != null &&
+				formData.paymentPlan != null &&
+				formData.paymentPlan != '' &&
+				formData.token != null &&
+				formData.token != '' &&
+				formData.type != '' &&
+				formData.cnic != null &&
+				formData.cnic != ''
+			) {
 				this.setState({
 					openFirstScreenModal: status,
 				})
-			}
-		} else {
-			this.setState({
-				firstScreenValidate: true,
-			})
+			} else {
+				this.setState({
+					firstScreenValidate: true,
+				})
+			} Î
 		}
 
 	}

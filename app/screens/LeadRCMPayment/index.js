@@ -75,6 +75,7 @@ class LeadRCMPayment extends React.Component {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.getCallHistory()
             this.getSelectedProperty(this.state.lead)
+            // this.reopenPaymentModal();
         })
     }
 
@@ -96,9 +97,10 @@ class LeadRCMPayment extends React.Component {
         dispatch(setRCMPayment(newData));
     }
 
+
     componentWillUnmount() {
         this.clearReduxAndStateValues();
-        this._unsubscribe();
+        //this._unsubscribe();
     }
 
     getSelectedProperty = (lead) => {
@@ -108,7 +110,7 @@ class LeadRCMPayment extends React.Component {
         this.setState({ loading: true }, () => {
             axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
                 dispatch(setlead(response.data));
-                this.setState({ progressValue: rcmProgressBar[lead.status] })
+                this.setState({ progressValue: rcmProgressBar[lead.status], lead: response.data })
                 if (response.data.shortlist_id === null) {
                     this.getShortlistedProperties(lead)
                     return;
@@ -332,7 +334,6 @@ class LeadRCMPayment extends React.Component {
         var leadId = []
         leadId.push(lead.id)
         axios.patch(`/api/leads`, payload, { params: { id: leadId } }).then(response => {
-            //console.log(response);
             this.props.dispatch(setlead(response.data));
             this.setState({
                 showTokenAmountArrow: false,
@@ -416,7 +417,6 @@ class LeadRCMPayment extends React.Component {
         const { formData } = this.state;
         formData[name] = value
         this.setState({ formData }, () => {
-            // console.log('formData', formData)
         })
         if (formData.monthlyRent !== '' && name === 'monthlyRent') {
             this.setState({ showMonthlyRentArrow: true })
@@ -627,7 +627,30 @@ class LeadRCMPayment extends React.Component {
     }
 
     goToPayAttachments = () => {
-        console.log('go to pay attachments');
+        const { rcmPayment, dispatch, navigation } = this.props;
+        dispatch(setRCMPayment({ ...rcmPayment, visible: false }));
+        navigation.navigate('RCMAttachment');
+    }
+
+    uploadAttachment = (paymentAttachment, paymentId) => {
+        let attachment = {
+            name: paymentAttachment.fileName,
+            type: 'file/' + paymentAttachment.fileName.split('.').pop(),
+            uri: paymentAttachment.uri,
+        }
+        let fd = new FormData()
+        fd.append('file', attachment)
+        fd.append('title', paymentAttachment.title);
+        fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
+        // ====================== API call for Attachments base on Payment ID
+        axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd).then(res => {
+            if(res.data){
+                this.fetchLead();
+                this.clearReduxAndStateValues();
+            }
+        }).catch(error => {
+            helper.errorToast('Attachment Error');
+        })
     }
 
     submitCommissionPayment = () => {
@@ -644,35 +667,47 @@ class LeadRCMPayment extends React.Component {
                 axios.post(`/api/leads/project/payments`, body)
                     .then(response => {
                         if (response.data) {
-                            this.fetchLead();
-                            helper.successToast('Commission Payment Added')
+                            // check if some attachment exists so upload that as well to server with payment id.
+                            if (rcmPayment.paymentAttachments.length > 0) {
+                                rcmPayment.paymentAttachments.map(paymentAttachment => (
+                                    // payment attachments
+                                    this.uploadAttachment(paymentAttachment, response.data.id)
+                                ))
+                            }
+                            else{
+                                this.fetchLead();
+                                this.clearReduxAndStateValues();
+                                helper.successToast('Commission Payment Added')
+                            }
                         }
                     })
                     .catch(error => {
-                        helper.errorToast('Commission Payment Not Added');
-                    })
-                    .finally(() => {
+                        helper.errorToast('Error Adding Commission Payment', error);
                         this.clearReduxAndStateValues();
-                    });
+                    })
             }
             else {
                 // commission update mode 
-                //console.log('addBody=>', body);' 
-                let body = { ...rcmPayment, rcmLeadId: lead.id }
-                console.log(body)
+                let body = { ...rcmPayment }
                 delete body.visible;
                 axios.patch(`/api/leads/project/payment?id=${body.id}`, body)
                     .then(response => {
-                        if (response.data) {
+                        if (rcmPayment.paymentAttachments.length > 0) {
+                            rcmPayment.paymentAttachments.map((item,index) => (
+                                // payment attachments
+                                this.uploadAttachment(item, body.id)
+                            ));
+                        }
+                        else{
                             this.fetchLead();
+                            this.clearReduxAndStateValues();
                             helper.successToast('Commission Payment Updated')
                         }
                     })
                     .catch(error => {
-                        helper.errorToast('Error Updating Commission Payment');
-                    }).finally(() => {
+                        helper.errorToast('Error Updating Commission Payment', error);
                         this.clearReduxAndStateValues();
-                    });
+                    })
             }
         }
         else {
@@ -691,10 +726,10 @@ class LeadRCMPayment extends React.Component {
             axios.get(`/api/leads/byId?id=${lead.id}`).then(response => {
                 if (response.data) {
                     dispatch(setlead(response.data));
-                    this.setState({ progressValue: rcmProgressBar[response.data.status], loading: false, lead: response.data })
+                    this.setState({ progressValue: rcmProgressBar[response.data.status], loading: false, lead: response.data });
                 }
                 else {
-                    console.log('something went wrong in api')
+                    //console.log('something went wrong in api');
                 }
 
             })
@@ -835,6 +870,9 @@ class LeadRCMPayment extends React.Component {
                                                             tokenPriceFromat={tokenPriceFromat}
                                                             agreeAmountFromat={agreeAmountFromat}
                                                             monthlyFormatStatus={monthlyFormatStatus}
+
+                                                            onAddCommissionPayment={this.onAddCommissionPayment}
+                                                            editTile={this.setCommissionEditData}
                                                         />
                                                     : null
                                             }

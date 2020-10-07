@@ -714,11 +714,11 @@ class Payments extends Component {
 	}
 
 	goToPayAttachments = () => {
-		const { navigation, lead } = this.props;
+		const { navigation } = this.props;
 		this.setState({
 			addPaymentModalToggleState: false,
 		})
-		navigation.navigate('AttachmentsForPayments', { rcmLeadId: lead.id });
+		navigation.navigate('AttachmentsForPayments');
 	}
 
 	goToDiaryForm = (taskType) => {

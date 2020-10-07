@@ -9,6 +9,7 @@ import _ from 'underscore';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { setRCMPayment } from '../../actions/rcmPayment';
+import helper from '../../helper';
 
 
 class RCMAttachment extends Component {
@@ -20,16 +21,11 @@ class RCMAttachment extends Component {
             isVisible: false,
             checkValidation: false,
             title: '',
-            formData: { ...this.props.RCMPayment }
+            formData: { ...this.props.rcmPayment }
         }
     }
 
-    componentDidMount() {
-        //this.getAttachmentsFromServer();
-    }
-
     showModal = () => {
-        const { formData } = this.state;
         this.setState({ isVisible: true, checkValidation: false, formData: { title: '', fileName: '', size: '', uri: '' }, title: '' })
     }
 
@@ -39,7 +35,7 @@ class RCMAttachment extends Component {
 
     closeModal = () => {
         const { isVisible, formData } = this.state;
-        const { RCMPayment } = this.props;
+        const { rcmPayment } = this.props;
         const copyFormData = { ...formData };
         copyFormData.fileName = '';
         copyFormData.size = null;
@@ -48,9 +44,19 @@ class RCMAttachment extends Component {
         this.setState({
             isVisible: !isVisible,
         }, () => {
-            this.setValues({ ...RCMPayment, copyFormData });
+            this.setValues({ ...rcmPayment, copyFormData });
         })
     }
+
+    componentWillUnmount() {
+        this.reopenPaymentModal()
+    }
+
+    reopenPaymentModal = () => {
+        const { rcmPayment, dispatch } = this.props;
+        dispatch(setRCMPayment({ ...rcmPayment, visible: true }));
+    }
+
 
     getAttachmentFromStorage = () => {
         const { title, formData } = this.state;
@@ -68,8 +74,6 @@ class RCMAttachment extends Component {
                 newFormData.fileName = item.name;
                 newFormData.size = item.size;
                 newFormData.uri = item.uri;
-                // console.log(newFormData)
-
                 this.setState({
                     formData: newFormData,
                 })
@@ -80,12 +84,11 @@ class RCMAttachment extends Component {
     }
 
 
-
     deleteAttachmentLocally = (item) => {
-        const { RCMPayment } = this.props;
-        let newPaymentArray = { ...RCMPayment };
+        const { rcmPayment } = this.props;
+        let newPaymentArray = { ...rcmPayment };
         newPaymentArray = _.without(newPaymentArray.attachments, item);
-        this.setValues({ ...RCMPayment, attachments: newPaymentArray })
+        this.setValues({ ...rcmPayment, paymentAttachments: newPaymentArray })
     }
 
     deleteAttachmentFromServer = (item) => {
@@ -110,7 +113,7 @@ class RCMAttachment extends Component {
     // ********* On form Submit Function
     formSubmit = () => {
         const { formData, title } = this.state
-        const { RCMPayment } = this.props;
+        const { rcmPayment } = this.props;
 
         // ********* Form Validation Check
         if (!title ||
@@ -131,11 +134,10 @@ class RCMAttachment extends Component {
             objectForAttachment.size = formData.size;
             objectForAttachment.uri = formData.uri;
             objectForAttachment.title = title;
-            CMPayment.attachments.push(objectForAttachment);
+            rcmPayment.paymentAttachments.push(objectForAttachment);
             var payload = {
-                ...CMPayment,
+                ...rcmPayment,
             }
-            // console.log('8|==========================> ~~~', payload)
             this.setState({ isVisible: false }, () => {
                 this.setValues(payload);
             })
@@ -145,7 +147,7 @@ class RCMAttachment extends Component {
 
     render() {
         const { isVisible, formData, checkValidation, title, loading } = this.state;
-        const { RCMPayment } = this.props;
+        const { rcmPayment } = this.props;
         return (
             <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
                 <AddAttachmentPopup
@@ -162,7 +164,7 @@ class RCMAttachment extends Component {
                     ref={ref => { this.flatList = ref }}
                     contentContainerStyle={{ flexGrow: 1 }}
                     onContentSizeChange={() => this.flatList.scrollToEnd({ animated: true })}
-                    data={RCMPayment.attachments ? RCMPayment.attachments : []}
+                    data={rcmPayment.paymentAttachments ? rcmPayment.paymentAttachments : []}
                     renderItem={({ item }) => (
                         <AttachmentTile
                             data={item}
@@ -178,7 +180,7 @@ class RCMAttachment extends Component {
 }
 mapStateToProps = (store) => {
     return {
-        RCMPayment: store.RCMPayment.RCMPayment,
+        rcmPayment: store.RCMPayment.RCMPayment,
     }
 }
 export default connect(mapStateToProps)(RCMAttachment)

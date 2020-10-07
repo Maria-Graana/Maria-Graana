@@ -27,7 +27,6 @@ class BuyPaymentView extends React.Component {
             tokenDateStatus,
             agreeAmountFromat,
             onAddCommissionPayment,
-            // currencyConvert,
             editTile,
         } = this.props;
         const isLeadClosed = lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won;

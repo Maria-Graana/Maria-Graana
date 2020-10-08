@@ -24,6 +24,7 @@ class FirstScreenConfirmModal extends React.Component {
       allUnits,
       submitFirstScreen,
       firstScreenConfirmLoading,
+      formData,
     } = this.props
 
     var project = getAllProject.find((item) => { return data.projectId === item.id && item })
@@ -40,7 +41,11 @@ class FirstScreenConfirmModal extends React.Component {
             <Text style={styles.topTextMain}>Are you sure you want to book?</Text>
             <Text style={styles.noramlText}>Project: <Text style={styles.mainTextLarge}>{project && project.name}</Text></Text>
             <Text style={styles.noramlText}>Floor: <Text style={styles.mainTextLarge}>{floors && floors.name}</Text></Text>
-            <Text style={styles.noramlText}>Unit: <Text style={styles.mainTextLarge}>{units && units.name}</Text></Text>
+            
+            <Text style={styles.noramlText}>Unit: {data.unitType === 'pearl'? 
+            <Text style={styles.mainTextLarge}>{data && data.pearlName}</Text>
+            :
+             <Text style={styles.mainTextLarge}>{units && units.name}</Text>}</Text>
             <Text style={styles.noramlText}>Approved Discount: <Text style={styles.mainTextLarge}>{data.discount ? data.discount + '%' : 'N/A'}</Text></Text>
             <Text style={styles.noramlText}>Payment Plan: <Text style={styles.mainTextLarge}>{data.paymentPlan}</Text></Text>
             <Text style={styles.noramlText}>Final Price: <Text style={styles.mainTextLarge}>{formatPrice(data.finalPrice ? data.finalPrice : '')}</Text></Text>

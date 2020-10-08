@@ -44,6 +44,7 @@ class Payments extends Component {
 				pearl: null,
 				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
 				unitType: '',
+				pearlName:'New Pearl'
 			},
 			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
 			secondFormData: { ...this.props.CMPayment },
@@ -326,7 +327,6 @@ class Payments extends Component {
 				let object = {};
 				object = getAllFloors.find((item) => { return item.id == value && item })
 				var totalPrice = newFormData.pearl * object && object.pricePerSqFt
-		
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object }, () => {
 					this.refreshUnitPrice(name)
 				})

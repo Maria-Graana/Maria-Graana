@@ -42,7 +42,7 @@ class MeetingTile extends React.Component {
               {
                 data.taskType === 'meeting' &&
                 <View>
-                  <Text style={[styles.doneText, styles.uperCase]}>{data.response != null ? response : 'Meeting'}</Text>
+                  <Text style={[styles.doneText, styles.uperCase]}>{data.response != null ? response : 'Meeting Planned'}</Text>
                 </View>
               }
               {

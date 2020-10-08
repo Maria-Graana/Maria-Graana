@@ -88,6 +88,7 @@ export default styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 0,
     justifyContent: 'center',
+    alignItems:'center',
     marginTop: 15,
   },
   addPaymentBtnImg: {
@@ -96,7 +97,6 @@ export default styles = StyleSheet.create({
     marginRight: 5,
     height: 15,
     position: 'relative',
-    top: 3,
   },
   addPaymentBtnText: {
     color: '#006ff1',

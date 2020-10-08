@@ -28,7 +28,7 @@ class CommissionTile extends Component {
           <View style={styles.bottomLayer}>
             <Text style={styles.formatPrice}>{this.currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>
             <Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
-            <Text style={styles.priceDate}>{moment(data.createdAt).format('MM.DD.YYYY / h:mm a')}</Text>
+            <Text style={styles.priceDate}>{moment(data.createdAt).format('hh:mm A, MMM DD')}</Text>
           </View>
         </View>
       </TouchableOpacity>

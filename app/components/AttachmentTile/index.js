@@ -24,7 +24,7 @@ const AttachmentTile = (props) => {
 
             <View style={styles.horizontalContainer}>
                 <Text numberOfLines={1} style={[styles.subHeadingStyle, { flex: 0.6, marginRight: 5 }]}>{data && data.fileName}</Text>
-                <Text style={[styles.dateTimeStyle, { flex: 0.4, textAlign: 'right'}]}>{moment(data && data.createdAt).format('hh:mm A, MMMM DD')}</Text>
+                <Text style={[styles.dateTimeStyle, { flex: 0.4, textAlign: 'right'}]}>{moment(data && data.createdAt).format('hh:mm A, MMM DD')}</Text>
             </View>
         </View>
     )

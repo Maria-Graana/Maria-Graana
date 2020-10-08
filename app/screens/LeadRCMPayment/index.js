@@ -76,7 +76,6 @@ class LeadRCMPayment extends React.Component {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.getCallHistory()
             this.getSelectedProperty(this.state.lead)
-            // this.reopenPaymentModal();
         })
     }
 
@@ -101,7 +100,7 @@ class LeadRCMPayment extends React.Component {
 
     componentWillUnmount() {
         this.clearReduxAndStateValues();
-        //this._unsubscribe();
+        this._unsubscribe();
     }
 
     getSelectedProperty = (lead) => {
@@ -142,7 +141,6 @@ class LeadRCMPayment extends React.Component {
                             if (lead.monthlyRent != null) {
                                 this.formatStatusChange('monthlyRent', true)
                             }
-                            // this.checkCommissionPayment(response.data);
                         })
                     }
                     else {
@@ -173,15 +171,12 @@ class LeadRCMPayment extends React.Component {
                     checkReasonValidation: '',
                     agreedAmount: lead.payment ? String(lead.payment) : '',
                     token: lead.token ? String(lead.token) : '',
-                    // commissionPayment: lead.commissionPayment ? String(lead.commissionPayment) : '',
                     formData: {
                         contract_months: lead.contract_months ? String(lead.contract_months) : '',
                         security: lead.security ? String(lead.security) : '',
                         advance: lead.advance ? String(lead.advance) : '',
                         monthlyRent: lead.monthlyRent ? String(lead.monthlyRent) : ''
                     }
-                }, () => {
-                    // this.checkCommissionPayment(response.data);
                 })
             })
             .catch((error) => {
@@ -191,15 +186,6 @@ class LeadRCMPayment extends React.Component {
                 })
             })
     }
-
-    // checkCommissionPayment = (lead) => {
-    //     if (lead.commissionPayment !== null) {
-    //         this.setState({ reasons: StaticData.leadCloseReasonsWithPayment })
-    //     }
-    //     else {
-    //         this.setState({ reasons: StaticData.leadCloseReasons })
-    //     }
-    // }
 
     displayChecks = () => { }
 
@@ -657,7 +643,7 @@ class LeadRCMPayment extends React.Component {
     submitCommissionPayment = () => {
         const { rcmPayment, dispatch } = this.props;
         const { lead, editable } = this.state;
-        if (rcmPayment.installmentAmount != null && rcmPayment.installmentAmount != '' && rcmPayment.type != '') {
+        if (rcmPayment.installmentAmount != null && rcmPayment.installmentAmount != '' && Number(rcmPayment.installmentAmount) !== 0 && rcmPayment.type != '') {
             this.setState({
                 addPaymentLoading: true,
             })

@@ -747,10 +747,8 @@ class Payments extends Component {
 				}
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
-
 						// ====================== If have attachments then this check will b execute
 						this.submitAttachment(paymentId, true)
-
 					}).catch((error) => {
 						console.log('/api/leads/project/payments?id - Error', error)
 						helper.errorToast('Payment Not Added')
@@ -779,6 +777,7 @@ class Payments extends Component {
 
 		// ====================== If have attachments then this check will b execute
 		if (CMPayment.attachments && CMPayment.attachments.length > 0) {
+
 
 			// ====================== Using map for Uploading Attachments
 			CMPayment.attachments.map((item, index) => {
@@ -817,6 +816,16 @@ class Payments extends Component {
 								addPaymentLoading: false,
 							})
 						})
+				} else {
+					this.fetchLead();
+					this.setState({
+						addPaymentModalToggleState: false,
+						remainingPayment: remainingPayment - secondFormData.installmentAmount,
+						addPaymentLoading: false,
+					}, () => {
+						helper.successToast(message)
+						this.clearPaymentsValuesFromRedux(false);
+					})
 				}
 
 			})

@@ -326,9 +326,7 @@ class Payments extends Component {
 				let object = {};
 				object = getAllFloors.find((item) => { return item.id == value && item })
 				var totalPrice = newFormData.pearl * object && object.pricePerSqFt
-				// if(object.pearlArea <  50){
-				// 	StaticData.unitType = StaticData.onlyUnitType
-				// }
+		
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object }, () => {
 					this.refreshUnitPrice(name)
 				})
@@ -355,6 +353,7 @@ class Payments extends Component {
 				if (leftSqft < 50) {
 					this.setState({ leftSqft: leftSqft })
 				}
+			
 				var totalPrice = newFormData.pearl * object.pricePerSqFt
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object })
 			}
@@ -799,12 +798,13 @@ class Payments extends Component {
 					// ====================== API call for Attachments base on Payment ID
 					axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
 						.then((res) => {
-							this.fetchLead();
+							
 							this.setState({
 								addPaymentModalToggleState: false,
 								remainingPayment: remainingPayment - secondFormData.installmentAmount,
 								addPaymentLoading: false,
 							}, () => {
+								this.fetchLead();
 								helper.successToast(message)
 								this.clearPaymentsValuesFromRedux(false);
 							})
@@ -817,12 +817,13 @@ class Payments extends Component {
 							})
 						})
 				} else {
-					this.fetchLead();
+					
 					this.setState({
 						addPaymentModalToggleState: false,
 						remainingPayment: remainingPayment - secondFormData.installmentAmount,
 						addPaymentLoading: false,
 					}, () => {
+						this.fetchLead();
 						helper.successToast(message)
 						this.clearPaymentsValuesFromRedux(false);
 					})
@@ -831,18 +832,20 @@ class Payments extends Component {
 			})
 
 		} else {
-			this.fetchLead();
+			
 			this.setState({
 				addPaymentModalToggleState: false,
+				remainingPayment: remainingPayment - secondFormData.installmentAmount,
 				secondFormData: {
 					installmentAmount: null,
 					type: '',
 					details: '',
 					cmLeadId: this.props.lead.id,
 				},
-				remainingPayment: remainingPayment - secondFormData.installmentAmount,
+				
 				addPaymentLoading: false,
 			}, () => {
+				this.fetchLead();
 				this.clearPaymentsValuesFromRedux(false);
 				helper.successToast(message)
 			})

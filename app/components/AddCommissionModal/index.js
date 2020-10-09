@@ -7,6 +7,8 @@ import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index';
 import StaticData from '../../StaticData';
 import ErrorMessage from '../../components/ErrorMessage'
+import TouchableButton from '../../components/TouchableButton'
+import AppStyles from '../../AppStyles';
 
 const AddCommissionModal = ({
     onModalCloseClick,
@@ -40,7 +42,7 @@ const AddCommissionModal = ({
                         onChangeHandle={handleCommissionChange}
                     />
                     {
-                        modalValidation === true && (rcmPayment.installmentAmount == null || rcmPayment.installmentAmount == '') ? <ErrorMessage errorMessage={'Required'} /> : null
+                        modalValidation === true && (rcmPayment.installmentAmount == null || rcmPayment.installmentAmount == '' || Number(rcmPayment.installmentAmount) === 0) ? <ErrorMessage errorMessage={'Required'} /> : null
                     }
 
                     <View style={[AppStyles.mainInputWrap]}>
@@ -79,32 +81,38 @@ const AddCommissionModal = ({
                         rcmPayment.type != '' &&
                         <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { goToPayAttachments() }}>
                             <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                            <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
+                            <Text style={styles.addPaymentBtnText}>ADD ATTACHMENTS</Text>
                         </TouchableOpacity>
                     }
 
                     {
                         lead.commissions && lead.commissions.status === 'rejected' ?
                             <View style={styles.reSubmitBtnMain}>
-                                <TouchableOpacity style={[styles.bookedBtn, styles.reSubmitBtns, styles.cancelLight]} onPress={() => { onModalCloseClick() }}>
-                                    <Text style={[styles.bookedBtnText, styles.reSubmitText]}>
-                                        CANCEL
-                          </Text>
-                                </TouchableOpacity>
+                                <TouchableButton containerStyle={[styles.bookedBtn, { marginRight: 3 }]}
+                                    label={'Cancel'}
+                                    loading={false}
+                                    fontSize={16}
+                                    fontFamily={AppStyles.fonts.boldFont}
+                                    onPress={() => onModalCloseClick()} />
 
-                                <TouchableOpacity style={[styles.bookedBtn, styles.reSubmitBtns, styles.reSubmitLight]} onPress={() => { addPaymentLoading != true && submitCommissionPayment() }}>
-                                    <Text style={[styles.bookedBtnText, styles.reSubmitText, styles.reSubmitTextDark]}>
-                                        {addPaymentLoading === true ? 'Wait...' : 'RE-SUBMIT'}
-                                    </Text>
-                                </TouchableOpacity>
+                                <TouchableButton
+                                    containerStyle={[styles.bookedBtn, styles.reSubmitBtns]}
+                                    containerBackgroundColor={AppStyles.whiteColor.color}
+                                    label={'RE-SUBMIT'}
+                                    loaderColor={AppStyles.colors.primaryColor}
+                                    fontFamily={AppStyles.fonts.boldFont}
+                                    fontSize={16}
+                                    loading={addPaymentLoading}
+                                    textColor={AppStyles.colors.primaryColor}
+                                    onPress={() => submitCommissionPayment()} />
                             </View>
                             :
-                            <TouchableOpacity style={styles.bookedBtn} onPress={() => { addPaymentLoading != true && submitCommissionPayment() }}>
-                                <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
-                                <Text style={styles.bookedBtnText}>
-                                    {addPaymentLoading === true ? 'Wait...' : 'OK'}
-                                </Text>
-                            </TouchableOpacity>
+                            <TouchableButton containerStyle={[styles.bookedBtn, { width: '100%' }]}
+                                label={'OK'}
+                                fontFamily={AppStyles.fonts.boldFont}
+                                fontSize={18}
+                                loading={addPaymentLoading}
+                                onPress={() => submitCommissionPayment()} />
                     }
                 </View>
             </View>
@@ -184,6 +192,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         marginBottom: 15,
         justifyContent: 'center',
+        alignItems: 'center',
         marginTop: 15,
     },
     addPaymentBtnImg: {
@@ -199,29 +208,25 @@ const styles = StyleSheet.create({
         letterSpacing: 2,
     },
     bookedBtn: {
-        flexDirection: 'row',
         borderColor: '#006ff1',
         backgroundColor: '#006ff1',
+        width: '50%',
         borderRadius: 4,
         borderWidth: 1,
         color: '#006ff1',
         textAlign: 'center',
-        paddingTop: 15,
-        paddingBottom: 15,
-        fontSize: 18,
-        fontWeight: 'bold',
-        letterSpacing: 2,
         borderRadius: 4,
         marginBottom: 0,
         justifyContent: 'center',
         marginBottom: 10,
+        minHeight: 55,
     },
     bookedBtnText: {
         color: '#fff',
         textAlign: 'center',
         fontSize: 18,
-        fontWeight: 'bold',
-        letterSpacing: 2,
+        // fontWeight: 'bold',
+        // letterSpacing: 2,
         borderRadius: 4,
     },
     bookedBtnImage: {
@@ -250,7 +255,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     reSubmitBtnMain: {
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     reSubmitBtns: {
         marginRight: 10,

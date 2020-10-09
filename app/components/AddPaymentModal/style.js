@@ -153,5 +153,7 @@ export default styles = StyleSheet.create({
   },
   loaderTop: {
     marginTop: 12,
+    width: 20,
+    height: 20,
   },
 });

@@ -92,4 +92,8 @@ export default styles = StyleSheet.create({
   loaderStyle: {
     marginTop: 8,
   },
+  loaderHeight: {
+    width: 20,
+    height: 20,
+  },
 });

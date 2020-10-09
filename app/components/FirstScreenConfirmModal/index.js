@@ -50,7 +50,7 @@ class FirstScreenConfirmModal extends React.Component {
           </View>
           <View style={styles.confirmBtnView}>
             <TouchableOpacity style={[styles.confirmBtn]} onPress={() => { firstScreenConfirmLoading != true && submitFirstScreen() }}>
-            {firstScreenConfirmLoading === true ? <Text style={styles.loaderStyle}><ActivityIndicator size="small" color={AppStyles.colors.primaryColor} /></Text> : <Text style={[styles.textCenter, styles.activeBtn]}>BOOK</Text>}
+            {firstScreenConfirmLoading === true ? <Text style={styles.loaderStyle}><ActivityIndicator style={styles.loaderHeight} size="small" color={AppStyles.colors.primaryColor} /></Text> : <Text style={[styles.textCenter, styles.activeBtn]}>BOOK</Text>}
               
             </TouchableOpacity>
             

@@ -93,7 +93,7 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
-		this.handleForm(formData.projectId, 'projectId')
+		this.handleForm(lead.projectId, 'projectId')
 		this._unsubscribe = navigation.addListener('focus', () => {
 			this.reopenPaymentModal();
 		})
@@ -323,7 +323,7 @@ class Payments extends Component {
 			}
 
 			// when floor id chnage the unit filed will be refresh
-			if (name === 'floorId' && formData.floorId != null) {
+			if (name === 'floorId' && newFormData.floorId != null) {
 				let object = {};
 				object = getAllFloors.find((item) => { return item.id == value && item })
 				var totalPrice = newFormData.pearl * object && object.pricePerSqFt
@@ -671,6 +671,7 @@ class Payments extends Component {
 				addPaymentModalToggleState: status,
 				secondCheckValidation: false,
 				secondFormLeadData: {},
+				editaAble: false,
 			})
 		} else if (status === false) {
 			this.clearPaymentsValuesFromRedux(status)
@@ -720,12 +721,11 @@ class Payments extends Component {
 					unitStatus: this.props.lead.installmentDue,
 					unitId: this.props.lead.unitId,
 				}
-
 				// ====================== API call for added Payments
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
 						// ====================== If have attachments then this check will b execute
-						this.submitAttachment(res.data.id, false)
+						this.submitAttachment(res.data.id, false, remainingPayment - secondFormData.installmentAmount)
 					}).catch(() => {
 						console.log('/api/leads/project/payments - Error', error)
 						helper.errorToast('Payment Not Added')
@@ -738,19 +738,22 @@ class Payments extends Component {
 				if (paymentOldValue > secondFormData.installmentAmount) {
 					total = paymentOldValue - secondFormData.installmentAmount
 					total = remainingPayment + total
-				} else {
+				} else if (paymentOldValue != secondFormData.installmentAmount) {
 					total = secondFormData.installmentAmount - paymentOldValue
 					total = remainingPayment - total
+				} else {
+					total = remainingPayment
 				}
 				var body = {
 					...secondFormData,
 					remainingPayment: total,
 					cmLeadId: this.props.lead.id,
 				}
+
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
 						// ====================== If have attachments then this check will b execute
-						this.submitAttachment(paymentId, true)
+						this.submitAttachment(paymentId, true, total)
 					}).catch((error) => {
 						console.log('/api/leads/project/payments?id - Error', error)
 						helper.errorToast('Payment Not Added')
@@ -766,7 +769,7 @@ class Payments extends Component {
 		}
 	}
 
-	submitAttachment = (paymentId, checkForEdit) => {
+	submitAttachment = (paymentId, checkForEdit, totalRemaining) => {
 
 		const {
 			secondFormData,
@@ -779,7 +782,6 @@ class Payments extends Component {
 
 		// ====================== If have attachments then this check will b execute
 		if (CMPayment.attachments && CMPayment.attachments.length > 0) {
-
 
 			// ====================== Using map for Uploading Attachments
 			CMPayment.attachments.map((item, index) => {
@@ -835,10 +837,9 @@ class Payments extends Component {
 			})
 
 		} else {
-
 			this.setState({
 				addPaymentModalToggleState: false,
-				remainingPayment: remainingPayment - secondFormData.installmentAmount,
+				remainingPayment: totalRemaining,
 				secondFormData: {
 					installmentAmount: null,
 					type: '',
@@ -1065,6 +1066,7 @@ class Payments extends Component {
 			cnicEditable,
 			leftSqft,
 		} = this.state
+
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -1142,7 +1144,7 @@ class Payments extends Component {
 						/>
 					}
 					{
-						getAllFloors != '' && getAllProject != '' && 
+						getAllFloors != '' && getAllProject != '' &&
 						<FirstScreenConfirmModal
 							active={openFirstScreenModal}
 							data={formData}

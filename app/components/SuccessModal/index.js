@@ -3,14 +3,14 @@ import { View, Image, StyleSheet, Modal, Text } from 'react-native';
 import AppStyles from "../../AppStyles";
 import TouchableButton from '../TouchableButton';
 import config from '../../config';
-import AppJson from '../../../app.json';
+import helper from '../../helper';
 
 export default class SuccessModal extends React.Component {
     constructor(props) {
         super(props)
     }
     render() {
-        let label = config.channel === 'development' ? 'Dev ' : ''
+        let label = helper.checkChannel(config.channel)
         return (
             <Modal
                 visible={this.props.active}>

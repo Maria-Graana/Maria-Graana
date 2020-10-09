@@ -443,7 +443,12 @@ const helper = {
 			}
 		} else return false
 	},
-	createArray(N) { return Array.from({ length: N }, (_, index) => index + 1) }
+	createArray(N) { return Array.from({ length: N }, (_, index) => index + 1) },
+	checkChannel(channel) {
+		if (channel === 'production') return ''
+		else if (channel === 'staging') return 'Staging '
+		else return 'Dev '
+	}
 }
 
 

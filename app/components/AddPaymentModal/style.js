@@ -151,4 +151,7 @@ export default styles = StyleSheet.create({
   cancelLight: {
     flex: 1,
   },
+  loaderTop: {
+    marginTop: 12,
+  },
 });

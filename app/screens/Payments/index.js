@@ -44,7 +44,7 @@ class Payments extends Component {
 				pearl: null,
 				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
 				unitType: '',
-				pearlName:'New Pearl'
+				pearlName: 'New Pearl'
 			},
 			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
 			secondFormData: { ...this.props.CMPayment },
@@ -353,7 +353,7 @@ class Payments extends Component {
 				if (leftSqft < 50) {
 					this.setState({ leftSqft: leftSqft })
 				}
-			
+
 				var totalPrice = newFormData.pearl * object.pricePerSqFt
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object })
 			}
@@ -431,6 +431,9 @@ class Payments extends Component {
 			newFormData['discount'] = null
 			newFormData['finalPrice'] = null
 			newFormData['discountedPrice'] = null
+			newFormData['paymentPlan'] = 'no'
+			newFormData['unitType'] = 'no'
+			newFormData['pearl'] = null
 			this.setState({ unitPrice: null, })
 		}
 
@@ -606,30 +609,30 @@ class Payments extends Component {
 
 	firstScreenConfirmModal = (status) => {
 		const { formData, cnicValidate, leftSqft, unitPearlDetailsData } = this.state
+
 		if (formData.pearl != null) {
 			if (
 				formData.pearl <= unitPearlDetailsData.pearlArea &&
 				formData.pearl >= 50 &&
 				formData.cnic != null &&
 				formData.cnic != '' &&
-				cnicValidate === false
+				cnicValidate === false &&
+				formData.paymentPlan != null &&
+				formData.paymentPlan != '' &&
+				formData.paymentPlan != 'no'
 			) {
-
 				if (leftSqft < 50 && leftSqft > 0) {
-
 					this.setState({
 						firstScreenValidate: true,
 					})
 
 				} else {
-
 					this.setState({
 						openFirstScreenModal: status,
 					})
 
 				}
 			} else {
-
 				this.setState({
 					firstScreenValidate: true,
 				})
@@ -798,7 +801,7 @@ class Payments extends Component {
 					// ====================== API call for Attachments base on Payment ID
 					axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
 						.then((res) => {
-							
+
 							this.setState({
 								addPaymentModalToggleState: false,
 								remainingPayment: remainingPayment - secondFormData.installmentAmount,
@@ -817,7 +820,7 @@ class Payments extends Component {
 							})
 						})
 				} else {
-					
+
 					this.setState({
 						addPaymentModalToggleState: false,
 						remainingPayment: remainingPayment - secondFormData.installmentAmount,
@@ -832,7 +835,7 @@ class Payments extends Component {
 			})
 
 		} else {
-			
+
 			this.setState({
 				addPaymentModalToggleState: false,
 				remainingPayment: remainingPayment - secondFormData.installmentAmount,
@@ -842,7 +845,7 @@ class Payments extends Component {
 					details: '',
 					cmLeadId: this.props.lead.id,
 				},
-				
+
 				addPaymentLoading: false,
 			}, () => {
 				this.fetchLead();
@@ -1138,9 +1141,8 @@ class Payments extends Component {
 							pearlModal={true}
 						/>
 					}
-
 					{
-						getAllFloors != '' && getAllProject != '' && allUnits != '' &&
+						getAllFloors != '' && getAllProject != '' && 
 						<FirstScreenConfirmModal
 							active={openFirstScreenModal}
 							data={formData}

@@ -93,11 +93,13 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
-		this.getFloors(lead.projectId)
+		
 		this._unsubscribe = navigation.addListener('focus', () => {
 			this.reopenPaymentModal();
 		})
-		console.log(lead.unit)
+		if(lead.projectId && lead.projectId != null){
+			this.getFloors(lead.projectId)
+		}
 	}
 
 	componentWillUnmount() {

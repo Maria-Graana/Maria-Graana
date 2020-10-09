@@ -52,7 +52,7 @@ class InnerForm extends Component {
     const dataForPaymentTile = {
       installmentAmount: formData.token,
       id: null,
-      status: 'Pending',
+      status: '',
       details: formData.details,
       type: formData.type,
       createdAt: new Date(),

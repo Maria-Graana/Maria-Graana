@@ -25,7 +25,7 @@ class FirstScreenConfirmModal extends React.Component {
       firstScreenConfirmLoading,
       formData,
     } = this.props
-    var project = getAllProject.length && getAllProject.find((item) => { return data.projectId === item.id && item })
+    var project = getAllProject && getAllProject.find((item) => { return data.projectId === item.id && item })
     var floors = getAllFloors && getAllFloors.find((item) => { return data.floorId === item.id && item })
     var units = allUnits!= '' && allUnits.find((item) => { return data.unitId === item.id && item })
 

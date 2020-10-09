@@ -33,7 +33,7 @@ class PaymentTile extends React.Component {
 					<View style={styles.bottomLayer}>
 						<Text style={styles.formatPrice}>{currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>
 						<Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
-						<Text style={styles.priceDate}>{moment(data.createdAt).format('MM.DD.YYYY / h:mm a')}</Text>
+						<Text style={styles.priceDate}>{moment(data.createdAt).format('DD MMM YY - h:mm a')}</Text>
 					</View>
 				</View>
 			</TouchableOpacity>

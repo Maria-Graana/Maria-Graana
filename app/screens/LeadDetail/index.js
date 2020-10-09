@@ -250,8 +250,10 @@ class LeadDetail extends React.Component {
                                         lead.status && lead.status === 'token' ?
                                             <Text>DEAL SIGNED - TOKEN</Text>
                                             :
-                                            lead.status &&
-                                            lead.status.split('_').join(' ').toUpperCase()
+                                            lead.status === 'meeting' ?
+                                                lead.status.split('_').join(' ').toUpperCase() + ' PLANNED'
+                                                :
+                                                lead.status.split('_').join(' ').toUpperCase()
                                     }
                                 </Text>
                             </View>

@@ -357,7 +357,7 @@ export default StaticData = {
         { value: 'follow_up', name: 'Follow up' },
         { value: 'details_sent', name: 'Details Sent' },
         { value: 'expected_visit', name: 'Expected Visit' },
-        { value: 'meeting_planned', name: 'Meeting Planned' },
+        { value: 'meeting', name: 'Meeting Planned' },
         { value: 'visited', name: 'Visited' },
         { value: 'deal_expected', name: 'Deal Expected' },
         { value: 'deal_signed', name: 'Deal Signed' },

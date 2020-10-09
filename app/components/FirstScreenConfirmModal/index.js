@@ -1,13 +1,12 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { Button, } from 'native-base';
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal';
 import times from '../../../assets/img/times.png'
 import styles from './style'
 import { formatPrice } from '../../PriceFormate';
-import SimpleInputText from '../SimpleInputField'
-import ErrorMessage from '../../components/ErrorMessage'
+import Loader from '../loader';
 
 class FirstScreenConfirmModal extends React.Component {
   constructor(props) {
@@ -26,10 +25,9 @@ class FirstScreenConfirmModal extends React.Component {
       firstScreenConfirmLoading,
       formData,
     } = this.props
-
     var project = getAllProject.find((item) => { return data.projectId === item.id && item })
     var floors = getAllFloors.find((item) => { return data.floorId === item.id && item })
-    var units = allUnits.find((item) => { return data.unitId === item.id && item })
+    var units = allUnits!= '' && allUnits.find((item) => { return data.unitId === item.id && item })
 
     return (
       <Modal isVisible={active}>
@@ -52,8 +50,10 @@ class FirstScreenConfirmModal extends React.Component {
           </View>
           <View style={styles.confirmBtnView}>
             <TouchableOpacity style={[styles.confirmBtn]} onPress={() => { firstScreenConfirmLoading != true && submitFirstScreen() }}>
-              <Text style={[styles.textCenter, styles.activeBtn]}>{firstScreenConfirmLoading === true ? 'Wait...' : 'BOOK'}</Text>
+            {firstScreenConfirmLoading === true ? <Text style={styles.loaderStyle}><ActivityIndicator size="small" color={AppStyles.colors.primaryColor} /></Text> : <Text style={[styles.textCenter, styles.activeBtn]}>BOOK</Text>}
+              
             </TouchableOpacity>
+            
 
             <TouchableOpacity style={[styles.confirmBtn]}>
               <Text style={[styles.textCenter]} onPress={() => { firstScreenConfirmModal(false) }}>CANCEL</Text>

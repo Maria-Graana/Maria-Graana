@@ -228,17 +228,20 @@ class InnerForm extends Component {
             }
 
 
-            <SimpleInputText
-              name={'cnic'}
-              placeholder={'Client CNIC'}
-              label={'CLIENT CNIC'}
-              value={formData.cnic}
-              keyboardType={'numeric'}
-              onChangeHandle={handleForm}
-              formatValue={''}
-              editable={cnicEditable}
-              fromatName={false}
-            />
+            {
+              cnicEditable != false &&
+              <SimpleInputText
+                name={'cnic'}
+                placeholder={'Client CNIC'}
+                label={'CLIENT CNIC'}
+                value={formData.cnic}
+                keyboardType={'numeric'}
+                onChangeHandle={handleForm}
+                formatValue={''}
+                editable={cnicEditable}
+                fromatName={false}
+              />
+            }
             {
               firstScreenValidate === true && formData.cnic === null || formData.cnic === '' ?
                 <ErrorMessage errorMessage={'Required'} />

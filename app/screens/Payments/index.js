@@ -93,10 +93,11 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
-		this.handleForm(lead.projectId, 'projectId')
+		this.getFloors(lead.projectId)
 		this._unsubscribe = navigation.addListener('focus', () => {
 			this.reopenPaymentModal();
 		})
+		console.log(lead.unit)
 	}
 
 	componentWillUnmount() {
@@ -1011,7 +1012,7 @@ class Payments extends Component {
 
 			var leadId = []
 			leadId.push(lead.id)
-
+				console.log(formData)
 			// Check for Payment Done option 
 			if (Number(remainingPayment) <= 0 && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })

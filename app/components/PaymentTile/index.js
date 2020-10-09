@@ -28,7 +28,9 @@ class PaymentTile extends React.Component {
 				<View style={styles.tileTopWrap}>
 					<View style={styles.upperLayer}>
 						<Text style={styles.paymnetHeading}>PAYMENT {count + 1} ({data.type})</Text>
-						<Text style={[styles.tileStatus, statusColor]}>{data.status === 'pending' ? 'pending clearance' : data.status}</Text>
+						{
+							data.status != '' && <Text style={[styles.tileStatus, statusColor]}>{data.status === 'pending' ? 'pending clearance' : data.status}</Text>
+						}
 					</View>
 					<View style={styles.bottomLayer}>
 						<Text style={styles.formatPrice}>{currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>

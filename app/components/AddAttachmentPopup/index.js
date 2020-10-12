@@ -14,7 +14,7 @@ import { Button } from 'native-base';
 import ErrorMessage from '../../components/ErrorMessage'
 
 const AddAttachmentPopup = (props) => {
-    const { isVisible, closeModal, formData, checkValidation, formSubmit, getAttachmentFromStorage, title, setTitle } = props;
+    const { isVisible, closeModal, formData, checkValidation, formSubmit, getAttachmentFromStorage, setTitle } = props;
     return (
         <Modal
             visible={isVisible}

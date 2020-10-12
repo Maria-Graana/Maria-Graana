@@ -16,9 +16,7 @@ import AddPaymentModal from '../../components/AddPaymentModal'
 import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style';
-import AddAttachmentPopup from '../../components/AddAttachmentPopup'
-import * as DocumentPicker from 'expo-document-picker';
-import { cos } from 'react-native-reanimated';
+import { setCMPaymennt } from '../../actions/addCMPayment';
 
 
 class Payments extends Component {
@@ -43,13 +41,13 @@ class Payments extends Component {
 				token: lead.token != null ? lead.token : null,
 				type: '',
 				details: '',
+				pearl: null,
+				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
+				unitType: '',
+				pearlName: 'New Pearl'
 			},
-			secondFormData: {
-				installmentAmount: null,
-				type: '',
-				cmLeadId: lead.id,
-				details: '',
-			},
+			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
+			secondFormData: { ...this.props.CMPayment },
 			unitId: null,
 			unitPrice: null,
 			checkPaymentPlan: {
@@ -59,11 +57,14 @@ class Payments extends Component {
 				investment: true,
 				quartarly: true,
 			},
+			cnicValidate: false,
+			leftSqft: null,
+			secondFormLeadData: {},
+			unitPearlDetailsData: {},
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
 			firstScreenDone: lead.unit != null && lead.unit.bookingStatus != 'Available' ? false : true,
-			// firstScreenDone: false,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
 			secondCheckValidation: false,
@@ -75,12 +76,6 @@ class Payments extends Component {
 			firstScreenConfirmLoading: false,
 			addPaymentLoading: false,
 			paymentPreviewLoading: false,
-			attachmentVisible: false,
-			attachmentData: {
-				fileName: '',
-				uri: '',
-				size: null,
-			},
 			tokenModalVisible: false,
 			reasons: [],
 			isVisible: false,
@@ -93,16 +88,47 @@ class Payments extends Component {
 
 	componentDidMount() {
 		const { formData, remarks } = this.state
+		const { navigation, lead } = this.props
+
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
-		this.handleForm(formData.projectId, 'projectId')
+		
+		this._unsubscribe = navigation.addListener('focus', () => {
+			this.reopenPaymentModal();
+		})
+		if(lead.projectId && lead.projectId != null){
+			this.getFloors(lead.projectId)
+		}
+	}
+
+	componentWillUnmount() {
+		this.clearPaymentsValuesFromRedux()
+	}
+
+	reopenPaymentModal = () => {
+		this.setState({
+			addPaymentModalToggleState: this.props.CMPayment.visible
+		})
+	}
+
+	clearPaymentsValuesFromRedux = (status) => {
+		const newObject = {
+			installmentAmount: null,
+			type: '',
+			cmLeadId: null,
+			details: '',
+			visible: status,
+			attachments: [],
+		}
+		this.setState({ secondFormData: newObject }, () => {
+			this.props.dispatch(setCMPaymennt(newObject))
+		})
 	}
 
 	setdefaultFields = (lead) => {
 		const { checkPaymentPlan } = this.state
 		var newcheckPaymentPlan = { ...checkPaymentPlan }
-
 		newcheckPaymentPlan['years'] = lead.paidProject != null && lead.paidProject.installment_plan != null || '' ? lead.paidProject.installment_plan : null
 		newcheckPaymentPlan['monthly'] = lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes' ? true : false
 		newcheckPaymentPlan['rental'] = lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false,
@@ -133,7 +159,7 @@ class Payments extends Component {
 				})
 			})
 			.catch((error) => {
-				console.log(error)
+				console.log('/api/leads/project/byId?id - Error', error)
 				this.setState({
 					paymentPreviewLoading: false,
 				})
@@ -150,7 +176,7 @@ class Payments extends Component {
 					getAllProject: res.data.items
 				})
 			}).catch((error) => {
-				console.log('project')
+				console.log('/api/project/all - Error', error)
 			})
 	}
 
@@ -163,12 +189,14 @@ class Payments extends Component {
 					getFloors: Array,
 					getAllFloors: res.data.rows,
 				})
+			}).catch((error) => {
+				console.log('/api/project/floors?projectId - Error', error)
 			})
 	}
 
 	getUnits = (projectId, floorId) => {
 		const { lead } = this.props
-		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
+		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available&type=regular`)
 			.then((res) => {
 				let array = [];
 				res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
@@ -176,6 +204,8 @@ class Payments extends Component {
 					getUnit: array,
 					allUnits: res.data.rows,
 				})
+			}).catch((error) => {
+				console.log('/api/project/shops?projectId & floorId & status - Error', error)
 			})
 	}
 
@@ -186,6 +216,16 @@ class Payments extends Component {
 		this.setState({
 			unitDetailModal: status,
 			unitDetailsData: object,
+		})
+	}
+
+	openPearlDetailsModal = (status) => {
+		const { formData, getAllFloors } = this.state
+		let object = {};
+		object = getAllFloors.find((item) => { return item.id == formData.floorId && item })
+		this.setState({
+			unitDetailModal: status,
+			unitPearlDetailsData: object,
 		})
 	}
 
@@ -202,14 +242,13 @@ class Payments extends Component {
 
 	setPaymentPlanArray = (lead) => {
 		const { paymentPlan, checkPaymentPlan } = this.state
-		// const { lead } = this.props
 		const array = [];
 
-		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null ) {
-				array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null) {
+			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
 		}
-		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null ) {
-				array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null) {
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -223,12 +262,26 @@ class Payments extends Component {
 		})
 	}
 
+	validateCnic = (value) => {
+		if (value.length < 15 || value === '') {
+			this.setState({ cnicValidate: true })
+		} else { this.setState({ cnicValidate: false }) }
+	}
+
 	handleForm = (value, name) => {
-		const { formData, unitPrice } = this.state
+		const { formData, unitPrice, getAllFloors } = this.state
+
+
+		const newFormData = { ...formData }
+
+		if (name === 'cnic') {
+			value = helper.normalizeCnic(value)
+			this.validateCnic(value)
+		}
 
 		// Set Values In form Data
-		const newFormData = { ...formData }
 		newFormData[name] = value
+
 
 		// Get Floor base on Project Id
 		if (name === 'projectId') {
@@ -252,6 +305,7 @@ class Payments extends Component {
 			newFormData['discount'] = ''
 		}
 
+
 		this.setState({
 			formData: newFormData,
 		}, () => {
@@ -272,13 +326,39 @@ class Payments extends Component {
 			}
 
 			// when floor id chnage the unit filed will be refresh
-			if (name === 'floorId' && formData.floorId != null) {
-				this.refreshUnitPrice(name)
+			if (name === 'floorId' && newFormData.floorId != null) {
+				let object = {};
+				object = getAllFloors.find((item) => { return item.id == value && item })
+				var totalPrice = newFormData.pearl * object && object.pricePerSqFt
+				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object }, () => {
+					this.refreshUnitPrice(name)
+				})
 			}
 
 			// when floor id chnage the unit filed will be refresh
 			if (name === 'unitId' && formData.unitId != null) {
 				this.refreshUnitPrice(name)
+			}
+
+			//Checks for PEARl values
+			if (name === 'unitType') {
+				this.refreshUnitPrice(name)
+			}
+
+			if (name === 'pearl') {
+				this.setState({ leftSqft: null })
+				let object = {};
+				object = getAllFloors.find((item) => { return item.id == formData.floorId && item })
+				var totalSqft = object.pearlArea
+				var minusSqft = value
+
+				var leftSqft = totalSqft - minusSqft
+				if (leftSqft < 50) {
+					this.setState({ leftSqft: leftSqft })
+				}
+
+				var totalPrice = newFormData.pearl * object.pricePerSqFt
+				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object })
 			}
 		})
 	}
@@ -354,6 +434,9 @@ class Payments extends Component {
 			newFormData['discount'] = null
 			newFormData['finalPrice'] = null
 			newFormData['discountedPrice'] = null
+			newFormData['paymentPlan'] = 'no'
+			newFormData['unitType'] = 'no'
+			newFormData['pearl'] = null
 			this.setState({ unitPrice: null, })
 		}
 
@@ -361,6 +444,16 @@ class Payments extends Component {
 			newFormData['discount'] = null
 			newFormData['finalPrice'] = null
 			newFormData['discountedPrice'] = null
+		}
+
+		if (name === 'unitType') {
+			newFormData['unitId'] = 'no'
+			newFormData['discount'] = null
+			newFormData['finalPrice'] = null
+			newFormData['discountedPrice'] = null
+			newFormData['paymentPlan'] = 'no'
+			newFormData['pearl'] = null
+			this.setState({ unitPrice: null, })
 		}
 
 		this.setState({
@@ -385,13 +478,89 @@ class Payments extends Component {
 
 	submitFirstScreen = () => {
 		const { lead } = this.props
-		const { formData, remainingPayment } = this.state
+		const { formData, unitPrice, unitPearlDetailsData, unitType } = this.state
+
 		this.setState({
 			firstScreenConfirmLoading: true,
 		})
 
+		var downPayment = lead.paidProject != null ? lead.paidProject.down_payment : 0
+		var totalDownPayment = (downPayment / 100) * unitPrice
+
+		var fullPaymentDiscount = lead.paidProject != null ? lead.paidProject.full_payment_discount : 0
+		var totalFullpaymentDiscount = (1 - fullPaymentDiscount / 100) * unitPrice
+
+		var possessionCharges = lead.paidProject != null ? lead.paidProject.possession_charges : 0
+		var totalpossessionCharges = (possessionCharges / 100) * unitPrice
+
+		var installmentAmount = unitPrice - totalDownPayment - totalpossessionCharges
+
+		var installmentPlan = lead.paidProject != null ? lead.paidProject.installment_plan : 1
+
+		var numberOfQuarterlyInstallments = installmentPlan * 4
+		var quarterlyInstallmentsAmount = installmentAmount / numberOfQuarterlyInstallments
+
+		var numberOfMonthlyInstallments = installmentPlan * 12
+		var monthlyInstallmentsAmount = installmentAmount / numberOfMonthlyInstallments
+
+		var totalRent = unitPearlDetailsData.rentPerSqFt * formData.pearl
+
+		var pearlBody = {
+			area: formData.pearl,
+			area_unit: 'sqft',
+			bookingStatus: "Available",
+			category_charges: 0,
+			unit_price: unitPrice,
+			discount: 0,
+			discount_amount: 0,
+			discounted_price: unitPrice,
+			down_payment: totalDownPayment,
+			floorId: formData.floorId,
+			full_payment_price: totalFullpaymentDiscount,
+			possession_charges: totalpossessionCharges,
+			installment_amount: installmentAmount,
+			quarterly_installments: quarterlyInstallmentsAmount,
+			monthly_installments: monthlyInstallmentsAmount,
+			name: "Shop # 4892",
+			optional_fields: "{}",
+			pricePerSqFt: unitPearlDetailsData.pricePerSqFt,
+			projectId: formData.projectId,
+			rate_per_sqft: unitPearlDetailsData.pricePerSqFt,
+			remarks: "",
+			rent: totalRent,
+			rentPerSqFt: unitPearlDetailsData.rentPerSqFt,
+			reservation: unitPearlDetailsData.project.reservation_charges,
+			type: "pearl",
+			userId: this.props.user.id,
+			name: 'name',
+		}
+
+		if (formData.unitType === 'pearl') {
+			axios.post(`/api/project/shop/create`, pearlBody)
+				.then((res) => {
+					unitId = res.data.id
+					this.firstScreenApiCall(res.data.id)
+				}).catch((error) => {
+					console.log('/api/project/shop/create - Error', error)
+					helper.errorToast('Something went wrong!!')
+					this.setState({
+						firstScreenConfirmLoading: false,
+					})
+				})
+		} else {
+			var unitId = formData.unitId === null || formData.unitId === '' || formData.unitId === 'no' ? null : formData.unitId
+			this.firstScreenApiCall(unitId)
+		}
+
+	}
+
+
+	firstScreenApiCall = (unitId) => {
+		const { lead } = this.props
+		const { formData, remainingPayment } = this.state
+
 		var body = {
-			unitId: formData.unitId,
+			unitId: unitId,
 			projectId: formData.projectId,
 			floorId: formData.floorId,
 			unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
@@ -403,7 +572,9 @@ class Payments extends Component {
 			remainingPayment: remainingPayment,
 			installmentAmount: formData.token,
 			type: formData.type,
+			pearl: formData.pearl === null || formData.pearl === '' ? null : formData.pearl,
 		}
+
 		var leadId = []
 		leadId.push(lead.id)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
@@ -424,12 +595,14 @@ class Payments extends Component {
 							helper.successToast('Unit Has Been Booked')
 						})
 					}).catch(() => {
+						console.log('/api/leads/project/byId?id - Error', error)
 						helper.errorToast('Something went wrong!!!')
 						this.setState({
 							firstScreenConfirmLoading: false,
 						})
 					})
-			}).catch(() => {
+			}).catch((error) => {
+				console.log('/api/leads/project - Error', error)
 				helper.errorToast('Something went wrong!!')
 				this.setState({
 					firstScreenConfirmLoading: false,
@@ -438,43 +611,75 @@ class Payments extends Component {
 	}
 
 	firstScreenConfirmModal = (status) => {
-		const { formData } = this.state
-		if (
-			formData.projectId != null &&
-			formData.floorId != null &&
-			formData.unitId != null &&
-			formData.paymentPlan != null &&
-			formData.paymentPlan != '' &&
-			formData.token != null &&
-			formData.token != '' &&
-			formData.type != ''
-		) {
-			this.setState({
-				openFirstScreenModal: status,
-			})
+		const { formData, cnicValidate, leftSqft, unitPearlDetailsData } = this.state
+
+		if (formData.pearl != null) {
+			if (
+				formData.pearl <= unitPearlDetailsData.pearlArea &&
+				formData.pearl >= 50 &&
+				formData.cnic != null &&
+				formData.cnic != '' &&
+				cnicValidate === false &&
+				formData.paymentPlan != null &&
+				formData.paymentPlan != '' &&
+				formData.paymentPlan != 'no'
+			) {
+				if (leftSqft < 50 && leftSqft > 0) {
+					this.setState({
+						firstScreenValidate: true,
+					})
+
+				} else {
+					this.setState({
+						openFirstScreenModal: status,
+					})
+
+				}
+			} else {
+				this.setState({
+					firstScreenValidate: true,
+				})
+
+			}
 		} else {
-			this.setState({
-				firstScreenValidate: true,
-			})
+			if (
+				formData.projectId != null &&
+				formData.floorId != null &&
+				formData.unitId != null &&
+				formData.paymentPlan != null &&
+				formData.paymentPlan != '' &&
+				formData.token != null &&
+				formData.token != '' &&
+				formData.type != '' &&
+				formData.cnic != null &&
+				formData.cnic != '' &&
+				cnicValidate === false
+			) {
+				this.setState({
+					openFirstScreenModal: status,
+				})
+			} else {
+				this.setState({
+					firstScreenValidate: true,
+				})
+			}
 		}
 
 	}
 
 	addPaymentModalToggle = (status) => {
 		if (status === true) {
+			this.clearPaymentsValuesFromRedux(status)
 			this.setState({
 				addPaymentModalToggleState: status,
 				secondCheckValidation: false,
+				secondFormLeadData: {},
+				editaAble: false,
 			})
 		} else if (status === false) {
+			this.clearPaymentsValuesFromRedux(status)
 			this.setState({
 				addPaymentModalToggleState: status,
-				secondFormData: {
-					installmentAmount: null,
-					type: '',
-					details: '',
-					cmLeadId: this.props.lead.id,
-				},
 				remarks: null,
 				editaAble: false,
 			})
@@ -483,81 +688,49 @@ class Payments extends Component {
 	}
 
 	secondHandleForm = (value, name) => {
-		const { secondFormData } = this.state
-		const newSecondFormData = secondFormData
+		const { secondFormData, attachmentData, addPaymentModalToggleState } = this.state
+		const newSecondFormData = { ...secondFormData, ...attachmentData, visible: addPaymentModalToggleState }
 		newSecondFormData[name] = value
+		this.props.dispatch(setCMPaymennt(newSecondFormData))
 		this.setState({
 			secondFormData: newSecondFormData,
 		})
 	}
 
+	// ====================== Function for submit second Screen *******
 	secondFormSubmit = () => {
 		const {
 			secondFormData,
 			editaAble,
 			paymentId,
-			formData,
 			remainingPayment,
 			paymentOldValue,
-			attachmentData,
 		} = this.state
+
+		const { CMPayment } = this.props
 
 
 		if (secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' && secondFormData.type != '') {
 			this.setState({
 				addPaymentLoading: true,
 			})
+
 			if (editaAble === false) {
-				var attachmentDataBOdy = {
-					name: attachmentData.fileName,
-					type: 'file/' + attachmentData.fileName.split('.').pop(),
-					uri: attachmentData.uri
-				}
-				var fd = new FormData()
-				fd.append('file', attachmentDataBOdy)
+
 				var body = {
 					...secondFormData,
+					cmLeadId: this.props.lead.id,
 					remainingPayment: remainingPayment - secondFormData.installmentAmount,
 					unitStatus: this.props.lead.installmentDue,
 					unitId: this.props.lead.unitId,
 				}
+				// ====================== API call for added Payments
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
-						if (attachmentData.fileName != '') {
-							axios.post(`/api/leads/paymentAttachment?id=${res.data.id}`, fd)
-								.then((res) => {
-									this.fetchLead();
-									this.setState({
-										addPaymentModalToggleState: false,
-										secondFormData: {
-											installmentAmount: null,
-											type: '',
-											details: '',
-											cmLeadId: this.props.lead.id,
-										},
-										remainingPayment: remainingPayment - secondFormData.installmentAmount,
-										addPaymentLoading: false,
-									}, () => {
-										helper.successToast('Payment Added')
-									})
-								})
-						} else {
-							this.fetchLead();
-							this.setState({
-								addPaymentModalToggleState: false,
-								secondFormData: {
-									installmentAmount: null,
-									type: '',
-									details: '',
-									cmLeadId: this.props.lead.id,
-								},
-								remainingPayment: remainingPayment - secondFormData.installmentAmount,
-								addPaymentLoading: false,
-							}, () => {
-								helper.successToast('Payment Added')
-							})
-						}
+						// ====================== If have attachments then this check will b execute
+						this.submitAttachment(res.data.id, false, remainingPayment - secondFormData.installmentAmount)
 					}).catch(() => {
+						console.log('/api/leads/project/payments - Error', error)
 						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
@@ -568,32 +741,25 @@ class Payments extends Component {
 				if (paymentOldValue > secondFormData.installmentAmount) {
 					total = paymentOldValue - secondFormData.installmentAmount
 					total = remainingPayment + total
-				} else {
+				} else if (paymentOldValue != secondFormData.installmentAmount) {
 					total = secondFormData.installmentAmount - paymentOldValue
 					total = remainingPayment - total
+				} else {
+					total = remainingPayment
 				}
 				var body = {
 					...secondFormData,
 					remainingPayment: total,
+					cmLeadId: this.props.lead.id,
 				}
+
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
-						this.fetchLead();
-						this.setState({
-							addPaymentModalToggleState: false,
-							secondFormData: {
-								installmentAmount: null,
-								type: '',
-								details: '',
-								cmLeadId: this.props.lead.id
-							},
-							remainingPayment: total,
-							editaAble: false,
-							addPaymentLoading: false,
-						}, () => {
-							helper.successToast('Payment Updated')
-						})
-					}).catch(() => {
+						// ====================== If have attachments then this check will b execute
+						this.submitAttachment(paymentId, true, total)
+					}).catch((error) => {
+						console.log('/api/leads/project/payments?id - Error', error)
+						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
 						})
@@ -602,6 +768,93 @@ class Payments extends Component {
 		} else {
 			this.setState({
 				secondCheckValidation: true,
+			})
+		}
+	}
+
+	submitAttachment = (paymentId, checkForEdit, totalRemaining) => {
+
+		const {
+			secondFormData,
+			remainingPayment,
+		} = this.state
+
+		const { CMPayment } = this.props
+
+		var message = checkForEdit === true ? 'Payment Updated' : 'Payment Added'
+
+		// ====================== If have attachments then this check will b execute
+		if (CMPayment.attachments && CMPayment.attachments.length > 0) {
+
+			// ====================== Using map for Uploading Attachments
+			CMPayment.attachments.map((item, index) => {
+
+				// ====================== attachment payload requirments
+				let attachment = {
+					name: item.fileName,
+					type: 'file/' + item.fileName.split('.').pop(),
+					uri: item.uri,
+				}
+				let fd = new FormData()
+				fd.append('file', attachment)
+				fd.append('title', item.title);
+				fd.append('type', 'file/' + item.fileName.split('.').pop())
+
+
+
+				if (item && !item.id) {
+					// ====================== API call for Attachments base on Payment ID
+					axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
+						.then((res) => {
+
+							this.setState({
+								addPaymentModalToggleState: false,
+								remainingPayment: remainingPayment - secondFormData.installmentAmount,
+								addPaymentLoading: false,
+							}, () => {
+								this.fetchLead();
+								helper.successToast(message)
+								this.clearPaymentsValuesFromRedux(false);
+							})
+						}).catch((error) => {
+							console.log('/api/leads/paymentAttachment?id - Error', error)
+							helper.errorToast('Attachment Not Added')
+							his.setState({
+								addPaymentModalToggleState: false,
+								addPaymentLoading: false,
+							})
+						})
+				} else {
+
+					this.setState({
+						addPaymentModalToggleState: false,
+						remainingPayment: remainingPayment - secondFormData.installmentAmount,
+						addPaymentLoading: false,
+					}, () => {
+						this.fetchLead();
+						helper.successToast(message)
+						this.clearPaymentsValuesFromRedux(false);
+					})
+				}
+
+			})
+
+		} else {
+			this.setState({
+				addPaymentModalToggleState: false,
+				remainingPayment: totalRemaining,
+				secondFormData: {
+					installmentAmount: null,
+					type: '',
+					details: '',
+					cmLeadId: this.props.lead.id,
+				},
+
+				addPaymentLoading: false,
+			}, () => {
+				this.fetchLead();
+				this.clearPaymentsValuesFromRedux(false);
+				helper.successToast(message)
 			})
 		}
 	}
@@ -623,8 +876,20 @@ class Payments extends Component {
 		this.setState({ addPaymentModalToggleState: true, modalLoading: true })
 		axios.get(`/api/leads/project/byId?id=${this.props.lead.id}`)
 			.then((res) => {
+
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
+				var setValuesForRedux = {
+					attachments: [...editLeadData.paymentAttachments],
+					cmLeadId: this.props.lead.id,
+					details: editLeadData.details,
+					installmentAmount: null,
+					type: editLeadData.type,
+					visible: true,
+				}
+
+				this.props.dispatch(setCMPaymennt(setValuesForRedux))
+
 				this.setState({
 					secondFormData: {
 						installmentAmount: editLeadData.installmentAmount,
@@ -638,7 +903,15 @@ class Payments extends Component {
 					paymentId: id,
 					paymentOldValue: editLeadData.installmentAmount,
 					modalLoading: false,
-					remarks: editLeadData.remarks
+					remarks: editLeadData.remarks,
+					secondFormLeadData: editLeadData,
+				})
+			}).catch((error) => {
+				console.log('/api/leads/project/byId?id= - Error', error)
+				helper.errorToast('No edit data found!!')
+				this.setState({
+					editaAble: false,
+					modalLoading: false,
 				})
 			})
 	}
@@ -654,8 +927,11 @@ class Payments extends Component {
 	}
 
 	goToPayAttachments = () => {
-		const { navigation, lead } = this.props;
-		navigation.navigate('Attachments', { rcmLeadId: lead.id });
+		const { navigation } = this.props;
+		this.setState({
+			addPaymentModalToggleState: false,
+		})
+		navigation.navigate('AttachmentsForPayments');
 	}
 
 	goToDiaryForm = (taskType) => {
@@ -672,36 +948,6 @@ class Payments extends Component {
 
 	navigateTo = () => {
 		this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
-	}
-
-	getAttachmentFromStorage = () => {
-		const { title } = this.state;
-		let options = {
-			type: '*/*',
-			copyToCacheDirectory: true,
-		}
-		DocumentPicker.getDocumentAsync(options).then(item => {
-			if (item.type === 'cancel') {
-				Alert.alert('Pick File', 'Please pick a file from documents!')
-			}
-			else {
-				this.setState({ attachmentData: { fileName: item.name, size: item.size, uri: item.uri, } }, () => {
-				})
-			}
-
-		}).catch(error => {
-			console.log(error);
-		})
-	}
-
-	attechmentModalToggle = (status) => {
-		this.setState({
-			attachmentVisible: status,
-		})
-	}
-
-	submitAttachment = () => {
-		this.attechmentModalToggle(false)
 	}
 
 	tokenModalToggle = (status) => {
@@ -730,7 +976,8 @@ class Payments extends Component {
 						navigation.navigate('Leads');
 					});
 				}).catch(error => {
-					console.log(error);
+					console.log('/api/leads/project - Error', error);
+					helper.errorToast('Closed lead API failed!!')
 				})
 		}
 		else {
@@ -767,7 +1014,7 @@ class Payments extends Component {
 
 			var leadId = []
 			leadId.push(lead.id)
-
+				console.log(formData)
 			// Check for Payment Done option 
 			if (Number(remainingPayment) <= 0 && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
@@ -810,16 +1057,19 @@ class Payments extends Component {
 			firstScreenConfirmLoading,
 			addPaymentLoading,
 			paymentPreviewLoading,
-			attachmentVisible,
-			attachmentData,
 			tokenModalVisible,
 			reasons,
 			selectedReason,
-			checkReasonValidation,
+			unitPearlDetailsData,
 			isVisible,
 			checkLeadClosedOrNot,
 			remarks,
+			secondFormLeadData,
+			cnicValidate,
+			cnicEditable,
+			leftSqft,
 		} = this.state
+
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -839,10 +1089,15 @@ class Payments extends Component {
 										firstScreenValidate={firstScreenValidate}
 										remainingPayment={remainingPayment}
 										checkLeadClosedOrNot={checkLeadClosedOrNot}
+										cnicValidate={cnicValidate}
+										leftSqft={leftSqft}
+										cnicEditable={cnicEditable}
+										unitPearlDetailsData={unitPearlDetailsData}
 										currencyConvert={this.currencyConvert}
 										handleForm={this.handleForm}
 										submitFirstScreen={this.submitFirstScreen}
 										openUnitDetailsModal={this.openUnitDetailsModal}
+										openPearlDetailsModal={this.openPearlDetailsModal}
 										firstScreenConfirmModal={this.firstScreenConfirmModal}
 										tokenModalToggle={this.tokenModalToggle}
 										editTileForscreenOne={this.editTileForscreenOne}
@@ -881,7 +1136,18 @@ class Payments extends Component {
 					}
 
 					{
-						getAllFloors != '' && getAllProject != '' && allUnits != '' &&
+						unitPearlDetailsData &&
+						<UnitDetailsModal
+							active={unitDetailModal}
+							data={unitPearlDetailsData}
+							formData={formData}
+							unitPrice={unitPrice}
+							openUnitDetailsModal={this.openPearlDetailsModal}
+							pearlModal={true}
+						/>
+					}
+					{
+						getAllFloors != '' && getAllProject != '' &&
 						<FirstScreenConfirmModal
 							active={openFirstScreenModal}
 							data={formData}
@@ -901,7 +1167,7 @@ class Payments extends Component {
 						modalLoading={modalLoading}
 						addPaymentLoading={addPaymentLoading}
 						remarks={remarks}
-						attechmentModalToggle={this.attechmentModalToggle}
+						secondFormLeadData={secondFormLeadData}
 						addPaymentModalToggle={this.addPaymentModalToggle}
 						secondHandleForm={this.secondHandleForm}
 						secondFormSubmit={this.secondFormSubmit}
@@ -915,17 +1181,7 @@ class Payments extends Component {
 						handleForm={this.handleForm}
 						tokenModalToggle={this.tokenModalToggle}
 					/>
-
-					<AddAttachmentPopup
-						isVisible={attachmentVisible}
-						formData={attachmentData}
-						formSubmit={this.submitAttachment}
-						getAttachmentFromStorage={this.getAttachmentFromStorage}
-						closeModal={() => this.attechmentModalToggle(false)}
-					/>
-
 				</View>
-
 				<LeadRCMPaymentPopup
 					reasons={reasons}
 					selectedReason={selectedReason}
@@ -959,7 +1215,8 @@ class Payments extends Component {
 mapStateToProps = (store) => {
 	return {
 		user: store.user.user,
-		lead: store.lead.lead
+		lead: store.lead.lead,
+		CMPayment: store.CMPayment.CMPayment,
 	}
 }
 

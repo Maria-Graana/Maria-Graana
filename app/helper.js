@@ -115,6 +115,24 @@ const helper = {
 			return matches
 		} else return []
 	},
+	propertyIdCheck(data) {
+		let matches = []
+		if (data.length) {
+			data.map((item, index) => {
+				if (item.graana_id) {
+					item.images = item.property_images || []
+					item.checkBox = false
+					return (matches.push(item))
+				} else {
+					item.images = item.armsPropertyImages || []
+					item.checkBox = false
+					item.user = item.armsuser
+					return (matches.push(item))
+				}
+			})
+			return matches
+		} else return []
+	},
 	setStatusText(val, todayDate) {
 		let taskDate = moment(val.date).format('YYYY-MM-DD')
 		if (val.taskCategory === 'simpleTask') { // simple task is reffered to task added from diary directly or through lead but taskcategory is simpleTask
@@ -425,7 +443,12 @@ const helper = {
 			}
 		} else return false
 	},
-	createArray(N) { return Array.from({ length: N }, (_, index) => index + 1) }
+	createArray(N) { return Array.from({ length: N }, (_, index) => index + 1) },
+	checkChannel(channel) {
+		if (channel === 'production') return ''
+		else if (channel === 'staging') return 'Staging '
+		else return 'Dev '
+	}
 }
 
 

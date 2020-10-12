@@ -11,7 +11,6 @@ export default styles = StyleSheet.create({
     shadowOffset: { width: 5, height: 5 },
     shadowColor: '#33333312',
     shadowOpacity: 1,
-    marginHorizontal: 10
   },
   tileIndex: {
     zIndex: 10,

@@ -32,10 +32,11 @@ class SimpleInputField extends React.Component {
       editable,
       fromatName,
       onChangeHandle,
+      noMargin,
     } = this.props
     const val = value != null || '' ? value.toString() : ''
     return (
-      <View style={[styles.mainInputParent]}>
+      <View style={[styles.mainInputParent, noMargin === true && {marginBottom: 0, marginTop: 0,}]}>
         {/* label */}
         <Text style={[styles.labelStyle]}>{label}</Text>
 

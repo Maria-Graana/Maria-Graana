@@ -22,7 +22,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import NetInfo from '@react-native-community/netinfo';
 import { navigationRef } from './app/navigation/RootNavigation';
 import { setInternetConnection } from './app/actions/user'
-import * as Updates from 'expo-updates';
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -71,7 +70,7 @@ export default class App extends React.Component {
 		if (config.channel === 'production') {
 			Sentry.init({
 				enableInExpoDevelopment: false,
-				dsn: 'https://95bf407ef0f042b1b985d4efe8a8a75f@sentry.graana.rocks/8'
+				dsn: 'http://95bf407ef0f042b1b985d4efe8a8a75f@sentry.graana.rocks/8',
 			})
 			Sentry.setRelease(Constants.manifest.revisionId)
 		}

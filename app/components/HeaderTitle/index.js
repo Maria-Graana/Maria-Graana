@@ -28,12 +28,11 @@ class HeaderTitle extends React.Component {
         let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
         if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
         let leadSize = this.leadSize()
-
         return (
             <View style={styles.mainView}>
                 <Text style={styles.headerText}>{headerName}</Text>
                 {
-                    !lead.projectId && !lead.projectName ?
+                    !lead.projectId ?
                         < Text numberOfLines={1} style={[styles.detailText, AppStyles.darkColor,]}>
                             {leadSize}
                             {lead.size_unit && lead.size_unit !== null ? helper.capitalize(lead.size_unit) + ' ' : null}
@@ -45,7 +44,9 @@ class HeaderTitle extends React.Component {
                             {lead.project ? helper.capitalize(lead.project.name) : helper.capitalize(lead.projectName)}{lead.projectType ? ' - ' + helper.capitalize(lead.projectType) : ''}
                         </Text>
                 }
+
             </View>
+
         )
     }
 }

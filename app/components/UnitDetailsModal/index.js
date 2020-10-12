@@ -20,9 +20,6 @@ class UnitDetailsModal extends React.Component {
       active,
       openUnitDetailsModal,
       data,
-      pearlModal,
-      formData,
-      unitPrice,
     } = this.props
     var optionalArray = data && data.optional_fields != null && data.optional_fields
     var optional = []
@@ -32,7 +29,7 @@ class UnitDetailsModal extends React.Component {
 
       <Modal isVisible={active}>
         {
-          !pearlModal && data && data != '' &&
+          data && data != '' &&
           <View style={[styles.modalMain]}>
             <TouchableOpacity style={styles.timesBtn} onPress={() => { openUnitDetailsModal(null, false) }}>
               <Image source={times} style={styles.timesImg} />
@@ -181,57 +178,6 @@ class UnitDetailsModal extends React.Component {
                 </View>
               </View>
               {/* ===================== */}
-            </ScrollView>
-          </View>
-        }
-        {
-          pearlModal && data && data != '' &&
-          <View style={[styles.modalMain]}>
-            <TouchableOpacity style={styles.timesBtn} onPress={() => { openUnitDetailsModal(null, false) }}>
-              <Image source={times} style={styles.timesImg} />
-            </TouchableOpacity>
-            <ScrollView>
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Size</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(formData.pearl)}</Text>
-                </View>
-              </View>
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Rate/Sqft</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.pricePerSqFt)}</Text>
-                </View>
-              </View>
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Unit Price</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(unitPrice)}</Text>
-                </View>
-              </View>
-              {/* ===================== */}
-              {
-                data.rentPerSqFt !== null &&
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Rent/Sqft</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
-                  </View>
-                </View>
-              }
-              {/* ===================== */}
-              {
-                data.rentPerSqFt !== null &&
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Rent Amount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt * formData.pearl)}</Text>
-                  </View>
-                </View>
-              }
             </ScrollView>
           </View>
         }

@@ -23,7 +23,7 @@ export default styles = StyleSheet.create({
   unitDetailBtn: {
     borderWidth: 1,
     borderColor: '#016FF2',
-    height: 53,
+    height: 48,
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
@@ -211,11 +211,5 @@ export default styles = StyleSheet.create({
   mainParent: {
     position: 'relative',
     height: '99.4%',
-  },
-  customeStyle: {
-    marginTop: 0,
-  },
-  equalHeight: {
-    height: 53,
   },
 });

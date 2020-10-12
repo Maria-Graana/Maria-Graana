@@ -262,7 +262,7 @@ class Meetings extends Component {
     }
 
     if (status === 'cancel_meeting') {
-      axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}&cmLeadId=${formData.leadId}`)
+      axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}`)
         .then((res) => {
           this.getMeetingLead();
           this.setState({

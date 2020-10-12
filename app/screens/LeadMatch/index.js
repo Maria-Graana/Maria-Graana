@@ -23,7 +23,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 class LeadMatch extends React.Component {
     constructor(props) {
         super(props)
-        const { user, lead } = this.props;
+        const {user, lead} = this.props;
         this.state = {
             open: false,
             organization: 'arms',
@@ -446,7 +446,7 @@ class LeadMatch extends React.Component {
         const { showCheckBoxes } = this.state
         const { lead, user } = this.props
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
-        if (leadAssignedSharedStatus) {
+        if(leadAssignedSharedStatus){
             if (showCheckBoxes) {
                 this.unSelectAll()
             } else {
@@ -463,9 +463,9 @@ class LeadMatch extends React.Component {
 
     addProperty = (property) => {
         const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-        const { user, lead } = this.props;
+        const {user, lead} = this.props;
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
-        if (leadAssignedSharedStatus) {
+        if(leadAssignedSharedStatus){
             if (showCheckBoxes) {
                 if (showCheckBoxes) this.changeComBool()
                 let properties = matchData.data.map((item) => {
@@ -512,7 +512,7 @@ class LeadMatch extends React.Component {
                     })
                 }
             }
-        }
+        }   
     }
 
     unSelectAll = () => {
@@ -544,14 +544,14 @@ class LeadMatch extends React.Component {
     }
 
     closeLead = () => {
-		const {lead} = this.props;
-		if (lead.commissions && lead.commissions.status === 'approved') {
-            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
-        }
-        else {
-            this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
-        }
-	}
+        var commissionPayment = this.props.lead.commissionPayment
+            if (commissionPayment !== null) {
+                this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
+            }
+            else {
+                this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
+            }
+    }
 
     onHandleCloseLead = () => {
         const { navigation, lead } = this.props
@@ -639,7 +639,7 @@ class LeadMatch extends React.Component {
     }
 
     render() {
-        const { lead, user, navigation } = this.props
+        const { lead, user } = this.props
         const { meetings, callModal, sizeUnitList, selectedCity, visible, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
 
         return (
@@ -659,8 +659,6 @@ class LeadMatch extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <HistoryModal
-                            getCallHistory={this.getCallHistory}
-                            navigation={navigation}
                             data={meetings}
                             closePopup={this.goToHistory}
                             openPopup={callModal}

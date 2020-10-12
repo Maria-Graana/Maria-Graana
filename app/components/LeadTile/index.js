@@ -62,8 +62,8 @@ class LeadTile extends React.Component {
 
 	render() {
 		const { data, navigateTo, callNumber, user, purposeTab, contacts, handleLongPress } = this.props
-		var changeColor = data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id ? styles.blueColor : AppStyles.darkColor
-		var changeStatusColor = data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
+		var changeColor = data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id   ? styles.blueColor : AppStyles.darkColor
+		var changeStatusColor =data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id ? styles.tokenLabel : styles.tokenLabelDark
 		var descriptionColor = data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id ? styles.desBlue : styles.desDark
 		let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
 		let customerName = data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
@@ -85,15 +85,13 @@ class LeadTile extends React.Component {
 										data.status === 'token' ?
 											<Text>DEAL SIGNED - TOKEN</Text>
 											:
-											data.status === 'meeting' ?
-												data.status.split('_').join(' ').toUpperCase() + ' PLANNED'
-												: data.status.split('_').join(' ').toUpperCase()
+											data.status.split('_').join(' ').toUpperCase()
 									}
 								</Text>
 
 								{data.shared_with_armsuser_id &&
 									<View style={styles.sharedLead}>
-										<Text style={[AppStyles.mrFive, styles.viewStyle, { color: AppStyles.colors.primaryColor, fontSize: AppStyles.noramlSize.fontSize, fontFamily: AppStyles.fonts.lightFont }]}>Shared Lead</Text>
+										<Text style={[AppStyles.mrFive, styles.viewStyle, {color:AppStyles.colors.primaryColor, fontSize: AppStyles.noramlSize.fontSize, fontFamily: AppStyles.fonts.lightFont}]}>Shared Lead</Text>
 									</View>
 								}
 							</View>

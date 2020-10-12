@@ -382,12 +382,10 @@ class CMReport extends React.Component {
     }
 
     agentUrl = () => {
-        let { agentFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
+        const { agentFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-        if (filterLabel === 'Monthly') {
-            if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
-            url = `/api/leads/project/report?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
-        }
+
+        if (filterLabel === 'Monthly') url = `/api/leads/project/report?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
         if (filterLabel === 'Daily') url = `/api/leads/project/report?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/project/report?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
         if (filterLabel === 'Weekly') url = `/api/leads/project/report?scope=agent&q=${agentFormData.agent}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -429,12 +427,10 @@ class CMReport extends React.Component {
     }
 
     teamUrl = () => {
-        let { zoneFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
+        const { zoneFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-        if (filterLabel === 'Monthly') {
-            if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
-            url = `/api/leads/project/report?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
-        }
+
+        if (filterLabel === 'Monthly') url = `/api/leads/project/report?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
         if (filterLabel === 'Daily') url = `/api/leads/project/report?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/project/report?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
         if (filterLabel === 'Weekly') url = `/api/leads/project/report?scope=team&q=${zoneFormData.zone}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -474,12 +470,10 @@ class CMReport extends React.Component {
     }
 
     regionUrl = () => {
-        let { regionFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
+        const { regionFormData, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-        if (filterLabel === 'Monthly') {
-            if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
-            url = `/api/leads/project/report?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
-        }
+
+        if (filterLabel === 'Monthly') url = `/api/leads/project/report?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
         if (filterLabel === 'Daily') url = `/api/leads/project/report?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/project/report?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`
         if (filterLabel === 'Weekly') url = `/api/leads/project/report?scope=region&q=${regionFormData.region}&organizationId=${regionFormData.organization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -521,12 +515,10 @@ class CMReport extends React.Component {
     }
 
     organizationUrl = () => {
-        let { selectedOrganization, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
+        const { selectedOrganization, filterLabel, selectedDate, selectedMonth, selectedYear, quarters, startWeek, endWeek } = this.state
         let url = ''
-        if (filterLabel === 'Monthly') {
-            if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
-            url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
-        }
+
+        if (filterLabel === 'Monthly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-0${selectedMonth}`
         if (filterLabel === 'Daily') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
         if (filterLabel === 'Yearly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
         if (filterLabel === 'Weekly') url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`
@@ -572,6 +564,7 @@ class CMReport extends React.Component {
 
     checkDate = () => {
         const { filterLabel, selectedYear, selectedMonth, months, quarters } = this.state
+
         if (filterLabel === 'Daily') this.setState({ selectedDate: moment(_today).format('LL') }, () => { this.callReportApi() })
         if (filterLabel === 'Weekly') this.setState({ selectedDate: moment(_today).startOf('isoWeek').format('LL') + ' - ' + moment(_today).endOf('isoWeek').format('LL') }, () => { this.callReportApi() })
         if (filterLabel === 'Monthly') this.setState({ selectedDate: months[selectedMonth - 1] + ' ' + selectedYear }, () => { this.callReportApi() })
@@ -724,14 +717,17 @@ class CMReport extends React.Component {
 
                                     {
                                         filterLabel === 'Daily' ?
-                                            <RectangleDaily label={'Revenue'} targetNumber={dashBoardData.revenue} />
+                                            <RectangleDaily targetNumber={dashBoardData.revenue} />
                                             :
                                             <RectangleContainer targetPercent={60} targetNumber={dashBoardData.revenue} totalTarget={dashBoardData.totalTarget} />
                                     }
                                     <View style={styles.sqaureView}>
-                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
-                                        <SquareContainer imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
-
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={clientAddedImg} label={'Clients Added'} total={dashBoardData.clientsAdded} />
+                                        <SquareContainer imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                                    </View>
+                                    <View style={styles.sqaureView}>
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
+                                        <SquareContainer imagePath={amountPendingImg} label={'Amount Pending'} total={dashBoardData.pendingAmount} />
                                     </View>
                                     <View style={styles.graphContainer}>
                                         <Text style={styles.labelStyle}>Total Leads</Text>

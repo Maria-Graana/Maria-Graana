@@ -3,7 +3,7 @@ import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   modalMain: {
-    backgroundColor: '#e7ecf0',
+    backgroundColor: '#fff',
     // borderRadius: 10,
     padding: 15,
     paddingTop: 30,
@@ -15,14 +15,6 @@ export default styles = StyleSheet.create({
     shadowOffset: { width: 5, height: 5 },
     shadowColor: '#33333312',
     shadowOpacity: 1,
-  },
-  mainTextWrap: {
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 4,
-    marginTop: 15,
-    borderWidth: 1,
-    borderColor: '#ddd'
   },
   timesBtn: {
     position: 'absolute',
@@ -88,12 +80,5 @@ export default styles = StyleSheet.create({
     borderColor: '#0070f1',
     borderWidth: 1,
     borderRadius: 4,
-  },
-  loaderStyle: {
-    marginTop: 8,
-  },
-  loaderHeight: {
-    width: 20,
-    height: 20,
   },
 });

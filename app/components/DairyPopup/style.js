@@ -5,7 +5,8 @@ import AppStyles from '../../AppStyles'
 export default styles = StyleSheet.create({
     viewContainer: {
         backgroundColor:'white',
-        marginHorizontal: 10,
+        marginLeft: 25,
+        marginRight: 25,
         paddingTop:10
     },
     closeStyle: {

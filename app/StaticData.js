@@ -322,18 +322,6 @@ export default StaticData = {
         { value: 'all', name: 'All' },
         { value: 'open', name: 'Open' },
         { value: 'called', name: 'Called' },
-        { value: 'no_response', name: 'No Response' },
-        { value: 'powered_off', name: 'Powered Off' },
-        { value: 'invalid_number', name: 'Invalid Number' },
-        { value: 'not_interested', name: 'Not Interested' },
-        { value: 'DNC', name: 'DNC' },
-        { value: 'details_texted', name: 'No Response but Details Sent' },
-        { value: 'other_agent', name: 'In contact with some other agent' },
-        { value: 'call_back', name: 'Call Back' },
-        { value: 'awaiting_call', name: 'Awaiting Response' },
-        { value: 'follow up', name: 'Follow up' },
-        { value: 'details_sent', name: 'Details Sent' },
-        { value: 'expected_visit', name: 'Expected Visit' },
         { value: 'viewing', name: 'Viewing' },
         { value: 'offer', name: 'Offer' },
         { value: 'propsure', name: 'Propsure' },
@@ -357,7 +345,7 @@ export default StaticData = {
         { value: 'follow_up', name: 'Follow up' },
         { value: 'details_sent', name: 'Details Sent' },
         { value: 'expected_visit', name: 'Expected Visit' },
-        { value: 'meeting', name: 'Meeting Planned' },
+        { value: 'meeting_planned', name: 'Meeting Planned' },
         { value: 'visited', name: 'Visited' },
         { value: 'deal_expected', name: 'Deal Expected' },
         { value: 'deal_signed', name: 'Deal Signed' },
@@ -628,13 +616,6 @@ export default StaticData = {
         { value: 'Remittance', name: 'Remittance' },
         { value: 'bank-Transfer', name: 'Bank-Transfer' },
         { value: 'e-Gateway', name: 'E-Gateway' },
-    ],
-    unitType: [
-        { value: 'fullUnit', name: 'Full Unit' },
-        { value: 'pearl', name: 'Pearl' }
-    ],
-    onlyUnitType: [
-        { value: 'fullUnit', name: 'Full Unit' },
     ]
 }
 

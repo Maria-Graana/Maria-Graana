@@ -68,7 +68,7 @@ class DetailForm extends Component {
         }
         let _renderBeds = () => {
             var min = 0;
-            var max = 30;
+            var max = 10;
             this.beds = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.beds.push({ name: i.toString() + ' Bedroom', value: i })
@@ -78,7 +78,7 @@ class DetailForm extends Component {
         }
         let _renderBaths = () => {
             var min = 0;
-            var max = 30;
+            var max = 10;
             this.baths = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.baths.push({ name: i.toString() + ' Bathroom', value: i })
@@ -88,7 +88,7 @@ class DetailForm extends Component {
         }
         let _renderParkings = () => {
             var min = 0;
-            var max = 30;
+            var max = 10;
             this.parkings = [];
             for (var i = min; i <= max; i++) {
                 if (i == 0 || i == 1) this.parkings.push({ name: i.toString() + ' Parking Space', value: i })

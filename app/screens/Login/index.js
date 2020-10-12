@@ -79,7 +79,7 @@ class Login extends Component {
 
     render() {
         const { checkValidation, formData, checkLogin, showError, isInternetConnected } = this.state
-        let label = helper.checkChannel(config.channel)
+        let label = config.channel === 'development' ? 'Dev ' : ''
         return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>

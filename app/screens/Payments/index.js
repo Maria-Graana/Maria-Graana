@@ -196,7 +196,7 @@ class Payments extends Component {
 
 	getUnits = (projectId, floorId) => {
 		const { lead } = this.props
-		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
+		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available&type=regular`)
 			.then((res) => {
 				let array = [];
 				res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal';
@@ -127,9 +127,9 @@ class AddPaymentModal extends React.Component {
                       </View>
                       :
                       <TouchableOpacity style={styles.bookedBtn} onPress={() => { addPaymentLoading != true && secondFormSubmit() }}>
-                        <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
+                        {addPaymentLoading === false && <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />}
                         <Text style={styles.bookedBtnText}>
-                          {addPaymentLoading === true ? 'Wait...' : 'OK'}
+                          {addPaymentLoading === true ? <ActivityIndicator size="small" color={'white'} style={styles.loaderTop}/> : 'OK'}
                         </Text>
                       </TouchableOpacity>
                   }

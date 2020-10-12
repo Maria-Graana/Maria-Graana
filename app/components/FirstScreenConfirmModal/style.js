@@ -89,4 +89,11 @@ export default styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 4,
   },
+  loaderStyle: {
+    marginTop: 8,
+  },
+  loaderHeight: {
+    width: 20,
+    height: 20,
+  },
 });

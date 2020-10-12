@@ -44,6 +44,7 @@ class Payments extends Component {
 				pearl: null,
 				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
 				unitType: '',
+				pearlName: 'New Pearl'
 			},
 			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
 			secondFormData: { ...this.props.CMPayment },
@@ -92,10 +93,13 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
-		this.handleForm(formData.projectId, 'projectId')
+		
 		this._unsubscribe = navigation.addListener('focus', () => {
 			this.reopenPaymentModal();
 		})
+		if(lead.projectId && lead.projectId != null){
+			this.getFloors(lead.projectId)
+		}
 	}
 
 	componentWillUnmount() {
@@ -192,7 +196,7 @@ class Payments extends Component {
 
 	getUnits = (projectId, floorId) => {
 		const { lead } = this.props
-		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available`)
+		axios.get(`/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available&type=regular`)
 			.then((res) => {
 				let array = [];
 				res && res.data.rows.map((item, index) => { return (array.push({ value: item.id, name: item.name })) })
@@ -322,13 +326,10 @@ class Payments extends Component {
 			}
 
 			// when floor id chnage the unit filed will be refresh
-			if (name === 'floorId' && formData.floorId != null) {
+			if (name === 'floorId' && newFormData.floorId != null) {
 				let object = {};
 				object = getAllFloors.find((item) => { return item.id == value && item })
 				var totalPrice = newFormData.pearl * object && object.pricePerSqFt
-				// if(object.pearlArea <  50){
-				// 	StaticData.unitType = StaticData.onlyUnitType
-				// }
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object }, () => {
 					this.refreshUnitPrice(name)
 				})
@@ -355,6 +356,7 @@ class Payments extends Component {
 				if (leftSqft < 50) {
 					this.setState({ leftSqft: leftSqft })
 				}
+
 				var totalPrice = newFormData.pearl * object.pricePerSqFt
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object })
 			}
@@ -432,6 +434,9 @@ class Payments extends Component {
 			newFormData['discount'] = null
 			newFormData['finalPrice'] = null
 			newFormData['discountedPrice'] = null
+			newFormData['paymentPlan'] = 'no'
+			newFormData['unitType'] = 'no'
+			newFormData['pearl'] = null
 			this.setState({ unitPrice: null, })
 		}
 
@@ -609,23 +614,28 @@ class Payments extends Component {
 		const { formData, cnicValidate, leftSqft, unitPearlDetailsData } = this.state
 
 		if (formData.pearl != null) {
-			if (formData.pearl <= unitPearlDetailsData.pearlArea && formData.pearl >= 50) {
-
+			if (
+				formData.pearl <= unitPearlDetailsData.pearlArea &&
+				formData.pearl >= 50 &&
+				formData.cnic != null &&
+				formData.cnic != '' &&
+				cnicValidate === false &&
+				formData.paymentPlan != null &&
+				formData.paymentPlan != '' &&
+				formData.paymentPlan != 'no'
+			) {
 				if (leftSqft < 50 && leftSqft > 0) {
-
 					this.setState({
 						firstScreenValidate: true,
 					})
 
 				} else {
-
 					this.setState({
 						openFirstScreenModal: status,
 					})
 
 				}
 			} else {
-
 				this.setState({
 					firstScreenValidate: true,
 				})
@@ -642,7 +652,8 @@ class Payments extends Component {
 				formData.token != '' &&
 				formData.type != '' &&
 				formData.cnic != null &&
-				formData.cnic != ''
+				formData.cnic != '' &&
+				cnicValidate === false
 			) {
 				this.setState({
 					openFirstScreenModal: status,
@@ -663,6 +674,7 @@ class Payments extends Component {
 				addPaymentModalToggleState: status,
 				secondCheckValidation: false,
 				secondFormLeadData: {},
+				editaAble: false,
 			})
 		} else if (status === false) {
 			this.clearPaymentsValuesFromRedux(status)
@@ -712,12 +724,11 @@ class Payments extends Component {
 					unitStatus: this.props.lead.installmentDue,
 					unitId: this.props.lead.unitId,
 				}
-
 				// ====================== API call for added Payments
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
 						// ====================== If have attachments then this check will b execute
-						this.submitAttachment(res.data.id, false)
+						this.submitAttachment(res.data.id, false, remainingPayment - secondFormData.installmentAmount)
 					}).catch(() => {
 						console.log('/api/leads/project/payments - Error', error)
 						helper.errorToast('Payment Not Added')
@@ -730,21 +741,22 @@ class Payments extends Component {
 				if (paymentOldValue > secondFormData.installmentAmount) {
 					total = paymentOldValue - secondFormData.installmentAmount
 					total = remainingPayment + total
-				} else {
+				} else if (paymentOldValue != secondFormData.installmentAmount) {
 					total = secondFormData.installmentAmount - paymentOldValue
 					total = remainingPayment - total
+				} else {
+					total = remainingPayment
 				}
 				var body = {
 					...secondFormData,
 					remainingPayment: total,
 					cmLeadId: this.props.lead.id,
 				}
+
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
-
 						// ====================== If have attachments then this check will b execute
-						this.submitAttachment(paymentId, true)
-
+						this.submitAttachment(paymentId, true, total)
 					}).catch((error) => {
 						console.log('/api/leads/project/payments?id - Error', error)
 						helper.errorToast('Payment Not Added')
@@ -760,7 +772,7 @@ class Payments extends Component {
 		}
 	}
 
-	submitAttachment = (paymentId, checkForEdit) => {
+	submitAttachment = (paymentId, checkForEdit, totalRemaining) => {
 
 		const {
 			secondFormData,
@@ -794,12 +806,13 @@ class Payments extends Component {
 					// ====================== API call for Attachments base on Payment ID
 					axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
 						.then((res) => {
-							this.fetchLead();
+
 							this.setState({
 								addPaymentModalToggleState: false,
 								remainingPayment: remainingPayment - secondFormData.installmentAmount,
 								addPaymentLoading: false,
 							}, () => {
+								this.fetchLead();
 								helper.successToast(message)
 								this.clearPaymentsValuesFromRedux(false);
 							})
@@ -811,23 +824,35 @@ class Payments extends Component {
 								addPaymentLoading: false,
 							})
 						})
+				} else {
+
+					this.setState({
+						addPaymentModalToggleState: false,
+						remainingPayment: remainingPayment - secondFormData.installmentAmount,
+						addPaymentLoading: false,
+					}, () => {
+						this.fetchLead();
+						helper.successToast(message)
+						this.clearPaymentsValuesFromRedux(false);
+					})
 				}
 
 			})
 
 		} else {
-			this.fetchLead();
 			this.setState({
 				addPaymentModalToggleState: false,
+				remainingPayment: totalRemaining,
 				secondFormData: {
 					installmentAmount: null,
 					type: '',
 					details: '',
 					cmLeadId: this.props.lead.id,
 				},
-				remainingPayment: remainingPayment - secondFormData.installmentAmount,
+
 				addPaymentLoading: false,
 			}, () => {
+				this.fetchLead();
 				this.clearPaymentsValuesFromRedux(false);
 				helper.successToast(message)
 			})
@@ -989,7 +1014,7 @@ class Payments extends Component {
 
 			var leadId = []
 			leadId.push(lead.id)
-
+				console.log(formData)
 			// Check for Payment Done option 
 			if (Number(remainingPayment) <= 0 && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
@@ -1044,6 +1069,7 @@ class Payments extends Component {
 			cnicEditable,
 			leftSqft,
 		} = this.state
+
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -1120,9 +1146,8 @@ class Payments extends Component {
 							pearlModal={true}
 						/>
 					}
-
 					{
-						getAllFloors != '' && getAllProject != '' && allUnits != '' &&
+						getAllFloors != '' && getAllProject != '' &&
 						<FirstScreenConfirmModal
 							active={openFirstScreenModal}
 							data={formData}

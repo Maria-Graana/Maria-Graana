@@ -205,7 +205,7 @@ class Client extends React.Component {
                                     keyExtractor={(item, index) => item.id.toString()}
                                 />
                                 :
-                                <NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />
+                                <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
                         }
 
                         <OnLoadMoreComponent style={{ backgroundColor: 'white' }} onEndReached={onEndReachedLoader} />

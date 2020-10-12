@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity, } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-import noData from '../../../assets/images/no-result2.png'
+import noData from '../../../assets/img/no-result-found.png'
 
 class LoadingNoResult extends React.Component {
 	constructor(props) {

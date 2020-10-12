@@ -409,7 +409,7 @@ class LeadPropsure extends React.Component {
                                 />
                                 :
                                 <>
-                                <Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
+                                <Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
                                 </>
                         }
                     </View>

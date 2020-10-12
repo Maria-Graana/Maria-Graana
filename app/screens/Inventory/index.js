@@ -193,7 +193,7 @@ class Inventory extends React.Component {
 								keyExtractor={(item, index) => this.setKey(index)}
 							/>
 							:
-							<NoResultsComponent imageSource={require('../../../assets/images/no-result2.png')} />
+							<NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
 					}
 
 					{

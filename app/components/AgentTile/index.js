@@ -150,8 +150,6 @@ class AgentTile extends React.Component {
 						</View>
 					</View>
 				</View>
-
-
 			</TouchableOpacity>
 		)
 	}

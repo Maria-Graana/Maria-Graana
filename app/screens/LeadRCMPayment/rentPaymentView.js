@@ -8,6 +8,7 @@ import PickerComponent from '../../components/Picker'
 import moment from 'moment';
 import { formatPrice } from '../../PriceFormate'
 import InputField from '../../components/InputField'
+import CommissionTile from '../../components/CommissionTile';
 
 const RentPaymentView = (props) => {
     const {
@@ -16,22 +17,16 @@ const RentPaymentView = (props) => {
         handleForm,
         formData,
         handleMonthlyRentPress,
-        showMonthlyRentArrow,
-        commissionPayment,
         handleTokenAmountChange,
-        handleCommissionAmountChange,
-        showTokenAmountArrow,
-        showCommissionAmountArrow,
         handleTokenAmountPress,
-        handleCommissionAmountPress,
         lead,
         showAndHideStyling,
         showStylingState,
         tokenPriceFromat,
         tokenDateStatus,
-        comissionDateStatus,
-        comissionPriceFromat,
-        monthlyFormatStatus
+        monthlyFormatStatus,
+        onAddCommissionPayment,
+        editTile,
     } = props;
     const isLeadClosed = lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won;
     return (
@@ -52,20 +47,6 @@ const RentPaymentView = (props) => {
                 editable={!isLeadClosed}
                 showDate={false}
             />
-            {/* <View style={[styles.mainBlackWrap]}>
-                <View style={{ width: "50%", justifyContent: "center" }}>
-                    <Text style={[styles.blackInputText, { marginLeft: 12 }]}>MONTHLY RENT</Text>
-                    <TextInput style={[styles.blackInput, { marginLeft: 12 }]} editable={!isLeadClosed} placeholder={'Enter Monthly Rent'} value={formData.monthlyRent} keyboardType={'number-pad'} onChangeText={(text) => handleForm(text, 'monthlyRent')} />
-                </View>
-                <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(formData.monthlyRent)} PKR`}</Text>
-                {
-                    showMonthlyRentArrow &&
-                    <TouchableOpacity onPress={handleMonthlyRentPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center', justifyContent: "center" }]}>
-                        <Ionicons style={{ alignSelf: 'flex-end', marginRight: 10 }} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
-                    </TouchableOpacity>
-                }
-
-            </View> */}
 
             <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -98,84 +79,24 @@ const RentPaymentView = (props) => {
                 showStyling={showAndHideStyling}
                 showStylingState={showStylingState}
                 editPriceFormat={{ status: tokenPriceFromat, name: 'token' }}
-                date={lead.tokenPaymentTime && moment(lead.tokenPaymentTime).format('hh:mm A, MMMM DD')}
+                date={lead.tokenPaymentTime && moment(lead.tokenPaymentTime).format('hh:mm A, MMM DD')}
                 editable={!isLeadClosed}
                 showDate={true}
                 dateStatus={{ status: tokenDateStatus, name: 'token' }}
             />
 
-            {/* <View style={[styles.mainBlackWrap]}>
-                <View style={{ width: "50%" }}>
-                    <Text style={[styles.blackInputText, { marginLeft: 12 }]}>TOKEN</Text>
-                    <TextInput style={[styles.blackInput, { marginLeft: 12 }]} editable={!isLeadClosed} placeholder={'Enter Token Amount'} value={(token)} keyboardType={'number-pad'} onChangeText={(text) => handleTokenAmountChange(text)} />
-                </View>
-                <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(token)} PKR`}</Text>
-                {
-                    showTokenAmountArrow ?
-                        <TouchableOpacity onPress={handleTokenAmountPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center', justifyContent: "center" }]}>
-                            <Ionicons style={{ alignSelf: 'flex-end', marginRight: 10 }} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
-                        </TouchableOpacity>
-                        :
-                        <View style={[styles.blackInputdate, { justifyContent: 'center' }]}>
-                            <Text style={{
-                                letterSpacing: 0.5,
-                                minHeight: 30,
-                                minWidth: 50,
-                                marginLeft: 10,
-                                fontSize: 10,
-                                alignSelf: 'flex-end',
-                                marginRight: 10
-                            }}>{lead.tokenPaymentTime && moment(lead.tokenPaymentTime).format('hh:mm A, MMMM DD')}</Text>
-                        </View>
-                }
-
-            </View> */}
-
-
-            <InputField
-                label={'COMMISSION PAYMENT'}
-                placeholder={'Enter Comission Payment'}
-                name={'commissionPayment'}
-                value={commissionPayment}
-                priceFormatVal={commissionPayment != null ? commissionPayment : ''}
-                keyboardType={'numeric'}
-                onChange={handleCommissionAmountChange}
-                paymentDone={handleCommissionAmountPress}
-                showStyling={showAndHideStyling}
-                showStylingState={showStylingState}
-                editPriceFormat={{ status: comissionPriceFromat, name: 'commissionPayment' }}
-                date={lead.commissionTime && moment(lead.commissionTime).format('hh:mm A, MMMM DD')}
-                editable={!isLeadClosed}
-                showDate={true}
-                dateStatus={{ status: comissionDateStatus, name: 'commissionPayment' }}
-            />
-
-
-            {/* <View style={[styles.mainBlackWrap]}>
-                <View style={{ width: "50%" }}>
-                    <Text style={[styles.blackInputText, { marginLeft: 12 }]}>COMMISSION PAYMENT</Text>
-                    <TextInput style={[styles.blackInput, { marginLeft: 12 }]} editable={!isLeadClosed} keyboardType={'number-pad'} value={(commissionPayment)} onChangeText={(text) => handleCommissionAmountChange(text)} />
-                </View>
-                <Text style={[styles.dateText, { textAlign: 'right' }]}>{`${formatPrice(commissionPayment)} PKR`}</Text>
-                {
-                    showCommissionAmountArrow ?
-                        <TouchableOpacity onPress={handleCommissionAmountPress} style={[styles.addBtnColorRight, styles.sideBtnInput, { alignItems: 'center', justifyContent: "center" }]} >
-                            <Ionicons style={{ alignSelf: 'flex-end', marginRight: 10 }} name='ios-arrow-round-forward' size={40} color={AppStyles.colors.primaryColor} />
-                        </TouchableOpacity>
-                        :
-                        <View style={[styles.blackInputdate, { justifyContent: 'center' }]}>
-                            <Text style={{
-                                letterSpacing: 0.5,
-                                minHeight: 30,
-                                marginLeft: 10,
-                                fontSize: 10,
-                                alignSelf: 'flex-end',
-                                marginRight: 10
-                            }}>{lead.commissionTime && moment(lead.commissionTime).format('hh:mm A, MMMM DD')}</Text>
-                        </View>
-                }
-
-            </View> */}
+            {
+                lead.commissions ?
+                    <CommissionTile
+                        data={lead.commissions}
+                        editTile={editTile}
+                    />
+                    :
+                    <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment(true)}>
+                        <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                        <Text style={styles.addPaymentBtnText}>ADD COMMISSION PAYMENT</Text>
+                    </TouchableOpacity>
+            }
         </View >
     )
 }

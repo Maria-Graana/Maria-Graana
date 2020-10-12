@@ -28,11 +28,12 @@ export default styles = StyleSheet.create({
     paddingTop: 3,
     paddingBottom: 2,
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 10,
     paddingLeft: 10,
     paddingRight: 10,
     textTransform: 'uppercase',
     letterSpacing: 1,
+    overflow: 'hidden'
   },
   statusRed: {
     borderColor: '#b38f8d',

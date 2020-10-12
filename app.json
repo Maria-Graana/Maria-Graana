@@ -1,82 +1,83 @@
 {
-  "expo": {
-    "name": "ARMS",
-    "slug": "arms",
-    "privacy": "public",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "version": "1.2.4",
-    "orientation": "portrait",
-    "icon": "./assets/img/ICON1024PNG.png",
-    "splash": {
-      "image": "./assets/img/Splash.png",
-      "resizeMode": "cover"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "userInterfaceStyle": "automatic",
-    "ios": {
-      "bundleIdentifier": "com.agency21.arms",
-      "supportsTablet": true,
-      "usesIcloudStorage": true,
-      "config": {
-        "usesNonExemptEncryption": false
-      },
-      "infoPlist": {
-        "UIUserInterfaceStyle": "Light",
-        "NSContactsUsageDescription": "The Contacts permission used to create new contacts for users when creating new clients and calling from leads",
-        "NSCameraUsageDescription": "The Camera permission used to capture user's properties pictures when posting property",
-        "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
-        "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
-      },
-      "userInterfaceStyle": "automatic",
-      "buildNumber": "7"
-    },
-    "android": {
-      "package": "com.agency21.arms",
-      "googleServicesFile": "./google-services.json",
-      "userInterfaceStyle": "automatic",
-      "permissions": [
-        "CAMERA",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "MANAGE_DOCUMENTS",
-        "READ_EXTERNAL_STORAGE",
-        "READ_INTERNAL_STORAGE",
-        "READ_PHONE_STATE",
-        "RECORD_AUDIO",
-        "VIBRATE",
-        "WAKE_LOCK",
-        "WRITE_EXTERNAL_STORAGE",
-        "READ_CONTACTS",
-        "WRITE_CONTACTS"
-      ],
-      "versionCode": 4,
-      "useNextNotificationsApi": true
-    },
-    "notification": {
-      "icon": "./assets/img/ARMS-notif.png",
-      "color": "#2A7EF0",
-      "iosDisplayInForeground": true
-    },
-    "hooks": {
-      "postPublish": [
-        {
-          "file": "sentry-expo/upload-sourcemaps",
-          "config": {
-            "organization": "graana",
-            "project": "arms-app",
-            "authToken": "5d6896d009064e5a9e31c249b59b359a96153dbf77a84b55bb9f0b7a8db5b05b",
-            "url": "https://sentry.graana.rocks"
-          }
-        }
-      ]
-    }
-  }
+	"expo": {
+		"name": "ARMS",
+		"slug": "arms",
+		"privacy": "public",
+		"platforms": [
+			"ios",
+			"android"
+		],
+		"version": "1.2.62",
+		"orientation": "portrait",
+		"icon": "./assets/img/ICON1024PNG.png",
+		"splash": {
+			"image": "./assets/img/Splash.png",
+			"resizeMode": "cover"
+		},
+		"updates": {
+			"enabled": false,
+			"fallbackToCacheTimeout": 0
+		},
+		"assetBundlePatterns": [
+			"**/*"
+		],
+		"userInterfaceStyle": "automatic",
+		"ios": {
+			"bundleIdentifier": "com.agency21.arms",
+			"supportsTablet": true,
+			"usesIcloudStorage": true,
+			"config": {
+				"usesNonExemptEncryption": false
+			},
+			"infoPlist": {
+				"UIUserInterfaceStyle": "Light",
+				"NSContactsUsageDescription": "The Contacts permission used to create new contacts for users when creating new clients and calling from leads",
+				"NSCameraUsageDescription": "The Camera permission used to capture user's properties pictures when posting property",
+				"NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
+				"NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
+			},
+			"userInterfaceStyle": "automatic",
+			"buildNumber": "7"
+		},
+		"android": {
+			"package": "com.agency21.arms",
+			"googleServicesFile": "./google-services.json",
+			"userInterfaceStyle": "automatic",
+			"permissions": [
+				"CAMERA",
+				"ACCESS_FINE_LOCATION",
+				"ACCESS_COARSE_LOCATION",
+				"MANAGE_DOCUMENTS",
+				"READ_EXTERNAL_STORAGE",
+				"READ_INTERNAL_STORAGE",
+				"READ_PHONE_STATE",
+				"RECORD_AUDIO",
+				"VIBRATE",
+				"WAKE_LOCK",
+				"WRITE_EXTERNAL_STORAGE",
+				"READ_CONTACTS",
+				"WRITE_CONTACTS"
+			],
+			"versionCode": 4,
+			"useNextNotificationsApi": true
+		},
+		"notification": {
+			"icon": "./assets/img/ARMS-notif.png",
+			"color": "#2A7EF0",
+			"iosDisplayInForeground": true
+		},
+		"hooks": {
+			"postPublish": [
+				{
+					"file": "sentry-expo/upload-sourcemaps",
+					"config": {
+						"organization": "graana",
+						"project": "arms-app",
+						"authToken": "5d6896d009064e5a9e31c249b59b359a96153dbf77a84b55bb9f0b7a8db5b05b",
+						"url": "https://sentry.graana.rocks"
+					}
+				}
+			]
+		}
+	}
 }

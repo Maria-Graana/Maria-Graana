@@ -16,7 +16,7 @@ class RectangleDaily extends React.Component {
     }
 
     render() {
-        const { targetNumber } = this.props
+        const { targetNumber, label } = this.props
 
         return (
             <LinearGradient
@@ -29,7 +29,7 @@ class RectangleDaily extends React.Component {
                 </View>
                 <View style={styles.headView}>
                     <Text style={styles.totalText}>{targetNumber ? targetNumber : 0}</Text>
-                    <Text style={styles.headingText}>Revenue</Text>
+                    <Text style={styles.headingText}>{label}</Text>
                 </View>
             </LinearGradient>
         )

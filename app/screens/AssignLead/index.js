@@ -26,14 +26,16 @@ class AssignLead extends React.Component {
     }
 
     componentDidMount() {
-        const { route } = this.props;
+        const { route, navigation } = this.props;
         const { screen } = route.params;
         if (screen == 'LeadDetail') {
             // for Lead Assigning this function is used
+            navigation.setOptions({title:'SELECT TEAM MEMBER'})
             this.fetchTeam()
         }
         else {
             // For lead sharing we call this function
+            navigation.setOptions({title:'SELECT AGENT'})
             this.fetchShareTeam();
         }
     }
@@ -156,7 +158,7 @@ class AssignLead extends React.Component {
         return (
             !loading ?
                 <View style={[AppStyles.container, styles.container]}>
-                    <Search placeholder='Search team members here' searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
+                    <Search placeholder={screen === 'LeadDetail' ? 'Search team members here' : 'Search Agents here'} searchText={searchText} setSearchText={(value) => this.setState({ searchText: value })} />
                     {
                         screen === 'LeadDetail' && (user.role === 'admin 3' || user.role === 'sub_admin 1') ?
                             <View style={styles.pickerMain}>

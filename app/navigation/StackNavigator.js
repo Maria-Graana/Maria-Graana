@@ -23,6 +23,7 @@ import LeadDetail from '../screens/LeadDetail';
 import AppStyles from '../AppStyles';
 import RCMLeadTabs from './RCMTabNavigator';
 import CMLeadTabs from './CMTabNavigator';
+import AttachmentsForPayments from '../screens/AttachmentsForPayments';
 import Attachments from '../screens/Attachments';
 import Comments from '../screens/Comments';
 import Targets from '../screens/Targets';
@@ -36,6 +37,7 @@ import RCMReport from '../screens/RCMReport';
 import AssignLead from '../screens/AssignLead';
 import SingleSelectionPicker from '../screens/SingleSelectionPicker';
 import HeaderTitle from '../components/HeaderTitle/index';
+import RCMAttachment from '../screens/RCMAttachment';
 
 const Stack = createStackNavigator();
 
@@ -198,6 +200,20 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
+            <Stack.Screen name='AttachmentsForPayments' component={AttachmentsForPayments}
+                options={({ navigation, route }) => ({
+                    title: 'ATTACHMENTS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
+              <Stack.Screen name='RCMAttachment' component={RCMAttachment}
+                options={({ navigation, route }) => ({
+                    title: 'ATTACHMENTS',
+                    headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+                    headerTitleAlign: 'center',
+                })}
+            />
             <Stack.Screen name='Comments' component={Comments}
                 options={({ navigation, route }) => ({
                     title: 'COMMENTS',
@@ -278,7 +294,7 @@ function MainStack() {
             />
             <Stack.Screen name='AssignLead' component={AssignLead}
                 options={({ navigation, route }) => ({
-                    title: 'SELECT TEAM MEMBER',
+                    title: '',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

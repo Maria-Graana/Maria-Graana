@@ -20,7 +20,7 @@ import HistoryModal from '../../components/HistoryModal/index';
 class LeadOffer extends React.Component {
 	constructor(props) {
 		super(props)
-		const {user, lead} = this.props;
+		const { user, lead } = this.props;
 		this.state = {
 			open: false,
 			loading: true,
@@ -41,7 +41,8 @@ class LeadOffer extends React.Component {
 			reasons: [],
 			closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
 			callModal: false,
-			meetings: []
+			meetings: [],
+			matchData: []
 		}
 	}
 
@@ -59,7 +60,7 @@ class LeadOffer extends React.Component {
 		let matches = []
 		axios.get(`/api/leads/${lead.id}/shortlist`)
 			.then((res) => {
-				matches = helper.propertyCheck(res.data.rows)
+				matches = helper.propertyIdCheck(res.data.rows)
 				this.setState({
 					disableButton: false,
 					loading: false,
@@ -184,13 +185,13 @@ class LeadOffer extends React.Component {
 	}
 
 	closeLead = () => {
-		var commissionPayment = this.props.lead.commissionPayment
-			if (commissionPayment !== null) {
-				this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
-			}
-			else {
-				this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
-			}
+		const {lead} = this.props;
+		if (lead.commissions && lead.commissions.status === 'approved') {
+            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+        }
+        else {
+            this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+        }
 	}
 
 	onHandleCloseLead = () => {
@@ -295,7 +296,7 @@ class LeadOffer extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={() => {
-						if(leadAssignedSharedStatus){
+						if (leadAssignedSharedStatus) {
 							this.openChatModal();
 							this.setProperty(property)
 						}
@@ -316,7 +317,7 @@ class LeadOffer extends React.Component {
 						alignItems: "center"
 					}}
 					onPress={() => {
-						if(leadAssignedSharedStatus){
+						if (leadAssignedSharedStatus) {
 							this.openChatModal();
 							this.setProperty(property)
 						}
@@ -348,13 +349,15 @@ class LeadOffer extends React.Component {
 	render() {
 
 		const { meetings, callModal, loading, matchData, user, modalActive, offersData, offerChat, open, progressValue, disableButton, leadData, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
-		const { lead } = this.props
+		const { lead, navigation } = this.props
 
 		return (
 			!loading ?
 				<View style={{ flex: 1 }}>
 					<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 					<HistoryModal
+						getCallHistory={this.getCallHistory}
+						navigation={navigation}
 						data={meetings}
 						closePopup={this.goToHistory}
 						openPopup={callModal}
@@ -407,7 +410,9 @@ class LeadOffer extends React.Component {
 										/>
 									</View>
 									:
-									<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }} />
+									<>
+									<Image source={require('../../../assets/images/no-result2.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
+									</>
 							}
 						</View>
 					</View>

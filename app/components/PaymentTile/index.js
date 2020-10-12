@@ -24,16 +24,18 @@ class PaymentTile extends React.Component {
 		} = this.props
 		var statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
 		return (
-			<TouchableOpacity onPress={() => { data.status != 'approved' ? tileForToken === true ? editTileForscreenOne() :editTile(data.id): null }}>
+			<TouchableOpacity onPress={() => { data.status != 'approved' ? tileForToken === true ? editTileForscreenOne() : editTile(data.id): null }}>
 				<View style={styles.tileTopWrap}>
 					<View style={styles.upperLayer}>
 						<Text style={styles.paymnetHeading}>PAYMENT {count + 1} ({data.type})</Text>
-						<Text style={[styles.tileStatus, statusColor]}>{data.status}</Text>
+						{
+							data.status != '' && <Text style={[styles.tileStatus, statusColor]}>{data.status === 'pending' ? 'pending clearance' : data.status}</Text>
+						}
 					</View>
 					<View style={styles.bottomLayer}>
 						<Text style={styles.formatPrice}>{currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>
 						<Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
-						<Text style={styles.priceDate}>{moment(data.createdAt).format('MM.DD.YYYY / h:mm a')}</Text>
+						<Text style={styles.priceDate}>{moment(data.createdAt).format('DD MMM YY - h:mm a')}</Text>
 					</View>
 				</View>
 			</TouchableOpacity>

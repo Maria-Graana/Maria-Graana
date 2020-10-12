@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatPrice } from '../../PriceFormate';
 import ErrorMessage from '../../components/ErrorMessage'
 import PaymentTile from '../../components/PaymentTile'
+import StaticData from '../../StaticData'
 
 
 class InnerForm extends Component {
@@ -31,6 +32,7 @@ class InnerForm extends Component {
       formData,
       handleForm,
       openUnitDetailsModal,
+      openPearlDetailsModal,
       paymentPlan,
       unitPrice,
       currencyConvert,
@@ -41,18 +43,22 @@ class InnerForm extends Component {
       remainingPayment,
       checkLeadClosedOrNot,
       editTileForscreenOne,
+      leftSqft,
+      cnicEditable,
+      unitPearlDetailsData,
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
-    const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' && checkLeadClosedOrNot === true ? true : false
+    const checkForUnitIdavail = formData.unitId != '' && formData.unitId != null && formData.unitId != 'no' && checkLeadClosedOrNot === true || formData.pearl != null && formData.pearl != '' ? true : false
     const dataForPaymentTile = {
       installmentAmount: formData.token,
       id: null,
-      status: 'Pending',
+      status: '',
       details: formData.details,
       type: formData.type,
       createdAt: new Date(),
     }
-    var checkForPaymentPlan = formData.paymentPlan === '' || formData.paymentPlan === null || checkForUnitIdavail === false? false : true
+    let checkForPearlArea = unitPearlDetailsData.pearlArea < 50 ? StaticData.onlyUnitType : StaticData.unitType
+    let checkForPaymentPlan = formData.paymentPlan === '' || formData.paymentPlan === null || checkForUnitIdavail === false ? false : true
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>
@@ -75,18 +81,72 @@ class InnerForm extends Component {
 
             {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap]}>
-              <View style={styles.maiinDetailBtn}>
-                <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
-                  <PickerComponent onValueChange={handleForm} data={getUnit} name={'unitId'} placeholder='Unit' selectedItem={formData.unitId} enabled={checkLeadClosedOrNot} />
-                  {firstScreenValidate === true && formData.unitId === null && <ErrorMessage errorMessage={'Required'} />}
-                </View>
-                <View style={styles.mainDetailViewBtn}>
-                  <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.unitId != null && openUnitDetailsModal(formData.unitId, true) }}>
-                    <Text style={styles.detailBtnText}>Details</Text>
-                  </TouchableOpacity>
-                </View>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent onValueChange={handleForm} data={checkForPearlArea} name={'unitType'} placeholder='Unit Type' selectedItem={formData.unitType} enabled={checkLeadClosedOrNot} />
+                {firstScreenValidate === true && formData.unitType === null && <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
+
+            {/* **************************************** */}
+
+
+            {
+              formData.unitType === 'pearl' ?
+                <View style={[AppStyles.mainInputWrap]}>
+                  <View style={styles.maiinDetailBtn}>
+                    <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
+                      <SimpleInputText
+                        name={'pearl'}
+                        fromatName={false}
+                        placeholder={`${unitPearlDetailsData.pearlArea} sqft available`}
+                        label={'PEARL'}
+                        value={formData.pearl}
+                        formatValue={''}
+                        onChangeHandle={handleForm}
+                        editable={true}
+                        keyboardType={'numeric'}
+                        noMargin={true}
+                      />
+                      {firstScreenValidate === true && formData.pearl === null && <ErrorMessage errorMessage={'Required'} />}
+                      {formData.pearl > unitPearlDetailsData.pearlArea && <ErrorMessage errorMessage={`Cannot be greater than ${unitPearlDetailsData.pearlArea} sqft `} />}
+                      {formData.pearl < 50 && formData.pearl > 0 && <ErrorMessage errorMessage={'Must be greater than or equal to 50 sqft'} />}
+                      {leftSqft < 50 && leftSqft > 0 ? <ErrorMessage errorMessage={`Remaining area (${leftSqft} sqft) must be 0 or greater than or equal to 50 sqft`} /> : null}
+                    </View>
+                    <View style={styles.mainDetailViewBtn}>
+                      <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.pearl != null && openPearlDetailsModal(true) }}>
+                        <Text style={styles.detailBtnText}>Details</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+                :
+                null
+            }
+            {
+              formData.unitType === 'fullUnit' ?
+                <View style={[AppStyles.mainInputWrap]}>
+                  <View style={styles.maiinDetailBtn}>
+                    <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
+                      <PickerComponent
+                        onValueChange={handleForm}
+                        data={getUnit} name={'unitId'}
+                        placeholder='Unit'
+                        selectedItem={formData.unitId}
+                        enabled={checkLeadClosedOrNot}
+                        customStyle={styles.equalHeight}
+                      />
+                      {firstScreenValidate === true && formData.unitId === null && <ErrorMessage errorMessage={'Required'} />}
+                    </View>
+                    <View style={styles.mainDetailViewBtn}>
+                      <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.unitId != null && openUnitDetailsModal(formData.unitId, true) }}>
+                        <Text style={styles.detailBtnText}>Details</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+                : null
+            }
+
 
             {/* **************************************** */}
             <SimpleInputText
@@ -94,8 +154,8 @@ class InnerForm extends Component {
               fromatName={'unitPrice'}
               placeholder={'Unit Price'}
               label={'UNIT PRICE'}
-              value={unitPrice}
-              formatValue={unitPrice}
+              value={unitPrice != null ? unitPrice : ''}
+              formatValue={unitPrice != null ? unitPrice : ''}
               editable={false}
               keyboardType={'numeric'}
             />
@@ -129,7 +189,7 @@ class InnerForm extends Component {
             />
             {/* {firstScreenValidate === true && formData.projectId === '' && <ErrorMessage errorMessage={'Required'} />} */}
 
-            
+
 
             {/* **************************************** */}
 
@@ -165,6 +225,28 @@ class InnerForm extends Component {
                       : null
                   }
                 </View>
+            }
+
+
+            {
+              cnicEditable != false &&
+              <SimpleInputText
+                name={'cnic'}
+                placeholder={'Client CNIC'}
+                label={'CLIENT CNIC'}
+                value={formData.cnic}
+                keyboardType={'numeric'}
+                onChangeHandle={handleForm}
+                formatValue={''}
+                editable={cnicEditable}
+                fromatName={false}
+              />
+            }
+            {
+              firstScreenValidate === true && formData.cnic === null || formData.cnic === '' ?
+                <ErrorMessage errorMessage={'Required'} />
+                :
+                formData.cnic && formData.cnic.length < 15 && firstScreenValidate === true ? <ErrorMessage errorMessage={'Enter Valid CNIC'} /> : null
             }
 
             {/* **************************************** */}

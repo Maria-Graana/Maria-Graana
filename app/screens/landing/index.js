@@ -14,6 +14,7 @@ import { View, TouchableOpacity, Text, Image } from 'react-native';
 import addIcon from '../../../assets/img/add-icon-l.png';
 import { setContacts } from '../../actions/contacts';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import UpdateApp from '../../UpdateApp';
 
 class Landing extends React.Component {
 	constructor(props) {
@@ -81,7 +82,7 @@ class Landing extends React.Component {
 	render() {
 		const { tiles } = this.state
 		const { user, navigation } = this.props
-
+		
 		return (
 			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor, paddingHorizontal: wp('0%'), paddingLeft: 0 }]}>
 				<AndroidNotifications navigation={navigation} />
@@ -121,6 +122,7 @@ class Landing extends React.Component {
 							null
 					}
 				</View>
+				<UpdateApp />
 			</SafeAreaView >
 		)
 	}

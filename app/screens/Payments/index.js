@@ -205,7 +205,7 @@ class Payments extends Component {
 					allUnits: res.data.rows,
 				})
 			}).catch((error) => {
-				console.log('/api/project/shops?projectId & floorId & status - Error', error)
+				console.log('/api/project/shops?projectId & floorId & status & type - Error', error)
 			})
 	}
 
@@ -554,7 +554,6 @@ class Payments extends Component {
 
 	}
 
-
 	firstScreenApiCall = (unitId) => {
 		const { lead } = this.props
 		const { formData, remainingPayment } = this.state
@@ -781,7 +780,7 @@ class Payments extends Component {
 
 		const { CMPayment } = this.props
 
-		var message = checkForEdit === true ? 'Payment Updated' : 'Payment Added'
+		var message = checkForEdit === true ? 'Payment Updated' : 'Payment details have been sent to Accounts for verification and clearance'
 
 		// ====================== If have attachments then this check will b execute
 		if (CMPayment.attachments && CMPayment.attachments.length > 0) {

@@ -32,7 +32,7 @@ class UnitDetailsModal extends React.Component {
 
       <Modal isVisible={active}>
         {
-          !pearlModal && data && data != '' &&
+          pearlModal === false && data && data != '' &&
           <View style={[styles.modalMain]}>
             <TouchableOpacity style={styles.timesBtn} onPress={() => { openUnitDetailsModal(null, false) }}>
               <Image source={times} style={styles.timesImg} />
@@ -185,7 +185,7 @@ class UnitDetailsModal extends React.Component {
           </View>
         }
         {
-          pearlModal && data && data != '' &&
+          pearlModal === true && data && data != '' &&
           <View style={[styles.modalMain]}>
             <TouchableOpacity style={styles.timesBtn} onPress={() => { openUnitDetailsModal(null, false) }}>
               <Image source={times} style={styles.timesImg} />

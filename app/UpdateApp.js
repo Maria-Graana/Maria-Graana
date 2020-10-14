@@ -64,7 +64,7 @@ class UpdateApp extends React.Component {
         return (
             <View>
                 <UpdateModal active={this.state.visible} click={this.updateSubmit} loading={this.state.loading} />
-                <SuccessModal expoVersion={this.state.expoVersion} active={this.state.successModal} click={this.reloadApp} loading={false} />
+                <SuccessModal expoVersion={this.state.expoVersion} active={this.state.successModal} reloadApp={this.reloadApp} loading={false} />
             </View>
 
         )

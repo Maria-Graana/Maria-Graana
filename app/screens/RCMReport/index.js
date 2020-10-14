@@ -94,7 +94,8 @@ class RCMReport extends React.Component {
             fromDate: moment(_today).format(_format),
             toDate: moment(_today).format(_format),
             organizations: [],
-            graphLabels: ['open', 'called', 'viewing', 'offer', 'propsure', 'token', 'payment', 'closed_won', 'closed_lost']
+            graphLabels: ['open', 'called', 'viewing', 'offer', 'propsure', 'token', 'payment', 'closed_won', 'closed_lost'],
+            leadsCount: 0
         }
     }
 
@@ -202,8 +203,9 @@ class RCMReport extends React.Component {
         this.setState({ loading: true })
         axios.get(url)
             .then((res) => {
+                let totalLeadsWithCommision = res.data.totalLeadsWithCommision
                 this.graphData(res.data)
-                this.setState({ dashBoardData: res.data, loading: false, viewLoader: false })
+                this.setState({ dashBoardData: res.data, loading: false, viewLoader: false, leadsCount: '(' + totalLeadsWithCommision + ')' })
             })
             .catch((error) => {
                 console.log(error)
@@ -214,7 +216,7 @@ class RCMReport extends React.Component {
         const { user } = this.props
         let org = this.organizationName(value)
         if (user.subRole !== 'regional_head' && user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager') {
-            axios.get(`/api/cities/regions?organization=${org.name.toLocaleLowerCase()}&active=true`)
+            axios.get(`/api/cities/regions?organization=${org.name.toLocaleLowerCase()}&active=true&all=true`)
                 .then((res) => {
                     let regions = []
                     res && res.data.items.length && res.data.items.map((item, index) => { return (regions.push({ value: item.id, name: item.name })) })
@@ -645,7 +647,7 @@ class RCMReport extends React.Component {
     }
 
     render() {
-        const { viewLoader, organizationFormData, loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
+        const { leadsCount, viewLoader, organizationFormData, loading, graph, dashBoardData, showOrganizationFilter, showCalendar, selectedDate, agents, zones, filterLabel, footerLabel, showRegionFilter, showAgentFilter, showZoneFilter, organizations, regionFormData, checkValidation, regionText, regions, agentFormData, zoneFormData } = this.state
         const width = 500
         const height = 250
         let chartConfig = {
@@ -730,7 +732,7 @@ class RCMReport extends React.Component {
                             <ScrollView style={styles.scrollContainer}>
                                 <View style={{
                                 }}>
-                                    <RectangleDaily label={'Commission Revenue'} targetNumber={dashBoardData.totalRevenue} />
+                                    <RectangleDaily label={'Commission Revenue'} leadsCount={leadsCount} deals={'(Deals)'} targetNumber={dashBoardData.totalRevenue} />
                                     <View style={styles.sqaureView}>
                                         <SquareContainer containerStyle={styles.squareRight} imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
                                         <SquareContainer imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />

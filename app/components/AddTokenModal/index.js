@@ -37,6 +37,14 @@ class AddTokenModal extends React.Component {
 
           <ScrollView>
             <View style={styles.moreViewContainer}>
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <PickerComponent onValueChange={handleForm} data={StaticData.paymentTypeForToken} name={'paymentTypeForToken'} placeholder='Payment Type' selectedItem={formData.paymentTypeForToken} />
+                  {firstScreenValidate === true && formData.paymentTypeForToken === '' && <ErrorMessage errorMessage={'Required'} />}
+                </View>
+              </View>
+
+
               <SimpleInputText
                 name={'token'}
                 fromatName={false}
@@ -49,6 +57,7 @@ class AddTokenModal extends React.Component {
                 onChangeHandle={handleForm}
               />
               {firstScreenValidate === true && formData.token === null || formData.token === '' ? <ErrorMessage errorMessage={'Required'} /> : null}
+
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Alert } from 'react-native';
 import axios from 'axios'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
@@ -44,7 +44,8 @@ class Payments extends Component {
 				pearl: null,
 				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
 				unitType: '',
-				pearlName: 'New Pearl'
+				pearlName: 'New Pearl',
+				paymentTypeForToken: 'Token',
 			},
 			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
 			secondFormData: { ...this.props.CMPayment },
@@ -93,13 +94,14 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
-		
+
 		this._unsubscribe = navigation.addListener('focus', () => {
 			this.reopenPaymentModal();
 		})
-		if(lead.projectId && lead.projectId != null){
-			this.getFloors(lead.projectId)
+		if (lead.paidProject && lead.paidProject != null) {
+			this.getFloors(lead.paidProject.id)
 		}
+
 	}
 
 	componentWillUnmount() {
@@ -305,6 +307,22 @@ class Payments extends Component {
 			newFormData['discount'] = ''
 		}
 
+		// Check Payment Token Type
+		if (name === 'paymentTypeForToken' && value == 'Payment') {
+			Alert.alert(
+				'Alert',
+				'Are you sure you want to book without Token?',
+				[
+				  {
+					text: 'Cancel',
+					onPress: () => {this.handleForm('Token', 'paymentTypeForToken')},
+					style: 'cancel'
+				  },
+				  { text: 'Yes' }
+				],
+				{ cancelable: false }
+			  );
+		}
 
 		this.setState({
 			formData: newFormData,
@@ -330,6 +348,7 @@ class Payments extends Component {
 				let object = {};
 				object = getAllFloors.find((item) => { return item.id == value && item })
 				var totalPrice = newFormData.pearl * object && object.pricePerSqFt
+
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object }, () => {
 					this.refreshUnitPrice(name)
 				})
@@ -565,7 +584,7 @@ class Payments extends Component {
 			unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
 			discounted_price: formData.discountedPrice === null || formData.discountedPrice === '' ? null : formData.discountedPrice,
 			discount_amount: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
-			unitStatus: 'Token',
+			unitStatus: formData.paymentTypeForToken,
 			installmentDue: formData.paymentPlan,
 			finalPrice: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
 			remainingPayment: remainingPayment,
@@ -980,7 +999,7 @@ class Payments extends Component {
 				})
 		}
 		else {
-			alert('Please select a reason for lead closure!')
+			('Please select a reason for lead closure!')
 		}
 	}
 
@@ -1013,7 +1032,7 @@ class Payments extends Component {
 
 			var leadId = []
 			leadId.push(lead.id)
-				console.log(formData)
+			console.log(formData)
 			// Check for Payment Done option 
 			if (Number(remainingPayment) <= 0 && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
@@ -1068,7 +1087,7 @@ class Payments extends Component {
 			cnicEditable,
 			leftSqft,
 		} = this.state
-
+		console.log(formData.paymentTypeForToken)
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
@@ -1126,16 +1145,17 @@ class Payments extends Component {
 					}
 
 					{
-						unitDetailsData &&
+						unitDetailsData && formData.pearl == null &&
 						<UnitDetailsModal
 							active={unitDetailModal}
 							data={unitDetailsData}
+							pearlModal={false}
 							openUnitDetailsModal={this.openUnitDetailsModal}
 						/>
 					}
 
 					{
-						unitPearlDetailsData &&
+						unitPearlDetailsData && formData.pearl &&
 						<UnitDetailsModal
 							active={unitDetailModal}
 							data={unitPearlDetailsData}
@@ -1186,7 +1206,6 @@ class Payments extends Component {
 					selectedReason={selectedReason}
 					isVisible={isVisible}
 					CMlead={true}
-					// checkValidation={checkReasonValidation}
 					closeModal={() => this.closeModal()}
 					changeReason={this.handleReasonChange}
 					onPress={this.onHandleCloseLead}
@@ -1200,7 +1219,6 @@ class Payments extends Component {
 						goToComments={this.goToComments}
 						closedLeadEdit={checkLeadClosedOrNot}
 						alreadyClosedLead={this.closedLead}
-						// closedLeadEdit={leadClosedCheck}
 						closeLead={this.formSubmit}
 					/>
 				</View>

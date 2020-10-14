@@ -734,15 +734,15 @@ class RCMReport extends React.Component {
                                 }}>
                                     <RectangleDaily label={'Commission Revenue'} leadsCount={leadsCount} deals={'(Deals)'} targetNumber={dashBoardData.totalRevenue} />
                                     <View style={styles.sqaureView}>
-                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
-                                        <SquareContainer imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsAssignedImg} label={'Company Generated Leads'} total={dashBoardData.totalleadsAssigned} />
+                                        <SquareContainer imagePath={leadsCreatedImg} label={'Personal Leads'} total={dashBoardData.totalLeadsAdded} />
                                     </View>
                                     <View style={styles.sqaureView}>
                                         <SquareContainer containerStyle={styles.squareRight} imagePath={viewingConductedImg} label={'Viewings Conducted'} total={dashBoardData.viewingConducted} />
                                         <SquareContainer imagePath={viewingOverdueImg} label={'Viewings Overdue'} total={dashBoardData.viewingOverdue} />
                                     </View>
                                     <View style={styles.graphContainer}>
-                                        <Text style={styles.labelStyle}>Total Leads</Text>
+                                        <Text style={styles.labelStyle}>Total Leads so far</Text>
                                         <ScrollView horizontal={true}>
                                             <BarChart
                                                 decimalPlaces={0.1}

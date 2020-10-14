@@ -734,7 +734,7 @@ class CMReport extends React.Component {
 
                                     </View>
                                     <View style={styles.graphContainer}>
-                                        <Text style={styles.labelStyle}>Total Leads so far</Text>
+                                        <Text style={styles.labelStyle}>Total Leads</Text>
                                         <ScrollView horizontal={true}>
                                             <BarChart
                                                 useShadowColorFromDataset={true}

@@ -742,7 +742,7 @@ class RCMReport extends React.Component {
                                         <SquareContainer imagePath={viewingOverdueImg} label={'Viewings Overdue'} total={dashBoardData.viewingOverdue} />
                                     </View>
                                     <View style={styles.graphContainer}>
-                                        <Text style={styles.labelStyle}>Total Leads so far</Text>
+                                        <Text style={styles.labelStyle}>Total Leads</Text>
                                         <ScrollView horizontal={true}>
                                             <BarChart
                                                 decimalPlaces={0.1}

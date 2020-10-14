@@ -213,7 +213,7 @@ class CMReport extends React.Component {
         const { user } = this.props
         let org = this.organizationName(value)
         if (user.subRole !== 'regional_head' && user.subRole !== 'zonal_manager' && user.subRole !== 'branch_manager' && user.subRole !== 'business_centre_manager' && user.subRole !== 'call_centre_manager') {
-            axios.get(`/api/cities/regions?organization=${org.name.toLocaleLowerCase()}&active=true`)
+            axios.get(`/api/cities/regions?organization=${org.name.toLocaleLowerCase()}&active=true&all=true`)
                 .then((res) => {
                     let regions = []
                     res && res.data.items.length && res.data.items.map((item, index) => { return (regions.push({ value: item.id, name: item.name })) })
@@ -729,8 +729,8 @@ class CMReport extends React.Component {
                                             <RectangleContainer targetPercent={60} targetNumber={dashBoardData.revenue} totalTarget={dashBoardData.totalTarget} />
                                     }
                                     <View style={styles.sqaureView}>
-                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsAssignedImg} label={'Company Generated Leads'} total={dashBoardData.totalleadsAssigned} />
-                                        <SquareContainer imagePath={leadsCreatedImg} label={'Personal Leads'} total={dashBoardData.totalLeadsAdded} />
+                                        <SquareContainer containerStyle={styles.squareRight} imagePath={leadsAssignedImg} label={'Leads Assigned'} total={dashBoardData.totalleadsAssigned} />
+                                        <SquareContainer imagePath={leadsCreatedImg} label={'Leads Created'} total={dashBoardData.totalLeadsAdded} />
 
                                     </View>
                                     <View style={styles.graphContainer}>

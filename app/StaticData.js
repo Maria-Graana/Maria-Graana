@@ -635,6 +635,10 @@ export default StaticData = {
     ],
     onlyUnitType: [
         { value: 'fullUnit', name: 'Full Unit' },
+    ],
+    paymentTypeForToken: [
+        { value: 'Token', name: 'Token' },
+        { value: 'Payment', name: 'Other Payment' },
     ]
 }
 

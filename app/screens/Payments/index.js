@@ -1032,7 +1032,6 @@ class Payments extends Component {
 
 			var leadId = []
 			leadId.push(lead.id)
-			console.log(formData)
 			// Check for Payment Done option 
 			if (Number(remainingPayment) <= 0 && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
@@ -1087,7 +1086,6 @@ class Payments extends Component {
 			cnicEditable,
 			leftSqft,
 		} = this.state
-		console.log(formData.paymentTypeForToken)
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />

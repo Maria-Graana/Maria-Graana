@@ -32,21 +32,25 @@ class AddRCMLead extends Component {
             fifteenKArray: helper.createArray(15000),
             fiftyArray: helper.createArray(50),
             hundredArray: helper.createArray(100),
+            isBedBathModalVisible: false,
+            modalType: 'none',
             RCMFormData: {
                 type: "",
                 subtype: "",
-                bed: null,
-                bath: null,
                 leadAreas: [],
                 customerId: '',
                 city_id: '',
                 size_unit: 'marla',
-                minPrice: null,
-                maxPrice: null,
                 description: '',
                 org: '',
-                size: null,
-                maxSize: null
+                bed: null,
+                maxBed: null,
+                bath: null,
+                maxBath: null,
+                size: 0,
+                maxSize: 0,
+                minPrice: 0,
+                maxPrice: 0,
             }
         }
     }
@@ -188,7 +192,23 @@ class AddRCMLead extends Component {
     }
 
     selectSubtype = (type) => {
-        this.setState({ selectSubType: StaticData.subType[type] })
+        this.setState({
+            selectSubType: StaticData.subType[type],
+        }, () => {
+            this.setDefaultValuesForBedBath(type)
+        });
+    }
+
+    setDefaultValuesForBedBath = (type) => {
+        if (type === 'residential') {
+            const { RCMFormData } = this.state;
+            const copyObject = { ...RCMFormData };
+            copyObject.bed = 0;
+            copyObject.bath = 0;
+            copyObject.maxBed = StaticData.bedBathRange.length - 1;
+            copyObject.maxBath = StaticData.bedBathRange.length - 1;
+            this.setState({ RCMFormData: copyObject })
+        }
     }
 
     RCMFormSubmit = () => {
@@ -277,19 +297,58 @@ class AddRCMLead extends Component {
     }
 
     onSliderValueChange = (values) => {
-        const { RCMFormData, priceList } = this.state;
-        const copyObject = { ...RCMFormData };
-        copyObject.minPrice = priceList[values[0]];
-        copyObject.maxPrice = priceList[values[values.length - 1]];
-        this.setState({ RCMFormData: copyObject });
+        // const { RCMFormData, priceList, sizeUnitList, modalType } = this.state;
+        // //console.log('change', values)
+        // const copyObject = { ...RCMFormData };
+        // switch (modalType) {
+        //     case 'bed':
+        //         copyObject.bed = StaticData.bedBathRange[values[0]];
+        //         copyObject.maxBed = StaticData.bedBathRange[values[values.length - 1]];
+        //         this.setState({ RCMFormData: copyObject });
+        //         break;
+        //     case 'bath':
+        //         copyObject.bath = StaticData.bedBathRange[values[0]];
+        //         copyObject.maxBath = StaticData.bedBathRange[values[values.length - 1]];
+        //         this.setState({ RCMFormData: copyObject });
+        //         break;
+        //     case 'price':
+        //         copyObject.minPrice = priceList[values[0]];
+        //         copyObject.maxPrice = priceList[values[values.length - 1]];
+        //         break;
+        //     case 'size':
+        //         copyObject.size = sizeUnitList[values[0]];
+        //         copyObject.maxSize = sizeUnitList[values[values.length - 1]];
+        //         break;
+        //     default:
+        //         break;
+        // }
     }
 
-    onSizeUnitSliderValueChange = (values) => {
-        const { RCMFormData, sizeUnitList } = this.state;
+    handleInputType = (modalType) => {
+        this.setState({ isBedBathModalVisible: true, modalType })
+    }
+
+    onBedBathModalDonePressed = (minValue, maxValue) => {
+        const { RCMFormData, modalType } = this.state;
         const copyObject = { ...RCMFormData };
-        copyObject.size = sizeUnitList[values[0]];
-        copyObject.maxSize = sizeUnitList[values[values.length - 1]];
-        this.setState({ RCMFormData: copyObject });
+        switch (modalType) {
+            case 'bed':
+                copyObject.bed = minValue;
+                copyObject.maxBed = maxValue;
+                this.setState({ RCMFormData: copyObject });
+                break;
+            case 'bath':
+                copyObject.bath = minValue;
+                copyObject.maxBath = maxValue;
+                this.setState({ RCMFormData: copyObject });
+            default:
+                break;
+        }
+        this.setState({ isBedBathModalVisible: false });
+    }
+
+    onModalCancelPressed = () => {
+        this.setState({ isBedBathModalVisible: false })
     }
 
     render() {
@@ -304,7 +363,9 @@ class AddRCMLead extends Component {
             checkValidation,
             priceList,
             loading,
-            sizeUnitList
+            sizeUnitList,
+            isBedBathModalVisible,
+            modalType
         } = this.state
         const { route } = this.props
 
@@ -334,9 +395,13 @@ class AddRCMLead extends Component {
                                         subType={selectSubType}
                                         handleAreaClick={this.handleAreaClick}
                                         priceList={priceList}
-                                        onSizeUnitSliderValueChange={(values) => this.onSizeUnitSliderValueChange(values)}
                                         onSliderValueChange={(values) => this.onSliderValueChange(values)}
                                         loading={loading}
+                                        isBedBathModalVisible={isBedBathModalVisible}
+                                        modalType={modalType}
+                                        handleInputType={(value) => this.handleInputType(value)}
+                                        onBedBathModalDonePressed={(minValue, maxValue) => this.onBedBathModalDonePressed(minValue, maxValue)}
+                                        onModalCancelPressed={() => this.onModalCancelPressed()}
                                     />
                                 </View>
                             </TouchableWithoutFeedback>

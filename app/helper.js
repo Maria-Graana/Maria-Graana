@@ -448,6 +448,23 @@ const helper = {
 		if (channel === 'production') return ''
 		else if (channel === 'staging') return 'Staging '
 		else return 'Dev '
+	},
+	showRangesString(start, end, maxValue) {
+		if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
+			return 'Any'
+		}
+		else if (start === 0 && end !== maxValue) {
+			return `Upto ${end}`;
+		}
+		else if (start !== 0 && end === maxValue) {
+			return `${start} or more`;
+		}
+		else if (start === end) {
+			return `${start}`;
+		}
+		else {
+			return `${start}-${end}`
+		}
 	}
 }
 

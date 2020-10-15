@@ -11,13 +11,36 @@ import PriceSlider from '../../components/PriceSlider';
 import StaticData from '../../StaticData'
 import TouchableInput from '../../components/TouchableInput';
 import TouchableButton from '../../components/TouchableButton';
-
+import BedBathSliderModal from '../../components/BedBathSliderModal';
+import helper from '../../helper';
 class InnerRCMForm extends Component {
 	constructor(props) {
 		super(props)
 	}
 
-	componentDidMount() { }
+	checkBedBathInitialValue = (modalType) => {
+		const {formData} = this.props;
+		switch (modalType) {
+			case 'bed':
+				return formData.bed;
+			case 'bath':
+				return formData.bath;
+			default:
+				return 0;
+		}
+	}
+
+	checkBedBathFinalValue = (modalType) => {
+		const {formData} = this.props;
+		switch (modalType) {
+			case 'bed':
+				return formData.maxBed;
+			case 'bath':
+				return formData.maxBath;
+			default:
+				return 0;
+		}
+	}
 
 	render() {
 
@@ -35,18 +58,29 @@ class InnerRCMForm extends Component {
 			handleAreaClick,
 			clientName,
 			handleClientClick,
-			priceList,
-			onSliderValueChange,
 			organizations,
 			loading,
-			sizeUnitList,
-			onSizeUnitSliderValueChange
+			isBedBathModalVisible,
+			modalType,
+			handleInputType,
+			onBedBathModalDonePressed,
+			onModalCancelPressed,
 		} = this.props
 
 		const { leadAreas } = formData;
 		const leadAreasLength = leadAreas ? leadAreas.length : 0;
 		return (
 			<View>
+				<BedBathSliderModal
+					formData={formData}
+					isVisible={isBedBathModalVisible}
+					modalType={modalType}
+					initialValue={this.checkBedBathInitialValue(modalType)}
+					finalValue = {this.checkBedBathFinalValue(modalType)}
+					onBedBathModalDonePressed={onBedBathModalDonePressed}
+					onModalCancelPressed={onModalCancelPressed}
+					arrayValues={StaticData.bedBathRange}
+				/>
 
 				{
 					user.subRole === 'group_management' ?
@@ -110,7 +144,7 @@ class InnerRCMForm extends Component {
 					</View>
 				</View>
 
-				<View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
+				{/* <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
 					<TextInput placeholder='Size Min'
 						value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.size)}
 						style={[AppStyles.formControl, styles.priceStyle]}
@@ -122,11 +156,11 @@ class InnerRCMForm extends Component {
 						style={[AppStyles.formControl, styles.priceStyle]}
 						editable={false}
 					/>
-				</View>
-				<PriceSlider priceValues={sizeUnitList} initialValue={0} finalValue={sizeUnitList.length - 1} onSliderValueChange={(values) => onSizeUnitSliderValueChange(values)} />
+				</View> */}
+				{/* <PriceSlider priceValues={sizeUnitList} initialValue={0} finalValue={sizeUnitList.length - 1} onSliderValueChange={(values) => onSizeUnitSliderValueChange(values)} /> */}
 
 				{/* **************************************** */}
-				<View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
+				{/* <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
 
 					<TextInput placeholder='Price Min'
 						value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice)}
@@ -140,24 +174,27 @@ class InnerRCMForm extends Component {
 						editable={false}
 					/>
 				</View>
-				<PriceSlider priceValues={priceList} initialValue={0} finalValue={priceList.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} />
+				<PriceSlider priceValues={priceList} initialValue={0} finalValue={priceList.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} /> */}
 
 				{
-					formData.type != 'plot' && formData.type != 'commercial' &&
+					formData.type !== '' && formData.type != 'plot' && formData.type != 'commercial' &&
 					<View style={AppStyles.multiFormInput}>
 
 						{/* **************************************** */}
 						<View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
-							<View style={[AppStyles.inputWrap]}>
-								<PickerComponent onValueChange={handleForm} data={StaticData.bedBathList} name={'bed'} placeholder='Bed' />
-							</View>
+							<TouchableInput placeholder="Bed"
+								showDropDownIcon={false}
+								onPress={() => handleInputType('bed')}
+								value={`Beds: ${helper.showRangesString(formData.bed, formData.maxBed, StaticData.bedBathRange.length - 1)}`}
+							/>
 						</View>
-
 						{/* **************************************** */}
 						<View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
-							<View style={[AppStyles.inputWrap]}>
-								<PickerComponent onValueChange={handleForm} data={StaticData.bedBathList} name={'bath'} placeholder='Bath' />
-							</View>
+							<TouchableInput placeholder="Bath"
+								showDropDownIcon={false}
+								onPress={() => handleInputType('bath')}
+								value={`Baths: ${helper.showRangesString(formData.bath, formData.maxBath,  StaticData.bedBathRange.length - 1)}`}
+							/>
 						</View>
 					</View>
 				}

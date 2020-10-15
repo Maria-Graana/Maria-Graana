@@ -58,6 +58,7 @@ class Payments extends Component {
 				investment: true,
 				quartarly: true,
 			},
+			specificUnitDetails: {},
 			cnicValidate: false,
 			leftSqft: null,
 			secondFormLeadData: {},
@@ -232,13 +233,20 @@ class Payments extends Component {
 	}
 
 	setUnitPrice = (id) => {
-		const { allUnits, formData } = this.state
+		const { allUnits, formData, specificUnitDetails } = this.state
 		let object = {};
 		var newFormdata = { ...formData }
 		object = allUnits.find((item) => { return item.id == id && item })
 		this.setState({
 			unitPrice: object.unit_price,
 			remainingPayment: object.unit_price,
+			specificUnitDetails: object,
+		}, () => {
+			if (object && object.discount != null && object.discount > 0) {
+				this.handleForm(object.discount, 'discount')
+			}else{
+				this.handleForm(0, 'discount')
+			}
 		})
 	}
 
@@ -302,10 +310,10 @@ class Payments extends Component {
 		}
 
 		// If user select payment drop down so discount and discounted price will be refresh
-		if (name === 'paymentPlan') {
-			newFormData['discountedPrice'] = ''
-			newFormData['discount'] = ''
-		}
+		// if (name === 'paymentPlan') {
+		// 	newFormData['discountedPrice'] = ''
+		// 	newFormData['discount'] = ''
+		// }
 
 		// Check Payment Token Type
 		if (name === 'paymentTypeForToken' && value == 'Payment') {
@@ -313,15 +321,15 @@ class Payments extends Component {
 				'Alert',
 				'Are you sure you want to book without Token?',
 				[
-				  {
-					text: 'Cancel',
-					onPress: () => {this.handleForm('Token', 'paymentTypeForToken')},
-					style: 'cancel'
-				  },
-				  { text: 'Yes' }
+					{
+						text: 'Cancel',
+						onPress: () => { this.handleForm('Token', 'paymentTypeForToken') },
+						style: 'cancel'
+					},
+					{ text: 'Yes' }
 				],
 				{ cancelable: false }
-			  );
+			);
 		}
 
 		this.setState({
@@ -330,12 +338,12 @@ class Payments extends Component {
 
 			//Set Discount Price
 			if (name === 'discount' || name === 'paymentPlan') {
-				this.allCalculations(name)
+				this.allCalculations(newFormData, name)
 			}
 
 			// Set Discount for Token
 			if (name === 'token') {
-				this.allCalculations('token')
+				this.allCalculations(newFormData,'token')
 			}
 
 			// when Project id chnage the unit filed will be refresh
@@ -395,13 +403,12 @@ class Payments extends Component {
 			})
 	}
 
-	allCalculations = (name) => {
+	allCalculations = (data,name) => {
 		const { formData, unitPrice } = this.state
 		const { lead } = this.props
 		const newFormData = { ...formData }
-
 		var totalPrice = unitPrice
-		var frontDiscount = formData.discount
+		var frontDiscount = data.discount
 		var backendDiscount = lead.paidProject != null && lead.paidProject.full_payment_discount
 		var grandTotal = ''
 		var oldGrandTotal = ''
@@ -418,6 +425,7 @@ class Payments extends Component {
 
 		if (name === 'discount') {
 			var formula = (oldGrandTotal / 100) * frontDiscount
+			newFormData['discount'] = frontDiscount
 			newFormData['discountedPrice'] = formula
 		}
 
@@ -584,7 +592,7 @@ class Payments extends Component {
 			unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
 			discounted_price: formData.discountedPrice === null || formData.discountedPrice === '' ? null : formData.discountedPrice,
 			discount_amount: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
-			unitStatus: formData.paymentTypeForToken,
+			unitStatus: formData.paymentTypeForToken === 'Token' ? formData.paymentTypeForToken : formData.paymentPlan,
 			installmentDue: formData.paymentPlan,
 			finalPrice: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
 			remainingPayment: remainingPayment,

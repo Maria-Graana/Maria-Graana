@@ -9,16 +9,10 @@ import StaticData from '../../StaticData';
 
 const checkModalType = (modalType, initialValue, finalValue) => {
     if (modalType === 'bed') {
-        return (`Beds: ${helper.showRangesString(initialValue, finalValue, StaticData.bedBathRange.length - 1)}`);
+        return (`Beds: ${helper.showBedBathRangesString(initialValue, finalValue, StaticData.bedBathRange.length - 1)}`);
     }
     else if (modalType === 'bath') {
-        return (`Baths: ${helper.showRangesString(initialValue, finalValue, StaticData.bedBathRange.length - 1)}`);
-    }
-    else if (modalType === 'price') {
-
-    }
-    else if (modalType === 'size') {
-
+        return (`Baths: ${helper.showBedBathRangesString(initialValue, finalValue, StaticData.bedBathRange.length - 1)}`);
     }
     else {
         return '';

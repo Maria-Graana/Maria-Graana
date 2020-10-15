@@ -449,7 +449,7 @@ const helper = {
 		else if (channel === 'staging') return 'Staging '
 		else return 'Dev '
 	},
-	showRangesString(start, end, maxValue) {
+	showBedBathRangesString(start, end, maxValue) {
 		if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
 			return 'Any'
 		}

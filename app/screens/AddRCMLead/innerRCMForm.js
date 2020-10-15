@@ -185,7 +185,7 @@ class InnerRCMForm extends Component {
 							<TouchableInput placeholder="Bed"
 								showDropDownIcon={false}
 								onPress={() => handleInputType('bed')}
-								value={`Beds: ${helper.showRangesString(formData.bed, formData.maxBed, StaticData.bedBathRange.length - 1)}`}
+								value={`Beds: ${helper.showBedBathRangesString(formData.bed, formData.maxBed, StaticData.bedBathRange.length - 1)}`}
 							/>
 						</View>
 						{/* **************************************** */}
@@ -193,7 +193,7 @@ class InnerRCMForm extends Component {
 							<TouchableInput placeholder="Bath"
 								showDropDownIcon={false}
 								onPress={() => handleInputType('bath')}
-								value={`Baths: ${helper.showRangesString(formData.bath, formData.maxBath,  StaticData.bedBathRange.length - 1)}`}
+								value={`Baths: ${helper.showBedBathRangesString(formData.bath, formData.maxBath, StaticData.bedBathRange.length - 1)}`}
 							/>
 						</View>
 					</View>

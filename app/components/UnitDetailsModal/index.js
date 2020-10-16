@@ -129,7 +129,7 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount)+'%'}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount) + `${data.discount > 0 ? '%' : ''}`}</Text>
                   </View>
                 </View>
               }

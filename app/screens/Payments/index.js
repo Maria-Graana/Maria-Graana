@@ -12,6 +12,7 @@ import { setlead } from '../../actions/lead';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
+import BookingDetailsModal from '../../components/BookingDetailsModal'
 import AddPaymentModal from '../../components/AddPaymentModal'
 import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
@@ -85,6 +86,7 @@ class Payments extends Component {
 			checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead),
 			remarks: null,
 			editaAbleForTokenScreenOne: false,
+			bookingDetailsModalActive: false,
 		}
 	}
 
@@ -102,6 +104,7 @@ class Payments extends Component {
 		if (lead.paidProject && lead.paidProject != null) {
 			this.getFloors(lead.paidProject.id)
 		}
+		console.log(lead.id)
 
 	}
 
@@ -135,7 +138,6 @@ class Payments extends Component {
 		newcheckPaymentPlan['years'] = lead.paidProject != null && lead.paidProject.installment_plan != null || '' ? lead.paidProject.installment_plan : null
 		newcheckPaymentPlan['monthly'] = lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes' ? true : false
 		newcheckPaymentPlan['rental'] = lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false,
-
 			this.setState({
 				checkPaymentPlan: newcheckPaymentPlan,
 			}, () => {
@@ -244,7 +246,7 @@ class Payments extends Component {
 		}, () => {
 			if (object && object.discount != null && object.discount > 0) {
 				this.handleForm(object.discount, 'discount')
-			}else{
+			} else {
 				this.handleForm(0, 'discount')
 			}
 		})
@@ -280,41 +282,26 @@ class Payments extends Component {
 
 	handleForm = (value, name) => {
 		const { formData, unitPrice, getAllFloors } = this.state
-
-
 		const newFormData = { ...formData }
-
 		if (name === 'cnic') {
 			value = helper.normalizeCnic(value)
 			this.validateCnic(value)
 		}
-
 		// Set Values In form Data
 		newFormData[name] = value
-
-
 		// Get Floor base on Project Id
 		if (name === 'projectId') {
 			this.changeProject(value)
 			this.getFloors(value)
 		}
-
 		// Get Floor base on Floor ID & Project Id
 		if (name === 'floorId') {
 			this.getUnits(formData.projectId, value)
 		}
-
 		//Set Selected Unit Details
 		if (name === 'unitId') {
 			this.setUnitPrice(value)
 		}
-
-		// If user select payment drop down so discount and discounted price will be refresh
-		// if (name === 'paymentPlan') {
-		// 	newFormData['discountedPrice'] = ''
-		// 	newFormData['discount'] = ''
-		// }
-
 		// Check Payment Token Type
 		if (name === 'paymentTypeForToken' && value == 'Payment') {
 			Alert.alert(
@@ -331,26 +318,21 @@ class Payments extends Component {
 				{ cancelable: false }
 			);
 		}
-
 		this.setState({
 			formData: newFormData,
 		}, () => {
-
 			//Set Discount Price
 			if (name === 'discount' || name === 'paymentPlan') {
 				this.allCalculations(newFormData, name)
 			}
-
 			// Set Discount for Token
 			if (name === 'token') {
-				this.allCalculations(newFormData,'token')
+				this.allCalculations(newFormData, 'token')
 			}
-
 			// when Project id chnage the unit filed will be refresh
 			if (name === 'projectId' && formData.projectId != null) {
 				this.refreshUnitPrice(name)
 			}
-
 			// when floor id chnage the unit filed will be refresh
 			if (name === 'floorId' && newFormData.floorId != null) {
 				let object = {};
@@ -361,29 +343,24 @@ class Payments extends Component {
 					this.refreshUnitPrice(name)
 				})
 			}
-
 			// when floor id chnage the unit filed will be refresh
 			if (name === 'unitId' && formData.unitId != null) {
 				this.refreshUnitPrice(name)
 			}
-
 			//Checks for PEARl values
 			if (name === 'unitType') {
 				this.refreshUnitPrice(name)
 			}
-
 			if (name === 'pearl') {
 				this.setState({ leftSqft: null })
 				let object = {};
 				object = getAllFloors.find((item) => { return item.id == formData.floorId && item })
 				var totalSqft = object.pearlArea
 				var minusSqft = value
-
 				var leftSqft = totalSqft - minusSqft
 				if (leftSqft < 50) {
 					this.setState({ leftSqft: leftSqft })
 				}
-
 				var totalPrice = newFormData.pearl * object.pricePerSqFt
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object })
 			}
@@ -403,7 +380,7 @@ class Payments extends Component {
 			})
 	}
 
-	allCalculations = (data,name) => {
+	allCalculations = (data, name) => {
 		const { formData, unitPrice } = this.state
 		const { lead } = this.props
 		const newFormData = { ...formData }
@@ -501,6 +478,13 @@ class Payments extends Component {
 			lastThree = ',' + lastThree;
 		var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
 		return res;
+	}
+
+	toggleBookingDetailsModal = (status) => {
+		console.log(status)
+		this.setState({
+			bookingDetailsModalActive: status,
+		})
 	}
 
 	submitFirstScreen = () => {
@@ -603,6 +587,7 @@ class Payments extends Component {
 
 		var leadId = []
 		leadId.push(lead.id)
+		console.log('body ============================ body',body)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
 			.then((res) => {
 				axios.get(`/api/leads/project/byId?id=${lead.id}`)
@@ -1093,76 +1078,70 @@ class Payments extends Component {
 			cnicValidate,
 			cnicEditable,
 			leftSqft,
+			bookingDetailsModalActive,
 		} = this.state
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 				<View style={styles.mainParent}>
-					{
-						firstScreenDone === true ?
-							<ScrollView>
-								<View style={styles.fullHeight}>
-									<FormScreenOne
-										getProject={getProject}
-										getFloors={getFloors}
-										getUnit={getUnit}
-										unitPrice={unitPrice}
-										unitId={unitId}
-										formData={formData}
-										paymentPlan={paymentPlan}
-										firstScreenValidate={firstScreenValidate}
-										remainingPayment={remainingPayment}
-										checkLeadClosedOrNot={checkLeadClosedOrNot}
-										cnicValidate={cnicValidate}
-										leftSqft={leftSqft}
-										cnicEditable={cnicEditable}
-										unitPearlDetailsData={unitPearlDetailsData}
-										currencyConvert={this.currencyConvert}
-										handleForm={this.handleForm}
-										submitFirstScreen={this.submitFirstScreen}
-										openUnitDetailsModal={this.openUnitDetailsModal}
-										openPearlDetailsModal={this.openPearlDetailsModal}
-										firstScreenConfirmModal={this.firstScreenConfirmModal}
-										tokenModalToggle={this.tokenModalToggle}
-										editTileForscreenOne={this.editTileForscreenOne}
-									/>
-								</View>
-							</ScrollView>
-							: null
-					}
+					{firstScreenDone === true ?
+						<ScrollView>
+							<View style={styles.fullHeight}>
+								<FormScreenOne
+									getProject={getProject}
+									getFloors={getFloors}
+									getUnit={getUnit}
+									unitPrice={unitPrice}
+									unitId={unitId}
+									formData={formData}
+									paymentPlan={paymentPlan}
+									firstScreenValidate={firstScreenValidate}
+									remainingPayment={remainingPayment}
+									checkLeadClosedOrNot={checkLeadClosedOrNot}
+									cnicValidate={cnicValidate}
+									leftSqft={leftSqft}
+									cnicEditable={cnicEditable}
+									unitPearlDetailsData={unitPearlDetailsData}
+									currencyConvert={this.currencyConvert}
+									handleForm={this.handleForm}
+									submitFirstScreen={this.submitFirstScreen}
+									openUnitDetailsModal={this.openUnitDetailsModal}
+									openPearlDetailsModal={this.openPearlDetailsModal}
+									firstScreenConfirmModal={this.firstScreenConfirmModal}
+									tokenModalToggle={this.tokenModalToggle}
+									editTileForscreenOne={this.editTileForscreenOne}
+								/>
+							</View>
+						</ScrollView>
+						: null}
 
-					{
-						firstScreenDone === false ?
-							<ScrollView>
-								<View style={styles.secondContainer}>
-									<FormScreenSecond
-										data={secondScreenData}
-										paymentPreviewLoading={paymentPreviewLoading}
-										remainingPayment={remainingPayment}
-										checkLeadClosedOrNot={checkLeadClosedOrNot}
-										onlyReadFormData={formData}
-										addPaymentModalToggle={this.addPaymentModalToggle}
-										currencyConvert={this.currencyConvert}
-										editTile={this.editTile}
-									/>
-								</View>
-							</ScrollView>
-							: null
-					}
+					{firstScreenDone === false ?
+						<ScrollView>
+							<View style={styles.secondContainer}>
+								<FormScreenSecond
+									data={secondScreenData}
+									paymentPreviewLoading={paymentPreviewLoading}
+									remainingPayment={remainingPayment}
+									checkLeadClosedOrNot={checkLeadClosedOrNot}
+									onlyReadFormData={formData}
+									toggleBookingDetailsModal={this.toggleBookingDetailsModal}
+									addPaymentModalToggle={this.addPaymentModalToggle}
+									currencyConvert={this.currencyConvert}
+									editTile={this.editTile}
+								/>
+							</View>
+						</ScrollView>
+						: null}
 
-					{
-						unitDetailsData && formData.pearl == null &&
+					{unitDetailsData && formData.pearl == null &&
 						<UnitDetailsModal
 							active={unitDetailModal}
 							data={unitDetailsData}
 							formData={formData}
 							pearlModal={false}
 							openUnitDetailsModal={this.openUnitDetailsModal}
-						/>
-					}
-
-					{
-						unitPearlDetailsData && formData.pearl &&
+						/>}
+					{unitPearlDetailsData && formData.pearl &&
 						<UnitDetailsModal
 							active={unitDetailModal}
 							data={unitPearlDetailsData}
@@ -1170,10 +1149,17 @@ class Payments extends Component {
 							unitPrice={unitPrice}
 							openUnitDetailsModal={this.openPearlDetailsModal}
 							pearlModal={true}
-						/>
-					}
-					{
-						getAllFloors != '' && getAllProject != '' &&
+						/>}
+					{secondScreenData &&
+						<BookingDetailsModal
+							active={bookingDetailsModalActive}
+							data={secondScreenData}
+							formData={formData}
+							pearlModal={false}
+							toggleBookingDetailsModal={this.toggleBookingDetailsModal}
+							openUnitDetailsModal={this.openUnitDetailsModal}
+						/>}
+					{getAllFloors != '' && getAllProject != '' &&
 						<FirstScreenConfirmModal
 							active={openFirstScreenModal}
 							data={formData}
@@ -1183,9 +1169,7 @@ class Payments extends Component {
 							firstScreenConfirmLoading={firstScreenConfirmLoading}
 							firstScreenConfirmModal={this.firstScreenConfirmModal}
 							submitFirstScreen={this.submitFirstScreen}
-						/>
-					}
-
+						/>}
 					<AddPaymentModal
 						active={addPaymentModalToggleState}
 						secondFormData={secondFormData}
@@ -1199,7 +1183,6 @@ class Payments extends Component {
 						secondFormSubmit={this.secondFormSubmit}
 						goToPayAttachments={this.goToPayAttachments}
 					/>
-
 					<AddTokenModal
 						active={tokenModalVisible}
 						formData={formData}
@@ -1217,7 +1200,6 @@ class Payments extends Component {
 					changeReason={this.handleReasonChange}
 					onPress={this.onHandleCloseLead}
 				/>
-
 				<View style={AppStyles.mainCMBottomNav}>
 					<CMBottomNav
 						goToAttachments={this.goToAttachments}
@@ -1229,12 +1211,10 @@ class Payments extends Component {
 						closeLead={this.formSubmit}
 					/>
 				</View>
-
 			</View>
 		)
 	}
 }
-
 
 mapStateToProps = (store) => {
 	return {

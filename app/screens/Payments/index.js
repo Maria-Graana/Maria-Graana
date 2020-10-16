@@ -587,7 +587,6 @@ class Payments extends Component {
 
 		var leadId = []
 		leadId.push(lead.id)
-		console.log('body ============================ body',body)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
 			.then((res) => {
 				axios.get(`/api/leads/project/byId?id=${lead.id}`)

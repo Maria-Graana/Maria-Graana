@@ -65,7 +65,7 @@ class InventoryTile extends React.Component {
               />
               :
               <Image
-                source={require('../../../assets/img/no-result-found.png')}
+                source={require('../../../assets/Images/no-image-found.png')}
                 style={styles.imageStyle}
               />
           }

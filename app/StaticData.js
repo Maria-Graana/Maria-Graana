@@ -628,6 +628,8 @@ export default StaticData = {
         { value: 'Remittance', name: 'Remittance' },
         { value: 'bank-Transfer', name: 'Bank-Transfer' },
         { value: 'e-Gateway', name: 'E-Gateway' },
+        { value: 'buy-back-adjustment', name: 'Buy Back Adjustment' },
+        { value: 'inter-mall-adjustment', name: 'Inter Mall Adjustment' },
     ],
     unitType: [
         { value: 'fullUnit', name: 'Full Unit' },
@@ -635,6 +637,10 @@ export default StaticData = {
     ],
     onlyUnitType: [
         { value: 'fullUnit', name: 'Full Unit' },
+    ],
+    paymentTypeForToken: [
+        { value: 'Token', name: 'Token' },
+        { value: 'Payment', name: 'Other Payment' },
     ]
 }
 

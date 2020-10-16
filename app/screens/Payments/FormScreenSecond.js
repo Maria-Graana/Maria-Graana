@@ -29,6 +29,7 @@ class FormScreenSecond extends Component {
       paymentPreviewLoading,
       checkLeadClosedOrNot,
       onlyReadFormData,
+      toggleBookingDetailsModal,
       tileForToken,
     } = this.props
     return (
@@ -36,10 +37,15 @@ class FormScreenSecond extends Component {
         <KeyboardAvoidingView>
           <View style={[styles.firstContainer]}>
             {/* Top Booked Text */}
-            <View style={styles.bookedBtn}>
+            {/* <View style={styles.bookedBtn}>
               <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
               <Text style={styles.bookedBtnText}>BOOKED</Text>
-            </View>
+            </View> */}
+
+            <TouchableOpacity style={[styles.addPaymentBtn, styles.noMargTop]} onPress={() => { toggleBookingDetailsModal(true) }}>
+              <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/checkWhite.png')}></Image>
+              <Text style={styles.addPaymentBtnText}>BOOKING DETAILS</Text>
+            </TouchableOpacity>
 
             {/* Top Details Wrap */}
             <View style={styles.mainTopDetailsWrap}>

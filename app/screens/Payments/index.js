@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Alert } from 'react-native';
 import axios from 'axios'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux';
@@ -12,6 +12,7 @@ import { setlead } from '../../actions/lead';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
+import BookingDetailsModal from '../../components/BookingDetailsModal'
 import AddPaymentModal from '../../components/AddPaymentModal'
 import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
@@ -44,7 +45,8 @@ class Payments extends Component {
 				pearl: null,
 				cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
 				unitType: '',
-				pearlName: 'New Pearl'
+				pearlName: 'New Pearl',
+				paymentTypeForToken: 'Token',
 			},
 			cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
 			secondFormData: { ...this.props.CMPayment },
@@ -57,6 +59,7 @@ class Payments extends Component {
 				investment: true,
 				quartarly: true,
 			},
+			specificUnitDetails: {},
 			cnicValidate: false,
 			leftSqft: null,
 			secondFormLeadData: {},
@@ -83,6 +86,7 @@ class Payments extends Component {
 			checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead),
 			remarks: null,
 			editaAbleForTokenScreenOne: false,
+			bookingDetailsModalActive: false,
 		}
 	}
 
@@ -93,13 +97,15 @@ class Payments extends Component {
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
-		
+
 		this._unsubscribe = navigation.addListener('focus', () => {
 			this.reopenPaymentModal();
 		})
-		if(lead.projectId && lead.projectId != null){
-			this.getFloors(lead.projectId)
+		if (lead.paidProject && lead.paidProject != null) {
+			this.getFloors(lead.paidProject.id)
 		}
+		console.log(lead.id)
+
 	}
 
 	componentWillUnmount() {
@@ -132,7 +138,6 @@ class Payments extends Component {
 		newcheckPaymentPlan['years'] = lead.paidProject != null && lead.paidProject.installment_plan != null || '' ? lead.paidProject.installment_plan : null
 		newcheckPaymentPlan['monthly'] = lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes' ? true : false
 		newcheckPaymentPlan['rental'] = lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false,
-
 			this.setState({
 				checkPaymentPlan: newcheckPaymentPlan,
 			}, () => {
@@ -230,13 +235,20 @@ class Payments extends Component {
 	}
 
 	setUnitPrice = (id) => {
-		const { allUnits, formData } = this.state
+		const { allUnits, formData, specificUnitDetails } = this.state
 		let object = {};
 		var newFormdata = { ...formData }
 		object = allUnits.find((item) => { return item.id == id && item })
 		this.setState({
 			unitPrice: object.unit_price,
 			remainingPayment: object.unit_price,
+			specificUnitDetails: object,
+		}, () => {
+			if (object && object.discount != null && object.discount > 0) {
+				this.handleForm(object.discount, 'discount')
+			} else {
+				this.handleForm(0, 'discount')
+			}
 		})
 	}
 
@@ -248,7 +260,7 @@ class Payments extends Component {
 			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
 		}
 		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null) {
-			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -270,93 +282,85 @@ class Payments extends Component {
 
 	handleForm = (value, name) => {
 		const { formData, unitPrice, getAllFloors } = this.state
-
-
 		const newFormData = { ...formData }
-
 		if (name === 'cnic') {
 			value = helper.normalizeCnic(value)
 			this.validateCnic(value)
 		}
-
 		// Set Values In form Data
 		newFormData[name] = value
-
-
 		// Get Floor base on Project Id
 		if (name === 'projectId') {
 			this.changeProject(value)
 			this.getFloors(value)
 		}
-
 		// Get Floor base on Floor ID & Project Id
 		if (name === 'floorId') {
 			this.getUnits(formData.projectId, value)
 		}
-
 		//Set Selected Unit Details
 		if (name === 'unitId') {
 			this.setUnitPrice(value)
 		}
-
-		// If user select payment drop down so discount and discounted price will be refresh
-		if (name === 'paymentPlan') {
-			newFormData['discountedPrice'] = ''
-			newFormData['discount'] = ''
+		// Check Payment Token Type
+		if (name === 'paymentTypeForToken' && value == 'Payment') {
+			Alert.alert(
+				'Alert',
+				'Are you sure you want to book without Token?',
+				[
+					{
+						text: 'Cancel',
+						onPress: () => { this.handleForm('Token', 'paymentTypeForToken') },
+						style: 'cancel'
+					},
+					{ text: 'Yes' }
+				],
+				{ cancelable: false }
+			);
 		}
-
-
 		this.setState({
 			formData: newFormData,
 		}, () => {
-
 			//Set Discount Price
 			if (name === 'discount' || name === 'paymentPlan') {
-				this.allCalculations(name)
+				this.allCalculations(newFormData, name)
 			}
-
 			// Set Discount for Token
 			if (name === 'token') {
-				this.allCalculations('token')
+				this.allCalculations(newFormData, 'token')
 			}
-
 			// when Project id chnage the unit filed will be refresh
 			if (name === 'projectId' && formData.projectId != null) {
 				this.refreshUnitPrice(name)
 			}
-
 			// when floor id chnage the unit filed will be refresh
 			if (name === 'floorId' && newFormData.floorId != null) {
 				let object = {};
 				object = getAllFloors.find((item) => { return item.id == value && item })
 				var totalPrice = newFormData.pearl * object && object.pricePerSqFt
+
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object }, () => {
 					this.refreshUnitPrice(name)
 				})
 			}
-
 			// when floor id chnage the unit filed will be refresh
 			if (name === 'unitId' && formData.unitId != null) {
 				this.refreshUnitPrice(name)
 			}
-
 			//Checks for PEARl values
 			if (name === 'unitType') {
 				this.refreshUnitPrice(name)
 			}
-
 			if (name === 'pearl') {
 				this.setState({ leftSqft: null })
 				let object = {};
 				object = getAllFloors.find((item) => { return item.id == formData.floorId && item })
 				var totalSqft = object.pearlArea
 				var minusSqft = value
-
 				var leftSqft = totalSqft - minusSqft
 				if (leftSqft < 50) {
 					this.setState({ leftSqft: leftSqft })
 				}
-
 				var totalPrice = newFormData.pearl * object.pricePerSqFt
 				this.setState({ unitPrice: totalPrice, unitPearlDetailsData: object })
 			}
@@ -376,19 +380,18 @@ class Payments extends Component {
 			})
 	}
 
-	allCalculations = (name) => {
+	allCalculations = (data, name) => {
 		const { formData, unitPrice } = this.state
 		const { lead } = this.props
 		const newFormData = { ...formData }
-
 		var totalPrice = unitPrice
-		var frontDiscount = formData.discount
+		var frontDiscount = data.discount
 		var backendDiscount = lead.paidProject != null && lead.paidProject.full_payment_discount
 		var grandTotal = ''
 		var oldGrandTotal = ''
 		var totalToken = ''
 
-		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
+		if (formData.paymentPlan === 'Sold on Investment Plan') {
 			oldGrandTotal = (Number(totalPrice)) * (1 - Number((backendDiscount / 100)));
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
 		}
@@ -399,6 +402,7 @@ class Payments extends Component {
 
 		if (name === 'discount') {
 			var formula = (oldGrandTotal / 100) * frontDiscount
+			newFormData['discount'] = frontDiscount
 			newFormData['discountedPrice'] = formula
 		}
 
@@ -474,6 +478,13 @@ class Payments extends Component {
 			lastThree = ',' + lastThree;
 		var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
 		return res;
+	}
+
+	toggleBookingDetailsModal = (status) => {
+		console.log(status)
+		this.setState({
+			bookingDetailsModalActive: status,
+		})
 	}
 
 	submitFirstScreen = () => {
@@ -565,7 +576,7 @@ class Payments extends Component {
 			unitDiscount: formData.discount === null || formData.discount === '' ? null : formData.discount,
 			discounted_price: formData.discountedPrice === null || formData.discountedPrice === '' ? null : formData.discountedPrice,
 			discount_amount: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
-			unitStatus: 'Token',
+			unitStatus: formData.paymentTypeForToken === 'Token' ? formData.paymentTypeForToken : formData.paymentPlan,
 			installmentDue: formData.paymentPlan,
 			finalPrice: formData.finalPrice === null || formData.finalPrice === '' ? null : formData.finalPrice,
 			remainingPayment: remainingPayment,
@@ -980,7 +991,7 @@ class Payments extends Component {
 				})
 		}
 		else {
-			alert('Please select a reason for lead closure!')
+			('Please select a reason for lead closure!')
 		}
 	}
 
@@ -1013,7 +1024,6 @@ class Payments extends Component {
 
 			var leadId = []
 			leadId.push(lead.id)
-				console.log(formData)
 			// Check for Payment Done option 
 			if (Number(remainingPayment) <= 0 && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
@@ -1067,75 +1077,70 @@ class Payments extends Component {
 			cnicValidate,
 			cnicEditable,
 			leftSqft,
+			bookingDetailsModalActive,
 		} = this.state
-
 		return (
 			<View>
 				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
 				<View style={styles.mainParent}>
-					{
-						firstScreenDone === true ?
-							<ScrollView>
-								<View style={styles.fullHeight}>
-									<FormScreenOne
-										getProject={getProject}
-										getFloors={getFloors}
-										getUnit={getUnit}
-										unitPrice={unitPrice}
-										unitId={unitId}
-										formData={formData}
-										paymentPlan={paymentPlan}
-										firstScreenValidate={firstScreenValidate}
-										remainingPayment={remainingPayment}
-										checkLeadClosedOrNot={checkLeadClosedOrNot}
-										cnicValidate={cnicValidate}
-										leftSqft={leftSqft}
-										cnicEditable={cnicEditable}
-										unitPearlDetailsData={unitPearlDetailsData}
-										currencyConvert={this.currencyConvert}
-										handleForm={this.handleForm}
-										submitFirstScreen={this.submitFirstScreen}
-										openUnitDetailsModal={this.openUnitDetailsModal}
-										openPearlDetailsModal={this.openPearlDetailsModal}
-										firstScreenConfirmModal={this.firstScreenConfirmModal}
-										tokenModalToggle={this.tokenModalToggle}
-										editTileForscreenOne={this.editTileForscreenOne}
-									/>
-								</View>
-							</ScrollView>
-							: null
-					}
+					{firstScreenDone === true ?
+						<ScrollView>
+							<View style={styles.fullHeight}>
+								<FormScreenOne
+									getProject={getProject}
+									getFloors={getFloors}
+									getUnit={getUnit}
+									unitPrice={unitPrice}
+									unitId={unitId}
+									formData={formData}
+									paymentPlan={paymentPlan}
+									firstScreenValidate={firstScreenValidate}
+									remainingPayment={remainingPayment}
+									checkLeadClosedOrNot={checkLeadClosedOrNot}
+									cnicValidate={cnicValidate}
+									leftSqft={leftSqft}
+									cnicEditable={cnicEditable}
+									unitPearlDetailsData={unitPearlDetailsData}
+									currencyConvert={this.currencyConvert}
+									handleForm={this.handleForm}
+									submitFirstScreen={this.submitFirstScreen}
+									openUnitDetailsModal={this.openUnitDetailsModal}
+									openPearlDetailsModal={this.openPearlDetailsModal}
+									firstScreenConfirmModal={this.firstScreenConfirmModal}
+									tokenModalToggle={this.tokenModalToggle}
+									editTileForscreenOne={this.editTileForscreenOne}
+								/>
+							</View>
+						</ScrollView>
+						: null}
 
-					{
-						firstScreenDone === false ?
-							<ScrollView>
-								<View style={styles.secondContainer}>
-									<FormScreenSecond
-										data={secondScreenData}
-										paymentPreviewLoading={paymentPreviewLoading}
-										remainingPayment={remainingPayment}
-										checkLeadClosedOrNot={checkLeadClosedOrNot}
-										onlyReadFormData={formData}
-										addPaymentModalToggle={this.addPaymentModalToggle}
-										currencyConvert={this.currencyConvert}
-										editTile={this.editTile}
-									/>
-								</View>
-							</ScrollView>
-							: null
-					}
+					{firstScreenDone === false ?
+						<ScrollView>
+							<View style={styles.secondContainer}>
+								<FormScreenSecond
+									data={secondScreenData}
+									paymentPreviewLoading={paymentPreviewLoading}
+									remainingPayment={remainingPayment}
+									checkLeadClosedOrNot={checkLeadClosedOrNot}
+									onlyReadFormData={formData}
+									toggleBookingDetailsModal={this.toggleBookingDetailsModal}
+									addPaymentModalToggle={this.addPaymentModalToggle}
+									currencyConvert={this.currencyConvert}
+									editTile={this.editTile}
+								/>
+							</View>
+						</ScrollView>
+						: null}
 
-					{
-						unitDetailsData &&
+					{unitDetailsData && formData.pearl == null &&
 						<UnitDetailsModal
 							active={unitDetailModal}
 							data={unitDetailsData}
+							formData={formData}
+							pearlModal={false}
 							openUnitDetailsModal={this.openUnitDetailsModal}
-						/>
-					}
-
-					{
-						unitPearlDetailsData &&
+						/>}
+					{unitPearlDetailsData && formData.pearl &&
 						<UnitDetailsModal
 							active={unitDetailModal}
 							data={unitPearlDetailsData}
@@ -1143,10 +1148,17 @@ class Payments extends Component {
 							unitPrice={unitPrice}
 							openUnitDetailsModal={this.openPearlDetailsModal}
 							pearlModal={true}
-						/>
-					}
-					{
-						getAllFloors != '' && getAllProject != '' &&
+						/>}
+					{secondScreenData &&
+						<BookingDetailsModal
+							active={bookingDetailsModalActive}
+							data={secondScreenData}
+							formData={formData}
+							pearlModal={false}
+							toggleBookingDetailsModal={this.toggleBookingDetailsModal}
+							openUnitDetailsModal={this.openUnitDetailsModal}
+						/>}
+					{getAllFloors != '' && getAllProject != '' &&
 						<FirstScreenConfirmModal
 							active={openFirstScreenModal}
 							data={formData}
@@ -1156,9 +1168,7 @@ class Payments extends Component {
 							firstScreenConfirmLoading={firstScreenConfirmLoading}
 							firstScreenConfirmModal={this.firstScreenConfirmModal}
 							submitFirstScreen={this.submitFirstScreen}
-						/>
-					}
-
+						/>}
 					<AddPaymentModal
 						active={addPaymentModalToggleState}
 						secondFormData={secondFormData}
@@ -1172,7 +1182,6 @@ class Payments extends Component {
 						secondFormSubmit={this.secondFormSubmit}
 						goToPayAttachments={this.goToPayAttachments}
 					/>
-
 					<AddTokenModal
 						active={tokenModalVisible}
 						formData={formData}
@@ -1186,12 +1195,10 @@ class Payments extends Component {
 					selectedReason={selectedReason}
 					isVisible={isVisible}
 					CMlead={true}
-					// checkValidation={checkReasonValidation}
 					closeModal={() => this.closeModal()}
 					changeReason={this.handleReasonChange}
 					onPress={this.onHandleCloseLead}
 				/>
-
 				<View style={AppStyles.mainCMBottomNav}>
 					<CMBottomNav
 						goToAttachments={this.goToAttachments}
@@ -1200,16 +1207,13 @@ class Payments extends Component {
 						goToComments={this.goToComments}
 						closedLeadEdit={checkLeadClosedOrNot}
 						alreadyClosedLead={this.closedLead}
-						// closedLeadEdit={leadClosedCheck}
 						closeLead={this.formSubmit}
 					/>
 				</View>
-
 			</View>
 		)
 	}
 }
-
 
 mapStateToProps = (store) => {
 	return {

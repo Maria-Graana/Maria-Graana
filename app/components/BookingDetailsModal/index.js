@@ -6,7 +6,7 @@ import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal';
 import times from '../../../assets/img/times.png'
 
-class UnitDetailsModal extends React.Component {
+class BookingDetailsModal extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -23,80 +23,82 @@ class UnitDetailsModal extends React.Component {
       pearlModal,
       formData,
       unitPrice,
+      toggleBookingDetailsModal,
     } = this.props
-    var optionalArray = data && data.optional_fields != null && data.optional_fields
-    var optional = []
-    optional = data && data != '' && JSON.parse([optionalArray])
-
     return (
-
       <Modal isVisible={active}>
         {
-          pearlModal === false && data && data != '' &&
+          pearlModal === false && data && data.unit != null &&
           <View style={[styles.modalMain]}>
-            <TouchableOpacity style={styles.timesBtn} onPress={() => { openUnitDetailsModal(null, false) }}>
+            <TouchableOpacity style={styles.timesBtn} onPress={() => { toggleBookingDetailsModal(false) }}>
               <Image source={times} style={styles.timesImg} />
             </TouchableOpacity>
             <ScrollView>
               <View style={styles.MainTileView}>
                 <View>
-                  <Text style={styles.smallText}>Unit ID</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.id)}</Text>
+                  <Text style={styles.smallText}>Project</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.paidProject && data.paidProject.name)}</Text>
                 </View>
               </View>
-              {/* ===================== */}
-              {
-                optional && optional[0] &&
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Custom Field 1</Text>
-                    <Text style={styles.largeText}>
-                      {optional[0].data}
-                    </Text>
-                  </View>
-                </View>
-              }
-
-              {/* ===================== */}
-              {
-                optional && optional[1] &&
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Custom Field 2</Text>
-                    <Text style={styles.largeText}>
-                      {optional[1].data}
-                    </Text>
-                  </View>
-                </View>
-              }
-
-              {/* ===================== */}
-              {
-                optional && optional[2] &&
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Custom Field 3</Text>
-                    <Text style={styles.largeText}>
-                      {optional[2].data}
-                    </Text>
-                  </View>
-                </View>
-              }
-
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
-                  <Text style={styles.smallText}>Size (sqft)</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.area)}</Text>
+                  <Text style={styles.smallText}>Floor</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.floor && data.floor.name)}</Text>
                 </View>
               </View>
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Unit Size (sqft)</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.area)}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Rate/Sqft</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.rate_per_sqft)}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Unit Price</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.unit_price)}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Discount</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.discount) + `${data.unit.discount > 0 ? '%': ''}`}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Discounted Price</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.discounted_price)}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
+              {
+                data.installmentDue === 'Sold on Investment Plan' &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Full Payment Option Price</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.full_payment_price)}</Text>
+                  </View>
+                </View>
+              }
               {/* ===================== */}
               {
                 data.category_charges !== null &&
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Standard Rate / sqft</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.pricePerSqFt)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.pricePerSqFt)}</Text>
                   </View>
                 </View>
               }
@@ -105,75 +107,80 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Category Charges</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.category_charges + '%')}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.category_charges + '%')}</Text>
                   </View>
                 </View>
               }
               {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Rate/Sqft</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.rate_per_sqft)}</Text>
-                </View>
-              </View>
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Unit Price</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.unit_price)}</Text>
-                </View>
-              </View>
-              {/* ===================== */}
               {
-                data.rentPerSqFt !== null &&
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Discount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount) + `${data.discount > 0 ? '%' : ''}`}</Text>
-                  </View>
-                </View>
-              }
-              {
-                data.rentPerSqFt !== null &&
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Discounted Price</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discountedPrice)}</Text>
-                  </View>
-                </View>
-              }
-              {
-                data.rentPerSqFt !== null &&
+                data.unit.rentPerSqFt !== null && data.installmentDue === 'Sold on Rental Plan' &&
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rent/Sqft</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.rentPerSqFt)}</Text>
                   </View>
                 </View>
               }
               {/* ===================== */}
               {
-                data.rentPerSqFt !== null &&
+                data.rentPerSqFt !== null && data.installmentDue === 'Sold on Rental Plan' &&
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rent Amount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rent)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.rent)}</Text>
                   </View>
                 </View>
               }
-
+              {/* ===================== */}
+              {
+                data.installmentDue === 'Sold on Installments Plan' &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Down Payment</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.downPayment)}</Text>
+                  </View>
+                </View>
+              }
+              {/* ===================== */}
+              {
+                data.installmentDue === 'Sold on Monthly Installments Plan' && data.paidProject && data.paidProject.monthly_installment_availablity === 'yes' ?
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Installment Plan</Text>
+                      <Text style={styles.largeText}>{this.handleEmptyValue('Monthly installment')}</Text>
+                    </View>
+                  </View>
+                  :
+                  data.installmentDue === 'Sold on Quarterly Installments Plan' &&
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Installment Plan</Text>
+                      <Text style={styles.largeText}>{this.handleEmptyValue('Quarterly installment')}</Text>
+                    </View>
+                  </View>
+              }
+              {/* ===================== */}
+              {
+                data.installmentDue === 'Sold on Installments Plan' &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Possession Charges</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.paidProject && data.paidProject.possession_charges)}</Text>
+                  </View>
+                </View>
+              }
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
                   <Text style={styles.smallText}>Status</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.bookingStatus)}</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.bookingStatus)}</Text>
                 </View>
               </View>
               {/* ===================== */}
               <View style={[styles.MainTileView, styles.noBorder]}>
                 <View>
                   <Text style={[styles.smallText]}>Remarks</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.remarks)}</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.remarks)}</Text>
                 </View>
               </View>
               {/* ===================== */}
@@ -236,4 +243,4 @@ class UnitDetailsModal extends React.Component {
   }
 }
 
-export default UnitDetailsModal;
+export default BookingDetailsModal;

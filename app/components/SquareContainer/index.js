@@ -37,8 +37,7 @@ class SqaureContainer extends React.Component {
 
 const styles = StyleSheet.create({
     headView: {
-        justifyContent: "center",
-        paddingHorizontal: 15
+        marginTop: 20,
     },
     totalText: {
         color: '#ffffff',
@@ -46,7 +45,6 @@ const styles = StyleSheet.create({
         fontFamily: AppStyles.fonts.semiBoldFont
     },
     containerImg: {
-        marginHorizontal: 15,
         width: 30,
         height: 30,
         resizeMode: 'contain'
@@ -55,7 +53,7 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 160,
         borderRadius: 20,
-        justifyContent: "space-around",
+        padding:15,
     },
     headingText: {
         color: '#ffffff',

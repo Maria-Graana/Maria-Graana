@@ -521,7 +521,7 @@ class LeadMatch extends React.Component {
     redirectProperty = (property) => {
         const { organization } = this.state
         if (organization === 'arms') {
-            if (this.ownProperty(property)) this.props.navigation.navigate('PropertyDetail', { property: property })
+            if (this.ownProperty(property)) this.props.navigation.navigate('PropertyDetail', { property: property, update: true })
             else helper.warningToast(`You can not view other's agent property!!`)
         } else {
             let url = `https://dev.graana.rocks/property/${property.id}`

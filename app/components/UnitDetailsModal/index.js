@@ -12,7 +12,7 @@ class UnitDetailsModal extends React.Component {
   }
 
   handleEmptyValue = (value) => {
-    return value != null ? value : '-'
+    return value != null && value != '' ? value : '-'
   }
 
   render() {
@@ -83,32 +83,10 @@ class UnitDetailsModal extends React.Component {
                 </View>
               }
 
-              {
-                // optional && optional.map((item, key) => {
-                //   return (
-                //     <View style={styles.MainTileView}>
-                //       <View>
-                //         <Text style={styles.smallText}>{item.fieldName}</Text>
-                //         <Text style={styles.largeText}>
-                //           {
-                //             item.fieldType && item.fieldType.value === 'dropdown' &&
-                //             item.value && item.value.map((items, index) => {
-                //               return (
-                //                 items.value + ', '
-                //               )
-                //             })
-                //           }
-                //         </Text>
-                //       </View>
-                //     </View>
-                //   )
-                // })
-              }
-
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
-                  <Text style={styles.smallText}>Size</Text>
+                  <Text style={styles.smallText}>Size (sqft)</Text>
                   <Text style={styles.largeText}>{this.handleEmptyValue(data.area)}</Text>
                 </View>
               </View>
@@ -117,7 +95,7 @@ class UnitDetailsModal extends React.Component {
                 data.category_charges !== null &&
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Standard Rate</Text>
+                    <Text style={styles.smallText}>Standard Rate / sqft</Text>
                     <Text style={styles.largeText}>{this.handleEmptyValue(data.pricePerSqFt)}</Text>
                   </View>
                 </View>

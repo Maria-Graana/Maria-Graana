@@ -258,7 +258,7 @@ class Payments extends Component {
 			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
 		}
 		if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null) {
-			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
+			array.push({ value: 'Sold on Rental Plan', name: `Rental Plan` })
 		}
 		if (checkPaymentPlan.years != null) {
 			array.push({ value: 'Sold on Installments Plan', name: checkPaymentPlan.years + ' Years Quarterly Installments' })
@@ -414,7 +414,7 @@ class Payments extends Component {
 		var oldGrandTotal = ''
 		var totalToken = ''
 
-		if (formData.paymentPlan === 'Sold on Rental Plan' || formData.paymentPlan === 'Sold on Investment Plan') {
+		if (formData.paymentPlan === 'Sold on Investment Plan') {
 			oldGrandTotal = (Number(totalPrice)) * (1 - Number((backendDiscount / 100)));
 			grandTotal = (Number(totalPrice)) * (1 - Number((frontDiscount / 100))) * (1 - Number((backendDiscount / 100)))
 		}

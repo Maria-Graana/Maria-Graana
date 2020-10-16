@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './style'
-import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, Linking } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles'
 import { CheckBox } from 'native-base';
@@ -19,6 +19,7 @@ import { ProgressBar } from 'react-native-paper';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import CMBottomNav from '../../components/CMBottomNav'
+import config from '../../config';
 
 class LeadMatch extends React.Component {
     constructor(props) {
@@ -511,7 +512,26 @@ class LeadMatch extends React.Component {
                         displayButton: false
                     })
                 }
+            } else {
+                this.redirectProperty(property)
             }
+        }
+    }
+
+    redirectProperty = (property) => {
+        const { organization } = this.state
+        if (organization === 'arms') {
+            if (this.ownProperty(property)) this.props.navigation.navigate('PropertyDetail', { property: property })
+            else helper.warningToast(`You can not view other's agent property!!`)
+        } else {
+            let url = `https://dev.graana.rocks/property/${property.id}`
+            if (config.channel === 'staging') url = `https://staging.graana.rocks/property/${property.id}`
+            if (config.channel === 'production') url = `https://www.graana.com/property/${property.id}`
+            Linking.canOpenURL(url)
+                .then(supported => {
+                    if (!supported) helper.errorToast(`No application available open this Url`)
+                    else return Linking.openURL(url)
+                }).catch(err => console.error('An error occurred', err));
         }
     }
 
@@ -544,14 +564,14 @@ class LeadMatch extends React.Component {
     }
 
     closeLead = () => {
-		const {lead} = this.props;
-		if (lead.commissions && lead.commissions.status === 'approved') {
+        const { lead } = this.props;
+        if (lead.commissions && lead.commissions.status === 'approved') {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
         }
         else {
             this.setState({ reasons: StaticData.leadCloseReasons, isVisible: true, checkReasonValidation: '' })
         }
-	}
+    }
 
     onHandleCloseLead = () => {
         const { navigation, lead } = this.props

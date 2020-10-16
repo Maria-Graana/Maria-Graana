@@ -1155,6 +1155,7 @@ class Payments extends Component {
 						<UnitDetailsModal
 							active={unitDetailModal}
 							data={unitDetailsData}
+							formData={formData}
 							pearlModal={false}
 							openUnitDetailsModal={this.openUnitDetailsModal}
 						/>

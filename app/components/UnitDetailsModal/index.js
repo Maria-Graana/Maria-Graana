@@ -128,6 +128,24 @@ class UnitDetailsModal extends React.Component {
                 data.rentPerSqFt !== null &&
                 <View style={styles.MainTileView}>
                   <View>
+                    <Text style={styles.smallText}>Discount</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount)+'%'}</Text>
+                  </View>
+                </View>
+              }
+              {
+                data.rentPerSqFt !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Discounted Price</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discountedPrice)}</Text>
+                  </View>
+                </View>
+              }
+              {
+                data.rentPerSqFt !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
                     <Text style={styles.smallText}>Rent/Sqft</Text>
                     <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
                   </View>

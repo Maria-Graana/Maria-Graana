@@ -185,7 +185,7 @@ class RCMReport extends React.Component {
         const { user } = this.props
         if (user.organizationName && user.organizationName !== '') {
             let organizations = [{ value: user.organizationId, name: user.organizationName }]
-            this.setState({ organizations, regionText: organizations[0].name })
+            this.setState({ organizations, regionText: organizations[0].name, selectedOrganization: user.organizationId })
         } else {
             axios.get('/api/user/organizations?limit=2')
                 .then((res) => {

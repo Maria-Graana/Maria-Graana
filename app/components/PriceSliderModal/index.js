@@ -6,6 +6,7 @@ import PriceSlider from '../PriceSlider';
 import TouchableButton from '../TouchableButton'
 import ErrorMessage from '../ErrorMessage'
 import helper from '../../helper'
+import {formatPrice} from '../../PriceFormate'
 
 const currencyConvert = (x) => {
     if (x) {
@@ -51,13 +52,17 @@ const PriceSliderModal = ({ isVisible,
         setRangeString(helper.convertPriceToString(start, end, arrayValues.length - 1, arrayValues))
     }
 
+    const priceFormatter = (start, end) => {
+        return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
+    }
+
     const handleMinPriceChange = (value) => {
         setStringValues({ ...stringValues, priceMin: String(value) });
         if (value < arrayValues[maxValue]) {
             setErrorMessage('');
             const closestNumber = getClosestNumber(Number(value), arrayValues);
             const indexOfClosestNumber = arrayValues.indexOf(closestNumber);
-            setRangeString(helper.convertPriceToString(indexOfClosestNumber, maxValue, arrayValues.length - 1, arrayValues))
+            setRangeString(priceFormatter(value, arrayValues[maxValue]))
             if (indexOfClosestNumber !== -1) {
                 setMinValue(indexOfClosestNumber);
             }
@@ -66,6 +71,8 @@ const PriceSliderModal = ({ isVisible,
             setErrorMessage('Minimum price cannot be greater than Maximum price')
         }
     }
+
+
 
     const handleMaxPriceChange = (value) => {
         setStringValues({ ...stringValues, priceMax: String(value) });
@@ -76,7 +83,7 @@ const PriceSliderModal = ({ isVisible,
             setErrorMessage('');
             const closestNumber = getClosestNumber(Number(value), arrayValues);
             const indexOfClosestNumber = arrayValues.indexOf(closestNumber);
-            setRangeString(helper.convertPriceToString(minValue, indexOfClosestNumber, arrayValues.length - 1, arrayValues))
+            setRangeString(priceFormatter(arrayValues[minValue], value))
             if (indexOfClosestNumber !== -1) {
                 setMaxValue(indexOfClosestNumber);
             }

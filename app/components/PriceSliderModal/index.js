@@ -84,8 +84,6 @@ const PriceSliderModal = ({ isVisible,
     }
 
     const onDonePressed = () => {
-        // console.log('hello')
-        // console.log(minValue, maxValue)
         onModalPriceDonePressed(minValue, maxValue)
     }
 

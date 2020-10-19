@@ -113,6 +113,14 @@ const PriceSliderModal = ({ isVisible,
         }
     }
 
+    const onModalCancel = () => {
+        setMinValue(initialValue)
+        setMaxValue(finalValue)
+        setStringValues({ ...stringValues, priceMin: currencyConvert(arrayValues[initialValue]), priceMax: finalValue === arrayValues.length - 1 ? null : currencyConvert(arrayValues[finalValue]) })
+        setRangeString(helper.convertPriceToString(initialValue, finalValue, arrayValues.length - 1, arrayValues))
+        onModalCancelPressed();
+    }
+
     return (
         <Modal isVisible={isVisible}>
             <View style={styles.modalMain}>
@@ -155,7 +163,7 @@ const PriceSliderModal = ({ isVisible,
                         fontFamily={AppStyles.fonts.boldFont}
                         textColor={AppStyles.colors.primaryColor}
                         fontSize={18}
-                        onPress={() => onModalCancelPressed()} />
+                        onPress={() => onModalCancel()} />
                     <TouchableButton
                         containerStyle={[styles.buttonCommonStyle, styles.doneButton]}
                         label={'Done'}

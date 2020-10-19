@@ -146,7 +146,7 @@ class MatchTile extends React.Component {
 								/>
 								:
 								<Image
-									source={require('../../../assets/Images/no-image-found.png')}
+									source={require('../../../assets/images/no-image-found.png')}
 									style={styles.noImage}
 								/>
 						}

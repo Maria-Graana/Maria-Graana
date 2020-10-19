@@ -45,7 +45,8 @@ class LeadPropsure extends React.Component {
             reasons: [],
             closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
             callModal: false,
-            meetings: []
+            meetings: [],
+            menuShow: false
         }
     }
 
@@ -260,15 +261,15 @@ class LeadPropsure extends React.Component {
         helper.leadClosedToast()
     }
 
-	closeLead = () => {
-		const {lead} = this.props;
-		if (lead.commissions && lead.commissions.status === 'approved') {
+    closeLead = () => {
+        const { lead } = this.props;
+        if (lead.commissions && lead.commissions.status === 'approved') {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
         }
         else {
             this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
         }
-	}
+    }
 
     onHandleCloseLead = () => {
         const { navigation, lead } = this.props
@@ -338,8 +339,18 @@ class LeadPropsure extends React.Component {
             })
     }
 
+    goToPropertyComments = (data) => {
+        const { lead, navigation } = this.props
+        this.toggleMenu(false)
+        navigation.navigate('Comments', { propertyId: data.id, screenName: 'propsure' });
+    }
+
+    toggleMenu = (val) => {
+        this.setState({ menuShow: val })
+    }
+
     render() {
-        const { meetings, callModal, loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { menuShow, meetings, callModal, loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
         const { lead, navigation } = this.props
 
         return (
@@ -385,6 +396,11 @@ class LeadPropsure extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}
                                                         addProperty={this.addProperty}
+                                                        isMenuVisible={true}
+                                                        viewingMenu={false}
+                                                        goToPropertyComments={this.goToPropertyComments}
+                                                        toggleMenu={this.toggleMenu}
+                                                        menuShow={menuShow}
                                                     />
                                                     :
                                                     <AgentTile
@@ -393,6 +409,11 @@ class LeadPropsure extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}
                                                         addProperty={this.addProperty}
+                                                        isMenuVisible={true}
+                                                        viewingMenu={false}
+                                                        goToPropertyComments={this.goToPropertyComments}
+                                                        toggleMenu={this.toggleMenu}
+                                                        menuShow={menuShow}
                                                     />
                                             }
                                             <View>
@@ -409,7 +430,7 @@ class LeadPropsure extends React.Component {
                                 />
                                 :
                                 <>
-                                <Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
+                                    <Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
                                 </>
                         }
                     </View>

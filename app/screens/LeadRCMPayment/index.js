@@ -68,7 +68,8 @@ class LeadRCMPayment extends React.Component {
             modalValidation: false,
             addPaymentLoading: false,
             editable: false,
-            matchData: []
+            matchData: [],
+            menuShow: false
         }
     }
 
@@ -707,7 +708,6 @@ class LeadRCMPayment extends React.Component {
         }
     }
 
-
     fetchLead = () => {
         const { dispatch, lead } = this.props;
         const { rcmProgressBar } = StaticData
@@ -725,8 +725,20 @@ class LeadRCMPayment extends React.Component {
         });
     }
 
+    goToPropertyComments = (data) => {
+        const { lead, navigation } = this.props
+        this.toggleMenu(false)
+        navigation.navigate('Comments', { propertyId: data.id, screenName: 'payment' });
+    }
+
+    toggleMenu = (val) => {
+        this.setState({ menuShow: val })
+    }
+
     render() {
-        const { loading,
+        const {
+            menuShow,
+            loading,
             allProperties,
             user,
             isVisible,
@@ -800,6 +812,11 @@ class LeadRCMPayment extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}
                                                         addProperty={this.addProperty}
+                                                        isMenuVisible={true}
+                                                        viewingMenu={false}
+                                                        goToPropertyComments={this.goToPropertyComments}
+                                                        toggleMenu={this.toggleMenu}
+                                                        menuShow={menuShow}
                                                     />
                                                     :
                                                     <AgentTile
@@ -808,6 +825,11 @@ class LeadRCMPayment extends React.Component {
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}
                                                         addProperty={this.addProperty}
+                                                        isMenuVisible={true}
+                                                        viewingMenu={false}
+                                                        goToPropertyComments={this.goToPropertyComments}
+                                                        toggleMenu={this.toggleMenu}
+                                                        menuShow={menuShow}
                                                     />
                                             }
                                             <View>
@@ -874,7 +896,7 @@ class LeadRCMPayment extends React.Component {
                                 />
                                 :
                                 <>
-                                <Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
+                                    <Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
                                 </>
                         }
                         <View style={AppStyles.mainCMBottomNav}>

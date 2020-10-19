@@ -123,13 +123,13 @@ class LeadViewing extends React.Component {
 	}
 
 	closeLead = () => {
-		const {lead} = this.props;
+		const { lead } = this.props;
 		if (lead.commissions && lead.commissions.status === 'approved') {
-            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
-        }
-        else {
-            this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
-        }
+			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
+		else {
+			this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
 	}
 
 	onHandleCloseLead = () => {
@@ -444,8 +444,18 @@ class LeadViewing extends React.Component {
 			})
 	}
 
+	goToPropertyComments = (data) => {
+		const { lead, navigation } = this.props
+		this.toggleMenu(false)
+		navigation.navigate('Comments', { propertyId: data.id, screenName: 'viewing' });
+	}
+
+	toggleMenu = (val) => {
+		this.setState({ menuShow: val })
+	}
+
 	render() {
-		const { meetings, callModal, loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
+		const { menuShow, meetings, callModal, loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
 		const { lead, user, navigation } = this.props;
 		const showMenuItem = helper.checkAssignedSharedStatus(user, lead);
 
@@ -491,6 +501,10 @@ class LeadViewing extends React.Component {
 															displayChecks={this.displayChecks}
 															showCheckBoxes={false}
 															addProperty={this.addProperty}
+															viewingMenu={true}
+															goToPropertyComments={this.goToPropertyComments}
+															toggleMenu={this.toggleMenu}
+															menuShow={menuShow}
 														/>
 														:
 														<AgentTile
@@ -503,6 +517,10 @@ class LeadViewing extends React.Component {
 															displayChecks={this.displayChecks}
 															showCheckBoxes={false}
 															addProperty={this.addProperty}
+															viewingMenu={true}
+															goToPropertyComments={this.goToPropertyComments}
+															menuShow={menuShow}
+															toggleMenu={this.toggleMenu}
 														/>
 												}
 												<View>
@@ -516,7 +534,7 @@ class LeadViewing extends React.Component {
 									/>
 									:
 									<>
-									<Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
+										<Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
 									</>
 							}
 						</View>

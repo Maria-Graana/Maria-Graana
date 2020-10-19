@@ -18,7 +18,8 @@ class Comments extends Component {
             commentsList: [],
             comment: '',
             loading: true,
-            type: 'comment'
+            type: 'comment',
+            property: false
         }
     }
 
@@ -27,17 +28,25 @@ class Comments extends Component {
     }
 
     getCommentsFromServer = () => {
-        const { type } = this.state;
+        const { type, property } = this.state;
         const { route } = this.props;
-        const { rcmLeadId, cmLeadId } = route.params;
-        const url = rcmLeadId ? `/api/leads/comments?rcmLeadId=${rcmLeadId}&type=${type}`
-            : `/api/leads/comments?cmLeadId=${cmLeadId}&type=${type}`
+        if ('rcmLeadId' in route.params || 'cmLeadId' in route.params) {
+            const { rcmLeadId, cmLeadId } = route.params
+            const url = rcmLeadId ? `/api/leads/comments?rcmLeadId=${rcmLeadId}&type=${type}`
+                : `/api/leads/comments?cmLeadId=${cmLeadId}&type=${type}`
 
-        axios.get(url).then(response => {
-            this.setState({ commentsList: response.data, comment: '', loading: false });
-        }).catch(error => {
-            console.log(error);
-        })
+            axios.get(url).then(response => {
+                this.setState({ commentsList: response.data, comment: '', loading: false });
+            }).catch(error => {
+                console.log(error);
+            })
+        } else {
+            const { propertyId, screenName } = route.params
+            console.log('property: ', property)
+            console.log('propertyId: ', propertyId)
+            console.log('screenName: ', screenName)
+        }
+
     }
 
     setComment = (value) => {

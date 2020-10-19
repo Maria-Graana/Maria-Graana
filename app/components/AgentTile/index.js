@@ -9,21 +9,11 @@ import { Menu } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 class AgentTile extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			menuShow: false
-		}
-	}
 
 	_renderItem = (item) => {
 		return (
 			<Image style={styles.noImage} source={{ uri: item.item }} />
 		)
-	}
-
-	toggleMenu = (val) => {
-		this.setState({ menuShow: val })
 	}
 
 	displayName = (data) => {
@@ -66,8 +56,7 @@ class AgentTile extends React.Component {
 	}
 
 	render() {
-		const { data, isMenuVisible, showCheckBoxes } = this.props
-		const { menuShow } = this.state
+		const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow } = this.props
 		let agentName = data ? this.displayName(data) : '';
 		let show = isMenuVisible
 		if (isMenuVisible) {
@@ -111,20 +100,36 @@ class AgentTile extends React.Component {
 								show ?
 									<Menu
 										visible={menuShow}
-										onDismiss={() => this.toggleMenu(false)}
+										onDismiss={() => this.props.toggleMenu(false)}
 										anchor={
-											<Entypo onPress={() => this.toggleMenu(true)} name='dots-three-vertical' size={20} />
+											<Entypo onPress={() => this.props.toggleMenu(true)} name='dots-three-vertical' size={20} />
 										}
 									>
-										{
-											data.diaries && data.diaries.length && data.diaries[0].status === 'pending' ?
-												<View>
-													<Menu.Item onPress={() => { this.props.doneViewing(data) }} title="Viewing done" />
-													<Menu.Item onPress={() => { this.props.cancelViewing(data) }} title="Cancel Viewing" />
-												</View>
-												:
-												<Menu.Item onPress={() => { this.props.deleteProperty(data) }} title="Remove from the list" />
-										}
+										<View>
+											{
+												viewingMenu ?
+													<View>
+														{
+															data.diaries && data.diaries.length && data.diaries[0].status === 'pending' ?
+																<View>
+																	<Menu.Item onPress={() => { this.props.goToPropertyComments(data) }} title="Comments" />
+																	<Menu.Item onPress={() => { this.props.doneViewing(data) }} title="Viewing done" />
+																	<Menu.Item onPress={() => { this.props.cancelViewing(data) }} title="Cancel Viewing" />
+																</View>
+																:
+																<View>
+																	<Menu.Item onPress={() => { this.props.goToPropertyComments(data) }} title="Comments" />
+																	<Menu.Item onPress={() => { this.props.deleteProperty(data) }} title="Remove from the list" />
+																</View>
+														}
+													</View>
+													:
+													<View>
+														<Menu.Item onPress={() => { this.props.goToPropertyComments(data) }} title="Comments" />
+													</View>
+											}
+										</View>
+
 									</Menu>
 									:
 									null

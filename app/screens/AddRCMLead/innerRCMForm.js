@@ -13,13 +13,14 @@ import TouchableInput from '../../components/TouchableInput';
 import TouchableButton from '../../components/TouchableButton';
 import BedBathSliderModal from '../../components/BedBathSliderModal';
 import helper from '../../helper';
+import PriceSliderModal from '../../components/PriceSliderModal';
 class InnerRCMForm extends Component {
 	constructor(props) {
 		super(props)
 	}
 
 	checkBedBathInitialValue = (modalType) => {
-		const {formData} = this.props;
+		const { formData } = this.props;
 		switch (modalType) {
 			case 'bed':
 				return formData.bed;
@@ -31,7 +32,7 @@ class InnerRCMForm extends Component {
 	}
 
 	checkBedBathFinalValue = (modalType) => {
-		const {formData} = this.props;
+		const { formData } = this.props;
 		switch (modalType) {
 			case 'bed':
 				return formData.maxBed;
@@ -60,26 +61,39 @@ class InnerRCMForm extends Component {
 			handleClientClick,
 			organizations,
 			loading,
+			priceList,
 			isBedBathModalVisible,
 			modalType,
-			handleInputType,
+			showBedBathModal,
 			onBedBathModalDonePressed,
 			onModalCancelPressed,
+			isPriceModalVisible,
+			showPriceModal,
+			onModalPriceDonePressed,
 		} = this.props
 
 		const { leadAreas } = formData;
 		const leadAreasLength = leadAreas ? leadAreas.length : 0;
+		//console.log(formData);
 		return (
 			<View>
 				<BedBathSliderModal
-					formData={formData}
 					isVisible={isBedBathModalVisible}
 					modalType={modalType}
 					initialValue={this.checkBedBathInitialValue(modalType)}
-					finalValue = {this.checkBedBathFinalValue(modalType)}
+					finalValue={this.checkBedBathFinalValue(modalType)}
 					onBedBathModalDonePressed={onBedBathModalDonePressed}
 					onModalCancelPressed={onModalCancelPressed}
 					arrayValues={StaticData.bedBathRange}
+				/>
+
+				<PriceSliderModal
+					isVisible={isPriceModalVisible}
+					initialValue={formData.minPrice}
+					finalValue={formData.maxPrice}
+					onModalPriceDonePressed={onModalPriceDonePressed}
+					onModalCancelPressed={onModalCancelPressed}
+					arrayValues={priceList}
 				/>
 
 				{
@@ -143,6 +157,17 @@ class InnerRCMForm extends Component {
 						}
 					</View>
 				</View>
+				{/* **************************************** */}
+
+				<View style={AppStyles.multiFormInput}>
+					<View style={{ width: '100%' }}>
+						<TouchableInput placeholder="Price"
+							showIconOrImage={false}
+							onPress={() => showPriceModal()}
+						    value={`${helper.convertPriceToString(formData.minPrice, formData.maxPrice, priceList.length - 1, priceList)}`}
+						/>
+					</View>
+				</View>
 
 				{/* <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
 					<TextInput placeholder='Size Min'
@@ -181,18 +206,18 @@ class InnerRCMForm extends Component {
 					<View style={AppStyles.multiFormInput}>
 
 						{/* **************************************** */}
-						<View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
+						<View style={AppStyles.flexOne}>
 							<TouchableInput placeholder="Bed"
 								showDropDownIcon={false}
-								onPress={() => handleInputType('bed')}
+								onPress={() => showBedBathModal('bed')}
 								value={`Beds: ${helper.showBedBathRangesString(formData.bed, formData.maxBed, StaticData.bedBathRange.length - 1)}`}
 							/>
 						</View>
 						{/* **************************************** */}
-						<View style={[AppStyles.mainInputWrap, AppStyles.flexOne, AppStyles.flexMarginRight]}>
+						<View style={[AppStyles.flexOne, AppStyles.flexMarginRight]}>
 							<TouchableInput placeholder="Bath"
-								showDropDownIcon={false}
-								onPress={() => handleInputType('bath')}
+								showIconOrImage={false}
+								onPress={() => showBedBathModal('bath')}
 								value={`Baths: ${helper.showBedBathRangesString(formData.bath, formData.maxBath, StaticData.bedBathRange.length - 1)}`}
 							/>
 						</View>

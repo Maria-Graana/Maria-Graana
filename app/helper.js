@@ -463,7 +463,24 @@ const helper = {
 			return `${start}`;
 		}
 		else {
-			return `${start}-${end}`
+			return `${start} - ${end}`
+		}
+	},
+	 convertPriceToString(start, end, maxValue, priceList){
+		if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
+			return `PKR: Any`
+		}
+		else if (start === 0 && end !== maxValue) {
+			return `PKR: Upto ${formatPrice(priceList[end])}`
+		}
+		else if (start !== 0 && end === maxValue) {
+			return `PKR: ${formatPrice(priceList[start])} or more`;
+		}
+		else if (start === end) {
+			return `PKR: ${formatPrice(priceList[start])}`;
+		}
+		else {
+			return `PKR: ${formatPrice(priceList[start])} - ${formatPrice(priceList[end])}`
 		}
 	}
 }

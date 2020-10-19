@@ -33,6 +33,7 @@ class AddRCMLead extends Component {
             fiftyArray: helper.createArray(50),
             hundredArray: helper.createArray(100),
             isBedBathModalVisible: false,
+            isPriceModalVisible: false,
             modalType: 'none',
             RCMFormData: {
                 type: "",
@@ -125,13 +126,13 @@ class AddRCMLead extends Component {
     setPriceList = () => {
         const { formType, RCMFormData } = this.state;
         if (formType === 'sale') {
-            RCMFormData.minPrice = StaticData.PricesBuy[0];
-            RCMFormData.maxPrice = StaticData.PricesBuy[StaticData.PricesBuy.length - 1];
+            RCMFormData.minPrice = 0;
+            RCMFormData.maxPrice = StaticData.PricesBuy.length - 1;
             this.setState({ RCMFormData, priceList: StaticData.PricesBuy })
         }
         else {
-            RCMFormData.minPrice = StaticData.PricesRent[0];
-            RCMFormData.maxPrice = StaticData.PricesRent[StaticData.PricesRent.length - 1];
+            RCMFormData.minPrice = 0;
+            RCMFormData.maxPrice = StaticData.PricesRent.length - 1;
             this.setState({ RCMFormData, priceList: StaticData.PricesRent })
         }
     }
@@ -143,8 +144,8 @@ class AddRCMLead extends Component {
         if (sizeUnit === 'kanal') priceList = hundredArray
         if (sizeUnit === 'sqft') priceList = fifteenKArray
         if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') priceList = sixKArray
-        RCMFormData.size = priceList[0];
-        RCMFormData.maxSize = priceList[priceList.length - 1];
+        RCMFormData.size = 0;
+        RCMFormData.maxSize = priceList.length - 1;
         this.setState({ RCMFormData, sizeUnitList: priceList })
     }
 
@@ -326,7 +327,7 @@ class AddRCMLead extends Component {
         // }
     }
 
-    handleInputType = (modalType) => {
+    showBedBathModal = (modalType) => {
         this.setState({ isBedBathModalVisible: true, modalType })
     }
 
@@ -350,7 +351,22 @@ class AddRCMLead extends Component {
     }
 
     onModalCancelPressed = () => {
-        this.setState({ isBedBathModalVisible: false })
+        this.setState({
+            isBedBathModalVisible: false,
+            isPriceModalVisible: false
+        })
+    }
+
+    showPriceModal = () => {
+        this.setState({ isPriceModalVisible: true })
+    }
+
+    onModalPriceDonePressed = (minValue, maxValue) => {
+        const { RCMFormData } = this.state;
+        const copyObject = { ...RCMFormData };
+        copyObject.minPrice = minValue;
+        copyObject.maxPrice = maxValue;
+        this.setState({ RCMFormData: copyObject,isPriceModalVisible: false });
     }
 
     render() {
@@ -367,6 +383,7 @@ class AddRCMLead extends Component {
             loading,
             sizeUnitList,
             isBedBathModalVisible,
+            isPriceModalVisible,
             modalType
         } = this.state
         const { route } = this.props
@@ -401,9 +418,12 @@ class AddRCMLead extends Component {
                                         loading={loading}
                                         isBedBathModalVisible={isBedBathModalVisible}
                                         modalType={modalType}
-                                        handleInputType={(value) => this.handleInputType(value)}
+                                        showBedBathModal={(value) => this.showBedBathModal(value)}
                                         onBedBathModalDonePressed={(minValue, maxValue) => this.onBedBathModalDonePressed(minValue, maxValue)}
                                         onModalCancelPressed={() => this.onModalCancelPressed()}
+                                        isPriceModalVisible={isPriceModalVisible}
+                                        showPriceModal={() => this.showPriceModal()}
+                                        onModalPriceDonePressed={(minValue, maxValue) => this.onModalPriceDonePressed(minValue, maxValue)}
                                     />
                                 </View>
                             </TouchableWithoutFeedback>

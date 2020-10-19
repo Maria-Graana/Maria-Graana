@@ -5,7 +5,7 @@ import { isEmpty } from 'underscore';
 import AppStyles from '../../AppStyles';
 import ErrorMessage from '../ErrorMessage';
 
-const TouchableInput = ({ onPress, placeholder, value, showError, errorMessage, showDropDownIcon = true, iconSource = '', disabled = false }) => {
+const TouchableInput = ({ onPress, placeholder, value, showError, errorMessage, showDropDownIcon = true, iconSource = '', showIconOrImage = true, disabled = false }) => {
   return (
     <View>
       <TouchableOpacity disabled={disabled} onPress={onPress}>
@@ -14,9 +14,11 @@ const TouchableInput = ({ onPress, placeholder, value, showError, errorMessage, 
             {isEmpty(value) ? placeholder : value}
           </Text>
           {
-            showDropDownIcon ? <Ionicons style={styles.iconStyle} name="ios-arrow-down" size={26} color={AppStyles.colors.subTextColor} />
-              :
-              < Image style={{ width: 26, height: 26, marginRight: 12 }} source={iconSource} />
+            showIconOrImage ?
+              showDropDownIcon ? <Ionicons style={styles.iconStyle} name="ios-arrow-down" size={26} color={AppStyles.colors.subTextColor} />
+                :
+                < Image style={{ width: 26, height: 26, marginRight: 12 }} source={iconSource} />
+              : null
           }
 
         </View>

@@ -5,7 +5,6 @@ import AppStyles from '../../AppStyles';
 import styles from './styles';
 import moment from 'moment';
 
-
 const AttachmentTile = (props) => {
     const { data, deleteComment, property } = props
     return (
@@ -21,10 +20,10 @@ const AttachmentTile = (props) => {
                 property ?
                     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                         <Text style={[styles.dateTimeStyle, { color: AppStyles.colors.primaryColor }]}>{data.title && data.title.toLocaleUpperCase()}</Text>
-                        <Text style={styles.dateTimeStyle}>{moment(data.createdAt).format('hh:mm A, MMMM DD')}</Text>
+                        <Text style={styles.dateTimeStyle}>{moment(data.createdAt).format('hh:mm A, MMMM DD, YYYY')}</Text>
                     </View>
                     :
-                    <Text style={styles.dateTimeStyle}>{moment(data.createdAt).format('hh:mm A, MMMM DD')}</Text>
+                    <Text style={styles.dateTimeStyle}>{moment(data.createdAt).format('hh:mm A, MMMM DD, YYYY')}</Text>
             }
 
         </View>

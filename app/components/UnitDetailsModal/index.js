@@ -27,7 +27,6 @@ class UnitDetailsModal extends React.Component {
     var optionalArray = data && data.optional_fields != null && data.optional_fields
     var optional = []
     optional = data && data != '' && JSON.parse([optionalArray])
-
     return (
 
       <Modal isVisible={active}>
@@ -129,7 +128,7 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount) + `${data.discount > 0 ? '%' : ''}`}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount) + `${data.discount > 0 ? '%' : '0'}`}</Text>
                   </View>
                 </View>
               }
@@ -138,7 +137,7 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Unit Discounted Price</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discountedPrice)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discountedPrice === 0 ? data.discounted_price: formData.discountedPrice)}</Text>
                   </View>
                 </View>
               }

@@ -12,7 +12,7 @@ class UnitDetailsModal extends React.Component {
   }
 
   handleEmptyValue = (value) => {
-    return value != null && value != '' ? value : '-'
+    return value != null && value != '' ? value : ''
   }
 
   render() {
@@ -137,7 +137,7 @@ class UnitDetailsModal extends React.Component {
                 data.rentPerSqFt !== null &&
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Discounted Price</Text>
+                    <Text style={styles.smallText}>Unit Discounted Price</Text>
                     <Text style={styles.largeText}>{this.handleEmptyValue(formData.discountedPrice)}</Text>
                   </View>
                 </View>

@@ -104,8 +104,6 @@ class Payments extends Component {
 		if (lead.paidProject && lead.paidProject != null) {
 			this.getFloors(lead.paidProject.id)
 		}
-		console.log(lead.id)
-
 	}
 
 	componentWillUnmount() {
@@ -481,7 +479,6 @@ class Payments extends Component {
 	}
 
 	toggleBookingDetailsModal = (status) => {
-		console.log(status)
 		this.setState({
 			bookingDetailsModalActive: status,
 		})

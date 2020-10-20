@@ -12,7 +12,7 @@ class BookingDetailsModal extends React.Component {
   }
 
   handleEmptyValue = (value) => {
-    return value != null && value != '' ? value : '-'
+    return value != null && value != '' ? value : ''
   }
 
   render() {
@@ -165,7 +165,7 @@ class BookingDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Possession Charges</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.paidProject && data.paidProject.possession_charges)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.paidProject && data.paidProject.possession_charges  + `${data.paidProject.possession_charges > 0 ? '%': ''}`)}</Text>
                   </View>
                 </View>
               }

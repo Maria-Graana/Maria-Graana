@@ -20,8 +20,8 @@ import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { getItem, storeItem } from '../../actions/user';
 
-var BUTTONS = ['Share lead with other agent', 'Cancel'];
-var CANCEL_INDEX = 1;
+var BUTTONS = ['Share lead with other agent', 'Create new Investment lead for this client', 'Cancel'];
+var CANCEL_INDEX = 2;
 
 class InvestLeads extends React.Component {
 	constructor(props) {
@@ -113,9 +113,9 @@ class InvestLeads extends React.Component {
 			})
 	}
 
-	goToFormPage = (page, status) => {
+	goToFormPage = (page, status, client) => {
 		const { navigation } = this.props;
-		navigation.navigate(page, { 'pageName': status });
+		navigation.navigate(page, { 'pageName': status , client, name: client && client.customerName});
 	}
 
 	changeStatus = (status) => {
@@ -157,6 +157,9 @@ class InvestLeads extends React.Component {
 				if (buttonIndex === 0) {
 					//Share
 					this.navigateToShareScreen(val);
+				}
+				else if(buttonIndex === 1){
+					this.goToFormPage('AddCMLead', 'CM', val && val.customer ? val.customer: null)
 				}
 			}
 		);
@@ -329,8 +332,8 @@ class InvestLeads extends React.Component {
 					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
 					color={AppStyles.bgcWhite.backgroundColor}
 					actions={[
-						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
-						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
+						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM', null) },
+						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null) },
 
 					]}
 					onStateChange={({ open }) => this.setState({ open })}

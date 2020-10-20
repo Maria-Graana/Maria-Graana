@@ -20,8 +20,8 @@ import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { storeItem, getItem } from '../../actions/user';
 
-var BUTTONS = ['Share lead with other agent', 'Cancel'];
-var CANCEL_INDEX = 1;
+var BUTTONS = ['Share lead with other agent', 'Create new Buy lead for this client', 'Cancel'];
+var CANCEL_INDEX = 2;
 
 class BuyLeads extends React.Component {
 	constructor(props) {
@@ -114,9 +114,13 @@ class BuyLeads extends React.Component {
 			})
 	}
 
-	goToFormPage = (page, status) => {
+	goToFormPage = (page, status, client, clientId) => {
 		const { navigation } = this.props;
-		navigation.navigate(page, { 'pageName': status });
+		const copyClient = client ? {...client} : null;
+		if(copyClient) {
+			copyClient.id = clientId
+		}
+		navigation.navigate(page, { 'pageName': status , client:copyClient, name: copyClient && copyClient.customerName, purpose: 'sale'});
 	}
 
 	changeStatus = (status) => {
@@ -166,6 +170,9 @@ class BuyLeads extends React.Component {
 				if (buttonIndex === 0) {
 					//Share
 					this.navigateToShareScreen(val);
+				}
+				else if(buttonIndex === 1) {
+					this.goToFormPage('AddRCMLead', 'RCM', val && val.customer ? val.customer: null, val.customer_id)
 				}
 			}
 		);
@@ -356,8 +363,8 @@ class BuyLeads extends React.Component {
 					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
 					color={AppStyles.bgcWhite.backgroundColor}
 					actions={[
-						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
-						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
+						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null) },
+						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null) },
 
 					]}
 					onStateChange={({ open }) => this.setState({ open })}

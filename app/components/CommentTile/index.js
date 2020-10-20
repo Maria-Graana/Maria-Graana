@@ -7,10 +7,9 @@ import moment from 'moment';
 
 
 const AttachmentTile = (props) => {
-    const { data, deleteComment } = props
+    const { data, deleteComment, property } = props
     return (
         <View style={styles.mainContainer} >
-
             {/*   First Row    */}
             <View style={styles.horizontalContainer}>
                 <Text style={styles.headingStyle}>{data.value}</Text>
@@ -18,8 +17,16 @@ const AttachmentTile = (props) => {
                     <AntDesign name="close" size={18} color={AppStyles.colors.subTextColor} />
                 </TouchableOpacity>
             </View>
+            {
+                property ?
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                        <Text style={[styles.dateTimeStyle, { color: AppStyles.colors.primaryColor }]}>{data.title && data.title.toLocaleUpperCase()}</Text>
+                        <Text style={styles.dateTimeStyle}>{moment(data.createdAt).format('hh:mm A, MMMM DD')}</Text>
+                    </View>
+                    :
+                    <Text style={styles.dateTimeStyle}>{moment(data.createdAt).format('hh:mm A, MMMM DD')}</Text>
+            }
 
-            <Text style={styles.dateTimeStyle}>{moment(data.createdAt).format('hh:mm A, MMMM DD')}</Text>
         </View>
     )
 }

@@ -64,7 +64,6 @@ class AgentTile extends React.Component {
 				if (data.diaries[0].status === 'completed') show = false
 			}
 		}
-
 		return (
 			<TouchableOpacity
 				style={{ flexDirection: "row" }}
@@ -99,10 +98,10 @@ class AgentTile extends React.Component {
 							{
 								show ?
 									<Menu
-										visible={menuShow}
-										onDismiss={() => this.props.toggleMenu(false)}
+										visible={data.checkBox}
+										onDismiss={() => this.props.toggleMenu(false, data.id)}
 										anchor={
-											<Entypo onPress={() => this.props.toggleMenu(true)} name='dots-three-vertical' size={20} />
+											<Entypo onPress={() => this.props.toggleMenu(true, data.id)} name='dots-three-vertical' size={20} />
 										}
 									>
 										<View>

@@ -446,12 +446,19 @@ class LeadViewing extends React.Component {
 
 	goToPropertyComments = (data) => {
 		const { lead, navigation } = this.props
-		this.toggleMenu(false)
-		navigation.navigate('Comments', { propertyId: data.id, screenName: 'viewing' });
+		this.toggleMenu(false, data.id)
+		navigation.navigate('Comments', { propertyId: data.id, screenName: 'viewing' })
 	}
 
-	toggleMenu = (val) => {
-		this.setState({ menuShow: val })
+	toggleMenu = (val, id) => {
+		const { matchData } = this.state
+		let newMatches = matchData.map(item => {
+			if (item.id === id) {
+				item.checkBox = val
+				return item
+			} else return item
+		})
+		this.setState({ matchData: newMatches })
 	}
 
 	render() {
@@ -486,7 +493,7 @@ class LeadViewing extends React.Component {
 							{
 								matchData.length !== 0 ?
 									<FlatList
-										data={matchData}
+										data={_.clone(matchData)}
 										renderItem={(item, index) => (
 											<View style={{ marginVertical: 3 }}>
 												{
@@ -496,7 +503,7 @@ class LeadViewing extends React.Component {
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
 															isMenuVisible={showMenuItem && isMenuVisible}
-															data={item.item}
+															data={_.clone(item.item)}
 															user={user}
 															displayChecks={this.displayChecks}
 															showCheckBoxes={false}
@@ -512,7 +519,7 @@ class LeadViewing extends React.Component {
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
 															isMenuVisible={showMenuItem && isMenuVisible}
-															data={item.item}
+															data={_.clone(item.item)}
 															user={user}
 															displayChecks={this.displayChecks}
 															showCheckBoxes={false}

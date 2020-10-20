@@ -727,12 +727,19 @@ class LeadRCMPayment extends React.Component {
 
     goToPropertyComments = (data) => {
         const { lead, navigation } = this.props
-        this.toggleMenu(false)
+        this.toggleMenu(false, data.id)
         navigation.navigate('Comments', { propertyId: data.id, screenName: 'payment' });
     }
 
-    toggleMenu = (val) => {
-        this.setState({ menuShow: val })
+    toggleMenu = (val, id) => {
+        const { allProperties } = this.state
+        let newMatches = allProperties.map(item => {
+            if (item.id === id) {
+                item.checkBox = val
+                return item
+            } else return item
+        })
+        this.setState({ allProperties: newMatches })
     }
 
     render() {
@@ -801,13 +808,13 @@ class LeadRCMPayment extends React.Component {
                         {
                             allProperties.length > 0 ?
                                 <FlatList
-                                    data={allProperties}
+                                    data={_.clone(allProperties)}
                                     renderItem={(item, index) => (
                                         <View style={{ marginVertical: 3, marginHorizontal: 10 }}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile
-                                                        data={item.item}
+                                                        data={_.clone(item.item)}
                                                         user={user}
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}
@@ -820,7 +827,7 @@ class LeadRCMPayment extends React.Component {
                                                     />
                                                     :
                                                     <AgentTile
-                                                        data={item.item}
+                                                        data={_.clone(item.item)}
                                                         user={user}
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}

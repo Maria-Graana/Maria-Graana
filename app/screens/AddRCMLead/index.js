@@ -63,12 +63,21 @@ class AddRCMLead extends Component {
 
     componentDidMount() {
         const { user, navigation } = this.props
+        const { purpose } = this.props.route.params;
+        if (purpose) {
+            this.setState({ formType: purpose }, () => {
+                this.setPriceList()
+            })
+        }
+        else {
+            this.setPriceList()
+        }
         navigation.addListener('focus', () => {
             this.onScreenFocused()
         })
-        this.setPriceList()
         this.setSizeUnitList('marla')
         this.fetchOrganizations()
+
     }
 
     componentWillUnmount() {

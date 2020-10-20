@@ -123,13 +123,13 @@ class LeadViewing extends React.Component {
 	}
 
 	closeLead = () => {
-		const {lead} = this.props;
+		const { lead } = this.props;
 		if (lead.commissions && lead.commissions.status === 'approved') {
-            this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
-        }
-        else {
-            this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
-        }
+			this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
+		else {
+			this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
+		}
 	}
 
 	onHandleCloseLead = () => {
@@ -444,8 +444,25 @@ class LeadViewing extends React.Component {
 			})
 	}
 
+	goToPropertyComments = (data) => {
+		const { lead, navigation } = this.props
+		this.toggleMenu(false, data.id)
+		navigation.navigate('Comments', { propertyId: data.id, screenName: 'viewing' })
+	}
+
+	toggleMenu = (val, id) => {
+		const { matchData } = this.state
+		let newMatches = matchData.map(item => {
+			if (item.id === id) {
+				item.checkBox = val
+				return item
+			} else return item
+		})
+		this.setState({ matchData: newMatches })
+	}
+
 	render() {
-		const { meetings, callModal, loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
+		const { menuShow, meetings, callModal, loading, matchData, isVisible, checkValidation, viewing, progressValue, updateViewing, isMenuVisible, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit, addLoading } = this.state
 		const { lead, user, navigation } = this.props;
 		const showMenuItem = helper.checkAssignedSharedStatus(user, lead);
 
@@ -476,7 +493,7 @@ class LeadViewing extends React.Component {
 							{
 								matchData.length !== 0 ?
 									<FlatList
-										data={matchData}
+										data={_.clone(matchData)}
 										renderItem={(item, index) => (
 											<View style={{ marginVertical: 3 }}>
 												{
@@ -486,11 +503,15 @@ class LeadViewing extends React.Component {
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
 															isMenuVisible={showMenuItem && isMenuVisible}
-															data={item.item}
+															data={_.clone(item.item)}
 															user={user}
 															displayChecks={this.displayChecks}
 															showCheckBoxes={false}
 															addProperty={this.addProperty}
+															viewingMenu={true}
+															goToPropertyComments={this.goToPropertyComments}
+															toggleMenu={this.toggleMenu}
+															menuShow={menuShow}
 														/>
 														:
 														<AgentTile
@@ -498,11 +519,15 @@ class LeadViewing extends React.Component {
 															cancelViewing={this.cancelViewing}
 															doneViewing={this.doneViewing}
 															isMenuVisible={showMenuItem && isMenuVisible}
-															data={item.item}
+															data={_.clone(item.item)}
 															user={user}
 															displayChecks={this.displayChecks}
 															showCheckBoxes={false}
 															addProperty={this.addProperty}
+															viewingMenu={true}
+															goToPropertyComments={this.goToPropertyComments}
+															menuShow={menuShow}
+															toggleMenu={this.toggleMenu}
 														/>
 												}
 												<View>
@@ -516,7 +541,7 @@ class LeadViewing extends React.Component {
 									/>
 									:
 									<>
-									<Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
+										<Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
 									</>
 							}
 						</View>

@@ -133,13 +133,13 @@ class BookingDetailsModal extends React.Component {
               }
               {/* ===================== */}
               {
-                data.installmentDue === 'Sold on Installments Plan' &&
+                data.installmentDue === 'Sold on Installments Plan' || data.installmentDue === 'Sold on Monthly Installments Plan' ?
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Down Payment</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.downPayment)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.down_payment)}</Text>
                   </View>
-                </View>
+                </View> : <Text>ff</Text>
               }
               {/* ===================== */}
               {

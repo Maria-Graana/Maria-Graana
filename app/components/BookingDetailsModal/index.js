@@ -137,7 +137,7 @@ class BookingDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Down Payment</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.downPayment)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.downPayment)}</Text>
                   </View>
                 </View>
               }

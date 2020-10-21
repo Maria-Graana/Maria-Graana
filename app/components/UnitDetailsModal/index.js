@@ -28,7 +28,6 @@ class UnitDetailsModal extends React.Component {
     var optional = []
     optional = data && data != '' && JSON.parse([optionalArray])
     return (
-
       <Modal isVisible={active}>
         {
           pearlModal === false && data && data != '' &&
@@ -137,7 +136,7 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Unit Discounted Price</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discountedPrice === 0 ? data.discounted_price: formData.discountedPrice)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discountedPrice === 0 ? data.discount_amount : formData.finalPrice)}</Text>
                   </View>
                 </View>
               }

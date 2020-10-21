@@ -1078,7 +1078,7 @@ class Payments extends Component {
 		} = this.state
 		return (
 			<View>
-				<ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
+				<ProgressBar style={{ backgroundColor: "#ffffff" }} progress={progressValue} color={'#0277FD'} />
 				<View style={styles.mainParent}>
 					{firstScreenDone === true ?
 						<ScrollView>
@@ -1129,15 +1129,15 @@ class Payments extends Component {
 						</ScrollView>
 						: null}
 
-					{unitDetailsData && formData.pearl == null &&
+					{unitDetailsData && formData.pearl == null ?
 						<UnitDetailsModal
 							active={unitDetailModal}
 							data={unitDetailsData}
 							formData={formData}
 							pearlModal={false}
 							openUnitDetailsModal={this.openUnitDetailsModal}
-						/>}
-					{unitPearlDetailsData && formData.pearl &&
+						/> : null}
+					{unitPearlDetailsData && formData.pearl ?
 						<UnitDetailsModal
 							active={unitDetailModal}
 							data={unitPearlDetailsData}
@@ -1145,8 +1145,8 @@ class Payments extends Component {
 							unitPrice={unitPrice}
 							openUnitDetailsModal={this.openPearlDetailsModal}
 							pearlModal={true}
-						/>}
-					{secondScreenData &&
+						/> : null}
+					{secondScreenData ?
 						<BookingDetailsModal
 							active={bookingDetailsModalActive}
 							data={secondScreenData}
@@ -1154,8 +1154,8 @@ class Payments extends Component {
 							pearlModal={false}
 							toggleBookingDetailsModal={this.toggleBookingDetailsModal}
 							openUnitDetailsModal={this.openUnitDetailsModal}
-						/>}
-					{getAllFloors != '' && getAllProject != '' &&
+						/> : null}
+					{getAllFloors != '' && getAllProject != '' ?
 						<FirstScreenConfirmModal
 							active={openFirstScreenModal}
 							data={formData}
@@ -1165,7 +1165,7 @@ class Payments extends Component {
 							firstScreenConfirmLoading={firstScreenConfirmLoading}
 							firstScreenConfirmModal={this.firstScreenConfirmModal}
 							submitFirstScreen={this.submitFirstScreen}
-						/>}
+						/> : null}
 					<AddPaymentModal
 						active={addPaymentModalToggleState}
 						secondFormData={secondFormData}

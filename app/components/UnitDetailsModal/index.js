@@ -127,7 +127,7 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount) + `${data.discount > 0 ? '%' : '0'}`}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount) + `${data.discount > 0 ? '%' : `${data.discount <= 0 ? '': ''}`}`}</Text>
                   </View>
                 </View>
               }
@@ -135,7 +135,7 @@ class UnitDetailsModal extends React.Component {
                 data.rentPerSqFt !== null &&
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Unit Discounted Price</Text>
+                    <Text style={styles.smallText}>Discounted Price</Text>
                     <Text style={styles.largeText}>{this.handleEmptyValue(formData.discountedPrice === 0 ? data.discount_amount : formData.finalPrice)}</Text>
                   </View>
                 </View>

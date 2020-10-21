@@ -10,11 +10,11 @@ const AttachmentTile = (props) => {
     return (
         <View style={styles.mainContainer} >
             {/*   First Row    */}
+            <TouchableOpacity style={{ position: 'absolute', right: 5, top: 5 }} onPress={() => deleteComment(data.id)} activeOpacity={0.7} >
+                <AntDesign name="close" size={18} color={AppStyles.colors.subTextColor} />
+            </TouchableOpacity>
             <View style={styles.horizontalContainer}>
                 <Text style={styles.headingStyle}>{data.value}</Text>
-                <TouchableOpacity style={{ position: 'absolute', right: 5, top: 5 }} onPress={() => deleteComment(data.id)} activeOpacity={0.7} >
-                    <AntDesign name="close" size={18} color={AppStyles.colors.subTextColor} />
-                </TouchableOpacity>
             </View>
             {
                 property ?

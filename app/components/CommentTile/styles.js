@@ -23,7 +23,8 @@ export default styles = StyleSheet.create({
     horizontalContainer: {
         flex: 1,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingTop: 10
     },
     headingStyle: {
         fontSize: AppStyles.noramlSize.fontSize,

@@ -354,34 +354,20 @@ class AddClient extends Component {
                 if (formData.cnic === '') formData.cnic = null
                 if (!update) {
                     let body = this.createPayload()
+                    body.name = body.first_name + ' ' + body.last_name
                     this.setState({ loading: true })
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
                             if (res.status === 200 && res.data) {
-                                if (res.data.original_owner) {
-                                    Alert.alert('Alert', res.data.message, [
-                                        {
-                                            text: 'OK', onPress: () => {
-                                                isFromDropDown ?
-                                                    navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : '' }) :
-                                                    navigation.goBack();
-
-                                                helper.successToast('CLIENT CREATED');
-                                            }
-                                        },
-                                    ],
-                                        { cancelable: false })
-                                } else {
-                                    if (res.data.message === 'Client already exists') {
-                                        helper.errorToast(res.data.message)
-                                    }
-                                    else {
-                                        helper.successToast(res.data.message)
-                                    }
+                                if (res.data.message === 'Client already exists') {
+                                    helper.errorToast(res.data.message)
+                                }
+                                else {
+                                    // helper.successToast('CLIENT CREATED');
+                                    helper.successToast(res.data.message)
                                     isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack();
                                 }
                             }
-                            body.name = body.first_name + ' ' + body.last_name
                         })
                         .catch((error) => {
                             console.log(error)

@@ -29,8 +29,9 @@ class Comments extends Component {
 
     getCommentsFromServer = () => {
         const { type, property } = this.state;
-        const { route } = this.props;
+        const { route, navigation } = this.props;
         if ('rcmLeadId' in route.params || 'cmLeadId' in route.params) {
+            navigation.setParams({ title: 'LEAD COMMENTS' })
             const { rcmLeadId, cmLeadId } = route.params
             const url = rcmLeadId ? `/api/leads/comments?rcmLeadId=${rcmLeadId}&type=${type}`
                 : `/api/leads/comments?cmLeadId=${cmLeadId}&type=${type}`
@@ -41,6 +42,7 @@ class Comments extends Component {
                 console.log(error);
             })
         } else {
+            navigation.setParams({ title: 'PROPERTY COMMENTS' })
             const { propertyId, screenName } = route.params
             const url = `/api/leads/comments?shortListPropertyId=${propertyId}`
             axios.get(url).then(response => {

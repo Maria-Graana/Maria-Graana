@@ -580,8 +580,8 @@ class Payments extends Component {
 			installmentAmount: formData.token,
 			type: formData.type,
 			pearl: formData.pearl === null || formData.pearl === '' ? null : formData.pearl,
-			// cnic: formData.cnic.replace(/[^\w\s]/gi, ''),
-			cnic: formData.cnic,
+			cnic: formData.cnic.replace(/[^\w\s]/gi, ''),
+			// cnic: formData.cnic,
 			customerId: lead.customer.id,
 		}
 		var leadId = []
@@ -843,8 +843,7 @@ class Payments extends Component {
 								],
 								{ cancelable: false }
 							);
-							// helper.errorToast('Attachment Not Added')
-							his.setState({
+							this.setState({
 								addPaymentModalToggleState: false,
 								addPaymentLoading: false,
 							})
@@ -857,7 +856,6 @@ class Payments extends Component {
 						addPaymentLoading: false,
 					}, () => {
 						this.fetchLead();
-						// helper.successToast(message)
 						Alert.alert(
 							'Alert',
 							message,
@@ -887,7 +885,6 @@ class Payments extends Component {
 			}, () => {
 				this.fetchLead();
 				this.clearPaymentsValuesFromRedux(false);
-				// helper.successToast(message)
 				Alert.alert(
 					'Alert',
 					message,
@@ -1147,19 +1144,19 @@ class Payments extends Component {
 
 					{firstScreenDone === false ?
 						// <ScrollView>
-							<View style={styles.secondContainer}>
-								<FormScreenSecond
-									data={secondScreenData}
-									paymentPreviewLoading={paymentPreviewLoading}
-									remainingPayment={remainingPayment}
-									checkLeadClosedOrNot={checkLeadClosedOrNot}
-									onlyReadFormData={formData}
-									toggleBookingDetailsModal={this.toggleBookingDetailsModal}
-									addPaymentModalToggle={this.addPaymentModalToggle}
-									currencyConvert={this.currencyConvert}
-									editTile={this.editTile}
-								/>
-							</View>
+						<View style={styles.secondContainer}>
+							<FormScreenSecond
+								data={secondScreenData}
+								paymentPreviewLoading={paymentPreviewLoading}
+								remainingPayment={remainingPayment}
+								checkLeadClosedOrNot={checkLeadClosedOrNot}
+								onlyReadFormData={formData}
+								toggleBookingDetailsModal={this.toggleBookingDetailsModal}
+								addPaymentModalToggle={this.addPaymentModalToggle}
+								currencyConvert={this.currencyConvert}
+								editTile={this.editTile}
+							/>
+						</View>
 						// </ScrollView>
 						: null}
 

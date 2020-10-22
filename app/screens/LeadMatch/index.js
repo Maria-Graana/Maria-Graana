@@ -522,7 +522,7 @@ class LeadMatch extends React.Component {
         const { organization } = this.state
         if (organization === 'arms') {
             if (this.ownProperty(property)) this.props.navigation.navigate('PropertyDetail', { property: property, update: true })
-            else helper.warningToast(`You can not view other's agent property!!`)
+            else helper.warningToast(`You cannot view other agent's property details!`)
         } else {
             let url = `https://dev.graana.rocks/property/${property.id}`
             if (config.channel === 'staging') url = `https://staging.graana.rocks/property/${property.id}`

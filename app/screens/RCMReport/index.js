@@ -205,7 +205,7 @@ class RCMReport extends React.Component {
             .then((res) => {
                 let totalLeadsWithCommision = res.data.totalLeadsWithCommision
                 this.graphData(res.data)
-                this.setState({ dashBoardData: res.data, loading: false, viewLoader: false, leadsCount: '(' + totalLeadsWithCommision + ')' })
+                this.setState({ dashBoardData: res.data, loading: false, viewLoader: false, leadsCount: totalLeadsWithCommision ? '(' + totalLeadsWithCommision + ')' : '' })
             })
             .catch((error) => {
                 console.log(error)

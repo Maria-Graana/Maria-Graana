@@ -50,6 +50,13 @@ class BookingDetailsModal extends React.Component {
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
+                  <Text style={styles.smallText}>Unit Name</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.name)}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
                   <Text style={styles.smallText}>Unit Size (sqft)</Text>
                   <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.area)}</Text>
                 </View>
@@ -137,25 +144,25 @@ class BookingDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Down Payment</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.down_payment)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.downPayment)}</Text>
                   </View>
-                </View> : <Text>ff</Text>
+                </View> : null
               }
               {/* ===================== */}
               {
-                data.installmentDue === 'Sold on Monthly Installments Plan' && data.paidProject && data.paidProject.monthly_installment_availablity === 'yes' ?
+                data.installmentDue === 'Sold on Monthly Installments Plan' ?
                   <View style={styles.MainTileView}>
                     <View>
-                      <Text style={styles.smallText}>Installment Plan</Text>
-                      <Text style={styles.largeText}>{this.handleEmptyValue('Monthly installment')}</Text>
+                      <Text style={styles.smallText}>Monthly Installment</Text>
+                      <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.monthly_installments)}</Text>
                     </View>
                   </View>
                   :
-                  data.installmentDue === 'Sold on Quarterly Installments Plan' &&
+                  data.installmentDue === 'Sold on Installments Plan' &&
                   <View style={styles.MainTileView}>
                     <View>
-                      <Text style={styles.smallText}>Installment Plan</Text>
-                      <Text style={styles.largeText}>{this.handleEmptyValue('Quarterly installment')}</Text>
+                      <Text style={styles.smallText}>Quarterly Installment</Text>
+                      <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.quarterly_installments)}</Text>
                     </View>
                   </View>
               }

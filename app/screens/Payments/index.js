@@ -580,8 +580,11 @@ class Payments extends Component {
 			installmentAmount: formData.token,
 			type: formData.type,
 			pearl: formData.pearl === null || formData.pearl === '' ? null : formData.pearl,
+			// cnic: formData.cnic.replace(/[^\w\s]/gi, ''),
+			cnic: formData.cnic,
+			customerId: lead.customer.id,
 		}
-
+		console.log(body)
 		var leadId = []
 		leadId.push(lead.id)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
@@ -1112,7 +1115,7 @@ class Payments extends Component {
 						: null}
 
 					{firstScreenDone === false ?
-						<ScrollView>
+						// <ScrollView>
 							<View style={styles.secondContainer}>
 								<FormScreenSecond
 									data={secondScreenData}
@@ -1126,7 +1129,7 @@ class Payments extends Component {
 									editTile={this.editTile}
 								/>
 							</View>
-						</ScrollView>
+						// </ScrollView>
 						: null}
 
 					{unitDetailsData && formData.pearl == null ?

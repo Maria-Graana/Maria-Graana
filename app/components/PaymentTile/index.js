@@ -24,10 +24,10 @@ class PaymentTile extends React.Component {
 		} = this.props
 		var statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
 		return (
-			<TouchableOpacity onPress={() => { data.status != 'approved' ? tileForToken === true ? editTileForscreenOne() : editTile(data.id): null }}>
+			<TouchableOpacity onPress={() => { data.status != 'approved' ? tileForToken === true ? editTileForscreenOne() : editTile(data.id) : null }}>
 				<View style={styles.tileTopWrap}>
 					<View style={styles.upperLayer}>
-						<Text style={styles.paymnetHeading}>PAYMENT {count + 1} ({data.type})</Text>
+						<Text style={styles.paymnetHeading}>{data.paymentCategory === 'token' ? 'TOKEN' : 'PAYMENT'} {count + 1} ({data.type})</Text>
 						{
 							data.status != '' && <Text style={[styles.tileStatus, statusColor]}>{data.status === 'pending' ? 'pending clearance' : data.status}</Text>
 						}

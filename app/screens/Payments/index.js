@@ -565,7 +565,6 @@ class Payments extends Component {
 	firstScreenApiCall = (unitId) => {
 		const { lead } = this.props
 		const { formData, remainingPayment } = this.state
-
 		var body = {
 			unitId: unitId,
 			projectId: formData.projectId,
@@ -580,7 +579,7 @@ class Payments extends Component {
 			installmentAmount: formData.token,
 			type: formData.type,
 			pearl: formData.pearl === null || formData.pearl === '' ? null : formData.pearl,
-			cnic: formData.cnic.replace(/[^\w\s]/gi, ''),
+			cnic:  lead.customer && lead.customer.cnic != null ? lead.customer.cnic : formData.cnic.replace(/[^\w\s]/gi, ''),
 			// cnic: formData.cnic,
 			customerId: lead.customer.id,
 		}

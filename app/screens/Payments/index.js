@@ -843,7 +843,6 @@ class Payments extends Component {
 								],
 								{ cancelable: false }
 							);
-							// helper.errorToast('Attachment Not Added')
 							this.setState({
 								addPaymentModalToggleState: false,
 								addPaymentLoading: false,
@@ -857,7 +856,6 @@ class Payments extends Component {
 						addPaymentLoading: false,
 					}, () => {
 						this.fetchLead();
-						// helper.successToast(message)
 						Alert.alert(
 							'Alert',
 							message,
@@ -887,15 +885,14 @@ class Payments extends Component {
 			}, () => {
 				this.fetchLead();
 				this.clearPaymentsValuesFromRedux(false);
-				// helper.successToast(message)
 				Alert.alert(
-									'Alert',
-									message,
-									[
-										{ text: 'Ok' }
-									],
-									{ cancelable: false }
-								);
+					'Alert',
+					message,
+					[
+						{ text: 'Ok' }
+					],
+					{ cancelable: false }
+				);
 			})
 		}
 	}
@@ -1147,19 +1144,19 @@ class Payments extends Component {
 
 					{firstScreenDone === false ?
 						// <ScrollView>
-							<View style={styles.secondContainer}>
-								<FormScreenSecond
-									data={secondScreenData}
-									paymentPreviewLoading={paymentPreviewLoading}
-									remainingPayment={remainingPayment}
-									checkLeadClosedOrNot={checkLeadClosedOrNot}
-									onlyReadFormData={formData}
-									toggleBookingDetailsModal={this.toggleBookingDetailsModal}
-									addPaymentModalToggle={this.addPaymentModalToggle}
-									currencyConvert={this.currencyConvert}
-									editTile={this.editTile}
-								/>
-							</View>
+						<View style={styles.secondContainer}>
+							<FormScreenSecond
+								data={secondScreenData}
+								paymentPreviewLoading={paymentPreviewLoading}
+								remainingPayment={remainingPayment}
+								checkLeadClosedOrNot={checkLeadClosedOrNot}
+								onlyReadFormData={formData}
+								toggleBookingDetailsModal={this.toggleBookingDetailsModal}
+								addPaymentModalToggle={this.addPaymentModalToggle}
+								currencyConvert={this.currencyConvert}
+								editTile={this.editTile}
+							/>
+						</View>
 						// </ScrollView>
 						: null}
 

@@ -362,11 +362,11 @@ class AddClient extends Component {
                                 if (res.data.message !== 'CLIENT CREATED') {
                                     // Error Messages
                                     if (res.data.message === 'Client already exists') {
-                                        helper.errorToast(res.data.message)
+                                        Alert.alert('Client already Exists', res.data.message);
                                     }
                                     else {
                                         // this is important error message so showing as alert
-                                        alert(res.data.message);
+                                        Alert.alert('Client already Exists', res.data.message);
                                     }
                                 }
                                 else {

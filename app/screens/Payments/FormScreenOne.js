@@ -113,7 +113,7 @@ class InnerForm extends Component {
                       {leftSqft < 50 && leftSqft > 0 ? <ErrorMessage errorMessage={`Remaining area (${leftSqft} sqft) must be 0 or greater than or equal to 50 sqft`} /> : null}
                     </View>
                     <View style={styles.mainDetailViewBtn}>
-                      <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.pearl != null && openPearlDetailsModal(true) }}>
+                      <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.pearl != null && formData.pearl >= 50 && openPearlDetailsModal(true) }}>
                         <Text style={styles.detailBtnText}>Details</Text>
                       </TouchableOpacity>
                     </View>

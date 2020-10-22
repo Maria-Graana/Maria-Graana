@@ -822,12 +822,28 @@ class Payments extends Component {
 								addPaymentLoading: false,
 							}, () => {
 								this.fetchLead();
-								helper.successToast(message)
+								Alert.alert(
+									'Alert',
+									message,
+									[
+										{ text: 'Ok' }
+									],
+									{ cancelable: false }
+								);
+								// helper.successToast(message)
 								this.clearPaymentsValuesFromRedux(false);
 							})
 						}).catch((error) => {
 							console.log('/api/leads/paymentAttachment?id - Error', error)
-							helper.errorToast('Attachment Not Added')
+							Alert.alert(
+								'Alert',
+								message,
+								[
+									{ text: 'Ok' }
+								],
+								{ cancelable: false }
+							);
+							// helper.errorToast('Attachment Not Added')
 							his.setState({
 								addPaymentModalToggleState: false,
 								addPaymentLoading: false,
@@ -841,7 +857,15 @@ class Payments extends Component {
 						addPaymentLoading: false,
 					}, () => {
 						this.fetchLead();
-						helper.successToast(message)
+						// helper.successToast(message)
+						Alert.alert(
+							'Alert',
+							message,
+							[
+								{ text: 'Ok' }
+							],
+							{ cancelable: false }
+						);
 						this.clearPaymentsValuesFromRedux(false);
 					})
 				}
@@ -863,7 +887,15 @@ class Payments extends Component {
 			}, () => {
 				this.fetchLead();
 				this.clearPaymentsValuesFromRedux(false);
-				helper.successToast(message)
+				// helper.successToast(message)
+				Alert.alert(
+					'Alert',
+					message,
+					[
+						{ text: 'Ok' }
+					],
+					{ cancelable: false }
+				);
 			})
 		}
 	}

@@ -844,7 +844,7 @@ class Payments extends Component {
 								{ cancelable: false }
 							);
 							// helper.errorToast('Attachment Not Added')
-							his.setState({
+							this.setState({
 								addPaymentModalToggleState: false,
 								addPaymentLoading: false,
 							})
@@ -889,13 +889,13 @@ class Payments extends Component {
 				this.clearPaymentsValuesFromRedux(false);
 				// helper.successToast(message)
 				Alert.alert(
-					'Alert',
-					message,
-					[
-						{ text: 'Ok' }
-					],
-					{ cancelable: false }
-				);
+									'Alert',
+									message,
+									[
+										{ text: 'Ok' }
+									],
+									{ cancelable: false }
+								);
 			})
 		}
 	}

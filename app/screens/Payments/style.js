@@ -198,7 +198,7 @@ export default styles = StyleSheet.create({
     marginBottom: 10,
   },
   scrollHeight: {
-    height: 183,
+    height: 280,
   },
   scrollHeightAuto: {
     height: 'auto',

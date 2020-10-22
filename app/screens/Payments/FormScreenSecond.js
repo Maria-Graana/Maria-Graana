@@ -45,12 +45,13 @@ class FormScreenSecond extends Component {
 
           <Text style={styles.paymentsHeading}>
             PAYMENTS
-              </Text>
+          </Text>
 
           <View style={styles.mainPaymentWrap}>
 
             <View style={styles.paymentTileMain}>
-              <View style={[styles.tileWrap, styles.scrollHeight, data.payment != null && data.payment.length < 3 ? styles.scrollHeightAuto : null]}>
+              {/* <View style={[styles.tileWrap, styles.scrollHeight, data.payment != null && data.payment.length < 3 ? styles.scrollHeightAuto : null]}> */}
+              <View style={[styles.tileWrap, styles.scrollHeight]}>
                 <ScrollView>
 
                   {

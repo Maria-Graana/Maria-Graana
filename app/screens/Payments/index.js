@@ -584,7 +584,6 @@ class Payments extends Component {
 			cnic: formData.cnic,
 			customerId: lead.customer.id,
 		}
-		console.log(body)
 		var leadId = []
 		leadId.push(lead.id)
 		axios.patch(`/api/leads/project`, body, { params: { id: leadId } })

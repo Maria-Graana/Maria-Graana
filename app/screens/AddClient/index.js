@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 import helper from '../../helper';
 import _ from 'underscore';
 import { getAllCountries } from 'react-native-country-picker-modal'
-import { readAsStringAsync } from 'expo-file-system';
 
 class AddClient extends Component {
     constructor(props) {

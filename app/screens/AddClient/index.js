@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import helper from '../../helper';
 import _ from 'underscore';
 import { getAllCountries } from 'react-native-country-picker-modal'
+import { readAsStringAsync } from 'expo-file-system';
 
 class AddClient extends Component {
     constructor(props) {
@@ -359,11 +360,17 @@ class AddClient extends Component {
                     axios.post(`/api/customer/create`, body)
                         .then((res) => {
                             if (res.status === 200 && res.data) {
-                                if (res.data.message === 'Client already exists') {
-                                    helper.errorToast(res.data.message)
+                                if (res.data.message !== 'CLIENT CREATED') {
+                                    // Error Messages
+                                    if (res.data.message === 'Client already exists') {
+                                        helper.errorToast(res.data.message)
+                                    }
+                                    else {
+                                        // this is important error message so showing as alert
+                                        alert(res.data.message);
+                                    }
                                 }
                                 else {
-                                    // helper.successToast('CLIENT CREATED');
                                     helper.successToast(res.data.message)
                                     isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack();
                                 }

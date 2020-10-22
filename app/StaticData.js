@@ -641,6 +641,13 @@ export default StaticData = {
     paymentTypeForToken: [
         { value: 'Token', name: 'Token' },
         { value: 'Payment', name: 'Other Payment' },
+    ],
+    statusOptions: [
+        { label: 'Pending Approval', value: 'pending' },
+        { label: 'Rejected', value: 'rejected' },
+        { label: 'Pending at Bank', value: 'bankPending' },
+        { label: 'Not Cleared', value: 'notCleared' },
+        { label: 'Cleared', value: 'cleared' },
     ]
 }
 

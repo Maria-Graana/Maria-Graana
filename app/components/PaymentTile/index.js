@@ -4,6 +4,7 @@ import styles from './style'
 import { connect } from 'react-redux';
 import { formatPrice } from '../../PriceFormate';
 import moment from 'moment'
+import StaticData from '../../StaticData';
 
 class PaymentTile extends React.Component {
 	constructor(props) {
@@ -22,14 +23,15 @@ class PaymentTile extends React.Component {
 			tileForToken,
 			editTileForscreenOne,
 		} = this.props
-		var statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
+		var showStatus = StaticData.statusOptions.find((item) => { return item.value === data.status ? item : null })
+		var statusColor = showStatus.value === 'cleared' ? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
 		return (
-			<TouchableOpacity onPress={() => { data.status != 'approved' ? tileForToken === true ? editTileForscreenOne() : editTile(data.id) : null }}>
+			<TouchableOpacity onPress={() => { data.status != 'cleared' ? tileForToken === true ? editTileForscreenOne() : editTile(data.id) : null }}>
 				<View style={styles.tileTopWrap}>
 					<View style={styles.upperLayer}>
 						<Text style={styles.paymnetHeading}>{data.paymentCategory === 'token' ? 'TOKEN' : 'PAYMENT'} {count + 1} ({data.type})</Text>
 						{
-							data.status != '' && <Text style={[styles.tileStatus, statusColor]}>{data.status === 'pending' ? 'pending clearance' : data.status}</Text>
+							data.status != '' && <Text style={[styles.tileStatus, statusColor]}>{showStatus.label}</Text>
 						}
 					</View>
 					<View style={styles.bottomLayer}>

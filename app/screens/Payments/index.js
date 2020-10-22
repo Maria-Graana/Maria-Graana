@@ -580,8 +580,8 @@ class Payments extends Component {
 			installmentAmount: formData.token,
 			type: formData.type,
 			pearl: formData.pearl === null || formData.pearl === '' ? null : formData.pearl,
-			// cnic: formData.cnic.replace(/[^\w\s]/gi, ''),
-			cnic: formData.cnic,
+			cnic: formData.cnic.replace(/[^\w\s]/gi, ''),
+			// cnic: formData.cnic,
 			customerId: lead.customer.id,
 		}
 		var leadId = []

@@ -648,7 +648,8 @@ export default StaticData = {
         { label: 'Pending at Bank', value: 'bankPending' },
         { label: 'Not Cleared', value: 'notCleared' },
         { label: 'Cleared', value: 'cleared' },
-    ]
+    ],
+    leadClearedStatus: 'cleared',
 }
 
 

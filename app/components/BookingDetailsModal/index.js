@@ -1,8 +1,6 @@
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native'
-import { Button, } from 'native-base';
 import styles from './style'
-import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal';
 import times from '../../../assets/img/times.png'
 

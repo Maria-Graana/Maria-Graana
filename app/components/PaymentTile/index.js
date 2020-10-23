@@ -23,8 +23,8 @@ class PaymentTile extends React.Component {
 			tileForToken,
 			editTileForscreenOne,
 		} = this.props
-		var showStatus = StaticData.statusOptions.find((item) => { return item.value === data.status ? item : null })
-		var statusColor = showStatus.value === 'cleared' ? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
+		var showStatus = data.status != '' ?  StaticData.statusOptions.find((item) => { return item.value === data.status && item  }) : {label: '', value: ''}
+		var statusColor = showStatus != null && showStatus.value === 'cleared' ? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
 		return (
 			<TouchableOpacity onPress={() => { data.status != 'cleared' ? tileForToken === true ? editTileForscreenOne() : editTile(data.id) : null }}>
 				<View style={styles.tileTopWrap}>

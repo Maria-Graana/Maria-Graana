@@ -67,7 +67,7 @@ class Payments extends Component {
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
-			firstScreenDone: lead.unit != null && lead.unit.bookingStatus != 'Available' ? false : true,
+			firstScreenDone: lead.status === 'token' || lead.status === 'payment'  ? false : true,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
 			secondCheckValidation: false,
@@ -104,6 +104,8 @@ class Payments extends Component {
 		if (lead.paidProject && lead.paidProject != null) {
 			this.getFloors(lead.paidProject.id)
 		}
+
+		console.log(lead)
 	}
 
 	componentWillUnmount() {

@@ -19,9 +19,9 @@ class CommissionTile extends Component {
   render() {
     const { data, editTile } = this.props;
     var showStatus = data.status != '' ?  StaticData.statusOptions.find((item) => { return item.value === data.status && item  }) : {label: '', value: ''}
-		var statusColor = showStatus != null && showStatus.value === 'cleared' ? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
+		var statusColor = showStatus != null && showStatus.value === StaticData.leadClearedStatus? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
     return (
-      <TouchableOpacity onPress={() => { data.status != 'cleared' ? editTile(data) : null }}>
+      <TouchableOpacity onPress={() => { data.status != StaticData.leadClearedStatus ? editTile(data) : null }}>
         <View style={styles.tileTopWrap}>
           <View style={styles.upperLayer}>
             <Text style={styles.paymnetHeading}>Commission Payment</Text>

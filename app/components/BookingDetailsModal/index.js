@@ -1,8 +1,6 @@
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native'
-import { Button, } from 'native-base';
 import styles from './style'
-import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal';
 import times from '../../../assets/img/times.png'
 
@@ -144,7 +142,7 @@ class BookingDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Down Payment</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.downPayment)}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.down_payment)}</Text>
                   </View>
                 </View> : null
               }

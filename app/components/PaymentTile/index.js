@@ -29,7 +29,7 @@ class PaymentTile extends React.Component {
 			<TouchableOpacity onPress={() => { data.status != 'cleared' ? tileForToken === true ? editTileForscreenOne() : editTile(data.id) : null }}>
 				<View style={styles.tileTopWrap}>
 					<View style={styles.upperLayer}>
-						<Text style={styles.paymnetHeading}>{data.paymentCategory === 'token' ? 'TOKEN' : 'PAYMENT'} {count + 1} ({data.type})</Text>
+						<Text style={styles.paymnetHeading}>{data.paymentCategory === 'token' ? 'TOKEN' : 'PAYMENT' + ' ' + count} ({data.type})</Text>
 						{
 							data.status != '' && <Text style={[styles.tileStatus, statusColor]}>{showStatus.label}</Text>
 						}

@@ -67,7 +67,7 @@ class Payments extends Component {
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
-			firstScreenDone: lead.unit != null && lead.unit.bookingStatus != 'Available' ? false : true,
+			firstScreenDone: lead.status === 'token' || lead.status === 'payment'  ? false : true,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
 			secondCheckValidation: false,
@@ -104,6 +104,8 @@ class Payments extends Component {
 		if (lead.paidProject && lead.paidProject != null) {
 			this.getFloors(lead.paidProject.id)
 		}
+
+		console.log(lead)
 	}
 
 	componentWillUnmount() {
@@ -579,7 +581,7 @@ class Payments extends Component {
 			installmentAmount: formData.token,
 			type: formData.type,
 			pearl: formData.pearl === null || formData.pearl === '' ? null : formData.pearl,
-			cnic:  lead.customer && lead.customer.cnic != null ? lead.customer.cnic : formData.cnic.replace(/[^\w\s]/gi, ''),
+			cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : formData.cnic.replace(/[^\w\s]/gi, ''),
 			// cnic: formData.cnic,
 			customerId: lead.customer.id,
 		}
@@ -1142,21 +1144,21 @@ class Payments extends Component {
 						: null}
 
 					{firstScreenDone === false ?
-						// <ScrollView>
-						<View style={styles.secondContainer}>
-							<FormScreenSecond
-								data={secondScreenData}
-								paymentPreviewLoading={paymentPreviewLoading}
-								remainingPayment={remainingPayment}
-								checkLeadClosedOrNot={checkLeadClosedOrNot}
-								onlyReadFormData={formData}
-								toggleBookingDetailsModal={this.toggleBookingDetailsModal}
-								addPaymentModalToggle={this.addPaymentModalToggle}
-								currencyConvert={this.currencyConvert}
-								editTile={this.editTile}
-							/>
-						</View>
-						// </ScrollView>
+						<ScrollView>
+							<View style={styles.secondContainer}>
+								<FormScreenSecond
+									data={secondScreenData}
+									paymentPreviewLoading={paymentPreviewLoading}
+									remainingPayment={remainingPayment}
+									checkLeadClosedOrNot={checkLeadClosedOrNot}
+									onlyReadFormData={formData}
+									toggleBookingDetailsModal={this.toggleBookingDetailsModal}
+									addPaymentModalToggle={this.addPaymentModalToggle}
+									currencyConvert={this.currencyConvert}
+									editTile={this.editTile}
+								/>
+							</View>
+						</ScrollView>
 						: null}
 
 					{unitDetailsData && formData.pearl == null ?

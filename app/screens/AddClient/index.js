@@ -366,7 +366,7 @@ class AddClient extends Component {
                                     }
                                     else {
                                         // this is important error message so showing as alert
-                                        alert(res.data.message);
+                                        Alert.alert('Client already Exists', res.data.message);
                                     }
                                 }
                                 else {

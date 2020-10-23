@@ -1039,7 +1039,7 @@ class Payments extends Component {
 			var approvedPaymentDone = []
 			secondScreenData && secondScreenData.payment != null &&
 				secondScreenData.payment.filter((item, index) => {
-					return item.status === 'pending' || item.status === 'rejected' ?
+					return item.status === 'pending' || item.status === 'rejected' || item.status === 'bankPending' || item.status === 'notCleared' ?
 						approvedPaymentDone.push(true) : approvedPaymentDone.push(false)
 				})
 

@@ -221,7 +221,7 @@ class LeadRCMPayment extends React.Component {
 
     showLeadPaymentModal = () => {
         const { lead } = this.state;
-        if (lead.commissions && lead.commissions.status === 'approved') {
+        if (lead.commissions && lead.commissions.status ===  StaticData.leadClearedStatus) {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
         }
         else {

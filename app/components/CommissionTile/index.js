@@ -1,6 +1,7 @@
 import React,{Component} from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { formatPrice } from '../../PriceFormate';
+import StaticData from '../../StaticData';
 import moment from 'moment';
 
 class CommissionTile extends Component {
@@ -19,7 +20,6 @@ class CommissionTile extends Component {
     const { data, editTile } = this.props;
     var showStatus = data.status != '' ?  StaticData.statusOptions.find((item) => { return item.value === data.status && item  }) : {label: '', value: ''}
 		var statusColor = showStatus != null && showStatus.value === 'cleared' ? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
-    //let statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
     return (
       <TouchableOpacity onPress={() => { data.status != 'cleared' ? editTile(data) : null }}>
         <View style={styles.tileTopWrap}>

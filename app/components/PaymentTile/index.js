@@ -22,11 +22,12 @@ class PaymentTile extends React.Component {
 			editTile,
 			tileForToken,
 			editTileForscreenOne,
+			checkLeadClosedOrNot,
 		} = this.props
 		var showStatus = data.status != '' ?  StaticData.statusOptions.find((item) => { return item.value === data.status && item  }) : {label: '', value: ''}
 		var statusColor = showStatus != null && showStatus.value === 'cleared' ? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'pendingSales' ? styles.statusRed : styles.statusYellow
 		return (
-			<TouchableOpacity onPress={() => { data.status != 'cleared' ? tileForToken === true ? editTileForscreenOne() : editTile(data.id) : null }}>
+			<TouchableOpacity onPress={() => { data.status != 'cleared' ? tileForToken === true ? editTileForscreenOne() : checkLeadClosedOrNot === true ? editTile(data.id): null : null }}>
 				<View style={styles.tileTopWrap}>
 					<View style={styles.upperLayer}>
 						<Text style={styles.paymnetHeading}>{data.paymentCategory === 'token' ? 'TOKEN' : 'PAYMENT' + ' ' + count} ({data.type})</Text>

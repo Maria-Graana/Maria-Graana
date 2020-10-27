@@ -466,25 +466,24 @@ const helper = {
 			return `${start} - ${end}`
 		}
 	},
-	 convertPriceToString(start, end, maxValue, priceList){
-		if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
-			return `PKR: Any`
-		}
-		else if (start === 0 && end !== maxValue) {
-			return `PKR: Upto ${formatPrice(priceList[end])}`
-		}
-		else if (start !== 0 && end === maxValue) {
-			return `PKR: ${formatPrice(priceList[start])} or more`;
-		}
-		else if (start === end) {
-			return `PKR: ${formatPrice(priceList[start])}`;
-		}
-		else {
-			return `PKR: ${formatPrice(priceList[start])} - ${formatPrice(priceList[end])}`
+	convertPriceToString(start, end, maxValue) {
+			if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
+				return `PKR: Any`
+			}
+			else if (start === 0 && end !== maxValue) {
+				return `PKR: Upto ${formatPrice(end)}`
+			}
+			else if (start !== 0 && end === maxValue) {
+				return `PKR: ${formatPrice(start)} or more`;
+			}
+			else if (start === end) {
+				return `PKR: ${formatPrice(start)}`;
+			}
+			else {
+				return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
+			}
 		}
 	}
-}
-
 
 
 module.exports = helper;

@@ -164,7 +164,7 @@ class InnerRCMForm extends Component {
 						<TouchableInput placeholder="Price"
 							showIconOrImage={false}
 							onPress={() => showPriceModal()}
-						    value={`${helper.convertPriceToString(formData.minPrice, formData.maxPrice, priceList.length - 1, priceList)}`}
+						    value={`${helper.convertPriceToString(formData.minPrice, formData.maxPrice, priceList[priceList.length - 1])}`}
 						/>
 					</View>
 				</View>

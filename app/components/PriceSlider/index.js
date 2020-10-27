@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     trackStyle: {
         height: 5
     },
-    selectedStyle:{
+    selectedStyle: {
         backgroundColor: AppStyles.colors.primaryColor
     },
     customMarkerStyle: {

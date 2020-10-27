@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { StyleSheet, Text, View, TextInput } from 'react-native'
-import Modal from 'react-native-modal';
-import AppStyles from '../../AppStyles';
 import PriceSlider from '../PriceSlider';
+import Modal from 'react-native-modal';
 import TouchableButton from '../TouchableButton'
 import ErrorMessage from '../ErrorMessage'
 import helper from '../../helper'
-import {formatPrice} from '../../PriceFormate'
+import AppStyles from '../../AppStyles';
+import StaticData from '../../StaticData';
 
 const currencyConvert = (x) => {
-    if (x) {
+    if (x !== null || x !== undefined) {
         x = x.toString();
         var lastThree = x.substring(x.length - 3);
         var otherNumbers = x.substring(0, x.length - 3);
@@ -29,69 +29,59 @@ const PriceSliderModal = ({ isVisible,
     const [minValue, setMinValue] = useState(initialValue);
     const [maxValue, setMaxValue] = useState(finalValue);
     const [stringValues, setStringValues] = useState({
-        priceMin: currencyConvert(arrayValues[initialValue]),
-        priceMax: currencyConvert(arrayValues[finalValue])
+        priceMin: currencyConvert(initialValue),
+        priceMax: currencyConvert(finalValue)
     })
+
     const [rangeString, setRangeString] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const priceMinInput = useRef(null);
 
     useEffect(() => {
         setMinValue(initialValue);
         setMaxValue(finalValue);
-        setStringValues({ ...stringValues, priceMin: currencyConvert(arrayValues[initialValue]), priceMax: finalValue === arrayValues.length - 1 ? null : currencyConvert(arrayValues[finalValue]) })
-        setRangeString(helper.convertPriceToString(initialValue, finalValue, arrayValues.length - 1, arrayValues))
+        setStringValues({ ...stringValues, priceMin: initialValue === StaticData.Constants.any_value ? null : currencyConvert(initialValue), priceMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue) })
+        setRangeString(helper.convertPriceToString(initialValue, finalValue, arrayValues[arrayValues.length - 1]))
     }, [initialValue, finalValue])
 
     const onSliderValueChange = (values) => {
         const start = values[0];
         const end = values[values.length - 1];
-        setMinValue(start)
-        setMaxValue(end)
-        setStringValues({ ...stringValues, priceMin: currencyConvert(arrayValues[start]), priceMax: end === arrayValues.length - 1 ? null : currencyConvert(arrayValues[end]) })
-        setRangeString(helper.convertPriceToString(start, end, arrayValues.length - 1, arrayValues))
+        setMinValue(arrayValues[start])
+        setMaxValue(arrayValues[end])
+        setStringValues({ ...stringValues, priceMin: arrayValues[start] === arrayValues[arrayValues.length - 1] ? null : currencyConvert(arrayValues[start]), priceMax: arrayValues[end] === arrayValues[arrayValues.length - 1] ? null : currencyConvert(arrayValues[end]) })
+        setRangeString(helper.convertPriceToString(arrayValues[start], arrayValues[end], arrayValues[arrayValues.length - 1]))
     }
 
-    const priceFormatter = (start, end) => {
-        return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
-    }
 
     const handleMinPriceChange = (value) => {
         setStringValues({ ...stringValues, priceMin: String(value) });
-        if (value < arrayValues[maxValue]) {
-            setErrorMessage('');
-            const closestNumber = getClosestNumber(Number(value), arrayValues);
-            const indexOfClosestNumber = arrayValues.indexOf(closestNumber);
-            setRangeString(priceFormatter(value, arrayValues[maxValue]))
-            if (indexOfClosestNumber !== -1) {
-                setMinValue(indexOfClosestNumber);
-            }
-        }
-        else {
-            setErrorMessage('Minimum price cannot be greater than Maximum price')
+        setRangeString(helper.convertPriceToString(value, maxValue, arrayValues[arrayValues.length - 1]))
+        const closestNumber = getClosestNumber(Number(value), arrayValues);
+        if (closestNumber) {
+            setMinValue(closestNumber);
         }
     }
 
-
-
     const handleMaxPriceChange = (value) => {
         setStringValues({ ...stringValues, priceMax: String(value) });
-        if (value < arrayValues[minValue]) {
-            setErrorMessage('Maximum price cannot be less than Minimum price')
-        }
-        else {
-            setErrorMessage('');
-            const closestNumber = getClosestNumber(Number(value), arrayValues);
-            const indexOfClosestNumber = arrayValues.indexOf(closestNumber);
-            setRangeString(priceFormatter(arrayValues[minValue], value))
-            if (indexOfClosestNumber !== -1) {
-                setMaxValue(indexOfClosestNumber);
-            }
+        setRangeString(helper.convertPriceToString(minValue, value, arrayValues[arrayValues.length - 1]));
+        const closestNumber = getClosestNumber(Number(value), arrayValues);
+        if (closestNumber) {
+            setMaxValue(closestNumber);
         }
     }
 
     const onDonePressed = () => {
-        onModalPriceDonePressed(minValue, maxValue)
+        const finalMinValue = stringValues.priceMin ? Number(removeCommas(stringValues.priceMin)) : StaticData.Constants.any_value;
+        const finalMaxValue = stringValues.priceMax ? Number(removeCommas(stringValues.priceMax)) : StaticData.Constants.any_value;
+        if (finalMinValue > finalMaxValue) {
+            setErrorMessage('Minimum price cannot be greater than Maximum price')
+            return;
+        }
+        else {
+            onModalPriceDonePressed(finalMinValue, finalMaxValue)
+            setErrorMessage('');
+        }
     }
 
     const getClosestNumber = (num, array) => {
@@ -104,25 +94,17 @@ const PriceSliderModal = ({ isVisible,
     }
 
 
-
-    const removeCommas = (symbol, str) => {
-        if (str) {
-            var newString = "";
-            for (var i = 0; i < str.length; i++) {
-                var char = str.charAt(i);
-                if (char != symbol) {
-                    newString = newString + char;
-                }
-            }
-            return newString;
-        }
+    const removeCommas = (str) => {
+        let newString = str.replace(/,/g, "");
+        return newString;
     }
 
     const onModalCancel = () => {
         setMinValue(initialValue)
         setMaxValue(finalValue)
-        setStringValues({ ...stringValues, priceMin: currencyConvert(arrayValues[initialValue]), priceMax: finalValue === arrayValues.length - 1 ? null : currencyConvert(arrayValues[finalValue]) })
-        setRangeString(helper.convertPriceToString(initialValue, finalValue, arrayValues.length - 1, arrayValues))
+        setErrorMessage('');
+        setStringValues({ ...stringValues, priceMin: initialValue === StaticData.Constants.any_value ? null : currencyConvert(initialValue), priceMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue) })
+        setRangeString(helper.convertPriceToString(initialValue, finalValue, arrayValues[arrayValues.length - 1]))
         onModalCancelPressed();
     }
 
@@ -131,18 +113,17 @@ const PriceSliderModal = ({ isVisible,
             <View style={styles.modalMain}>
                 <Text style={styles.textStyle}>{rangeString}</Text>
                 <PriceSlider
-                    initialValue={minValue}
-                    finalValue={maxValue}
+                    initialValue={arrayValues.indexOf(getClosestNumber(minValue, arrayValues))}
+                    finalValue={arrayValues.indexOf(getClosestNumber(maxValue, arrayValues))}
                     priceValues={arrayValues}
                     onSliderValueChange={(values) => onSliderValueChange(values)} />
 
                 <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
                     <TextInput
-                        ref={priceMinInput}
                         placeholder={'Any'}
                         value={stringValues.priceMin}
                         onBlur={() => setStringValues({ ...stringValues, priceMin: currencyConvert(stringValues.priceMin) })}
-                        onFocus={() => setStringValues({ ...stringValues, priceMin: removeCommas(',', stringValues.priceMin) })}
+                        onFocus={() => setStringValues({ ...stringValues, priceMin: stringValues.priceMin ? removeCommas(stringValues.priceMin) : '' })}
                         onChangeText={(text) => handleMinPriceChange(text)}
                         placeholderTextColor="#96999E"
                         style={[AppStyles.formControl, styles.priceStyle]}
@@ -151,7 +132,7 @@ const PriceSliderModal = ({ isVisible,
                         placeholder={'Any'}
                         value={stringValues.priceMax}
                         onBlur={() => setStringValues({ ...stringValues, priceMax: currencyConvert(stringValues.priceMax) })}
-                        onFocus={() => setStringValues({ ...stringValues, priceMax: removeCommas(',', stringValues.priceMax) })}
+                        onFocus={() => setStringValues({ ...stringValues, priceMax: stringValues.priceMax ? removeCommas(stringValues.priceMax) : '' })}
                         placeholderTextColor="#96999E"
                         onChangeText={(text) => handleMaxPriceChange(text)}
                         style={[AppStyles.formControl, styles.priceStyle]}

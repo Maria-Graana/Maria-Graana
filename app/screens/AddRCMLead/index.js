@@ -126,13 +126,13 @@ class AddRCMLead extends Component {
     setPriceList = () => {
         const { formType, RCMFormData } = this.state;
         if (formType === 'sale') {
-            RCMFormData.minPrice = 0;
-            RCMFormData.maxPrice = StaticData.PricesBuy.length - 1;
+            RCMFormData.minPrice = StaticData.PricesBuy[0];
+            RCMFormData.maxPrice = StaticData.PricesBuy[StaticData.PricesBuy.length - 1];
             this.setState({ RCMFormData, priceList: StaticData.PricesBuy })
         }
         else {
-            RCMFormData.minPrice = 0;
-            RCMFormData.maxPrice = StaticData.PricesRent.length - 1;
+            RCMFormData.minPrice = StaticData.PricesRent[0];
+            RCMFormData.maxPrice = StaticData.PricesRent[StaticData.PricesRent.length - 1];
             this.setState({ RCMFormData, priceList: StaticData.PricesRent })
         }
     }
@@ -297,34 +297,6 @@ class AddRCMLead extends Component {
         }, () => {
             this.setPriceList();
         })
-    }
-
-    onSliderValueChange = (values) => {
-        // const { RCMFormData, priceList, sizeUnitList, modalType } = this.state;
-        // //console.log('change', values)
-        // const copyObject = { ...RCMFormData };
-        // switch (modalType) {
-        //     case 'bed':
-        //         copyObject.bed = StaticData.bedBathRange[values[0]];
-        //         copyObject.maxBed = StaticData.bedBathRange[values[values.length - 1]];
-        //         this.setState({ RCMFormData: copyObject });
-        //         break;
-        //     case 'bath':
-        //         copyObject.bath = StaticData.bedBathRange[values[0]];
-        //         copyObject.maxBath = StaticData.bedBathRange[values[values.length - 1]];
-        //         this.setState({ RCMFormData: copyObject });
-        //         break;
-        //     case 'price':
-        //         copyObject.minPrice = priceList[values[0]];
-        //         copyObject.maxPrice = priceList[values[values.length - 1]];
-        //         break;
-        //     case 'size':
-        //         copyObject.size = sizeUnitList[values[0]];
-        //         copyObject.maxSize = sizeUnitList[values[values.length - 1]];
-        //         break;
-        //     default:
-        //         break;
-        // }
     }
 
     showBedBathModal = (modalType) => {

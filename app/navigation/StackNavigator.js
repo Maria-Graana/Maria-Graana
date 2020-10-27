@@ -207,7 +207,7 @@ function MainStack() {
                     headerTitleAlign: 'center',
                 })}
             />
-              <Stack.Screen name='RCMAttachment' component={RCMAttachment}
+            <Stack.Screen name='RCMAttachment' component={RCMAttachment}
                 options={({ navigation, route }) => ({
                     title: 'ATTACHMENTS',
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
@@ -216,7 +216,7 @@ function MainStack() {
             />
             <Stack.Screen name='Comments' component={Comments}
                 options={({ navigation, route }) => ({
-                    title: 'COMMENTS',
+                    title: route.params.title,
                     headerLeft: props => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
                     headerTitleAlign: 'center',
                 })}

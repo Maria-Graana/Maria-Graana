@@ -45,7 +45,8 @@ class LeadPropsure extends React.Component {
             reasons: [],
             closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
             callModal: false,
-            meetings: []
+            meetings: [],
+            menuShow: false
         }
     }
 
@@ -260,15 +261,15 @@ class LeadPropsure extends React.Component {
         helper.leadClosedToast()
     }
 
-	closeLead = () => {
-		const {lead} = this.props;
-		if (lead.commissions && lead.commissions.status === 'approved') {
+    closeLead = () => {
+        const { lead } = this.props;
+        if (lead.commissions && lead.commissions.status ===  StaticData.leadClearedStatus) {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
         }
         else {
             this.setState({ reasons: StaticData.leadCloseReasons, isCloseLeadVisible: true, checkReasonValidation: '' })
         }
-	}
+    }
 
     onHandleCloseLead = () => {
         const { navigation, lead } = this.props
@@ -338,8 +339,25 @@ class LeadPropsure extends React.Component {
             })
     }
 
+    goToPropertyComments = (data) => {
+        const { lead, navigation } = this.props
+        this.toggleMenu(false, data.id)
+        navigation.navigate('Comments', { propertyId: data.id, screenName: 'propsure' });
+    }
+
+    toggleMenu = (val, id) => {
+        const { matchData } = this.state
+        let newMatches = matchData.map(item => {
+            if (item.id === id) {
+                item.checkBox = val
+                return item
+            } else return item
+        })
+        this.setState({ matchData: newMatches })
+    }
+
     render() {
-        const { meetings, callModal, loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { menuShow, meetings, callModal, loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
         const { lead, navigation } = this.props
 
         return (
@@ -374,25 +392,35 @@ class LeadPropsure extends React.Component {
                         {
                             matchData.length ?
                                 <FlatList
-                                    data={matchData}
+                                    data={_.clone(matchData)}
                                     renderItem={(item, index) => (
                                         <View style={{ marginVertical: 3, marginHorizontal: 15 }}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile
-                                                        data={item.item}
+                                                        data={_.clone(item.item)}
                                                         user={user}
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}
                                                         addProperty={this.addProperty}
+                                                        isMenuVisible={true}
+                                                        viewingMenu={false}
+                                                        goToPropertyComments={this.goToPropertyComments}
+                                                        toggleMenu={this.toggleMenu}
+                                                        menuShow={menuShow}
                                                     />
                                                     :
                                                     <AgentTile
-                                                        data={item.item}
+                                                        data={_.clone(item.item)}
                                                         user={user}
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}
                                                         addProperty={this.addProperty}
+                                                        isMenuVisible={true}
+                                                        viewingMenu={false}
+                                                        goToPropertyComments={this.goToPropertyComments}
+                                                        toggleMenu={this.toggleMenu}
+                                                        menuShow={menuShow}
                                                     />
                                             }
                                             <View>
@@ -409,7 +437,7 @@ class LeadPropsure extends React.Component {
                                 />
                                 :
                                 <>
-                                <Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
+                                    <Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
                                 </>
                         }
                     </View>

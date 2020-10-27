@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, FlatList, Alert, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import axios from 'axios';
-import _ from 'underscore';
+import _, { property } from 'underscore';
 import AppStyles from '../../AppStyles';
 import AddComment from './addComment';
 import CommentTile from '../../components/CommentTile'
@@ -18,7 +18,8 @@ class Comments extends Component {
             commentsList: [],
             comment: '',
             loading: true,
-            type: 'comment'
+            type: 'comment',
+            property: false
         }
     }
 
@@ -27,17 +28,27 @@ class Comments extends Component {
     }
 
     getCommentsFromServer = () => {
-        const { type } = this.state;
-        const { route } = this.props;
-        const { rcmLeadId, cmLeadId } = route.params;
-        const url = rcmLeadId ? `/api/leads/comments?rcmLeadId=${rcmLeadId}&type=${type}`
-            : `/api/leads/comments?cmLeadId=${cmLeadId}&type=${type}`
+        const { type, property } = this.state;
+        const { route, navigation } = this.props;
+        if ('rcmLeadId' in route.params || 'cmLeadId' in route.params) {
+            navigation.setParams({ title: 'LEAD COMMENTS' })
+            const { rcmLeadId, cmLeadId } = route.params
+            const url = rcmLeadId ? `/api/leads/comments?rcmLeadId=${rcmLeadId}&type=${type}`
+                : `/api/leads/comments?cmLeadId=${cmLeadId}&type=${type}`
 
-        axios.get(url).then(response => {
-            this.setState({ commentsList: response.data, comment: '', loading: false });
-        }).catch(error => {
-            console.log(error);
-        })
+            axios.get(url).then(response => {
+                this.setState({ commentsList: response.data, comment: '', loading: false });
+            }).catch(error => {
+                console.log(error);
+            })
+        } else {
+            navigation.setParams({ title: 'PROPERTY COMMENTS' })
+            const { propertyId, screenName } = route.params
+            const url = `/api/leads/comments?shortListPropertyId=${propertyId}`
+            axios.get(url).then(response => {
+                this.setState({ property: true, commentsList: response.data, comment: '', loading: false })
+            }).catch(error => { console.log(`ERROR: /api/leads/comments ${error}`) })
+        }
     }
 
     setComment = (value) => {
@@ -63,27 +74,35 @@ class Comments extends Component {
     }
 
     addComment = () => {
-        const { comment } = this.state;
+        const { comment, property } = this.state;
         const { route } = this.props;
-        const { rcmLeadId, cmLeadId } = route.params;
+        const { rcmLeadId, cmLeadId, screenName, propertyId } = route.params;
         let commentObject = {};
 
         if (comment.length > 0 && comment !== '') {
-            if (rcmLeadId) {
+            if (!property) {
+                if (rcmLeadId) {
+                    commentObject = {
+                        value: comment,
+                        type: 'comment',
+                        rcmLeadId: rcmLeadId,
+                    }
+                }
+                else {
+                    commentObject = {
+                        value: comment,
+                        type: 'comment',
+                        cmLeadId: cmLeadId,
+                    }
+                }
+            } else {
                 commentObject = {
                     value: comment,
                     type: 'comment',
-                    rcmLeadId: rcmLeadId,
+                    shortListPropertyId: propertyId,
+                    title: screenName
                 }
             }
-            else {
-                commentObject = {
-                    value: comment,
-                    type: 'comment',
-                    cmLeadId: cmLeadId,
-                }
-            }
-
             axios.post(`/api/leads/comments`, commentObject).then(response => {
                 this.getCommentsFromServer();
             }).catch(error => {
@@ -97,7 +116,7 @@ class Comments extends Component {
     }
 
     render() {
-        const { commentsList, loading, comment } = this.state;
+        const { commentsList, loading, comment, property } = this.state;
         return (
             !loading ?
                 <KeyboardAwareScrollView style={[AppStyles.container, { paddingHorizontal: 0, marginBottom: 25 }]} >
@@ -107,6 +126,7 @@ class Comments extends Component {
                         data={commentsList}
                         renderItem={({ item }) => (
                             <CommentTile
+                                property={property}
                                 data={item}
                                 addComment={this.addComment}
                                 deleteComment={(item) => this.showDeleteDialog(item)} />

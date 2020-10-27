@@ -20,8 +20,8 @@ import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { storeItem, getItem } from '../../actions/user';
 
-var BUTTONS = ['Share lead with other agent', 'Cancel'];
-var CANCEL_INDEX = 1;
+var BUTTONS = ['Share lead with other agent', 'Create new Rent lead for this client', 'Cancel'];
+var CANCEL_INDEX = 2;
 
 class RentLeads extends React.Component {
 	constructor(props) {
@@ -112,9 +112,13 @@ class RentLeads extends React.Component {
 			})
 	}
 
-	goToFormPage = (page, status) => {
+	goToFormPage = (page, status, client, clientId) => {
 		const { navigation } = this.props;
-		navigation.navigate(page, { 'pageName': status });
+		const copyClient = client ? { ...client } : null;
+		if (copyClient) {
+			copyClient.id = clientId
+		}
+		navigation.navigate(page, { 'pageName': status, client: copyClient, name: copyClient && copyClient.customerName, purpose: 'rent' });
 	}
 
 	changeStatus = (status) => {
@@ -165,6 +169,8 @@ class RentLeads extends React.Component {
 				if (buttonIndex === 0) {
 					//Share
 					this.navigateToShareScreen(val);
+				} else if (buttonIndex === 1) {
+					this.goToFormPage('AddRCMLead', 'RCM', val && val.customer ? val.customer : null, val.customer_id)
 				}
 			}
 		);
@@ -172,7 +178,7 @@ class RentLeads extends React.Component {
 
 	navigateToShareScreen = (data) => {
 		const { user } = this.props;
-		if(data){
+		if (data) {
 			if (data.status === StaticData.Constants.lead_closed_lost || data.status === StaticData.Constants.lead_closed_won) {
 				helper.errorToast('Closed leads cannot be shared with other agents')
 				return;
@@ -190,10 +196,10 @@ class RentLeads extends React.Component {
 				helper.errorToast('Only the leads assigned to you can be shared')
 			}
 		}
-		else{
+		else {
 			helper.errorToast('Something went wrong!')
 		}
-		
+
 	}
 
 	callNumber = (url) => {
@@ -354,8 +360,8 @@ class RentLeads extends React.Component {
 					fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
 					color={AppStyles.bgcWhite.backgroundColor}
 					actions={[
-						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM') },
-						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM') },
+						{ icon: 'plus', label: 'Investment Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null) },
+						{ icon: 'plus', label: 'Buy/Rent Lead', color: AppStyles.colors.primaryColor, onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null) },
 
 					]}
 					onStateChange={({ open }) => this.setState({ open })}

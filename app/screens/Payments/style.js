@@ -177,6 +177,7 @@ export default styles = StyleSheet.create({
     marginBottom: 0,
     justifyContent: 'center',
     marginTop: 15,
+    backgroundColor: '#fff',
   },
   addPaymentBtnImg: {
     resizeMode: 'contain',
@@ -192,8 +193,12 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
   },
+  noMargTop: {
+    marginTop: 0,
+    marginBottom: 10,
+  },
   scrollHeight: {
-    height: 183,
+    height: 280,
   },
   scrollHeightAuto: {
     height: 'auto',

@@ -29,6 +29,7 @@ class FormScreenSecond extends Component {
       paymentPreviewLoading,
       checkLeadClosedOrNot,
       onlyReadFormData,
+      toggleBookingDetailsModal,
       tileForToken,
     } = this.props
     return (
@@ -36,73 +37,21 @@ class FormScreenSecond extends Component {
         <KeyboardAvoidingView>
           <View style={[styles.firstContainer]}>
             {/* Top Booked Text */}
-            <View style={styles.bookedBtn}>
-              <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
-              <Text style={styles.bookedBtnText}>BOOKED</Text>
-            </View>
-
-            {/* Top Details Wrap */}
-            <View style={styles.mainTopDetailsWrap}>
-              <View style={styles.detailsRow}>
-                <Text style={styles.leftDetailsText}>
-                  Project
-                </Text>
-                <Text style={styles.rightDetailsText}>
-                  {data.project.name}
-                </Text>
-              </View>
-
-              {/* ================================= */}
-              <View style={styles.detailsRow}>
-                <Text style={styles.leftDetailsText}>
-                  Floor
-                    </Text>
-                <Text style={styles.rightDetailsText}>
-                  {data.floor && data.floor.name}
-                </Text>
-              </View>
-
-              {/* ================================= */}
-              <View style={styles.detailsRow}>
-                <Text style={styles.leftDetailsText}>
-                  Unit
-                    </Text>
-                <Text style={styles.rightDetailsText}>
-                  {data.unit && data.unit.name}
-                </Text>
-              </View>
-
-              {/* ================================= */}
-              <View style={styles.detailsRow}>
-                <Text style={styles.leftDetailsText}>
-                  Final Price
-                    </Text>
-                <Text style={styles.rightDetailsText}>
-                  {formatPrice(data.unit ? data.unit.finalPrice : '')}
-                </Text>
-              </View>
-
-              {/* ================================= */}
-              <View style={styles.detailsRow}>
-                <Text style={styles.leftDetailsText}>
-                  Payment Plan
-                    </Text>
-                <Text style={styles.rightDetailsText}>
-                  {data.installmentDue}
-                </Text>
-              </View>
-            </View>
-
+            <TouchableOpacity style={[styles.addPaymentBtn, styles.noMargTop]} onPress={() => { toggleBookingDetailsModal(true) }}>
+              <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/checkWhite.png')}></Image>
+              <Text style={styles.addPaymentBtnText}>BOOKING DETAILS</Text>
+            </TouchableOpacity>
           </View>
 
           <Text style={styles.paymentsHeading}>
             PAYMENTS
-              </Text>
+          </Text>
 
           <View style={styles.mainPaymentWrap}>
 
             <View style={styles.paymentTileMain}>
-              <View style={[styles.tileWrap, styles.scrollHeight, data.payment != null && data.payment.length < 3 ? styles.scrollHeightAuto : null]}>
+              {/* <View style={[styles.tileWrap, styles.scrollHeight, data.payment != null && data.payment.length < 3 ? styles.scrollHeightAuto : null]}> */}
+              <View style={[styles.tileWrap, styles.scrollHeight]}>
                 <ScrollView>
 
                   {

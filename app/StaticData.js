@@ -642,6 +642,8 @@ export default StaticData = {
         { value: 'Remittance', name: 'Remittance' },
         { value: 'bank-Transfer', name: 'Bank-Transfer' },
         { value: 'e-Gateway', name: 'E-Gateway' },
+        { value: 'Buy Back Adjustment', name: 'Buy Back Adjustment' },
+        { value: 'Inter Mall Adjustment', name: 'Inter Mall Adjustment' },
     ],
     unitType: [
         { value: 'fullUnit', name: 'Full Unit' },
@@ -649,7 +651,19 @@ export default StaticData = {
     ],
     onlyUnitType: [
         { value: 'fullUnit', name: 'Full Unit' },
-    ]
+    ],
+    paymentTypeForToken: [
+        { value: 'Token', name: 'Token' },
+        { value: 'Payment', name: 'Other Payment' },
+    ],
+    statusOptions: [
+        { label: 'Pending Account', value: 'pendingAccount' },
+        { label: 'Pending Sales', value: 'pendingSales' },
+        { label: 'Pending at Bank', value: 'bankPending' },
+        { label: 'Not Cleared', value: 'notCleared' },
+        { label: 'Cleared', value: 'cleared' },
+    ],
+    leadClearedStatus: 'cleared',
 }
 
 

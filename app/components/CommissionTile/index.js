@@ -1,6 +1,7 @@
 import React,{Component} from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { formatPrice } from '../../PriceFormate';
+import StaticData from '../../StaticData';
 import moment from 'moment';
 
 class CommissionTile extends Component {
@@ -17,13 +18,14 @@ class CommissionTile extends Component {
 
   render() {
     const { data, editTile } = this.props;
-    let statusColor = data.status === 'approved' ? styles.statusGreen : data.status === 'rejected' ? styles.statusRed : styles.statusYellow
+    var showStatus = data.status != '' ?  StaticData.statusOptions.find((item) => { return item.value === data.status && item  }) : {label: '', value: ''}
+		var statusColor = showStatus != null && showStatus.value === StaticData.leadClearedStatus? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
     return (
-      <TouchableOpacity onPress={() => { data.status != 'approved' ? editTile(data) : null }}>
+      <TouchableOpacity onPress={() => { data.status != StaticData.leadClearedStatus ? editTile(data) : null }}>
         <View style={styles.tileTopWrap}>
           <View style={styles.upperLayer}>
             <Text style={styles.paymnetHeading}>Commission Payment</Text>
-            <Text style={[styles.tileStatus, statusColor]}>{data.status === 'pending' ? 'pending clearance' : data.status}</Text>
+            <Text style={[styles.tileStatus, statusColor]}>{showStatus.label}</Text>
           </View>
           <View style={styles.bottomLayer}>
             <Text style={styles.formatPrice}>{this.currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>

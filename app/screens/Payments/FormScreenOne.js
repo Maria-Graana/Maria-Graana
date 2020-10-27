@@ -107,13 +107,13 @@ class InnerForm extends Component {
                         keyboardType={'numeric'}
                         noMargin={true}
                       />
-                      {firstScreenValidate === true && formData.pearl === null && <ErrorMessage errorMessage={'Required'} />}
-                      {formData.pearl > unitPearlDetailsData.pearlArea && <ErrorMessage errorMessage={`Cannot be greater than ${unitPearlDetailsData.pearlArea} sqft `} />}
-                      {formData.pearl < 50 && formData.pearl > 0 && <ErrorMessage errorMessage={'Must be greater than or equal to 50 sqft'} />}
+                      {firstScreenValidate === true && formData.pearl === null ? <ErrorMessage errorMessage={'Required'} /> : null}
+                      {formData.pearl > unitPearlDetailsData.pearlArea ? <ErrorMessage errorMessage={`Cannot be greater than ${unitPearlDetailsData.pearlArea} sqft `} /> : null}
+                      {formData.pearl < 50 && formData.pearl > 0 ? <ErrorMessage errorMessage={'Must be greater than or equal to 50 sqft'} /> : null}
                       {leftSqft < 50 && leftSqft > 0 ? <ErrorMessage errorMessage={`Remaining area (${leftSqft} sqft) must be 0 or greater than or equal to 50 sqft`} /> : null}
                     </View>
                     <View style={styles.mainDetailViewBtn}>
-                      <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.pearl != null && openPearlDetailsModal(true) }}>
+                      <TouchableOpacity style={[styles.unitDetailBtn]} onPress={() => { formData.pearl != null && formData.pearl >= 50 && openPearlDetailsModal(true) }}>
                         <Text style={styles.detailBtnText}>Details</Text>
                       </TouchableOpacity>
                     </View>

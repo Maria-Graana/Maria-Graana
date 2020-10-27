@@ -68,7 +68,8 @@ class LeadRCMPayment extends React.Component {
             modalValidation: false,
             addPaymentLoading: false,
             editable: false,
-            matchData: []
+            matchData: [],
+            menuShow: false
         }
     }
 
@@ -220,7 +221,7 @@ class LeadRCMPayment extends React.Component {
 
     showLeadPaymentModal = () => {
         const { lead } = this.state;
-        if (lead.commissions && lead.commissions.status === 'approved') {
+        if (lead.commissions && lead.commissions.status ===  StaticData.leadClearedStatus) {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
         }
         else {
@@ -707,7 +708,6 @@ class LeadRCMPayment extends React.Component {
         }
     }
 
-
     fetchLead = () => {
         const { dispatch, lead } = this.props;
         const { rcmProgressBar } = StaticData
@@ -725,8 +725,27 @@ class LeadRCMPayment extends React.Component {
         });
     }
 
+    goToPropertyComments = (data) => {
+        const { lead, navigation } = this.props
+        this.toggleMenu(false, data.id)
+        navigation.navigate('Comments', { propertyId: data.id, screenName: 'payment' });
+    }
+
+    toggleMenu = (val, id) => {
+        const { allProperties } = this.state
+        let newMatches = allProperties.map(item => {
+            if (item.id === id) {
+                item.checkBox = val
+                return item
+            } else return item
+        })
+        this.setState({ allProperties: newMatches })
+    }
+
     render() {
-        const { loading,
+        const {
+            menuShow,
+            loading,
             allProperties,
             user,
             isVisible,
@@ -789,25 +808,35 @@ class LeadRCMPayment extends React.Component {
                         {
                             allProperties.length > 0 ?
                                 <FlatList
-                                    data={allProperties}
+                                    data={_.clone(allProperties)}
                                     renderItem={(item, index) => (
                                         <View style={{ marginVertical: 3, marginHorizontal: 10 }}>
                                             {
                                                 this.ownProperty(item.item) ?
                                                     <MatchTile
-                                                        data={item.item}
+                                                        data={_.clone(item.item)}
                                                         user={user}
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}
                                                         addProperty={this.addProperty}
+                                                        isMenuVisible={true}
+                                                        viewingMenu={false}
+                                                        goToPropertyComments={this.goToPropertyComments}
+                                                        toggleMenu={this.toggleMenu}
+                                                        menuShow={menuShow}
                                                     />
                                                     :
                                                     <AgentTile
-                                                        data={item.item}
+                                                        data={_.clone(item.item)}
                                                         user={user}
                                                         displayChecks={this.displayChecks}
                                                         showCheckBoxes={false}
                                                         addProperty={this.addProperty}
+                                                        isMenuVisible={true}
+                                                        viewingMenu={false}
+                                                        goToPropertyComments={this.goToPropertyComments}
+                                                        toggleMenu={this.toggleMenu}
+                                                        menuShow={menuShow}
                                                     />
                                             }
                                             <View>
@@ -874,7 +903,7 @@ class LeadRCMPayment extends React.Component {
                                 />
                                 :
                                 <>
-                                <Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
+                                    <Image source={require('../../../assets/img/no-result-found.png')} resizeMode={'center'} style={{ alignSelf: 'center', width: 300, height: 300 }} />
                                 </>
                         }
                         <View style={AppStyles.mainCMBottomNav}>

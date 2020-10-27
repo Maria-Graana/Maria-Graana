@@ -12,7 +12,7 @@ class UnitDetailsModal extends React.Component {
   }
 
   handleEmptyValue = (value) => {
-    return value != null ? value : '-'
+    return value != null && value != '' ? value : ''
   }
 
   render() {
@@ -27,12 +27,10 @@ class UnitDetailsModal extends React.Component {
     var optionalArray = data && data.optional_fields != null && data.optional_fields
     var optional = []
     optional = data && data != '' && JSON.parse([optionalArray])
-
     return (
-
       <Modal isVisible={active}>
         {
-          !pearlModal && data && data != '' &&
+          pearlModal === false && data && data != '' &&
           <View style={[styles.modalMain]}>
             <TouchableOpacity style={styles.timesBtn} onPress={() => { openUnitDetailsModal(null, false) }}>
               <Image source={times} style={styles.timesImg} />
@@ -83,32 +81,10 @@ class UnitDetailsModal extends React.Component {
                 </View>
               }
 
-              {
-                // optional && optional.map((item, key) => {
-                //   return (
-                //     <View style={styles.MainTileView}>
-                //       <View>
-                //         <Text style={styles.smallText}>{item.fieldName}</Text>
-                //         <Text style={styles.largeText}>
-                //           {
-                //             item.fieldType && item.fieldType.value === 'dropdown' &&
-                //             item.value && item.value.map((items, index) => {
-                //               return (
-                //                 items.value + ', '
-                //               )
-                //             })
-                //           }
-                //         </Text>
-                //       </View>
-                //     </View>
-                //   )
-                // })
-              }
-
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
-                  <Text style={styles.smallText}>Size</Text>
+                  <Text style={styles.smallText}>Size (sqft)</Text>
                   <Text style={styles.largeText}>{this.handleEmptyValue(data.area)}</Text>
                 </View>
               </View>
@@ -117,7 +93,7 @@ class UnitDetailsModal extends React.Component {
                 data.category_charges !== null &&
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Standard Rate</Text>
+                    <Text style={styles.smallText}>Standard Rate / sqft</Text>
                     <Text style={styles.largeText}>{this.handleEmptyValue(data.pricePerSqFt)}</Text>
                   </View>
                 </View>
@@ -146,6 +122,24 @@ class UnitDetailsModal extends React.Component {
                 </View>
               </View>
               {/* ===================== */}
+              {
+                data.rentPerSqFt !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Discount</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount) + `${data.discount > 0 || formData.discount > 1 ? '%' : `${data.discount <= 0 ? '': ''}`}`}</Text>
+                  </View>
+                </View>
+              }
+              {
+                data.rentPerSqFt !== null &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Discounted Price</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discountedPrice === 0 ? data.discount_amount : formData.finalPrice)}</Text>
+                  </View>
+                </View>
+              }
               {
                 data.rentPerSqFt !== null &&
                 <View style={styles.MainTileView}>
@@ -185,7 +179,7 @@ class UnitDetailsModal extends React.Component {
           </View>
         }
         {
-          pearlModal && data && data != '' &&
+          pearlModal === true && data && data != '' &&
           <View style={[styles.modalMain]}>
             <TouchableOpacity style={styles.timesBtn} onPress={() => { openUnitDetailsModal(null, false) }}>
               <Image source={times} style={styles.timesImg} />

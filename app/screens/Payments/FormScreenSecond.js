@@ -61,7 +61,7 @@ class FormScreenSecond extends Component {
                       data && data.payment && data.payment.length > 0 ?
                         data.payment.map((item, index) => {
                           return (
-                            <PaymentTile tileForToken={false} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} />
+                            <PaymentTile tileForToken={false} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} checkLeadClosedOrNot={checkLeadClosedOrNot} />
                           )
                         })
                         : <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>

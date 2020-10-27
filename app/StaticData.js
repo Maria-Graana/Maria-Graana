@@ -643,8 +643,8 @@ export default StaticData = {
         { value: 'Payment', name: 'Other Payment' },
     ],
     statusOptions: [
-        { label: 'Pending Approval', value: 'pending' },
-        { label: 'Rejected', value: 'rejected' },
+        { label: 'Pending Approval', value: 'pendingAccount' },
+        { label: 'Rejected', value: 'pendingSales' },
         { label: 'Pending at Bank', value: 'bankPending' },
         { label: 'Not Cleared', value: 'notCleared' },
         { label: 'Cleared', value: 'cleared' },

@@ -66,7 +66,12 @@ class Payments extends Component {
 			paymentPlan: [],
 			openFirstScreenModal: false,
 			firstScreenValidate: false,
-			firstScreenDone: lead.status === 'token' || lead.status === 'payment' || lead.status === 'closed_won' || lead.status === 'closed_lost' ? false : true,
+			firstScreenDone: lead.status === 'token' || lead.status === 'payment' || lead.status === 'closed_won' || lead.status === 'closed_lost' ?
+				lead.status === 'closed_lost' && lead.remainingPayment === null ?
+					true
+					:
+					false
+				: true,
 			secondScreenData: lead,
 			addPaymentModalToggleState: false,
 			secondCheckValidation: false,

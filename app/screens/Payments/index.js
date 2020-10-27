@@ -19,7 +19,6 @@ import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style';
 import { setCMPaymennt } from '../../actions/addCMPayment';
 
-
 class Payments extends Component {
 	constructor(props) {
 		super(props)
@@ -93,19 +92,15 @@ class Payments extends Component {
 	componentDidMount() {
 		const { formData, remarks } = this.state
 		const { navigation, lead } = this.props
-
 		this.fetchLead()
 		this.getAllProjects()
 		this.setdefaultFields(this.props.lead)
-
 		this._unsubscribe = navigation.addListener('focus', () => {
 			this.reopenPaymentModal();
 		})
 		if (lead.paidProject && lead.paidProject != null) {
 			this.getFloors(lead.paidProject.id)
 		}
-
-		console.log(lead)
 	}
 
 	componentWillUnmount() {
@@ -255,7 +250,6 @@ class Payments extends Component {
 	setPaymentPlanArray = (lead) => {
 		const { paymentPlan, checkPaymentPlan } = this.state
 		const array = [];
-
 		if (checkPaymentPlan.investment === true && lead.paidProject != null && lead.paidProject != null) {
 			array.push({ value: 'Sold on Investment Plan', name: `Investment Plan ${lead.paidProject.full_payment_discount > 0 ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)` : ''}` })
 		}
@@ -268,7 +262,6 @@ class Payments extends Component {
 		if (checkPaymentPlan.monthly === true) {
 			array.push({ value: 'Sold on Monthly Installments Plan', name: checkPaymentPlan.years + ' Years Monthly Installments' })
 		}
-
 		this.setState({
 			paymentPlan: array,
 		})
@@ -622,7 +615,6 @@ class Payments extends Component {
 
 	firstScreenConfirmModal = (status) => {
 		const { formData, cnicValidate, leftSqft, unitPearlDetailsData } = this.state
-
 		if (formData.pearl != null) {
 			if (
 				formData.pearl <= unitPearlDetailsData.pearlArea &&
@@ -649,7 +641,6 @@ class Payments extends Component {
 				this.setState({
 					firstScreenValidate: true,
 				})
-
 			}
 		} else {
 			if (
@@ -674,7 +665,6 @@ class Payments extends Component {
 				})
 			}
 		}
-
 	}
 
 	addPaymentModalToggle = (status) => {
@@ -694,7 +684,6 @@ class Payments extends Component {
 				editaAble: false,
 			})
 		}
-
 	}
 
 	secondHandleForm = (value, name) => {
@@ -718,15 +707,11 @@ class Payments extends Component {
 		} = this.state
 
 		const { CMPayment } = this.props
-
-
 		if (secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' && secondFormData.type != '') {
 			this.setState({
 				addPaymentLoading: true,
 			})
-
 			if (editaAble === false) {
-
 				var body = {
 					...secondFormData,
 					cmLeadId: this.props.lead.id,
@@ -762,7 +747,6 @@ class Payments extends Component {
 					remainingPayment: total,
 					cmLeadId: this.props.lead.id,
 				}
-
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
 						// ====================== If have attachments then this check will b execute
@@ -783,22 +767,16 @@ class Payments extends Component {
 	}
 
 	submitAttachment = (paymentId, checkForEdit, totalRemaining) => {
-
 		const {
 			secondFormData,
 			remainingPayment,
 		} = this.state
-
 		const { CMPayment } = this.props
-
 		var message = checkForEdit === true ? 'Payment Updated' : 'Payment details have been sent to Accounts for verification and clearance'
-
 		// ====================== If have attachments then this check will b execute
 		if (CMPayment.attachments && CMPayment.attachments.length > 0) {
-
 			// ====================== Using map for Uploading Attachments
 			CMPayment.attachments.map((item, index) => {
-
 				// ====================== attachment payload requirments
 				let attachment = {
 					name: item.fileName,
@@ -809,9 +787,6 @@ class Payments extends Component {
 				fd.append('file', attachment)
 				fd.append('title', item.title);
 				fd.append('type', 'file/' + item.fileName.split('.').pop())
-
-
-
 				if (item && !item.id) {
 					// ====================== API call for Attachments base on Payment ID
 					axios.post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
@@ -850,7 +825,6 @@ class Payments extends Component {
 							})
 						})
 				} else {
-
 					this.setState({
 						addPaymentModalToggleState: false,
 						remainingPayment: remainingPayment - secondFormData.installmentAmount,
@@ -868,9 +842,7 @@ class Payments extends Component {
 						this.clearPaymentsValuesFromRedux(false);
 					})
 				}
-
 			})
-
 		} else {
 			this.setState({
 				addPaymentModalToggleState: false,
@@ -915,7 +887,6 @@ class Payments extends Component {
 		this.setState({ addPaymentModalToggleState: true, modalLoading: true })
 		axios.get(`/api/leads/project/byId?id=${this.props.lead.id}`)
 			.then((res) => {
-
 				let editLeadData = [];
 				editLeadData = res && res.data.payment.find((item, index) => { return item.id === id ? item : null })
 				var setValuesForRedux = {
@@ -926,9 +897,7 @@ class Payments extends Component {
 					type: editLeadData.type,
 					visible: true,
 				}
-
 				this.props.dispatch(setCMPaymennt(setValuesForRedux))
-
 				this.setState({
 					secondFormData: {
 						installmentAmount: editLeadData.installmentAmount,
@@ -1036,7 +1005,6 @@ class Payments extends Component {
 		const { lead } = this.props
 		const { formData, remainingPayment, secondScreenData } = this.state
 		if (secondScreenData && secondScreenData != '') {
-
 			// Check For Any pending and rejected Status
 			var approvedPaymentDone = []
 			secondScreenData && secondScreenData.payment != null &&
@@ -1044,13 +1012,10 @@ class Payments extends Component {
 					return item.status === 'pending' || item.status === 'rejected' || item.status === 'bankPending' || item.status === 'notCleared' ?
 						approvedPaymentDone.push(true) : approvedPaymentDone.push(false)
 				})
-
 			// If there is any true in the bottom array PAYMENT DONE option will be hide
 			var checkForPenddingNrjected = []
 			approvedPaymentDone && approvedPaymentDone.length > 0 &&
 				approvedPaymentDone.filter((item) => { item === true && checkForPenddingNrjected.push(true) })
-
-
 			var leadId = []
 			leadId.push(lead.id)
 			// Check for Payment Done option 
@@ -1142,7 +1107,6 @@ class Payments extends Component {
 							</View>
 						</ScrollView>
 						: null}
-
 					{firstScreenDone === false ?
 						<ScrollView>
 							<View style={styles.secondContainer}>
@@ -1160,7 +1124,6 @@ class Payments extends Component {
 							</View>
 						</ScrollView>
 						: null}
-
 					{unitDetailsData && formData.pearl == null ?
 						<UnitDetailsModal
 							active={unitDetailModal}
@@ -1243,7 +1206,6 @@ class Payments extends Component {
 		)
 	}
 }
-
 mapStateToProps = (store) => {
 	return {
 		user: store.user.user,
@@ -1251,5 +1213,4 @@ mapStateToProps = (store) => {
 		CMPayment: store.CMPayment.CMPayment,
 	}
 }
-
 export default connect(mapStateToProps)(Payments)

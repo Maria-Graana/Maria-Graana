@@ -33,11 +33,9 @@ class CMLeadFrom extends Component {
       clientName,
       handleClientClick,
       priceList,
-      // onSliderValueChange,
       organizations,
       loading,
       sizeUnitList,
-      onSizeUnitSliderValueChange,
       isBedBathModalVisible,
       modalType,
       showBedBathModal,
@@ -46,6 +44,9 @@ class CMLeadFrom extends Component {
       isPriceModalVisible,
       showPriceModal,
       onModalPriceDonePressed,
+			isSizeModalVisible,
+			showSizeModal,
+			onModalSizeDonePressed,
 
     } = this.props
     const checkBuy = formType === 'sale'
@@ -81,7 +82,6 @@ class CMLeadFrom extends Component {
             handleAreaClick={handleAreaClick}
             priceList={priceList}
             modalType={modalType}
-            //onSliderValueChange={(values) => onSliderValueChange(values)}
             loading={loading}
             isBedBathModalVisible={isBedBathModalVisible}
             onBedBathModalDonePressed={onBedBathModalDonePressed}
@@ -90,6 +90,9 @@ class CMLeadFrom extends Component {
             isPriceModalVisible={isPriceModalVisible}
             showPriceModal={showPriceModal}
             onModalPriceDonePressed={onModalPriceDonePressed}
+            isSizeModalVisible={isSizeModalVisible}
+            onModalSizeDonePressed={onModalSizeDonePressed}
+            showSizeModal={showSizeModal}
           />
         </View>
       </View>

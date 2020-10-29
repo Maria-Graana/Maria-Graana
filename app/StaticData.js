@@ -444,6 +444,7 @@ export default StaticData = {
         lead_closed_won: 'closed_won',
         lead_closed_lost: 'closed_lost',
         any_value: 10000000000,
+        size_any_value: 10000000,
     },
     PricesProject: [
         500000,

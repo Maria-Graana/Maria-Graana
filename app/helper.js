@@ -467,23 +467,31 @@ const helper = {
 		}
 	},
 	convertPriceToString(start, end, maxValue) {
-			if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
-				return `PKR: Any`
-			}
-			else if (start === 0 && end !== maxValue) {
-				return `PKR: Upto ${formatPrice(end)}`
-			}
-			else if (start !== 0 && end === maxValue) {
-				return `PKR: ${formatPrice(start)} or more`;
-			}
-			else if (start === end) {
-				return `PKR: ${formatPrice(start)}`;
-			}
-			else {
-				return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
-			}
+		if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
+			return `PKR: Any`
+		}
+		else if (start === 0 && end !== maxValue) {
+			return `PKR: Upto ${(end)}`
+		}
+		else if (start !== 0 && end === maxValue) {
+			return `PKR: ${(start)} or more`;
+		}
+		else if (start === end) {
+			return `PKR: ${(start)}`;
+		}
+		else {
+			return `PKR: ${(start)} - ${(end)}`
+		}
+	},
+	convertSizeToString(start, end, unit) {
+		if (start === end) {
+			return `Size: ${(start)} ${this.capitalize(unit)}`;
+		}
+		else {
+			return `Size: ${(start)} - ${(end)} ${this.capitalize(unit)}`
 		}
 	}
+}
 
 
 module.exports = helper;

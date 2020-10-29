@@ -14,6 +14,7 @@ import TouchableButton from '../../components/TouchableButton';
 import BedBathSliderModal from '../../components/BedBathSliderModal';
 import helper from '../../helper';
 import PriceSliderModal from '../../components/PriceSliderModal';
+import SizeSliderModal from '../../components/SizeSliderModal';
 class InnerRCMForm extends Component {
 	constructor(props) {
 		super(props)
@@ -55,7 +56,6 @@ class InnerRCMForm extends Component {
 			selectedCity,
 			propertyType,
 			subType,
-			sizeUnit,
 			handleAreaClick,
 			clientName,
 			handleClientClick,
@@ -70,6 +70,10 @@ class InnerRCMForm extends Component {
 			isPriceModalVisible,
 			showPriceModal,
 			onModalPriceDonePressed,
+			sizeUnitList,
+			isSizeModalVisible,
+			showSizeModal,
+			onModalSizeDonePressed,
 		} = this.props
 
 		const { leadAreas } = formData;
@@ -94,6 +98,15 @@ class InnerRCMForm extends Component {
 					onModalPriceDonePressed={onModalPriceDonePressed}
 					onModalCancelPressed={onModalCancelPressed}
 					arrayValues={priceList}
+				/>
+				<SizeSliderModal
+					isVisible={isSizeModalVisible}
+					initialValue={formData.size}
+					finalValue={formData.maxSize}
+					onModalSizeDonePressed={onModalSizeDonePressed}
+					onModalCancelPressed={onModalCancelPressed}
+					arrayValues={sizeUnitList}
+					sizeUnit={formData.size_unit}
 				/>
 
 				{
@@ -149,14 +162,24 @@ class InnerRCMForm extends Component {
 					</View>
 				</View>
 				{/* **************************************** */}
-				<View style={[AppStyles.mainInputWrap]}>
+				<View style={AppStyles.multiFormInput}>
+					<View style={{ width: '100%' }}>
+						<TouchableInput
+							placeholder="Size"
+							showIconOrImage={false}
+							onPress={() => showSizeModal()}
+							value={`${helper.convertSizeToString(formData.size, formData.maxSize, formData.size_unit)}`}
+						/>
+					</View>
+				</View>
+				{/* <View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
 						<PickerComponent onValueChange={handleForm} selectedItem={formData.size_unit} data={sizeUnit} name={'size_unit'} placeholder='Unit Size' />
 						{
 							checkValidation === true && formData.type === '' && <ErrorMessage errorMessage={'Required'} />
 						}
 					</View>
-				</View>
+				</View> */}
 				{/* **************************************** */}
 
 				<View style={AppStyles.multiFormInput}>
@@ -164,42 +187,10 @@ class InnerRCMForm extends Component {
 						<TouchableInput placeholder="Price"
 							showIconOrImage={false}
 							onPress={() => showPriceModal()}
-						    value={`${helper.convertPriceToString(formData.minPrice, formData.maxPrice, priceList[priceList.length - 1])}`}
+							value={`${helper.convertPriceToString(formData.minPrice, formData.maxPrice, priceList[priceList.length - 1])}`}
 						/>
 					</View>
 				</View>
-
-				{/* <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
-					<TextInput placeholder='Size Min'
-						value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.size)}
-						style={[AppStyles.formControl, styles.priceStyle]}
-						editable={false}
-					/>
-					<Text style={styles.toText}>to</Text>
-					<TextInput placeholder='Size Max'
-						value={formatPrice(formData.maxSize)}
-						style={[AppStyles.formControl, styles.priceStyle]}
-						editable={false}
-					/>
-				</View> */}
-				{/* <PriceSlider priceValues={sizeUnitList} initialValue={0} finalValue={sizeUnitList.length - 1} onSliderValueChange={(values) => onSizeUnitSliderValueChange(values)} /> */}
-
-				{/* **************************************** */}
-				{/* <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
-
-					<TextInput placeholder='Price Min'
-						value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice)}
-						style={[AppStyles.formControl, styles.priceStyle]}
-						editable={false}
-					/>
-					<Text style={styles.toText}>to</Text>
-					<TextInput placeholder='Price Max'
-						value={formData.maxPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice)}
-						style={[AppStyles.formControl, styles.priceStyle]}
-						editable={false}
-					/>
-				</View>
-				<PriceSlider priceValues={priceList} initialValue={0} finalValue={priceList.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} /> */}
 
 				{
 					formData.type !== '' && formData.type != 'plot' && formData.type != 'commercial' &&

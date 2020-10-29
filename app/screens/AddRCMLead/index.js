@@ -34,6 +34,7 @@ class AddRCMLead extends Component {
             hundredArray: helper.createArray(100),
             isBedBathModalVisible: false,
             isPriceModalVisible: false,
+            isSizeModalVisible: false,
             modalType: 'none',
             RCMFormData: {
                 type: "",
@@ -148,14 +149,14 @@ class AddRCMLead extends Component {
 
     setSizeUnitList = (sizeUnit) => {
         const { RCMFormData, fifteenKArray, fiftyArray, sixKArray, hundredArray } = this.state
-        let priceList = []
-        if (sizeUnit === 'marla') priceList = fiftyArray
-        if (sizeUnit === 'kanal') priceList = hundredArray
-        if (sizeUnit === 'sqft') priceList = fifteenKArray
-        if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') priceList = sixKArray
-        RCMFormData.size = 0;
-        RCMFormData.maxSize = priceList.length - 1;
-        this.setState({ RCMFormData, sizeUnitList: priceList })
+        let sizeList = []
+        if (sizeUnit === 'marla') sizeList = fiftyArray
+        if (sizeUnit === 'kanal') sizeList = hundredArray
+        if (sizeUnit === 'sqft') sizeList = fifteenKArray
+        if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') sizeList = sixKArray
+        RCMFormData.size = sizeList[0];
+        RCMFormData.maxSize = sizeList[sizeList.length - 1];
+        this.setState({ RCMFormData, sizeUnitList: sizeList })
     }
 
     handleRCMForm = (value, name) => {
@@ -334,7 +335,8 @@ class AddRCMLead extends Component {
     onModalCancelPressed = () => {
         this.setState({
             isBedBathModalVisible: false,
-            isPriceModalVisible: false
+            isPriceModalVisible: false,
+            isSizeModalVisible: false,
         })
     }
 
@@ -347,7 +349,19 @@ class AddRCMLead extends Component {
         const copyObject = { ...RCMFormData };
         copyObject.minPrice = minValue;
         copyObject.maxPrice = maxValue;
-        this.setState({ RCMFormData: copyObject,isPriceModalVisible: false });
+        this.setState({ RCMFormData: copyObject, isPriceModalVisible: false });
+    }
+
+    showSizeModal = () => {
+        this.setState({ isSizeModalVisible: true })
+    }
+
+    onModalSizeDonePressed = () => {
+        const { RCMFormData } = this.state;
+        const copyObject = { ...RCMFormData };
+        copyObject.size = minValue;
+        copyObject.maxSize = maxValue;
+        this.setState({ RCMFormData: copyObject, isSizeModalVisible: false });
     }
 
     render() {
@@ -365,6 +379,7 @@ class AddRCMLead extends Component {
             sizeUnitList,
             isBedBathModalVisible,
             isPriceModalVisible,
+            isSizeModalVisible,
             modalType
         } = this.state
         const { route } = this.props
@@ -405,6 +420,10 @@ class AddRCMLead extends Component {
                                         isPriceModalVisible={isPriceModalVisible}
                                         showPriceModal={() => this.showPriceModal()}
                                         onModalPriceDonePressed={(minValue, maxValue) => this.onModalPriceDonePressed(minValue, maxValue)}
+                                        sizeUnitList={sizeUnitList}
+                                        isSizeModalVisible={isSizeModalVisible}
+                                        showSizeModal={() => this.showSizeModal()}
+                                        onModalPriceDonePressed={(minValue, maxValue) => this.onModalSizeDonePressed(minValue, maxValue)}
                                     />
                                 </View>
                             </TouchableWithoutFeedback>

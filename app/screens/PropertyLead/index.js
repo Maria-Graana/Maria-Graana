@@ -139,7 +139,7 @@ class PropertyLead extends React.Component {
     this.props.dispatch(setlead(data))
     let page = ''
     if (data.status === 'open') {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'property' })
     } else {
       if (data.status === 'viewing') {
         page = 'Viewing'

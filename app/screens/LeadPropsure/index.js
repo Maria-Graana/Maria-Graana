@@ -8,7 +8,7 @@ import MatchTile from '../../components/MatchTile/index';
 import AgentTile from '../../components/AgentTile/index';
 import axios from 'axios';
 import Loader from '../../components/loader';
-import PropsurePackagePopup from '../../components/PropsurePackagePopup/index'
+import PropsureReportsPopup from '../../components/PropsureReportsPopup/index'
 import PropsureDocumentPopup from '../../components/PropsureDocumentPopup/index'
 import _ from 'underscore';
 import StaticData from '../../StaticData';
@@ -29,9 +29,7 @@ class LeadPropsure extends React.Component {
             isVisible: false,
             documentModalVisible: false,
             checkValidation: false,
-            checkPackageValidation: false,
-            selectedPackage: '',
-            packages: StaticData.propsurePackages,
+            selectedReports: [],
             selectedPropertyId: null,
             selectedProperty: null,
             selectedPropsureId: null,
@@ -84,7 +82,7 @@ class LeadPropsure extends React.Component {
                         selectedPropertyId: null,
                         selctedPropsureId: null,
                         selectedProperty: null,
-                        selectedPackage: ''
+                        selectedReports: []
                     })
                 })
         })
@@ -123,45 +121,40 @@ class LeadPropsure extends React.Component {
 
     closeModal = () => { this.setState({ isVisible: false }) }
 
-    showPackageModal = (property) => {
+    showReportsModal = (property) => {
         const { lead, user } = this.props
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
         if (leadAssignedSharedStatus) {
-            this.setState({ isVisible: true, selectedPropertyId: property.id, selectedProperty: property, checkPackageValidation: false });
+            this.setState({ isVisible: true, selectedPropertyId: property.id, selectedProperty: property});
         }
     }
 
 
     onHandleRequestVerification = () => {
         const { lead } = this.props
-        const { selectedPackage, selectedPropertyId, selectedProperty } = this.state;
-        if (selectedPackage === '') {
-            this.setState({
-                checkPackageValidation: true
-            })
+        const { selectedReports, selectedPropertyId, selectedProperty } = this.state;
+        if (selectedReports.length === 0) {
+            alert('Please select at least one report!')
         } else {
             // ********* Call Add Attachment API here :)
             this.closeModal();
             const body = {
-                packageName: selectedPackage,
+                packageName: selectedReports,
                 propertyId: selectedPropertyId,
                 pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
                 org: selectedProperty.arms_id ? 'arms' : 'graana',
             }
-            axios.post(`/api/leads/propsure/${lead.id}`, body).then(response => {
-                this.fetchLead()
-                this.fetchProperties();
-            }).catch(error => {
-                console.log(error);
-                this.setState({ selectedPropertyId: null, selectedPackage: '', selectedProperty: null });
-            })
+            console.log(body)
+            // axios.post(`/api/leads/propsure/${lead.id}`, body).then(response => {
+            //     this.fetchLead()
+            //     this.fetchProperties();
+            // }).catch(error => {
+            //     console.log(error);
+            //     this.setState({ selectedPropertyId: null, selectedReports: [], selectedProperty: null });
+            // })
 
         }
 
-    }
-
-    handlePackageChange = (value) => {
-        this.setState({ selectedPackage: value });
     }
 
     showDocumentModal = (propsureId) => {
@@ -231,7 +224,7 @@ class LeadPropsure extends React.Component {
 
     renderPropsureVerificationView = (item) => {
         return (
-            <TouchableOpacity key={item.id.toString()} onPress={() => this.showPackageModal(item)}
+            <TouchableOpacity key={item.id.toString()} onPress={() => this.showReportsModal(item)}
                 style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]} activeOpacity={0.7}>
                 <Text style={styles.propsureVerificationTextStyle}>
                     PROPSURE VERIFICATION
@@ -263,7 +256,7 @@ class LeadPropsure extends React.Component {
 
     closeLead = () => {
         const { lead } = this.props;
-        if (lead.commissions && lead.commissions.status ===  StaticData.leadClearedStatus) {
+        if (lead.commissions && lead.commissions.status === StaticData.leadClearedStatus) {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isCloseLeadVisible: true, checkReasonValidation: '' })
         }
         else {
@@ -356,8 +349,20 @@ class LeadPropsure extends React.Component {
         this.setState({ matchData: newMatches })
     }
 
+    addRemoveReport = (report) => {
+        const { selectedReports } = this.state;
+        let reports = [...selectedReports];
+        if (reports.includes(report, 0)) {
+            reports = _.without(reports, report);
+        }
+        else {
+            reports.push(report);
+        }
+        this.setState({ selectedReports: reports })
+    }
+
     render() {
-        const { menuShow, meetings, callModal, loading, matchData, user, isVisible, packages, selectedPackage, documentModalVisible, file, checkValidation, checkPackageValidation, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { menuShow, meetings, callModal, loading, matchData, user, isVisible, documentModalVisible, file, checkValidation, checkReportsValidation, selectedReports, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
         const { lead, navigation } = this.props
 
         return (
@@ -371,11 +376,10 @@ class LeadPropsure extends React.Component {
                         closePopup={this.goToHistory}
                         openPopup={callModal}
                     />
-                    <PropsurePackagePopup
-                        packages={packages}
-                        selectedPackage={selectedPackage}
-                        changePackage={this.handlePackageChange}
-                        checkValidation={checkPackageValidation}
+                    <PropsureReportsPopup
+                        reports={StaticData.propsureReportTypes}
+                        addRemoveReport={(item) => this.addRemoveReport(item)}
+                        selectedReports={selectedReports}
                         isVisible={isVisible}
                         closeModal={() => this.closeModal()}
                         onPress={this.onHandleRequestVerification}

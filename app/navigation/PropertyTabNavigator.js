@@ -7,7 +7,7 @@ import AppStyles from '../AppStyles'
 import LeadOffer from '../screens/LeadOffer/index'
 import LeadPropsure from '../screens/LeadPropsure/index'
 import LeadRCMPayment from '../screens/LeadRCMPayment/index'
-import LeadViewing from '../screens/LeadViewing/index'
+import PropertyViewing from '../screens/PropertyViewing/index'
 
 const { width } = Dimensions.get('window')
 
@@ -27,7 +27,7 @@ export default function PropertyTabs() {
         },
       }}
     >
-      <Tab.Screen name="Viewing" component={LeadViewing} />
+      <Tab.Screen name="Viewing" component={PropertyViewing} />
       <Tab.Screen name="Offer" component={LeadOffer} />
       <Tab.Screen name="Propsure" component={LeadPropsure} />
       <Tab.Screen name="Payment" component={LeadRCMPayment} />

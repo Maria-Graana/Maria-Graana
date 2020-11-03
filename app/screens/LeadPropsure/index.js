@@ -206,6 +206,7 @@ class LeadPropsure extends React.Component {
     }
 
     uploadAttachment(file, propsureId) {
+        this.closeDocumentModal();
         let document = {
             name: file.name,
             type: 'file/' + file.name.split('.').pop(),
@@ -216,7 +217,6 @@ class LeadPropsure extends React.Component {
         axios.post(`api/leads/propsureDoc?id=${propsureId}`, fd).then(response => {
             this.fetchProperties();
             this.fetchLead()
-            this.closeDocumentModal();
         }).catch(error => {
             console.log('error=>', error.message);
         })

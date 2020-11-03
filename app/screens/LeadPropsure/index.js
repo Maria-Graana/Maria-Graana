@@ -67,7 +67,6 @@ class LeadPropsure extends React.Component {
         this.setState({ loading: true }, () => {
             axios.get(`/api/leads/${lead.id}/shortlist`)
                 .then((res) => {
-                    console.log(res.data)
                     matches = helper.propertyIdCheck(res.data.rows)
                     this.setState({
                         matchData: matches,

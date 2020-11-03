@@ -33,8 +33,8 @@ class LeadPropsure extends React.Component {
             selectedPropertyId: null,
             selectedProperty: null,
             selectedPropsureId: null,
+            pendingPropsures: null,
             matchData: [],
-            file: null,
             progressValue: 0,
             // for the lead close dialog
             isCloseLeadVisible: false,
@@ -67,6 +67,7 @@ class LeadPropsure extends React.Component {
         this.setState({ loading: true }, () => {
             axios.get(`/api/leads/${lead.id}/shortlist`)
                 .then((res) => {
+                    console.log(res.data)
                     matches = helper.propertyIdCheck(res.data.rows)
                     this.setState({
                         matchData: matches,
@@ -80,7 +81,6 @@ class LeadPropsure extends React.Component {
                     this.setState({
                         loading: false,
                         selectedPropertyId: null,
-                        selctedPropsureId: null,
                         selectedProperty: null,
                         selectedReports: []
                     })
@@ -125,7 +125,7 @@ class LeadPropsure extends React.Component {
         const { lead, user } = this.props
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
         if (leadAssignedSharedStatus) {
-            this.setState({ isVisible: true, selectedPropertyId: property.id, selectedProperty: property});
+            this.setState({ isVisible: true, selectedPropertyId: property.id, selectedProperty: property });
         }
     }
 
@@ -144,24 +144,24 @@ class LeadPropsure extends React.Component {
                 pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
                 org: selectedProperty.arms_id ? 'arms' : 'graana',
             }
-            console.log(body)
-            // axios.post(`/api/leads/propsure/${lead.id}`, body).then(response => {
-            //     this.fetchLead()
-            //     this.fetchProperties();
-            // }).catch(error => {
-            //     console.log(error);
-            //     this.setState({ selectedPropertyId: null, selectedReports: [], selectedProperty: null });
-            // })
+            // console.log(body)
+            axios.post(`/api/leads/propsure/${lead.id}`, body).then(response => {
+                this.fetchLead()
+                this.fetchProperties();
+            }).catch(error => {
+                console.log(error);
+                this.setState({ selectedPropertyId: null, selectedReports: [], selectedProperty: null });
+            })
 
         }
 
     }
 
-    showDocumentModal = (propsureId) => {
+    showDocumentModal = (propsureReports) => {
         const { lead, user } = this.props
         const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead);
         if (leadAssignedSharedStatus) {
-            this.setState({ documentModalVisible: true, selectedPropsureId: propsureId, checkValidation: false });
+            this.setState({ documentModalVisible: true, pendingPropsures: propsureReports, checkValidation: false });
         }
     }
 
@@ -169,54 +169,55 @@ class LeadPropsure extends React.Component {
         this.setState({ documentModalVisible: false, file: null })
     }
 
-    getAttachmentFromStorage = () => {
-        let options = {
-            type: '*/*',
-            copyToCacheDirectory: true,
-        }
-        DocumentPicker.getDocumentAsync(options).then(item => {
-            if (item.type === 'cancel') {
-                Alert.alert('Pick File', 'Please pick a file from documents!')
+    getAttachmentFromStorage = (id) => {
+        const { pendingPropsures } = this.state;
+        const pendingPropsuresCopy = [...pendingPropsures];
+        if (id) {
+            let options = {
+                type: '*/*',
+                copyToCacheDirectory: true,
             }
-            else {
-                this.setState({ file: item });
-            }
+            DocumentPicker.getDocumentAsync(options).then(item => {
+                if (item.type === 'cancel') {
+                    Alert.alert('Pick File', 'Please pick a file from documents!')
+                    return;
+                }
+                // const file = pendingPropsuresCopy.find(item => item.id === id, 0);
+                const propsureDocument = _.find(pendingPropsuresCopy, item => item.id === id);
+                if (propsureDocument) {
+                    // id matched, push the file in propsure doc array
+                    if (propsureDocument.propsureDocs && propsureDocument.propsureDocs.length > 0) {
+                        // document already exists so replace the existing file
+                        propsureDocument.propsureDocs[0] = item;
+                    }
+                    else {
+                        // new document
+                        propsureDocument.propsureDocs.push(item)
+                    }
+                }
+                this.setState({ pendingPropsures: pendingPropsuresCopy });
 
-        }).catch(error => {
-            console.log(error);
-        })
-    }
-
-    handleDocumentModalDone = () => {
-        const { file } = this.state
-        // ********* Form Validation Check
-        if (file === null) {
-            this.setState({
-                checkValidation: true
+            }).catch(error => {
+                console.log(error);
             })
-        } else {
-            // ********* Call Add Attachment API here :)
-            this.setState({ documentModalVisible: false })
-            let document = {
-                name: file.name,
-                type: 'file/' + file.name.split('.').pop(),
-                uri: file.uri
-            }
-            this.uploadAttachment(document);
-            this.setState({
-                file: null
-            });
+        }
+        else {
+            console.log('error')
         }
     }
 
-    uploadAttachment(data) {
-        const { selectedPropsureId } = this.state;
-
+    uploadAttachment(file, propsureId) {
+        let document = {
+            name: file.name,
+            type: 'file/' + file.name.split('.').pop(),
+            uri: file.uri
+        }
         let fd = new FormData()
-        fd.append('file', data);
-        axios.post(`api/leads/propsureDoc?id=${selectedPropsureId}`, fd).then(response => {
-            this.fetchLead()
+        fd.append('file', document);
+        axios.post(`api/leads/propsureDoc?id=${propsureId}`, fd).then(response => {
             this.fetchProperties();
+            this.fetchLead()
+            this.closeDocumentModal();
         }).catch(error => {
             console.log('error=>', error.message);
         })
@@ -234,20 +235,28 @@ class LeadPropsure extends React.Component {
     }
 
     renderPropsurePendingView = (item) => {
-        return item.propsures.map(propsure => {
+        let filteredPropsuresReport = item.propsures && item.propsures.length ? _.filter(item.propsures, item => item.status === 'pending') : null;
+        if (filteredPropsuresReport && filteredPropsuresReport.length) {
             return (
-                <TouchableOpacity key={item.id.toString()} onPress={propsure.status === 'pending' ? () => this.showDocumentModal(propsure.id) : null}
-                    style={[styles.viewButtonStyle, { backgroundColor: propsure.status === 'pending' ? '#FCD12A' : AppStyles.colors.primaryColor }]} activeOpacity={0.7}>
+                <TouchableOpacity
+                    style={[styles.viewButtonStyle, { backgroundColor: '#FCD12A' }]}
+                    activeOpacity={0.7}
+                    onPress={() => this.showDocumentModal(item.propsures)}
+                >
                     <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>
-                        {
-                            propsure.status === 'pending' ?
-                                'PENDING VERIFICATION' :
-                                'VERIFIED'
-                        }
+                        PENDING VERIFICATION
                     </Text>
                 </TouchableOpacity>
             )
-        });
+        }
+        else {
+            return (
+                <View style={[styles.viewButtonStyle, { backgroundColor: AppStyles.colors.primaryColor }]}>
+                    <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>VERIFIED</Text>
+                </View>
+
+            )
+        }
     }
 
     closedLead = () => {
@@ -362,7 +371,7 @@ class LeadPropsure extends React.Component {
     }
 
     render() {
-        const { menuShow, meetings, callModal, loading, matchData, user, isVisible, documentModalVisible, file, checkValidation, checkReportsValidation, selectedReports, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { menuShow, meetings, callModal, loading, matchData, user, isVisible, documentModalVisible, checkValidation, pendingPropsures, selectedReports, progressValue, reasons, selectedReason, isCloseLeadVisible, checkReasonValidation, closedLeadEdit } = this.state
         const { lead, navigation } = this.props
 
         return (
@@ -385,12 +394,12 @@ class LeadPropsure extends React.Component {
                         onPress={this.onHandleRequestVerification}
                     />
                     <PropsureDocumentPopup
+                        pendingPropsures={pendingPropsures}
                         isVisible={documentModalVisible}
+                        uploadReport={(report, propsureId) => this.uploadAttachment(report, propsureId)}
                         closeModal={() => this.closeDocumentModal()}
-                        onPress={this.handleDocumentModalDone}
+                        onPress={() => this.closeDocumentModal()}
                         getAttachmentFromStorage={this.getAttachmentFromStorage}
-                        selectedFile={file}
-                        checkValidation={checkValidation}
                     />
                     <View style={{ paddingBottom: 100 }}>
                         {

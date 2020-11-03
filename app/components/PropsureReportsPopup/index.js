@@ -26,7 +26,7 @@ const PropsureReportsPopup = (props) => {
             <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
                 <AntDesign style={styles.closeStyle} onPress={closeModal} name="close" size={26} color={AppStyles.colors.textColor} />
                 <FlatList data={reports}
-                    style={{ marginTop: 25 }}
+                    style={{ marginTop: 25}}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) =>
                         <View>
@@ -34,7 +34,7 @@ const PropsureReportsPopup = (props) => {
                                 <CheckBox checked={selectedReports.includes(item)} style={{ marginHorizontal: 5 }}
                                     onPress={() => addRemoveReport(item)}
                                     color={AppStyles.colors.primaryColor} />
-                                <Text style={styles.reportName}>{item}</Text>
+                                <Text   onPress={() => addRemoveReport(item)} style={styles.reportName}>{item}</Text>
                             </View>
                             <Divider />
                         </View>

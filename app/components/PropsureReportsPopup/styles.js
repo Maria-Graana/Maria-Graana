@@ -15,8 +15,7 @@ export default styles = StyleSheet.create({
     },
     buttonExtraStyle: {
         marginHorizontal: 15,
-        position: 'absolute',
-        bottom: 70,
+        paddingVertical: 15,
         width: '90%'
     },
     reportRow: {

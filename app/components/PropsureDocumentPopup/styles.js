@@ -7,6 +7,7 @@ export default styles = StyleSheet.create({
         marginLeft: 25,
         marginRight: 25,
         justifyContent: 'center',
+        marginVertical: 15,
         borderRadius:4,
     },
     closeStyle: {

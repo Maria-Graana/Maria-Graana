@@ -356,7 +356,7 @@ class AddRCMLead extends Component {
         this.setState({ isSizeModalVisible: true })
     }
 
-    onModalSizeDonePressed = () => {
+    onModalSizeDonePressed = (minValue, maxValue) => {
         const { RCMFormData } = this.state;
         const copyObject = { ...RCMFormData };
         copyObject.size = minValue;
@@ -423,7 +423,7 @@ class AddRCMLead extends Component {
                                         sizeUnitList={sizeUnitList}
                                         isSizeModalVisible={isSizeModalVisible}
                                         showSizeModal={() => this.showSizeModal()}
-                                        onModalPriceDonePressed={(minValue, maxValue) => this.onModalSizeDonePressed(minValue, maxValue)}
+                                        onModalSizeDonePressed={(minValue, maxValue) => this.onModalSizeDonePressed(minValue, maxValue)}
                                     />
                                 </View>
                             </TouchableWithoutFeedback>

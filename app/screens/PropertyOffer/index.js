@@ -1,25 +1,24 @@
 /** @format */
 
-import * as React from 'react'
-import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native'
-import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import MatchTile from '../../components/MatchTile/index'
-import AgentTile from '../../components/AgentTile/index'
 import axios from 'axios'
-import Loader from '../../components/loader'
-import _ from 'underscore'
-import OfferModal from '../../components/OfferModal'
-import { FAB } from 'react-native-paper'
+import * as React from 'react'
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
+import { connect } from 'react-redux'
+import _ from 'underscore'
 import { setlead } from '../../actions/lead'
-import CMBottomNav from '../../components/CMBottomNav'
-import StaticData from '../../StaticData'
-import helper from '../../helper'
-import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import AppStyles from '../../AppStyles'
+import PropAgentTile from '../../components/PropAgentTile/index'
+import PropertyBottomNav from '../../components/PropertyBottomNav'
 import HistoryModal from '../../components/HistoryModal/index'
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import Loader from '../../components/loader'
+import PropMatchTile from '../../components/PropMatchTile/index'
+import OfferModal from '../../components/OfferModal'
+import helper from '../../helper'
+import StaticData from '../../StaticData'
 
-class LeadOffer extends React.Component {
+class PropertyOffer extends React.Component {
   constructor(props) {
     super(props)
     const { user, lead } = this.props
@@ -46,6 +45,7 @@ class LeadOffer extends React.Component {
       meetings: [],
       matchData: [],
       menuShow: false,
+      btnLoading: false,
     }
   }
 
@@ -58,13 +58,13 @@ class LeadOffer extends React.Component {
   }
 
   fetchProperties = () => {
-    const { lead } = this.props
+    const { lead, user } = this.props
     const { rcmProgressBar } = StaticData
     let matches = []
     axios
       .get(`/api/leads/${lead.id}/shortlist`)
       .then((res) => {
-        matches = helper.propertyIdCheck(res.data.rows)
+        matches = helper.propertyIdCheck(res.data.rows, user)
         this.setState({
           disableButton: false,
           loading: false,
@@ -115,6 +115,7 @@ class LeadOffer extends React.Component {
     this.setState(
       {
         modalActive: !modalActive,
+        btnLoading: false,
       },
       () => {
         if (!this.state.modalActive) {
@@ -137,6 +138,7 @@ class LeadOffer extends React.Component {
     this.setState({ leadData })
   }
 
+  // ************** types will be seller an customer... customer= lead agent, seller= property agent ****************
   fetchOffers = () => {
     const { currentProperty } = this.state
     const { lead } = this.props
@@ -269,7 +271,8 @@ class LeadOffer extends React.Component {
 
   checkStatus = (property) => {
     const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    let leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    leadAssignedSharedStatus = true
     if (property.agreedOffer.length) {
       return (
         <TouchableOpacity
@@ -411,22 +414,22 @@ class LeadOffer extends React.Component {
     const { lead } = this.props
     let offer = []
     let offerId = null
+    if (value === 'showSeller') {
+      offerChat.map((item) => {
+        if (item.from === 'customer') {
+          offer.push(item)
+        }
+      })
+    } else {
+      offerChat.map((item) => {
+        if (item.from === 'seller') {
+          offer.push(item)
+        }
+      })
+    }
     if (offerChat) {
-      if (value === 'showSeller') {
-        offerChat.map((item) => {
-          if (item.from === 'customer') {
-            offer.push(item)
-          }
-        })
-      } else {
-        offerChat.map((item) => {
-          if (item.from === 'seller') {
-            offer.push(item)
-          }
-        })
-      }
       this.setState({ disableButton: true, btnLoading: false })
-      if (offer && offer.length) {
+      if (offer.length) {
         offerId = offer[offer.length - 1].id
         axios
           .patch(`/api/offer/agree?leadId=${lead.id}&offerId=${offerId}`)
@@ -493,7 +496,7 @@ class LeadOffer extends React.Component {
                   renderItem={(item, index) => (
                     <View style={{ marginVertical: 3 }}>
                       {this.ownProperty(item.item) ? (
-                        <MatchTile
+                        <PropMatchTile
                           data={_.clone(item.item)}
                           user={user}
                           displayChecks={this.displayChecks}
@@ -506,7 +509,7 @@ class LeadOffer extends React.Component {
                           menuShow={menuShow}
                         />
                       ) : (
-                        <AgentTile
+                        <PropAgentTile
                           data={_.clone(item.item)}
                           user={user}
                           displayChecks={this.displayChecks}
@@ -554,7 +557,7 @@ class LeadOffer extends React.Component {
           </View>
         </View>
         <View style={AppStyles.mainCMBottomNav}>
-          <CMBottomNav
+          <PropertyBottomNav
             goToAttachments={this.goToAttachments}
             navigateTo={this.navigateToDetails}
             goToDiaryForm={this.goToDiaryForm}
@@ -593,4 +596,4 @@ mapStateToProps = (store) => {
   }
 }
 
-export default connect(mapStateToProps)(LeadOffer)
+export default connect(mapStateToProps)(PropertyOffer)

@@ -91,9 +91,9 @@ class PropertyLead extends React.Component {
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar && searchText !== '') {
-      query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      query = `/api/leads?leadWithCurrentAgentProps=true&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
     } else {
-      query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+      query = `/api/leads?leadWithCurrentAgentProps=true&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
     axios
       .get(`${query}`)

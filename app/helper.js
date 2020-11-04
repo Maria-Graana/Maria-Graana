@@ -471,16 +471,16 @@ const helper = {
 			return `PKR: Any`
 		}
 		else if (start === 0 && end !== maxValue) {
-			return `PKR: Upto ${(end)}`
+			return `PKR: Upto ${formatPrice(end)}`
 		}
 		else if (start !== 0 && end === maxValue) {
-			return `PKR: ${(start)} or more`;
+			return `PKR: ${formatPrice(start)} or more`;
 		}
 		else if (start === end) {
-			return `PKR: ${(start)}`;
+			return `PKR: ${formatPrice(start)}`;
 		}
 		else {
-			return `PKR: ${(start)} - ${(end)}`
+			return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
 		}
 	},
 	convertSizeToString(start, end, unit) {

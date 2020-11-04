@@ -57,7 +57,9 @@ const SizeSliderModal = ({
         setMinValue(initialValue);
         setMaxValue(finalValue);
         setUnit(unit)
-        setStringValues({ ...stringValues, sizeMin: initialValue === StaticData.Constants.any_value ? null : currencyConvert(initialValue), sizeMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue) })
+        setStringValues({ ...stringValues,
+             sizeMin: initialValue === StaticData.Constants.size_any_value ? null : currencyConvert(initialValue), 
+             sizeMax: finalValue === StaticData.Constants.size_any_value ? null : currencyConvert(finalValue) })
         setRangeString(helper.convertSizeToString(initialValue, finalValue, sizeUnit));
     }, [initialValue, finalValue])
 
@@ -74,19 +76,13 @@ const SizeSliderModal = ({
     const handleMinSizeChange = (value) => {
         setStringValues({ ...stringValues, sizeMin: String(value) });
         setRangeString(helper.convertSizeToString(value, maxValue, unit))
-        const closestNumber = getClosestNumber(Number(value), arrayValues);
-        if (closestNumber) {
-            setMinValue(closestNumber);
-        }
+        setMinValue(value)
     }
 
     const handleMaxSizeChange = (value) => {
         setStringValues({ ...stringValues, sizeMax: String(value) });
         setRangeString(helper.convertSizeToString(minValue, value, unit));
-        const closestNumber = getClosestNumber(Number(value), arrayValues);
-        if (closestNumber) {
-            setMaxValue(closestNumber);
-        }
+        setMaxValue(value)
     }
 
     const onSizeChange = (value) => {
@@ -104,6 +100,7 @@ const SizeSliderModal = ({
     const onDonePressed = () => {
         const finalMinValue = stringValues.sizeMin ? Number(removeCommas(stringValues.sizeMin)) : arrayValues[0];
         const finalMaxValue = stringValues.sizeMax ? Number(removeCommas(stringValues.sizeMax)) : arrayValues[arrayValues.length - 1];
+        console.log(finalMinValue, finalMaxValue, unit)
         if (finalMinValue > finalMaxValue) {
             setErrorMessage('Minimum size cannot be greater than Maximum size')
             return;
@@ -133,8 +130,12 @@ const SizeSliderModal = ({
         setMinValue(initialValue)
         setMaxValue(finalValue)
         setErrorMessage('');
-        setStringValues({ ...stringValues, priceMin: initialValue === StaticData.Constants.any_value ? null : currencyConvert(initialValue), priceMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue) })
-        setRangeString(helper.convertPriceToString(initialValue, finalValue, arrayValues[arrayValues.length - 1]))
+        setStringValues({
+            ...stringValues,
+            sizeMin: initialValue === StaticData.Constants.size_any_value ? null : currencyConvert(initialValue),
+            sizeMax: finalValue === StaticData.Constants.size_any_value ? null : currencyConvert(finalValue)
+        })
+        setRangeString(helper.convertSizeToString(initialValue, finalValue, unit))
         onModalCancelPressed();
     }
 

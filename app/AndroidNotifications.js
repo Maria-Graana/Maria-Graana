@@ -63,18 +63,21 @@ class AndroidNotifications extends React.Component {
         importance: Notifications.AndroidImportance.MAX,
         sound: 'default',
         vibrationPattern: [0, 250, 250, 250],
+        color: '#2A7EF0',
       })
       Notifications.setNotificationChannelAsync('development', {
         name: 'Development',
         importance: Notifications.AndroidImportance.MAX,
         sound: 'default',
         vibrationPattern: [0, 250, 250, 250],
+        color: '#2A7EF0',
       })
       Notifications.setNotificationChannelAsync('reminder', {
         name: 'Reminder',
         importance: Notifications.AndroidImportance.MAX,
         sound: 'default',
         vibrationPattern: [0, 250, 250, 250],
+        color: '#2A7EF0',
       })
     }
   }

@@ -60,23 +60,20 @@ class AndroidNotifications extends React.Component {
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('default', {
         name: 'Default',
-        importance: Notifications.AndroidImportance.HIGH,
-        sound: true,
-        priority: 'max',
+        importance: Notifications.AndroidImportance.MAX,
+        sound: 'default',
         vibrationPattern: [0, 250, 250, 250],
       })
       Notifications.setNotificationChannelAsync('development', {
         name: 'Development',
-        importance: Notifications.AndroidImportance.HIGH,
-        sound: true,
-        priority: 'max',
+        importance: Notifications.AndroidImportance.MAX,
+        sound: 'default',
         vibrationPattern: [0, 250, 250, 250],
       })
       Notifications.setNotificationChannelAsync('reminder', {
         name: 'Reminder',
-        importance: Notifications.AndroidImportance.HIGH,
-        sound: true,
-        priority: 'max',
+        importance: Notifications.AndroidImportance.MAX,
+        sound: 'default',
         vibrationPattern: [0, 250, 250, 250],
       })
     }

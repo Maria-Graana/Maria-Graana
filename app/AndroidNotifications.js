@@ -58,23 +58,23 @@ class AndroidNotifications extends React.Component {
       console.log('Must use physical device for Push Notifications')
     }
     if (Platform.OS === 'android') {
-      Notifications.createChannelAndroidAsync('default', {
+      Notifications.setNotificationChannelAsync('default', {
         name: 'Default',
-        importance: Notifications.AndroidImportance.MAX,
+        importance: Notifications.AndroidImportance.HIGH,
         sound: true,
         priority: 'max',
         vibrationPattern: [0, 250, 250, 250],
       })
-      Notifications.createChannelAndroidAsync('development', {
+      Notifications.setNotificationChannelAsync('development', {
         name: 'Development',
-        importance: Notifications.AndroidImportance.MAX,
+        importance: Notifications.AndroidImportance.HIGH,
         sound: true,
         priority: 'max',
         vibrationPattern: [0, 250, 250, 250],
       })
-      Notifications.createChannelAndroidAsync('reminder', {
+      Notifications.setNotificationChannelAsync('reminder', {
         name: 'Reminder',
-        importance: Notifications.AndroidImportance.MAX,
+        importance: Notifications.AndroidImportance.HIGH,
         sound: true,
         priority: 'max',
         vibrationPattern: [0, 250, 250, 250],

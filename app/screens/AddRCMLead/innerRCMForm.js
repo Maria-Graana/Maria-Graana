@@ -105,7 +105,6 @@ class InnerRCMForm extends Component {
 					finalValue={formData.maxSize}
 					onModalSizeDonePressed={onModalSizeDonePressed}
 					onModalCancelPressed={onModalCancelPressed}
-					arrayValues={sizeUnitList}
 					sizeUnit={formData.size_unit}
 				/>
 
@@ -126,11 +125,13 @@ class InnerRCMForm extends Component {
 				<TouchableInput placeholder="Client"
 					onPress={() => handleClientClick()}
 					value={clientName}
+					showIconOrImage={false}
 					showError={checkValidation === true && formData.customerId === ''}
 					errorMessage="Required" />
 
 				<TouchableInput placeholder="Select City"
 					onPress={() => handleCityClick()}
+					showIconOrImage={false}
 					value={selectedCity ? selectedCity.name : ''}
 					showError={checkValidation === true && formData.city_id === ''}
 					errorMessage="Required" />
@@ -172,14 +173,6 @@ class InnerRCMForm extends Component {
 						/>
 					</View>
 				</View>
-				{/* <View style={[AppStyles.mainInputWrap]}>
-					<View style={[AppStyles.inputWrap]}>
-						<PickerComponent onValueChange={handleForm} selectedItem={formData.size_unit} data={sizeUnit} name={'size_unit'} placeholder='Unit Size' />
-						{
-							checkValidation === true && formData.type === '' && <ErrorMessage errorMessage={'Required'} />
-						}
-					</View>
-				</View> */}
 				{/* **************************************** */}
 
 				<View style={AppStyles.multiFormInput}>

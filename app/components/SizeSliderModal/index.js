@@ -9,6 +9,11 @@ import AppStyles from '../../AppStyles';
 import StaticData from '../../StaticData';
 import PickerComponent from '../Picker'
 
+let fiftyArray = helper.createArray(50);
+let hundredArray = helper.createArray(100);
+let fifteenKArray = helper.createArray(15000);
+let sixtyKArray = helper.createArray(60000);
+
 const currencyConvert = (x) => {
     if (x !== null || x !== undefined) {
         x = x.toString();
@@ -21,12 +26,20 @@ const currencyConvert = (x) => {
     }
 }
 
+const setSizeUnitList = (sizeUnit) => {
+    let sizeList = []
+    if (sizeUnit === 'marla') sizeList = fiftyArray;
+    if (sizeUnit === 'kanal') sizeList = hundredArray;
+    if (sizeUnit === 'sqft') sizeList = fifteenKArray;
+    if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') sizeList = sixtyKArray;
+    return sizeList;
+}
+
 const SizeSliderModal = ({
     isVisible,
     initialValue,
     finalValue,
     sizeUnit,
-    arrayValues,
     onModalCancelPressed,
     onModalSizeDonePressed }) => {
     const [minValue, setMinValue] = useState(initialValue);
@@ -36,13 +49,14 @@ const SizeSliderModal = ({
         sizeMax: currencyConvert(finalValue)
     })
     const [unit, setUnit] = useState(sizeUnit)
+    const [arrayValues, setArrayValues] = useState(setSizeUnitList(unit))
     const [rangeString, setRangeString] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         setMinValue(initialValue);
         setMaxValue(finalValue);
-        setUnit(sizeUnit)
+        setUnit(unit)
         setStringValues({ ...stringValues, sizeMin: initialValue === StaticData.Constants.any_value ? null : currencyConvert(initialValue), sizeMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue) })
         setRangeString(helper.convertSizeToString(initialValue, finalValue, sizeUnit));
     }, [initialValue, finalValue])
@@ -75,15 +89,27 @@ const SizeSliderModal = ({
         }
     }
 
+    const onSizeChange = (value) => {
+        let sizeUnitList = setSizeUnitList(value);
+        setUnit(value);
+        setArrayValues(sizeUnitList);
+        let minSize = sizeUnitList[0];
+        let maxSize = sizeUnitList[sizeUnitList.length - 1];
+        setMinValue(minSize);
+        setMaxValue(maxSize);
+        setRangeString(helper.convertSizeToString(minSize, maxSize, value));
+        setStringValues({ ...stringValues, sizeMin: String(minSize), sizeMax: String(maxSize) });
+    }
+
     const onDonePressed = () => {
-        const finalMinValue = stringValues.sizeMin ? Number(removeCommas(stringValues.sizeMin)) : StaticData.Constants.any_value;
-        const finalMaxValue = stringValues.sizeMax ? Number(removeCommas(stringValues.sizeMax)) : StaticData.Constants.any_value;
+        const finalMinValue = stringValues.sizeMin ? Number(removeCommas(stringValues.sizeMin)) : arrayValues[0];
+        const finalMaxValue = stringValues.sizeMax ? Number(removeCommas(stringValues.sizeMax)) : arrayValues[arrayValues.length - 1];
         if (finalMinValue > finalMaxValue) {
             setErrorMessage('Minimum size cannot be greater than Maximum size')
             return;
         }
         else {
-            onModalSizeDonePressed(finalMinValue, finalMaxValue)
+            onModalSizeDonePressed(finalMinValue, finalMaxValue, unit);
             setErrorMessage('');
         }
     }
@@ -117,7 +143,7 @@ const SizeSliderModal = ({
             <View style={styles.modalMain}>
                 <View style={[AppStyles.mainInputWrap]}>
                     <View style={[AppStyles.inputWrap]}>
-                        <PickerComponent onValueChange={(value) => setUnit(value)} selectedItem={unit} data={StaticData.sizeUnit} placeholder='Unit Size' />
+                        <PickerComponent onValueChange={(value) => onSizeChange(value)} selectedItem={unit} data={StaticData.sizeUnit} placeholder='Unit Size' />
                     </View>
                 </View>
                 <Text style={styles.textStyle}>{rangeString}</Text>

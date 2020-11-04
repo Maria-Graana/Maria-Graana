@@ -28,10 +28,6 @@ class AddRCMLead extends Component {
             sizeUnitList: [],
             selectSubType: [],
             loading: false,
-            sixKArray: helper.createArray(60000),
-            fifteenKArray: helper.createArray(15000),
-            fiftyArray: helper.createArray(50),
-            hundredArray: helper.createArray(100),
             isBedBathModalVisible: false,
             isPriceModalVisible: false,
             isSizeModalVisible: false,
@@ -49,8 +45,8 @@ class AddRCMLead extends Component {
                 maxBed: null,
                 bath: null,
                 maxBath: null,
-                size: 0,
-                maxSize: 0,
+                size: 1,
+                maxSize: 50,
                 minPrice: 0,
                 maxPrice: 0,
             }
@@ -81,7 +77,7 @@ class AddRCMLead extends Component {
         navigation.addListener('focus', () => {
             this.onScreenFocused()
         })
-        this.setSizeUnitList('marla')
+        //this.setSizeUnitList('marla')
         this.fetchOrganizations()
 
     }
@@ -147,17 +143,7 @@ class AddRCMLead extends Component {
         }
     }
 
-    setSizeUnitList = (sizeUnit) => {
-        const { RCMFormData, fifteenKArray, fiftyArray, sixKArray, hundredArray } = this.state
-        let sizeList = []
-        if (sizeUnit === 'marla') sizeList = fiftyArray
-        if (sizeUnit === 'kanal') sizeList = hundredArray
-        if (sizeUnit === 'sqft') sizeList = fifteenKArray
-        if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') sizeList = sixKArray
-        RCMFormData.size = sizeList[0];
-        RCMFormData.maxSize = sizeList[sizeList.length - 1];
-        this.setState({ RCMFormData, sizeUnitList: sizeList })
-    }
+    
 
     handleRCMForm = (value, name) => {
         const { RCMFormData } = this.state
@@ -270,6 +256,7 @@ class AddRCMLead extends Component {
             maxBed: StaticData.bedBathRange[RCMFormData.maxBed],
             maxBath: StaticData.bedBathRange[RCMFormData.maxBath],
             size: RCMFormData.size,
+            max_size: RCMFormData.maxSize,
             leadAreas: RCMFormData.leadAreas,
             customerId: RCMFormData.customerId,
             city_id: RCMFormData.city_id,
@@ -277,7 +264,6 @@ class AddRCMLead extends Component {
             price: RCMFormData.maxPrice,
             min_price: RCMFormData.minPrice,
             description: RCMFormData.description,
-            max_size: RCMFormData.maxSize,
             phones: RCMFormData.phones
         }
         if (user.subRole === 'group_management') {
@@ -356,11 +342,12 @@ class AddRCMLead extends Component {
         this.setState({ isSizeModalVisible: true })
     }
 
-    onModalSizeDonePressed = (minValue, maxValue) => {
+    onModalSizeDonePressed = (minValue, maxValue, unit) => {
         const { RCMFormData } = this.state;
         const copyObject = { ...RCMFormData };
         copyObject.size = minValue;
         copyObject.maxSize = maxValue;
+        copyObject.size_unit = unit;
         this.setState({ RCMFormData: copyObject, isSizeModalVisible: false });
     }
 
@@ -423,7 +410,7 @@ class AddRCMLead extends Component {
                                         sizeUnitList={sizeUnitList}
                                         isSizeModalVisible={isSizeModalVisible}
                                         showSizeModal={() => this.showSizeModal()}
-                                        onModalSizeDonePressed={(minValue, maxValue) => this.onModalSizeDonePressed(minValue, maxValue)}
+                                        onModalSizeDonePressed={(minValue, maxValue, unit) => this.onModalSizeDonePressed(minValue, maxValue, unit)}
                                     />
                                 </View>
                             </TouchableWithoutFeedback>

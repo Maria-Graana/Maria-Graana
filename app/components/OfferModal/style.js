@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+/** @format */
+
+import { StyleSheet } from 'react-native'
 export default styles = StyleSheet.create({
   widthModal: {
     width: '100%',
@@ -33,7 +35,7 @@ export default styles = StyleSheet.create({
   },
   closeStyle: {
     paddingTop: 10,
-    paddingVertical: 5
+    paddingVertical: 5,
   },
   mainInputWrap: {
     marginVertical: 10,
@@ -43,7 +45,7 @@ export default styles = StyleSheet.create({
   },
   mainTopHeader: {
     marginHorizontal: 10,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   offerColor: {
     color: '#2b2c34',
@@ -54,7 +56,7 @@ export default styles = StyleSheet.create({
     position: 'relative',
     flexDirection: 'row',
     borderRadius: 4,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   formControl: {
     backgroundColor: '#fff',
@@ -65,13 +67,13 @@ export default styles = StyleSheet.create({
   sideBtnInput: {
     width: '30%',
     borderRadius: 4,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   addBtnColorLeft: {
-    backgroundColor: '#0D73EE'
+    backgroundColor: '#0D73EE',
   },
   addBtnColorRight: {
-    backgroundColor: '#1D1C25'
+    backgroundColor: '#1D1C25',
   },
   addImg: {
     width: 40,
@@ -136,10 +138,10 @@ export default styles = StyleSheet.create({
     marginBottom: 5,
   },
   priceBlue: {
-    color: '#0D73EE'
+    color: '#0D73EE',
   },
   priceBlack: {
-    color: '#1D1C25'
+    color: '#1D1C25',
   },
   dataTime: {
     fontSize: 12,
@@ -149,10 +151,10 @@ export default styles = StyleSheet.create({
   alignRight: {
     alignItems: 'flex-end',
     width: '100%',
-    alignContent: 'flex-end'
+    alignContent: 'flex-end',
   },
   textRight: {
-    textAlign: 'right'
+    textAlign: 'right',
   },
   offerColorLast: {
     color: '#2b2c34',
@@ -165,7 +167,7 @@ export default styles = StyleSheet.create({
     position: 'relative',
     flexDirection: 'row',
     borderRadius: 4,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   formControlLast: {
     backgroundColor: '#fff',
@@ -181,7 +183,7 @@ export default styles = StyleSheet.create({
   sideBtnInputLast: {
     width: '20%',
     borderRadius: 4,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   checkImg: {
     width: 30,
@@ -190,4 +192,8 @@ export default styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
-});
+  disabledBtnText: {
+    backgroundColor: '#999',
+    fontFamily: AppStyles.fonts.semiBoldFont,
+  },
+})

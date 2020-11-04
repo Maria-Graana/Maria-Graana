@@ -9,10 +9,6 @@ ehthumbs.db
 Thumbs.db
 .expo/*
 
-
-[core]
-excludesfile = /Users/graana/.gitignore_global
-
 ## logs ##
 ----------
 *.log

@@ -61,7 +61,7 @@ const PropsureDocumentPopup = (props) => {
                                             numberOfLines={2}
                                         >
                                             {
-                                                item.propsureDocs.length > 0 ? item.propsureDocs[0].name ? item.propsureDocs[0].name : item.propsureDocs[0].document : `Upload ${item.package}`
+                                                item.propsureDocs.length > 0 ? item.propsureDocs[0].name ? item.propsureDocs[0].name : item.propsureDocs[0].fileName : `Upload ${item.package}`
                                             }
                                         </Text>
                                     </View>

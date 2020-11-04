@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { Button, Textarea } from 'native-base';
+import { View } from 'react-native';
+import { Textarea } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import styles from './style';
 import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
-import { formatPrice } from '../../PriceFormate';
-import PriceSlider from '../../components/PriceSlider';
 import StaticData from '../../StaticData'
 import TouchableInput from '../../components/TouchableInput';
 import TouchableButton from '../../components/TouchableButton';

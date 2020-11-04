@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.2.96",
+    "version": "1.2.97",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "splash": {
@@ -15,7 +15,8 @@
       "resizeMode": "cover"
     },
     "updates": {
-      "enabled": false,
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
@@ -37,7 +38,7 @@
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
       "userInterfaceStyle": "automatic",
-      "buildNumber": "7"
+      "buildNumber": "11"
     },
     "android": {
       "package": "com.agency21.arms",
@@ -58,7 +59,7 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 4,
+      "versionCode": 5,
       "useNextNotificationsApi": true
     },
     "notification": {

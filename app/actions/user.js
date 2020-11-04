@@ -49,6 +49,15 @@ removeBaseUrl = () => {
   axios.defaults.baseURL = ''
 }
 
+export function setUpdatesLoader(value) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_UPDATE_LOADER,
+      payload: value,
+    })
+  }
+}
+
 export function getListingsCount() {
   return (dispatch, getsState) => {
     //Put All Your Code Here, Which You Want To Execute After Some Delay Time.

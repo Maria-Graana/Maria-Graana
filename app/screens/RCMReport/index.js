@@ -1210,38 +1210,41 @@ class RCMReport extends React.Component {
         {!loading ? (
           <ScrollView style={styles.scrollContainer}>
             <View style={{}}>
-              {/* <RectangleDaily
+              <RectangleDaily
                 label={"Commission Revenue"}
                 leadsCount={leadsCount}
                 deals={"(Deals)"}
                 targetNumber={dashBoardData.totalRevenue}
-              /> */}
+              />
               <View style={styles.sqaureView}>
-                <SquareContainer
+                {/* <SquareContainer
                   containerStyle={styles.squareRight}
                   imagePath={comissionRevenueImg}
                   label={"Commission Revenue"}
                   total={dashBoardData.totalRevenue}
-                />
-                <SquareContainer
-                  containerStyle={styles.squareRight}
-                  imagePath={leadsAssignedImg}
-                  label={"Leads Assigned"}
-                  total={dashBoardData.totalleadsAssigned}
-                />
+                /> */}
+
               </View>
               <View style={styles.sqaureView}>
                 <SquareContainer
                   containerStyle={styles.squareRight}
+                  imagePath={leadsAssignedImg}
+                  label={"Company Genrated Leads"}
+                  total={dashBoardData.totalleadsAssigned}
+                />
+
+                <SquareContainer
+                  // containerStyle={styles.squareRight}
                   imagePath={leadsCreatedImg}
-                  label={"Leads Created"}
+                  label={"Personal Leads"}
                   total={dashBoardData.totalLeadsAdded}
                 />
-                <SquareContainer
+
+                {/* <SquareContainer
                   imagePath={clientsAddedImg}
                   label={"Clients Added"}
                   total={dashBoardData.clientsAdded}
-                />
+                /> */}
               </View>
               <View style={styles.sqaureView}>
                 <SquareContainer
@@ -1264,23 +1267,24 @@ class RCMReport extends React.Component {
                   total={dashBoardData.viewingConducted}
                 />
                 <SquareContainer
-                  imagePath={firstCall}
-                  label={"1st Call"}
-                  total={dashBoardData.firstCalls}
+                  imagePath={offersPlaced}
+                  label={"Offers Placed"}
+                  total={dashBoardData.leadsOffers}
                 />
               </View>
               <View style={styles.sqaureView}>
                 <SquareContainer
                   containerStyle={styles.squareRight}
+                  imagePath={firstCall}
+                  label={"1st Call"}
+                  total={dashBoardData.firstCalls}
+                />
+                <SquareContainer
                   imagePath={TotalCalls}
                   label={"Total Calls"}
                   total={dashBoardData.totalCalls}
                 />
-                <SquareContainer
-                  imagePath={offersPlaced}
-                  label={"Offers Placed"}
-                  total={dashBoardData.leadsOffers}
-                />
+
               </View>
               <View style={styles.graphContainer}>
                 <Text style={styles.labelStyle}>Total Leads so far</Text>

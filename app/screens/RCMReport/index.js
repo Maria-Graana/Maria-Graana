@@ -11,7 +11,7 @@ import RegionFilter from "../../components/RegionFilter";
 import AgentFilter from "../../components/AgentFilter";
 import ZoneFilter from "../../components/ZoneFilter";
 import OrganizationFilter from "../../components/OrganizationFilter";
-import clientAddedImg from "../../../assets/img/client-added.png";
+import clientsAddedImg from "../../../assets/img/client-added.png";
 import leadsAssignedImg from "../../../assets/img/leads-assigned.png";
 import leadsCreatedImg from "../../../assets/img/leads-created.png";
 import comissionRevenueImg from "../../../assets/img/commission-revenue-icon.png";
@@ -19,6 +19,10 @@ import viewingConductedImg from "../../../assets/img/viewing-conducted.png";
 import viewingOverdueImg from "../../../assets/img/viewing-overdue.png";
 import listIconImg from "../../../assets/img/list-icon.png";
 import calendarImg from "../../../assets/img/calendar-s.png";
+import offersPlaced from "../../../assets/img/offersPlaced.png";
+import firstCall from "../../../assets/img/firstCall.png";
+import TotalCalls from "../../../assets/img/totalCalls.png";
+import LeadClosed from "../../../assets/img/leadClosed.png";
 import CalendarComponent from "../../components/CalendarComponent";
 import MonthPicker from "../../components/MonthPicker";
 import YearPicker from "../../components/YearPicker";
@@ -555,22 +559,18 @@ class RCMReport extends React.Component {
     if (filterLabel === "Monthly") {
       if (selectedMonth.toString().length === 1)
         selectedMonth = "0" + selectedMonth;
-      url = `/api/leads/reports?scope=agent&q=${
-        agentFormData.agent
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`;
+      url = `/api/leads/reports?scope=agent&q=${agentFormData.agent
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`;
     }
     if (filterLabel === "Daily")
-      url = `/api/leads/reports?scope=agent&q=${
-        agentFormData.agent
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`;
+      url = `/api/leads/reports?scope=agent&q=${agentFormData.agent
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`;
     if (filterLabel === "Yearly")
-      url = `/api/leads/reports?scope=agent&q=${
-        agentFormData.agent
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`;
+      url = `/api/leads/reports?scope=agent&q=${agentFormData.agent
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`;
     if (filterLabel === "Weekly")
-      url = `/api/leads/reports?scope=agent&q=${
-        agentFormData.agent
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`;
+      url = `/api/leads/reports?scope=agent&q=${agentFormData.agent
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`;
     if (filterLabel === "Quarterly") {
       let newQaurter = this.setDefaultQuarter();
       let quarter = _.find(quarters, function (item) {
@@ -580,11 +580,9 @@ class RCMReport extends React.Component {
         selectedDate: quarter.name + ", " + selectedYear,
         selectedQuarter: newQaurter,
       });
-      url = `/api/leads/reports?scope=agent&q=${
-        agentFormData.agent
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${
-        quarter.fromDate
-      }&toDate=${selectedYear}-${quarter.toDate}`;
+      url = `/api/leads/reports?scope=agent&q=${agentFormData.agent
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate
+        }&toDate=${selectedYear}-${quarter.toDate}`;
     }
     this.fetchReport(url);
   };
@@ -648,22 +646,18 @@ class RCMReport extends React.Component {
     if (filterLabel === "Monthly") {
       if (selectedMonth.toString().length === 1)
         selectedMonth = "0" + selectedMonth;
-      url = `/api/leads/reports?scope=team&q=${
-        zoneFormData.zone
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`;
+      url = `/api/leads/reports?scope=team&q=${zoneFormData.zone
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`;
     }
     if (filterLabel === "Daily")
-      url = `/api/leads/reports?scope=team&q=${
-        zoneFormData.zone
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`;
+      url = `/api/leads/reports?scope=team&q=${zoneFormData.zone
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`;
     if (filterLabel === "Yearly")
-      url = `/api/leads/reports?scope=team&q=${
-        zoneFormData.zone
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`;
+      url = `/api/leads/reports?scope=team&q=${zoneFormData.zone
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`;
     if (filterLabel === "Weekly")
-      url = `/api/leads/reports?scope=team&q=${
-        zoneFormData.zone
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`;
+      url = `/api/leads/reports?scope=team&q=${zoneFormData.zone
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`;
     if (filterLabel === "Quarterly") {
       let newQaurter = this.setDefaultQuarter();
       let quarter = _.find(quarters, function (item) {
@@ -673,11 +667,9 @@ class RCMReport extends React.Component {
         selectedDate: quarter.name + ", " + selectedYear,
         selectedQuarter: newQaurter,
       });
-      url = `/api/leads/reports?scope=team&q=${
-        zoneFormData.zone
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${
-        quarter.fromDate
-      }&toDate=${selectedYear}-${quarter.toDate}`;
+      url = `/api/leads/reports?scope=team&q=${zoneFormData.zone
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate
+        }&toDate=${selectedYear}-${quarter.toDate}`;
     }
 
     this.fetchReport(url);
@@ -733,30 +725,22 @@ class RCMReport extends React.Component {
     if (filterLabel === "Monthly") {
       if (selectedMonth.toString().length === 1)
         selectedMonth = "0" + selectedMonth;
-      url = `/api/leads/reports?scope=region&q=${
-        regionFormData.region
-      }&organizationId=${
-        regionFormData.organization
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`;
+      url = `/api/leads/reports?scope=region&q=${regionFormData.region
+        }&organizationId=${regionFormData.organization
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`;
     }
     if (filterLabel === "Daily")
-      url = `/api/leads/reports?scope=region&q=${
-        regionFormData.region
-      }&organizationId=${
-        regionFormData.organization
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`;
+      url = `/api/leads/reports?scope=region&q=${regionFormData.region
+        }&organizationId=${regionFormData.organization
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`;
     if (filterLabel === "Yearly")
-      url = `/api/leads/reports?scope=region&q=${
-        regionFormData.region
-      }&organizationId=${
-        regionFormData.organization
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`;
+      url = `/api/leads/reports?scope=region&q=${regionFormData.region
+        }&organizationId=${regionFormData.organization
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedDate}`;
     if (filterLabel === "Weekly")
-      url = `/api/leads/reports?scope=region&q=${
-        regionFormData.region
-      }&organizationId=${
-        regionFormData.organization
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`;
+      url = `/api/leads/reports?scope=region&q=${regionFormData.region
+        }&organizationId=${regionFormData.organization
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${startWeek}&toDate=${endWeek}`;
     if (filterLabel === "Quarterly") {
       let newQaurter = this.setDefaultQuarter();
       let quarter = _.find(quarters, function (item) {
@@ -766,11 +750,9 @@ class RCMReport extends React.Component {
         selectedDate: quarter.name + ", " + selectedYear,
         selectedQuarter: newQaurter,
       });
-      url = `/api/leads/reports?scope=region&q=${
-        regionFormData.region
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${
-        quarter.fromDate
-      }&toDate=${selectedYear}-${quarter.toDate}`;
+      url = `/api/leads/reports?scope=region&q=${regionFormData.region
+        }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate
+        }&toDate=${selectedYear}-${quarter.toDate}`;
     }
 
     this.fetchReport(url);
@@ -849,9 +831,8 @@ class RCMReport extends React.Component {
         selectedDate: quarter.name + ", " + selectedYear,
         selectedQuarter: newQaurter,
       });
-      url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${
-        quarter.fromDate
-      }&toDate=${selectedYear}-${quarter.toDate}`;
+      url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${quarter.fromDate
+        }&toDate=${selectedYear}-${quarter.toDate}`;
     }
 
     this.fetchReport(url);
@@ -1236,17 +1217,34 @@ class RCMReport extends React.Component {
                 targetNumber={dashBoardData.totalRevenue}
               />
               <View style={styles.sqaureView}>
+                {/* <SquareContainer
+                  containerStyle={styles.squareRight}
+                  imagePath={comissionRevenueImg}
+                  label={"Commission Revenue"}
+                  total={dashBoardData.totalRevenue}
+                /> */}
+
+              </View>
+              <View style={styles.sqaureView}>
                 <SquareContainer
                   containerStyle={styles.squareRight}
                   imagePath={leadsAssignedImg}
-                  label={"Company Generated Leads"}
+                  label={"Company Genrated Leads"}
                   total={dashBoardData.totalleadsAssigned}
                 />
+
                 <SquareContainer
+                  // containerStyle={styles.squareRight}
                   imagePath={leadsCreatedImg}
                   label={"Personal Leads"}
                   total={dashBoardData.totalLeadsAdded}
                 />
+
+                {/* <SquareContainer
+                  imagePath={clientsAddedImg}
+                  label={"Clients Added"}
+                  total={dashBoardData.clientsAdded}
+                /> */}
               </View>
               <View style={styles.sqaureView}>
                 <SquareContainer
@@ -1260,6 +1258,33 @@ class RCMReport extends React.Component {
                   label={"Viewings Overdue"}
                   total={dashBoardData.viewingOverdue}
                 />
+              </View>
+              <View style={styles.sqaureView}>
+                <SquareContainer
+                  containerStyle={styles.squareRight}
+                  imagePath={LeadClosed}
+                  label={"Lead Closed"}
+                  total={dashBoardData.viewingConducted}
+                />
+                <SquareContainer
+                  imagePath={offersPlaced}
+                  label={"Offers Placed"}
+                  total={dashBoardData.leadsOffers}
+                />
+              </View>
+              <View style={styles.sqaureView}>
+                <SquareContainer
+                  containerStyle={styles.squareRight}
+                  imagePath={firstCall}
+                  label={"1st Call"}
+                  total={dashBoardData.firstCalls}
+                />
+                <SquareContainer
+                  imagePath={TotalCalls}
+                  label={"Total Calls"}
+                  total={dashBoardData.totalCalls}
+                />
+
               </View>
               <View style={styles.graphContainer}>
                 <Text style={styles.labelStyle}>Total Leads so far</Text>
@@ -1285,16 +1310,16 @@ class RCMReport extends React.Component {
             </View>
           </ScrollView>
         ) : (
-          <Loader loading={loading} />
-        )}
+            <Loader loading={loading} />
+          )}
         <ReportFooter
           label={footerLabel}
           selectedFooterButton={this.selectedFooterButton}
         />
       </View>
     ) : (
-      <Loader loading={loading} />
-    );
+        <Loader loading={loading} />
+      );
   }
 }
 

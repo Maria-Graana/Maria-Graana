@@ -1,32 +1,34 @@
+/** @format */
+
 const role = {
   Diary: {
     roles: [
-      { role: "regional_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "zonal_manager", access: { v: true, a: true, e: true, d: true } },
+      { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'zonal_manager', access: { v: true, a: true, e: true, d: true } },
       {
-        role: "branch_manager",
+        role: 'branch_manager',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "business_centre_manager",
+        role: 'business_centre_manager',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "call_centre_manager",
+        role: 'call_centre_manager',
         access: { v: true, a: true, e: true, d: true },
       },
-      { role: "area_manager", access: { v: true, a: true, e: true, d: true } },
-      { role: "sales_agent", access: { v: true, a: true, e: true, d: true } },
+      { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
       {
-        role: "business_centre_agent",
-        access: { v: true, a: true, e: true, d: true },
-      },
-      {
-        role: "call_centre_warrior",
+        role: 'business_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "call_centre_agent",
+        role: 'call_centre_warrior',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      {
+        role: 'call_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
     ],
@@ -34,41 +36,41 @@ const role = {
   Inventory: {
     roles: [
       {
-        role: "group_management",
+        role: 'group_management',
         access: { v: true, a: true, e: true, d: true },
       },
-      { role: "group_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "country_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "regional_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "zonal_manager", access: { v: true, a: true, e: true, d: true } },
+      { role: 'group_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'country_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'zonal_manager', access: { v: true, a: true, e: true, d: true } },
       {
-        role: "branch_manager",
+        role: 'branch_manager',
         access: { v: true, a: true, e: true, d: true },
       },
-      { role: "area_manager", access: { v: true, a: true, e: true, d: true } },
-      { role: "sales_agent", access: { v: true, a: true, e: true, d: true } },
+      { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
   TeamDiary: {
     roles: [
       {
-        role: "group_management",
+        role: 'group_management',
         access: { v: true, a: true, e: true, d: true },
       },
-      { role: "group_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "country_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "regional_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "zonal_manager", access: { v: true, a: true, e: true, d: true } },
+      { role: 'group_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'country_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'zonal_manager', access: { v: true, a: true, e: true, d: true } },
       {
-        role: "branch_manager",
-        access: { v: true, a: true, e: true, d: true },
-      },
-      {
-        role: "business_centre_manager",
+        role: 'branch_manager',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "call_centre_manager",
+        role: 'business_centre_manager',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      {
+        role: 'call_centre_manager',
         access: { v: true, a: true, e: true, d: true },
       },
     ],
@@ -76,78 +78,78 @@ const role = {
   Client: {
     roles: [
       {
-        role: "group_management",
+        role: 'group_management',
         access: { v: true, a: true, e: true, d: true },
       },
-      { role: "group_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "country_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "regional_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "zonal_manager", access: { v: true, a: true, e: true, d: true } },
+      { role: 'group_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'country_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'zonal_manager', access: { v: true, a: true, e: true, d: true } },
       {
-        role: "branch_manager",
-        access: { v: true, a: true, e: true, d: true },
-      },
-      {
-        role: "business_centre_manager",
+        role: 'branch_manager',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "call_centre_manager",
-        access: { v: true, a: true, e: true, d: true },
-      },
-      { role: "area_manager", access: { v: true, a: true, e: true, d: true } },
-      { role: "sales_agent", access: { v: true, a: true, e: true, d: true } },
-      {
-        role: "business_centre_agent",
+        role: 'business_centre_manager',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "call_centre_warrior",
+        role: 'call_centre_manager',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
+      {
+        role: 'business_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "call_centre_agent",
+        role: 'call_centre_warrior',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      {
+        role: 'call_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
     ],
   },
   Targets: {
     roles: [
-      { role: "regional_head", access: { v: true, a: true, e: true, d: true } },
+      { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
       {
-        role: "zonal_manager",
+        role: 'zonal_manager',
         access: { v: true, a: true, e: false, d: false },
       },
       {
-        role: "branch_manager",
+        role: 'branch_manager',
         access: { v: true, a: true, e: false, d: false },
       },
       {
-        role: "business_centre_manager",
+        role: 'business_centre_manager',
         access: { v: true, a: true, e: false, d: false },
       },
       {
-        role: "call_centre_manager",
+        role: 'call_centre_manager',
         access: { v: true, a: true, e: false, d: false },
       },
       {
-        role: "area_manager",
+        role: 'area_manager',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "sales_agent",
+        role: 'sales_agent',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "business_centre_agent",
+        role: 'business_centre_agent',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "call_centre_warrior",
+        role: 'call_centre_warrior',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "call_centre_agent",
+        role: 'call_centre_agent',
         access: { v: true, a: false, e: false, d: false },
       },
     ],
@@ -155,37 +157,37 @@ const role = {
   Leads: {
     roles: [
       {
-        role: "group_management",
+        role: 'group_management',
         access: { v: true, a: true, e: true, d: true },
       },
-      { role: "group_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "country_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "regional_head", access: { v: true, a: true, e: true, d: true } },
-      { role: "zonal_manager", access: { v: true, a: true, e: true, d: true } },
+      { role: 'group_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'country_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'zonal_manager', access: { v: true, a: true, e: true, d: true } },
       {
-        role: "branch_manager",
-        access: { v: true, a: true, e: true, d: true },
-      },
-      {
-        role: "business_centre_manager",
+        role: 'branch_manager',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "call_centre_manager",
-        access: { v: true, a: true, e: true, d: true },
-      },
-      { role: "area_manager", access: { v: true, a: true, e: true, d: true } },
-      { role: "sales_agent", access: { v: true, a: true, e: true, d: true } },
-      {
-        role: "business_centre_agent",
+        role: 'business_centre_manager',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "call_centre_warrior",
+        role: 'call_centre_manager',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
+      {
+        role: 'business_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
       {
-        role: "call_centre_agent",
+        role: 'call_centre_warrior',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      {
+        role: 'call_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
     ],
@@ -196,69 +198,83 @@ const role = {
   Dashboard: {
     roles: [
       {
-        role: "group_management",
+        role: 'group_management',
         access: { v: true, a: false, e: false, d: false },
       },
-      { role: "group_head", access: { v: true, a: false, e: false, d: false } },
+      { role: 'group_head', access: { v: true, a: false, e: false, d: false } },
       {
-        role: "country_head",
-        access: { v: true, a: false, e: false, d: false },
-      },
-      {
-        role: "regional_head",
+        role: 'country_head',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "zonal_manager",
+        role: 'regional_head',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "branch_manager",
+        role: 'zonal_manager',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "business_centre_manager",
+        role: 'branch_manager',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "call_centre_manager",
+        role: 'business_centre_manager',
         access: { v: true, a: false, e: false, d: false },
+      },
+      {
+        role: 'call_centre_manager',
+        access: { v: true, a: false, e: false, d: false },
+      },
+      { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
+      {
+        role: 'business_centre_agent',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      {
+        role: 'call_centre_warrior',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      {
+        role: 'call_centre_agent',
+        access: { v: true, a: true, e: true, d: true },
       },
     ],
   },
   AssignLead: {
     roles: [
       {
-        role: "group_management",
+        role: 'group_management',
         access: { v: true, a: false, e: false, d: false },
       },
-      { role: "group_head", access: { v: true, a: false, e: false, d: false } },
+      { role: 'group_head', access: { v: true, a: false, e: false, d: false } },
       {
-        role: "country_head",
-        access: { v: true, a: false, e: false, d: false },
-      },
-      {
-        role: "regional_head",
+        role: 'country_head',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "zonal_manager",
+        role: 'regional_head',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "branch_manager",
+        role: 'zonal_manager',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "business_centre_manager",
+        role: 'branch_manager',
         access: { v: true, a: false, e: false, d: false },
       },
       {
-        role: "call_centre_manager",
+        role: 'business_centre_manager',
+        access: { v: true, a: false, e: false, d: false },
+      },
+      {
+        role: 'call_centre_manager',
         access: { v: true, a: false, e: false, d: false },
       },
     ],
   },
-};
+}
 
-module.exports = role;
+module.exports = role

@@ -1,12 +1,13 @@
 /** @format */
 
-import axios from 'axios'
-import Constants from 'expo-constants'
-import * as Notifications from 'expo-notifications'
-import * as Permissions from 'expo-permissions'
 import * as React from 'react'
-import { Alert, Platform, View } from 'react-native'
 import { connect } from 'react-redux'
+import * as Permissions from 'expo-permissions'
+import Constants from 'expo-constants'
+import { View, Alert, Platform } from 'react-native'
+import axios from 'axios'
+import * as Notifications from 'expo-notifications'
+import * as Sentry from 'sentry-expo'
 
 class AndroidNotifications extends React.Component {
   constructor(props) {
@@ -60,23 +61,23 @@ class AndroidNotifications extends React.Component {
       Notifications.setNotificationChannelAsync('default', {
         name: 'Default',
         importance: Notifications.AndroidImportance.MAX,
-        sound: true,
-        priority: 'max',
+        sound: 'default',
         vibrationPattern: [0, 250, 250, 250],
+        color: '#2A7EF0',
       })
       Notifications.setNotificationChannelAsync('development', {
         name: 'Development',
         importance: Notifications.AndroidImportance.MAX,
-        sound: true,
-        priority: 'max',
+        sound: 'default',
         vibrationPattern: [0, 250, 250, 250],
+        color: '#2A7EF0',
       })
       Notifications.setNotificationChannelAsync('reminder', {
         name: 'Reminder',
         importance: Notifications.AndroidImportance.MAX,
-        sound: true,
-        priority: 'max',
+        sound: 'default',
         vibrationPattern: [0, 250, 250, 250],
+        color: '#2A7EF0',
       })
     }
   }

@@ -1,23 +1,22 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput } from 'react-native';
-import { Button, Textarea } from 'native-base';
+import { View } from 'react-native';
+import { Textarea } from 'native-base';
 import PickerComponent from '../../components/Picker/index';
 import styles from './style';
 import AppStyles from '../../AppStyles';
 import ErrorMessage from '../../components/ErrorMessage'
 import { connect } from 'react-redux';
-import StaticData from '../../StaticData'
-import { formatPrice } from '../../PriceFormate'
-import PriceSlider from '../../components/PriceSlider';
 import TouchableInput from '../../components/TouchableInput';
+import helper from '../../helper';
+import PriceSliderModal from '../../components/PriceSliderModal';
 import TouchableButton from '../../components/TouchableButton';
+import StaticData from '../../StaticData';
+
 
 class CMLeadFrom extends Component {
   constructor(props) {
     super(props)
   }
-
-  componentDidMount() { }
 
   render() {
 
@@ -31,13 +30,25 @@ class CMLeadFrom extends Component {
       handleCityClick,
       handleClientClick,
       getProject,
-      onSliderValueChange,
       getProductType,
       loading,
+      isPriceModalVisible,
+      showPriceModal,
+      onModalPriceDonePressed,
+      onModalCancelPressed
     } = this.props
 
     return (
       <View>
+
+        <PriceSliderModal
+          isVisible={isPriceModalVisible}
+          initialValue={formData.minPrice}
+          finalValue={formData.maxPrice}
+          onModalPriceDonePressed={onModalPriceDonePressed}
+          onModalCancelPressed={onModalCancelPressed}
+          arrayValues={StaticData.PricesProject}
+        />
 
         <TouchableInput placeholder="Client"
           onPress={() => handleClientClick()}
@@ -70,22 +81,18 @@ class CMLeadFrom extends Component {
             } */}
           </View>
         </View>
-        <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center' }]}>
 
-          <TextInput placeholderTextColor={'#a8a8aa'} placeholder='Price Min'
-            value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice)}
-            style={[AppStyles.formControl, styles.priceStyle]}
-            editable={false}
-          />
-          <Text style={styles.toText}>to</Text>
-          <TextInput placeholderTextColor={'#a8a8aa'} placeholder='Price Max'
-            value={formData.maxPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice)}
-            style={[AppStyles.formControl, styles.priceStyle]}
-            editable={false}
-          />
+        <View style={AppStyles.multiFormInput}>
+          <View style={{ width: '100%' }}>
+            <TouchableInput placeholder="Price"
+              showIconOrImage={false}
+              onPress={() => showPriceModal()}
+              value={`${helper.convertPriceToString(formData.minPrice, formData.maxPrice, StaticData.PricesProject[StaticData.PricesProject.length - 1])}`}
+            />
+          </View>
         </View>
 
-        <PriceSlider priceValues={StaticData.PricesProject} initialValue={0} finalValue={StaticData.PricesProject.length - 1} onSliderValueChange={(values) => onSliderValueChange(values)} />
+        {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <Textarea
             value={formData.description}

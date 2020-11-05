@@ -28,25 +28,27 @@ class AddRCMLead extends Component {
             sizeUnitList: [],
             selectSubType: [],
             loading: false,
-            sixKArray: helper.createArray(60000),
-            fifteenKArray: helper.createArray(15000),
-            fiftyArray: helper.createArray(50),
-            hundredArray: helper.createArray(100),
+            isBedBathModalVisible: false,
+            isPriceModalVisible: false,
+            isSizeModalVisible: false,
+            modalType: 'none',
             RCMFormData: {
                 type: "",
                 subtype: "",
-                bed: null,
-                bath: null,
                 leadAreas: [],
                 customerId: '',
                 city_id: '',
                 size_unit: 'marla',
-                minPrice: null,
-                maxPrice: null,
                 description: '',
                 org: '',
-                size: null,
-                maxSize: null
+                bed: null,
+                maxBed: null,
+                bath: null,
+                maxBath: null,
+                size: StaticData.sizeMarla[0],
+                maxSize: StaticData.sizeMarla[StaticData.sizeMarla.length - 1],
+                minPrice: 0,
+                maxPrice: 0,
             }
         }
     }
@@ -75,7 +77,7 @@ class AddRCMLead extends Component {
         navigation.addListener('focus', () => {
             this.onScreenFocused()
         })
-        this.setSizeUnitList('marla')
+        //this.setSizeUnitList('marla')
         this.fetchOrganizations()
 
     }
@@ -141,17 +143,7 @@ class AddRCMLead extends Component {
         }
     }
 
-    setSizeUnitList = (sizeUnit) => {
-        const { RCMFormData, fifteenKArray, fiftyArray, sixKArray, hundredArray } = this.state
-        let priceList = []
-        if (sizeUnit === 'marla') priceList = fiftyArray
-        if (sizeUnit === 'kanal') priceList = hundredArray
-        if (sizeUnit === 'sqft') priceList = fifteenKArray
-        if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') priceList = sixKArray
-        RCMFormData.size = priceList[0];
-        RCMFormData.maxSize = priceList[priceList.length - 1];
-        this.setState({ RCMFormData, sizeUnitList: priceList })
-    }
+    
 
     handleRCMForm = (value, name) => {
         const { RCMFormData } = this.state
@@ -197,7 +189,23 @@ class AddRCMLead extends Component {
     }
 
     selectSubtype = (type) => {
-        this.setState({ selectSubType: StaticData.subType[type] })
+        this.setState({
+            selectSubType: StaticData.subType[type],
+        }, () => {
+            this.setDefaultValuesForBedBath(type)
+        });
+    }
+
+    setDefaultValuesForBedBath = (type) => {
+        if (type === 'residential') {
+            const { RCMFormData } = this.state;
+            const copyObject = { ...RCMFormData };
+            copyObject.bed = 0;
+            copyObject.bath = 0;
+            copyObject.maxBed = StaticData.bedBathRange[StaticData.bedBathRange.length - 1];
+            copyObject.maxBath = StaticData.bedBathRange[StaticData.bedBathRange.length - 1];
+            this.setState({ RCMFormData: copyObject })
+        }
     }
 
     RCMFormSubmit = () => {
@@ -245,7 +253,10 @@ class AddRCMLead extends Component {
             subtype: RCMFormData.subtype,
             bed: RCMFormData.bed,
             bath: RCMFormData.bath,
+            maxBed: RCMFormData.maxBed,
+            maxBath:RCMFormData.maxBath,
             size: RCMFormData.size,
+            max_size: RCMFormData.maxSize,
             leadAreas: RCMFormData.leadAreas,
             customerId: RCMFormData.customerId,
             city_id: RCMFormData.city_id,
@@ -253,7 +264,6 @@ class AddRCMLead extends Component {
             price: RCMFormData.maxPrice,
             min_price: RCMFormData.minPrice,
             description: RCMFormData.description,
-            max_size: RCMFormData.maxSize,
             phones: RCMFormData.phones
         }
         if (user.subRole === 'group_management') {
@@ -285,20 +295,60 @@ class AddRCMLead extends Component {
         })
     }
 
-    onSliderValueChange = (values) => {
-        const { RCMFormData, priceList } = this.state;
-        const copyObject = { ...RCMFormData };
-        copyObject.minPrice = priceList[values[0]];
-        copyObject.maxPrice = priceList[values[values.length - 1]];
-        this.setState({ RCMFormData: copyObject });
+    showBedBathModal = (modalType) => {
+        this.setState({ isBedBathModalVisible: true, modalType })
     }
 
-    onSizeUnitSliderValueChange = (values) => {
-        const { RCMFormData, sizeUnitList } = this.state;
+    onBedBathModalDonePressed = (minValue, maxValue) => {
+        const { RCMFormData, modalType } = this.state;
         const copyObject = { ...RCMFormData };
-        copyObject.size = sizeUnitList[values[0]];
-        copyObject.maxSize = sizeUnitList[values[values.length - 1]];
-        this.setState({ RCMFormData: copyObject });
+        switch (modalType) {
+            case 'bed':
+                copyObject.bed = minValue;
+                copyObject.maxBed = maxValue;
+                this.setState({ RCMFormData: copyObject });
+                break;
+            case 'bath':
+                copyObject.bath = minValue;
+                copyObject.maxBath = maxValue;
+                this.setState({ RCMFormData: copyObject });
+            default:
+                break;
+        }
+        this.setState({ isBedBathModalVisible: false });
+    }
+
+    onModalCancelPressed = () => {
+        this.setState({
+            isBedBathModalVisible: false,
+            isPriceModalVisible: false,
+            isSizeModalVisible: false,
+        })
+    }
+
+    showPriceModal = () => {
+        this.setState({ isPriceModalVisible: true })
+    }
+
+    onModalPriceDonePressed = (minValue, maxValue) => {
+        const { RCMFormData } = this.state;
+        const copyObject = { ...RCMFormData };
+        copyObject.minPrice = minValue;
+        copyObject.maxPrice = maxValue;
+        this.setState({ RCMFormData: copyObject, isPriceModalVisible: false });
+    }
+
+    showSizeModal = () => {
+        this.setState({ isSizeModalVisible: true })
+    }
+
+    onModalSizeDonePressed = (minValue, maxValue, unit) => {
+        const { RCMFormData } = this.state;
+        const copyObject = { ...RCMFormData };
+        copyObject.size = minValue;
+        copyObject.maxSize = maxValue;
+        copyObject.size_unit = unit;
+        this.setState({ RCMFormData: copyObject, isSizeModalVisible: false });
     }
 
     render() {
@@ -313,7 +363,11 @@ class AddRCMLead extends Component {
             checkValidation,
             priceList,
             loading,
-            sizeUnitList
+            sizeUnitList,
+            isBedBathModalVisible,
+            isPriceModalVisible,
+            isSizeModalVisible,
+            modalType
         } = this.state
         const { route } = this.props
 
@@ -343,9 +397,20 @@ class AddRCMLead extends Component {
                                         subType={selectSubType}
                                         handleAreaClick={this.handleAreaClick}
                                         priceList={priceList}
-                                        onSizeUnitSliderValueChange={(values) => this.onSizeUnitSliderValueChange(values)}
                                         onSliderValueChange={(values) => this.onSliderValueChange(values)}
                                         loading={loading}
+                                        isBedBathModalVisible={isBedBathModalVisible}
+                                        modalType={modalType}
+                                        showBedBathModal={(value) => this.showBedBathModal(value)}
+                                        onBedBathModalDonePressed={(minValue, maxValue) => this.onBedBathModalDonePressed(minValue, maxValue)}
+                                        onModalCancelPressed={() => this.onModalCancelPressed()}
+                                        isPriceModalVisible={isPriceModalVisible}
+                                        showPriceModal={() => this.showPriceModal()}
+                                        onModalPriceDonePressed={(minValue, maxValue) => this.onModalPriceDonePressed(minValue, maxValue)}
+                                        sizeUnitList={sizeUnitList}
+                                        isSizeModalVisible={isSizeModalVisible}
+                                        showSizeModal={() => this.showSizeModal()}
+                                        onModalSizeDonePressed={(minValue, maxValue, unit) => this.onModalSizeDonePressed(minValue, maxValue, unit)}
                                     />
                                 </View>
                             </TouchableWithoutFeedback>

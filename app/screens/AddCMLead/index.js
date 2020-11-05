@@ -135,13 +135,13 @@ class AddCMLead extends Component {
         })
     }
 
-    onSliderValueChange = (values) => {
-        const { formData } = this.state;
-        const prices = StaticData.PricesProject;
-        formData.minPrice = prices[values[0]];
-        formData.maxPrice = prices[values[values.length - 1]];
-        this.setState({ formData });
-    }
+    // onSliderValueChange = (values) => {
+    //     const { formData } = this.state;
+    //     const prices = StaticData.PricesProject;
+    //     formData.minPrice = prices[values[0]];
+    //     formData.maxPrice = prices[values[values.length - 1]];
+    //     this.setState({ formData });
+    // }
 
     handleClientClick = () => {
         const { navigation } = this.props;
@@ -169,6 +169,27 @@ class AddCMLead extends Component {
         })
     }
 
+    showPriceModal = () => {
+        this.setState({
+            isPriceModalVisible: true,
+        })
+    }
+
+    onModalCancelPressed = () => {
+        this.setState({
+            isPriceModalVisible: false,
+        })
+    }
+
+    onModalPriceDonePressed = (minValue, maxValue) => {
+        const { formData } = this.state;
+        const copyObject = { ...formData };
+        copyObject.minPrice = minValue;
+        copyObject.maxPrice = maxValue;
+        this.setState({ formData: copyObject, isPriceModalVisible: false });
+    }
+
+
     render() {
         const {
             formData,
@@ -178,6 +199,7 @@ class AddCMLead extends Component {
             clientName,
             getProductType,
             loading,
+            isPriceModalVisible,
         } = this.state
         const { route } = this.props
         return (
@@ -197,9 +219,12 @@ class AddCMLead extends Component {
                                         handleClientClick={this.handleClientClick}
                                         formData={formData}
                                         getProject={getProject}
-                                        onSliderValueChange={(values) => this.onSliderValueChange(values)}
                                         getProductType={getProductType}
                                         loading={loading}
+                                        isPriceModalVisible={isPriceModalVisible}
+                                        showPriceModal={() => this.showPriceModal()}
+                                        onModalPriceDonePressed={(minValue, maxValue) => this.onModalPriceDonePressed(minValue, maxValue)}
+                                        onModalCancelPressed={() => this.onModalCancelPressed()}
                                     />
                                 </View>
                             </TouchableWithoutFeedback>

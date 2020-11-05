@@ -14,14 +14,15 @@ import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles';
 import PickerComponent from '../Picker/index';
 import styles from './style';
-import PriceSlider from '../PriceSlider/index';
 import { Button } from 'native-base';
 import StaticData from '../../StaticData';
 import AreaPicker from '../AreaPicker/index';
 import TouchableInput from '../TouchableInput';
 import SingleSelectionPickerComp from '../SingleSelectionPickerComp/index';
-import ErrorMessage from '../ErrorMessage/index';
-import { formatPrice } from '../../PriceFormate'
+import PriceSliderModal from '../PriceSliderModal';
+import BedBathSliderModal from '../../components/BedBathSliderModal';
+import SizeSliderModal from '../../components/SizeSliderModal';
+import helper from '../../helper';
 import _ from 'underscore';
 
 class FilterModal extends React.Component {
@@ -29,7 +30,11 @@ class FilterModal extends React.Component {
         super(props)
         this.state = {
             showAreaPicker: false,
-            showCityPicker: false
+            showCityPicker: false,
+            isPriceModalVisible: false,
+            isBedBathModalVisible: false,
+            isSizeModalVisible: false,
+            modalType: 'none',
         }
     }
 
@@ -51,14 +56,72 @@ class FilterModal extends React.Component {
         })
     }
 
-    emptyList = () => {
-        this.areaPicker.emptyList()
+    checkBedBathInitialValue = (modalType) => {
+        const { formData } = this.props;
+        switch (modalType) {
+            case 'bed':
+                return formData.bed;
+            case 'bath':
+                return formData.bath;
+            default:
+                return 0;
+        }
+    }
+
+    checkBedBathFinalValue = (modalType) => {
+        const { formData } = this.props;
+        switch (modalType) {
+            case 'bed':
+                return formData.maxBed;
+            case 'bath':
+                return formData.maxBath;
+            default:
+                return 0;
+        }
+    }
+
+    showBedBathModal = (modalType) => {
+        this.setState({ isBedBathModalVisible: true, modalType })
+    }
+
+    onBedBathModalDonePressed = (minValue, maxValue) => {
+        const { modalType } = this.state;
+        this.setState({ isBedBathModalVisible: false }, () => {
+            this.props.onBedBathModalDonePressed(minValue, maxValue, modalType)
+        });
+    }
+
+    showPricePicker = () => {
+        this.setState({ isPriceModalVisible: true })
+    }
+
+    showSizePicker = () => {
+        this.setState({ isSizeModalVisible: true })
+    }
+
+    onModalSizeDonePressed = (minValue, maxValue, unit) => {
+        this.setState({ isSizeModalVisible: false }, () => {
+            this.props.onModalSizeDonePressed(minValue, maxValue, unit)
+        });
+    }
+
+    onModalPriceDonePressed = (minValue, maxValue) => {
+        this.setState({ isPriceModalVisible: false }, () => {
+            this.props.onModalPriceDonePressed(minValue, maxValue)
+        });
+    }
+
+    onModalCancelPressed = () => {
+        this.setState({
+            isPriceModalVisible: false,
+            isBedBathModalVisible: false,
+            isSizeModalVisible: false,
+        })
     }
 
     render() {
         const {
             openPopup,
-            maxCheck,
             areas,
             cities,
             formData,
@@ -66,13 +129,9 @@ class FilterModal extends React.Component {
             getSubType,
             subTypVal,
             submitFilter,
-            getAreas,
-            onSliderValueChange,
             selectedCity,
-            sizeUnitList,
-            onSizeUnitSliderValueChange
         } = this.props;
-        const { showAreaPicker, showCityPicker } = this.state
+        const { showAreaPicker, showCityPicker, isPriceModalVisible, isBedBathModalVisible, isSizeModalVisible, modalType } = this.state
         const { sizeUnit, type } = StaticData
         let prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
         return (
@@ -115,17 +174,37 @@ class FilterModal extends React.Component {
                             cityId={formData.cityId}
                             cities={cities.length ? _.clone(cities) : []}
                         />
+                        {/* **************************************** */}
+                        <BedBathSliderModal
+                            isVisible={isBedBathModalVisible}
+                            modalType={modalType}
+                            initialValue={this.checkBedBathInitialValue(modalType)}
+                            finalValue={this.checkBedBathFinalValue(modalType)}
+                            onBedBathModalDonePressed={this.onBedBathModalDonePressed}
+                            onModalCancelPressed={this.onModalCancelPressed}
+                            arrayValues={StaticData.bedBathRange}
+                        />
+                        {/* **************************************** */}
+                        <PriceSliderModal
+                            isVisible={isPriceModalVisible}
+                            initialValue={formData.minPrice}
+                            finalValue={formData.maxPrice}
+                            onModalPriceDonePressed={this.onModalPriceDonePressed}
+                            onModalCancelPressed={this.onModalCancelPressed}
+                            arrayValues={prices}
+                        />
+
+                        <SizeSliderModal
+                            isVisible={isSizeModalVisible}
+                            initialValue={formData.size}
+                            finalValue={formData.maxSize}
+                            onModalSizeDonePressed={this.onModalSizeDonePressed}
+                            onModalCancelPressed={this.onModalCancelPressed}
+                            sizeUnit={formData.sizeUnit}
+                        />
 
                         {/* **************************************** */}
 
-
-                        {/* <View style={styles.pickerView}>
-                            <PickerComponent selectedItem={formData.cityId} onValueChange={(text) => {
-                                handleForm(text, 'cityId')
-                                getAreas(text)
-                                this.emptyList()
-                            }} data={cities.length ? cities : []} name={'city'} placeholder='Select City' />
-                        </View> */}
                         <View style={[styles.pickerView, { padding: 0, paddingHorizontal: 15 }]} >
                             <TouchableInput
                                 placeholder="Select City"
@@ -149,58 +228,44 @@ class FilterModal extends React.Component {
                         <View style={styles.pickerView}>
                             <PickerComponent selectedItem={formData.propertySubType} onValueChange={(text) => { handleForm(text, 'propertySubType') }} data={subTypVal} name={'type'} placeholder='Property Sub Type' />
                         </View>
-                        <View style={styles.pickerView}>
-                            <PickerComponent selectedItem={formData.sizeUnit} onValueChange={(text) => { handleForm(text, 'sizeUnit') }} data={sizeUnit} name={'type'} placeholder='Size Unit' />
-                        </View>
-                        <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15 }]}>
-                            <TextInput placeholder='Size Min'
-                                value={formData.minPrice === StaticData.Constants.any_value ? 'Any' : formatPrice(formData.size)}
-                                style={[AppStyles.formControl, styles.priceStyle]}
-                                editable={false}
-                            />
-                            <Text style={styles.toText}>to</Text>
-                            <TextInput placeholder='Size Max'
-                                value={formatPrice(formData.maxSize)}
-                                style={[AppStyles.formControl, styles.priceStyle]}
-                                editable={false}
+
+                        <View style={[styles.pickerView, { padding: 0, paddingHorizontal: 15 }]} >
+                            <TouchableInput
+                                placeholder="Size"
+                                showIconOrImage={false}
+                                onPress={() => this.showSizePicker()}
+                                value={`${helper.convertSizeToString(formData.size, formData.maxSize, StaticData.Constants.size_any_value, formData.sizeUnit)}`}
                             />
                         </View>
-                        <PriceSlider priceValues={sizeUnitList} initialValue={sizeUnitList.indexOf(Number(formData.size) || 0)} finalValue={sizeUnitList.indexOf(Number(formData.maxSize) || 0)} onSliderValueChange={(values) => onSizeUnitSliderValueChange(values)} />
-                        {
-                            maxCheck ?
-                                <View style={styles.errorView}>
-                                    <ErrorMessage errorMessage={'Max value cannot be less than Min value!'} />
-                                </View>
-                                :
-                                null
-                        }
-                        <View style={[AppStyles.multiFormInput, AppStyles.mainInputWrap, { justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15 }]}>
-                            <TextInput
-                                placeholderTextColor={'#a8a8aa'}
-                                placeholder='Price Min'
-                                value={formData.minPrice == StaticData.Constants.any_value ? 'Any' : formatPrice(formData.minPrice || 0)}
-                                style={[AppStyles.formControl, styles.priceStyle]}
-                                editable={false}
-                            />
-                            <Text style={styles.toText}>to</Text>
-                            <TextInput
-                                placeholderTextColor={'#a8a8aa'}
-                                placeholder='Price Max'
-                                value={formData.maxPrice == StaticData.Constants.any_value ? 'Any' : formatPrice(formData.maxPrice || 0)}
-                                style={[AppStyles.formControl, styles.priceStyle]}
-                                style={[AppStyles.formControl, styles.priceStyle]}
-                                editable={false}
+                        {/* **************************************** */}
+                        <View style={[styles.pickerView, { padding: 0, paddingHorizontal: 15 }]} >
+                            <TouchableInput
+                                placeholder="Price"
+                                showIconOrImage={false}
+                                onPress={() => this.showPricePicker()}
+                                value={`${helper.convertPriceToString(formData.minPrice, formData.maxPrice, prices[prices.length - 1])}`}
                             />
                         </View>
-                        <PriceSlider priceValues={prices} initialValue={prices.indexOf(Number(formData.minPrice) || 0)} finalValue={prices.indexOf(Number(formData.maxPrice) || 0)} onSliderValueChange={(values) => onSliderValueChange(values)} />
+
+                        {/* **************************************** */}
                         <View style={styles.textInputView}>
                             <View style={styles.textView}>
-                                <TextInput placeholderTextColor={'#a8a8aa'} keyboardType={'numeric'} value={formData.bed ? String(formData.bed) : ''} onChangeText={(text) => { handleForm(text, 'bed') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bed'} placeholder={'Beds'} />
+                                <TouchableInput placeholder="Bed"
+                                    showIconOrImage={false}
+                                    onPress={() => this.showBedBathModal('bed')}
+                                    value={`Beds: ${helper.showBedBathRangesString(formData.bed, formData.maxBed, StaticData.bedBathRange[StaticData.bedBathRange.length - 1])}`}
+                                />
                             </View>
+                            {/* **************************************** */}
                             <View style={AppStyles.mb1}>
-                                <TextInput placeholderTextColor={'#a8a8aa'} keyboardType={'numeric'} value={formData.bath ? String(formData.bath) : ''} onChangeText={(text) => { handleForm(text, 'bath') }} style={[AppStyles.formControl, AppStyles.inputPadLeft]} name={'bath'} placeholder={'Bath'} />
+                                <TouchableInput placeholder="Bath"
+                                    showIconOrImage={false}
+                                    onPress={() => this.showBedBathModal('bath')}
+                                    value={`Baths: ${helper.showBedBathRangesString(formData.bath, formData.maxBath, StaticData.bedBathRange[StaticData.bedBathRange.length - 1])}`}
+                                />
                             </View>
                         </View>
+
                         <View style={[AppStyles.mainInputWrap, styles.matchBtn]}>
                             <Button
                                 onPress={() => { submitFilter() }}

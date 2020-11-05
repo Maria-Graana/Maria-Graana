@@ -9,10 +9,10 @@ import StaticData from '../../StaticData';
 
 const checkModalType = (modalType, initialValue, finalValue) => {
     if (modalType === 'bed') {
-        return (`Beds: ${helper.showBedBathRangesString(initialValue, finalValue, StaticData.bedBathRange.length - 1)}`);
+        return (`Beds: ${helper.showBedBathRangesString(initialValue, finalValue, StaticData.bedBathRange[StaticData.bedBathRange.length - 1])}`);
     }
     else if (modalType === 'bath') {
-        return (`Baths: ${helper.showBedBathRangesString(initialValue, finalValue, StaticData.bedBathRange.length - 1)}`);
+        return (`Baths: ${helper.showBedBathRangesString(initialValue, finalValue, StaticData.bedBathRange[StaticData.bedBathRange.length - 1])}`);
     }
     else {
         return '';
@@ -38,11 +38,11 @@ const BedBathSliderModal = ({
     }, [initialValue, finalValue])
 
     const onSliderValueChange = (values) => {
-        const initialValue = values[0];
-        const finalValue = values[values.length - 1];
-        setMinValue(initialValue)
-        setMaxValue(finalValue)
-        setRangeString(checkModalType(modalType, initialValue, finalValue));
+        const start = values[0];
+        const end = values[values.length - 1];
+        setMinValue(arrayValues[start])
+        setMaxValue(arrayValues[end])
+        setRangeString(checkModalType(modalType, arrayValues[start], arrayValues[end]));
     }
 
     const onDonePressed = () => {
@@ -53,7 +53,10 @@ const BedBathSliderModal = ({
         <Modal isVisible={isVisible}>
             <View style={styles.modalMain}>
                 <Text style={styles.textStyle}>{rangeString}</Text>
-                <PriceSlider initialValue={minValue} finalValue={maxValue} priceValues={arrayValues} onSliderValueChange={(values) => onSliderValueChange(values)} />
+                <PriceSlider initialValue={arrayValues.indexOf(minValue)}
+                    finalValue={arrayValues.indexOf(maxValue)}
+                    priceValues={arrayValues}
+                    onSliderValueChange={(values) => onSliderValueChange(values)} />
                 <View style={styles.buttonsContainer}>
                     <TouchableButton containerStyle={[styles.buttonCommonStyle, styles.cancelButton]}
                         containerBackgroundColor={AppStyles.whiteColor.color}

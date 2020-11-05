@@ -9,11 +9,6 @@ import AppStyles from '../../AppStyles';
 import StaticData from '../../StaticData';
 import PickerComponent from '../Picker'
 
-let fiftyArray = helper.createArray(50);
-let hundredArray = helper.createArray(100);
-let fifteenKArray = helper.createArray(15000);
-let sixtyKArray = helper.createArray(60000);
-
 const currencyConvert = (x) => {
     if (x !== null || x !== undefined) {
         x = x.toString();
@@ -28,10 +23,10 @@ const currencyConvert = (x) => {
 
 const setSizeUnitList = (sizeUnit) => {
     let sizeList = []
-    if (sizeUnit === 'marla') sizeList = fiftyArray;
-    if (sizeUnit === 'kanal') sizeList = hundredArray;
-    if (sizeUnit === 'sqft') sizeList = fifteenKArray;
-    if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') sizeList = sixtyKArray;
+    if (sizeUnit === 'marla') sizeList = StaticData.sizeMarla;
+    if (sizeUnit === 'kanal') sizeList = StaticData.sizeKanal;
+    if (sizeUnit === 'sqft') sizeList =StaticData.sizeSqft;
+    if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') sizeList = StaticData.sizeSqm;
     return sizeList;
 }
 
@@ -60,7 +55,7 @@ const SizeSliderModal = ({
         setStringValues({ ...stringValues,
              sizeMin: initialValue === StaticData.Constants.size_any_value ? null : currencyConvert(initialValue), 
              sizeMax: finalValue === StaticData.Constants.size_any_value ? null : currencyConvert(finalValue) })
-        setRangeString(helper.convertSizeToString(initialValue, finalValue, sizeUnit));
+        setRangeString(helper.convertSizeToString(initialValue, finalValue,StaticData.Constants.size_any_value, sizeUnit));
     }, [initialValue, finalValue])
 
     const onSliderValueChange = (values) => {
@@ -69,19 +64,19 @@ const SizeSliderModal = ({
         setMinValue(arrayValues[start])
         setMaxValue(arrayValues[end])
         setStringValues({ ...stringValues, sizeMin: arrayValues[start] === arrayValues[arrayValues.length - 1] ? null : currencyConvert(arrayValues[start]), sizeMax: arrayValues[end] === arrayValues[arrayValues.length - 1] ? null : currencyConvert(arrayValues[end]) })
-        setRangeString(helper.convertSizeToString(arrayValues[start], arrayValues[end], unit));
+        setRangeString(helper.convertSizeToString(arrayValues[start], arrayValues[end], StaticData.Constants.size_any_value, unit));
     }
 
 
     const handleMinSizeChange = (value) => {
         setStringValues({ ...stringValues, sizeMin: String(value) });
-        setRangeString(helper.convertSizeToString(value, maxValue, unit))
+        setRangeString(helper.convertSizeToString(value, maxValue, StaticData.Constants.size_any_value, unit))
         setMinValue(value)
     }
 
     const handleMaxSizeChange = (value) => {
         setStringValues({ ...stringValues, sizeMax: String(value) });
-        setRangeString(helper.convertSizeToString(minValue, value, unit));
+        setRangeString(helper.convertSizeToString(minValue, value, StaticData.Constants.size_any_value, unit));
         setMaxValue(value)
     }
 
@@ -93,14 +88,16 @@ const SizeSliderModal = ({
         let maxSize = sizeUnitList[sizeUnitList.length - 1];
         setMinValue(minSize);
         setMaxValue(maxSize);
-        setRangeString(helper.convertSizeToString(minSize, maxSize, value));
-        setStringValues({ ...stringValues, sizeMin: String(minSize), sizeMax: String(maxSize) });
+        setRangeString(helper.convertSizeToString(minSize, maxSize,StaticData.Constants.size_any_value, value));
+        setStringValues({ ...stringValues, 
+            sizeMin: minSize === arrayValues[arrayValues.length - 1]? null : String(minSize), 
+            sizeMax: maxSize === arrayValues[arrayValues.length - 1]? null : String(maxSize), 
+        });
     }
-
+ 
     const onDonePressed = () => {
-        const finalMinValue = stringValues.sizeMin ? Number(removeCommas(stringValues.sizeMin)) : arrayValues[0];
-        const finalMaxValue = stringValues.sizeMax ? Number(removeCommas(stringValues.sizeMax)) : arrayValues[arrayValues.length - 1];
-        console.log(finalMinValue, finalMaxValue, unit)
+        const finalMinValue = stringValues.sizeMin ? Number(removeCommas(stringValues.sizeMin)) : StaticData.Constants.size_any_value;
+        const finalMaxValue = stringValues.sizeMax ? Number(removeCommas(stringValues.sizeMax)) : StaticData.Constants.size_any_value;
         if (finalMinValue > finalMaxValue) {
             setErrorMessage('Minimum size cannot be greater than Maximum size')
             return;
@@ -135,7 +132,7 @@ const SizeSliderModal = ({
             sizeMin: initialValue === StaticData.Constants.size_any_value ? null : currencyConvert(initialValue),
             sizeMax: finalValue === StaticData.Constants.size_any_value ? null : currencyConvert(finalValue)
         })
-        setRangeString(helper.convertSizeToString(initialValue, finalValue, unit))
+        setRangeString(helper.convertSizeToString(initialValue, finalValue, StaticData.Constants.size_any_value, unit))
         onModalCancelPressed();
     }
 

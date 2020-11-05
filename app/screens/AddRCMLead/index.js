@@ -45,8 +45,8 @@ class AddRCMLead extends Component {
                 maxBed: null,
                 bath: null,
                 maxBath: null,
-                size: 1,
-                maxSize: 50,
+                size: StaticData.sizeMarla[0],
+                maxSize: StaticData.sizeMarla[StaticData.sizeMarla.length - 1],
                 minPrice: 0,
                 maxPrice: 0,
             }
@@ -202,8 +202,8 @@ class AddRCMLead extends Component {
             const copyObject = { ...RCMFormData };
             copyObject.bed = 0;
             copyObject.bath = 0;
-            copyObject.maxBed = StaticData.bedBathRange.length - 1;
-            copyObject.maxBath = StaticData.bedBathRange.length - 1;
+            copyObject.maxBed = StaticData.bedBathRange[StaticData.bedBathRange.length - 1];
+            copyObject.maxBath = StaticData.bedBathRange[StaticData.bedBathRange.length - 1];
             this.setState({ RCMFormData: copyObject })
         }
     }
@@ -251,10 +251,10 @@ class AddRCMLead extends Component {
             purpose: formType,
             type: RCMFormData.type,
             subtype: RCMFormData.subtype,
-            bed: StaticData.bedBathRange[RCMFormData.bed],
-            bath: StaticData.bedBathRange[RCMFormData.bath],
-            maxBed: StaticData.bedBathRange[RCMFormData.maxBed],
-            maxBath: StaticData.bedBathRange[RCMFormData.maxBath],
+            bed: RCMFormData.bed,
+            bath: RCMFormData.bath,
+            maxBed: RCMFormData.maxBed,
+            maxBath:RCMFormData.maxBath,
             size: RCMFormData.size,
             max_size: RCMFormData.maxSize,
             leadAreas: RCMFormData.leadAreas,

@@ -103,7 +103,9 @@ const PriceSliderModal = ({ isVisible,
         setMinValue(initialValue)
         setMaxValue(finalValue)
         setErrorMessage('');
-        setStringValues({ ...stringValues, priceMin: initialValue === StaticData.Constants.any_value ? null : currencyConvert(initialValue), priceMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue) })
+        setStringValues({ ...stringValues, 
+            priceMin: initialValue === StaticData.Constants.any_value ? null : currencyConvert(initialValue), 
+            priceMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue) })
         setRangeString(helper.convertPriceToString(initialValue, finalValue, arrayValues[arrayValues.length - 1]))
         onModalCancelPressed();
     }

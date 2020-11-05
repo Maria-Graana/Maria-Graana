@@ -48,17 +48,19 @@ class LeadMatch extends React.Component {
             formData: {
                 cityId: '',
                 areaId: '',
-                minPrice: '',
-                maxPrice: '',
-                bed: '',
-                bath: '',
-                size: '',
+                minPrice: 0,
+                maxPrice: 0,
+                bed: null,
+                maxBed: null,
+                bath: null,
+                maxBath: null,
+                size: null,
+                maxSize: null,
                 sizeUnit: '',
                 propertySubType: '',
                 propertyType: '',
                 purpose: '',
                 leadAreas: [],
-                maxSize: ''
             },
             checkCount: {
                 'true': 0,
@@ -71,14 +73,8 @@ class LeadMatch extends React.Component {
             subTypVal: [],
             progressValue: 0,
             filterColor: false,
-            maxCheck: false,
             cities: [],
             areas: [],
-            sixKArray: helper.createArray(60000),
-            fifteenKArray: helper.createArray(15000),
-            fiftyArray: helper.createArray(50),
-            hundredArray: helper.createArray(100),
-            sizeUnitList: [],
             // for the lead close dialog
             isVisible: false,
             checkReasonValidation: false,
@@ -140,35 +136,6 @@ class LeadMatch extends React.Component {
             })
     }
 
-    setSizeUnitList = (sizeUnit) => {
-        const { formData, fifteenKArray, fiftyArray, sixKArray, hundredArray, lead } = this.state
-        let priceList = []
-        if (sizeUnit === 'marla') priceList = fiftyArray
-        if (sizeUnit === 'kanal') priceList = hundredArray
-        if (sizeUnit === 'sqft') priceList = fifteenKArray
-        if (sizeUnit === 'sqyd' || sizeUnit === 'sqm') priceList = sixKArray
-        formData.size = priceList[0];
-        formData.maxSize = priceList[priceList.length - 1];
-        if (!lead.max_size) lead.max_size = priceList[priceList.length - 1]
-        this.setState({ formData, sizeUnitList: priceList })
-    }
-
-    onSliderValueChange = (values) => {
-        const { formData } = this.state;
-        const prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
-        formData.minPrice = prices[values[0]].toString()
-        formData.maxPrice = prices[values[values.length - 1]].toString()
-        this.setState({ formData })
-    }
-
-    onSizeUnitSliderValueChange = (values) => {
-        const { formData, sizeUnitList } = this.state;
-        const copyObject = { ...formData };
-        copyObject.size = sizeUnitList[values[0]];
-        copyObject.maxSize = sizeUnitList[values[values.length - 1]];
-        this.setState({ formData: copyObject });
-    }
-
     handleForm = (value, name) => {
         const { formData } = this.state
         formData[name] = value
@@ -179,7 +146,7 @@ class LeadMatch extends React.Component {
             formData.leadAreas = []
             formData[name] = value.value
         }
-        if (name === 'sizeUnit') this.setSizeUnitList(value)
+        // if (name === 'sizeUnit') this.setSizeUnitList(value)
         this.setState({ formData })
     }
 
@@ -212,41 +179,20 @@ class LeadMatch extends React.Component {
 
     submitFilter = () => {
         const { formData } = this.state
-
-        if (formData.maxPrice && formData.maxPrice !== '' && formData.minPrice && formData.minPrice !== '') {
-            if (Number(formData.maxPrice) >= Number(formData.minPrice)) {
-                this.setState({
-                    formData: formData,
-                    showFilter: false,
-                    loading: true,
-                    filterColor: true,
-                    maxCheck: false
-                }, () => {
-                    this.fetchMatches()
-                })
-            } else {
-                this.setState({
-                    maxCheck: true
-                })
-            }
-        } else {
-            this.setState({
-                formData: formData,
-                showFilter: false,
-                loading: true,
-                filterColor: true,
-                maxCheck: false
-            }, () => {
-                this.fetchMatches()
-            })
-        }
+        this.setState({
+            formData: formData,
+            showFilter: false,
+            loading: true,
+            filterColor: true,
+        }, () => {
+            this.fetchMatches()
+        })
     }
 
     resetFilter = () => {
         const { lead } = this.state
         let cityId = ''
         let areas = []
-        let prices = lead.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
 
         if ('city' in lead && lead.city) {
             cityId = lead.city.id
@@ -262,21 +208,16 @@ class LeadMatch extends React.Component {
                 })
             }
         }
-        if (!lead.size_unit) {
-            lead.size_unit = 'marla'
-            this.setSizeUnitList('marla')
-        } else this.setSizeUnitList(lead.size_unit)
+        if (!lead.size_unit) lead.size_unit = 'marla'
+        if (!lead.bed) lead.bed = 0;
+        if (!lead.maxBed) lead.maxBed = StaticData.bedBathRange[StaticData.bedBathRange.length - 1]
+        if (!lead.bath) lead.bath = 0;
+        if (!lead.maxBath) lead.maxBath = StaticData.bedBathRange[StaticData.bedBathRange.length - 1]
         if (lead.type) this.getSubType(lead.type)
-        if (lead.min_price) {
-            if (!_.contains(prices, Number(lead.min_price))) {
-                lead.min_price = 0
-            }
-        }
-        if (lead.price) {
-            if (!_.contains(prices, Number(lead.price))) {
-                lead.price = StaticData.Constants.any_value
-            }
-        }
+        if (!lead.min_price) lead.min_price = 0
+        if (!lead.price) lead.price = StaticData.Constants.any_value
+        if (!lead.size) lead.size = 0;
+        if (!lead.max_size) lead.max_size = StaticData.Constants.size_any_value;
         this.setState({
             formData: {
                 cityId: cityId,
@@ -285,6 +226,8 @@ class LeadMatch extends React.Component {
                 maxPrice: lead.price,
                 bed: lead.bed,
                 bath: lead.bath,
+                maxBed: lead.maxBed,
+                maxBath: lead.maxBath,
                 size: lead.size,
                 sizeUnit: lead.size_unit,
                 propertySubType: lead.subtype,
@@ -320,7 +263,6 @@ class LeadMatch extends React.Component {
     setParams = () => {
         const { organization, formData } = this.state
         const { lead } = this.state
-
         let params = {
             leadId: lead.id,
             organization: organization,
@@ -328,14 +270,16 @@ class LeadMatch extends React.Component {
             subtype: formData.propertySubType,
             area_id: formData.leadAreas,
             purpose: formData.purpose,
-            price_min: formData.minPrice,
-            price_max: formData.maxPrice,
+            price_min: String(formData.minPrice),
+            price_max: String(formData.maxPrice),
             city_id: formData.cityId,
-            bed: formData.bed,
-            bath: formData.bath,
-            size: formData.size,
+            bed: String(formData.bed),
+            bath: String(formData.bath),
+            maxBed: String(formData.maxBed),
+            maxBath: String(formData.maxBath),
+            size: String(formData.size),
             unit: formData.sizeUnit,
-            max_size: formData.maxSize,
+            max_size: String(formData.maxSize),
             all: true
         }
 
@@ -565,7 +509,7 @@ class LeadMatch extends React.Component {
 
     closeLead = () => {
         const { lead } = this.props;
-        if (lead.commissions && lead.commissions.status ===  StaticData.leadClearedStatus) {
+        if (lead.commissions && lead.commissions.status === StaticData.leadClearedStatus) {
             this.setState({ reasons: StaticData.leadCloseReasonsWithPayment, isVisible: true, checkReasonValidation: '' })
         }
         else {
@@ -658,9 +602,44 @@ class LeadMatch extends React.Component {
             })
     }
 
+    onModalPriceDonePressed = (minValue, maxValue) => {
+        const { formData } = this.state;
+        const copyObject = { ...formData };
+        copyObject.minPrice = minValue;
+        copyObject.maxPrice = maxValue;
+        this.setState({ formData: copyObject });
+    }
+
+    onBedBathModalDonePressed = (minValue, maxValue, modalType) => {
+        const { formData } = this.state;
+        const copyObject = { ...formData };
+        switch (modalType) {
+            case 'bed':
+                copyObject.bed = minValue;
+                copyObject.maxBed = maxValue;
+                this.setState({ formData: copyObject });
+                break;
+            case 'bath':
+                copyObject.bath = minValue;
+                copyObject.maxBath = maxValue;
+                this.setState({ formData: copyObject });
+            default:
+                break;
+        }
+    }
+
+    onModalSizeDonePressed = (minValue, maxValue, unit) => {
+        const { formData } = this.state;
+        const copyObject = { ...formData };
+        copyObject.size = minValue;
+        copyObject.maxSize = maxValue;
+        copyObject.sizeUnit = unit;
+        this.setState({ formData: copyObject});
+    }
+
     render() {
         const { lead, user, navigation } = this.props
-        const { meetings, callModal, sizeUnitList, selectedCity, visible, subTypVal, areas, cities, maxCheck, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
+        const { meetings, callModal, sizeUnitList, selectedCity, visible, subTypVal, areas, cities, filterColor, progressValue, organization, loading, matchData, selectedProperties, checkAllBoolean, showFilter, showCheckBoxes, formData, displayButton, reasons, selectedReason, isVisible, checkReasonValidation, closedLeadEdit } = this.state
 
         return (
             !loading ?
@@ -696,12 +675,14 @@ class LeadMatch extends React.Component {
                             handleForm={this.handleForm}
                             areas={_.clone(areas)}
                             cities={cities}
-                            maxCheck={maxCheck}
                             resetFilter={this.resetFilter}
                             formData={_.clone(formData)}
                             openPopup={showFilter}
                             getSubType={this.getSubType}
                             filterModal={this.filterModal}
+                            onModalPriceDonePressed={(minValue, maxValue) => this.onModalPriceDonePressed(minValue, maxValue)}
+                            onBedBathModalDonePressed={(minValue, maxValue, modalType) => this.onBedBathModalDonePressed(minValue, maxValue, modalType)}
+                            onModalSizeDonePressed={(minValue,maxValue, unit) =>  this.onModalSizeDonePressed(minValue, maxValue, unit)}
                             submitFilter={this.submitFilter} />
                         <View style={[{
                             flexDirection: "row", paddingTop: 10, paddingLeft: 15, paddingBottom: 10, elevation: 10,

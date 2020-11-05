@@ -505,8 +505,17 @@ convertPriceToString(start, end, maxValue) {
 		return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
 	}
 },
-convertSizeToString(start, end, unit) {
-	if (start === end) {
+convertSizeToString(start, end, maxValue, unit) {
+	if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)){
+		return `Size: Any`
+	}
+	else if (start === 0 && end !== maxValue) {
+		return `Size: Upto ${(end)} ${this.capitalize(unit)}(s)`
+	}
+	else if (start !== 0 && end === maxValue) {
+		return `Size: ${(start)} ${this.capitalize(unit)}(s) or more`;
+	}
+	else if (start === end) {
 		return `Size: ${(start)} ${this.capitalize(unit)}`;
 	}
 	else {

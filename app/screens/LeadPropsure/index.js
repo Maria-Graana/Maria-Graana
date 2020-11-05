@@ -399,7 +399,6 @@ class LeadPropsure extends React.Component {
       callModal,
       loading,
       matchData,
-      user,
       isVisible,
       documentModalVisible,
       checkValidation,
@@ -412,7 +411,8 @@ class LeadPropsure extends React.Component {
       checkReasonValidation,
       closedLeadEdit,
     } = this.state
-    const { lead, navigation } = this.props
+    const { lead, navigation, user } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
 
     return !loading ? (
       <View
@@ -462,11 +462,12 @@ class LeadPropsure extends React.Component {
                       displayChecks={this.displayChecks}
                       showCheckBoxes={false}
                       addProperty={this.addProperty}
-                      isMenuVisible={true}
+                      isMenuVisible={showMenuItem}
                       viewingMenu={false}
                       goToPropertyComments={this.goToPropertyComments}
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
+                      screen={'propsure'}
                     />
                   ) : (
                     <AgentTile
@@ -475,11 +476,12 @@ class LeadPropsure extends React.Component {
                       displayChecks={this.displayChecks}
                       showCheckBoxes={false}
                       addProperty={this.addProperty}
-                      isMenuVisible={true}
+                      isMenuVisible={showMenuItem}
                       viewingMenu={false}
                       goToPropertyComments={this.goToPropertyComments}
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
+                      screen={'propsure'}
                     />
                   )}
                   <View>

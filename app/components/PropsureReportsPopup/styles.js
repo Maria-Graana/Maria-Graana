@@ -6,9 +6,6 @@ export default styles = StyleSheet.create({
     viewContainer: {
         marginLeft: 25,
         marginRight: 25,
-        justifyContent: 'center',
-        marginVertical: 15,
-        borderRadius:4,
     },
     closeStyle: {
         position: 'absolute',
@@ -16,4 +13,21 @@ export default styles = StyleSheet.create({
         top: Platform.OS == 'android' ? 10 : 40,
         paddingVertical: 5
     },
+    buttonExtraStyle: {
+        marginHorizontal: 15,
+        paddingVertical: 15,
+        width: '90%'
+    },
+    reportRow: {
+        flexDirection: 'row',
+        paddingVertical: 20,
+        alignItems: 'center'
+    },
+    reportName: {
+        marginLeft: 15,
+        color: AppStyles.colors.textColor,
+        fontFamily: AppStyles.fonts.defaultFont,
+        fontSize: AppStyles.fontSize.large,
+    }
+
 });

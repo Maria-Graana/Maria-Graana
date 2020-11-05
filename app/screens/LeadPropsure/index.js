@@ -10,7 +10,7 @@ import MatchTile from '../../components/MatchTile/index'
 import AgentTile from '../../components/AgentTile/index'
 import axios from 'axios'
 import Loader from '../../components/loader'
-import PropsurePackagePopup from '../../components/PropsurePackagePopup/index'
+import PropsureReportsPopup from '../../components/PropsureReportsPopup/index'
 import PropsureDocumentPopup from '../../components/PropsureDocumentPopup/index'
 import _ from 'underscore'
 import StaticData from '../../StaticData'
@@ -31,14 +31,12 @@ class LeadPropsure extends React.Component {
       isVisible: false,
       documentModalVisible: false,
       checkValidation: false,
-      checkPackageValidation: false,
-      selectedPackage: '',
-      packages: StaticData.propsurePackages,
+      selectedReports: [],
       selectedPropertyId: null,
       selectedProperty: null,
       selectedPropsureId: null,
+      pendingPropsures: null,
       matchData: [],
-      file: null,
       progressValue: 0,
       // for the lead close dialog
       isCloseLeadVisible: false,
@@ -85,9 +83,8 @@ class LeadPropsure extends React.Component {
           this.setState({
             loading: false,
             selectedPropertyId: null,
-            selctedPropsureId: null,
             selectedProperty: null,
-            selectedPackage: '',
+            selectedReports: [],
           })
         })
     })
@@ -127,7 +124,7 @@ class LeadPropsure extends React.Component {
     this.setState({ isVisible: false })
   }
 
-  showPackageModal = (property) => {
+  showReportsModal = (property) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
     if (leadAssignedSharedStatus) {
@@ -135,27 +132,25 @@ class LeadPropsure extends React.Component {
         isVisible: true,
         selectedPropertyId: property.id,
         selectedProperty: property,
-        checkPackageValidation: false,
       })
     }
   }
 
   onHandleRequestVerification = () => {
     const { lead } = this.props
-    const { selectedPackage, selectedPropertyId, selectedProperty } = this.state
-    if (selectedPackage === '') {
-      this.setState({
-        checkPackageValidation: true,
-      })
+    const { selectedReports, selectedPropertyId, selectedProperty } = this.state
+    if (selectedReports.length === 0) {
+      alert('Please select at least one report!')
     } else {
       // ********* Call Add Attachment API here :)
       this.closeModal()
       const body = {
-        packageName: selectedPackage,
+        packageName: selectedReports,
         propertyId: selectedPropertyId,
         pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
         org: selectedProperty.arms_id ? 'arms' : 'graana',
       }
+      // console.log(body)
       axios
         .post(`/api/leads/propsure/${lead.id}`, body)
         .then((response) => {
@@ -164,22 +159,18 @@ class LeadPropsure extends React.Component {
         })
         .catch((error) => {
           console.log(error)
-          this.setState({ selectedPropertyId: null, selectedPackage: '', selectedProperty: null })
+          this.setState({ selectedPropertyId: null, selectedReports: [], selectedProperty: null })
         })
     }
   }
 
-  handlePackageChange = (value) => {
-    this.setState({ selectedPackage: value })
-  }
-
-  showDocumentModal = (propsureId) => {
+  showDocumentModal = (propsureReports) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
     if (leadAssignedSharedStatus) {
       this.setState({
         documentModalVisible: true,
-        selectedPropsureId: propsureId,
+        pendingPropsures: propsureReports,
         checkValidation: false,
       })
     }
@@ -189,56 +180,56 @@ class LeadPropsure extends React.Component {
     this.setState({ documentModalVisible: false, file: null })
   }
 
-  getAttachmentFromStorage = () => {
-    let options = {
-      type: '*/*',
-      copyToCacheDirectory: true,
-    }
-    DocumentPicker.getDocumentAsync(options)
-      .then((item) => {
-        if (item.type === 'cancel') {
-          Alert.alert('Pick File', 'Please pick a file from documents!')
-        } else {
-          this.setState({ file: item })
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
-  handleDocumentModalDone = () => {
-    const { file } = this.state
-    // ********* Form Validation Check
-    if (file === null) {
-      this.setState({
-        checkValidation: true,
-      })
-    } else {
-      // ********* Call Add Attachment API here :)
-      this.setState({ documentModalVisible: false })
-      let document = {
-        name: file.name,
-        type: 'file/' + file.name.split('.').pop(),
-        uri: file.uri,
+  getAttachmentFromStorage = (id) => {
+    const { pendingPropsures } = this.state
+    const pendingPropsuresCopy = [...pendingPropsures]
+    if (id) {
+      let options = {
+        type: '*/*',
+        copyToCacheDirectory: true,
       }
-      this.uploadAttachment(document)
-      this.setState({
-        file: null,
-      })
+      DocumentPicker.getDocumentAsync(options)
+        .then((item) => {
+          if (item.type === 'cancel') {
+            Alert.alert('Pick File', 'Please pick a file from documents!')
+            return
+          }
+          // const file = pendingPropsuresCopy.find(item => item.id === id, 0);
+          const propsureDocument = _.find(pendingPropsuresCopy, (item) => item.id === id)
+          if (propsureDocument) {
+            // id matched, push the file in propsure doc array
+            if (propsureDocument.propsureDocs && propsureDocument.propsureDocs.length > 0) {
+              // document already exists so replace the existing file
+              propsureDocument.propsureDocs[0] = item
+            } else {
+              // new document
+              propsureDocument.propsureDocs.push(item)
+            }
+          }
+          this.setState({ pendingPropsures: pendingPropsuresCopy })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    } else {
+      console.log('error')
     }
   }
 
-  uploadAttachment(data) {
-    const { selectedPropsureId } = this.state
-
+  uploadAttachment(file, propsureId) {
+    this.closeDocumentModal()
+    let document = {
+      name: file.name,
+      type: 'file/' + file.name.split('.').pop(),
+      uri: file.uri,
+    }
     let fd = new FormData()
-    fd.append('file', data)
+    fd.append('file', document)
     axios
-      .post(`api/leads/propsureDoc?id=${selectedPropsureId}`, fd)
+      .post(`api/leads/propsureDoc?id=${propsureId}`, fd)
       .then((response) => {
-        this.fetchLead()
         this.fetchProperties()
+        this.fetchLead()
       })
       .catch((error) => {
         console.log('error=>', error.message)
@@ -249,7 +240,7 @@ class LeadPropsure extends React.Component {
     return (
       <TouchableOpacity
         key={item.id.toString()}
-        onPress={() => this.showPackageModal(item)}
+        onPress={() => this.showReportsModal(item)}
         style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]}
         activeOpacity={0.7}
       >
@@ -259,26 +250,29 @@ class LeadPropsure extends React.Component {
   }
 
   renderPropsurePendingView = (item) => {
-    return item.propsures.map((propsure) => {
+    let filteredPropsuresReport =
+      item.propsures && item.propsures.length
+        ? _.filter(item.propsures, (item) => item.status === 'pending')
+        : null
+    if (filteredPropsuresReport && filteredPropsuresReport.length) {
       return (
         <TouchableOpacity
-          key={item.id.toString()}
-          onPress={propsure.status === 'pending' ? () => this.showDocumentModal(propsure.id) : null}
-          style={[
-            styles.viewButtonStyle,
-            {
-              backgroundColor:
-                propsure.status === 'pending' ? '#FCD12A' : AppStyles.colors.primaryColor,
-            },
-          ]}
+          style={[styles.viewButtonStyle, { backgroundColor: '#FCD12A' }]}
           activeOpacity={0.7}
+          onPress={() => this.showDocumentModal(item.propsures)}
         >
           <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>
-            {propsure.status === 'pending' ? 'PENDING VERIFICATION' : 'VERIFIED'}
+            PENDING VERIFICATION
           </Text>
         </TouchableOpacity>
       )
-    })
+    } else {
+      return (
+        <View style={[styles.viewButtonStyle, { backgroundColor: AppStyles.colors.primaryColor }]}>
+          <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>VERIFIED</Text>
+        </View>
+      )
+    }
   }
 
   closedLead = () => {
@@ -387,6 +381,17 @@ class LeadPropsure extends React.Component {
     this.setState({ matchData: newMatches })
   }
 
+  addRemoveReport = (report) => {
+    const { selectedReports } = this.state
+    let reports = [...selectedReports]
+    if (reports.includes(report, 0)) {
+      reports = _.without(reports, report)
+    } else {
+      reports.push(report)
+    }
+    this.setState({ selectedReports: reports })
+  }
+
   render() {
     const {
       menuShow,
@@ -394,13 +399,12 @@ class LeadPropsure extends React.Component {
       callModal,
       loading,
       matchData,
+      user,
       isVisible,
-      packages,
-      selectedPackage,
       documentModalVisible,
-      file,
       checkValidation,
-      checkPackageValidation,
+      pendingPropsures,
+      selectedReports,
       progressValue,
       reasons,
       selectedReason,
@@ -408,8 +412,7 @@ class LeadPropsure extends React.Component {
       checkReasonValidation,
       closedLeadEdit,
     } = this.state
-    const { lead, navigation, user } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, navigation } = this.props
 
     return !loading ? (
       <View
@@ -430,22 +433,21 @@ class LeadPropsure extends React.Component {
           closePopup={this.goToHistory}
           openPopup={callModal}
         />
-        <PropsurePackagePopup
-          packages={packages}
-          selectedPackage={selectedPackage}
-          changePackage={this.handlePackageChange}
-          checkValidation={checkPackageValidation}
+        <PropsureReportsPopup
+          reports={StaticData.propsureReportTypes}
+          addRemoveReport={(item) => this.addRemoveReport(item)}
+          selectedReports={selectedReports}
           isVisible={isVisible}
           closeModal={() => this.closeModal()}
           onPress={this.onHandleRequestVerification}
         />
         <PropsureDocumentPopup
+          pendingPropsures={pendingPropsures}
           isVisible={documentModalVisible}
+          uploadReport={(report, propsureId) => this.uploadAttachment(report, propsureId)}
           closeModal={() => this.closeDocumentModal()}
-          onPress={this.handleDocumentModalDone}
+          onPress={() => this.closeDocumentModal()}
           getAttachmentFromStorage={this.getAttachmentFromStorage}
-          selectedFile={file}
-          checkValidation={checkValidation}
         />
         <View style={{ paddingBottom: 100 }}>
           {matchData.length ? (
@@ -460,12 +462,11 @@ class LeadPropsure extends React.Component {
                       displayChecks={this.displayChecks}
                       showCheckBoxes={false}
                       addProperty={this.addProperty}
-                      isMenuVisible={showMenuItem}
+                      isMenuVisible={true}
                       viewingMenu={false}
                       goToPropertyComments={this.goToPropertyComments}
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
-                      screen={'propsure'}
                     />
                   ) : (
                     <AgentTile
@@ -474,12 +475,11 @@ class LeadPropsure extends React.Component {
                       displayChecks={this.displayChecks}
                       showCheckBoxes={false}
                       addProperty={this.addProperty}
-                      isMenuVisible={showMenuItem}
+                      isMenuVisible={true}
                       viewingMenu={false}
                       goToPropertyComments={this.goToPropertyComments}
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
-                      screen={'propsure'}
                     />
                   )}
                   <View>

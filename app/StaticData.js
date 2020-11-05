@@ -650,6 +650,21 @@ export default StaticData = {
         { label: 'Cleared', value: 'cleared' },
     ],
     leadClearedStatus: 'cleared',
+    propsureReportTypes: [
+        'Basic Property Survey Report',
+        'Title Report',
+        'Master Plan Report',
+        'By-Laws Report',
+        'Demarcation Report',
+        'Market Price Report',
+        'Structure Survey Report',
+        'Utility Services Report',
+        'Regulatory Report',
+        'Urban Hazard Report',
+        'Livability Report',
+        'Floor Plan Report',
+        'Energy Efficiency Report',
+    ]
 }
 
 

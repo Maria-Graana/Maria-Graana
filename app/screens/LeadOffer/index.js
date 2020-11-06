@@ -463,6 +463,7 @@ class LeadOffer extends React.Component {
       btnLoading,
     } = this.state
     const { lead, navigation, user } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -499,11 +500,12 @@ class LeadOffer extends React.Component {
                           displayChecks={this.displayChecks}
                           showCheckBoxes={false}
                           addProperty={this.addProperty}
-                          isMenuVisible={true}
+                          isMenuVisible={showMenuItem}
                           viewingMenu={false}
                           goToPropertyComments={this.goToPropertyComments}
                           toggleMenu={this.toggleMenu}
                           menuShow={menuShow}
+                          screen={'offer'}
                         />
                       ) : (
                         <AgentTile
@@ -512,11 +514,12 @@ class LeadOffer extends React.Component {
                           displayChecks={this.displayChecks}
                           showCheckBoxes={false}
                           addProperty={this.addProperty}
-                          isMenuVisible={true}
+                          isMenuVisible={showMenuItem}
                           viewingMenu={false}
                           goToPropertyComments={this.goToPropertyComments}
                           toggleMenu={this.toggleMenu}
                           menuShow={menuShow}
+                          screen={'offer'}
                         />
                       )}
                       <View>{this.checkStatus(item.item)}</View>

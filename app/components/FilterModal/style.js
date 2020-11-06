@@ -72,7 +72,7 @@ export default styles = StyleSheet.create({
     },
     textInputView: {
         flexDirection: "row",
-        padding: 15
+        paddingHorizontal: 15
     },
     btnMargin: {
         marginHorizontal: 15

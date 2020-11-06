@@ -369,7 +369,7 @@ class RCMReport extends React.Component {
 
     if (check === 'zone') org = this.organizationName(zoneFormData.organization)
     if (check === 'agent') org = this.organizationName(agentFormData.organization)
-    if (org.name === 'Agency21') armsZone = true
+    if (org && org.name && org.name === 'Agency21') armsZone = true
     if (
       user.subRole !== 'zonal_manager' &&
       user.subRole !== 'branch_manager' &&

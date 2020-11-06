@@ -276,13 +276,11 @@ class RCMReport extends React.Component {
 
   fetchReport = (url) => {
     this.setState({ loading: true });
-    console.log("RCM URL : ", url);
     axios
       .get(url)
       .then((res) => {
         let totalLeadsWithCommision = res.data.totalLeadsWithCommision;
         this.graphData(res.data);
-        console.log("RCM res.data : ", res.data);
         this.setState({
           dashBoardData: res.data,
           loading: false,
@@ -759,7 +757,6 @@ class RCMReport extends React.Component {
   };
 
   // *********************** Organization ******************************
-
   openOrganizationFilter = () => {
     this.setState({ showOrganizationFilter: true });
   };
@@ -1213,7 +1210,7 @@ class RCMReport extends React.Component {
               <RectangleDaily
                 label={"Commission Revenue"}
                 leadsCount={leadsCount}
-                deals={"(Deals)"}
+                deals={""}
                 targetNumber={dashBoardData.totalRevenue}
               />
               <View style={styles.sqaureView}>
@@ -1263,7 +1260,7 @@ class RCMReport extends React.Component {
                 <SquareContainer
                   containerStyle={styles.squareRight}
                   imagePath={LeadClosed}
-                  label={"Lead Closed"}
+                  label={"Leads Closed"}
                   total={dashBoardData.viewingConducted}
                 />
                 <SquareContainer
@@ -1276,7 +1273,7 @@ class RCMReport extends React.Component {
                 <SquareContainer
                   containerStyle={styles.squareRight}
                   imagePath={firstCall}
-                  label={"1st Call"}
+                  label={"1st Calls"}
                   total={dashBoardData.firstCalls}
                 />
                 <SquareContainer

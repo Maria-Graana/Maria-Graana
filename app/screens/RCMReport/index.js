@@ -311,12 +311,12 @@ class RCMReport extends React.Component {
   }
 
   fetchReport = (url) => {
-    this.setState({ loading: true });
+    this.setState({ loading: true })
     axios
       .get(url)
       .then((res) => {
-        let totalLeadsWithCommision = res.data.totalLeadsWithCommision;
-        this.graphData(res.data);
+        let totalLeadsWithCommision = res.data.totalLeadsWithCommision
+        this.graphData(res.data)
         this.setState({
           dashBoardData: res.data,
           loading: false,
@@ -1043,6 +1043,8 @@ class RCMReport extends React.Component {
       this.setState({ showOrganizationFilter: !showOrganizationFilter })
   }
 
+  updateMonth = () => {}
+
   render() {
     const {
       leadsCount,
@@ -1220,6 +1222,7 @@ class RCMReport extends React.Component {
 
         {showCalendar ? (
           <CalendarComponent
+            updateMonth={this.updateMonth}
             startDate={selectedDate}
             updateDay={this.updateDay}
             onPress={this._toggleShow}
@@ -1231,7 +1234,7 @@ class RCMReport extends React.Component {
               <RectangleDaily
                 label={'Commission Revenue'}
                 leadsCount={leadsCount}
-                deals={""}
+                deals={''}
                 targetNumber={dashBoardData.totalRevenue}
               />
               <View style={styles.sqaureView}>
@@ -1280,7 +1283,7 @@ class RCMReport extends React.Component {
                 <SquareContainer
                   containerStyle={styles.squareRight}
                   imagePath={LeadClosed}
-                  label={"Leads Closed"}
+                  label={'Leads Closed'}
                   total={dashBoardData.viewingConducted}
                 />
                 <SquareContainer
@@ -1293,7 +1296,7 @@ class RCMReport extends React.Component {
                 <SquareContainer
                   containerStyle={styles.squareRight}
                   imagePath={firstCall}
-                  label={"1st Calls"}
+                  label={'1st Calls'}
                   total={dashBoardData.firstCalls}
                 />
                 <SquareContainer

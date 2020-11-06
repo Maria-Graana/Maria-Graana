@@ -1011,6 +1011,8 @@ class CMReport extends React.Component {
       this.setState({ showOrganizationFilter: !showOrganizationFilter })
   }
 
+  updateMonth = () => {}
+
   render() {
     const {
       viewLoader,
@@ -1177,6 +1179,7 @@ class CMReport extends React.Component {
         <QuarterPicker ref={(picker) => (this.quarterPicker = picker)} />
         {showCalendar ? (
           <CalendarComponent
+            updateMonth={this.updateMonth}
             startDate={selectedDate}
             updateDay={this.updateDay}
             onPress={this._toggleShow}

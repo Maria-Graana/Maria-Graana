@@ -42,6 +42,11 @@ class FilterModal extends React.Component {
         this.props.onRef(this)
     }
 
+    emptyList = () => {
+        this.areaPicker.emptyList()
+
+    }
+
     openModal = () => {
         const { showAreaPicker } = this.state
         this.setState({

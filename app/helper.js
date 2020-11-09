@@ -18,6 +18,8 @@ import * as Sentry from 'sentry-expo'
 import _ from 'underscore'
 import * as Notifications from 'expo-notifications'
 import TimerNotification from './LocalNotifications'
+import Ability from './hoc/Ability';
+
 
 const helper = {
   successToast(message) {
@@ -422,7 +424,7 @@ const helper = {
     }
     if (identifier) {
       Notifications.cancelScheduledNotificationAsync(identifier)
-        .then((notification) => {})
+        .then((notification) => { })
         .catch((error) => {
           console.log(error)
         })
@@ -521,22 +523,37 @@ const helper = {
     }
   },
   convertSizeToString(start, end, maxValue, unit) {
-    if (
-      (start === 0 && end === maxValue) ||
-      (start === maxValue && end === maxValue) ||
-      (start === 0 && end === 0)
-    ) {
+    if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
       return `Size: Any`
-    } else if (start === 0 && end !== maxValue) {
-      return `Size: Upto ${end} ${this.capitalize(unit)}(s)`
-    } else if (start !== 0 && end === maxValue) {
-      return `Size: ${start} ${this.capitalize(unit)}(s) or more`
-    } else if (start === end) {
-      return `Size: ${start} ${this.capitalize(unit)}`
-    } else {
-      return `Size: ${start} - ${end} ${this.capitalize(unit)}`
+    }
+    else if (start === 0 && end !== maxValue) {
+      return `Size: Upto ${(end)} ${this.capitalize(unit)}(s)`
+    }
+    else if (start !== 0 && end === maxValue) {
+      return `Size: ${(start)} ${this.capitalize(unit)}(s) or more`;
+    }
+    else if (start === end) {
+      return `Size: ${(start)} ${this.capitalize(unit)}`;
+    }
+    else {
+      return `Size: ${(start)} - ${(end)} ${this.capitalize(unit)}`
     }
   },
+  isSellerOrBuyer(property, lead, user) {
+    let subRole =
+      property &&
+      property.armsuser &&
+      property.armsuser.armsUserRole &&
+      property.armsuser.armsUserRole.subRole
+    if(property.assigned_to_armsuser_id === user.id ||
+      (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
+      !Ability.canView(subRole, 'Leads')) {
+      return true; // lead agent can have access to all functionality
+    }
+    else {
+      return false; // property agent
+    }
+  }
 }
 
 module.exports = helper

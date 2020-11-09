@@ -1,4 +1,4 @@
-import React,{Component} from 'react'
+import React, { Component } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { formatPrice } from '../../PriceFormate';
 import StaticData from '../../StaticData';
@@ -17,23 +17,25 @@ class CommissionTile extends Component {
   }
 
   render() {
-    const { data, editTile } = this.props;
-    var showStatus = data.status != '' ?  StaticData.statusOptions.find((item) => { return item.value === data.status && item  }) : {label: '', value: ''}
-		var statusColor = showStatus != null && showStatus.value === StaticData.leadClearedStatus? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
+    const { data, editTile, title } = this.props;
+    var showStatus = data && data.status != '' ? StaticData.statusOptions.find((item) => { return item.value === data.status && item }) : { label: '', value: '' }
+    var statusColor = showStatus && showStatus.value === StaticData.leadClearedStatus ? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
     return (
+      data ?
       <TouchableOpacity onPress={() => { data.status != StaticData.leadClearedStatus ? editTile(data) : null }}>
         <View style={styles.tileTopWrap}>
           <View style={styles.upperLayer}>
-            <Text style={styles.paymnetHeading}>Commission Payment</Text>
+            <Text style={styles.paymnetHeading}>{title}</Text>
             <Text style={[styles.tileStatus, statusColor]}>{showStatus.label}</Text>
           </View>
           <View style={styles.bottomLayer}>
-            <Text style={styles.formatPrice}>{this.currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}</Text>
-            <Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
-            <Text style={styles.priceDate}>{moment(data.createdAt).format('hh:mm A, MMM DD')}</Text>
+            {data.installmentAmount ? <Text style={styles.formatPrice}>{this.currencyConvert(data.installmentAmount)}</Text> : null}
+            {data.installmentAmount ? <Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text> : null}
+            {data.createdAt ? <Text style={styles.priceDate}>{moment(data.createdAt).format('hh:mm A, MMM DD')}</Text> : null}
           </View>
         </View>
       </TouchableOpacity>
+      : null
     )
   }
 }

@@ -33,7 +33,7 @@ import RentPaymentView from './rentPaymentView'
 import { ProgressBar } from 'react-native-paper'
 import HistoryModal from '../../components/HistoryModal/index'
 import AddCommissionModal from '../../components/AddCommissionModal'
-import { displayName } from 'react-native/Libraries/ReactNative/RootTagContext'
+import { add } from 'react-native-reanimated'
 
 class LeadRCMPayment extends React.Component {
   constructor(props) {
@@ -199,9 +199,9 @@ class LeadRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
-  addProperty = () => {}
+  addProperty = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -445,7 +445,7 @@ class LeadRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
-    this.setState({ formData }, () => {})
+    this.setState({ formData }, () => { })
     if (formData.monthlyRent !== '' && name === 'monthlyRent') {
       this.setState({ showMonthlyRentArrow: true })
     }
@@ -557,7 +557,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -570,7 +570,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -635,9 +635,9 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
-  onAddCommissionPayment = () => {
+  onAddCommissionPayment = (addedBy) => {
     const { dispatch, rcmPayment } = this.props
-    dispatch(setRCMPayment({ ...rcmPayment, visible: true }))
+    dispatch(setRCMPayment({ ...rcmPayment, visible: true, addedBy }))
   }
 
   onModalCloseClick = () => {
@@ -688,7 +688,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   submitCommissionPayment = () => {
-    const { rcmPayment, dispatch } = this.props
+    const { rcmPayment, user } = this.props
     const { lead, editable } = this.state
     if (
       rcmPayment.installmentAmount != null &&
@@ -701,7 +701,12 @@ class LeadRCMPayment extends React.Component {
       })
       if (editable === false) {
         // for commission addition
-        let body = { ...rcmPayment, rcmLeadId: lead.id }
+        let body = {
+          ...rcmPayment, 
+          rcmLeadId: lead.id,
+          armsUserId: user.id,
+        }
+        //console.log(body)
         delete body.visible
         axios
           .post(`/api/leads/project/payments`, body)
@@ -734,8 +739,8 @@ class LeadRCMPayment extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -896,20 +901,20 @@ class LeadRCMPayment extends React.Component {
                       screen={'payment'}
                     />
                   ) : (
-                    <AgentTile
-                      data={_.clone(item.item)}
-                      user={user}
-                      displayChecks={this.displayChecks}
-                      showCheckBoxes={false}
-                      addProperty={this.addProperty}
-                      isMenuVisible={showMenuItem}
-                      viewingMenu={false}
-                      goToPropertyComments={this.goToPropertyComments}
-                      toggleMenu={this.toggleMenu}
-                      menuShow={menuShow}
-                      screen={'payment'}
-                    />
-                  )}
+                      <AgentTile
+                        data={_.clone(item.item)}
+                        user={user}
+                        displayChecks={this.displayChecks}
+                        showCheckBoxes={false}
+                        addProperty={this.addProperty}
+                        isMenuVisible={showMenuItem}
+                        viewingMenu={false}
+                        goToPropertyComments={this.goToPropertyComments}
+                        toggleMenu={this.toggleMenu}
+                        menuShow={menuShow}
+                        screen={'payment'}
+                      />
+                    )}
                   <View>{this.renderSelectPaymentView(item.item)}</View>
                 </View>
               )}
@@ -932,45 +937,45 @@ class LeadRCMPayment extends React.Component {
                         tokenDateStatus={tokenDateStatus}
                         tokenPriceFromat={tokenPriceFromat}
                         agreeAmountFromat={agreeAmountFromat}
-                        onAddCommissionPayment={this.onAddCommissionPayment}
+                        onAddCommissionPayment={(addedBy)=>this.onAddCommissionPayment(addedBy)}
                         editTile={this.setCommissionEditData}
                       />
                     ) : (
-                      <RentPaymentView
-                        lead={lead}
-                        pickerData={pickerData}
-                        handleForm={this.handleForm}
-                        formData={formData}
-                        showMonthlyRentArrow={showMonthlyRentArrow}
-                        handleMonthlyRentPress={this.handleMonthlyRentPress}
-                        token={token}
-                        handleTokenAmountChange={this.handleTokenAmountChange}
-                        showTokenAmountArrow={showTokenAmountArrow}
-                        handleTokenAmountPress={this.handleTokenAmountPress}
-                        showAndHideStyling={this.showAndHideStyling}
-                        showStylingState={showStyling}
-                        tokenDateStatus={tokenDateStatus}
-                        tokenPriceFromat={tokenPriceFromat}
-                        agreeAmountFromat={agreeAmountFromat}
-                        monthlyFormatStatus={monthlyFormatStatus}
-                        onAddCommissionPayment={this.onAddCommissionPayment}
-                        editTile={this.setCommissionEditData}
-                      />
-                    )
+                        <RentPaymentView
+                          lead={lead}
+                          pickerData={pickerData}
+                          handleForm={this.handleForm}
+                          formData={formData}
+                          showMonthlyRentArrow={showMonthlyRentArrow}
+                          handleMonthlyRentPress={this.handleMonthlyRentPress}
+                          token={token}
+                          handleTokenAmountChange={this.handleTokenAmountChange}
+                          showTokenAmountArrow={showTokenAmountArrow}
+                          handleTokenAmountPress={this.handleTokenAmountPress}
+                          showAndHideStyling={this.showAndHideStyling}
+                          showStylingState={showStyling}
+                          tokenDateStatus={tokenDateStatus}
+                          tokenPriceFromat={tokenPriceFromat}
+                          agreeAmountFromat={agreeAmountFromat}
+                          monthlyFormatStatus={monthlyFormatStatus}
+                          onAddCommissionPayment={(addedBy)=>this.onAddCommissionPayment(addedBy)}
+                          editTile={this.setCommissionEditData}
+                        />
+                      )
                   ) : null}
                 </View>
               }
               keyExtractor={(item, index) => item.id.toString()}
             />
           ) : (
-            <>
-              <Image
-                source={require('../../../assets/img/no-result-found.png')}
-                resizeMode={'center'}
-                style={{ alignSelf: 'center', width: 300, height: 300 }}
-              />
-            </>
-          )}
+              <>
+                <Image
+                  source={require('../../../assets/img/no-result-found.png')}
+                  resizeMode={'center'}
+                  style={{ alignSelf: 'center', width: 300, height: 300 }}
+                />
+              </>
+            )}
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -990,8 +995,8 @@ class LeadRCMPayment extends React.Component {
         </View>
       </KeyboardAvoidingView>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

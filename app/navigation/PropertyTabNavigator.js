@@ -5,9 +5,9 @@ import React from 'react'
 import { Dimensions } from 'react-native'
 import AppStyles from '../AppStyles'
 import PropertyOffer from '../screens/PropertyOffer/index'
-import LeadPropsure from '../screens/LeadPropsure/index'
-import LeadRCMPayment from '../screens/LeadRCMPayment/index'
 import PropertyViewing from '../screens/PropertyViewing/index'
+import PropertyPropsure from '../screens/PropertyPropsure'
+import PropertyRCMPayment from '../screens/PropertyRCMPayment'
 
 const { width } = Dimensions.get('window')
 
@@ -29,8 +29,8 @@ export default function PropertyTabs() {
     >
       <Tab.Screen name="Viewing" component={PropertyViewing} />
       <Tab.Screen name="Offer" component={PropertyOffer} />
-      <Tab.Screen name="Propsure" component={LeadPropsure} />
-      <Tab.Screen name="Payment" component={LeadRCMPayment} />
+      <Tab.Screen name="Propsure" component={PropertyPropsure} />
+      <Tab.Screen name="Payment" component={PropertyRCMPayment} />
     </Tab.Navigator>
   )
 }

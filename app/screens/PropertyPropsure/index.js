@@ -20,7 +20,6 @@ import { setlead } from '../../actions/lead'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import HistoryModal from '../../components/HistoryModal/index'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
-import Ability from '../../hoc/Ability';
 import PropMatchTile from '../../components/PropMatchTile'
 import PropAgentTile from '../../components/PropAgentTile'
 
@@ -241,19 +240,9 @@ class PropertyPropsure extends React.Component {
 
   renderPropsureVerificationView = (item) => {
     const {lead, user} = this.props;
-    let subRole =
-    item &&
-    item.armsuser &&
-    item.armsuser.armsUserRole &&
-    item.armsuser.armsUserRole.subRole
-    let showCustomer =
-    lead.assigned_to_armsuser_id === user.id &&
-    (Ability.canView(subRole, 'Leads') || item.origin !== 'arms')
-      ? true
-      : false
     return (
       <TouchableOpacity
-        disabled={showCustomer}
+        disabled={helper.isSellerOrBuyer(item,lead,user)}
         key={item.id.toString()}
         onPress={() => this.showReportsModal(item)}
         style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]}
@@ -266,16 +255,6 @@ class PropertyPropsure extends React.Component {
 
   renderPropsurePendingView = (item) => {
     const {lead, user} = this.props;
-    let subRole =
-    item &&
-    item.armsuser &&
-    item.armsuser.armsUserRole &&
-    item.armsuser.armsUserRole.subRole
-    let showCustomer =
-    lead.assigned_to_armsuser_id === user.id &&
-    (Ability.canView(subRole, 'Leads') || item.origin !== 'arms')
-      ? true
-      : false
     let filteredPropsuresReport =
       item.propsures && item.propsures.length
         ? _.filter(item.propsures, (item) => item.status === 'pending')
@@ -283,7 +262,7 @@ class PropertyPropsure extends React.Component {
     if (filteredPropsuresReport && filteredPropsuresReport.length) {
       return (
         <TouchableOpacity
-          disabled={showCustomer}
+          disabled={helper.isSellerOrBuyer(item,lead,user)}
           style={[styles.viewButtonStyle, { backgroundColor: '#FCD12A' }]}
           activeOpacity={0.7}
           onPress={() => this.showDocumentModal(item.propsures)}
@@ -439,7 +418,6 @@ class PropertyPropsure extends React.Component {
       closedLeadEdit,
     } = this.state
     const { lead, navigation, user } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
    
 
     return !loading ? (

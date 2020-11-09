@@ -5,7 +5,6 @@ import moment from 'moment';
 import StaticData from '../../StaticData';
 import InputField from '../../components/InputField'
 import CommissionTile from '../../components/CommissionTile';
-import _ from 'underscore';
 import styles from './styles'
 
 class BuyPaymentView extends React.Component {
@@ -31,8 +30,6 @@ class BuyPaymentView extends React.Component {
             editTile,
         } = this.props;
         const isLeadClosed = lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won;
-        const buyer = _.find(lead.commissions, commission => commission.addedBy === 'buyer');
-        const seller = _.find(lead.commissions, commission => commission.addedBy === 'seller');
         return (
             <View>
                 <InputField
@@ -47,7 +44,7 @@ class BuyPaymentView extends React.Component {
                     showStyling={showAndHideStyling}
                     showStylingState={showStylingState}
                     editPriceFormat={{ status: agreeAmountFromat, name: 'agreeAmount' }}
-                    editable={!isLeadClosed}
+                    editable={false}
                     showDate={false}
                 />
 
@@ -64,44 +61,23 @@ class BuyPaymentView extends React.Component {
                     showStylingState={showStylingState}
                     editPriceFormat={{ status: tokenPriceFromat, name: 'token' }}
                     date={lead.tokenPaymentTime && moment(lead.tokenPaymentTime).format('hh:mm A, MMM DD')}
-                    editable={!isLeadClosed}
+                    editable={false}
                     showDate={true}
                     dateStatus={{ status: tokenDateStatus, name: 'token' }}
                 />
-
                 {
-                    lead.commissions && lead.commissions.length ?
-                        buyer ? <CommissionTile
-                            data={buyer ? buyer : null}
+                    lead.commissions && lead.commissions.length?
+                        <CommissionTile
+                            data={lead.commissions.find(commission => commission.addedBy && commission.addedBy === 'buyer')}
                             editTile={editTile}
-                            title={buyer ? 'Buyer Commission Payment' : ''}
+                            title = {'Commission Payment'}
                         />
-                            :
-                            <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment('buyer')}>
-                                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                                <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-                            </TouchableOpacity>
-                        : null
+                        :
+                        <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment(true)}>
+                            <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                            <Text style={styles.addPaymentBtnText}>ADD COMMISSION PAYMENT</Text>
+                        </TouchableOpacity>
                 }
-
-                {
-                    lead.commissions && lead.commissions.length ?
-                        seller ?
-                            <CommissionTile
-                                data={seller}
-                                editTile={editTile}
-                                title={'Seller Commission Payment'}
-                            />
-                            :
-                            <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment('seller')}>
-                                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                                <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
-                            </TouchableOpacity>
-                        : null
-                }
-
-
-
             </View >
         )
     }

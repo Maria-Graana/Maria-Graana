@@ -217,24 +217,57 @@ class LeadPropsure extends React.Component {
   }
 
   uploadAttachment(file, propsureId) {
-    this.closeDocumentModal()
-    let document = {
-      name: file.name,
-      type: 'file/' + file.name.split('.').pop(),
-      uri: file.uri,
-    }
-    let fd = new FormData()
-    fd.append('file', document)
-    axios
-      .post(`api/leads/propsureDoc?id=${propsureId}`, fd)
-      .then((response) => {
-        this.fetchProperties()
-        this.fetchLead()
-      })
-      .catch((error) => {
-        console.log('error=>', error.message)
-      })
-  }
+    const {pendingPropsures} = this.state;
+    let pendingPropsuresCopy = [...pendingPropsures]
+    pendingPropsuresCopy = pendingPropsuresCopy.map(item=> item.id === propsureId ? ({...item, isLoading:true}) : item)
+        this.setState({ pendingPropsures: pendingPropsuresCopy },()=>{
+            let document = {
+              name: file.name,
+              type: 'file/' + file.name.split('.').pop(),
+              uri: file.uri,
+            }
+            let fd = new FormData()
+            fd.append('file', document)
+            axios
+              .post(`api/leads/propsureDoc?id=${propsureId}`, fd)
+              .then((response) => {
+                if(response.data){
+                  pendingPropsuresCopy = pendingPropsuresCopy.map(item=> item.id === response.data.id ? ({...response.data, isLoading:false}) : item)
+                }
+                this.setState({pendingPropsures: pendingPropsuresCopy})
+                this.fetchDocuments()
+                this.fetchLead()
+              })
+              .catch((error) => {
+                console.log('error=>', error.message)
+              })
+          })
+     }
+
+   fetchDocuments = () => {
+    const { lead } = this.props
+    const { rcmProgressBar } = StaticData
+    let matches = []
+      axios
+        .get(`/api/leads/${lead.id}/shortlist`)
+        .then((res) => {
+          matches = helper.propertyIdCheck(res.data.rows)
+          this.setState({
+            matchData: matches,
+            progressValue: rcmProgressBar[lead.status],
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+        .finally(() => {
+          this.setState({
+            selectedPropertyId: null,
+            selectedProperty: null,
+            selectedReports: [],
+          })
+        })
+   }
 
   renderPropsureVerificationView = (item) => {
     return (
@@ -254,12 +287,13 @@ class LeadPropsure extends React.Component {
       item.propsures && item.propsures.length
         ? _.filter(item.propsures, (item) => item.status === 'pending')
         : null
+      let propsures = item.propsures.map(item => ({...item, isLoading:false}))
     if (filteredPropsuresReport && filteredPropsuresReport.length) {
       return (
         <TouchableOpacity
           style={[styles.viewButtonStyle, { backgroundColor: '#FCD12A' }]}
           activeOpacity={0.7}
-          onPress={() => this.showDocumentModal(item.propsures)}
+          onPress={() => this.showDocumentModal(propsures)}
         >
           <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>
             PENDING VERIFICATION
@@ -442,7 +476,7 @@ class LeadPropsure extends React.Component {
           onPress={this.onHandleRequestVerification}
         />
         <PropsureDocumentPopup
-          pendingPropsures={pendingPropsures}
+          pendingPropsures={_.clone(pendingPropsures)}
           isVisible={documentModalVisible}
           uploadReport={(report, propsureId) => this.uploadAttachment(report, propsureId)}
           closeModal={() => this.closeDocumentModal()}

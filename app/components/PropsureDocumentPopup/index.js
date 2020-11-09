@@ -13,6 +13,8 @@ import styles from './styles'
 import AppStyles from '../../AppStyles';
 import { Button } from 'native-base';
 import ErrorMessage from '../../components/ErrorMessage'
+import Loader from '../loader';
+import { ActivityIndicator } from 'react-native-paper';
 
 
 const PropsureDocumentPopup = (props) => {
@@ -29,27 +31,19 @@ const PropsureDocumentPopup = (props) => {
                     style={{ marginTop: 35 }}
                     renderItem={({ item }) =>
                         <View style={[styles.viewContainer]}>
+                            <Text style={{ color: AppStyles.colors.textColor, marginVertical: 5 }}>{`${item.package}`}</Text>
                             <TouchableOpacity
+                                disabled={item.isLoading && item.status === 'verified'}
                                 onPress={() => getAttachmentFromStorage(item.id)}
                                 activeOpacity={0.7} >
                                 <View style={[AppStyles.flexDirectionRow, AppStyles.bgcWhite]}>
-                                    <View style={{
-                                        alignSelf: 'center',
-                                        marginLeft: 10,
-                                        flex: 0.1
-                                    }}>
-                                        <MaterialCommunityIcons
-                                            name="file-upload-outline"
-                                            size={32}
-                                            color={AppStyles.colors.primaryColor} />
-                                    </View>
                                     <View style={[{
                                         backgroundColor: '#fff',
                                         borderRadius: 4,
                                         borderWidth: 0,
                                         height: 50,
                                         marginHorizontal: 10,
-                                        flex: 0.7,
+                                        flex: 0.8,
                                         justifyContent: 'center'
                                     }]}>
 
@@ -61,28 +55,45 @@ const PropsureDocumentPopup = (props) => {
                                             numberOfLines={2}
                                         >
                                             {
-                                                item.propsureDocs.length > 0 ? item.propsureDocs[0].name ? item.propsureDocs[0].name : item.propsureDocs[0].fileName : `Upload ${item.package}`
+                                                item.propsureDocs && item.propsureDocs.length > 0 ? item.propsureDocs[0].name ? item.propsureDocs[0].name : item.propsureDocs[0].fileName : ``
                                             }
                                         </Text>
                                     </View>
                                     {
                                         item.status === 'pending' ?
                                             <TouchableOpacity
-                                                onPress={() => item.propsureDocs.length > 0 ?
-                                                    uploadReport(item.propsureDocs[0], item.id)
-                                                    : Alert.alert('Pick File', 'Please pick a file from documents!')}
+                                                disabled={item.isLoading}
+                                                onPress={() =>
+                                                    item.propsureDocs.length > 0
+                                                        ?
+                                                        uploadReport(item.propsureDocs[0], item.id)
+                                                        :
+                                                        Alert.alert('Pick File', 'Please pick a file from documents!')}
                                                 style={{
                                                     flex: 0.2,
                                                     justifyContent: 'center',
                                                     alignItems: 'center',
-                                                    backgroundColor: AppStyles.colors.primaryColor
+                                                    borderColor: AppStyles.colors.subTextColor,
+                                                    borderLeftWidth: 0.5,
                                                 }}>
-                                                <MaterialCommunityIcons
-                                                    name="check"
-                                                    size={32}
-                                                    color={AppStyles.bgcWhite.backgroundColor} />
+                                                {
+                                                    item.isLoading ? <ActivityIndicator size={'small'} color={AppStyles.colors.primaryColor} /> :
+                                                        <MaterialCommunityIcons
+                                                            name="file-upload-outline"
+                                                            size={32}
+                                                            color={AppStyles.colors.primaryColor} />
+                                                }
+
                                             </TouchableOpacity>
-                                            : null
+                                            :
+                                            <View style={{
+                                                flex: 0.2,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}>
+                                                <AntDesign name="checkcircleo" size={32} color={AppStyles.colors.primaryColor} />
+                                            </View>
+
                                     }
                                 </View>
                             </TouchableOpacity>

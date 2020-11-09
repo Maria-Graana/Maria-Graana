@@ -114,18 +114,26 @@ class PropertyBottomNav extends React.Component {
           <Image style={styles.bottomNavImg} source={require('../../../assets/img/details.png')} />
           <Text style={styles.bottomNavBtnText}>Details</Text>
         </TouchableOpacity>
-        {callButton != true && (
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToComments()}>
-            <Image style={styles.bottomNavImg} source={require('../../../assets/img/msg.png')} />
-            <Text style={styles.bottomNavBtnText}>Comments</Text>
-          </TouchableOpacity>
-        )}
-        {callButton != true && (
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToAttachments()}>
-            <Image style={styles.bottomNavImg} source={require('../../../assets/img/files.png')} />
-            <Text style={styles.bottomNavBtnText}>Files</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          style={styles.bottomNavBtn}
+          onPress={() => {
+            goToComments()
+            this.openMenu(false)
+          }}
+        >
+          <Image style={styles.bottomNavImg} source={require('../../../assets/img/msg.png')} />
+          <Text style={styles.bottomNavBtnText}>Comments</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.bottomNavBtn}
+          onPress={() => {
+            goToAttachments()
+            this.openMenu(false)
+          }}
+        >
+          <Image style={styles.bottomNavImg} source={require('../../../assets/img/files.png')} />
+          <Text style={styles.bottomNavBtnText}>Files</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToDiaryForm()}>
           <Image
             style={styles.bottomNavImg}
@@ -154,11 +162,11 @@ class PropertyBottomNav extends React.Component {
             <Text style={styles.bottomNavBtnText}>Call</Text>
           </TouchableOpacity>
         )} */}
-        {callButton === true && (
-          // <TouchableOpacity style={[styles.bottomNavBtn, styles.forMenuIcon]} onPress={() => goToAttachments()}>
-          //   <Image style={styles.bottomNavImg} source={require('../../../assets/img/menuIcon.png')} />
-          //   <Text style={[styles.bottomNavBtnText, styles.colorWhite]}>Menu</Text>
-          // </TouchableOpacity>
+        {/* {callButton === true && (
+          <TouchableOpacity style={[styles.bottomNavBtn, styles.forMenuIcon]} onPress={() => goToAttachments()}>
+            <Image style={styles.bottomNavImg} source={require('../../../assets/img/menuIcon.png')} />
+            <Text style={[styles.bottomNavBtnText, styles.colorWhite]}>Menu</Text>
+          </TouchableOpacity>
           <View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>
             <Menu
               visible={visible}
@@ -198,17 +206,17 @@ class PropertyBottomNav extends React.Component {
                 icon={require('../../../assets/img/files.png')}
                 title="Files"
               />
-              {/* <Menu.Item
+              <Menu.Item
                 onPress={() => {
                   goToHistory()
                   this.openMenu(false)
                 }}
                 icon={require('../../../assets/img/callIcon.png')}
                 title="Call History"
-              /> */}
+              />
             </Menu>
           </View>
-        )}
+        )} */}
       </View>
     )
   }

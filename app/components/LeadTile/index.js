@@ -68,17 +68,24 @@ class LeadTile extends React.Component {
       contacts,
       handleLongPress,
       displayPhone,
+      propertyLead,
     } = this.props
     var changeColor =
-      data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id
+      data.assigned_to_armsuser_id == user.id ||
+      data.shared_with_armsuser_id == user.id ||
+      propertyLead
         ? styles.blueColor
         : AppStyles.darkColor
     var changeStatusColor =
-      data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id
+      data.assigned_to_armsuser_id == user.id ||
+      data.shared_with_armsuser_id == user.id ||
+      propertyLead
         ? styles.tokenLabel
         : styles.tokenLabelDark
     var descriptionColor =
-      data.assigned_to_armsuser_id == user.id || data.shared_with_armsuser_id == user.id
+      data.assigned_to_armsuser_id == user.id ||
+      data.shared_with_armsuser_id == user.id ||
+      propertyLead
         ? styles.desBlue
         : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName

@@ -445,6 +445,21 @@ const helper = {
       }
     } else return false
   },
+  propertyCheckAssignedSharedStatus(user, lead) {
+    if (user && lead) {
+      if (
+        lead.status === StaticData.Constants.lead_closed_lost ||
+        lead.status === StaticData.Constants.lead_closed_won
+      ) {
+        return false
+      }
+      if (user.id === lead.assigned_to_armsuser_id || user.id === lead.shared_with_armsuser_id)
+        return true
+      else {
+        return false
+      }
+    } else return false
+  },
   createArray(N) {
     return Array.from({ length: N }, (_, index) => index + 1)
   },
@@ -472,56 +487,56 @@ const helper = {
     } else return []
   },
   showBedBathRangesString(start, end, maxValue) {
-	if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
-		return 'Any'
-	}
-	else if (start === 0 && end !== maxValue) {
-		return `Upto ${end}`;
-	}
-	else if (start !== 0 && end === maxValue) {
-		return `${start} or more`;
-	}
-	else if (start === end) {
-		return `${start}`;
-	}
-	else {
-		return `${start} - ${end}`
-	}
-},
-convertPriceToString(start, end, maxValue) {
-	if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
-		return `PKR: Any`
-	}
-	else if (start === 0 && end !== maxValue) {
-		return `PKR: Upto ${formatPrice(end)}`
-	}
-	else if (start !== 0 && end === maxValue) {
-		return `PKR: ${formatPrice(start)} or more`;
-	}
-	else if (start === end) {
-		return `PKR: ${formatPrice(start)}`;
-	}
-	else {
-		return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
-	}
-},
-convertSizeToString(start, end, maxValue, unit) {
-	if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)){
-		return `Size: Any`
-	}
-	else if (start === 0 && end !== maxValue) {
-		return `Size: Upto ${(end)} ${this.capitalize(unit)}(s)`
-	}
-	else if (start !== 0 && end === maxValue) {
-		return `Size: ${(start)} ${this.capitalize(unit)}(s) or more`;
-	}
-	else if (start === end) {
-		return `Size: ${(start)} ${this.capitalize(unit)}`;
-	}
-	else {
-		return `Size: ${(start)} - ${(end)} ${this.capitalize(unit)}`
-	}
-}
+    if (
+      (start === 0 && end === maxValue) ||
+      (start === maxValue && end === maxValue) ||
+      (start === 0 && end === 0)
+    ) {
+      return 'Any'
+    } else if (start === 0 && end !== maxValue) {
+      return `Upto ${end}`
+    } else if (start !== 0 && end === maxValue) {
+      return `${start} or more`
+    } else if (start === end) {
+      return `${start}`
+    } else {
+      return `${start} - ${end}`
+    }
+  },
+  convertPriceToString(start, end, maxValue) {
+    if (
+      (start === 0 && end === maxValue) ||
+      (start === maxValue && end === maxValue) ||
+      (start === 0 && end === 0)
+    ) {
+      return `PKR: Any`
+    } else if (start === 0 && end !== maxValue) {
+      return `PKR: Upto ${formatPrice(end)}`
+    } else if (start !== 0 && end === maxValue) {
+      return `PKR: ${formatPrice(start)} or more`
+    } else if (start === end) {
+      return `PKR: ${formatPrice(start)}`
+    } else {
+      return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
+    }
+  },
+  convertSizeToString(start, end, maxValue, unit) {
+    if (
+      (start === 0 && end === maxValue) ||
+      (start === maxValue && end === maxValue) ||
+      (start === 0 && end === 0)
+    ) {
+      return `Size: Any`
+    } else if (start === 0 && end !== maxValue) {
+      return `Size: Upto ${end} ${this.capitalize(unit)}(s)`
+    } else if (start !== 0 && end === maxValue) {
+      return `Size: ${start} ${this.capitalize(unit)}(s) or more`
+    } else if (start === end) {
+      return `Size: ${start} ${this.capitalize(unit)}`
+    } else {
+      return `Size: ${start} - ${end} ${this.capitalize(unit)}`
+    }
+  },
 }
 
 module.exports = helper

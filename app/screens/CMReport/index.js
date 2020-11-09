@@ -114,6 +114,7 @@ class CMReport extends React.Component {
       fromDate: moment(_today).format(_format),
       toDate: moment(_today).format(_format),
       organizations: [],
+      agentDate: false,
     }
   }
 
@@ -228,6 +229,7 @@ class CMReport extends React.Component {
           regions: [{ value: user.region.id, name: user.region.name }],
           zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }],
           agents: [{ value: user.id, name: user.firstName + ' ' + user.lastName }],
+          agentDate: true,
         },
         () => {
           this.checkDate()
@@ -903,11 +905,12 @@ class CMReport extends React.Component {
       quarters,
       lastLabel,
       footerLabel,
+      agentDate,
     } = this.state
     if (filterLabel === 'Daily')
-      if (footerLabel === 'Agent' && lastLabel === 'Agent') {
+      if (footerLabel === 'Agent' && lastLabel === 'Agent' && agentDate) {
         let date = moment(_today).subtract(1, 'days')
-        this.setState({ selectedDate: date.format('LL') }, () => {
+        this.setState({ selectedDate: date.format('LL'), agentDate: false }, () => {
           this.callReportApi()
         })
       } else {

@@ -40,7 +40,7 @@ class PropertyOffer extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -197,7 +197,7 @@ class PropertyOffer extends React.Component {
   }
 
   closedLead = () => {
-    helper.leadClosedToast()
+    // helper.leadClosedToast()
   }
 
   closeLead = () => {
@@ -271,7 +271,7 @@ class PropertyOffer extends React.Component {
 
   checkStatus = (property) => {
     const { lead, user } = this.props
-    let leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    let leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
     leadAssignedSharedStatus = true
     if (property.agreedOffer.length) {
       return (

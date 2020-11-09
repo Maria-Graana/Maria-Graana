@@ -1,40 +1,38 @@
 /** @format */
 
-import React from 'react'
-import styles from './style'
-import { View, ScrollView, Text, Image, TouchableOpacity } from 'react-native'
-import ReportFilterButton from '../../components/ReportFilterButton/index'
-import ReportFooter from '../../components/ReportFooter/index'
-import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import helper from '../../helper'
-import SquareContainer from '../../components/SquareContainer'
-import RegionFilter from '../../components/RegionFilter'
-import AgentFilter from '../../components/AgentFilter'
-import ZoneFilter from '../../components/ZoneFilter'
-import OrganizationFilter from '../../components/OrganizationFilter'
-import clientsAddedImg from '../../../assets/img/client-added.png'
-import leadsAssignedImg from '../../../assets/img/leads-assigned.png'
-import leadsCreatedImg from '../../../assets/img/leads-created.png'
-import comissionRevenueImg from '../../../assets/img/commission-revenue-icon.png'
-import viewingConductedImg from '../../../assets/img/viewing-conducted.png'
-import viewingOverdueImg from '../../../assets/img/viewing-overdue.png'
-import listIconImg from '../../../assets/img/list-icon.png'
-import calendarImg from '../../../assets/img/calendar-s.png'
-import offersPlaced from '../../../assets/img/offersPlaced.png'
-import firstCall from '../../../assets/img/firstCall.png'
-import TotalCalls from '../../../assets/img/totalCalls.png'
-import LeadClosed from '../../../assets/img/leadClosed.png'
-import CalendarComponent from '../../components/CalendarComponent'
-import MonthPicker from '../../components/MonthPicker'
-import YearPicker from '../../components/YearPicker'
-import QuarterPicker from '../../components/QuarterPicker'
-import _ from 'underscore'
 import axios from 'axios'
 import moment from 'moment'
+import React from 'react'
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { BarChart } from 'react-native-chart-kit'
+import { connect } from 'react-redux'
+import _ from 'underscore'
+import calendarImg from '../../../assets/img/calendar-s.png'
+import firstCall from '../../../assets/img/firstCall.png'
+import LeadClosed from '../../../assets/img/leadClosed.png'
+import leadsAssignedImg from '../../../assets/img/leads-assigned.png'
+import leadsCreatedImg from '../../../assets/img/leads-created.png'
+import listIconImg from '../../../assets/img/list-icon.png'
+import offersPlaced from '../../../assets/img/offersPlaced.png'
+import TotalCalls from '../../../assets/img/totalCalls.png'
+import viewingConductedImg from '../../../assets/img/viewing-conducted.png'
+import viewingOverdueImg from '../../../assets/img/viewing-overdue.png'
+import AppStyles from '../../AppStyles'
+import AgentFilter from '../../components/AgentFilter'
+import CalendarComponent from '../../components/CalendarComponent'
 import Loader from '../../components/loader'
+import MonthPicker from '../../components/MonthPicker'
+import OrganizationFilter from '../../components/OrganizationFilter'
+import QuarterPicker from '../../components/QuarterPicker'
 import RectangleDaily from '../../components/RectangleDaily'
+import RegionFilter from '../../components/RegionFilter'
+import ReportFilterButton from '../../components/ReportFilterButton/index'
+import ReportFooter from '../../components/ReportFooter/index'
+import SquareContainer from '../../components/SquareContainer'
+import YearPicker from '../../components/YearPicker'
+import ZoneFilter from '../../components/ZoneFilter'
+import helper from '../../helper'
+import styles from './style'
 
 const _today = moment(new Date().dateString).format(_format)
 const _format = 'YYYY-MM-DD'
@@ -131,6 +129,7 @@ class RCMReport extends React.Component {
         'closed_lost',
       ],
       leadsCount: 0,
+      agentDate: false,
     }
   }
 
@@ -245,6 +244,7 @@ class RCMReport extends React.Component {
           regions: [{ value: user.region.id, name: user.region.name }],
           zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }],
           agents: [{ value: user.id, name: user.firstName + ' ' + user.lastName }],
+          agentDate: true,
         },
         () => {
           this.checkDate()
@@ -931,11 +931,12 @@ class RCMReport extends React.Component {
       quarters,
       lastLabel,
       footerLabel,
+      agentDate,
     } = this.state
     if (filterLabel === 'Daily')
-      if (footerLabel === 'Agent' && lastLabel === 'Agent') {
+      if (footerLabel === 'Agent' && lastLabel === 'Agent' && agentDate) {
         let date = moment(_today).subtract(1, 'days')
-        this.setState({ selectedDate: date.format('LL') }, () => {
+        this.setState({ selectedDate: date.format('LL'), agentDate: false }, () => {
           this.callReportApi()
         })
       } else {

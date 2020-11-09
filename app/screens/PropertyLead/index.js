@@ -338,6 +338,7 @@ class PropertyLead extends React.Component {
                 callNumber={this.callNumber}
                 handleLongPress={this.handleLongPress}
                 displayPhone={false}
+                propertyLead={true}
               />
             )}
             onEndReached={() => {

@@ -46,7 +46,7 @@ class PropertyViewing extends React.Component {
       organization: 'arms',
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -121,10 +121,11 @@ class PropertyViewing extends React.Component {
   }
 
   closedLead = () => {
-    helper.leadClosedToast()
+    // helper.leadClosedToast()
   }
 
   closeLead = () => {
+    console.log('hello')
     const { lead } = this.props
     if (lead.commissions && lead.commissions.status === StaticData.leadClearedStatus) {
       this.setState({
@@ -330,7 +331,7 @@ class PropertyViewing extends React.Component {
 
   checkStatus = (property) => {
     const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
     if (property.diaries.length) {
       if (property.diaries[0].status === 'completed') {
         return (
@@ -524,7 +525,7 @@ class PropertyViewing extends React.Component {
       addLoading,
     } = this.state
     const { lead, user, navigation } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const showMenuItem = helper.propertyCheckAssignedSharedStatus(user, lead)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -614,16 +615,15 @@ class PropertyViewing extends React.Component {
             )}
           </View>
         </View>
-
         <View style={AppStyles.mainCMBottomNav}>
           <PropertyBottomNav
             goToAttachments={this.goToAttachments}
             navigateTo={this.navigateToDetails}
             goToDiaryForm={this.goToDiaryForm}
             goToComments={this.goToComments}
-            alreadyClosedLead={() => this.closedLead()}
-            closeLead={this.closeLead}
-            closedLeadEdit={closedLeadEdit}
+            //alreadyClosedLead={() => this.closedLead()}
+            //closeLead={this.closeLead}
+            //closedLeadEdit={closedLeadEdit}
             callButton={true}
             customer={lead.customer}
             lead={lead}

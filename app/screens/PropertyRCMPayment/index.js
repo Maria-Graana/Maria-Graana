@@ -67,7 +67,7 @@ class PropertyRCMPayment extends React.Component {
             checkReasonValidation: false,
             selectedReason: '',
             reasons: [],
-            closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+            closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
             showStyling: '',
             tokenDateStatus: false,
             tokenPriceFromat: true,
@@ -776,7 +776,6 @@ class PropertyRCMPayment extends React.Component {
             addPaymentLoading,
         } = this.state
         const { navigation, user } = this.props
-        const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
 
         return !loading ? (
             <KeyboardAvoidingView

@@ -45,7 +45,7 @@ class PropertyPropsure extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
       callModal: false,
       meetings: [],
       menuShow: false,
@@ -128,7 +128,7 @@ class PropertyPropsure extends React.Component {
 
   showReportsModal = (property) => {
     const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
     if (leadAssignedSharedStatus) {
       this.setState({
         isVisible: true,
@@ -168,7 +168,7 @@ class PropertyPropsure extends React.Component {
 
   showDocumentModal = (propsureReports) => {
     const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
     if (leadAssignedSharedStatus) {
       this.setState({
         documentModalVisible: true,

@@ -706,7 +706,7 @@ class LeadRCMPayment extends React.Component {
           rcmLeadId: lead.id,
           armsUserId: user.id,
         }
-        console.log(body)
+        //console.log(body)
         delete body.visible
         axios
           .post(`/api/leads/project/payments`, body)

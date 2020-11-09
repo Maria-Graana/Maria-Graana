@@ -1270,19 +1270,6 @@ class RCMReport extends React.Component {
               <View style={styles.sqaureView}>
                 <SquareContainer
                   containerStyle={styles.squareRight}
-                  imagePath={viewingConductedImg}
-                  label={'Viewings Conducted'}
-                  total={dashBoardData.viewingConducted}
-                />
-                <SquareContainer
-                  imagePath={viewingOverdueImg}
-                  label={'Viewings Overdue'}
-                  total={dashBoardData.viewingOverdue}
-                />
-              </View>
-              <View style={styles.sqaureView}>
-                <SquareContainer
-                  containerStyle={styles.squareRight}
                   imagePath={LeadClosed}
                   label={'Deals Won'}
                   total={dashBoardData.viewingConducted}
@@ -1291,6 +1278,19 @@ class RCMReport extends React.Component {
                   imagePath={offersPlaced}
                   label={'Offers Placed'}
                   total={dashBoardData.leadsOffers}
+                />
+              </View>
+              <View style={styles.sqaureView}>
+                <SquareContainer
+                  containerStyle={styles.squareRight}
+                  imagePath={viewingConductedImg}
+                  label={'Viewings Conducted'}
+                  total={dashBoardData.viewingConducted}
+                />
+                <SquareContainer
+                  imagePath={viewingOverdueImg}
+                  label={'Viewings Overdue'}
+                  total={dashBoardData.viewingOverdue}
                 />
               </View>
               <View style={styles.sqaureView}>

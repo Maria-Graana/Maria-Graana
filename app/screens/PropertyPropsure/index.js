@@ -239,10 +239,10 @@ class PropertyPropsure extends React.Component {
   }
 
   renderPropsureVerificationView = (item) => {
-    const {lead, user} = this.props;
+    const { lead, user } = this.props
     return (
       <TouchableOpacity
-        disabled={helper.isSellerOrBuyer(item,lead,user)}
+        disabled={helper.isSellerOrBuyer(item, lead, user)}
         key={item.id.toString()}
         onPress={() => this.showReportsModal(item)}
         style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]}
@@ -254,7 +254,7 @@ class PropertyPropsure extends React.Component {
   }
 
   renderPropsurePendingView = (item) => {
-    const {lead, user} = this.props;
+    const { lead, user } = this.props
     let filteredPropsuresReport =
       item.propsures && item.propsures.length
         ? _.filter(item.propsures, (item) => item.status === 'pending')
@@ -262,7 +262,7 @@ class PropertyPropsure extends React.Component {
     if (filteredPropsuresReport && filteredPropsuresReport.length) {
       return (
         <TouchableOpacity
-          disabled={helper.isSellerOrBuyer(item,lead,user)}
+          disabled={helper.isSellerOrBuyer(item, lead, user)}
           style={[styles.viewButtonStyle, { backgroundColor: '#FCD12A' }]}
           activeOpacity={0.7}
           onPress={() => this.showDocumentModal(item.propsures)}
@@ -418,7 +418,6 @@ class PropertyPropsure extends React.Component {
       closedLeadEdit,
     } = this.state
     const { lead, navigation, user } = this.props
-   
 
     return !loading ? (
       <View
@@ -432,13 +431,13 @@ class PropertyPropsure extends React.Component {
           progress={progressValue}
           color={'#0277FD'}
         />
-        <HistoryModal
+        {/* <HistoryModal
           getCallHistory={this.getCallHistory}
           navigation={navigation}
           data={meetings}
           closePopup={this.goToHistory}
           openPopup={callModal}
-        />
+        /> */}
         <PropsureReportsPopup
           reports={StaticData.propsureReportTypes}
           addRemoveReport={(item) => this.addRemoveReport(item)}
@@ -463,30 +462,30 @@ class PropertyPropsure extends React.Component {
                 <View style={{ marginVertical: 3, marginHorizontal: 15 }}>
                   {this.ownProperty(item.item) ? (
                     <PropMatchTile
-                    data={_.clone(item.item)}
-                    user={user}
-                    displayChecks={this.displayChecks}
-                    showCheckBoxes={false}
-                    addProperty={this.addProperty}
-                    isMenuVisible={true}
-                    viewingMenu={false}
-                    goToPropertyComments={this.goToPropertyComments}
-                    toggleMenu={this.toggleMenu}
-                    menuShow={menuShow}
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      isMenuVisible={true}
+                      viewingMenu={false}
+                      goToPropertyComments={this.goToPropertyComments}
+                      toggleMenu={this.toggleMenu}
+                      menuShow={menuShow}
                     />
                   ) : (
                     <PropAgentTile
-                          data={_.clone(item.item)}
-                          user={user}
-                          displayChecks={this.displayChecks}
-                          showCheckBoxes={false}
-                          addProperty={this.addProperty}
-                          isMenuVisible={true}
-                          viewingMenu={false}
-                          goToPropertyComments={this.goToPropertyComments}
-                          toggleMenu={this.toggleMenu}
-                          menuShow={menuShow}
-                        />
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      isMenuVisible={true}
+                      viewingMenu={false}
+                      goToPropertyComments={this.goToPropertyComments}
+                      toggleMenu={this.toggleMenu}
+                      menuShow={menuShow}
+                    />
                   )}
                   <View>
                     {item.item.propsures.length === 0

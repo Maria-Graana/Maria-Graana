@@ -536,13 +536,13 @@ class PropertyViewing extends React.Component {
             color={'#0277FD'}
           />
         </View>
-        <HistoryModal
+        {/* <HistoryModal
           getCallHistory={this.getCallHistory}
           navigation={navigation}
           data={meetings}
           closePopup={this.goToHistory}
           openPopup={callModal}
-        />
+        /> */}
         <View
           style={[
             AppStyles.container,

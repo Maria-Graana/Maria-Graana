@@ -1249,7 +1249,7 @@ class RCMReport extends React.Component {
                 <SquareContainer
                   containerStyle={styles.squareRight}
                   imagePath={leadsAssignedImg}
-                  label={'Company Genrated Leads'}
+                  label={'Company Generated Leads'}
                   total={dashBoardData.totalleadsAssigned}
                 />
 
@@ -1283,7 +1283,7 @@ class RCMReport extends React.Component {
                 <SquareContainer
                   containerStyle={styles.squareRight}
                   imagePath={LeadClosed}
-                  label={'Leads Closed'}
+                  label={'Deals Closed'}
                   total={dashBoardData.viewingConducted}
                 />
                 <SquareContainer

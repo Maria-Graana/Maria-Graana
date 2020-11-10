@@ -786,7 +786,7 @@ class RCMReport extends React.Component {
         regionFormData.region
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${
         quarter.fromDate
-      }&toDate=${selectedYear}-${quarter.toDate}`
+      }&toDate=${selectedYear}-${quarter.toDate}&organizationId=${regionFormData.organization}`
     }
 
     this.fetchReport(url)

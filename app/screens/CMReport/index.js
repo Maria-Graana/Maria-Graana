@@ -297,6 +297,7 @@ class CMReport extends React.Component {
 
   fetchReport = (url) => {
     this.setState({ loading: true })
+    console.log(url)
     axios
       .get(url)
       .then((res) => {
@@ -758,7 +759,7 @@ class CMReport extends React.Component {
         regionFormData.region
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedYear}-${
         quarter.fromDate
-      }&toDate=${selectedYear}-${quarter.toDate}`
+      }&toDate=${selectedYear}-${quarter.toDate}&organizationId=${regionFormData.organization}`
     }
 
     this.fetchReport(url)

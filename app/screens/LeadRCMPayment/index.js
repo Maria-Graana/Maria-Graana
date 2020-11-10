@@ -236,9 +236,15 @@ class LeadRCMPayment extends React.Component {
       lead.commissions.map((item) => {
         if (item.status === 'cleared') cleared++
       })
-      if (cleared === 2) {
+      if (cleared > 1) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
+          isVisible: true,
+          checkReasonValidation: '',
+        })
+      } else {
+        this.setState({
+          reasons: StaticData.leadCloseReasons,
           isVisible: true,
           checkReasonValidation: '',
         })

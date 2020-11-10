@@ -36,6 +36,7 @@ import AddCommissionModal from '../../components/AddCommissionModal'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
 import PropMatchTile from '../../components/PropMatchTile'
 import PropAgentTile from '../../components/PropAgentTile'
+import { apps } from 'firebase'
 
 class PropertyRCMPayment extends React.Component {
   constructor(props) {
@@ -905,13 +906,19 @@ class PropertyRCMPayment extends React.Component {
               keyExtractor={(item, index) => item && item.id && item.id.toString()}
             />
           ) : (
-            <>
-              <Image
-                source={require('../../../assets/img/no-result-found.png')}
-                resizeMode={'center'}
-                style={{ alignSelf: 'center', width: 300, height: 300 }}
-              />
-            </>
+            <View style={{justifyContent:'center', 
+            alignItems:'center',
+            flex:1,
+            }}>
+                <Text
+                    style={{ 
+                    fontFamily: AppStyles.fonts.semiBoldFont, 
+                    fontSize: AppStyles.fontSize.medium, 
+                    color: AppStyles.colors.textColor }}
+                >
+                    NO PROPERTY IS SELECTED FOR PAYMENT YET
+                    </Text>
+            </View>
           )}
           <View style={AppStyles.mainCMBottomNav}>
             <PropertyBottomNav

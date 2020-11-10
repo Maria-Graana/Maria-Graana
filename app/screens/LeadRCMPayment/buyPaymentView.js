@@ -70,9 +70,9 @@ class BuyPaymentView extends React.Component {
                 />
 
                 {
-                    lead.commissions && lead.commissions.length ?
+                    lead.commissions ?
                         buyer ? <CommissionTile
-                            data={buyer ? buyer : null}
+                            data={buyer}
                             editTile={editTile}
                             title={buyer ? 'Buyer Commission Payment' : ''}
                         />
@@ -85,7 +85,7 @@ class BuyPaymentView extends React.Component {
                 }
 
                 {
-                    lead.commissions && lead.commissions.length ?
+                    lead.commissions  ?
                         seller ?
                             <CommissionTile
                                 data={seller}

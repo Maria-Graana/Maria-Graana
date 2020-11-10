@@ -3,31 +3,25 @@ import { Text, View, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import AppStyles from '../../AppStyles';
 import helper from '../../helper';
+import StaticData from "../../StaticData";
 
 class HeaderTitle extends React.Component {
     constructor(props) {
         super(props)
     }
 
-    leadSize = () => {
+    leadSize = (unit) => {
         const { lead } = this.props
-        let minSize = !lead.projectId && lead.size && lead.size !== 0 ? lead.size : ''
-        let maxSize = !lead.projectId && lead.max_size && lead.max_size !== 0 ? lead.max_size : ''
-        let size = ''
-        if (minSize == maxSize) {
-            size = minSize + ' '
-        } else {
-            maxSize = maxSize !== '' ? ' - ' + maxSize : maxSize
-            size = minSize + maxSize + ' '
-        }
-        return size
+        let minSize = !lead.projectId && lead.size!==null && lead.size !== undefined ? lead.size : ''
+        let maxSize = !lead.projectId && lead.max_size!==null && lead.max_size !== undefined ? lead.max_size : ''
+        return helper.convertSizeToString(minSize, maxSize, StaticData.Constants.size_any_value, unit) + ' '
     }
 
     render() {
         const { lead } = this.props
         let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
         if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
-        let leadSize = this.leadSize()
+        let leadSize = this.leadSize(lead.size_unit)
 
         return (
             <View style={styles.mainView}>
@@ -36,7 +30,6 @@ class HeaderTitle extends React.Component {
                     !lead.projectId && !lead.projectName ?
                         < Text numberOfLines={1} style={[styles.detailText, AppStyles.darkColor,]}>
                             {leadSize}
-                            {lead.size_unit && lead.size_unit !== null ? helper.capitalize(lead.size_unit) + ' ' : null}
                             {lead.subtype && helper.capitalize(lead.subtype)} {lead.purpose != null && 'to '}
                             {lead.purpose === 'sale' ? 'Buy' : 'Rent'}
                         </Text>

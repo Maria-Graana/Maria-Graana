@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import phone from '../../../assets/img/phone2.png'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
+import StaticData from '../../StaticData'
 import styles from './style'
 
 class LeadTile extends React.Component {
@@ -41,21 +42,14 @@ class LeadTile extends React.Component {
     if (purposeTab === 'invest') body.leadId = data.id
     else body.armsLeadId = data.id
 
-    axios.post(`api/leads/project/meeting`, body).then((res) => {})
+    axios.post(`api/leads/project/meeting`, body).then((res) => { })
   }
 
-  leadSize = () => {
+  leadSize = (unit) => {
     const { data } = this.props
-    let minSize = !data.projectId && data.size && data.size !== 0 ? data.size : ''
-    let maxSize = !data.projectId && data.max_size && data.max_size !== 0 ? data.max_size : ''
-    let size = ''
-    if (minSize == maxSize) {
-      size = minSize + ' '
-    } else {
-      maxSize = maxSize !== '' ? ' - ' + maxSize : maxSize
-      size = minSize + maxSize + ' '
-    }
-    return size
+    let minSize = !data.projectId &&  data.size!==null && data.size !== undefined ? data.size : ''
+    let maxSize = !data.projectId && data.max_size!==null && data.max_size !== undefined ? data.max_size : ''
+    return helper.convertSizeToString(minSize, maxSize, StaticData.Constants.size_any_value, unit) + ' '
   }
 
   render() {
@@ -72,20 +66,20 @@ class LeadTile extends React.Component {
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
-      data.shared_with_armsuser_id == user.id ||
-      propertyLead
+        data.shared_with_armsuser_id == user.id ||
+        propertyLead
         ? styles.blueColor
         : AppStyles.darkColor
     var changeStatusColor =
       data.assigned_to_armsuser_id == user.id ||
-      data.shared_with_armsuser_id == user.id ||
-      propertyLead
+        data.shared_with_armsuser_id == user.id ||
+        propertyLead
         ? styles.tokenLabel
         : styles.tokenLabelDark
     var descriptionColor =
       data.assigned_to_armsuser_id == user.id ||
-      data.shared_with_armsuser_id == user.id ||
-      propertyLead
+        data.shared_with_armsuser_id == user.id ||
+        propertyLead
         ? styles.desBlue
         : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
@@ -93,11 +87,10 @@ class LeadTile extends React.Component {
       data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
     let areasLength =
       !data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 1
-        ? ` (+${Number(data.armsLeadAreas.length) - 1} ${
-            data.armsLeadAreas.length > 2 ? 'areas' : 'area'
-          })`
+        ? ` (+${Number(data.armsLeadAreas.length) - 1} ${data.armsLeadAreas.length > 2 ? 'areas' : 'area'
+        })`
         : ''
-    let leadSize = this.leadSize()
+    let leadSize = this.leadSize(data.size_unit)
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
     return (
       <TouchableOpacity
@@ -120,8 +113,8 @@ class LeadTile extends React.Component {
                   ) : data.status === 'meeting' ? (
                     data.status.split('_').join(' ').toUpperCase() + ' PLANNED'
                   ) : (
-                    data.status.split('_').join(' ').toUpperCase()
-                  )}
+                        data.status.split('_').join(' ').toUpperCase()
+                      )}
                 </Text>
 
                 {data.shared_with_armsuser_id && (
@@ -169,21 +162,27 @@ class LeadTile extends React.Component {
                     </Text>
                   </View>
                 )}
-                {purposeTab != 'invest' && (
-                  <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                    <Text style={[styles.priceText, AppStyles.darkColor]}>PKR</Text>
-                    <Text style={[styles.priceText, changeColor]}>
-                      {` ${
-                        !data.projectId && data.min_price
-                          ? helper.checkPrice(data.min_price) + ' - '
-                          : ''
-                      }`}
-                      {!data.projectId && data.price ? helper.checkPrice(data.price) : ''}
-                      {data.projectId && data.minPrice && helper.checkPrice(data.minPrice) + ' - '}
-                      {data.projectId && data.maxPrice && helper.checkPrice(data.maxPrice)}
-                    </Text>
+                {purposeTab != 'invest' ? (
+                  <View style={[styles.contentMultiMain]}>
+                    {
+                      !data.projectId && data.min_price && data.price ?
+                        <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
+                          {helper.convertPriceToString(data.min_price, data.price, StaticData.Constants.any_value)}
+                        </Text>
+                        : null
+                    }
                   </View>
-                )}
+                ) :
+                  <View style={[styles.contentMultiMain]}>
+                    {
+                      data.projectId && data.minPrice && data.maxPrice ?
+                        <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
+                          {helper.convertPriceToString(data.minPrice, data.maxPrice, StaticData.Constants.any_value)}
+                        </Text>
+                        : null
+                    }
+                  </View>
+                }
                 {/* ****** Address Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   {data.size != null && !data.projectId && (
@@ -192,9 +191,6 @@ class LeadTile extends React.Component {
                       numberOfLines={1}
                     >
                       {leadSize}
-                      {data.size_unit && data.size_unit !== null && data.size !== 0
-                        ? helper.capitalize(data.size_unit) + ' '
-                        : null}
                       {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
                       {data.purpose === 'sale' ? 'Buy' : 'Rent'}
                     </Text>

@@ -108,45 +108,39 @@ const RentPaymentView = (props) => {
         dateStatus={{ status: tokenDateStatus, name: 'token' }}
       />
 
-      {lead.commissions && lead.commissions.length ? (
-        buyer ? (
-          <CommissionTile
-            data={buyer ? buyer : null}
-            editTile={editTile}
-            title={buyer ? 'Buyer Commission Payment' : ''}
-          />
-        ) : (
-          <TouchableOpacity
-            style={styles.addPaymentBtn}
-            onPress={() => onAddCommissionPayment('buyer')}
-          >
-            <Image
-              style={styles.addPaymentBtnImg}
-              source={require('../../../assets/img/roundPlus.png')}
-            ></Image>
-            <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-          </TouchableOpacity>
-        )
-      ) : null}
+{
+                    lead.commissions ?
+                        buyer ? <CommissionTile
+                            data={buyer ? buyer : null}
+                            editTile={editTile}
+                            title={buyer ? 'Buyer Commission Payment' : ''}
+                        />
+                            :
+                            <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment('buyer')}>
+                                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                                <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
+                            </TouchableOpacity>
+                        : null
+                }
 
-      {lead.commissions && lead.commissions.length ? (
-        seller ? (
-          <CommissionTile data={seller} editTile={editTile} title={'Seller Commission Payment'} />
-        ) : (
-          <TouchableOpacity
-            style={styles.addPaymentBtn}
-            onPress={() => onAddCommissionPayment('seller')}
-          >
-            <Image
-              style={styles.addPaymentBtnImg}
-              source={require('../../../assets/img/roundPlus.png')}
-            ></Image>
-            <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
-          </TouchableOpacity>
-        )
-      ) : null}
-    </View>
-  )
+                {
+                    lead.commissions ?
+                        seller ?
+                            <CommissionTile
+                                data={seller}
+                                editTile={editTile}
+                                title={'Seller Commission Payment'}
+                            />
+                            :
+                            <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment('seller')}>
+                                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                                <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
+                            </TouchableOpacity>
+                        : null
+                }
+        </View >
+    )
+
 }
 
 export default RentPaymentView

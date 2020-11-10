@@ -250,18 +250,11 @@ class LeadDetail extends React.Component {
     }
   }
 
-  leadSize = () => {
+  leadSize = (unit) => {
     const { lead } = this.state
-    let minSize = !lead.projectId && lead.size && lead.size !== 0 ? lead.size : ''
-    let maxSize = !lead.projectId && lead.max_size && lead.max_size !== 0 ? lead.max_size : ''
-    let size = ''
-    if (minSize == maxSize) {
-      size = minSize + ' '
-    } else {
-      maxSize = maxSize !== '' ? ' - ' + maxSize : maxSize
-      size = minSize + maxSize + ' '
-    }
-    return size
+    let minSize = !lead.projectId && lead.size && lead.size !== null && lead.size!==undefined ? lead.size : ''
+    let maxSize = !lead.projectId && lead.max_size && lead.max_size !== null && lead.max_size!==undefined ? lead.max_size : ''
+    return helper.convertSizeToString(minSize, maxSize, StaticData.Constants.size_any_value, unit) + ' '
   }
 
   render() {
@@ -279,7 +272,7 @@ class LeadDetail extends React.Component {
     let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
     const leadSource = this.checkLeadSource()
     const regex = /(<([^>]+)>)/gi
-    let leadSize = this.leadSize()
+    let leadSize = this.leadSize(lead.size_unit)
     return !loading ? (
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -381,9 +374,8 @@ class LeadDetail extends React.Component {
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Requirement </Text>
           <Text style={styles.labelText}>
-            {leadSize}
-            {!lead.projectId && lead.size ? helper.capitalize(lead.size_unit) + ' ' : ''}
-            {!lead.projectId && helper.capitalize(lead.subtype)}
+            {!lead.projectId && leadSize}
+            {!lead.projectId && `${helper.capitalize(lead.subtype)} to ${type}`}
             {lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}
           </Text>
           <View style={styles.underLine} />
@@ -402,16 +394,20 @@ class LeadDetail extends React.Component {
           </Text>
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Price Range </Text>
-          <Text style={styles.labelText}>
-            {` ${
-              !lead.projectId && lead.min_price
-                ? helper.checkPrice(lead.min_price, true) + ' - '
-                : ''
-            }`}
-            {!lead.projectId && lead.price ? helper.checkPrice(lead.price) : ''}
-            {lead.projectId && lead.minPrice && helper.checkPrice(lead.minPrice, true) + ' - '}
-            {lead.projectId && lead.maxPrice && helper.checkPrice(lead.maxPrice)}
-          </Text>
+          {
+            !lead.projectId && lead.min_price && lead.price ?
+            <Text style={styles.labelText}>
+               {helper.convertPriceToString(lead.min_price, lead.price, StaticData.Constants.any_value)}
+            </Text> :
+            null
+          }
+          {
+            lead.projectId && lead.minPrice && lead.maxPrice ? 
+            <Text style={styles.labelText}>
+            {helper.convertPriceToString(lead.minPrice, lead.maxPrice, StaticData.Constants.any_value)}
+            </Text>
+            :null
+          }
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Assigned</Text>
           <Text style={styles.labelText}>

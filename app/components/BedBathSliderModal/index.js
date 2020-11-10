@@ -56,6 +56,7 @@ const BedBathSliderModal = ({
                 <PriceSlider initialValue={arrayValues.indexOf(minValue)}
                     finalValue={arrayValues.indexOf(maxValue)}
                     priceValues={arrayValues}
+                    allowOverlap={minValue !== arrayValues[arrayValues.length - 2]}
                     onSliderValueChange={(values) => onSliderValueChange(values)} />
                 <View style={styles.buttonsContainer}>
                     <TouchableButton containerStyle={[styles.buttonCommonStyle, styles.cancelButton]}

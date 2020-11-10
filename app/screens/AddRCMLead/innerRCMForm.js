@@ -53,7 +53,7 @@ class InnerRCMForm extends Component {
 			handleCityClick,
 			selectedCity,
 			propertyType,
-			subType,
+			subTypeData,
 			handleAreaClick,
 			clientName,
 			handleClientClick,
@@ -154,7 +154,7 @@ class InnerRCMForm extends Component {
 				{/* **************************************** */}
 				<View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
-						<PickerComponent onValueChange={handleForm} data={subType} name={'subtype'} placeholder='Property Sub Type' />
+						<PickerComponent onValueChange={handleForm} data={subTypeData} name={'subtype'} placeholder='Property Sub Type' />
 						{
 							checkValidation === true && formData.subtype === '' && <ErrorMessage errorMessage={'Required'} />
 						}
@@ -184,13 +184,13 @@ class InnerRCMForm extends Component {
 				</View>
 
 				{
-					formData.type !== '' && formData.type != 'plot' && formData.type != 'commercial' &&
+					formData.type !== '' && formData.subtype !== '' && formData.type != 'plot' && formData.type != 'commercial' &&
 					<View style={AppStyles.multiFormInput}>
 
 						{/* **************************************** */}
 						<View style={AppStyles.flexOne}>
 							<TouchableInput placeholder="Bed"
-								showDropDownIcon={false}
+							     showIconOrImage={false}
 								onPress={() => showBedBathModal('bed')}
 								value={`Beds: ${helper.showBedBathRangesString(formData.bed, formData.maxBed, StaticData.bedBathRange[StaticData.bedBathRange.length - 1])}`}
 							/>

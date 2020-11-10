@@ -10,7 +10,7 @@ const CustomMarker = () => {
     );
 };
 
-const PriceSlider = ({ priceValues, onSliderValueChange, initialValue, finalValue }) => {
+const PriceSlider = ({ priceValues, onSliderValueChange, initialValue, finalValue, allowOverlap = false }) => {
     return (
         <View style={styles.container}>
             <MultiSlider
@@ -21,7 +21,7 @@ const PriceSlider = ({ priceValues, onSliderValueChange, initialValue, finalValu
                 onValuesChange={onSliderValueChange}
                 min={0}
                 max={priceValues.length - 1}
-                allowOverlap
+                allowOverlap={allowOverlap}
                 snapped
             />
         </View>

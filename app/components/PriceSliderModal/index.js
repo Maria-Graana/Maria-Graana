@@ -39,7 +39,9 @@ const PriceSliderModal = ({ isVisible,
     useEffect(() => {
         setMinValue(initialValue);
         setMaxValue(finalValue);
-        setStringValues({ ...stringValues, priceMin: initialValue === StaticData.Constants.any_value ? null : currencyConvert(initialValue), priceMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue) })
+        setStringValues({ ...stringValues, 
+            priceMin: initialValue === StaticData.Constants.any_value ? null : currencyConvert(initialValue), 
+            priceMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue) })
         setRangeString(helper.convertPriceToString(initialValue, finalValue, arrayValues[arrayValues.length - 1]))
     }, [initialValue, finalValue])
 
@@ -48,7 +50,9 @@ const PriceSliderModal = ({ isVisible,
         const end = values[values.length - 1];
         setMinValue(arrayValues[start])
         setMaxValue(arrayValues[end])
-        setStringValues({ ...stringValues, priceMin: arrayValues[start] === arrayValues[arrayValues.length - 1] ? null : currencyConvert(arrayValues[start]), priceMax: arrayValues[end] === arrayValues[arrayValues.length - 1] ? null : currencyConvert(arrayValues[end]) })
+        setStringValues({ ...stringValues, 
+            priceMin: arrayValues[start] === arrayValues[arrayValues.length - 1] ? null : String(arrayValues[start]), 
+            priceMax: arrayValues[end] === arrayValues[arrayValues.length - 1] ? null : String(arrayValues[end]) })
         setRangeString(helper.convertPriceToString(arrayValues[start], arrayValues[end], arrayValues[arrayValues.length - 1]))
     }
 
@@ -95,8 +99,8 @@ const PriceSliderModal = ({ isVisible,
 
 
     const removeCommas = (str) => {
-        let newString = str.replace(/,/g, "");
-        return newString;
+            let newString = str.replace(/,/g, "");
+            return newString;
     }
 
     const onModalCancel = () => {
@@ -117,6 +121,7 @@ const PriceSliderModal = ({ isVisible,
                 <PriceSlider
                     initialValue={arrayValues.indexOf(getClosestNumber(minValue, arrayValues))}
                     finalValue={arrayValues.indexOf(getClosestNumber(maxValue, arrayValues))}
+                    allowOverlap={minValue !== arrayValues[arrayValues.length - 2]}
                     priceValues={arrayValues}
                     onSliderValueChange={(values) => onSliderValueChange(values)} />
 
@@ -124,7 +129,7 @@ const PriceSliderModal = ({ isVisible,
                     <TextInput
                         placeholder={'Any'}
                         value={stringValues.priceMin}
-                        onBlur={() => setStringValues({ ...stringValues, priceMin: currencyConvert(stringValues.priceMin) })}
+                        onBlur={() => setStringValues({ ...stringValues, priceMin: stringValues.priceMin ? currencyConvert(stringValues.priceMin) : '' })}
                         onFocus={() => setStringValues({ ...stringValues, priceMin: stringValues.priceMin ? removeCommas(stringValues.priceMin) : '' })}
                         onChangeText={(text) => handleMinPriceChange(text)}
                         placeholderTextColor="#96999E"
@@ -133,7 +138,7 @@ const PriceSliderModal = ({ isVisible,
                     <TextInput
                         placeholder={'Any'}
                         value={stringValues.priceMax}
-                        onBlur={() => setStringValues({ ...stringValues, priceMax: currencyConvert(stringValues.priceMax) })}
+                        onBlur={() => setStringValues({ ...stringValues, priceMax: stringValues.priceMax ? currencyConvert(stringValues.priceMax) : '' })}
                         onFocus={() => setStringValues({ ...stringValues, priceMax: stringValues.priceMax ? removeCommas(stringValues.priceMax) : '' })}
                         placeholderTextColor="#96999E"
                         onChangeText={(text) => handleMaxPriceChange(text)}

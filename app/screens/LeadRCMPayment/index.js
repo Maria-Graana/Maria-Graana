@@ -199,9 +199,9 @@ class LeadRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
-  addProperty = () => { }
+  addProperty = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -231,12 +231,18 @@ class LeadRCMPayment extends React.Component {
 
   showLeadPaymentModal = () => {
     const { lead } = this.state
-    if (lead.commissions && lead.commissions.status === StaticData.leadClearedStatus) {
-      this.setState({
-        reasons: StaticData.leadCloseReasonsWithPayment,
-        isVisible: true,
-        checkReasonValidation: '',
+    let cleared = 0
+    if (lead.commissions.length) {
+      lead.commissions.map((item) => {
+        if (item.status === 'cleared') cleared++
       })
+      if (cleared === 2) {
+        this.setState({
+          reasons: StaticData.leadCloseReasonsWithPayment,
+          isVisible: true,
+          checkReasonValidation: '',
+        })
+      }
     } else {
       this.setState({
         reasons: StaticData.leadCloseReasons,
@@ -445,7 +451,7 @@ class LeadRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
-    this.setState({ formData }, () => { })
+    this.setState({ formData }, () => {})
     if (formData.monthlyRent !== '' && name === 'monthlyRent') {
       this.setState({ showMonthlyRentArrow: true })
     }
@@ -557,7 +563,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -570,7 +576,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -702,7 +708,7 @@ class LeadRCMPayment extends React.Component {
       if (editable === false) {
         // for commission addition
         let body = {
-          ...rcmPayment, 
+          ...rcmPayment,
           rcmLeadId: lead.id,
           armsUserId: user.id,
         }
@@ -739,8 +745,8 @@ class LeadRCMPayment extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                return !_.has(item, 'id')
-              })
+                  return !_.has(item, 'id')
+                })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -901,20 +907,20 @@ class LeadRCMPayment extends React.Component {
                       screen={'payment'}
                     />
                   ) : (
-                      <AgentTile
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        isMenuVisible={showMenuItem}
-                        viewingMenu={false}
-                        goToPropertyComments={this.goToPropertyComments}
-                        toggleMenu={this.toggleMenu}
-                        menuShow={menuShow}
-                        screen={'payment'}
-                      />
-                    )}
+                    <AgentTile
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      isMenuVisible={showMenuItem}
+                      viewingMenu={false}
+                      goToPropertyComments={this.goToPropertyComments}
+                      toggleMenu={this.toggleMenu}
+                      menuShow={menuShow}
+                      screen={'payment'}
+                    />
+                  )}
                   <View>{this.renderSelectPaymentView(item.item)}</View>
                 </View>
               )}
@@ -937,45 +943,45 @@ class LeadRCMPayment extends React.Component {
                         tokenDateStatus={tokenDateStatus}
                         tokenPriceFromat={tokenPriceFromat}
                         agreeAmountFromat={agreeAmountFromat}
-                        onAddCommissionPayment={(addedBy)=>this.onAddCommissionPayment(addedBy)}
+                        onAddCommissionPayment={(addedBy) => this.onAddCommissionPayment(addedBy)}
                         editTile={this.setCommissionEditData}
                       />
                     ) : (
-                        <RentPaymentView
-                          lead={lead}
-                          pickerData={pickerData}
-                          handleForm={this.handleForm}
-                          formData={formData}
-                          showMonthlyRentArrow={showMonthlyRentArrow}
-                          handleMonthlyRentPress={this.handleMonthlyRentPress}
-                          token={token}
-                          handleTokenAmountChange={this.handleTokenAmountChange}
-                          showTokenAmountArrow={showTokenAmountArrow}
-                          handleTokenAmountPress={this.handleTokenAmountPress}
-                          showAndHideStyling={this.showAndHideStyling}
-                          showStylingState={showStyling}
-                          tokenDateStatus={tokenDateStatus}
-                          tokenPriceFromat={tokenPriceFromat}
-                          agreeAmountFromat={agreeAmountFromat}
-                          monthlyFormatStatus={monthlyFormatStatus}
-                          onAddCommissionPayment={(addedBy)=>this.onAddCommissionPayment(addedBy)}
-                          editTile={this.setCommissionEditData}
-                        />
-                      )
+                      <RentPaymentView
+                        lead={lead}
+                        pickerData={pickerData}
+                        handleForm={this.handleForm}
+                        formData={formData}
+                        showMonthlyRentArrow={showMonthlyRentArrow}
+                        handleMonthlyRentPress={this.handleMonthlyRentPress}
+                        token={token}
+                        handleTokenAmountChange={this.handleTokenAmountChange}
+                        showTokenAmountArrow={showTokenAmountArrow}
+                        handleTokenAmountPress={this.handleTokenAmountPress}
+                        showAndHideStyling={this.showAndHideStyling}
+                        showStylingState={showStyling}
+                        tokenDateStatus={tokenDateStatus}
+                        tokenPriceFromat={tokenPriceFromat}
+                        agreeAmountFromat={agreeAmountFromat}
+                        monthlyFormatStatus={monthlyFormatStatus}
+                        onAddCommissionPayment={(addedBy) => this.onAddCommissionPayment(addedBy)}
+                        editTile={this.setCommissionEditData}
+                      />
+                    )
                   ) : null}
                 </View>
               }
               keyExtractor={(item, index) => item.id.toString()}
             />
           ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
+            <>
+              <Image
+                source={require('../../../assets/img/no-result-found.png')}
+                resizeMode={'center'}
+                style={{ alignSelf: 'center', width: 300, height: 300 }}
+              />
+            </>
+          )}
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -995,8 +1001,8 @@ class LeadRCMPayment extends React.Component {
         </View>
       </KeyboardAvoidingView>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

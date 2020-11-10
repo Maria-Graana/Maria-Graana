@@ -121,6 +121,7 @@ const PriceSliderModal = ({ isVisible,
                 <PriceSlider
                     initialValue={arrayValues.indexOf(getClosestNumber(minValue, arrayValues))}
                     finalValue={arrayValues.indexOf(getClosestNumber(maxValue, arrayValues))}
+                    allowOverlap={minValue !== arrayValues[arrayValues.length - 2]}
                     priceValues={arrayValues}
                     onSliderValueChange={(values) => onSliderValueChange(values)} />
 

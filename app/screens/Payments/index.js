@@ -1014,7 +1014,7 @@ class Payments extends Component {
 			var approvedPaymentDone = []
 			secondScreenData && secondScreenData.payment != null &&
 				secondScreenData.payment.filter((item, index) => {
-					return item.status === 'pending' || item.status === 'rejected' || item.status === 'bankPending' || item.status === 'notCleared' ?
+					return item.status === 'pendingAccount' || item.status === 'pendingSales' || item.status === 'bankPending' || item.status === 'notCleared' ?
 						approvedPaymentDone.push(true) : approvedPaymentDone.push(false)
 				})
 			// If there is any true in the bottom array PAYMENT DONE option will be hide

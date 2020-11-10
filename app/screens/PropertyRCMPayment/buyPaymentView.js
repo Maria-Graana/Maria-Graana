@@ -30,6 +30,7 @@ class BuyPaymentView extends React.Component {
             editTile,
         } = this.props;
         const isLeadClosed = lead.status === StaticData.Constants.lead_closed_lost || lead.status === StaticData.Constants.lead_closed_won;
+        const buyer = lead.commissions.find(commission => commission.addedBy && commission.addedBy === 'buyer');
         return (
             <View>
                 <InputField
@@ -66,17 +67,19 @@ class BuyPaymentView extends React.Component {
                     dateStatus={{ status: tokenDateStatus, name: 'token' }}
                 />
                 {
-                    lead.commissions && lead.commissions.length?
-                        <CommissionTile
-                            data={lead.commissions.find(commission => commission.addedBy && commission.addedBy === 'buyer')}
-                            editTile={editTile}
-                            title = {'Commission Payment'}
-                        />
-                        :
-                        <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment(true)}>
-                            <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                            <Text style={styles.addPaymentBtnText}>ADD COMMISSION PAYMENT</Text>
-                        </TouchableOpacity>
+                    lead.commissions ?
+                        buyer ?
+                            <CommissionTile
+                                data={buyer}
+                                editTile={editTile}
+                                title={'Commission Payment'}
+                            />
+                            :
+                            <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment(true)}>
+                                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                                <Text style={styles.addPaymentBtnText}>ADD COMMISSION PAYMENT</Text>
+                            </TouchableOpacity>
+                        : null
                 }
             </View >
         )

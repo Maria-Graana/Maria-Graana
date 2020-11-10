@@ -24,7 +24,7 @@ class CMLeadFrom extends Component {
       handleCityClick,
       selectedCity,
       propertyType,
-      subType,
+      subTypeData,
       sizeUnit,
       size,
       formSubmit,
@@ -74,7 +74,7 @@ class CMLeadFrom extends Component {
             selectedCity={selectedCity}
             handleCityClick={handleCityClick}
             propertyType={propertyType}
-            subType={subType}
+            subTypeData={subTypeData}
             sizeUnit={sizeUnit}
             size={size}
             formSubmit={formSubmit}

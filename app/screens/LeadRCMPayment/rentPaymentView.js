@@ -88,7 +88,7 @@ const RentPaymentView = (props) => {
             />
 
 {
-                    lead.commissions && lead.commissions.length ?
+                    lead.commissions ?
                         buyer ? <CommissionTile
                             data={buyer ? buyer : null}
                             editTile={editTile}
@@ -103,7 +103,7 @@ const RentPaymentView = (props) => {
                 }
 
                 {
-                    lead.commissions && lead.commissions.length ?
+                    lead.commissions ?
                         seller ?
                             <CommissionTile
                                 data={seller}

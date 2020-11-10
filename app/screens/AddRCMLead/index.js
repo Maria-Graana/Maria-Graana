@@ -394,7 +394,7 @@ class AddRCMLead extends Component {
                                         propertyType={StaticData.type}
                                         formData={RCMFormData}
                                         formType={formType}
-                                        subType={selectSubType}
+                                        subTypeData={selectSubType}
                                         handleAreaClick={this.handleAreaClick}
                                         priceList={priceList}
                                         onSliderValueChange={(values) => this.onSliderValueChange(values)}

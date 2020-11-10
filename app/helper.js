@@ -506,19 +506,19 @@ const helper = {
     }
   },
   convertPriceToString(start, end, maxValue) {
-    if (
-      (start === 0 && end === maxValue) ||
-      (start === maxValue && end === maxValue) ||
-      (start === 0 && end === 0)
-    ) {
+    if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
       return `PKR: Any`
-    } else if (start === 0 && end !== maxValue) {
+    }
+    else if (start === 0 && end !== maxValue) {
       return `PKR: Upto ${formatPrice(end)}`
-    } else if (start !== 0 && end === maxValue) {
-      return `PKR: ${formatPrice(start)} or more`
-    } else if (start === end) {
-      return `PKR: ${formatPrice(start)}`
-    } else {
+    }
+    else if (start !== 0 && end === maxValue) {
+      return `PKR: ${formatPrice(start)} or more`;
+    }
+    else if (start === end) {
+      return `PKR: ${formatPrice(start)}`;
+    }
+    else {
       return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
     }
   },

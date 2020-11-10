@@ -319,6 +319,12 @@ class LeadMatch extends React.Component {
 
     let params = this.setParams()
     let callApi = this.canCallApi()
+    if (lead.type === 'plot' || lead.type === 'commercial') {
+      delete params.bed
+      delete params.maxBed
+      delete params.bath
+      delete params.maxBath
+    }
     if (callApi || !showCheckBoxes) {
       axios
         .get(`/api/leads/matches`, {
@@ -787,6 +793,7 @@ class LeadMatch extends React.Component {
             openPopup={callModal}
           />
           <FilterModal
+            lead={lead}
             sizeUnitList={sizeUnitList}
             onRef={(ref) => (this.filterModalRef = ref)}
             selectedCity={selectedCity}

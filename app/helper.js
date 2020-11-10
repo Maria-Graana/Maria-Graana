@@ -489,11 +489,12 @@ const helper = {
     } else return []
   },
   showBedBathRangesString(start, end, maxValue) {
-    if (
+    if (start === 0 && end === 0) {
+      return '0';
+    }
+    else if (
       (start === 0 && end === maxValue) ||
-      (start === maxValue && end === maxValue) ||
-      (start === 0 && end === 0)
-    ) {
+      (start === maxValue && end === maxValue)) {
       return 'Any'
     } else if (start === 0 && end !== maxValue) {
       return `Upto ${end}`
@@ -506,7 +507,10 @@ const helper = {
     }
   },
   convertPriceToString(start, end, maxValue) {
-    if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
+    if (start === 0 && end === 0) {
+      return 'PKR: 0'
+    }
+    else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
       return `PKR: Any`
     }
     else if (start === 0 && end !== maxValue) {
@@ -523,7 +527,10 @@ const helper = {
     }
   },
   convertSizeToString(start, end, maxValue, unit) {
-    if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue) || (start === 0 && end === 0)) {
+    if (start === 0 && end === 0) {
+      return 'Size: 0'
+    }
+    else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
       return `Size: Any`
     }
     else if (start === 0 && end !== maxValue) {
@@ -545,7 +552,7 @@ const helper = {
       property.armsuser &&
       property.armsuser.armsUserRole &&
       property.armsuser.armsUserRole.subRole
-    if(property.assigned_to_armsuser_id === user.id ||
+    if (property.assigned_to_armsuser_id === user.id ||
       (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
       !Ability.canView(subRole, 'Leads')) {
       return true; // lead agent can have access to all functionality

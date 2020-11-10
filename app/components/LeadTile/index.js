@@ -47,8 +47,8 @@ class LeadTile extends React.Component {
 
   leadSize = (unit) => {
     const { data } = this.props
-    let minSize = !data.projectId && data.size ? data.size : ''
-    let maxSize = !data.projectId && data.max_size ? data.max_size : ''
+    let minSize = !data.projectId &&  data.size!==null && data.size !== undefined ? data.size : ''
+    let maxSize = !data.projectId && data.max_size!==null && data.max_size !== undefined ? data.max_size : ''
     return helper.convertSizeToString(minSize, maxSize, StaticData.Constants.size_any_value, unit) + ' '
   }
 
@@ -191,9 +191,6 @@ class LeadTile extends React.Component {
                       numberOfLines={1}
                     >
                       {leadSize}
-                      {/* {data.size_unit && data.size_unit !== null && data.size !== 0
-                        ? helper.capitalize(data.size_unit) + ' '
-                        : null} */}
                       {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
                       {data.purpose === 'sale' ? 'Buy' : 'Rent'}
                     </Text>

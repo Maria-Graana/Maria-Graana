@@ -252,8 +252,8 @@ class LeadDetail extends React.Component {
 
   leadSize = (unit) => {
     const { lead } = this.state
-    let minSize = !lead.projectId && lead.size && lead.size !== 0 ? lead.size : ''
-    let maxSize = !lead.projectId && lead.max_size && lead.max_size !== 0 ? lead.max_size : ''
+    let minSize = !lead.projectId && lead.size && lead.size !== null && lead.size!==undefined ? lead.size : ''
+    let maxSize = !lead.projectId && lead.max_size && lead.max_size !== null && lead.max_size!==undefined ? lead.max_size : ''
     return helper.convertSizeToString(minSize, maxSize, StaticData.Constants.size_any_value, unit) + ' '
   }
 
@@ -374,7 +374,7 @@ class LeadDetail extends React.Component {
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Requirement </Text>
           <Text style={styles.labelText}>
-            {leadSize}
+            {!lead.projectId && leadSize}
             {!lead.projectId && `${helper.capitalize(lead.subtype)} to ${type}`}
             {lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}
           </Text>

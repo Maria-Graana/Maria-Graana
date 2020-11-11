@@ -171,7 +171,9 @@ class InnerForm extends Component {
                   selectedItem={formData.paymentPlan}
                   enabled={checkForUnitIdavail}
                 />
-                {firstScreenValidate === true && formData.paymentPlan === null && <ErrorMessage errorMessage={'Required'} />}
+                {firstScreenValidate === true &&
+                  formData.paymentPlan === 'no' &&
+                  <ErrorMessage errorMessage={'Required'} />}
               </View>
             </View>
 

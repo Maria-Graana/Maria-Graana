@@ -36,7 +36,7 @@ class Payments extends Component {
 				discount: null,
 				discountedPrice: null,
 				finalPrice: null,
-				paymentPlan: null,
+				paymentPlan: 'no',
 				unitId: lead.unit != null ? lead.unit.id : null,
 				token: lead.token != null ? lead.token : null,
 				type: '',
@@ -627,8 +627,6 @@ class Payments extends Component {
 				formData.cnic != null &&
 				formData.cnic != '' &&
 				cnicValidate === false &&
-				formData.paymentPlan != null &&
-				formData.paymentPlan != '' &&
 				formData.paymentPlan != 'no'
 			) {
 				if (leftSqft < 50 && leftSqft > 0) {
@@ -652,8 +650,7 @@ class Payments extends Component {
 				formData.projectId != null &&
 				formData.floorId != null &&
 				formData.unitId != null &&
-				formData.paymentPlan != null &&
-				formData.paymentPlan != '' &&
+				formData.paymentPlan != 'no' &&
 				formData.token != null &&
 				formData.token != '' &&
 				formData.type != '' &&

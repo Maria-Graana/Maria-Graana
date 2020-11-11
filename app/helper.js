@@ -512,7 +512,7 @@ const helper = {
     } else if (start !== 0 && end === maxValue) {
       return `PKR: ${formatPrice(start)} or more`
     } else if (start === end) {
-      return `PKR: ${formatPrice(start)}`
+      return `PKR: ${formatPrice(start)} to ${formatPrice(end)}`
     } else {
       return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
     }

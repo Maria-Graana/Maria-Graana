@@ -432,7 +432,9 @@ class PropertyOffer extends React.Component {
       if (offer.length) {
         offerId = offer[offer.length - 1].id
         axios
-          .patch(`/api/offer/agree?leadId=${lead.id}&offerId=${offerId}`)
+          .patch(
+            `/api/offer/agree?leadId=${lead.id}&offerId=${offerId}&shortlistedPropId=${currentProperty.id}`
+          )
           .then((res) => {
             this.openChatModal()
           })

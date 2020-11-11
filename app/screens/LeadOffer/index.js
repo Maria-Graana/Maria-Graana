@@ -354,7 +354,10 @@ class LeadOffer extends React.Component {
   }
 
   navigateToDetails = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    this.props.navigation.navigate('LeadDetail', {
+      lead: this.props.lead,
+      purposeTab: this.props.lead.purpose,
+    })
   }
 
   goToHistory = () => {

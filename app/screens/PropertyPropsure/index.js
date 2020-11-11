@@ -355,7 +355,7 @@ class PropertyPropsure extends React.Component {
   }
 
   navigateToDetails = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'property' })
   }
 
   goToHistory = () => {
@@ -512,9 +512,9 @@ class PropertyPropsure extends React.Component {
             navigateTo={this.navigateToDetails}
             goToDiaryForm={this.goToDiaryForm}
             goToComments={this.goToComments}
-            alreadyClosedLead={() => this.closedLead()}
-            closeLead={this.closeLead}
-            closedLeadEdit={closedLeadEdit}
+            // alreadyClosedLead={() => this.closedLead()}
+            // closeLead={this.closeLead}
+            // closedLeadEdit={closedLeadEdit}
             callButton={true}
             customer={lead.customer}
             lead={lead}

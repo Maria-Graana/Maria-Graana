@@ -252,9 +252,20 @@ class LeadDetail extends React.Component {
 
   leadSize = (unit) => {
     const { lead } = this.state
-    let minSize = !lead.projectId && lead.size && lead.size !== null && lead.size!==undefined ? lead.size : ''
-    let maxSize = !lead.projectId && lead.max_size && lead.max_size !== null && lead.max_size!==undefined ? lead.max_size : ''
-    return helper.convertSizeToString(minSize, maxSize, StaticData.Constants.size_any_value, unit) + ' '
+    let minSize =
+      !lead.projectId && lead.size && lead.size !== null && lead.size !== undefined ? lead.size : ''
+    let maxSize =
+      !lead.projectId && lead.max_size && lead.max_size !== null && lead.max_size !== undefined
+        ? lead.max_size
+        : ''
+    let size = helper.convertSizeToStringV2(
+      minSize,
+      maxSize,
+      StaticData.Constants.size_any_value,
+      unit
+    )
+    size = size === '' ? '' : size + ' '
+    return size
   }
 
   render() {
@@ -273,6 +284,7 @@ class LeadDetail extends React.Component {
     const leadSource = this.checkLeadSource()
     const regex = /(<([^>]+)>)/gi
     let leadSize = this.leadSize(lead.size_unit)
+
     return !loading ? (
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -394,20 +406,24 @@ class LeadDetail extends React.Component {
           </Text>
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Price Range </Text>
-          {
-            !lead.projectId && lead.min_price && lead.price ?
+          {!lead.projectId && lead.min_price && lead.price ? (
             <Text style={styles.labelText}>
-               {helper.convertPriceToString(lead.min_price, lead.price, StaticData.Constants.any_value)}
-            </Text> :
-            null
-          }
-          {
-            lead.projectId && lead.minPrice && lead.maxPrice ? 
-            <Text style={styles.labelText}>
-            {helper.convertPriceToString(lead.minPrice, lead.maxPrice, StaticData.Constants.any_value)}
+              {helper.convertPriceToString(
+                lead.min_price,
+                lead.price,
+                StaticData.Constants.any_value
+              )}
             </Text>
-            :null
-          }
+          ) : null}
+          {lead.projectId && lead.minPrice && lead.maxPrice ? (
+            <Text style={styles.labelText}>
+              {helper.convertPriceToString(
+                lead.minPrice,
+                lead.maxPrice,
+                StaticData.Constants.any_value
+              )}
+            </Text>
+          ) : null}
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Assigned</Text>
           <Text style={styles.labelText}>

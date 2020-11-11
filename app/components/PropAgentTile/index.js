@@ -58,8 +58,9 @@ class PropAgentTile extends React.Component {
     let show = isMenuVisible
     if (isMenuVisible) {
       if (data.diaries && data.diaries.length) {
-        if (data.diaries[0].status === 'completed') show = false
-      }
+        if (data.diaries[0].status === 'pending') show = true
+        else show = false
+      } else show = false
     }
     return (
       <TouchableOpacity
@@ -110,7 +111,7 @@ class PropAgentTile extends React.Component {
           <View style={[styles.pad5, { marginRight: 5 }]}>
             <View style={{ flexDirection: 'row', height: 20 }}>
               <View style={{ flex: 1 }}></View>
-              {show ? (
+              {show && screen === 'viewing' ? (
                 <Menu
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -123,7 +124,7 @@ class PropAgentTile extends React.Component {
                   }
                 >
                   <View>
-                    {viewingMenu ? (
+                    {viewingMenu && screen && screen === 'viewing' ? (
                       <View>
                         {data.diaries &&
                         data.diaries.length &&

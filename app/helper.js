@@ -18,8 +18,7 @@ import * as Sentry from 'sentry-expo'
 import _ from 'underscore'
 import * as Notifications from 'expo-notifications'
 import TimerNotification from './LocalNotifications'
-import Ability from './hoc/Ability';
-
+import Ability from './hoc/Ability'
 
 const helper = {
   successToast(message) {
@@ -424,7 +423,7 @@ const helper = {
     }
     if (identifier) {
       Notifications.cancelScheduledNotificationAsync(identifier)
-        .then((notification) => { })
+        .then((notification) => {})
         .catch((error) => {
           console.log(error)
         })
@@ -490,11 +489,8 @@ const helper = {
   },
   showBedBathRangesString(start, end, maxValue) {
     if (start === 0 && end === 0) {
-      return '0';
-    }
-    else if (
-      (start === 0 && end === maxValue) ||
-      (start === maxValue && end === maxValue)) {
+      return '0'
+    } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
       return 'Any'
     } else if (start === 0 && end !== maxValue) {
       return `Upto ${end}`
@@ -509,41 +505,64 @@ const helper = {
   convertPriceToString(start, end, maxValue) {
     if (start === 0 && end === 0) {
       return 'PKR: 0'
-    }
-    else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
+    } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
       return `PKR: Any`
-    }
-    else if (start === 0 && end !== maxValue) {
+    } else if (start === 0 && end !== maxValue) {
       return `PKR: Upto ${formatPrice(end)}`
-    }
-    else if (start !== 0 && end === maxValue) {
-      return `PKR: ${formatPrice(start)} or more`;
-    }
-    else if (start === end) {
-      return `PKR: ${formatPrice(start)}`;
-    }
-    else {
+    } else if (start !== 0 && end === maxValue) {
+      return `PKR: ${formatPrice(start)} or more`
+    } else if (start === end) {
+      return `PKR: ${formatPrice(start)}`
+    } else {
       return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
     }
   },
   convertSizeToString(start, end, maxValue, unit) {
+    let unitType = unit
+    if (unitType) {
+      if (unitType === 'marla') unitType = `${this.capitalize(unitType)}(s)`
+      if (unitType === 'kanal') unitType = `${this.capitalize(unitType)}(s)`
+      else unitType = this.capitalize(unitType)
+    }
     if (start === 0 && end === 0) {
       return 'Size: 0'
-    }
-    else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
+    } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
       return `Size: Any`
+    } else if (start === 0 && end !== maxValue) {
+      return `Size: Upto ${end} ${this.capitalize(unitType)}`
+    } else if (start !== 0 && end === maxValue) {
+      return `Size: ${start} or more ${this.capitalize(unitType)}`
+    } else if (start === end) {
+      return `Size: ${start} ${this.capitalize(unitType)}`
+    } else {
+      return `Size: ${start} - ${end} ${this.capitalize(unitType)}`
     }
-    else if (start === 0 && end !== maxValue) {
-      return `Size: Upto ${(end)} ${this.capitalize(unit)}(s)`
+  },
+  convertSizeToStringV2(start, end, maxValue, unit) {
+    let unitType = unit
+    if (unitType) {
+      if (unitType === 'marla') unitType = `${this.capitalize(unitType)}(s)`
+      if (unitType === 'kanal') unitType = `${this.capitalize(unitType)}(s)`
+      else unitType = this.capitalize(unitType)
     }
-    else if (start !== 0 && end === maxValue) {
-      return `Size: ${(start)} ${this.capitalize(unit)}(s) or more`;
-    }
-    else if (start === end) {
-      return `Size: ${(start)} ${this.capitalize(unit)}`;
-    }
-    else {
-      return `Size: ${(start)} - ${(end)} ${this.capitalize(unit)}`
+    start = Number(start)
+    end = Number(end)
+    if (start === 0 && end === 0) {
+      return `0 ${unitType}`
+    } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
+      return ''
+    } else if (start === 0 && end && end !== maxValue) {
+      return `Upto ${end} ${unitType}`
+    } else if (start === end) {
+      return `${start} ${unitType}`
+    } else if (start === '' && end && end !== '') {
+      return `Upto ${end} ${unitType}`
+    } else if (start !== 0 && end === maxValue) {
+      return `${start} or more ${unitType}`
+    } else if (start && end) {
+      return `${start} - ${end} ${unitType}`
+    } else {
+      return ''
     }
   },
   isSellerOrBuyer(property, lead, user) {
@@ -552,15 +571,16 @@ const helper = {
       property.armsuser &&
       property.armsuser.armsUserRole &&
       property.armsuser.armsUserRole.subRole
-    if (property.assigned_to_armsuser_id === user.id ||
+    if (
+      property.assigned_to_armsuser_id === user.id ||
       (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-      !Ability.canView(subRole, 'Leads')) {
-      return true; // lead agent can have access to all functionality
+      !Ability.canView(subRole, 'Leads')
+    ) {
+      return true // lead agent can have access to all functionality
+    } else {
+      return false // property agent
     }
-    else {
-      return false; // property agent
-    }
-  }
+  },
 }
 
 module.exports = helper

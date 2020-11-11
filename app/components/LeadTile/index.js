@@ -42,14 +42,22 @@ class LeadTile extends React.Component {
     if (purposeTab === 'invest') body.leadId = data.id
     else body.armsLeadId = data.id
 
-    axios.post(`api/leads/project/meeting`, body).then((res) => { })
+    axios.post(`api/leads/project/meeting`, body).then((res) => {})
   }
 
-  leadSize = (unit) => {
+  leadSize = () => {
     const { data } = this.props
-    let minSize = !data.projectId &&  data.size!==null && data.size !== undefined ? data.size : ''
-    let maxSize = !data.projectId && data.max_size!==null && data.max_size !== undefined ? data.max_size : ''
-    return helper.convertSizeToString(minSize, maxSize, StaticData.Constants.size_any_value, unit) + ' '
+    let minSize = !data.projectId && data.size !== null && data.size !== undefined ? data.size : ''
+    let maxSize =
+      !data.projectId && data.max_size !== null && data.max_size !== undefined ? data.max_size : ''
+    let size = helper.convertSizeToStringV2(
+      minSize,
+      maxSize,
+      StaticData.Constants.size_any_value,
+      data.size_unit
+    )
+    size = size === '' ? '' : size + ' '
+    return size
   }
 
   render() {
@@ -66,20 +74,20 @@ class LeadTile extends React.Component {
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
-        data.shared_with_armsuser_id == user.id ||
-        propertyLead
+      data.shared_with_armsuser_id == user.id ||
+      propertyLead
         ? styles.blueColor
         : AppStyles.darkColor
     var changeStatusColor =
       data.assigned_to_armsuser_id == user.id ||
-        data.shared_with_armsuser_id == user.id ||
-        propertyLead
+      data.shared_with_armsuser_id == user.id ||
+      propertyLead
         ? styles.tokenLabel
         : styles.tokenLabelDark
     var descriptionColor =
       data.assigned_to_armsuser_id == user.id ||
-        data.shared_with_armsuser_id == user.id ||
-        propertyLead
+      data.shared_with_armsuser_id == user.id ||
+      propertyLead
         ? styles.desBlue
         : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
@@ -87,10 +95,11 @@ class LeadTile extends React.Component {
       data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
     let areasLength =
       !data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 1
-        ? ` (+${Number(data.armsLeadAreas.length) - 1} ${data.armsLeadAreas.length > 2 ? 'areas' : 'area'
-        })`
+        ? ` (+${Number(data.armsLeadAreas.length) - 1} ${
+            data.armsLeadAreas.length > 2 ? 'areas' : 'area'
+          })`
         : ''
-    let leadSize = this.leadSize(data.size_unit)
+    let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
     return (
       <TouchableOpacity
@@ -113,8 +122,8 @@ class LeadTile extends React.Component {
                   ) : data.status === 'meeting' ? (
                     data.status.split('_').join(' ').toUpperCase() + ' PLANNED'
                   ) : (
-                        data.status.split('_').join(' ').toUpperCase()
-                      )}
+                    data.status.split('_').join(' ').toUpperCase()
+                  )}
                 </Text>
 
                 {data.shared_with_armsuser_id && (
@@ -164,25 +173,29 @@ class LeadTile extends React.Component {
                 )}
                 {purposeTab != 'invest' ? (
                   <View style={[styles.contentMultiMain]}>
-                    {
-                      !data.projectId && data.min_price && data.price ?
-                        <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
-                          {helper.convertPriceToString(data.min_price, data.price, StaticData.Constants.any_value)}
-                        </Text>
-                        : null
-                    }
+                    {!data.projectId && data.min_price && data.price ? (
+                      <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
+                        {helper.convertPriceToString(
+                          data.min_price,
+                          data.price,
+                          StaticData.Constants.any_value
+                        )}
+                      </Text>
+                    ) : null}
                   </View>
-                ) :
+                ) : (
                   <View style={[styles.contentMultiMain]}>
-                    {
-                      data.projectId && data.minPrice && data.maxPrice ?
-                        <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
-                          {helper.convertPriceToString(data.minPrice, data.maxPrice, StaticData.Constants.any_value)}
-                        </Text>
-                        : null
-                    }
+                    {data.projectId && data.minPrice && data.maxPrice ? (
+                      <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
+                        {helper.convertPriceToString(
+                          data.minPrice,
+                          data.maxPrice,
+                          StaticData.Constants.any_value
+                        )}
+                      </Text>
+                    ) : null}
                   </View>
-                }
+                )}
                 {/* ****** Address Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   {data.size != null && !data.projectId && (

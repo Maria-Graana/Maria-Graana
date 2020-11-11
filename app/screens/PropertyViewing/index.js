@@ -525,7 +525,7 @@ class PropertyViewing extends React.Component {
       addLoading,
     } = this.state
     const { lead, user, navigation } = this.props
-    const showMenuItem = helper.propertyCheckAssignedSharedStatus(user, lead)
+    const showMenuItem = true
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -571,7 +571,7 @@ class PropertyViewing extends React.Component {
                         deleteProperty={this.deleteProperty}
                         cancelViewing={this.cancelViewing}
                         doneViewing={this.doneViewing}
-                        isMenuVisible={showMenuItem && isMenuVisible}
+                        isMenuVisible={isMenuVisible}
                         data={_.clone(item.item)}
                         user={user}
                         displayChecks={this.displayChecks}
@@ -581,13 +581,14 @@ class PropertyViewing extends React.Component {
                         goToPropertyComments={this.goToPropertyComments}
                         toggleMenu={this.toggleMenu}
                         menuShow={menuShow}
+                        screen={'viewing'}
                       />
                     ) : (
                       <PropAgentTile
                         deleteProperty={this.deleteProperty}
                         cancelViewing={this.cancelViewing}
                         doneViewing={this.doneViewing}
-                        isMenuVisible={showMenuItem && isMenuVisible}
+                        isMenuVisible={isMenuVisible}
                         data={_.clone(item.item)}
                         user={user}
                         displayChecks={this.displayChecks}
@@ -597,6 +598,7 @@ class PropertyViewing extends React.Component {
                         goToPropertyComments={this.goToPropertyComments}
                         menuShow={menuShow}
                         toggleMenu={this.toggleMenu}
+                        screen={'viewing'}
                       />
                     )}
                     <View>{this.checkStatus(item.item)}</View>

@@ -90,18 +90,19 @@ class PropMatchTile extends React.Component {
   }
 
   render() {
-    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow } = this.props
+    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen } = this.props
     let imagesList = this.checkImages()
     let show = isMenuVisible
     let phoneNumber = null
     let totalImages = imagesList.length
-
     if (isMenuVisible) {
       if (data.diaries && data.diaries.length) {
-        if (data.diaries[0].status === 'completed') show = false
-      }
+        if (data.diaries[0].status === 'pending') show = true
+        else show = false
+      } else show = false
     }
     phoneNumber = this.displayPhoneNumber(data)
+
     return (
       <TouchableOpacity
         style={{ flexDirection: 'row', marginVertical: 2 }}
@@ -175,7 +176,7 @@ class PropMatchTile extends React.Component {
             </View>
           </View>
           <View style={styles.phoneIcon}>
-            {show ? (
+            {show && screen === 'viewing' ? (
               <Menu
                 visible={data.checkBox}
                 onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -188,24 +189,24 @@ class PropMatchTile extends React.Component {
                 }
               >
                 <View>
-                  {viewingMenu ? (
+                  {viewingMenu && screen && screen === 'viewing' ? (
                     <View>
                       {data.diaries &&
                       data.diaries.length &&
                       data.diaries[0].status === 'pending' ? (
                         <View>
-                          <Menu.Item
+                          {/* <Menu.Item
                             onPress={() => {
                               this.props.goToPropertyComments(data)
                             }}
                             title="Comments"
-                          />
-                          {/* <Menu.Item
+                          /> */}
+                          <Menu.Item
                             onPress={() => {
                               this.props.doneViewing(data)
                             }}
                             title="Viewing done"
-                          /> */}
+                          />
                           {/* <Menu.Item
                             onPress={() => {
                               this.props.cancelViewing(data)

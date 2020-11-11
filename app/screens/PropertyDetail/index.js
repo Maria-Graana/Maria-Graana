@@ -178,7 +178,7 @@ class PropertyDetail extends React.Component {
                                     <Text style={styles.headingText}> Beds </Text>
                                     <Text style={styles.labelText}> {property.bed === null ? '0' + ' Bed(s)' : String(property.bed) + ' Bed(s)'} </Text>
                                     <Text style={styles.headingText}> Baths </Text>
-                                    <Text style={styles.labelText}> {property.bath === null ? '0' + ' Bed(s)' : String(property.bath) + ' Bath(s)'} </Text>
+                                    <Text style={styles.labelText}> {property.bath === null ? '0' + ' Bath(s)' : String(property.bath) + ' Bath(s)'} </Text>
                                     {
                                         parkingSpace ? <>
                                             <Text style={styles.headingText}> Parking </Text>

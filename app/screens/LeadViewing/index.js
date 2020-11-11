@@ -333,7 +333,9 @@ class LeadViewing extends React.Component {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
     if (property.diaries.length) {
-      if (property.diaries[0].status === 'completed') {
+      let diaries = property.diaries
+      let diary = _.find(diaries, (item) => user.id === item.userId)
+      if (diary.status === 'completed') {
         return (
           <TouchableOpacity
             style={{
@@ -350,7 +352,7 @@ class LeadViewing extends React.Component {
             </Text>
           </TouchableOpacity>
         )
-      } else if (property.diaries[0].status === 'pending') {
+      } else if (diary.status === 'pending') {
         return (
           <TouchableOpacity
             style={{
@@ -414,13 +416,16 @@ class LeadViewing extends React.Component {
   }
 
   doneViewing = (property) => {
+    const { user } = this.props
     if (property.diaries.length) {
-      if (property.diaries[0].status === 'pending') {
+      let diaries = property.diaries
+      let diary = _.find(diaries, (item) => user.id === item.userId)
+      if (diary.status === 'pending') {
         let body = {
           status: 'completed',
         }
         axios
-          .patch(`/api/diary/update?id=${property.diaries[0].id}`, body)
+          .patch(`/api/diary/update?id=${diary.id}`, body)
           .then((res) => {
             this.setState({ loading: true })
             this.fetchProperties()

@@ -83,7 +83,7 @@ class BookingDetailsModal extends React.Component {
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
-                  <Text style={styles.smallText}>Discounted Price</Text>
+                  <Text style={styles.smallText}>Discount Amount</Text>
                   <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.discounted_price)}</Text>
                 </View>
               </View>

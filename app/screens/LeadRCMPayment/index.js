@@ -938,6 +938,7 @@ class LeadRCMPayment extends React.Component {
                   {lead.shortlist_id !== null ? (
                     lead.purpose === 'sale' ? (
                       <BuyPaymentView
+                        currentProperty={allProperties}
                         lead={lead}
                         agreedAmount={agreedAmount}
                         showAgreedAmountArrow={showAgreedAmountArrow}
@@ -957,6 +958,8 @@ class LeadRCMPayment extends React.Component {
                       />
                     ) : (
                       <RentPaymentView
+                        user={user}
+                        currentProperty={allProperties}
                         lead={lead}
                         pickerData={pickerData}
                         handleForm={this.handleForm}

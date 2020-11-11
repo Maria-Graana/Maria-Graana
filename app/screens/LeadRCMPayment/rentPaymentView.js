@@ -9,6 +9,8 @@ import CommissionTile from '../../components/CommissionTile'
 import InputField from '../../components/InputField'
 import PickerComponent from '../../components/Picker'
 import styles from './styles'
+import { connect } from 'react-redux'
+import Ability from '../../hoc/Ability'
 
 const RentPaymentView = (props) => {
   const {
@@ -27,12 +29,40 @@ const RentPaymentView = (props) => {
     monthlyFormatStatus,
     onAddCommissionPayment,
     editTile,
+    user,
+    currentProperty,
   } = props
+  let property = currentProperty[0]
+  let subRole =
+    property &&
+    property.armsuser &&
+    property.armsuser.armsUserRole &&
+    property.armsuser.armsUserRole.subRole
+  // console.log('property: ', property)
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
     lead.status === StaticData.Constants.lead_closed_won
+  let buyerCommission =
+    lead.assigned_to_armsuser_id === user.id &&
+    (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
+      ? true
+      : false
+  let sellerCommission =
+    property.assigned_to_armsuser_id === user.id ||
+    (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
+    !Ability.canView(subRole, 'Leads')
+      ? true
+      : false
+  // console.log('property.assigned_to_armsuser_id: ', property.assigned_to_armsuser_id)
+  // console.log('lead.assigned_to_armsuser_id: ', lead.assigned_to_armsuser_id)
+  // console.log('property.origin: ', property.origin)
+  // console.log('user.id: ', user.id)
+  // console.log('Ability.canView(subRole: ', Ability.canView(subRole, 'Leads'))
+  // console.log('subRole: ', subRole)
   const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
   const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
+  // console.log('buyerCommission: ', buyerCommission)
+  // console.log('sellerCommission: ', sellerCommission)
   return (
     <View>
       <InputField
@@ -107,40 +137,57 @@ const RentPaymentView = (props) => {
         showDate={true}
         dateStatus={{ status: tokenDateStatus, name: 'token' }}
       />
+      <View>
+        {buyerCommission ? (
+          lead.commissions ? (
+            buyer ? (
+              <CommissionTile
+                data={buyer ? buyer : null}
+                editTile={editTile}
+                title={buyer ? 'Buyer Commission Payment' : ''}
+              />
+            ) : (
+              <TouchableOpacity
+                style={styles.addPaymentBtn}
+                onPress={() => onAddCommissionPayment('buyer')}
+              >
+                <Image
+                  style={styles.addPaymentBtnImg}
+                  source={require('../../../assets/img/roundPlus.png')}
+                ></Image>
+                <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
+              </TouchableOpacity>
+            )
+          ) : null
+        ) : null}
+      </View>
 
-{
-                    lead.commissions ?
-                        buyer ? <CommissionTile
-                            data={buyer ? buyer : null}
-                            editTile={editTile}
-                            title={buyer ? 'Buyer Commission Payment' : ''}
-                        />
-                            :
-                            <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment('buyer')}>
-                                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                                <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-                            </TouchableOpacity>
-                        : null
-                }
-
-                {
-                    lead.commissions ?
-                        seller ?
-                            <CommissionTile
-                                data={seller}
-                                editTile={editTile}
-                                title={'Seller Commission Payment'}
-                            />
-                            :
-                            <TouchableOpacity style={styles.addPaymentBtn} onPress={() => onAddCommissionPayment('seller')}>
-                                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                                <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
-                            </TouchableOpacity>
-                        : null
-                }
-        </View >
-    )
-
+      <View>
+        {sellerCommission ? (
+          lead.commissions ? (
+            sellerCommission ? (
+              <CommissionTile
+                data={seller}
+                editTile={editTile}
+                title={'Seller Commission Payment'}
+              />
+            ) : (
+              <TouchableOpacity
+                style={styles.addPaymentBtn}
+                onPress={() => onAddCommissionPayment('seller')}
+              >
+                <Image
+                  style={styles.addPaymentBtnImg}
+                  source={require('../../../assets/img/roundPlus.png')}
+                ></Image>
+                <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
+              </TouchableOpacity>
+            )
+          ) : null
+        ) : null}
+      </View>
+    </View>
+  )
 }
 
 export default RentPaymentView

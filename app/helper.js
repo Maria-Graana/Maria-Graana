@@ -547,13 +547,13 @@ const helper = {
     }
     start = Number(start)
     end = Number(end)
-    if (start === 0 && end === 0) {
+    if (start === 0 && end === 0 && unitType) {
       return `0 ${unitType}`
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
       return ''
     } else if (start === 0 && end && end !== maxValue) {
       return `Upto ${end} ${unitType}`
-    } else if (start === end) {
+    } else if (start === end && unitType) {
       return `${start} ${unitType}`
     } else if (start === '' && end && end !== '') {
       return `Upto ${end} ${unitType}`

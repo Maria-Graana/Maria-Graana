@@ -655,15 +655,21 @@ class PropertyRCMPayment extends React.Component {
           .then((response) => {
             if (response.data) {
               // check if some attachment exists so upload that as well to server with payment id.
-              if (rcmPayment.paymentAttachments.length > 0) {
-                rcmPayment.paymentAttachments.map((paymentAttachment) =>
-                  // payment attachments
-                  this.uploadAttachment(paymentAttachment, response.data.id)
-                )
-              } else {
+              if (response.data.message) {
+                helper.errorToast(response.data.message)
                 this.fetchLead()
                 this.clearReduxAndStateValues()
-                helper.successToast('Commission Payment Added')
+              } else {
+                if (rcmPayment.paymentAttachments.length > 0) {
+                  rcmPayment.paymentAttachments.map((paymentAttachment) =>
+                    // payment attachments
+                    this.uploadAttachment(paymentAttachment, response.data.id)
+                  )
+                } else {
+                  this.fetchLead()
+                  this.clearReduxAndStateValues()
+                  helper.successToast('Commission Payment Added')
+                }
               }
             }
           })

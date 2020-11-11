@@ -839,6 +839,7 @@ class PropertyRCMPayment extends React.Component {
                       goToPropertyComments={this.goToPropertyComments}
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
+                      screen={'payment'}
                     />
                   ) : (
                     <PropAgentTile
@@ -852,6 +853,7 @@ class PropertyRCMPayment extends React.Component {
                       goToPropertyComments={this.goToPropertyComments}
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
+                      screen={'payment'}
                     />
                   )}
                 </View>

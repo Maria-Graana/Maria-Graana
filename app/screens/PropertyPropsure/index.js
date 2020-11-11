@@ -472,6 +472,7 @@ class PropertyPropsure extends React.Component {
                       goToPropertyComments={this.goToPropertyComments}
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
+                      screen={'propsure'}
                     />
                   ) : (
                     <PropAgentTile
@@ -485,6 +486,7 @@ class PropertyPropsure extends React.Component {
                       goToPropertyComments={this.goToPropertyComments}
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
+                      screen={'propsure'}
                     />
                   )}
                   <View>

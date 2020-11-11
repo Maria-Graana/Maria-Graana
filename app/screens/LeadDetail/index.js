@@ -40,36 +40,54 @@ class LeadDetail extends React.Component {
     const { route } = this.props
     const { purposeTab } = route.params
     if (purposeTab === 'invest') {
-      this.fetchLead('/api/leads/project/byId')
-      this.setState({
-        type: 'Investment',
-      })
+      this.setState(
+        {
+          type: 'Investment',
+        },
+        () => {
+          this.fetchLead('/api/leads/project/byId')
+        }
+      )
     } else if (purposeTab === 'sale') {
-      this.fetchLead('api/leads/byId')
-      this.setState({
-        type: 'Buy',
-      })
+      this.setState(
+        {
+          type: 'Buy',
+        },
+        () => {
+          this.fetchLead('api/leads/byId')
+        }
+      )
     } else if (purposeTab === 'property') {
-      this.fetchLead('api/leads/byId')
-      this.setState({
-        type: 'Property',
-      })
+      this.setState(
+        {
+          type: 'Property',
+        },
+        () => {
+          this.fetchLead('api/leads/byId')
+        }
+      )
     } else {
-      this.fetchLead('api/leads/byId')
-      this.setState({
-        type: 'Rent',
-      })
+      this.setState(
+        {
+          type: 'Rent',
+        },
+        () => {
+          this.fetchLead('api/leads/byId')
+        }
+      )
     }
   }
 
   fetchLead = (url) => {
-    const { route } = this.props
+    const { route, user } = this.props
+    const { type } = this.state
     const { lead } = route.params
     const that = this
     axios
       .get(`${url}?id=${lead.id}`)
       .then((res) => {
         let responseData = res.data
+        let leadType = type
         if (!responseData.paidProject) {
           responseData.paidProject = responseData.project
         }
@@ -79,7 +97,15 @@ class LeadDetail extends React.Component {
           res.data.description && res.data.description !== ''
             ? res.data.description.replace(regex, '')
             : null
-        this.setState({ lead: res.data, loading: false, description: text }, () => {
+        console.log('res.data: ', res.data)
+        console.log('user.id: ', user.id)
+        let leadData = res.data
+        if (
+          leadData.added_by_armsuser_id !== user.id &&
+          leadData.assigned_to_armsuser_id !== user.id
+        )
+          leadType = 'Property'
+        this.setState({ lead: res.data, loading: false, description: text, type: leadType }, () => {
           that.checkCustomerName(res.data)
           that.checkAssignedLead(res.data)
         })

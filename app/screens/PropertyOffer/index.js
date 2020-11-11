@@ -357,7 +357,7 @@ class PropertyOffer extends React.Component {
   }
 
   navigateToDetails = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'property' })
   }
 
   goToHistory = () => {
@@ -436,6 +436,7 @@ class PropertyOffer extends React.Component {
             `/api/offer/agree?leadId=${lead.id}&offerId=${offerId}&shortlistedPropId=${currentProperty.id}`
           )
           .then((res) => {
+            if (res.data.msg) helper.errorToast(res.data.msg)
             this.openChatModal()
           })
           .catch((error) => {
@@ -509,6 +510,7 @@ class PropertyOffer extends React.Component {
                           goToPropertyComments={this.goToPropertyComments}
                           toggleMenu={this.toggleMenu}
                           menuShow={menuShow}
+                          screen={'offer'}
                         />
                       ) : (
                         <PropAgentTile
@@ -522,6 +524,7 @@ class PropertyOffer extends React.Component {
                           goToPropertyComments={this.goToPropertyComments}
                           toggleMenu={this.toggleMenu}
                           menuShow={menuShow}
+                          screen={'offer'}
                         />
                       )}
                       <View>{this.checkStatus(item.item)}</View>

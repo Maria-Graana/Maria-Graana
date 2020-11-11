@@ -434,6 +434,7 @@ class LeadOffer extends React.Component {
         axios
           .patch(`/api/offer/agree?leadId=${lead.id}&offerId=${offerId}`)
           .then((res) => {
+            if (res.data.msg) helper.errorToast(res.data.msg)
             this.openChatModal()
           })
           .catch((error) => {

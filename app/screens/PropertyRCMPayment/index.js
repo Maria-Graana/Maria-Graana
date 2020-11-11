@@ -461,7 +461,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   navigateToDetails = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'sale' })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'property' })
   }
 
   showAndHideStyling = (name, clear) => {
@@ -906,18 +906,16 @@ class PropertyRCMPayment extends React.Component {
               keyExtractor={(item, index) => item && item.id && item.id.toString()}
             />
           ) : (
-            <View style={{justifyContent:'center', 
-            alignItems:'center',
-            flex:1,
-            }}>
-                <Text
-                    style={{ 
-                    fontFamily: AppStyles.fonts.semiBoldFont, 
-                    fontSize: AppStyles.fontSize.medium, 
-                    color: AppStyles.colors.textColor }}
-                >
-                    NO PROPERTY IS SELECTED FOR PAYMENT YET
-                    </Text>
+            <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+              <Text
+                style={{
+                  fontFamily: AppStyles.fonts.semiBoldFont,
+                  fontSize: AppStyles.fontSize.medium,
+                  color: AppStyles.colors.textColor,
+                }}
+              >
+                NO PROPERTY IS SELECTED FOR PAYMENT YET
+              </Text>
             </View>
           )}
           <View style={AppStyles.mainCMBottomNav}>

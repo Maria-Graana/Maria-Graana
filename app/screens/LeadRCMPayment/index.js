@@ -955,6 +955,7 @@ class LeadRCMPayment extends React.Component {
                         agreeAmountFromat={agreeAmountFromat}
                         onAddCommissionPayment={(addedBy) => this.onAddCommissionPayment(addedBy)}
                         editTile={this.setCommissionEditData}
+                        user={user}
                       />
                     ) : (
                       <RentPaymentView
@@ -978,6 +979,7 @@ class LeadRCMPayment extends React.Component {
                         monthlyFormatStatus={monthlyFormatStatus}
                         onAddCommissionPayment={(addedBy) => this.onAddCommissionPayment(addedBy)}
                         editTile={this.setCommissionEditData}
+                        user={user}
                       />
                     )
                   ) : null}

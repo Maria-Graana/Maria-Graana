@@ -52,10 +52,35 @@ class PropAgentTile extends React.Component {
     helper.callNumber(newContact, contacts)
   }
 
+  checkDiaryStatus = (property) => {
+    const { user } = this.props
+    let othersCompleted = false
+    let ownCompleted = false
+    let ownDiary = false
+    if (property.diaries && property.diaries.length) {
+      let diaries = property.diaries
+      for (let i = 0; i < diaries.length; i++) {
+        if (Number(diaries[i].userId) === Number(user.id)) {
+          ownDiary = true
+        }
+        if (Number(diaries[i].userId) === Number(user.id) && diaries[i].status === 'completed') {
+          ownCompleted = true
+        }
+        if (Number(diaries[i].userId) !== Number(user.id) && diaries[i].status === 'completed') {
+          othersCompleted = true
+        }
+      }
+    }
+    if (othersCompleted && ownDiary && !ownCompleted) {
+      return true
+    } else return false
+  }
+
   render() {
     const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow } = this.props
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
+    let showDone = this.checkDiaryStatus(data)
     if (isMenuVisible) {
       if (data.diaries && data.diaries.length) {
         if (data.diaries[0].status === 'pending') show = true
@@ -111,6 +136,34 @@ class PropAgentTile extends React.Component {
           <View style={[styles.pad5, { marginRight: 5 }]}>
             <View style={{ flexDirection: 'row', height: 20 }}>
               <View style={{ flex: 1 }}></View>
+              {showDone ? (
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={20}
+                    />
+                  }
+                >
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        this.props.goToPropertyComments(data)
+                      }}
+                      title="Comments"
+                    />
+                    <Menu.Item
+                      onPress={() => {
+                        this.props.doneViewing(data)
+                      }}
+                      title="Viewing done"
+                    />
+                  </View>
+                </Menu>
+              ) : null}
               {show && screen === 'viewing' ? (
                 <Menu
                   visible={data.checkBox}

@@ -335,7 +335,7 @@ class PropertyViewing extends React.Component {
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
-      if (diary.status === 'completed') {
+      if (diary && diary.status === 'completed') {
         return (
           <TouchableOpacity
             style={{
@@ -352,7 +352,7 @@ class PropertyViewing extends React.Component {
             </Text>
           </TouchableOpacity>
         )
-      } else if (diary.status === 'pending') {
+      } else if (diary && diary.status === 'pending') {
         return (
           <TouchableOpacity
             style={{

@@ -97,8 +97,6 @@ class LeadDetail extends React.Component {
           res.data.description && res.data.description !== ''
             ? res.data.description.replace(regex, '')
             : null
-        console.log('res.data: ', res.data)
-        console.log('user.id: ', user.id)
         let leadData = res.data
         if (
           leadData.added_by_armsuser_id !== user.id &&
@@ -295,22 +293,17 @@ class LeadDetail extends React.Component {
   }
 
   render() {
-    const {
-      type,
-      lead,
-      customerName,
-      showAssignToButton,
-      loading,
-      editDes,
-      description,
-    } = this.state
+    let { type, lead, customerName, showAssignToButton, loading, editDes, description } = this.state
     const { user, route } = this.props
     const { purposeTab } = route.params
     let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
     const leadSource = this.checkLeadSource()
     const regex = /(<([^>]+)>)/gi
     let leadSize = this.leadSize(lead.size_unit)
-
+    if (type === 'Property') {
+      let purpose = lead.purpose === 'sale' ? 'Buy' : 'Rent'
+      type = purpose
+    }
     return !loading ? (
       <ScrollView
         showsVerticalScrollIndicator={false}

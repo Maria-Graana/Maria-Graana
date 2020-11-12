@@ -53,16 +53,8 @@ const RentPaymentView = (props) => {
     !Ability.canView(subRole, 'Leads')
       ? true
       : false
-  // console.log('property.assigned_to_armsuser_id: ', property.assigned_to_armsuser_id)
-  // console.log('lead.assigned_to_armsuser_id: ', lead.assigned_to_armsuser_id)
-  // console.log('property.origin: ', property.origin)
-  // console.log('user.id: ', user.id)
-  // console.log('Ability.canView(subRole: ', Ability.canView(subRole, 'Leads'))
-  // console.log('subRole: ', subRole)
   const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
   const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
-  // console.log('buyerCommission: ', buyerCommission)
-  // console.log('sellerCommission: ', sellerCommission)
   return (
     <View>
       <InputField

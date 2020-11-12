@@ -34,7 +34,7 @@ class BuyPaymentView extends React.Component {
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
     const buyer = lead.commissions.find(
-      (commission) => commission.addedBy && commission.addedBy === 'seller'
+      (commission) => commission.addedBy && commission.addedBy === 'buyer'
     )
     return (
       <View>

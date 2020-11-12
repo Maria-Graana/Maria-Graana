@@ -57,6 +57,8 @@ class BuyPaymentView extends React.Component {
         : false
     const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
     const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
+    // console.log(lead.commissions)
+    // console.log(sellerCommission)
 
     return (
       <View>
@@ -94,8 +96,8 @@ class BuyPaymentView extends React.Component {
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
         />
 
-        {lead.commissions ? (
-          buyerCommission ? (
+        {lead.commissions && buyerCommission ? (
+          buyer ? (
             <CommissionTile
               data={buyer}
               editTile={editTile}
@@ -115,8 +117,8 @@ class BuyPaymentView extends React.Component {
           )
         ) : null}
 
-        {lead.commissions ? (
-          sellerCommission ? (
+        {lead.commissions && sellerCommission ? (
+          seller ? (
             <CommissionTile data={seller} editTile={editTile} title={'Seller Commission Payment'} />
           ) : (
             <TouchableOpacity

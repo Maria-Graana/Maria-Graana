@@ -33,8 +33,9 @@ const RentPaymentView = (props) => {
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
     lead.status === StaticData.Constants.lead_closed_won
+    //console.log(commissions)
   const buyer = lead.commissions.find(
-    (commission) => commission.addedBy && commission.addedBy === 'seller'
+    (commission) => commission.addedBy && commission.addedBy === 'buyer'
   )
   return (
     <View>

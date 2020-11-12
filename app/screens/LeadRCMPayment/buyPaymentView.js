@@ -49,16 +49,21 @@ class BuyPaymentView extends React.Component {
       (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
         ? true
         : false
+       // console.log(lead.assigned_to_armsuser_id === user.id &&  property.origin && property.origin !== 'arms')
+       // console.log('userId', user.id)
     let sellerCommission =
       property.assigned_to_armsuser_id === user.id ||
       (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
       !Ability.canView(subRole, 'Leads')
         ? true
         : false
+        if(sellerCommission === true){
+          if(property.origin === null){
+            sellerCommission = false;
+          }
+        }
     const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
     const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
-    // console.log(lead.commissions)
-    // console.log(sellerCommission)
 
     return (
       <View>

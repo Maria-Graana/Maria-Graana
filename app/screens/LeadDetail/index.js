@@ -337,7 +337,7 @@ class LeadDetail extends React.Component {
               <Text style={styles.headingText}>Client Name </Text>
               <Text style={styles.labelText}>{customerName}</Text>
             </View>
-            {type !== 'Property' && (
+            {purposeTab !== 'property' && (
               <TouchableOpacity
                 onPress={() => this.goToClientsDetail()}
                 style={styles.roundButtonView}
@@ -517,7 +517,7 @@ class LeadDetail extends React.Component {
           <Text style={styles.headingText}>Additional Information </Text>
           <Text style={styles.labelText}>{lead.category ? lead.category : 'NA'} </Text>
         </View>
-        {showAssignToButton && type !== 'Property' && (
+        {showAssignToButton && purposeTab !== 'property' && (
           <View style={styles.assignButtonView}>
             <Button
               onPress={() => {

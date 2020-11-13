@@ -127,7 +127,7 @@ class PropMatchTile extends React.Component {
       } else show = false
     }
     phoneNumber = this.displayPhoneNumber(data)
-
+    if (showDone) show = false
     return (
       <TouchableOpacity
         style={{ flexDirection: 'row', marginVertical: 2 }}

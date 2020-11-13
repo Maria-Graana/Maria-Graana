@@ -87,6 +87,7 @@ class PropAgentTile extends React.Component {
         else show = false
       } else show = false
     }
+    if (showDone) show = false
     return (
       <TouchableOpacity
         style={{ flexDirection: 'row' }}

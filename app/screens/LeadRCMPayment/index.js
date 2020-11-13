@@ -231,12 +231,16 @@ class LeadRCMPayment extends React.Component {
 
   showLeadPaymentModal = () => {
     const { lead } = this.state
+   let commissionsLength = 2;
+   if(lead.paymentProperty && lead.paymentProperty.origin === null) {
+     commissionsLength = 1;
+   }
     let cleared = 0
     if (lead.commissions.length) {
       lead.commissions.map((item) => {
         if (item.status === 'cleared') cleared++
       })
-      if (cleared > 1) {
+      if (cleared === commissionsLength) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
           isVisible: true,

@@ -53,6 +53,11 @@ const RentPaymentView = (props) => {
     !Ability.canView(subRole, 'Leads')
       ? true
       : false
+      if(sellerCommission === true){
+        if(property.origin === null){
+          sellerCommission = false;
+        }
+      }
   const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
   const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
   return (

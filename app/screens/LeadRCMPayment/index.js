@@ -1,39 +1,37 @@
 /** @format */
 
+import axios from 'axios'
 import * as React from 'react'
-import styles from './styles'
 import {
-  View,
-  Text,
+  Alert,
   FlatList,
   Image,
-  TouchableOpacity,
   KeyboardAvoidingView,
+  Linking,
   Platform,
-  Alert,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import MatchTile from '../../components/MatchTile/index'
-import AgentTile from '../../components/AgentTile/index'
-import { Button } from 'native-base'
-import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons'
-import axios from 'axios'
-import Loader from '../../components/loader'
-import BuyPaymentView from './buyPaymentView'
-import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import _ from 'underscore'
-import StaticData from '../../StaticData'
-import helper from '../../helper'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
-import CMBottomNav from '../../components/CMBottomNav'
-import RentPaymentView from './rentPaymentView'
-import { ProgressBar } from 'react-native-paper'
-import HistoryModal from '../../components/HistoryModal/index'
+import AppStyles from '../../AppStyles'
 import AddCommissionModal from '../../components/AddCommissionModal'
-import { add } from 'react-native-reanimated'
+import AgentTile from '../../components/AgentTile/index'
+import CMBottomNav from '../../components/CMBottomNav'
+import HistoryModal from '../../components/HistoryModal/index'
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import Loader from '../../components/loader'
+import MatchTile from '../../components/MatchTile/index'
+import config from '../../config'
+import helper from '../../helper'
+import StaticData from '../../StaticData'
+import BuyPaymentView from './buyPaymentView'
+import RentPaymentView from './rentPaymentView'
+import styles from './styles'
 
 class LeadRCMPayment extends React.Component {
   constructor(props) {
@@ -201,8 +199,6 @@ class LeadRCMPayment extends React.Component {
 
   displayChecks = () => {}
 
-  addProperty = () => {}
-
   ownProperty = (property) => {
     const { user } = this.props
     const { organization } = this.state
@@ -231,10 +227,10 @@ class LeadRCMPayment extends React.Component {
 
   showLeadPaymentModal = () => {
     const { lead } = this.state
-   let commissionsLength = 2;
-   if(lead.paymentProperty && lead.paymentProperty.origin === null) {
-     commissionsLength = 1;
-   }
+    let commissionsLength = 2
+    if (lead.paymentProperty && lead.paymentProperty.origin === null) {
+      commissionsLength = 1
+    }
     let cleared = 0
     if (lead.commissions.length) {
       lead.commissions.map((item) => {
@@ -819,6 +815,34 @@ class LeadRCMPayment extends React.Component {
       } else return item
     })
     this.setState({ allProperties: newMatches })
+  }
+
+  addProperty = (data) => {
+    this.redirectProperty(data)
+  }
+
+  redirectProperty = (property) => {
+    if (property.origin === 'arms') {
+      if (this.ownProperty(property))
+        this.props.navigation.navigate('PropertyDetail', {
+          property: property,
+          update: true,
+          screen: 'LeadDetail',
+        })
+      else helper.warningToast(`You cannot view other agent's property details!`)
+    } else {
+      let url = `https://dev.graana.rocks/property/${property.graana_id}`
+      if (config.channel === 'staging')
+        url = `https://staging.graana.rocks/property/${property.graana_id}`
+      if (config.channel === 'production')
+        url = `https://www.graana.com/property/${property.graana_id}`
+      Linking.canOpenURL(url)
+        .then((supported) => {
+          if (!supported) helper.errorToast(`No application available open this Url`)
+          else return Linking.openURL(url)
+        })
+        .catch((err) => console.error('An error occurred', err))
+    }
   }
 
   render() {

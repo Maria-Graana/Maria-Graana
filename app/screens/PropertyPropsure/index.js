@@ -1,27 +1,25 @@
 /** @format */
 
-import * as React from 'react'
-import styles from './style'
-import { View, Text, FlatList, Image, TouchableOpacity, Alert } from 'react-native'
-import { connect } from 'react-redux'
-import * as DocumentPicker from 'expo-document-picker'
-import AppStyles from '../../AppStyles'
-import MatchTile from '../../components/MatchTile/index'
-import AgentTile from '../../components/AgentTile/index'
 import axios from 'axios'
-import Loader from '../../components/loader'
-import PropsureReportsPopup from '../../components/PropsureReportsPopup/index'
-import PropsureDocumentPopup from '../../components/PropsureDocumentPopup/index'
-import _ from 'underscore'
-import StaticData from '../../StaticData'
-import helper from '../../helper'
+import * as DocumentPicker from 'expo-document-picker'
+import * as React from 'react'
+import { Alert, FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
+import { connect } from 'react-redux'
+import _ from 'underscore'
 import { setlead } from '../../actions/lead'
+import AppStyles from '../../AppStyles'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import HistoryModal from '../../components/HistoryModal/index'
+import Loader from '../../components/loader'
+import PropAgentTile from '../../components/PropAgentTile'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
 import PropMatchTile from '../../components/PropMatchTile'
-import PropAgentTile from '../../components/PropAgentTile'
+import PropsureDocumentPopup from '../../components/PropsureDocumentPopup/index'
+import PropsureReportsPopup from '../../components/PropsureReportsPopup/index'
+import config from '../../config'
+import helper from '../../helper'
+import StaticData from '../../StaticData'
+import styles from './style'
 
 class PropertyPropsure extends React.Component {
   constructor(props) {
@@ -105,8 +103,6 @@ class PropertyPropsure extends React.Component {
   }
 
   displayChecks = () => {}
-
-  addProperty = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -396,6 +392,34 @@ class PropertyPropsure extends React.Component {
       reports.push(report)
     }
     this.setState({ selectedReports: reports })
+  }
+
+  addProperty = (data) => {
+    this.redirectProperty(data)
+  }
+
+  redirectProperty = (property) => {
+    if (property.origin === 'arms') {
+      if (this.ownProperty(property))
+        this.props.navigation.navigate('PropertyDetail', {
+          property: property,
+          update: true,
+          screen: 'LeadDetail',
+        })
+      else helper.warningToast(`You cannot view other agent's property details!`)
+    } else {
+      let url = `https://dev.graana.rocks/property/${property.graana_id}`
+      if (config.channel === 'staging')
+        url = `https://staging.graana.rocks/property/${property.graana_id}`
+      if (config.channel === 'production')
+        url = `https://www.graana.com/property/${property.graana_id}`
+      Linking.canOpenURL(url)
+        .then((supported) => {
+          if (!supported) helper.errorToast(`No application available open this Url`)
+          else return Linking.openURL(url)
+        })
+        .catch((err) => console.error('An error occurred', err))
+    }
   }
 
   render() {

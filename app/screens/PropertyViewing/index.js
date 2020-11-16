@@ -3,19 +3,19 @@
 import axios from 'axios'
 import moment from 'moment'
 import * as React from 'react'
-import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import { setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import AddViewing from '../../components/AddViewing/index'
-import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
 import PropAgentTile from '../../components/PropAgentTile/index'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
 import PropMatchTile from '../../components/PropMatchTile/index'
+import config from '../../config'
 import helper from '../../helper'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
@@ -103,8 +103,6 @@ class PropertyViewing extends React.Component {
   }
 
   displayChecks = () => {}
-
-  addProperty = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -507,6 +505,34 @@ class PropertyViewing extends React.Component {
       } else return item
     })
     this.setState({ matchData: newMatches })
+  }
+
+  addProperty = (data) => {
+    this.redirectProperty(data)
+  }
+
+  redirectProperty = (property) => {
+    if (property.origin === 'arms') {
+      if (this.ownProperty(property))
+        this.props.navigation.navigate('PropertyDetail', {
+          property: property,
+          update: true,
+          screen: 'LeadDetail',
+        })
+      else helper.warningToast(`You cannot view other agent's property details!`)
+    } else {
+      let url = `https://dev.graana.rocks/property/${property.graana_id}`
+      if (config.channel === 'staging')
+        url = `https://staging.graana.rocks/property/${property.graana_id}`
+      if (config.channel === 'production')
+        url = `https://www.graana.com/property/${property.graana_id}`
+      Linking.canOpenURL(url)
+        .then((supported) => {
+          if (!supported) helper.errorToast(`No application available open this Url`)
+          else return Linking.openURL(url)
+        })
+        .catch((err) => console.error('An error occurred', err))
+    }
   }
 
   render() {

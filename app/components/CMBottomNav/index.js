@@ -99,7 +99,8 @@ class CMBottomNav extends React.Component {
 			closeLead,
 			alreadyClosedLead,
 			callButton,
-			goToHistory
+			goToHistory,
+			closeLeadFor
 		} = this.props
 		const { visible } = this.state
 
@@ -128,7 +129,7 @@ class CMBottomNav extends React.Component {
 					<Image style={styles.bottomNavImg} source={require('../../../assets/img/roundPlus.png')} />
 					<Text style={styles.bottomNavBtnText}>Add Task</Text>
 				</TouchableOpacity>
-				<TouchableOpacity style={styles.bottomNavBtn} onPress={() => { closedLeadEdit == true ? closeLead() : alreadyClosedLead() }}>
+				<TouchableOpacity style={styles.bottomNavBtn} onPress={() => { closedLeadEdit == true ? closeLead(closeLeadFor) : alreadyClosedLead() }}>
 					<Image style={styles.bottomNavImg} source={require('../../../assets/img/roundCheck.png')} />
 					<Text style={styles.bottomNavBtnText}>Close</Text>
 				</TouchableOpacity>
@@ -141,10 +142,6 @@ class CMBottomNav extends React.Component {
 				}
 				{
 					callButton === true &&
-					// <TouchableOpacity style={[styles.bottomNavBtn, styles.forMenuIcon]} onPress={() => goToAttachments()}>
-					//   <Image style={styles.bottomNavImg} source={require('../../../assets/img/menuIcon.png')} />
-					//   <Text style={[styles.bottomNavBtnText, styles.colorWhite]}>Menu</Text>
-					// </TouchableOpacity>
 					<View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>
 						<Menu
 							visible={visible}

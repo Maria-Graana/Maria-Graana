@@ -148,7 +148,7 @@ class Payments extends Component {
 			})
 	}
 
-	fetchLead = () => {
+	fetchLead = (functionCallingFor) => {
 		const { lead } = this.props
 		const { cmProgressBar } = StaticData
 		this.setState({ paymentPreviewLoading: true, })
@@ -164,6 +164,10 @@ class Payments extends Component {
 					progressValue: cmProgressBar[res.data.status] || 0,
 					paymentPreviewLoading: false,
 					secondScreenData: res.data,
+				},() => {
+					if(functionCallingFor === 'leadClose'){
+						this.formSubmit()
+					}
 				})
 			})
 			.catch((error) => {
@@ -1204,7 +1208,8 @@ class Payments extends Component {
 						goToComments={this.goToComments}
 						closedLeadEdit={checkLeadClosedOrNot}
 						alreadyClosedLead={this.closedLead}
-						closeLead={this.formSubmit}
+						closeLead={this.fetchLead}
+						closeLeadFor={'leadClose'}
 					/>
 				</View>
 			</View>

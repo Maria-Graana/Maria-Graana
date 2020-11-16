@@ -27,6 +27,7 @@ class UnitDetailsModal extends React.Component {
     var optionalArray = data && data.optional_fields != null && data.optional_fields
     var optional = []
     optional = data && data != '' && JSON.parse([optionalArray])
+
     return (
       <Modal isVisible={active}>
         {
@@ -44,29 +45,33 @@ class UnitDetailsModal extends React.Component {
               </View>
               {/* ===================== */}
               {
-                optional && optional[0] &&
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Custom Field 1</Text>
-                    <Text style={styles.largeText}>
-                      {optional[0].data}
-                    </Text>
-                  </View>
-                </View>
+                optional && optional.length && optional.map((item, index) => {
+                  return (
+                    <View style={styles.MainTileView}>
+                      <View>
+                        <Text style={styles.smallText}>{item.fieldName}</Text>
+                        <Text style={styles.largeText}>
+                          {item.data}
+                        </Text>
+                      </View>
+                    </View>
+                  )
+                })
+
               }
 
               {/* ===================== */}
-              {
+              {/* {
                 optional && optional[1] &&
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Custom Field 2</Text>
+                    <Text style={styles.smallText}>{optional[1].fieldName}</Text>
                     <Text style={styles.largeText}>
                       {optional[1].data}
                     </Text>
                   </View>
                 </View>
-              }
+              } */}
 
               {/* ===================== */}
               {
@@ -127,7 +132,7 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount) + `${data.discount > 0 || formData.discount > 1 ? '%' : `${data.discount <= 0 ? '': ''}`}`}</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.discount) + `${data.discount > 0 || formData.discount > 1 ? '%' : `${data.discount <= 0 ? '' : ''}`}`}</Text>
                   </View>
                 </View>
               }

@@ -165,8 +165,6 @@ class Payments extends Component {
 					paymentPreviewLoading: false,
 					secondScreenData: res.data,
 				},() => {
-					console.log(functionCallingFor)
-
 					if(functionCallingFor === 'leadClose'){
 						this.formSubmit()
 					}

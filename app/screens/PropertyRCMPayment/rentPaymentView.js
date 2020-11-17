@@ -29,14 +29,34 @@ const RentPaymentView = (props) => {
     monthlyFormatStatus,
     onAddCommissionPayment,
     editTile,
+    currentProperty,
+    user,
   } = props
-  const isLeadClosed =
-    lead.status === StaticData.Constants.lead_closed_lost ||
-    lead.status === StaticData.Constants.lead_closed_won
-  //console.log(commissions)
-  const buyer = lead.commissions.find(
-    (commission) => commission.addedBy && commission.addedBy === 'seller'
-  )
+  let property = currentProperty[0]
+  let subRole =
+    property &&
+    property.armsuser &&
+    property.armsuser.armsUserRole &&
+    property.armsuser.armsUserRole.subRole
+let buyerCommission =
+  lead.assigned_to_armsuser_id === user.id &&
+    (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
+    ? true
+    : false
+let sellerCommission =
+  property.assigned_to_armsuser_id === user.id ||
+    (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
+    !Ability.canView(subRole, 'Leads')
+    ? true
+    : false
+if (sellerCommission === true) {
+  if (property.origin === null) {
+    sellerCommission = false;
+  }
+}
+const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
+const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
+
   return (
     <View>
       <InputField
@@ -63,7 +83,7 @@ const RentPaymentView = (props) => {
             name={'contract_months'}
             data={pickerData}
             selectedItem={formData.contract_months}
-            enabled={!isLeadClosed}
+            enabled={false}
             placeholder="Contact duration (No of months)"
           />
         </View>
@@ -77,7 +97,7 @@ const RentPaymentView = (props) => {
             name={'advance'}
             data={pickerData}
             selectedItem={formData.advance}
-            enabled={!isLeadClosed}
+            enabled={false}
             placeholder="Advance (No of months)"
           />
         </View>
@@ -91,7 +111,7 @@ const RentPaymentView = (props) => {
             name={'security'}
             data={pickerData}
             selectedItem={formData.security}
-            enabled={!isLeadClosed}
+            enabled={false}
             placeholder="Security (No of months)"
           />
         </View>
@@ -114,23 +134,56 @@ const RentPaymentView = (props) => {
         showDate={true}
         dateStatus={{ status: tokenDateStatus, name: 'token' }}
       />
+{lead.commissions ? (
+          buyer ? (
+            <CommissionTile
+              data={buyer}
+              editTile={editTile}
+              commissionEdit={!buyerCommission}
+              title={buyer ? 'Buyer Commission Payment' : ''}
+            />
+          ) : (
+              <View>
+                {buyerCommission ? (
+                  <TouchableOpacity
+                    style={styles.addPaymentBtn}
+                    onPress={() => onAddCommissionPayment('buyer')}
+                  >
+                    <Image
+                      style={styles.addPaymentBtnImg}
+                      source={require('../../../assets/img/roundPlus.png')}
+                    ></Image>
+                    <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            )
+        ) : null}
 
-      {lead.commissions ? (
-        buyer ? (
-          <CommissionTile data={buyer} editTile={editTile} title={'Commission Payment'} />
-        ) : (
-          <TouchableOpacity
-            style={styles.addPaymentBtn}
-            onPress={() => onAddCommissionPayment(true)}
-          >
-            <Image
-              style={styles.addPaymentBtnImg}
-              source={require('../../../assets/img/roundPlus.png')}
-            ></Image>
-            <Text style={styles.addPaymentBtnText}>ADD COMMISSION PAYMENT</Text>
-          </TouchableOpacity>
-        )
-      ) : null}
+        {lead.commissions ? (
+          seller ? (
+            <CommissionTile data={seller}
+             commissionEdit={!sellerCommission}
+             editTile={editTile} 
+             title={'Seller Commission Payment'} />
+          ) : (
+            <View>
+              {sellerCommission ? (
+                <TouchableOpacity
+                  style={styles.addPaymentBtn}
+                  onPress={() => onAddCommissionPayment('seller')}
+                >
+                  <Image
+                    style={styles.addPaymentBtnImg}
+                    source={require('../../../assets/img/roundPlus.png')}
+                  ></Image>
+                  <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          )
+        ) : null}
+     
     </View>
   )
 }

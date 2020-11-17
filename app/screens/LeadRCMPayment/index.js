@@ -299,7 +299,7 @@ class LeadRCMPayment extends React.Component {
     const { user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
     if (leadAssignedSharedStatus) {
-      if (lead.commissions) {
+      if (lead.commissions && lead.commissions.length > 0) {
         helper.errorToast('Payment already added, cannot select another property')
         return
       }

@@ -21,6 +21,7 @@ import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './styles'
+import * as FileSystem from 'expo-file-system'
 
 class LeadPropsure extends React.Component {
   constructor(props) {
@@ -56,11 +57,39 @@ class LeadPropsure extends React.Component {
       this.fetchLead()
       this.getCallHistory()
       this.fetchProperties()
+      this.downloadFile()
     })
   }
 
   componentWillUnmount() {
     this._unsubscribe()
+  }
+
+  callback = (downloadProgress) => {
+    const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite
+    console.log('progress: ', progress)
+  }
+
+  downloadFile = async () => {
+    // console.log(FileSystem.documentDirectory)
+    FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'app_docs/', {
+      intermediates: true,
+    })
+    const filePath = `${FileSystem.documentDirectory}app_docs/small.mp4`
+    console.log('filePath: ', filePath)
+    FileSystem.downloadAsync('http://techslides.com/demos/sample-videos/small.mp4', filePath)
+      .then(({ uri }) => {
+        console.log('Finished downloading to ', uri)
+        FileSystem.readDirectoryAsync(FileSystem.documentDirectory).then((info) => {
+          console.log('info: ', info)
+        })
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
   fetchProperties = () => {

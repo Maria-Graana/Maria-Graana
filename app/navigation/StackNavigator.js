@@ -37,6 +37,7 @@ import Targets from '../screens/Targets'
 import TeamDiary from '../screens/TeamDiary'
 import TeamTargets from '../screens/TeamTargets'
 import CMLeadTabs from './CMTabNavigator'
+import InventoryTabs from './InventoryTabNavigators'
 import Lead from './LeadsNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
 import PropertyTabs from './PropertyTabNavigator'
@@ -221,6 +222,17 @@ function MainStack() {
         options={({ navigation, route }) => ({
           title: 'LEAD WORKFLOW',
           headerTitle: (props) => <HeaderTitle {...props} />,
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="InventoryTabs"
+        component={InventoryTabs}
+        options={({ navigation, route }) => ({
+          title: 'INVENTORIES',
+          // headerTitle: (props) => <HeaderTitle {...props} />,
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',

@@ -73,8 +73,8 @@ class LeadPropsure extends React.Component {
   }
 
   downloadFile() {
-    const uri = "https://res.cloudinary.com/graanacom/image/upload/v1605607039/arms/bdf5175ddee0a9d77ece516c6248002b_ednzpc.jpg"
-    let fileUri = FileSystem.documentDirectory + "bdf5175ddee0a9d77ece516c6248002b_ednzpc.jpg"
+    const uri = "http://www.africau.edu/images/default/sample.pdf"
+    let fileUri = FileSystem.documentDirectory + "sample.pdf"
     FileSystem.downloadAsync(uri, fileUri)
     .then(({ uri }) => {
       this.saveFile(uri)
@@ -88,7 +88,7 @@ class LeadPropsure extends React.Component {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     if (status === "granted") {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
-      await MediaLibrary.createAlbumAsync("Downloads", asset, false)
+      await MediaLibrary.createAlbumAsync("Download", asset, false)
     }
   }
 

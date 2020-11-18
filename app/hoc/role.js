@@ -51,6 +51,24 @@ const role = {
       { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
+  InventoryTabs: {
+    roles: [
+      {
+        role: 'group_management',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      { role: 'group_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'country_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'zonal_manager', access: { v: true, a: true, e: true, d: true } },
+      {
+        role: 'branch_manager',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
+    ],
+  },
   TeamDiary: {
     roles: [
       {

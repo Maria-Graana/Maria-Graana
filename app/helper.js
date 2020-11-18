@@ -229,7 +229,7 @@ const helper = {
           return TeamDiaryImg
         case 'Leads':
           return LeadsImg
-        case 'Inventory':
+        case 'InventoryTabs':
           return InventoryImg
         case 'Client':
           return ClientsImg

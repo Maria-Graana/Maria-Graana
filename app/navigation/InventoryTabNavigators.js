@@ -6,6 +6,7 @@ import { Dimensions } from 'react-native'
 import AppStyles from '../AppStyles'
 import Armsinventory from '../screens/ArmsInventories'
 import GraanaInventories from '../screens/GraanaInventories'
+import FieldsInventories from '../screens/FieldsInventories'
 const { width } = Dimensions.get('window')
 
 const Tab = createMaterialTopTabNavigator()
@@ -27,7 +28,7 @@ export default function InventoryTabNavigators() {
       }}
     >
       <Tab.Screen name="ARMS" component={Armsinventory} />
-      <Tab.Screen name="Fields" component={GraanaInventories} />
+      <Tab.Screen name="Fields" component={FieldsInventories} />
       <Tab.Screen name="Graana" component={GraanaInventories} />
     </Tab.Navigator>
   )

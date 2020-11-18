@@ -60,7 +60,6 @@ class FieldsInventories extends React.Component {
 
 	getPropertyGraanaListing = () => {
 		const { propertiesList, page, pageSize } = this.state;
-		console.log('Fields')
 		const url = `/api/inventory/all?propType=fields`
 		axios.get(url).then((response) => {
 			if (response.status == 200) {

@@ -21,7 +21,9 @@ import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './styles'
+import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
+import * as Permissions from 'expo-permissions'
 
 class LeadPropsure extends React.Component {
   constructor(props) {
@@ -70,26 +72,24 @@ class LeadPropsure extends React.Component {
     console.log('progress: ', progress)
   }
 
-  downloadFile = async () => {
-    // console.log(FileSystem.documentDirectory)
-    FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'app_docs/', {
-      intermediates: true,
+  downloadFile() {
+    const uri = "https://res.cloudinary.com/graanacom/image/upload/v1605607039/arms/bdf5175ddee0a9d77ece516c6248002b_ednzpc.jpg"
+    let fileUri = FileSystem.documentDirectory + "bdf5175ddee0a9d77ece516c6248002b_ednzpc.jpg"
+    FileSystem.downloadAsync(uri, fileUri)
+    .then(({ uri }) => {
+      this.saveFile(uri)
     })
-    const filePath = `${FileSystem.documentDirectory}app_docs/small.mp4`
-    console.log('filePath: ', filePath)
-    FileSystem.downloadAsync('http://techslides.com/demos/sample-videos/small.mp4', filePath)
-      .then(({ uri }) => {
-        console.log('Finished downloading to ', uri)
-        FileSystem.readDirectoryAsync(FileSystem.documentDirectory).then((info) => {
-          console.log('info: ', info)
-        })
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+    .catch(error => {
+      console.error(error);
+    })
+  }
+
+  saveFile = async (fileUri) => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (status === "granted") {
+      const asset = await MediaLibrary.createAssetAsync(fileUri)
+      await MediaLibrary.createAlbumAsync("Downloads", asset, false)
+    }
   }
 
   fetchProperties = () => {

@@ -147,7 +147,6 @@ class Inventory extends React.Component {
 		return (
 			!loading ?
 				<View style={[AppStyles.container, { marginBottom: 25 }]}>
-					<Text>Hello</Text>
 
 					{
 						Ability.canAdd(user.subRole, route.params.screen) ?

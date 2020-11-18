@@ -28,7 +28,7 @@ export default function InventoryTabNavigators() {
       }}
     >
       <Tab.Screen name="ARMS" component={Armsinventory} />
-      <Tab.Screen name="Fields" component={FieldsInventories} />
+      <Tab.Screen name="Field" component={FieldsInventories} />
       <Tab.Screen name="Graana" component={GraanaInventories} />
     </Tab.Navigator>
   )

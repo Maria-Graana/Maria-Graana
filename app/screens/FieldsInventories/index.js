@@ -174,6 +174,7 @@ class FieldsInventories extends React.Component {
 								renderItem={({ item }) => (
 									<PropertyTile
 										data={item}
+										checkForArmsProperty={false}
 										onPress={(data) => this.onHandlePress(data)}
 										onLongPress={(id) => this.onHandleLongPress(id)}
 										onCall={this.onHandleOnCall}

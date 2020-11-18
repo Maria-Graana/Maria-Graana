@@ -40,12 +40,12 @@ class InventoryTile extends React.Component {
   }
 
   render() {
-    const { data, onCall } = this.props;
+    const { data, onCall, checkForArmsProperty } = this.props;
     const imagesList = data.armsPropertyImages;
     const ownerName = this.checkCustomerName(data);
 
     return (
-      <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => this.onLongPress(data.id)} activeOpacity={0.7}>
+      <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => checkForArmsProperty === true && this.onLongPress(data.id)} activeOpacity={0.7}>
         <View>
           {
             imagesList && imagesList.length ?

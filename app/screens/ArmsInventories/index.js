@@ -174,6 +174,7 @@ class ArmsInventories extends React.Component {
 								renderItem={({ item }) => (
 									<PropertyTile
 										data={item}
+										checkForArmsProperty={true}
 										onPress={(data) => this.onHandlePress(data)}
 										onLongPress={(id) => this.onHandleLongPress(id)}
 										onCall={this.onHandleOnCall}

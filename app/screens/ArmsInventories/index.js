@@ -145,12 +145,11 @@ class ArmsInventories extends React.Component {
 	render() {
 		const { propertiesList, loading, totalProperties, onEndReachedLoader } = this.state;
 		const { user, route } = this.props;
-		console.log('user===============',route)
 		return (
 			!loading ?
 				<View style={[AppStyles.container, { marginBottom: 25 }]}>
 
-					{/* {
+					{
 						Ability.canAdd(user.subRole, route.params.screen) ?
 							<Fab
 								active='true'
@@ -162,7 +161,7 @@ class ArmsInventories extends React.Component {
 								<Ionicons name="md-add" color="#ffffff" />
 							</Fab> :
 							null
-					} */}
+					}
 
 
 					{/* ***** Main Tile Wrap */}

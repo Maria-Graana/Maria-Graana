@@ -79,14 +79,20 @@ class Landing extends React.Component {
 	// ****** Navigate Function
 	navigateFunction = (name, screenName) => {
 		const { navigation } = this.props
-		console.log(screenName)
-		navigation.navigate(name, { screen: screenName })
+		if (screenName === 'InventoryTabs') {
+			navigation.navigate('InventoryTabs', {
+				screen: 'ARMS',
+				params: { screen: screenName },
+			})
+		} else {
+			navigation.navigate(name, { screen: screenName })
+		}
 	}
 
 	render() {
 		const { tiles } = this.state
 		const { user, navigation } = this.props
-		
+
 		return (
 			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor, paddingHorizontal: wp('0%'), paddingLeft: 0 }]}>
 				<AndroidNotifications navigation={navigation} />

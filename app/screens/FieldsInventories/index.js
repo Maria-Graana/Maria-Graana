@@ -15,14 +15,15 @@ import React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import helper from '../../helper';
-import styles from './style'
+// import styles from './style'
 import { ActivityIndicator } from 'react-native-paper';
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
+import { Fields } from 'expo-contacts';
 
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
 
-class ArmsInventories extends React.Component {
+class FieldsInventories extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -40,7 +41,7 @@ class ArmsInventories extends React.Component {
 	componentDidMount() {
 		const { navigation } = this.props;
 		this._unsubscribe = navigation.addListener('focus', () => {
-			this.getPropertyArmsListing();
+			this.getPropertyGraanaListing();
 		});
 	}
 
@@ -57,11 +58,10 @@ class ArmsInventories extends React.Component {
 		})
 	}
 
-	getPropertyArmsListing = () => {
+	getPropertyGraanaListing = () => {
 		const { propertiesList, page, pageSize } = this.state;
-		const url = `/api/inventory/all?propType=arms`
+		const url = `/api/inventory/all?propType=fields`
 		axios.get(url).then((response) => {
-			
 			if (response.status == 200) {
 				this.setState({
 					propertiesList: page === 1 ? response.data.rows : [...propertiesList, ...response.data.rows],
@@ -88,7 +88,7 @@ class ArmsInventories extends React.Component {
 			if (response.status === 200) {
 				helper.successToast('PROPERTY DELETED SUCCESSFULLY!')
 				that.setState({ loading: true }, () => {
-					that.getPropertyArmsListing();
+					that.getPropertyGraanaListing();
 				})
 			}
 
@@ -149,7 +149,7 @@ class ArmsInventories extends React.Component {
 			!loading ?
 				<View style={[AppStyles.container, { marginBottom: 25 }]}>
 
-					{
+					{/* {
 						Ability.canAdd(user.subRole, route.params.screen) ?
 							<Fab
 								active='true'
@@ -161,7 +161,7 @@ class ArmsInventories extends React.Component {
 								<Ionicons name="md-add" color="#ffffff" />
 							</Fab> :
 							null
-					}
+					} */}
 
 
 					{/* ***** Main Tile Wrap */}
@@ -174,7 +174,7 @@ class ArmsInventories extends React.Component {
 								renderItem={({ item }) => (
 									<PropertyTile
 										data={item}
-										checkForArmsProperty={true}
+										checkForArmsProperty={false}
 										onPress={(data) => this.onHandlePress(data)}
 										onLongPress={(id) => this.onHandleLongPress(id)}
 										onCall={this.onHandleOnCall}
@@ -186,7 +186,7 @@ class ArmsInventories extends React.Component {
 											page: this.state.page + 1,
 											onEndReachedLoader: true
 										}, () => {
-											this.getPropertyArmsListing();
+											this.getPropertyGraanaListing();
 										});
 									}
 								}}
@@ -214,4 +214,4 @@ mapStateToProps = (store) => {
 	}
 }
 
-export default connect(mapStateToProps)(ArmsInventories)
+export default connect(mapStateToProps)(FieldsInventories)

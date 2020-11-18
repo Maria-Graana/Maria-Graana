@@ -55,10 +55,10 @@ class PropertyDetail extends React.Component {
   }
 
   checkUserName = (property) => {
-    if (property.customer) {
+    if (property && property.customer) {
       if (property.customer.first_name && property.customer.last_name) {
         return property.customer.first_name + ' ' + property.customer.last_name
-      } else if (property.customer.first_name) {
+      } else if (property && property.customer.first_name) {
         return property.customer.first_name
       }
     } else {
@@ -67,7 +67,9 @@ class PropertyDetail extends React.Component {
   }
 
   render() {
-    const { loading, property } = this.state
+    const { loading } = this.state
+    const { route, navigation } = this.props
+    const { property } = route.params
     let type = ''
     let subtype = ''
     let areaName = ''
@@ -102,16 +104,16 @@ class PropertyDetail extends React.Component {
       sizeUnit =
         property && property.size_unit.charAt(0).toUpperCase() + property.size_unit.slice(1)
       purpose = property && property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1)
-      demandPrice = property.price
+      demandPrice = property && property.price
       description = property && property.description
-      grade = property.grade === null || property.grade === '' ? '' : property.grade
-      lattitude = property.lat === null ? '' : property.lat + '/'
-      longitude = property.lng === null ? '' : property.lng
+      grade = property && property.grade && property.grade === null || property && property.grade === '' ? '' : property && property.grade
+      lattitude = property && property.lat === null ? '' : property && property.lat + '/'
+      longitude = property && property.lng === null ? '' : property && property.lng
       ownerName = this.checkUserName(property)
-      ownerPhoneNumber = property.customer && property.customer.phone.trim()
-      address = property.customer && property.customer.address && property.customer.address
+      ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
+      address = property && property.customer && property.customer.address && property.customer.address
       images = property && property.armsPropertyImages
-      parsedFeatures = JSON.parse(property.features)
+      parsedFeatures = JSON.parse(property && property.features)
       amentities = _.isEmpty(parsedFeatures) ? [] : _.keys(parsedFeatures)
       if (amentities.length) {
         amentities = _.map(amentities, (amentity) =>
@@ -167,9 +169,9 @@ class PropertyDetail extends React.Component {
               </>
             ) : null}
 
-            {images.length ? <Text style={styles.headingText}> Images </Text> : null}
+            {images && images.length ? <Text style={styles.headingText}> Images </Text> : null}
             <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
-              {images.length
+              {images && images.length
                 ? images.map((item, index) => {
                     return (
                       <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
@@ -260,7 +262,7 @@ class PropertyDetail extends React.Component {
             ) : null}
             <View>
               <Text style={styles.headingText}> ID </Text>
-              <Text style={styles.labelText}> {property.id}</Text>
+              <Text style={styles.labelText}> {property && property.id}</Text>
             </View>
             {amentities && amentities.length ? (
               <>

@@ -285,7 +285,8 @@ class AddInventory extends Component {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
+                        // navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
+                        navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
                     }
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')
@@ -308,7 +309,11 @@ class AddInventory extends Component {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
+                        // navigation.navigate('InventoryTabs', {
+                        //     screen: 'ARMS',
+                        //     params: { screen: screenName },
+                        // })
+                        navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
                     }
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')

@@ -11,6 +11,7 @@ import { formatPrice } from '../../PriceFormate'
 import InputField from '../../components/InputField'
 import CommissionTile from '../../components/CommissionTile'
 import { connect } from 'react-redux'
+import _ from 'underscore';
 
 const RentPaymentView = (props) => {
   const {

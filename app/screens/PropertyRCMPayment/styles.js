@@ -100,7 +100,7 @@ export default styles = StyleSheet.create({
   },
   addPaymentBtnText: {
     color: '#006ff1',
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
     letterSpacing: 2,
   },

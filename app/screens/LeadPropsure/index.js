@@ -21,6 +21,9 @@ import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './styles'
+import * as MediaLibrary from 'expo-media-library'
+import * as FileSystem from 'expo-file-system'
+import * as Permissions from 'expo-permissions'
 
 class LeadPropsure extends React.Component {
   constructor(props) {
@@ -61,6 +64,34 @@ class LeadPropsure extends React.Component {
 
   componentWillUnmount() {
     this._unsubscribe()
+  }
+
+  callback = (downloadProgress) => {
+    const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite
+    console.log('progress: ', progress)
+  }
+
+  downloadFile = async (data) => {
+    if (data.propsureDocs && data.propsureDocs.length) {
+      let doc = data.propsureDocs[0]
+      const uri = doc.document
+      let fileUri = FileSystem.documentDirectory + doc.fileName
+      FileSystem.downloadAsync(uri, fileUri)
+        .then(({ uri }) => {
+          this.saveFile(uri)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
+  }
+
+  saveFile = async (fileUri) => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    if (status === 'granted') {
+      const asset = await MediaLibrary.createAssetAsync(fileUri)
+      await MediaLibrary.createAlbumAsync('Download', asset, false)
+    }
   }
 
   fetchProperties = () => {
@@ -515,6 +546,7 @@ class LeadPropsure extends React.Component {
           uploadReport={(report, propsureId) => this.uploadAttachment(report, propsureId)}
           closeModal={() => this.closeDocumentModal()}
           onPress={() => this.closeDocumentModal()}
+          downloadFile={this.downloadFile}
           getAttachmentFromStorage={this.getAttachmentFromStorage}
         />
         <View style={{ paddingBottom: 100 }}>

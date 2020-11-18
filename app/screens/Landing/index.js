@@ -21,7 +21,7 @@ class Landing extends React.Component {
 		super(props)
 		this.state = {
 			tiles: [],
-			tileNames: ['Dashboard', 'Leads', 'Client', 'Inventory', 'Diary', 'Team Diary', 'Targets']
+			tileNames: ['Dashboard', 'Leads', 'Client', 'InventoryTabs', 'Diary', 'Team Diary', 'Targets']
 		}
 	}
 
@@ -53,7 +53,10 @@ class Landing extends React.Component {
 			let label = tile
 			tile = tile.replace(/ /g, "")
 			if (Ability.canView(user.subRole, tile)) {
-				if (label === 'Inventory') label = 'Properties'
+				if (label === 'InventoryTabs') label = 'Inventory'
+				let oneTilee = {
+					screenName: tile
+				}
 				if (label === 'Team Diary') label = 'Team\'s Diary'
 				if (label === 'Client') label = 'Clients'
 				let oneTile = {
@@ -76,13 +79,20 @@ class Landing extends React.Component {
 	// ****** Navigate Function
 	navigateFunction = (name, screenName) => {
 		const { navigation } = this.props
-		navigation.navigate(name, { screen: screenName })
+		if (screenName === 'InventoryTabs') {
+			navigation.navigate('InventoryTabs', {
+				screen: 'ARMS',
+				params: { screen: screenName },
+			})
+		} else {
+			navigation.navigate(name, { screen: screenName })
+		}
 	}
 
 	render() {
 		const { tiles } = this.state
 		const { user, navigation } = this.props
-		
+
 		return (
 			<SafeAreaView style={[AppStyles.container, { backgroundColor: AppStyles.colors.primaryColor, paddingHorizontal: wp('0%'), paddingLeft: 0 }]}>
 				<AndroidNotifications navigation={navigation} />

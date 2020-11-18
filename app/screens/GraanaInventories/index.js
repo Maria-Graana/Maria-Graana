@@ -15,14 +15,14 @@ import React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import helper from '../../helper';
-import styles from './style'
+// import styles from './style'
 import { ActivityIndicator } from 'react-native-paper';
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
 
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
 
-class Inventory extends React.Component {
+class GraanaInventories extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -40,7 +40,7 @@ class Inventory extends React.Component {
 	componentDidMount() {
 		const { navigation } = this.props;
 		this._unsubscribe = navigation.addListener('focus', () => {
-			this.getPropertyListing();
+			this.getPropertyGraanaListing();
 		});
 	}
 
@@ -57,9 +57,9 @@ class Inventory extends React.Component {
 		})
 	}
 
-	getPropertyListing = () => {
+	getPropertyGraanaListing = () => {
 		const { propertiesList, page, pageSize } = this.state;
-		const url = `/api/inventory/all?pageSize=${pageSize}&page=${page}`
+		const url = `/api/inventory/all?propType=graana`
 		axios.get(url).then((response) => {
 			if (response.status == 200) {
 				this.setState({
@@ -87,7 +87,7 @@ class Inventory extends React.Component {
 			if (response.status === 200) {
 				helper.successToast('PROPERTY DELETED SUCCESSFULLY!')
 				that.setState({ loading: true }, () => {
-					that.getPropertyListing();
+					that.getPropertyGraanaListing();
 				})
 			}
 
@@ -148,7 +148,7 @@ class Inventory extends React.Component {
 			!loading ?
 				<View style={[AppStyles.container, { marginBottom: 25 }]}>
 
-					{
+					{/* {
 						Ability.canAdd(user.subRole, route.params.screen) ?
 							<Fab
 								active='true'
@@ -160,7 +160,7 @@ class Inventory extends React.Component {
 								<Ionicons name="md-add" color="#ffffff" />
 							</Fab> :
 							null
-					}
+					} */}
 
 
 					{/* ***** Main Tile Wrap */}
@@ -184,7 +184,7 @@ class Inventory extends React.Component {
 											page: this.state.page + 1,
 											onEndReachedLoader: true
 										}, () => {
-											this.getPropertyListing();
+											this.getPropertyGraanaListing();
 										});
 									}
 								}}
@@ -212,4 +212,4 @@ mapStateToProps = (store) => {
 	}
 }
 
-export default connect(mapStateToProps)(Inventory)
+export default connect(mapStateToProps)(GraanaInventories)

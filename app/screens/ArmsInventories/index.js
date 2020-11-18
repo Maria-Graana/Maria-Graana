@@ -22,7 +22,7 @@ import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
 var BUTTONS = ['Delete', 'Cancel'];
 var CANCEL_INDEX = 1;
 
-class Inventory extends React.Component {
+class ArmsInventories extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -40,7 +40,7 @@ class Inventory extends React.Component {
 	componentDidMount() {
 		const { navigation } = this.props;
 		this._unsubscribe = navigation.addListener('focus', () => {
-			this.getPropertyListing();
+			this.getPropertyArmsListing();
 		});
 	}
 
@@ -57,10 +57,11 @@ class Inventory extends React.Component {
 		})
 	}
 
-	getPropertyListing = () => {
+	getPropertyArmsListing = () => {
 		const { propertiesList, page, pageSize } = this.state;
-		const url = `/api/inventory/all?pageSize=${pageSize}&page=${page}`
+		const url = `/api/inventory/all?propType=arms`
 		axios.get(url).then((response) => {
+			
 			if (response.status == 200) {
 				this.setState({
 					propertiesList: page === 1 ? response.data.rows : [...propertiesList, ...response.data.rows],
@@ -87,7 +88,7 @@ class Inventory extends React.Component {
 			if (response.status === 200) {
 				helper.successToast('PROPERTY DELETED SUCCESSFULLY!')
 				that.setState({ loading: true }, () => {
-					that.getPropertyListing();
+					that.getPropertyArmsListing();
 				})
 			}
 
@@ -184,7 +185,7 @@ class Inventory extends React.Component {
 											page: this.state.page + 1,
 											onEndReachedLoader: true
 										}, () => {
-											this.getPropertyListing();
+											this.getPropertyArmsListing();
 										});
 									}
 								}}
@@ -212,4 +213,4 @@ mapStateToProps = (store) => {
 	}
 }
 
-export default connect(mapStateToProps)(Inventory)
+export default connect(mapStateToProps)(ArmsInventories)

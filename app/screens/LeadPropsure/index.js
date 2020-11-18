@@ -59,7 +59,6 @@ class LeadPropsure extends React.Component {
       this.fetchLead()
       this.getCallHistory()
       this.fetchProperties()
-      this.downloadFile()
     })
   }
 
@@ -72,23 +71,26 @@ class LeadPropsure extends React.Component {
     console.log('progress: ', progress)
   }
 
-  downloadFile() {
-    const uri = "http://www.africau.edu/images/default/sample.pdf"
-    let fileUri = FileSystem.documentDirectory + "sample.pdf"
-    FileSystem.downloadAsync(uri, fileUri)
-    .then(({ uri }) => {
-      this.saveFile(uri)
-    })
-    .catch(error => {
-      console.error(error);
-    })
+  downloadFile = async (data) => {
+    if (data.propsureDocs && data.propsureDocs.length) {
+      let doc = data.propsureDocs[0]
+      const uri = doc.document
+      let fileUri = FileSystem.documentDirectory + doc.fileName
+      FileSystem.downloadAsync(uri, fileUri)
+        .then(({ uri }) => {
+          this.saveFile(uri)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
   }
 
   saveFile = async (fileUri) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    if (status === "granted") {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
-      await MediaLibrary.createAlbumAsync("Download", asset, false)
+      await MediaLibrary.createAlbumAsync('Download', asset, false)
     }
   }
 
@@ -544,6 +546,7 @@ class LeadPropsure extends React.Component {
           uploadReport={(report, propsureId) => this.uploadAttachment(report, propsureId)}
           closeModal={() => this.closeDocumentModal()}
           onPress={() => this.closeDocumentModal()}
+          downloadFile={this.downloadFile}
           getAttachmentFromStorage={this.getAttachmentFromStorage}
         />
         <View style={{ paddingBottom: 100 }}>

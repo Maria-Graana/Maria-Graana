@@ -18,6 +18,7 @@ const PropsureDocumentPopup = (props) => {
     pendingPropsures,
     getAttachmentFromStorage,
     uploadReport,
+    downloadFile,
   } = props
   // console.log('pendingPropsures: ', pendingPropsures)
   return (
@@ -42,7 +43,11 @@ const PropsureDocumentPopup = (props) => {
               >{`${item.package}`}</Text>
               <TouchableOpacity
                 disabled={item.isLoading && item.status === 'verified'}
-                onPress={() => getAttachmentFromStorage(item.id)}
+                onPress={() => {
+                  if (item.status === 'verified') {
+                    downloadFile(item)
+                  }
+                }}
                 activeOpacity={0.7}
               >
                 <View style={[AppStyles.flexDirectionRow, AppStyles.bgcWhite]}>
@@ -79,11 +84,7 @@ const PropsureDocumentPopup = (props) => {
                   {item.status === 'pending' ? (
                     <TouchableOpacity
                       disabled={item.isLoading}
-                      onPress={() =>
-                        item.propsureDocs.length > 0
-                          ? uploadReport(item.propsureDocs[0], item.id)
-                          : Alert.alert('Pick File', 'Please pick a file from documents!')
-                      }
+                      onPress={() => {}}
                       style={{
                         flex: 0.2,
                         justifyContent: 'center',

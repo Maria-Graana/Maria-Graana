@@ -40,15 +40,15 @@ class InventoryTile extends React.Component {
   }
 
   render() {
-    const { data, onCall } = this.props;
+    const { data, onCall, checkForArmsProperty } = this.props;
     const imagesList = data.armsPropertyImages;
     const ownerName = this.checkCustomerName(data);
 
     return (
-      <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => this.onLongPress(data.id)} activeOpacity={0.7}>
+      <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => checkForArmsProperty === true && this.onLongPress(data.id)} activeOpacity={0.7}>
         <View>
           {
-            imagesList.length ?
+            imagesList && imagesList.length ?
               <Carousel
                 // ref={(c) => { this._carousel = c; }}
                 data={imagesList}
@@ -73,7 +73,7 @@ class InventoryTile extends React.Component {
 
         <View style={styles.imageCountViewStyle}>
           <Feather name={'camera'} color={'#fff'} size={16} />
-          <Text style={styles.imageCount}>{data.armsPropertyImages.length}</Text>
+          <Text style={styles.imageCount}>{data.armsPropertyImages && data.armsPropertyImages.length}</Text>
         </View>
 
         <View style={{ width: wp('60%') }}>

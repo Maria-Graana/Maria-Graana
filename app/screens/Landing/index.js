@@ -53,7 +53,7 @@ class Landing extends React.Component {
 			let label = tile
 			tile = tile.replace(/ /g, "")
 			if (Ability.canView(user.subRole, tile)) {
-				if (label === 'InventoryTabs') label = 'Inventory'
+				if (label === 'InventoryTabs') label = 'Properties'
 				let oneTilee = {
 					screenName: tile
 				}

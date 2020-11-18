@@ -96,7 +96,7 @@ function MainStack() {
         })}
       />
       <Stack.Screen
-        name="Inventory"
+        name="PROPERTIES"
         component={Inventory}
         options={({ navigation, route }) => ({
           title: 'PROPERTY LISTING',
@@ -231,7 +231,7 @@ function MainStack() {
         name="InventoryTabs"
         component={InventoryTabs}
         options={({ navigation, route }) => ({
-          title: 'INVENTORIES',
+          title: 'PROPERTIES',
           // headerTitle: (props) => <HeaderTitle {...props} />,
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,

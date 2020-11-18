@@ -100,7 +100,6 @@ class FieldsInventories extends React.Component {
 	}
 
 	onHandlePress = (data) => {
-		console.log(data)
 		const { navigation } = this.props;
 		navigation.navigate('PropertyDetail', { property: data, update: true })
 	}

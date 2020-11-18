@@ -94,8 +94,6 @@ class PropertyDetail extends React.Component {
     let downPayment = ''
     let floors = ''
 
-    console.log(property)
-
     if (!loading) {
       type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1)
       subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1)

@@ -290,11 +290,6 @@ class DetailForm extends Component {
       showAdditional,
       showAdditionalInformation,
       loading,
-      validate,
-      getTrimmedPhone,
-      phoneValidate,
-      countryCode,
-      setFlagObject,
     } = this.props
 
     const { size_unit } = this.props.formData
@@ -608,38 +603,6 @@ class DetailForm extends Component {
           showError={checkValidation === true && formData.customer_id === null}
           errorMessage="Required"
         />
-
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              onChangeText={(text) => {
-                handleForm(text, 'poc_name')
-              }}
-              placeholderTextColor={'#a8a8aa'}
-              value={formData.address}
-              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-              placeholder={'Point of Contact Name'}
-            />
-          </View>
-        </View>
-
-        <View style={[AppStyles.mainInputWrap]}>
-					<View style={[AppStyles.inputWrap]}>
-						<PhoneInputComponent
-					  	phoneValue={formData.poc_phone != '' && getTrimmedPhone(formData.poc_phone.replace('+92', ''))}
-							countryCodeValue={countryCode}
-							containerStyle={AppStyles.phoneInputStyle}
-              setPhone={(value) => validate(value, 'phone')}
-              setFlagObject={(object) => { setFlagObject(object) }}
-							onChangeHandle={handleForm}
-							name={'poc_phone'}
-							placeholder={'Point of Contact Number'}
-						/>
-						{
-							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
-						}
-					</View>
-				</View>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

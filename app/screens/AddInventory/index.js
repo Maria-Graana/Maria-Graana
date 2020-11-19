@@ -50,8 +50,8 @@ class AddInventory extends Component {
                 area_id: '',
                 size_unit: 'marla',
                 customer_id: null,
-                poc_name : '',
-                poc_phone : '',
+                poc_name : null,
+                poc_phone : null,
                 price: 0,
                 grade: '',
                 status: 'pending',
@@ -62,9 +62,9 @@ class AddInventory extends Component {
                 general_size: null,
                 lisitng_type: 'mm',
                 features: {},
-                custom_title: '',
+                custom_title: null,
                 show_address: true,
-                address: '',
+                address: null,
                 video: '',
                 year_built: null,
                 floors: null,
@@ -159,8 +159,6 @@ class AddInventory extends Component {
                 lat: property.lat,
                 lng: property.lng,
                 description: property.description,
-                poc_name: property.poc_name ? property.poc_name : '',
-                poc_phone: property.poc_phone ? property.poc_phone : '',
                 year_built: parsedFeatures.year_built ? parsedFeatures.year_built : null,
                 floors: (parsedFeatures.floors === null || parsedFeatures.floors === undefined) ? null : parsedFeatures.floors,
                 parking_space: (parsedFeatures.parking_space === null || parsedFeatures.parking_space === undefined) ? null : parsedFeatures.parking_space,
@@ -537,41 +535,6 @@ class AddInventory extends Component {
         }
     }
 
-    getTrimmedPhone = (number) => {
-        let phone = number;
-        if (phone.startsWith('92')) {
-            phone = phone.substring(2);
-        } else
-            if (phone.startsWith('092')) {
-                phone = phone.substring(3);
-            } else
-                if (phone.startsWith('0092')) {
-                    phone = phone.substring(4);
-                } else
-                    if (phone.startsWith('03')) {
-                        phone = phone.substring(1);
-                    }
-        return phone
-    }
-
-    validate(text, type) {
-        var phonenum = /(?=.{10})/
-        if (type == 'phone') {
-            this.setState({ phone: text });
-            if (phonenum.test(text)) {
-                this.setState({ phoneValidate: true })
-            }
-            else {
-                this.setState({ phoneValidate: false })
-            }
-        }
-    }
-
-    setFlagObject = (object) => {
-        console.log(object)
-        this.setState({ countryCode: object.cca2, callingCode: '+' + object.callingCode[0]  })
-    }
-
     render() {
         const {
             formData,
@@ -650,11 +613,6 @@ class AddInventory extends Component {
                                     selectedFeatures={selectedFeatures}
                                     handleFeatures={(value) => this.handleFeatures(value)}
                                     loading={loading}
-                                    getTrimmedPhone={this.getTrimmedPhone}
-                                    validate={this.validate}
-                                    phoneValidate={phoneValidate}
-                                    countryCode = {countryCode}
-                                    setFlagObject={this.setFlagObject}
                                 />
                             </View>
                         </TouchableWithoutFeedback>

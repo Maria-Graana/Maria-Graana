@@ -1028,7 +1028,7 @@ class Payments extends Component {
 			var leadId = []
 			leadId.push(lead.id)
 			// Check for Payment Done option 
-			if (Number(remainingPayment) <= 0 && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
+			if (Number(remainingPayment) <= 0 && secondScreenData.remainingPayment != null && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 			} else {
 				this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })

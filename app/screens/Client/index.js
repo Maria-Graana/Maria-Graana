@@ -62,9 +62,18 @@ class Client extends React.Component {
         this.setState({ customers: newCustomers })
     }
 
+    checkIsSelectedForPhone =(selectedPOC) => {
+         // this function is only called for drop down selection of client.
+         const copyCustomers = [...this.state.customers];
+         const newCustomers = copyCustomers.map(customer => (
+             { ...customer, isSelected: customer.contact1 === selectedPOC.contact1 }
+         ))
+         this.setState({ customers: newCustomers })
+    }
+
     fetchCustomer = () => {
         const { customers, page, pageSize } = this.state;
-        const { selectedClient } = this.props.route.params;
+        const { selectedClient, selectedPOC } = this.props.route.params;
         const url = `/api/customer/find?pageSize=${pageSize}&page=${page}`
 
         axios.get(url)
@@ -78,6 +87,9 @@ class Client extends React.Component {
                     if (selectedClient) {
                         this.checkIsSelected(selectedClient);
                     }
+                    if(selectedPOC){
+                        this.checkIsSelectedForPhone(selectedPOC)
+                    }
                 });
             })
             .catch((error) => {
@@ -88,11 +100,15 @@ class Client extends React.Component {
 
     navigateTo = (data) => {
         const { route, navigation } = this.props;
-        const { isFromDropDown = false, screenName } = route.params; // user can by default move to detail screen if param is undefined or null
+        const { isFromDropDown = false, screenName, isPOC = false } = route.params; // user can by default move to detail screen if param is undefined or null
         if (isFromDropDown) {
             // This is the case for dropdown value selection
-            navigation.navigate(screenName, { 'client': data, name: data.firstName + ' ' + data.lastName })
-
+            if(isPOC){
+                navigation.navigate(screenName, { selectedPOC: data })
+            }
+            else{
+                navigation.navigate(screenName, { 'client': data, name: data.firstName + ' ' + data.lastName })
+            }
         }
         else {
             // by default flow of client screen
@@ -102,8 +118,8 @@ class Client extends React.Component {
 
     addClient = () => {
         const { route, navigation } = this.props;
-        const { screenName, isFromDropDown = false } = route.params;
-        navigation.navigate('AddClient', { 'update': false, isFromDropDown, screenName })
+        const { screenName, isFromDropDown = false, isPOC = false} = route.params;
+        navigation.navigate('AddClient', { 'update': false, isFromDropDown, screenName, isPOC })
     }
 
     handleLongPress = (val) => {

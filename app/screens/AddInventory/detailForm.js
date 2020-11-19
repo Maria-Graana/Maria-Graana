@@ -290,6 +290,9 @@ class DetailForm extends Component {
       showAdditional,
       showAdditionalInformation,
       loading,
+      handlePointOfContact,
+      handleShowAddress,
+      handleWaterMark,
     } = this.props
 
     const { size_unit } = this.props.formData
@@ -361,6 +364,14 @@ class DetailForm extends Component {
             />
           </View>
         </View>
+        {/* **************************************** */}
+        <TouchableOpacity  onPress={() => handleShowAddress(!formData.show_address)}  
+          style={styles.checkBoxRow}>
+          <Checkbox color={AppStyles.colors.primaryColor}
+            status={formData.show_address ? 'checked' : 'unchecked'}
+          />
+          <Text>Show Address on Listing</Text>
+        </TouchableOpacity>
         {/* **************************************** */}
 
         <View style={AppStyles.multiFormInput}>
@@ -603,6 +614,22 @@ class DetailForm extends Component {
           showError={checkValidation === true && formData.customer_id === null}
           errorMessage="Required"
         />
+
+        {/* **************************************** */}
+        <TouchableInput
+          placeholder="Point of Contact Name"
+          onPress={() => handlePointOfContact()}
+          value={formData.poc_name}
+        />
+
+         {/* **************************************** */}
+         <TouchableOpacity  onPress={() => handleWaterMark(!formData.showWaterMark)}  
+          style={styles.checkBoxRow}>
+          <Checkbox color={AppStyles.colors.primaryColor}
+            status={formData.showWaterMark ? 'checked' : 'unchecked'}
+          />
+          <Text>Show Watermark on Images</Text>
+        </TouchableOpacity>
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

@@ -28,6 +28,9 @@ class CustomDrawerContent extends React.Component {
     navigateTo = (screen) => {
         RootNavigation.navigate(screen)
     }
+    navigateToProperties = () => {
+        RootNavigation.navigate('InventoryTabs', {screen: 'ARMS', params: { screen: 'InventoryTabs' },})
+    }
 
     signOut = () => {
         this.props.dispatch(logoutUser())
@@ -59,7 +62,10 @@ class CustomDrawerContent extends React.Component {
                     {Ability.canView(subRole, 'Diary') && <DrawerIconItem screen={'Diary'} badges={count.diary} navigateTo={() => { this.navigateTo('Diary') }} />}
                     {Ability.canView(subRole, 'TeamDiary') && <DrawerItem screen={'Team Diary'} navigateTo={() => { this.navigateTo('TeamDiary') }} />}
                     {Ability.canView(subRole, 'Leads') && <DrawerIconItem screen={'Leads'} badges={count.leads} navigateTo={() => { this.navigateTo('Leads') }} />}
-                    {Ability.canView(subRole, 'Inventory') && <DrawerIconItem screen={'Properties'} badges={count.inventory} navigateTo={() => { this.navigateTo('Inventory') }} />}
+                    {/* {
+                        navigation.navigate('InventoryTabs', {screen: 'ARMS',params: { screen: screenName },})
+                    } */}
+                    {Ability.canView(subRole, 'InventoryTabs') && <DrawerIconItem screen={'Properties'} badges={count.inventory} navigateTo={() => { this.navigateToProperties() }} />}
                     {Ability.canView(subRole, 'Client') && <DrawerItem screen={'Clients'} navigateTo={() => { this.navigateTo('Client') }} />}
                     {Ability.canView(subRole, 'Targets') && <DrawerItem screen={'Targets'} navigateTo={() => { this.navigateTo('Targets', { screen: 'Targets' }) }} />}
                     {/* {Ability.canView(role, 'CreateUser') && <DrawerItem screen={'Create User'} navigateTo={() => { this.navigateTo('CreateUser') }} />} */}

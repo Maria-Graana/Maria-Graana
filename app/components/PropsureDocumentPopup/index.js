@@ -64,22 +64,37 @@ const PropsureDocumentPopup = (props) => {
                       },
                     ]}
                   >
-                    <Text
-                      style={[
-                        {
-                          letterSpacing: 1,
-                          fontFamily: AppStyles.fonts.semiBoldFont,
-                          color: AppStyles.colors.textColor,
-                        },
-                      ]}
-                      numberOfLines={2}
-                    >
-                      {item.propsureDocs && item.propsureDocs.length > 0
-                        ? item.propsureDocs[0].name
+                    {item.status === 'verified' ? (
+                      <Text
+                        style={[
+                          {
+                            letterSpacing: 1,
+                            fontFamily: AppStyles.fonts.semiBoldFont,
+                            color: AppStyles.colors.textColor,
+                          },
+                        ]}
+                        numberOfLines={2}
+                      >
+                        {item.propsureDocs && item.propsureDocs.length > 0
                           ? item.propsureDocs[0].name
-                          : item.propsureDocs[0].fileName
-                        : ``}
-                    </Text>
+                            ? item.propsureDocs[0].name
+                            : item.propsureDocs[0].fileName
+                          : ``}
+                      </Text>
+                    ) : (
+                      <Text
+                        style={[
+                          {
+                            letterSpacing: 1,
+                            fontFamily: AppStyles.fonts.semiBoldFont,
+                            color: AppStyles.colors.subTextColor,
+                          },
+                        ]}
+                        numberOfLines={2}
+                      >
+                        Pending Propsure
+                      </Text>
+                    )}
                   </View>
                   {item.status === 'pending' ? (
                     <TouchableOpacity
@@ -90,18 +105,12 @@ const PropsureDocumentPopup = (props) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                         borderColor: AppStyles.colors.subTextColor,
-                        borderLeftWidth: 0.5,
+                        borderLeftWidth: item.status === 'pending' ? 0 : 0.5,
                       }}
                     >
                       {item.isLoading ? (
-                        <ActivityIndicator size={'small'} color={AppStyles.colors.primaryColor} />
-                      ) : (
-                        <MaterialCommunityIcons
-                          name="file-upload-outline"
-                          size={32}
-                          color={AppStyles.colors.primaryColor}
-                        />
-                      )}
+                        <ActivityIndicator size={'large'} color={AppStyles.colors.primaryColor} />
+                      ) : null}
                     </TouchableOpacity>
                   ) : (
                     <View

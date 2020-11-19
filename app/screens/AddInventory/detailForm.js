@@ -365,7 +365,7 @@ class DetailForm extends Component {
           </View>
         </View>
         {/* **************************************** */}
-        <TouchableOpacity  onPress={() => handleShowAddress(!formData.show_address)}  
+        <TouchableOpacity disabled={formData.address === '' || formData.address === null}  onPress={() => handleShowAddress(!formData.show_address)}  
           style={styles.checkBoxRow}>
           <Checkbox color={AppStyles.colors.primaryColor}
             status={formData.show_address ? 'checked' : 'unchecked'}

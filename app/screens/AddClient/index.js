@@ -343,7 +343,7 @@ class AddClient extends Component {
             cnicValidate,
         } = this.state
         const { route, navigation, contacts } = this.props
-        const { update, client, isFromDropDown, screenName } = route.params
+        const { update, client, isFromDropDown, screenName, isPOC } = route.params
         if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
         if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
             this.setState({
@@ -371,7 +371,11 @@ class AddClient extends Component {
                                 }
                                 else {
                                     helper.successToast(res.data.message)
-                                    isFromDropDown ? navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null }) : navigation.goBack();
+                                    isFromDropDown ? isPOC
+                                        ? navigation.navigate(screenName,
+                                            { selectedPOC: res.data.id ? { ...res.data, firstName: res.data.first_name ? res.data.first_name : '', lastName: res.data.last_name ? res.data.last_name : '' } : null }) :
+                                        navigation.navigate(screenName, { client: res.data.id ? res.data : null, name: res.data.first_name ? res.data.first_name + ' ' + res.data.last_name : null })
+                                        : navigation.goBack();
                                 }
                             }
                         })

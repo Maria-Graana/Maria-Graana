@@ -148,4 +148,9 @@ export default styles = StyleSheet.create({
     buttonWidth: {
         width: '80%'
     },
+    checkBoxRow: {
+        flexDirection: 'row', 
+        alignItems:'center',
+         padding: 5
+    },
 })

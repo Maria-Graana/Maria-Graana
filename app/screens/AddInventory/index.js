@@ -51,8 +51,8 @@ class AddInventory extends Component {
                 area_id: '',
                 size_unit: 'marla',
                 customer_id: null,
-                poc_name : null,
-                poc_phone : null,
+                poc_name: null,
+                poc_phone: null,
                 price: 0,
                 grade: '',
                 status: 'pending',
@@ -74,6 +74,7 @@ class AddInventory extends Component {
                 showWaterMark: false,
             },
             showAdditional: false,
+            showCustomTitle : false,
             features: StaticData.residentialFeatures,
             facing: StaticData.facing,
             utilities: StaticData.residentialUtilities,
@@ -114,7 +115,7 @@ class AddInventory extends Component {
             this.setState({ formData: copyObject, clientName: name, selectedClient: client })
         }
         if (selectedPOC) {
-            copyObject.poc_name = selectedPOC.firstName && selectedPOC.lastName ?  selectedPOC.firstName + ' ' + selectedPOC.lastName : null;
+            copyObject.poc_name = selectedPOC.firstName && selectedPOC.lastName ? selectedPOC.firstName + ' ' + selectedPOC.lastName : null;
             copyObject.poc_phone = selectedPOC.contact1 ? selectedPOC.contact1 : null;
             this.setState({ formData: copyObject, selectedPOC })
         }
@@ -173,14 +174,14 @@ class AddInventory extends Component {
                 downpayment: parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : 0,
                 general_size: null,
                 lisitng_type: 'mm',
-                custom_title: '',
+                custom_title: property.custom_title ? property.custom_title : null,
                 show_address: property.show_address ? property.show_address : false,
                 video: property.video,
-                poc_name : property.poc_name ? property.poc_name : null,
+                poc_name: property.poc_name ? property.poc_name : null,
                 poc_phone: property.poc_phone ? property.poc_phone : null,
             },
             selectedClient: property.customer ? property.customer : null,
-            selectedPOC: property.poc_name && property.poc_phone ? {firstName: property.poc_name, contact1: property.poc_phone} : null,
+            selectedPOC: property.poc_name && property.poc_phone ? { firstName: property.poc_name, contact1: property.poc_phone } : null,
             selectedCity: property.city ? { ...property.city, value: property.city.id } : null,
             selectedFeatures: amentities,
             selectedArea: property.area ? { ...property.area, value: property.area.id } : null,
@@ -313,10 +314,10 @@ class AddInventory extends Component {
                 })
         }
         else {
-             //console.log(formData)
+            //console.log(formData)
             axios.post(`/api/inventory/create`, formData)
                 .then((res) => {
-                   // console.log(res.data)
+                    // console.log(res.data)
                     if (res.status === 200) {
                         helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
                         dispatch(flushImages());
@@ -551,17 +552,22 @@ class AddInventory extends Component {
     }
 
     handleShowAddress = (value) => {
-        const {formData} = this.state;
-        const copyObject = {...formData};
+        const { formData } = this.state;
+        const copyObject = { ...formData };
         copyObject.show_address = value;
-        this.setState({formData: copyObject});
+        this.setState({ formData: copyObject });
     }
 
     handleWaterMark = (value) => {
-        const {formData} = this.state;
-        const copyObject = {...formData};
+        const { formData } = this.state;
+        const copyObject = { ...formData };
         copyObject.showWaterMark = value;
-        this.setState({formData: copyObject});
+        this.setState({ formData: copyObject });
+    }
+
+    showCustomTitleField = () => {
+        const { showCustomTitle } = this.state;
+        this.setState({ showCustomTitle: !showCustomTitle })
     }
 
     render() {
@@ -583,8 +589,7 @@ class AddInventory extends Component {
             facing,
             selectedFeatures,
             loading,
-            phoneValidate,
-            countryCode,
+            showCustomTitle,
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
@@ -645,6 +650,8 @@ class AddInventory extends Component {
                                     handlePointOfContact={this.handlePointOfContact}
                                     handleShowAddress={this.handleShowAddress}
                                     handleWaterMark={this.handleWaterMark}
+                                    showCustomTitleField={this.showCustomTitleField}
+                                    showCustomTitle={showCustomTitle}
                                 />
                             </View>
                         </TouchableWithoutFeedback>

@@ -101,7 +101,7 @@ class ArmsInventories extends React.Component {
 
 	onHandlePress = (data) => {
 		const { navigation } = this.props;
-		navigation.navigate('PropertyDetail', { property: data, update: true })
+		navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: false })
 	}
 
 	onHandleLongPress = (val) => {

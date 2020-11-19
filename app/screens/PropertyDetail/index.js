@@ -69,7 +69,8 @@ class PropertyDetail extends React.Component {
   render() {
     const { loading } = this.state
     const { route, navigation } = this.props
-    const { property } = route.params
+    const { property, editButtonHide } = route.params
+
     let type = ''
     let subtype = ''
     let areaName = ''
@@ -93,7 +94,6 @@ class PropertyDetail extends React.Component {
     let parkingSpace = ''
     let downPayment = ''
     let floors = ''
-
     if (!loading) {
       type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1)
       subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1)
@@ -107,8 +107,8 @@ class PropertyDetail extends React.Component {
       demandPrice = property && property.price
       description = property && property.description
       grade = property && property.grade && property.grade === null || property && property.grade === '' ? '' : property && property.grade
-      lattitude = property && property.lat === null ? '' : property && property.lat + '/'
-      longitude = property && property.lng === null ? '' : property && property.lng
+      lattitude = property && property.lat === null ? '' : property.lat + '/'
+      longitude = property && property.lng === null ? '' : property.lng
       ownerName = this.checkUserName(property)
       ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
       address = property && property.customer && property.customer.address && property.customer.address
@@ -173,10 +173,10 @@ class PropertyDetail extends React.Component {
             <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
               {images && images.length
                 ? images.map((item, index) => {
-                    return (
-                      <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
-                    )
-                  })
+                  return (
+                    <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
+                  )
+                })
                 : null}
             </View>
 
@@ -291,23 +291,27 @@ class PropertyDetail extends React.Component {
               </>
             ) : null}
           </View>
-          <View style={styles.pad}>
-            {
-              <MaterialCommunityIcons
-                onPress={() => {
-                  this.navigateTo()
-                }}
-                name="square-edit-outline"
-                size={26}
-                color={AppStyles.colors.primaryColor}
-              />
-            }
-          </View>
+          {
+            editButtonHide === false &&
+            <View style={styles.pad}>
+              {
+                <MaterialCommunityIcons
+                  onPress={() => {
+                    this.navigateTo()
+                  }}
+                  name="square-edit-outline"
+                  size={26}
+                  color={AppStyles.colors.primaryColor}
+                />
+              }
+            </View>
+          }
+
         </View>
       </ScrollView>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

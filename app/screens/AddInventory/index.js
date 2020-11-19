@@ -22,6 +22,7 @@ class AddInventory extends Component {
 
     constructor(props) {
         super(props)
+        var defaultCountry = { name: 'PK', code: '+92' }
         this.state = {
             checkValidation: false,
             areas: [],
@@ -31,9 +32,13 @@ class AddInventory extends Component {
             buttonText: 'ADD PROPERTY',
             clientName: '',
             selectedClient: null,
+            selectedPOC: null,
             selectedCity: null,
             selectedArea: null,
             isModalOpen: false,
+            phoneValidate: false,
+            countryCode: defaultCountry.name,
+            callingCode: defaultCountry.code,
             loading: false,
             formData: {
                 type: '',
@@ -46,6 +51,8 @@ class AddInventory extends Component {
                 area_id: '',
                 size_unit: 'marla',
                 customer_id: null,
+                poc_name: null,
+                poc_phone: null,
                 price: 0,
                 grade: '',
                 status: 'pending',
@@ -56,16 +63,18 @@ class AddInventory extends Component {
                 general_size: null,
                 lisitng_type: 'mm',
                 features: {},
-                custom_title: '',
-                show_address: true,
-                address: '',
+                custom_title: null,
+                show_address: false,
+                address: null,
                 video: '',
                 year_built: null,
                 floors: null,
                 parking_space: null,
                 downpayment: 0,
+                showWaterMark: false,
             },
             showAdditional: false,
+            showCustomTitle : false,
             features: StaticData.residentialFeatures,
             facing: StaticData.facing,
             utilities: StaticData.residentialUtilities,
@@ -98,12 +107,17 @@ class AddInventory extends Component {
     }
 
     onScreenFocused = () => {
-        const { client, name, selectedCity, selectedArea } = this.props.route.params;
+        const { client, name, selectedCity, selectedPOC, selectedArea } = this.props.route.params;
         const { formData } = this.state;
         let copyObject = Object.assign({}, formData);
         if (client && name) {
             copyObject.customer_id = client.id;
             this.setState({ formData: copyObject, clientName: name, selectedClient: client })
+        }
+        if (selectedPOC) {
+            copyObject.poc_name = selectedPOC.firstName && selectedPOC.lastName ? selectedPOC.firstName + ' ' + selectedPOC.lastName : null;
+            copyObject.poc_phone = selectedPOC.contact1 ? selectedPOC.contact1 : null;
+            this.setState({ formData: copyObject, selectedPOC })
         }
         if (selectedCity) {
             copyObject.city_id = selectedCity.value;
@@ -129,6 +143,7 @@ class AddInventory extends Component {
             amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
             amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
         }
+        //console.log(property)
         this.setState({
             formData: {
                 id: property.id,
@@ -159,11 +174,14 @@ class AddInventory extends Component {
                 downpayment: parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : 0,
                 general_size: null,
                 lisitng_type: 'mm',
-                custom_title: '',
-                show_address: true,
+                custom_title: property.custom_title ? property.custom_title : null,
+                show_address: property.show_address ? property.show_address : false,
                 video: property.video,
+                poc_name: property.poc_name ? property.poc_name : null,
+                poc_phone: property.poc_phone ? property.poc_phone : null,
             },
             selectedClient: property.customer ? property.customer : null,
+            selectedPOC: property.poc_name && property.poc_phone ? { firstName: property.poc_name, contact1: property.poc_phone } : null,
             selectedCity: property.city ? { ...property.city, value: property.city.id } : null,
             selectedFeatures: amentities,
             selectedArea: property.area ? { ...property.area, value: property.area.id } : null,
@@ -296,15 +314,13 @@ class AddInventory extends Component {
                 })
         }
         else {
+            //console.log(formData)
             axios.post(`/api/inventory/create`, formData)
                 .then((res) => {
+                    // console.log(res.data)
                     if (res.status === 200) {
                         helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        // navigation.navigate('InventoryTabs', {
-                        //     screen: 'ARMS',
-                        //     params: { screen: screenName },
-                        // })
                         navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
                     }
                     else {
@@ -496,7 +512,13 @@ class AddInventory extends Component {
     handleClientClick = () => {
         const { navigation } = this.props;
         const { selectedClient } = this.state;
-        navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddInventory' });
+        navigation.navigate('Client', { isFromDropDown: true, selectedClient, isPOC: false, screenName: 'AddInventory' });
+    }
+
+    handlePointOfContact = () => {
+        const { navigation } = this.props;
+        const { selectedPOC } = this.state;
+        navigation.navigate('Client', { isFromDropDown: true, selectedPOC, isPOC: true, screenName: 'AddInventory' });
     }
 
     handleCityClick = () => {
@@ -529,6 +551,25 @@ class AddInventory extends Component {
         }
     }
 
+    handleShowAddress = (value) => {
+        const { formData } = this.state;
+        const copyObject = { ...formData };
+        copyObject.show_address = value;
+        this.setState({ formData: copyObject });
+    }
+
+    handleWaterMark = (value) => {
+        const { formData } = this.state;
+        const copyObject = { ...formData };
+        copyObject.showWaterMark = value;
+        this.setState({ formData: copyObject });
+    }
+
+    showCustomTitleField = () => {
+        const { showCustomTitle } = this.state;
+        this.setState({ showCustomTitle: !showCustomTitle })
+    }
+
     render() {
         const {
             formData,
@@ -548,6 +589,7 @@ class AddInventory extends Component {
             facing,
             selectedFeatures,
             loading,
+            showCustomTitle,
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
@@ -605,6 +647,11 @@ class AddInventory extends Component {
                                     selectedFeatures={selectedFeatures}
                                     handleFeatures={(value) => this.handleFeatures(value)}
                                     loading={loading}
+                                    handlePointOfContact={this.handlePointOfContact}
+                                    handleShowAddress={this.handleShowAddress}
+                                    handleWaterMark={this.handleWaterMark}
+                                    showCustomTitleField={this.showCustomTitleField}
+                                    showCustomTitle={showCustomTitle}
                                 />
                             </View>
                         </TouchableWithoutFeedback>

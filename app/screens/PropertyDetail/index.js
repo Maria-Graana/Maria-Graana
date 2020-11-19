@@ -94,6 +94,8 @@ class PropertyDetail extends React.Component {
     let parkingSpace = ''
     let downPayment = ''
     let floors = ''
+    let pocName = '';
+    let pocPhone = '';
     if (!loading) {
       type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1)
       subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1)
@@ -112,6 +114,8 @@ class PropertyDetail extends React.Component {
       ownerName = this.checkUserName(property)
       ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
       address = property && property.customer && property.customer.address && property.customer.address
+      pocName = property && property.poc_name ? property.poc_name : '';
+      pocPhone= property && property.poc_phone ? property.poc_phone : '';
       images = property && property.armsPropertyImages
       parsedFeatures = JSON.parse(property && property.features)
       amentities = _.isEmpty(parsedFeatures) ? [] : _.keys(parsedFeatures)
@@ -258,6 +262,18 @@ class PropertyDetail extends React.Component {
               <View>
                 <Text style={styles.headingText}> Owner Address </Text>
                 <Text style={styles.labelText}> {address}</Text>
+              </View>
+            ) : null}
+             {pocName ? (
+              <View>
+                <Text style={styles.headingText}>Point of Contact Name </Text>
+                <Text style={styles.labelText}> {pocName}</Text>
+              </View>
+            ) : null}
+            {pocPhone ? (
+              <View>
+                <Text style={styles.headingText}> Point of Contact Phone </Text>
+                <Text style={styles.labelText}> {pocPhone}</Text>
               </View>
             ) : null}
             <View>

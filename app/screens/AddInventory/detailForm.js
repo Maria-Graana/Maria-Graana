@@ -473,7 +473,7 @@ class DetailForm extends Component {
         </View>
 
         {/* **************************************** */}
-        {/* <TouchableOpacity
+        <TouchableOpacity
           onPress={showCustomTitleField}
           style={[AppStyles.mainInputWrap, styles.additonalViewContainer]}
         >
@@ -499,7 +499,7 @@ class DetailForm extends Component {
               placeholder={'Enter Custom title'}
             />
           </View>
-        </View> : null} */}
+        </View> : null}
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>

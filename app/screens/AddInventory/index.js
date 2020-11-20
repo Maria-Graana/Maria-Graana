@@ -282,6 +282,7 @@ class AddInventory extends Component {
         formData.lng = this.convertLongitude(formData.lng);
         formData.size = this.convertToIntegerForZero(formData.size)
         formData.price = this.convertToIntegerForZero(formData.price)
+        formData.custom_title = formData.custom_title === '' ? null : formData.custom_title;
         formData.features = _.isEmpty(features) ? {} : features;
         formData.imageIds = _.pluck(images, 'id');
         // deleting these keys below from formdata as they are sent in features instead of seperately

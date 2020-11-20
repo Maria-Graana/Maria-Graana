@@ -84,7 +84,7 @@ class InventoryTile extends React.Component {
           </View >
 
           <Text style={styles.textControlStyle} numberOfLines={1}>
-            {`${data.size} ${data.size_unit.charAt(0).toUpperCase() + data.size_unit.slice(1)} ${data.subtype.charAt(0).toUpperCase() + data.subtype.slice(1)} for ${data.purpose.charAt(0).toUpperCase() + data.purpose.slice(1)}`}
+            {data.custom_title === null || data.custom_title === '' ? data.title ? data.title : '' : data.custom_title}
           </Text>
 
           <Text style={[styles.textControlStyle, { paddingTop: 2 }]} numberOfLines={1}>{ownerName}</Text>

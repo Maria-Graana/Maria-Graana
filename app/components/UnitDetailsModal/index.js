@@ -27,7 +27,7 @@ class UnitDetailsModal extends React.Component {
     var optionalArray = data && data.optional_fields != null && data.optional_fields
     var optional = []
     optional = data && data != '' && JSON.parse([optionalArray])
-
+    var optionalObjectKey = Object.keys(optional) 
     return (
       <Modal isVisible={active}>
         {
@@ -45,13 +45,16 @@ class UnitDetailsModal extends React.Component {
               </View>
               {/* ===================== */}
               {
-                optional && optional.length && optional.map((item, index) => {
+                optionalObjectKey && optionalObjectKey.length && optionalObjectKey.map((item, index) => {
                   return (
                     <View style={styles.MainTileView}>
+                      <Text>
+                        
+                      </Text>
                       <View>
-                        <Text style={styles.smallText}>{item.fieldName}</Text>
+                        <Text style={styles.smallText}>{optional[item].fieldName}</Text>
                         <Text style={styles.largeText}>
-                          {item.data}
+                          {optional[item].data}
                         </Text>
                       </View>
                     </View>

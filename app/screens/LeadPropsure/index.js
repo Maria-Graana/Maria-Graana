@@ -91,6 +91,7 @@ class LeadPropsure extends React.Component {
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       await MediaLibrary.createAlbumAsync('Download', asset, false)
+      helper.successToast('File Downloaded!')
     }
   }
 
@@ -336,9 +337,13 @@ class LeadPropsure extends React.Component {
       )
     } else {
       return (
-        <View style={[styles.viewButtonStyle, { backgroundColor: AppStyles.colors.primaryColor }]}>
+        <TouchableOpacity
+          style={[styles.viewButtonStyle, { backgroundColor: AppStyles.colors.primaryColor }]}
+          activeOpacity={0.7}
+          onPress={() => this.showDocumentModal(propsures)}
+        >
           <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>VERIFIED</Text>
-        </View>
+        </TouchableOpacity>
       )
     }
   }

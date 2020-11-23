@@ -634,7 +634,9 @@ class Payments extends Component {
 				formData.cnic != null &&
 				formData.cnic != '' &&
 				cnicValidate === false &&
-				formData.paymentPlan != 'no'
+				formData.paymentPlan != 'no' &&
+				formData.token != null &&
+				formData.token != ''
 			) {
 				if (leftSqft < 50 && leftSqft > 0) {
 					this.setState({

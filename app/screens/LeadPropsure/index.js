@@ -72,6 +72,8 @@ class LeadPropsure extends React.Component {
   }
 
   downloadFile = async (data) => {
+    const { pendingPropsures } = this.state
+    let pendingPropsuresCopy = []
     if (data.propsureDocs && data.propsureDocs.length) {
       let doc = data.propsureDocs[0]
       const uri = doc.document
@@ -79,6 +81,16 @@ class LeadPropsure extends React.Component {
       FileSystem.downloadAsync(uri, fileUri)
         .then(({ uri }) => {
           this.saveFile(uri)
+          pendingPropsuresCopy = pendingPropsures.map((item) => {
+            if (item.id === data.id) {
+              item.showMsg = true
+              return item
+            } else {
+              item.showMsg = false
+              return item
+            }
+          })
+          this.setState({ pendingPropsures: pendingPropsuresCopy })
         })
         .catch((error) => {
           console.error(error)

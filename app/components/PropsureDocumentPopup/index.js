@@ -129,6 +129,11 @@ const PropsureDocumentPopup = (props) => {
                   )}
                 </View>
               </TouchableOpacity>
+              {item.showMsg ? (
+                <View style={{ paddingVertical: 5 }}>
+                  <Text>File Downloaded!</Text>
+                </View>
+              ) : null}
             </View>
           )}
           keyExtractor={(item) => item.id.toString()}

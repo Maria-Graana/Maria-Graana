@@ -7,7 +7,8 @@ import StaticData from '../../StaticData'
 import InputField from '../../components/InputField'
 import CommissionTile from '../../components/CommissionTile'
 import styles from './styles'
-import _ from 'underscore';
+import _ from 'underscore'
+import Ability from '../../hoc/Ability'
 
 class BuyPaymentView extends React.Component {
   constructor(props) {
@@ -40,26 +41,26 @@ class BuyPaymentView extends React.Component {
       property.armsuser.armsUserRole &&
       property.armsuser.armsUserRole.subRole
     const isLeadClosed =
-    lead.status === StaticData.Constants.lead_closed_lost ||
-    lead.status === StaticData.Constants.lead_closed_won
-  let buyerCommission =
-    lead.assigned_to_armsuser_id === user.id &&
+      lead.status === StaticData.Constants.lead_closed_lost ||
+      lead.status === StaticData.Constants.lead_closed_won
+    let buyerCommission =
+      lead.assigned_to_armsuser_id === user.id &&
       (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
-      ? true
-      : false
-  let sellerCommission =
-    property.assigned_to_armsuser_id === user.id ||
+        ? true
+        : false
+    let sellerCommission =
+      property.assigned_to_armsuser_id === user.id ||
       (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
       !Ability.canView(subRole, 'Leads')
-      ? true
-      : false
-  if (sellerCommission === true) {
-    if (property.origin === null) {
-      sellerCommission = false;
+        ? true
+        : false
+    if (sellerCommission === true) {
+      if (property.origin === null) {
+        sellerCommission = false
+      }
     }
-  }
-  const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
-  const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
+    const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
+    const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
     return (
       <View>
         <InputField
@@ -95,7 +96,7 @@ class BuyPaymentView extends React.Component {
           showDate={true}
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
         />
-         {lead.commissions ? (
+        {lead.commissions ? (
           buyer ? (
             <CommissionTile
               data={buyer}
@@ -104,29 +105,31 @@ class BuyPaymentView extends React.Component {
               title={buyer ? 'Buyer Commission Payment' : ''}
             />
           ) : (
-              <View>
-                {buyerCommission ? (
-                  <TouchableOpacity
-                    style={styles.addPaymentBtn}
-                    onPress={() => onAddCommissionPayment('buyer')}
-                  >
-                    <Image
-                      style={styles.addPaymentBtnImg}
-                      source={require('../../../assets/img/roundPlus.png')}
-                    ></Image>
-                    <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-                  </TouchableOpacity>
-                ) : null}
-              </View>
-            )
+            <View>
+              {buyerCommission ? (
+                <TouchableOpacity
+                  style={styles.addPaymentBtn}
+                  onPress={() => onAddCommissionPayment('buyer')}
+                >
+                  <Image
+                    style={styles.addPaymentBtnImg}
+                    source={require('../../../assets/img/roundPlus.png')}
+                  ></Image>
+                  <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          )
         ) : null}
 
         {lead.commissions ? (
           seller ? (
-            <CommissionTile data={seller}
-             commissionEdit={!sellerCommission}
-             editTile={editTile} 
-             title={'Seller Commission Payment'} />
+            <CommissionTile
+              data={seller}
+              commissionEdit={!sellerCommission}
+              editTile={editTile}
+              title={'Seller Commission Payment'}
+            />
           ) : (
             <View>
               {sellerCommission ? (

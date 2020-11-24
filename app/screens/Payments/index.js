@@ -1041,7 +1041,7 @@ class Payments extends Component {
 					if (checkForPenddingNClear.length === 0) {
 						this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
 					} else {
-						helper.errorToast('Pending payments need to be clear')
+						this.setState({ reasons: StaticData.paymentPopupAnyPaymentAdded, isVisible: true, checkReasonValidation: '' })
 					}
 				} else {
 					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })

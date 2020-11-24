@@ -214,14 +214,14 @@ export default StaticData = {
             name: 'Payment Done',
             value: 'payment_done'
         },
-        {
-            name: 'Client not responding',
-            value: 'client_not_responding'
-        },
-        {
-            name: 'Client not satisfied with options',
-            value: 'client_not_satisfied'
-        }
+        // {
+        //     name: 'Client not responding',
+        //     value: 'client_not_responding'
+        // },
+        // {
+        //     name: 'Client not satisfied with options',
+        //     value: 'client_not_satisfied'
+        // }
     ],
     paymentPopup: [
         {
@@ -231,6 +231,24 @@ export default StaticData = {
         {
             name: 'Client not satisfied with options',
             value: 'client_not_satisfied'
+        },
+        {
+            name: 'Duplicate Lead',
+            value: 'duplicate_lead'
+        },
+        {
+            name: 'Client is an Agent',
+            value: 'client_is_an_agent'
+        },
+    ],
+    paymentPopupAnyPaymentAdded: [
+        {
+            name: 'Refund Amount',
+            value: 'refund_amount'
+        },
+        {
+            name: 'Adjustment to an other Project',
+            value: 'adjustment_to_an_other_project'
         }
     ],
     projectType: [

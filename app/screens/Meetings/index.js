@@ -454,14 +454,26 @@ class Meetings extends Component {
 
       // If there is any true in the bottom array PAYMENT DONE option will be hide
       var checkForPenddingNrjected = []
+      var checkForPenddingNClear = []
       approvedPaymentDone && approvedPaymentDone.length > 0 &&
         approvedPaymentDone.filter((item) => { item === true && checkForPenddingNrjected.push(true) })
-        
+      approvedPaymentDone && approvedPaymentDone.length > 0 &&
+        approvedPaymentDone.filter((item) => { item === false && checkForPenddingNClear.push(false) })
+
       var remainingPayment = this.props.lead.remainingPayment
       if (remainingPayment <= 0 && remainingPayment != null && checkForPenddingNrjected.length === 0) {
         this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '', checkForNewLeadData: false })
       } else {
-        this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '', checkForNewLeadData: false })
+        // Check For,If some payment is clear agent would not be able to close lead as close lost
+        if (Number(remainingPayment) >= 0 && secondScreenData.remainingPayment != null || checkForPenddingNClear.length != 0) {
+          if (checkForPenddingNClear.length === 0) {
+            this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+          } else {
+            this.setState({ reasons: StaticData.paymentPopupAnyPaymentAdded, isVisible: true, checkReasonValidation: '' })
+          }
+        } else {
+          this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+        }
       }
 
 

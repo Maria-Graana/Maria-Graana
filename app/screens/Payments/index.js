@@ -164,8 +164,8 @@ class Payments extends Component {
 					progressValue: cmProgressBar[res.data.status] || 0,
 					paymentPreviewLoading: false,
 					secondScreenData: res.data,
-				},() => {
-					if(functionCallingFor === 'leadClose'){
+				}, () => {
+					if (functionCallingFor === 'leadClose') {
 						this.formSubmit()
 					}
 				})
@@ -1025,15 +1025,27 @@ class Payments extends Component {
 				})
 			// If there is any true in the bottom array PAYMENT DONE option will be hide
 			var checkForPenddingNrjected = []
+			var checkForPenddingNClear = []
 			approvedPaymentDone && approvedPaymentDone.length > 0 &&
 				approvedPaymentDone.filter((item) => { item === true && checkForPenddingNrjected.push(true) })
+			approvedPaymentDone && approvedPaymentDone.length > 0 &&
+				approvedPaymentDone.filter((item) => { item === false && checkForPenddingNClear.push(false) })
 			var leadId = []
 			leadId.push(lead.id)
 			// Check for Payment Done option 
 			if (Number(remainingPayment) <= 0 && secondScreenData.remainingPayment != null && formData.unitId != null && formData.unitId != 'no' && checkForPenddingNrjected.length === 0) {
 				this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '' })
 			} else {
-				this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+				// Check For,If some payment is clear agent would not be able to close lead as close lost
+				if (Number(remainingPayment) >= 0 && secondScreenData.remainingPayment != null || checkForPenddingNClear.length != 0) {
+					if (checkForPenddingNClear.length === 0) {
+						this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+					} else {
+						helper.errorToast('Pending payments need to be clear')
+					}
+				} else {
+					this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+				}
 			}
 		}
 	}

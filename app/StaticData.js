@@ -214,14 +214,14 @@ export default StaticData = {
             name: 'Payment Done',
             value: 'payment_done'
         },
-        {
-            name: 'Client not responding',
-            value: 'client_not_responding'
-        },
-        {
-            name: 'Client not satisfied with options',
-            value: 'client_not_satisfied'
-        }
+        // {
+        //     name: 'Client not responding',
+        //     value: 'client_not_responding'
+        // },
+        // {
+        //     name: 'Client not satisfied with options',
+        //     value: 'client_not_satisfied'
+        // }
     ],
     paymentPopup: [
         {

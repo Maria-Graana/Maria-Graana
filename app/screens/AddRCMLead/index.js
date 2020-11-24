@@ -100,7 +100,7 @@ class AddRCMLead extends Component {
                 const { selectedAreasIds } = this.props;
                 copyObject.leadAreas = selectedAreasIds;
                 this.setState({ RCMFormData: copyObject, selectedCity })
-            }, 1000)
+            }, 500)
         }
     }
 

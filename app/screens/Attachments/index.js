@@ -50,19 +50,21 @@ class Attachments extends Component {
     }
 
     getAttachmentFromStorage = () => {
-        const { title } = this.state;
+        const { title, formData } = this.state;
         // console.log('pickDocment')
         let options = {
             type: '*/*',
             copyToCacheDirectory: true,
         }
         DocumentPicker.getDocumentAsync(options).then(item => {
-            if (item.type === 'cancel') {
+            if (item.type === 'cancel' && formData.fileName === '') { // App should prompt a pop message in-case file is already selected
                 Alert.alert('Pick File', 'Please pick a file from documents!')
             }
             else {
-                this.setState({ formData: { fileName: item.name, size: item.size, uri: item.uri, title: title } }, () => {
-                })
+                if(item.name && item.name!==''){
+                    this.setState({ formData: { fileName: item.name, size: item.size, uri: item.uri, title: title } }, () => {
+                    })
+                }
             }
 
         }).catch(error => {

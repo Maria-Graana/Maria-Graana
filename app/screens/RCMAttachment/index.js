@@ -67,16 +67,18 @@ class RCMAttachment extends Component {
             copyToCacheDirectory: true,
         }
         DocumentPicker.getDocumentAsync(options).then(item => {
-            if (item.type === 'cancel') {
+            if (item.type === 'cancel' && newFormData.fileName === '') { // App should prompt a pop message in-case file is already selected
                 Alert.alert('Pick File', 'Please pick a file from documents!')
             }
             else {
-                newFormData.fileName = item.name;
-                newFormData.size = item.size;
-                newFormData.uri = item.uri;
-                this.setState({
-                    formData: newFormData,
-                })
+                if (item.name && item.name !== '') {
+                    newFormData.fileName = item.name;
+                    newFormData.size = item.size;
+                    newFormData.uri = item.uri;
+                    this.setState({
+                        formData: newFormData,
+                    })
+                }
             }
         }).catch(error => {
             console.log(error);

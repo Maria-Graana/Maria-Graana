@@ -42,6 +42,7 @@ class OfferModal extends React.Component {
       user,
       loading,
       agreedAmount,
+      showWarning,
     } = this.props
     let subRole =
       property &&
@@ -255,7 +256,7 @@ class OfferModal extends React.Component {
               </View>
             </View>
           ) : (
-            <View style={{ marginHorizontal: 10, marginBottom: 20 }}>
+            <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
               <TouchableButton
                 containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
                 label={'ACCEPT OFFER'}
@@ -264,6 +265,11 @@ class OfferModal extends React.Component {
               />
             </View>
           )}
+          {showWarning ? (
+            <View style={{ paddingHorizontal: 10 }}>
+              <Text>Please enter an agreed amount</Text>
+            </View>
+          ) : null}
         </SafeAreaView>
       </Modal>
     )

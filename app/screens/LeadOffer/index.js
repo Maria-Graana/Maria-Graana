@@ -46,6 +46,7 @@ class LeadOffer extends React.Component {
       meetings: [],
       matchData: [],
       menuShow: false,
+      showWarning: false,
     }
   }
 
@@ -113,6 +114,7 @@ class LeadOffer extends React.Component {
     this.setState(
       {
         modalActive: !modalActive,
+        showWarning: false,
       },
       () => {
         if (!this.state.modalActive) {
@@ -145,6 +147,7 @@ class LeadOffer extends React.Component {
           offerChat: res.data.rows,
           disableButton: false,
           leadData: { customer: '', seller: '', agreed: '' },
+          showWarning: false,
         })
       })
       .catch((error) => {
@@ -438,7 +441,13 @@ class LeadOffer extends React.Component {
           .catch((error) => {
             console.log(error)
           })
+      } else {
+        this.setState({ showWarning: true, disableButton: false })
+        helper.warningToast('Please enter an agreed amount')
       }
+    } else {
+      this.setState({ showWarning: true, disableButton: false })
+      helper.warningToast('Please enter an agreed amount')
     }
   }
 
@@ -491,6 +500,7 @@ class LeadOffer extends React.Component {
       closedLeadEdit,
       currentProperty,
       btnLoading,
+      showWarning,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -558,6 +568,7 @@ class LeadOffer extends React.Component {
                   keyExtractor={(item, index) => item.id.toString()}
                 />
                 <OfferModal
+                  showWarning={showWarning}
                   agreedAmount={this.agreedAmount}
                   loading={btnLoading}
                   user={user}

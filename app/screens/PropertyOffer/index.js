@@ -46,6 +46,7 @@ class PropertyOffer extends React.Component {
       matchData: [],
       menuShow: false,
       btnLoading: false,
+      showWarning: false,
     }
   }
 
@@ -114,6 +115,7 @@ class PropertyOffer extends React.Component {
       {
         modalActive: !modalActive,
         btnLoading: false,
+        showWarning: false,
       },
       () => {
         if (!this.state.modalActive) {
@@ -133,6 +135,7 @@ class PropertyOffer extends React.Component {
   handleForm = (value, name) => {
     const { leadData } = this.state
     leadData[name] = value
+    console.log('handleForm: ', value, name)
     this.setState({ leadData })
   }
 
@@ -147,6 +150,7 @@ class PropertyOffer extends React.Component {
           offerChat: res.data.rows,
           disableButton: false,
           leadData: { customer: '', seller: '', agreed: '' },
+          showWarning: false,
         })
       })
       .catch((error) => {
@@ -412,20 +416,20 @@ class PropertyOffer extends React.Component {
     const { lead } = this.props
     let offer = []
     let offerId = null
-    if (value === 'showSeller') {
-      offerChat.map((item) => {
-        if (item.from === 'customer') {
-          offer.push(item)
-        }
-      })
-    } else {
-      offerChat.map((item) => {
-        if (item.from === 'seller') {
-          offer.push(item)
-        }
-      })
-    }
     if (offerChat) {
+      if (value === 'showSeller') {
+        offerChat.map((item) => {
+          if (item.from === 'customer') {
+            offer.push(item)
+          }
+        })
+      } else {
+        offerChat.map((item) => {
+          if (item.from === 'seller') {
+            offer.push(item)
+          }
+        })
+      }
       this.setState({ disableButton: true, btnLoading: false })
       if (offer.length) {
         offerId = offer[offer.length - 1].id
@@ -440,7 +444,13 @@ class PropertyOffer extends React.Component {
           .catch((error) => {
             console.log(error)
           })
+      } else {
+        this.setState({ showWarning: true, disableButton: false })
+        helper.warningToast('Please enter an agreed amount')
       }
+    } else {
+      this.setState({ showWarning: true, disableButton: false })
+      helper.warningToast('Please enter an agreed amount')
     }
   }
 
@@ -493,6 +503,7 @@ class PropertyOffer extends React.Component {
       closedLeadEdit,
       currentProperty,
       btnLoading,
+      showWarning,
     } = this.state
     const { lead, navigation, user } = this.props
 
@@ -559,6 +570,7 @@ class PropertyOffer extends React.Component {
                   keyExtractor={(item, index) => item.id.toString()}
                 />
                 <OfferModal
+                  showWarning={showWarning}
                   agreedAmount={this.agreedAmount}
                   loading={btnLoading}
                   user={user}

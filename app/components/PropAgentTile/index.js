@@ -77,7 +77,7 @@ class PropAgentTile extends React.Component {
   }
 
   render() {
-    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow } = this.props
+    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen } = this.props
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
     let showDone = this.checkDiaryStatus(data)

@@ -41,7 +41,8 @@ class InventoryTile extends React.Component {
 
   render() {
     const { data, onCall, checkForArmsProperty } = this.props;
-    const imagesList =  data.armsUser ? data.armsPropertyImages : data.property_images;
+    const imagesList =  data.armsuser ? data.armsPropertyImages : data.property_images;
+    const imagesCount = data.armsuser && data.armsPropertyImages ? data.armsPropertyImages.length : data.user && data.property_images ? data.property_images.length : null;
     const ownerName = this.checkCustomerName(data);
 
     return (
@@ -73,7 +74,7 @@ class InventoryTile extends React.Component {
 
         <View style={styles.imageCountViewStyle}>
           <Feather name={'camera'} color={'#fff'} size={16} />
-          <Text style={styles.imageCount}>{data.armsPropertyImages && data.armsPropertyImages.length}</Text>
+          <Text style={styles.imageCount}>{imagesCount}</Text>
         </View>
 
         <View style={{ width: wp('60%') }}>

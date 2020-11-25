@@ -76,10 +76,6 @@ class FieldsInventories extends React.Component {
 		})
 	}
 
-	goToInventoryForm = () => {
-		RootNavigation.navigate('AddInventory');
-	}
-
 	deleteProperty = (id) => {
 		let endPoint = ``
 		let that = this;
@@ -101,7 +97,7 @@ class FieldsInventories extends React.Component {
 
 	onHandlePress = (data) => {
 		const { navigation } = this.props;
-		navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: true })
+		navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: false, screenName: 'FieldsInventories' })
 	}
 
 	onHandleLongPress = (val) => {
@@ -148,22 +144,6 @@ class FieldsInventories extends React.Component {
 		return (
 			!loading ?
 				<View style={[AppStyles.container, { marginBottom: 25 }]}>
-
-					{/* {
-						Ability.canAdd(user.subRole, route.params.screen) ?
-							<Fab
-								active='true'
-								containerStyle={{ zIndex: 20 }}
-								style={{ backgroundColor: AppStyles.colors.primaryColor }}
-								position="bottomRight"
-								onPress={this.goToInventoryForm}
-							>
-								<Ionicons name="md-add" color="#ffffff" />
-							</Fab> :
-							null
-					} */}
-
-
 					{/* ***** Main Tile Wrap */}
 
 					{

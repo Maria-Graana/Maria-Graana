@@ -423,7 +423,7 @@ const helper = {
     }
     if (identifier) {
       Notifications.cancelScheduledNotificationAsync(identifier)
-        .then((notification) => {})
+        .then((notification) => { })
         .catch((error) => {
           console.log(error)
         })
@@ -581,6 +581,13 @@ const helper = {
       return false // property agent
     }
   },
+  removeHtmlTags(str) {
+    if ((str === null) || (str === ''))
+      return false;
+    else
+      str = str.toString();
+    return str.replace(/<[^>]*>/g, '');
+  }
 }
 
 module.exports = helper

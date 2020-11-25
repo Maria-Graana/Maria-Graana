@@ -169,7 +169,7 @@ class PropertyDetail extends React.Component {
             {description ? (
               <>
                 <Text style={styles.headingText}> Description </Text>
-                <Text style={styles.labelText}> {description} </Text>
+                <Text style={styles.labelText}> {helper.removeHtmlTags(description) } </Text>
               </>
             ) : null}
 

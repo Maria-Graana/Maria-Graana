@@ -125,7 +125,7 @@ class PropertyDetail extends React.Component {
       address = property && property.customer && property.customer.address && property.customer.address
       pocName = property && property.poc_name ? property.poc_name : '';
       pocPhone= property && property.poc_phone ? property.poc_phone : '';
-      images = property && property.armsPropertyImages
+      images = property && property.armsUser && property.armsPropertyImages  ? property.armsPropertyImages : property.property_images ? property.property_images : []
       parsedFeatures = JSON.parse(property && property.features)
       amentities = _.isEmpty(parsedFeatures) ? [] : _.keys(parsedFeatures)
       if (amentities.length) {

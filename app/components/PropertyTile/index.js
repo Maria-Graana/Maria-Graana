@@ -41,7 +41,7 @@ class InventoryTile extends React.Component {
 
   render() {
     const { data, onCall, checkForArmsProperty } = this.props;
-    const imagesList = data.armsPropertyImages;
+    const imagesList =  data.armsUser ? data.armsPropertyImages : data.property_images;
     const ownerName = this.checkCustomerName(data);
 
     return (

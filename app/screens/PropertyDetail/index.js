@@ -9,6 +9,7 @@ import { connect } from 'react-redux'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
+import TouchableButton from '../../components/TouchableButton'
 import helper from '../../helper'
 import styles from './style'
 
@@ -31,14 +32,14 @@ class PropertyDetail extends React.Component {
 
   navigateTo = () => {
     const { route, navigation } = this.props
-    const {property, update, screenName} = route.params;
-    if(screenName === 'FieldsInventories'){
+    const { property, update, screenName } = route.params;
+    if (screenName === 'FieldsInventories') {
       navigation.navigate('EditFieldAppProperty', {
         property: property,
         update: update
       })
     }
-    else{
+    else {
       navigation.navigate('AddInventory', {
         property: property,
         update: update,
@@ -119,13 +120,13 @@ class PropertyDetail extends React.Component {
       description = property && property.description
       grade = property && property.grade && property.grade === null || property && property.grade === '' ? '' : property && property.grade
       lattitude = property && property.lat === null ? '' : property.lat + '/'
-      longitude = property && property.lng === null ? '' : property.lng
+      longitude = property && (property.lng === null || property.lon === null )? '' : property.lng ? property.lng : property.lon
       ownerName = this.checkUserName(property)
       ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
       address = property && property.customer && property.customer.address && property.customer.address
       pocName = property && property.poc_name ? property.poc_name : '';
-      pocPhone= property && property.poc_phone ? property.poc_phone : '';
-      images = property && property.armsuser && property.armsPropertyImages  ? property.armsPropertyImages : property.property_images ? property.property_images : []
+      pocPhone = property && property.poc_phone ? property.poc_phone : '';
+      images = property && property.armsuser && property.armsPropertyImages ? property.armsPropertyImages : property.property_images ? property.property_images : []
       parsedFeatures = JSON.parse(property && property.features)
       amentities = _.isEmpty(parsedFeatures) ? [] : _.keys(parsedFeatures)
       if (amentities.length) {
@@ -178,7 +179,7 @@ class PropertyDetail extends React.Component {
             {description ? (
               <>
                 <Text style={styles.headingText}> Description </Text>
-                <Text style={styles.labelText}> {helper.removeHtmlTags(description) } </Text>
+                <Text style={styles.labelText}> {helper.removeHtmlTags(description)} </Text>
               </>
             ) : null}
 
@@ -273,7 +274,7 @@ class PropertyDetail extends React.Component {
                 <Text style={styles.labelText}> {address}</Text>
               </View>
             ) : null}
-             {pocName ? (
+            {pocName ? (
               <View>
                 <Text style={styles.headingText}>Point of Contact Name </Text>
                 <Text style={styles.labelText}> {pocName}</Text>
@@ -331,8 +332,21 @@ class PropertyDetail extends React.Component {
               }
             </View>
           }
-
         </View>
+        {/* **************************************** */}
+        {
+          property.rider_id && property.status === 'onhold' ?
+          <View style={{ marginBottom: 25 }}>
+            <TouchableButton
+              containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+              label={'APPROVE PROPERTY'}
+              onPress={() => console.log('hello')}
+            //loading={imageLoading || loading}
+            />
+          </View>
+          : null
+        }
+
       </ScrollView>
     ) : (
         <Loader loading={loading} />

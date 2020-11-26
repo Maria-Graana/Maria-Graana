@@ -100,7 +100,7 @@ class GraanaInventories extends React.Component {
 
 	onHandlePress = (data) => {
 		const { navigation } = this.props;
-		navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: true })
+		navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: true ,screenName: 'GraanaInventories' })
 	}
 
 	onHandleLongPress = (val) => {

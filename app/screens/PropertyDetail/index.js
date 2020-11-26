@@ -19,7 +19,7 @@ class PropertyDetail extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      property: {},
+      property: props.route.params.property ? props.route.params.property : null,
       loading: true,
     }
   }
@@ -32,7 +32,7 @@ class PropertyDetail extends React.Component {
 
   navigateTo = () => {
     const { route, navigation } = this.props
-    const { property, update, screenName } = route.params;
+    const { property, update, screenName } = this.state;
     if (screenName === 'FieldsInventories') {
       navigation.navigate('EditFieldAppProperty', {
         property: property,
@@ -48,16 +48,25 @@ class PropertyDetail extends React.Component {
   }
 
   fetchProperty = () => {
-    const { route } = this.props
-    const { property } = route.params
-    let url = `/api/inventory/${property.id}`
-    if ('screen' in route.params) {
-      url = `/api/inventory/${property.arms_id}`
+    const { route } = this.props;
+    const {screenName} = route.params;
+    const { property } = this.state;
+    let url = '';
+    if(screenName === 'FieldsInventories' || screenName === 'GraanaInventories'){
+        // calling different api in case of field app and graana inventories, fetching graana/ field app property
+        url = `/api/inventory/portalproperty?id=${property.id}`
     }
+    else{
+      url = `/api/inventory/${property.id}` // for getting normal arms property
+      if ('screen' in route.params) {
+        url = `/api/inventory/${property.arms_id}` // for shortlist properties, call this url
+      }
+    }
+   
     axios
       .get(url)
       .then((res) => {
-        this.setState({ property: res.data, loading: false })
+        this.setState({ property: res.data, loading:false });
       })
       .catch((error) => {
         console.log('ERROR API: /api/inventory/', error)
@@ -76,10 +85,25 @@ class PropertyDetail extends React.Component {
     }
   }
 
+  approveProperty = (id) => {
+    let url = `/api/inventory/fieldProperty?id=${id}`;
+    this.setState({ loading: true }, () => {
+      axios
+        .patch(url)
+        .then((res) => {
+                 this.fetchProperty();
+        })
+        .catch(error => {
+          console.log('ERROR API: /api/inventory/fieldProperty', error)
+        })
+    })
+
+  }
+
   render() {
-    const { loading } = this.state
+    const { loading, property } = this.state
     const { route, navigation } = this.props
-    const { property, editButtonHide } = route.params
+    const { editButtonHide } = route.params
 
     let type = ''
     let subtype = ''
@@ -119,8 +143,8 @@ class PropertyDetail extends React.Component {
       demandPrice = property && property.price
       description = property && property.description
       grade = property && property.grade && property.grade === null || property && property.grade === '' ? '' : property && property.grade
-      lattitude = property && property.lat === null ? '' : property.lat + '/'
-      longitude = property && (property.lng === null || property.lon === null )? '' : property.lng ? property.lng : property.lon
+     lattitude = property && property.lat === null ? '' : property.lat + '/'
+     longitude = property && (property.lng === null || property.lon === null) ? '' : property.lng ? property.lng : property.lon
       ownerName = this.checkUserName(property)
       ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
       address = property && property.customer && property.customer.address && property.customer.address
@@ -335,16 +359,16 @@ class PropertyDetail extends React.Component {
         </View>
         {/* **************************************** */}
         {
-          property.rider_id && property.status === 'onhold' ?
-          <View style={{ marginBottom: 25 }}>
-            <TouchableButton
-              containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-              label={'APPROVE PROPERTY'}
-              onPress={() => console.log('hello')}
-            //loading={imageLoading || loading}
-            />
-          </View>
-          : null
+          property && property.status === 'onhold' && property.rider_id  ?
+            <View style={{ marginBottom: 25 }}>
+              <TouchableButton
+                containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+                label={'APPROVE PROPERTY'}
+                onPress={() => this.approveProperty(property.id)}
+                loading={loading}
+              />
+            </View>
+            : null
         }
 
       </ScrollView>

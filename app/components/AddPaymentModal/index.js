@@ -29,12 +29,12 @@ class AddPaymentModal extends React.Component {
       goToPayAttachments,
       secondFormLeadData,
       remarks,
+      goToRemarks,
     } = this.props
     return (
 
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
-
           {
             modalLoading === false ?
               <View style={styles.topHeader}>
@@ -88,15 +88,18 @@ class AddPaymentModal extends React.Component {
 
                   {
                     remarks != null &&
-                    <SimpleInputText
-                      name={'remarks'}
-                      fromatName={false}
-                      placeholder={'Remarks'}
-                      label={'REMARKS'}
-                      value={remarks}
-                      formatValue={''}
-                      editable={false}
-                    />
+                    <TouchableOpacity style={styles.addPaymentBt} onPress={() => { goToRemarks(true, secondFormLeadData.id) }}>
+                      <SimpleInputText
+                        name={'remarks'}
+                        fromatName={false}
+                        placeholder={'Remarks'}
+                        label={'REMARKS'}
+                        value={'View Remarks'}
+                        formatValue={''}
+                        editable={false}
+                      />
+                    </TouchableOpacity>
+
                   }
 
                   {
@@ -129,7 +132,7 @@ class AddPaymentModal extends React.Component {
                       <TouchableOpacity style={styles.bookedBtn} onPress={() => { addPaymentLoading != true && secondFormSubmit() }}>
                         {addPaymentLoading === false && <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />}
                         <Text style={styles.bookedBtnText}>
-                          {addPaymentLoading === true ? <ActivityIndicator size="small" color={'white'} style={styles.loaderTop}/> : 'OK'}
+                          {addPaymentLoading === true ? <ActivityIndicator size="small" color={'white'} style={styles.loaderTop} /> : 'OK'}
                         </Text>
                       </TouchableOpacity>
                   }

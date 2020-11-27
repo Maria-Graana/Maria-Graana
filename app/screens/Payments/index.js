@@ -18,6 +18,7 @@ import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style';
 import { setCMPaymennt } from '../../actions/addCMPayment';
+import RemarksDetailsForPayment from '../../components/RemarksDetailsForPayment'
 
 class Payments extends Component {
 	constructor(props) {
@@ -94,6 +95,9 @@ class Payments extends Component {
 			remarks: null,
 			editaAbleForTokenScreenOne: false,
 			bookingDetailsModalActive: false,
+			paymentRemarkVisible: false,
+			remarksPaymentLoading: false,
+			remarksDataForPayment: [],
 		}
 	}
 
@@ -979,6 +983,25 @@ class Payments extends Component {
 		})
 	}
 
+	goToRemarks = (status, id) => {
+		this.setState({
+			paymentRemarkVisible: status,
+			remarksPaymentLoading: true,
+		})
+		if (status === true) {
+			axios.get(`/api/leads/paymentremarks?id=${id}`)
+				.then((res) => {
+					this.setState({
+						remarksPaymentLoading: false,
+						remarksDataForPayment: res.data.remarks
+					})
+				}).catch((error) => {
+					console.log('/api/leads/paymentremarks?id - Error', error);
+					helper.errorToast('Payment Remarks API failed!!')
+				})
+		}
+	}
+
 	onHandleCloseLead = (reason) => {
 		const { lead, navigation } = this.props
 		const { selectedReason } = this.state;
@@ -1095,6 +1118,9 @@ class Payments extends Component {
 			cnicEditable,
 			leftSqft,
 			bookingDetailsModalActive,
+			paymentRemarkVisible,
+			remarksDataForPayment,
+			remarksPaymentLoading,
 		} = this.state
 		return (
 			<View>
@@ -1184,6 +1210,12 @@ class Payments extends Component {
 							firstScreenConfirmModal={this.firstScreenConfirmModal}
 							submitFirstScreen={this.submitFirstScreen}
 						/> : null}
+					<RemarksDetailsForPayment
+						active={paymentRemarkVisible}
+						data={remarksDataForPayment}
+						remarksPaymentLoading={remarksPaymentLoading}
+						goToRemarks={this.goToRemarks}
+					/>
 					<AddPaymentModal
 						active={addPaymentModalToggleState}
 						secondFormData={secondFormData}
@@ -1196,6 +1228,7 @@ class Payments extends Component {
 						secondHandleForm={this.secondHandleForm}
 						secondFormSubmit={this.secondFormSubmit}
 						goToPayAttachments={this.goToPayAttachments}
+						goToRemarks={this.goToRemarks}
 					/>
 					<AddTokenModal
 						active={tokenModalVisible}

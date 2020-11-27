@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
+import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native'
 import Modal from 'react-native-modal';
 import { connect } from 'react-redux';
 import times from '../../../assets/img/times.png'
@@ -8,7 +8,10 @@ import PickerComponent from '../Picker/index';
 import StaticData from '../../StaticData';
 import ErrorMessage from '../../components/ErrorMessage'
 import TouchableButton from '../../components/TouchableButton'
+import TouchableInput from '../../components/TouchableInput'
 import AppStyles from '../../AppStyles';
+import axios from 'axios';
+import moment from 'moment'
 
 const AddCommissionModal = ({
     onModalCloseClick,
@@ -20,12 +23,42 @@ const AddCommissionModal = ({
     lead,
     submitCommissionPayment,
 }) => {
+
+    const handleEmptyValue = (value) => {
+        return value != null && value != '' ? value : ''
+    }
+
+    const [remarks, setRemarks] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [isCollapsed, setCollapsed] = useState(false);
+    const fetchRemarks = () => {
+        if(isCollapsed === false){
+            const url = `/api/leads/paymentremarks?id=${rcmPayment.id}`
+            axios.get(url).then(response => {
+                    setRemarks(response.data.remarks);
+                    setLoading(false);
+                    setCollapsed(true)
+    
+            }).catch(error => {
+                console.log('`/api/leads/paymentremarks- Error', error);
+                setLoading(false);
+            })
+        }
+        else{
+            setCollapsed(!isCollapsed);
+        }
+        
+    }
     return (
         <Modal isVisible={rcmPayment.visible}>
             <View style={styles.modalMain}>
                 <View style={styles.topHeader}>
                     <Text style={styles.headingText}>Enter Details</Text>
-                    <TouchableOpacity style={styles.timesBtn} onPress={() => onModalCloseClick()}>
+                    <TouchableOpacity style={styles.timesBtn} onPress={() => {
+                        setCollapsed(false)
+                        setRemarks([])
+                        onModalCloseClick()
+                        }}>
                         <Image source={times} style={styles.timesImg} />
                     </TouchableOpacity>
                 </View>
@@ -64,17 +97,37 @@ const AddCommissionModal = ({
                     />
 
                     {
-                        lead.commissions && lead.commissions.remarks != null &&
-                        <SimpleInputText
-                            name={'remarks'}
-                            fromatName={false}
-                            placeholder={'Remarks'}
-                            label={'REMARKS'}
-                            value={rcmPayment.remarks}
-                            formatValue={''}
-                            editable={false}
+                        rcmPayment.id &&
+                        <TouchableInput
+                            disabled={loading}
+                            onPress={() =>  fetchRemarks()}
+                            placeholder={'View Remarks'}
+                            showIconOrImage={false}
                         />
                     }
+
+                    {
+                        loading === false && isCollapsed ?
+                        remarks.length > 0 ?
+                            <FlatList 
+                            style={{ minHeight: 20, maxHeight: 150 }}
+                            data={remarks}
+                                renderItem={({ item, index }) => <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
+                                    <View>
+                                      <Text style={[styles.smallText]}>{item.armsuser.firstName} {item.armsuser.lastName} <Text style={styles.smallestText}> ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})</Text></Text>
+                                        <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
+                                    </View>
+                                </View>
+                                } 
+                                keyExtractor={(item)=> item.id.toString()}
+                                />
+
+                           : <ErrorMessage errorMessage={'No Payment Remarks Exists'}/>
+                            :
+                            null
+                    }
+
+
 
                     {
                         rcmPayment.installmentAmount != null && rcmPayment.installmentAmount != '' &&
@@ -276,4 +329,26 @@ const styles = StyleSheet.create({
     cancelLight: {
         flex: 1,
     },
+  MainTileView: {
+    borderTopWidth: 1,
+    borderColor: '#ECECEC',
+    padding: 10,
+    backgroundColor:'white'
+  },
+  smallText: {
+    color: '#1F2029',
+    fontSize: 16,
+    marginBottom: 3,
+    textTransform: 'capitalize',
+  },
+  smallestText: {
+    fontSize: 12,
+  },
+  largeText: {
+    color: '#1F2029',
+    fontSize: 18,
+  },
+  noBorder: {
+    borderTopWidth: 0
+  },
 })

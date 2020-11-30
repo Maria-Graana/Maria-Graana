@@ -8,6 +8,7 @@ import PickerComponent from '../Picker/index';
 import StaticData from '../../StaticData';
 import ErrorMessage from '../../components/ErrorMessage'
 import times from '../../../assets/img/times.png'
+import moment from 'moment'
 
 class AddPaymentModal extends React.Component {
   constructor(props) {
@@ -30,6 +31,9 @@ class AddPaymentModal extends React.Component {
       secondFormLeadData,
       remarks,
       goToRemarks,
+      remarkActive,
+      remarkData,
+      remarksPaymentLoading,
     } = this.props
     return (
 
@@ -88,7 +92,7 @@ class AddPaymentModal extends React.Component {
 
                   {
                     remarks != null &&
-                    <TouchableOpacity style={styles.addPaymentBt} onPress={() => { goToRemarks(true, secondFormLeadData.id) }}>
+                    <TouchableOpacity style={styles.addPaymentBt} onPress={() => { goToRemarks(!remarkActive, secondFormLeadData.id) }}>
                       <SimpleInputText
                         name={'remarks'}
                         fromatName={false}
@@ -101,6 +105,29 @@ class AddPaymentModal extends React.Component {
                     </TouchableOpacity>
 
                   }
+
+                  {
+                    remarkActive === true &&
+                    <View style={[styles.collapseMain, styles.collapseOpen]}>
+                      <ScrollView style={{ height: 150 }}>
+                        {
+                          remarksPaymentLoading === false ?
+                            remarkData && remarkData.length && remarkData.map((item, index) => {
+                              return (
+                                <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
+                                  <View>
+                                    <Text style={[styles.smallText]}>{item.armsuser.firstName} {item.armsuser.lastName} <Text style={styles.smallestText}> ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})</Text></Text>
+                                    <Text style={styles.largeText}>{item.remarks}</Text>
+                                  </View>
+                                </View>
+                              )
+                            })
+                            : <Text>Fetching Data...</Text>
+                        }
+                      </ScrollView>
+                    </View>
+                  }
+
 
                   {
                     secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' &&

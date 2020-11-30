@@ -1210,12 +1210,12 @@ class Payments extends Component {
 							firstScreenConfirmModal={this.firstScreenConfirmModal}
 							submitFirstScreen={this.submitFirstScreen}
 						/> : null}
-					<RemarksDetailsForPayment
+					{/* <RemarksDetailsForPayment
 						active={paymentRemarkVisible}
 						data={remarksDataForPayment}
 						remarksPaymentLoading={remarksPaymentLoading}
 						goToRemarks={this.goToRemarks}
-					/>
+					/> */}
 					<AddPaymentModal
 						active={addPaymentModalToggleState}
 						secondFormData={secondFormData}
@@ -1229,6 +1229,9 @@ class Payments extends Component {
 						secondFormSubmit={this.secondFormSubmit}
 						goToPayAttachments={this.goToPayAttachments}
 						goToRemarks={this.goToRemarks}
+						remarkActive={paymentRemarkVisible}
+						remarkData={remarksDataForPayment}
+						remarksPaymentLoading={remarksPaymentLoading}
 					/>
 					<AddTokenModal
 						active={tokenModalVisible}

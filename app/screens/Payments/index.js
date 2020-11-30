@@ -697,6 +697,7 @@ class Payments extends Component {
 				addPaymentModalToggleState: status,
 				remarks: null,
 				editaAble: false,
+				paymentRemarkVisible: false,
 			})
 		}
 	}
@@ -744,6 +745,7 @@ class Payments extends Component {
 						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
+							paymentRemarkVisible: false,
 						})
 					})
 			} else {
@@ -771,6 +773,7 @@ class Payments extends Component {
 						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
+							paymentRemarkVisible: false,
 						})
 					})
 			}
@@ -811,6 +814,7 @@ class Payments extends Component {
 								addPaymentModalToggleState: false,
 								remainingPayment: remainingPayment - secondFormData.installmentAmount,
 								addPaymentLoading: false,
+								paymentRemarkVisible: false,
 							}, () => {
 								this.fetchLead();
 								Alert.alert(
@@ -844,6 +848,7 @@ class Payments extends Component {
 						addPaymentModalToggleState: false,
 						remainingPayment: remainingPayment - secondFormData.installmentAmount,
 						addPaymentLoading: false,
+						paymentRemarkVisible: false,
 					}, () => {
 						this.fetchLead();
 						Alert.alert(
@@ -868,7 +873,7 @@ class Payments extends Component {
 					details: '',
 					cmLeadId: this.props.lead.id,
 				},
-
+				paymentRemarkVisible: false,
 				addPaymentLoading: false,
 			}, () => {
 				this.fetchLead();
@@ -953,6 +958,7 @@ class Payments extends Component {
 		const { navigation } = this.props;
 		this.setState({
 			addPaymentModalToggleState: false,
+			paymentRemarkVisible: false,
 		})
 		navigation.navigate('AttachmentsForPayments');
 	}

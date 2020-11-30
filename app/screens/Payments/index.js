@@ -18,7 +18,6 @@ import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style';
 import { setCMPaymennt } from '../../actions/addCMPayment';
-import RemarksDetailsForPayment from '../../components/RemarksDetailsForPayment'
 
 class Payments extends Component {
 	constructor(props) {
@@ -1216,12 +1215,6 @@ class Payments extends Component {
 							firstScreenConfirmModal={this.firstScreenConfirmModal}
 							submitFirstScreen={this.submitFirstScreen}
 						/> : null}
-					{/* <RemarksDetailsForPayment
-						active={paymentRemarkVisible}
-						data={remarksDataForPayment}
-						remarksPaymentLoading={remarksPaymentLoading}
-						goToRemarks={this.goToRemarks}
-					/> */}
 					<AddPaymentModal
 						active={addPaymentModalToggleState}
 						secondFormData={secondFormData}

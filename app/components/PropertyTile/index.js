@@ -40,10 +40,10 @@ class InventoryTile extends React.Component {
   }
 
   render() {
-    const { data, onCall, checkForArmsProperty, whichProperties, graanaVerifeyModal } = this.props;
+    const { data, onCall, checkForArmsProperty, whichProperties, graanaVerifeyModal, index } = this.props;
     const imagesList = data.armsPropertyImages;
     const ownerName = this.checkCustomerName(data);
-    const checkForGraanaProperties =  whichProperties === 'graanaProperties'
+    const checkForGraanaProperties =  whichProperties === 'graanaProperties' 
     return (
       <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => checkForArmsProperty === true && this.onLongPress(data.id)} activeOpacity={0.7}>
         <View>
@@ -113,10 +113,10 @@ class InventoryTile extends React.Component {
         </View>
         
         {
-          checkForGraanaProperties === true &&
+          checkForGraanaProperties === true && data.verifiedStatus && data.verifiedStatus != 'verified' &&
           <View style={{ width: wp('9%'),}}>
           <TouchableOpacity style={{alignItems: 'center',paddingBottom: 10,}} onPress={()=>{ graanaVerifeyModal(true, data.id) }}>
-            <Image source={require('../../../assets/img/menuIcon2.png')} style={{width: 25, height: 25 }}></Image>
+            <Image source={require('../../../assets/img/threedots.png')} style={{height: 20, resizeMode:'contain' }}></Image>
           </TouchableOpacity>
         </View>
         }

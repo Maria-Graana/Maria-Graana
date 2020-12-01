@@ -39,10 +39,12 @@ class PropertyDetail extends React.Component {
 
   fetchProperty = () => {
     const { route } = this.props
-    const { property } = route.params
+    const { property, screen } = route.params
     let url = `/api/inventory/${property.id}`
     if ('screen' in route.params) {
-      url = `/api/inventory/${property.arms_id}`
+      if (screen === 'LeadDetail') {
+        url = `/api/inventory/${property.arms_id}`
+      }
     }
     axios
       .get(url)
@@ -94,8 +96,8 @@ class PropertyDetail extends React.Component {
     let parkingSpace = ''
     let downPayment = ''
     let floors = ''
-    let pocName = '';
-    let pocPhone = '';
+    let pocName = ''
+    let pocPhone = ''
     if (!loading) {
       type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1)
       subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1)
@@ -108,14 +110,19 @@ class PropertyDetail extends React.Component {
       purpose = property && property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1)
       demandPrice = property && property.price
       description = property && property.description
-      grade = property && property.grade && property.grade === null || property && property.grade === '' ? '' : property && property.grade
+      grade =
+        (property && property.grade && property.grade === null) ||
+        (property && property.grade === '')
+          ? ''
+          : property && property.grade
       lattitude = property && property.lat === null ? '' : property.lat + '/'
       longitude = property && property.lng === null ? '' : property.lng
       ownerName = this.checkUserName(property)
       ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
-      address = property && property.customer && property.customer.address && property.customer.address
-      pocName = property && property.poc_name ? property.poc_name : '';
-      pocPhone= property && property.poc_phone ? property.poc_phone : '';
+      address =
+        property && property.customer && property.customer.address && property.customer.address
+      pocName = property && property.poc_name ? property.poc_name : ''
+      pocPhone = property && property.poc_phone ? property.poc_phone : ''
       images = property && property.armsPropertyImages
       parsedFeatures = JSON.parse(property && property.features)
       amentities = _.isEmpty(parsedFeatures) ? [] : _.keys(parsedFeatures)
@@ -169,7 +176,7 @@ class PropertyDetail extends React.Component {
             {description ? (
               <>
                 <Text style={styles.headingText}> Description </Text>
-                <Text style={styles.labelText}> {helper.removeHtmlTags(description) } </Text>
+                <Text style={styles.labelText}> {helper.removeHtmlTags(description)} </Text>
               </>
             ) : null}
 
@@ -177,10 +184,10 @@ class PropertyDetail extends React.Component {
             <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
               {images && images.length
                 ? images.map((item, index) => {
-                  return (
-                    <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
-                  )
-                })
+                    return (
+                      <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
+                    )
+                  })
                 : null}
             </View>
 
@@ -264,7 +271,7 @@ class PropertyDetail extends React.Component {
                 <Text style={styles.labelText}> {address}</Text>
               </View>
             ) : null}
-             {pocName ? (
+            {pocName ? (
               <View>
                 <Text style={styles.headingText}>Point of Contact Name </Text>
                 <Text style={styles.labelText}> {pocName}</Text>
@@ -307,8 +314,7 @@ class PropertyDetail extends React.Component {
               </>
             ) : null}
           </View>
-          {
-            editButtonHide === false &&
+          {editButtonHide === false && (
             <View style={styles.pad}>
               {
                 <MaterialCommunityIcons
@@ -321,13 +327,12 @@ class PropertyDetail extends React.Component {
                 />
               }
             </View>
-          }
-
+          )}
         </View>
       </ScrollView>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

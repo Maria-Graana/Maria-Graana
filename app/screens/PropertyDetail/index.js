@@ -32,7 +32,7 @@ class PropertyDetail extends React.Component {
 
   navigateTo = () => {
     const { route, navigation } = this.props
-    const { property, update, screenName } = this.state;
+    const { property, update, screenName } = route.params;
     if (screenName === 'FieldsInventories') {
       navigation.navigate('EditFieldAppProperty', {
         property: property,

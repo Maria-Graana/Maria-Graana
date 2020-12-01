@@ -18,9 +18,10 @@ import Loader from '../../components/loader';
 import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
+import Ability from '../../hoc/Ability'
 import { getItem, storeItem } from '../../actions/user';
 
-var BUTTONS = ['Share lead with other agent', 'Create new Investment lead for this client', 'Cancel'];
+var BUTTONS = ['Share lead with other agent', 'Create new Investment lead for this client', 'Assign to team member', 'Cancel'];
 var CANCEL_INDEX = 2;
 
 class InvestLeads extends React.Component {
@@ -40,6 +41,7 @@ class InvestLeads extends React.Component {
 			onEndReachedLoader: false,
 			showSearchBar: false,
 			searchText: '',
+			showAssignToButton: false,
 		}
 	}
 
@@ -47,6 +49,7 @@ class InvestLeads extends React.Component {
 		this._unsubscribe = this.props.navigation.addListener('focus', () => {
 			this.onFocus()
 		})
+
 	}
 
 	componentWillUnmount() {
@@ -105,6 +108,8 @@ class InvestLeads extends React.Component {
 					onEndReachedLoader: false,
 					totalLeads: res.data.count,
 					statusFilter: statusFilter,
+				}, () => {
+					// this.checkAssignedLead(res.data)
 				})
 			}).catch((res) => {
 				this.setState({
@@ -115,7 +120,7 @@ class InvestLeads extends React.Component {
 
 	goToFormPage = (page, status, client) => {
 		const { navigation } = this.props;
-		navigation.navigate(page, { 'pageName': status , client, name: client && client.customerName});
+		navigation.navigate(page, { 'pageName': status, client, name: client && client.customerName });
 	}
 
 	changeStatus = (status) => {
@@ -158,8 +163,12 @@ class InvestLeads extends React.Component {
 					//Share
 					this.navigateToShareScreen(val);
 				}
-				else if(buttonIndex === 1){
-					this.goToFormPage('AddCMLead', 'CM', val && val.customer ? val.customer: null)
+				else if (buttonIndex === 1) {
+					this.goToFormPage('AddCMLead', 'CM', val && val.customer ? val.customer : null)
+				}
+				else if (buttonIndex === 2) {
+
+					this.checkAssignedLead(val)
 				}
 			}
 		);
@@ -226,6 +235,38 @@ class InvestLeads extends React.Component {
 			this.clearStateValues();
 			this.fetchLeads();
 		})
+	}
+
+	checkAssignedLead = (lead) => {
+		const { user } = this.props
+		// Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
+		if (
+			Ability.canView(user.subRole, 'AssignLead') &&
+			lead.status !== StaticData.Constants.lead_closed_lost &&
+			lead.status !== StaticData.Constants.lead_closed_won
+		) {
+			// Lead can only be assigned to someone else if it is assigned to no one or to current user
+			if (lead.assigned_to_armsuser_id === null || user.id === lead.assigned_to_armsuser_id) {
+				this.setState({ showAssignToButton: true }, () => {
+					this.navigateToAssignLead(lead)
+				})
+			} else {
+				// Lead is already assigned to some other user (any other user)
+				this.setState({ showAssignToButton: false }, () => {
+					this.navigateToAssignLead(lead)
+				})
+			}
+		}
+	}
+
+	navigateToAssignLead = (lead) => {
+		const { navigation } = this.props
+		const { showAssignToButton } = this.state
+		if (showAssignToButton === true) {
+			navigation.navigate('AssignLead', { leadId: lead.id, type: 'Investment', screen: 'LeadDetail' })
+		} else {
+			helper.errorToast('Lead Already Assign')
+		}
 	}
 
 	render() {

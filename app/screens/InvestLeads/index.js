@@ -21,7 +21,7 @@ import Search from '../../components/Search';
 import Ability from '../../hoc/Ability'
 import { getItem, storeItem } from '../../actions/user';
 
-var BUTTONS = ['Share lead with other agent', 'Create new Investment lead for this client', 'Assign to team member', 'Cancel'];
+var BUTTONS = ['Assign to team member', 'Share lead with other agent', 'Create new Investment lead for this client', 'Cancel'];
 var CANCEL_INDEX = 2;
 
 class InvestLeads extends React.Component {
@@ -159,14 +159,14 @@ class InvestLeads extends React.Component {
 				title: 'Select an Option',
 			},
 			buttonIndex => {
-				if (buttonIndex === 0) {
+				if (buttonIndex === 1) {
 					//Share
 					this.navigateToShareScreen(val);
 				}
-				else if (buttonIndex === 1) {
+				else if (buttonIndex === 2) {
 					this.goToFormPage('AddCMLead', 'CM', val && val.customer ? val.customer : null)
 				}
-				else if (buttonIndex === 2) {
+				else if (buttonIndex === 0) {
 
 					this.checkAssignedLead(val)
 				}

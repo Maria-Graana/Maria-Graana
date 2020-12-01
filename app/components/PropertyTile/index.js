@@ -40,10 +40,10 @@ class InventoryTile extends React.Component {
   }
 
   render() {
-    const { data, onCall, checkForArmsProperty } = this.props;
+    const { data, onCall, checkForArmsProperty, whichProperties, graanaVerifeyModal } = this.props;
     const imagesList = data.armsPropertyImages;
     const ownerName = this.checkCustomerName(data);
-
+    const checkForGraanaProperties =  whichProperties === 'graanaProperties'
     return (
       <TouchableOpacity style={styles.mainContainer} onPress={() => this.onPress(data)} onLongPress={() => checkForArmsProperty === true && this.onLongPress(data.id)} activeOpacity={0.7}>
         <View>
@@ -76,7 +76,7 @@ class InventoryTile extends React.Component {
           <Text style={styles.imageCount}>{data.armsPropertyImages && data.armsPropertyImages.length}</Text>
         </View>
 
-        <View style={{ width: wp('60%') }}>
+        <View style={{ width: checkForGraanaProperties === true ? wp('50%') : wp('60%') }}>
 
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.currencyTextStyle}>PKR</Text>
@@ -111,6 +111,16 @@ class InventoryTile extends React.Component {
 
 
         </View>
+        
+        {
+          checkForGraanaProperties === true &&
+          <View style={{ width: wp('9%'),}}>
+          <TouchableOpacity style={{alignItems: 'center',paddingBottom: 10,}} onPress={()=>{ graanaVerifeyModal(true, data.id) }}>
+            <Image source={require('../../../assets/img/menuIcon2.png')} style={{width: 25, height: 25 }}></Image>
+          </TouchableOpacity>
+        </View>
+        }
+        
         {
           data.customer && data.customer.phone !== '' ?
             <View style={{ position: "absolute", bottom: 5, left: wp('82%') }}>

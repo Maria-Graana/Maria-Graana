@@ -292,12 +292,14 @@ class DetailForm extends Component {
       handleWaterMark,
       showCustomTitle,
       showCustomTitleField,
-      validate,
       setFlagObject,
       getTrimmedPhone,
       countryCode,
+      countryCode1,
       phoneValidate,
+      pocPhoneValidate,
     } = this.props
+
 
     const { size_unit } = this.props.formData
     return (
@@ -551,7 +553,7 @@ class DetailForm extends Component {
 
         {/* **************************************** */}
 
-        <View style={[AppStyles.multiFormInput, styles.radioComponentStyle]}>
+        {/* <View style={[AppStyles.multiFormInput, styles.radioComponentStyle]}>
           <RadioComponent
             onGradeSelected={(val) => handleForm(val, 'grade')}
             selected={selectedGrade === 'Grade A' ? true : false}
@@ -573,7 +575,7 @@ class DetailForm extends Component {
           >
             Grade C
           </RadioComponent>
-        </View>
+        </View> */}
 
         {formData.type ? (
           <TouchableOpacity
@@ -640,6 +642,7 @@ class DetailForm extends Component {
         </View>
 
         {/* **************************************** */}
+        <Text style={AppStyles.mainInputWrap}>Owner Name</Text>
         <View style={[AppStyles.inputWrap]}>
             <TextInput
               onChangeText={(text) => {
@@ -656,6 +659,7 @@ class DetailForm extends Component {
 
         <View style={[AppStyles.mainInputWrap]}>
 					<View style={[AppStyles.inputWrap]}>
+          <Text style={AppStyles.mainInputWrap}>Owner Phone</Text>
 						<PhoneInputComponent
 							phoneValue={(formData.owner_phone != '' && formData.owner_phone!=null ) && getTrimmedPhone(formData.owner_phone.replace('+92', ''))}
 							countryCodeValue={countryCode}
@@ -672,6 +676,40 @@ class DetailForm extends Component {
 						}
 					</View>
 				</View>
+
+         {/* **************************************** */}
+         <Text style={AppStyles.mainInputWrap}>Point of Contact Name</Text>
+         <View style={[AppStyles.inputWrap]}>
+            <TextInput
+              onChangeText={(text) => {
+                handleForm(text, 'poc_name')
+              }}
+              placeholderTextColor={'#a8a8aa'}
+              value={formData.poc_name}
+              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+              placeholder={'Point of Contact Name'}
+            />
+          </View>
+
+        {/* **************************************** */}
+
+        <View style={[AppStyles.mainInputWrap]}>
+					<View style={[AppStyles.inputWrap]}>
+          <Text style={AppStyles.mainInputWrap}>Point of Contact Phone</Text>
+						<PhoneInputComponent
+							phoneValue={(formData.poc_phone != '' && formData.poc_phone!=null ) && getTrimmedPhone(formData.poc_phone.replace('+92', ''))}
+							countryCodeValue={countryCode1}
+							setFlagObject={(object) => { setFlagObject(object, 'poc_phone') }}
+							onChangeHandle={handleForm}
+							name={'poc_phone'}
+							placeholder={'Point of Contact Phone'}
+						/>
+						{
+							pocPhoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+						}
+					</View>
+				</View>
+
 
         {/* **************************************** */}
         <TouchableOpacity onPress={() => handleWaterMark(!formData.showWaterMark)}

@@ -41,14 +41,14 @@ export function addImage(image){
   }
 }
 
-export function uploadImage(image) {
+export function uploadImage(image, isGraana = false) {
   return (dispatch, getState) => {
     let index = getState().property.images.length;
 
     let fd = new FormData();
     fd.append('image', image);
     dispatch(addImage(image));
-    let promise = axios.post(`/api/inventory/image`, fd)
+    let promise = axios.post(`/api/inventory/image?graana=${isGraana}`, fd)
       .then(response => {
         dispatch({
           type: types.IMAGE_UPLOAD_SUCCESS,

@@ -16,6 +16,7 @@ import _ from 'underscore';
 import ImageBrowser from '../../components/ImageBrowser/ImageBrowser';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { uploadImage, addImage, flushImages, removeImage, setImageLoading } from '../../actions/property'
+import { getAllCountries } from 'react-native-country-picker-modal'
 
 
 class EditFieldAppProperty extends Component {
@@ -35,6 +36,8 @@ class EditFieldAppProperty extends Component {
             selectedArea: null,
             isModalOpen: false,
             phoneValidate: false,
+            pocPhoneValidate: false,
+            countries: [],
             countryCode: defaultCountry.name,
             callingCode: defaultCountry.code,
             countryCode1: defaultCountry.name,
@@ -79,7 +82,7 @@ class EditFieldAppProperty extends Component {
                 showWaterMark: false,
             },
             showAdditional: false,
-            showCustomTitle : false,
+            showCustomTitle: false,
             features: StaticData.residentialFeatures,
             facing: StaticData.facing,
             utilities: StaticData.residentialUtilities,
@@ -95,7 +98,9 @@ class EditFieldAppProperty extends Component {
         })
         if (route.params.update) {
             navigation.setOptions({ title: 'EDIT PROPERTY' })
-            this.setEditValues()
+            getAllCountries().then((countries) => {
+                this.setState({ countries }, () => this.fetchCountryCode())
+            })
         }
     }
 
@@ -130,8 +135,87 @@ class EditFieldAppProperty extends Component {
         this.setState({ formData: { ...formData, area_id: '' }, selectedArea: null });
     }
 
+    fetchCountryCode = () => {
+        const { countries } = this.state
+        const { property } = this.props.route.params
+        let ownerPhone = property.owner_phone ? property.owner_phone.substring(1) : null;
+        let ownerDialCode = null
+        let ownerCountryCode = null
+        let pocContact = property.poc_phone ? property.poc_phone.substring(1) : null;
+        let pocCountryCode = null
+        let pocDialCode = null
+        let result = _.map(_.where(countries), function (country) {
+            return { callingCode: country.callingCode, cca2: country.cca2 }
+        })
+        let newResult = []
+        if (result.length) {
+            result.map((item) => {
+                let callingCode = item.callingCode
+                if (callingCode.length) {
+                    callingCode.map((code) => {
+                        let obj = {
+                            cca2: item.cca2,
+                            callingCode: Number(code),
+                        }
+                        newResult.push(obj)
+                    })
+                }
+            })
+        }
+        newResult = _.sortBy(newResult, 'callingCode').reverse()
+        for (let i = 0; i < newResult.length; i++) {
+            if (ownerPhone && ownerPhone.startsWith(newResult[i].callingCode)) {
+                if (!property.ownerCountryCode) {
+                    ownerDialCode = '+' + newResult[i].callingCode
+                    ownerCountryCode = newResult[i].cca2
+                } else {
+                    ownerCountryCode = property.ownerCountryCode
+                    ownerDialCode = property.ownerDialCode
+                }
+            }
+
+            if (pocContact && pocContact.startsWith(newResult[i].callingCode)) {
+                if (!property.pocDialCode) {
+                    pocDialCode = '+' + newResult[i].callingCode
+                    pocCountryCode = newResult[i].cca2
+                } else {
+                    pocDialCode = property.pocDialCode
+                    pocCountryCode = property.pocCountryCode
+                }
+            }
+        }
+        this.setState(
+            {
+                countryCode: ownerCountryCode ? ownerCountryCode.toUpperCase() : 'PK',
+                callingCode: ownerDialCode ? ownerDialCode : '+92',
+                countryCode1: pocCountryCode ? pocCountryCode.toUpperCase() : 'PK',
+                callingCode1: pocDialCode ? pocDialCode : '+92',
+            }, () => {
+                this.setEditValues()
+            }
+          
+        )
+    }
+
+    setDialCode = (callingCode) => {
+        return callingCode.startsWith('+') ? callingCode : "+" + callingCode
+    }
+    setPhoneNumber = (dialCode, phone) => {
+        let number = ''
+        let withoutPlus = dialCode.replace("+", "")
+        if (phone.startsWith("+")) {
+            if (phone.startsWith(dialCode)) number = phone.replace(dialCode, "")
+            else number = phone
+        } else {
+            if (phone.startsWith(withoutPlus)) number = number.replace(withoutPlus, "")
+            else number = phone
+        }
+        return number
+    }
+
     setEditValues = () => {
         const { route } = this.props
+        const {callingCode, countryCode, callingCode1, countryCode1} = this.state;
         const { property } = route.params
         let parsedFeatures = property.features ? JSON.parse(property.features) : {};
         let amentities = _.isEmpty(parsedFeatures) ? [] : (_.keys(parsedFeatures));
@@ -139,7 +223,12 @@ class EditFieldAppProperty extends Component {
             amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
             amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
         }
-        console.log(property)
+
+        let ownerCallingCode = this.setDialCode(callingCode)
+        let ownerNumber = this.setPhoneNumber(ownerCallingCode, property.owner_phone)
+        let pocCallingCode = this.setDialCode(callingCode1)
+        let pocNumber = this.setPhoneNumber(pocCallingCode, property.poc_phone)
+
         this.setState({
             formData: {
                 id: property.id,
@@ -160,14 +249,14 @@ class EditFieldAppProperty extends Component {
                     : property.property_images,
                 grade: property.grade,
                 status: property.status,
-                owner_phone: property.owner_phone,
+                owner_phone: ownerNumber,
                 owner_name: property.owner_name,
-                poc_phone: property.poc_phone,
+                ownerDialCode:  ownerCallingCode,
+                ownerCountryCode: countryCode,
+                poc_phone: pocNumber,
                 poc_name: property.poc_name,
-                // ownerDialCode:  property.ownerDialCode ? property.ownerDialCode : '+92',
-                // ownerCountryCode: property.ownerCountryCode ? property.ownerCountryCode : 'PK',
-                // pocDialCode: property.poc_phone ? property.pocDialCode ? property.pocDialCode : '+92' : null,
-                // pocCountryCode: property.poc_phone ? property.pocCountryCode ? property.pocCountryCode : 'PK' : null,
+                pocDialCode: pocCallingCode,
+                pocCountryCode: countryCode1,
                 lat: property.lat,
                 lon: property.lon,
                 description: property.description,
@@ -236,6 +325,9 @@ class EditFieldAppProperty extends Component {
         if (name === 'owner_phone') {
             this.validatePhone(value)
         }
+        if (name === 'poc_phone') {
+            this.validatePocPhone(value)
+        }
         if (formData.size === '') {
             formData.size = 0;
             this.setState({ formData })
@@ -251,7 +343,7 @@ class EditFieldAppProperty extends Component {
             !formData.city_id ||
             !formData.purpose ||
             !formData.area_id ||
-            !formData.size  ||
+            !formData.size ||
             !formData.owner_name ||
             !formData.owner_phone
             // !formData.customer_id
@@ -261,16 +353,16 @@ class EditFieldAppProperty extends Component {
             })
         } else {
             // ********* Call Add Inventory API here :)
-            this.setState({ loading: true }, () => {
+           // this.setState({ loading: true }, () => {
                 this.createOrEditProperty(formData);
-            })
+           // })
         }
     }
 
     createOrEditProperty = (formData) => {
         let features = {};
         const { navigation, route, dispatch } = this.props;
-        const { selectedFeatures } = this.state;
+        const { selectedFeatures, callingCode, callingCode1, countryCode, countryCode1 } = this.state;
         if (formData.year_built) { features["year_built"] = formData.year_built };
         if (formData.floors) { features["floors"] = formData.floors };
         if (formData.parking_space !== null || formData.parking_space !== undefined) { features["parking_space"] = formData.parking_space };
@@ -282,17 +374,22 @@ class EditFieldAppProperty extends Component {
         const { property } = route.params;
         const { images } = this.props;
         formData.lat = this.convertLatitude(formData.lat);
-        formData.lng = this.convertLongitude(formData.lng);
+        formData.lon = this.convertLongitude(formData.lon);
         formData.size = this.convertToIntegerForZero(formData.size)
         formData.price = this.convertToIntegerForZero(formData.price)
         formData.custom_title = formData.custom_title === '' ? null : formData.custom_title;
         formData.features = _.isEmpty(features) ? {} : features;
         formData.imageIds = _.pluck(images, 'id');
+        formData.ownerCountryCode = countryCode;
+        formData.ownerDialCode = callingCode
+        formData.pocCountryCode = countryCode1;
+        formData.pocDialCode = callingCode1
         // deleting these keys below from formdata as they are sent in features instead of seperately
         delete formData.parking_space;
         delete formData.floors;
         delete formData.year_built;
         delete formData.downpayment;
+
         if (route.params.update) {
             axios.patch(`/api/inventory/${property.id}`, formData)
                 .then((res) => {
@@ -311,30 +408,6 @@ class EditFieldAppProperty extends Component {
                 .catch((error) => {
                     this.setState({ loading: false })
                     helper.errorToast('ERROR: UPDATING PROPERTY')
-                    console.log('error', error.message)
-                })
-                .finally(() => {
-                    this.setState({ loading: false })
-                })
-        }
-        else {
-            //console.log(formData)
-            axios.post(`/api/inventory/create`, formData)
-                .then((res) => {
-                    // console.log(res.data)
-                    if (res.status === 200) {
-                        helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
-                        dispatch(flushImages());
-                        navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
-                    }
-                    else {
-                        helper.errorToast('ERROR: SOMETHING WENT WRONG')
-                    }
-                    this.setState({ loading: false })
-                })
-                .catch((error) => {
-                    this.setState({ loading: false })
-                    helper.errorToast('ERROR: ADDING PROPERTY')
                     console.log('error', error.message)
                 })
                 .finally(() => {
@@ -434,7 +507,7 @@ class EditFieldAppProperty extends Component {
             type: type,
             uri: manipResult.uri
         }
-        dispatch(uploadImage(image));
+        dispatch(uploadImage(image, true));
     };
 
 
@@ -576,7 +649,7 @@ class EditFieldAppProperty extends Component {
 
     setFlagObject = (object, name) => {
         if (name === 'owner_phone') {
-            this.setState({ countryCode: object.cca2, callingCode: '+' + object.callingCode[0] })
+            this.setState({ countryCode: object.cca2, callingCode: '+' + object.callingCode[0]  })
         }
         if (name === 'poc_phone') {
             this.setState({ countryCode1: object.cca2, callingCode1: '+' + object.callingCode[0] })
@@ -587,7 +660,12 @@ class EditFieldAppProperty extends Component {
         if (value.length < 4 && value !== '') this.setState({ phoneValidate: true })
         else this.setState({ phoneValidate: false })
     }
-    
+
+    validatePocPhone (value) {
+        if (value.length < 4 && value !== '') this.setState({ pocPhoneValidate: true })
+        else this.setState({ pocPhoneValidate: false })
+    }
+
 
     getTrimmedPhone = (number) => {
         let phone = number;
@@ -628,6 +706,7 @@ class EditFieldAppProperty extends Component {
             loading,
             showCustomTitle,
             phoneValidate,
+            pocPhoneValidate,
             countryCode,
             countryCode1,
         } = this.state
@@ -693,6 +772,7 @@ class EditFieldAppProperty extends Component {
                                     showCustomTitleField={this.showCustomTitleField}
                                     showCustomTitle={showCustomTitle}
                                     phoneValidate={phoneValidate}
+                                    pocPhoneValidate={pocPhoneValidate}
                                     countryCode={countryCode}
                                     countryCode1={countryCode1}
                                     getTrimmedPhone={this.getTrimmedPhone}

@@ -18,7 +18,6 @@ import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style';
 import { setCMPaymennt } from '../../actions/addCMPayment';
-import RemarksDetailsForPayment from '../../components/RemarksDetailsForPayment'
 
 class Payments extends Component {
 	constructor(props) {
@@ -697,6 +696,7 @@ class Payments extends Component {
 				addPaymentModalToggleState: status,
 				remarks: null,
 				editaAble: false,
+				paymentRemarkVisible: false,
 			})
 		}
 	}
@@ -744,6 +744,7 @@ class Payments extends Component {
 						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
+							paymentRemarkVisible: false,
 						})
 					})
 			} else {
@@ -771,6 +772,7 @@ class Payments extends Component {
 						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
+							paymentRemarkVisible: false,
 						})
 					})
 			}
@@ -811,6 +813,7 @@ class Payments extends Component {
 								addPaymentModalToggleState: false,
 								remainingPayment: remainingPayment - secondFormData.installmentAmount,
 								addPaymentLoading: false,
+								paymentRemarkVisible: false,
 							}, () => {
 								this.fetchLead();
 								Alert.alert(
@@ -844,6 +847,7 @@ class Payments extends Component {
 						addPaymentModalToggleState: false,
 						remainingPayment: remainingPayment - secondFormData.installmentAmount,
 						addPaymentLoading: false,
+						paymentRemarkVisible: false,
 					}, () => {
 						this.fetchLead();
 						Alert.alert(
@@ -868,7 +872,7 @@ class Payments extends Component {
 					details: '',
 					cmLeadId: this.props.lead.id,
 				},
-
+				paymentRemarkVisible: false,
 				addPaymentLoading: false,
 			}, () => {
 				this.fetchLead();
@@ -953,6 +957,7 @@ class Payments extends Component {
 		const { navigation } = this.props;
 		this.setState({
 			addPaymentModalToggleState: false,
+			paymentRemarkVisible: false,
 		})
 		navigation.navigate('AttachmentsForPayments');
 	}
@@ -1210,12 +1215,6 @@ class Payments extends Component {
 							firstScreenConfirmModal={this.firstScreenConfirmModal}
 							submitFirstScreen={this.submitFirstScreen}
 						/> : null}
-					<RemarksDetailsForPayment
-						active={paymentRemarkVisible}
-						data={remarksDataForPayment}
-						remarksPaymentLoading={remarksPaymentLoading}
-						goToRemarks={this.goToRemarks}
-					/>
 					<AddPaymentModal
 						active={addPaymentModalToggleState}
 						secondFormData={secondFormData}
@@ -1229,6 +1228,9 @@ class Payments extends Component {
 						secondFormSubmit={this.secondFormSubmit}
 						goToPayAttachments={this.goToPayAttachments}
 						goToRemarks={this.goToRemarks}
+						remarkActive={paymentRemarkVisible}
+						remarkData={remarksDataForPayment}
+						remarksPaymentLoading={remarksPaymentLoading}
 					/>
 					<AddTokenModal
 						active={tokenModalVisible}

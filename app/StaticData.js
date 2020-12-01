@@ -665,4 +665,12 @@ export default StaticData = {
     'Floor Plan Report',
     'Energy Efficiency Report',
   ],
+  graanaPropertiesStatusForRent: [
+        { label: 'Available for Rent', value: 'available_for_rent' },
+        { label: 'Rented', value: 'rented' },
+    ],
+    graanaPropertiesStatusForSale: [
+        { label: 'Available for Sale', value: 'available_for_sale' },
+        { label: 'Sold', value: 'sold' },
+    ]
 }

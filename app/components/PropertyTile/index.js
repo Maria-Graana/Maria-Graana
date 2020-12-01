@@ -45,10 +45,10 @@ class InventoryTile extends React.Component {
   }
 
   render() {
-    const { data, onCall, checkForArmsProperty, screen } = this.props
-    const imagesList = data.armsPropertyImages
-    const ownerName = this.checkCustomerName(data)
-
+    const { data, onCall, checkForArmsProperty, whichProperties, graanaVerifeyModal, screen } = this.props;
+    const imagesList = data.armsPropertyImages;
+    const ownerName = this.checkCustomerName(data);
+    const checkForGraanaProperties =  whichProperties === 'graanaProperties'
     return (
       <TouchableOpacity
         style={styles.mainContainer}
@@ -85,7 +85,7 @@ class InventoryTile extends React.Component {
             {data.armsPropertyImages && data.armsPropertyImages.length}
           </Text>
         </View>
-        <View style={{ width: wp('60%') }}>
+        <View style={{ width: checkForGraanaProperties === true ? wp('50%') : wp('60%') }}>
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.currencyTextStyle}>PKR</Text>
             <Text style={styles.priceTextStyle} numberOfLines={1}>
@@ -134,17 +134,24 @@ class InventoryTile extends React.Component {
             </View>
           )}
         </View>
-        {(data.customer && data.customer.phone !== '') || screen === 'fields' ? (
-          <View style={{ position: 'absolute', bottom: 5, left: wp('82%') }}>
-            <Foundation
-              name={'telephone'}
-              onPress={() => onCall(data)}
-              color={AppStyles.colors.subTextColor}
-              size={30}
-              style={styles.phoneButton}
-            />
-          </View>
-        ) : null}
+        {
+          checkForGraanaProperties === true &&
+          <View style={{ width: wp('9%'),}}>
+          <TouchableOpacity style={{alignItems: 'center',paddingBottom: 10,}} onPress={()=>{ graanaVerifeyModal(true, data.id) }}>
+            <Image source={require('../../../assets/img/menuIcon2.png')} style={{width: 25, height: 25 }}></Image>
+          </TouchableOpacity>
+        </View>
+        }
+        
+        {
+          data.customer && data.customer.phone !== ''  || screen === 'fields' ?
+            <View style={{ position: "absolute", bottom: 5, left: wp('82%') }}>
+              <Foundation name={'telephone'} onPress={() => onCall(data)} color={AppStyles.colors.subTextColor} size={30} style={styles.phoneButton} />
+            </View>
+            :
+            null
+        }
+
       </TouchableOpacity>
     )
   }

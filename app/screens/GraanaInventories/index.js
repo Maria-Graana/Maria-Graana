@@ -221,16 +221,16 @@ class GraanaInventories extends React.Component {
 			forStatusPrice,
 			formData,
 		} = this.state;
+		
 		return (
 			!loading ?
 				<View style={[AppStyles.container, { marginBottom: 25 }]}>
 					{/* ***** Main Tile Wrap */}
-
 					{
 						propertiesList && propertiesList.length > 0 ?
 							< FlatList
 								data={propertiesList}
-								renderItem={({ item }) => (
+								renderItem={({ item, index }) => (
 									<PropertyTile
 										data={item}
 										checkForArmsProperty={false}

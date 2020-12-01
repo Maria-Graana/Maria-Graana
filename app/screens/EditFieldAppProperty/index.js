@@ -31,14 +31,14 @@ class EditFieldAppProperty extends Component {
             sizeUnit: StaticData.sizeUnit,
             buttonText: 'ADD PROPERTY',
             clientName: '',
-            selectedClient: null,
-            selectedPOC: null,
             selectedCity: null,
             selectedArea: null,
             isModalOpen: false,
             phoneValidate: false,
             countryCode: defaultCountry.name,
             callingCode: defaultCountry.code,
+            countryCode1: defaultCountry.name,
+            callingCode1: defaultCountry.code,
             loading: false,
             formData: {
                 type: '',
@@ -50,9 +50,14 @@ class EditFieldAppProperty extends Component {
                 city_id: '',
                 area_id: '',
                 size_unit: 'marla',
-                customer_id: null,
+                owner_name: null,
+                owner_phone: null,
+                ownerDialCode: null,
+                ownerCountryCode: null,
                 poc_name: null,
                 poc_phone: null,
+                pocDialCode: null,
+                pocCountryCode: null,
                 price: 0,
                 grade: '',
                 status: 'pending',
@@ -107,18 +112,9 @@ class EditFieldAppProperty extends Component {
     }
 
     onScreenFocused = () => {
-        const { client, name, selectedCity, selectedPOC, selectedArea } = this.props.route.params;
+        const { selectedCity, selectedArea } = this.props.route.params;
         const { formData } = this.state;
         let copyObject = Object.assign({}, formData);
-        if (client && name) {
-            copyObject.customer_id = client.id;
-            this.setState({ formData: copyObject, clientName: name, selectedClient: client })
-        }
-        if (selectedPOC) {
-            copyObject.poc_name = selectedPOC.firstName && selectedPOC.lastName ? selectedPOC.firstName + ' ' + selectedPOC.lastName : null;
-            copyObject.poc_phone = selectedPOC.contact1 ? selectedPOC.contact1 : null;
-            this.setState({ formData: copyObject, selectedPOC })
-        }
         if (selectedCity) {
             copyObject.city_id = selectedCity.value;
             this.setState({ formData: copyObject, selectedCity })
@@ -143,7 +139,7 @@ class EditFieldAppProperty extends Component {
             amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
             amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
         }
-       // console.log(property)
+        console.log(property)
         this.setState({
             formData: {
                 id: property.id,
@@ -157,7 +153,6 @@ class EditFieldAppProperty extends Component {
                 city_id: property.city_id,
                 area_id: property.area_id,
                 address: property.address,
-                customer_id: property.customer_id ? property.customer_id : null,
                 price: property.price ? property.price : 0,
                 imageIds: property.property_images.length === 0 || property.property_images === undefined
                     ?
@@ -165,6 +160,14 @@ class EditFieldAppProperty extends Component {
                     : property.property_images,
                 grade: property.grade,
                 status: property.status,
+                owner_phone: property.owner_phone,
+                owner_name: property.owner_name,
+                poc_phone: property.poc_phone,
+                poc_name: property.poc_name,
+                // ownerDialCode:  property.ownerDialCode ? property.ownerDialCode : '+92',
+                // ownerCountryCode: property.ownerCountryCode ? property.ownerCountryCode : 'PK',
+                // pocDialCode: property.poc_phone ? property.pocDialCode ? property.pocDialCode : '+92' : null,
+                // pocCountryCode: property.poc_phone ? property.pocCountryCode ? property.pocCountryCode : 'PK' : null,
                 lat: property.lat,
                 lon: property.lon,
                 description: property.description,
@@ -177,20 +180,15 @@ class EditFieldAppProperty extends Component {
                 custom_title: property.custom_title ? property.custom_title : null,
                 show_address: property.show_address ? property.show_address : false,
                 video: property.video,
-                // poc_name: property.poc_name ? property.poc_name : null,
-                // poc_phone: property.poc_phone ? property.poc_phone : null,
             },
-            // selectedClient: property.customer ? property.customer : null,
-           // selectedPOC: property.poc_name && property.poc_phone ? { firstName: property.poc_name, contact1: property.poc_phone } : null,
             selectedCity: property.city ? { ...property.city, value: property.city.id } : null,
             selectedFeatures: amentities,
             selectedArea: property.area ? { ...property.area, value: property.area.id } : null,
-            //clientName: property.customer && property.customer.first_name + ' ' + property.customer.last_name,
             buttonText: 'UPDATE PROPERTY'
         }, () => {
+            //console.log(this.state.formData)
             this.selectSubtype(property.type);
             this.setFeatures(property.type);
-            // this.getAreas(property.city_id);
             this.state.formData.imageIds.length > 0 && this.setImagesForEditMode();
         })
     }
@@ -235,6 +233,9 @@ class EditFieldAppProperty extends Component {
             this.setFeatures(formData.type);
             this.selectSubtype(formData.type)
         }
+        if (name === 'owner_phone') {
+            this.validatePhone(value)
+        }
         if (formData.size === '') {
             formData.size = 0;
             this.setState({ formData })
@@ -250,8 +251,9 @@ class EditFieldAppProperty extends Component {
             !formData.city_id ||
             !formData.purpose ||
             !formData.area_id ||
-            !formData.size 
-            // ||
+            !formData.size  ||
+            !formData.owner_name ||
+            !formData.owner_phone
             // !formData.customer_id
         ) {
             this.setState({
@@ -572,6 +574,39 @@ class EditFieldAppProperty extends Component {
         this.setState({ showCustomTitle: !showCustomTitle })
     }
 
+    setFlagObject = (object, name) => {
+        if (name === 'owner_phone') {
+            this.setState({ countryCode: object.cca2, callingCode: '+' + object.callingCode[0] })
+        }
+        if (name === 'poc_phone') {
+            this.setState({ countryCode1: object.cca2, callingCode1: '+' + object.callingCode[0] })
+        }
+    }
+
+    validatePhone = (value) => {
+        if (value.length < 4 && value !== '') this.setState({ phoneValidate: true })
+        else this.setState({ phoneValidate: false })
+    }
+    
+
+    getTrimmedPhone = (number) => {
+        let phone = number;
+        if (phone.startsWith('92')) {
+            phone = phone.substring(2);
+        } else
+            if (phone.startsWith('092')) {
+                phone = phone.substring(3);
+            } else
+                if (phone.startsWith('0092')) {
+                    phone = phone.substring(4);
+                } else
+                    if (phone.startsWith('03')) {
+                        phone = phone.substring(1);
+                    }
+        return phone
+    }
+
+
     render() {
         const {
             formData,
@@ -592,6 +627,9 @@ class EditFieldAppProperty extends Component {
             selectedFeatures,
             loading,
             showCustomTitle,
+            phoneValidate,
+            countryCode,
+            countryCode1,
         } = this.state
         return (
             <StyleProvider style={getTheme(formTheme)}>
@@ -654,6 +692,11 @@ class EditFieldAppProperty extends Component {
                                     handleWaterMark={this.handleWaterMark}
                                     showCustomTitleField={this.showCustomTitleField}
                                     showCustomTitle={showCustomTitle}
+                                    phoneValidate={phoneValidate}
+                                    countryCode={countryCode}
+                                    countryCode1={countryCode1}
+                                    getTrimmedPhone={this.getTrimmedPhone}
+                                    setFlagObject={this.setFlagObject}
                                 />
                             </View>
                         </TouchableWithoutFeedback>

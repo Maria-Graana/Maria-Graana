@@ -285,16 +285,18 @@ class DetailForm extends Component {
       buttonText,
       images,
       imageLoading,
-      clientName,
-      handleClientClick,
       showAdditional,
       showAdditionalInformation,
       loading,
-      handlePointOfContact,
       handleShowAddress,
       handleWaterMark,
       showCustomTitle,
       showCustomTitleField,
+      validate,
+      setFlagObject,
+      getTrimmedPhone,
+      countryCode,
+      phoneValidate,
     } = this.props
 
     const { size_unit } = this.props.formData
@@ -638,20 +640,38 @@ class DetailForm extends Component {
         </View>
 
         {/* **************************************** */}
-        {/* <TouchableInput
-          placeholder="Owner Name"
-          onPress={() => handleClientClick()}
-          value={clientName}
-          showError={checkValidation === true && formData.customer_id === null}
-          errorMessage="Required"
-        /> */}
+        <View style={[AppStyles.inputWrap]}>
+            <TextInput
+              onChangeText={(text) => {
+                handleForm(text, 'owner_name')
+              }}
+              placeholderTextColor={'#a8a8aa'}
+              value={formData.owner_name}
+              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+              placeholder={'Onwer Name'}
+            />
+          </View>
 
         {/* **************************************** */}
-        {/* <TouchableInput
-          placeholder="Point of Contact Name"
-          onPress={() => handlePointOfContact()}
-          value={formData.poc_name}
-        /> */}
+
+        <View style={[AppStyles.mainInputWrap]}>
+					<View style={[AppStyles.inputWrap]}>
+						<PhoneInputComponent
+							phoneValue={(formData.owner_phone != '' && formData.owner_phone!=null ) && getTrimmedPhone(formData.owner_phone.replace('+92', ''))}
+							countryCodeValue={countryCode}
+							setFlagObject={(object) => { setFlagObject(object, 'owner_phone') }}
+							onChangeHandle={handleForm}
+							name={'owner_phone'}
+							placeholder={'Owner Phone*'}
+						/>
+						{
+							phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+						}
+						{
+							phoneValidate == false && checkValidation === true && formData.owner_phone === '' && formData.owner_phone === null && <ErrorMessage errorMessage={'Required'} />
+						}
+					</View>
+				</View>
 
         {/* **************************************** */}
         <TouchableOpacity onPress={() => handleWaterMark(!formData.showWaterMark)}

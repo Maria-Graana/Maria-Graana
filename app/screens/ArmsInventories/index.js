@@ -111,7 +111,12 @@ class ArmsInventories extends React.Component {
 
   onHandlePress = (data) => {
     const { navigation } = this.props
-    navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: false })
+    navigation.navigate('PropertyDetail', {
+      property: data,
+      update: true,
+      editButtonHide: false,
+      screen: 'arms',
+    })
   }
 
   onHandleLongPress = (val) => {
@@ -185,6 +190,7 @@ class ArmsInventories extends React.Component {
                 onPress={(data) => this.onHandlePress(data)}
                 onLongPress={(id) => this.onHandleLongPress(id)}
                 onCall={this.onHandleOnCall}
+                screen={'arms'}
               />
             )}
             onEndReached={() => {

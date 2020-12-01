@@ -1,28 +1,33 @@
-import * as RootNavigation from '../../navigation/RootNavigation';
+/** @format */
 
-import { Alert, FlatList, Image, Text, View } from 'react-native';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import * as RootNavigation from '../../navigation/RootNavigation'
+
+import { Alert, FlatList, Image, Text, View } from 'react-native'
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen'
 
 import Ability from '../../hoc/Ability'
-import { ActionSheet } from 'native-base';
+import { ActionSheet } from 'native-base'
 import AppStyles from '../../AppStyles'
-import { Fab } from 'native-base';
-import { Ionicons } from '@expo/vector-icons';
-import Loader from '../../components/loader';
-import NoResultsComponent from '../../components/NoResultsComponent';
+import { Fab } from 'native-base'
+import { Ionicons } from '@expo/vector-icons'
+import Loader from '../../components/loader'
+import NoResultsComponent from '../../components/NoResultsComponent'
 import PropertyTile from '../../components/PropertyTile'
-import React from 'react';
-import axios from 'axios';
-import { connect } from 'react-redux';
-import helper from '../../helper';
+import React from 'react'
+import axios from 'axios'
+import { connect } from 'react-redux'
+import helper from '../../helper'
 // import styles from './style'
 import { ActivityIndicator } from 'react-native-paper';
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
 import { cos } from 'react-native-reanimated';
 import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
 
-var BUTTONS = ['Delete', 'Cancel'];
-var CANCEL_INDEX = 1;
+var BUTTONS = ['Delete', 'Cancel']
+var CANCEL_INDEX = 1
 
 class GraanaInventories extends React.Component {
 	constructor(props) {
@@ -108,7 +113,7 @@ class GraanaInventories extends React.Component {
 
 	onHandlePress = (data) => {
 		const { navigation } = this.props;
-		navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: true })
+		navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: true, screen: 'graana', })
 	}
 
 	onHandleLongPress = (val) => {
@@ -282,10 +287,10 @@ class GraanaInventories extends React.Component {
 }
 
 mapStateToProps = (store) => {
-	return {
-		user: store.user.user,
-		contacts: store.contacts.contacts
-	}
+  return {
+    user: store.user.user,
+    contacts: store.contacts.contacts,
+  }
 }
 
 export default connect(mapStateToProps)(GraanaInventories)

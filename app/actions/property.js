@@ -7,9 +7,10 @@ export function flushImages() {
   };
 }
 
-export function removeImage(id) {
+export function removeImage(id, isFieldProperty = false) {
   return (dispatch, getState) => {
-    let promise = axios.delete(`/api/inventory/image/${id}`).then((response) => {
+    let url = isFieldProperty ? `api/inventory/fieldProperty/${id}` : `/api/inventory/image/${id}`
+    let promise = axios.delete(url).then((response) => {
       dispatch({
         type: types.IMAGE_REMOVE,
         payload: id,

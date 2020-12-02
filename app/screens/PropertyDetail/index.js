@@ -48,7 +48,7 @@ class PropertyDetail extends React.Component {
   }
 
   fetchProperty = () => {
-    const { route } = this.props;
+    const { route, navigation } = this.props;
     const {screenName} = route.params;
     const { property } = this.state;
     let url = '';
@@ -91,7 +91,8 @@ class PropertyDetail extends React.Component {
       axios
         .patch(url)
         .then((res) => {
-                 this.fetchProperty();
+          helper.successToast('PROPERTY APPROVED!')
+          navigation.navigate('InventoryTabs', {screen: 'ARMS', params: { screen: 'InventoryTabs' } })
         })
         .catch(error => {
           console.log('ERROR API: /api/inventory/fieldProperty', error)

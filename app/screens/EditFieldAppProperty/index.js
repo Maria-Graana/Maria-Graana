@@ -63,7 +63,6 @@ class EditFieldAppProperty extends Component {
                 pocCountryCode: null,
                 price: 0,
                 grade: '',
-                status: 'pending',
                 imageIds: [],
                 lat: '',
                 lon: '',
@@ -80,6 +79,7 @@ class EditFieldAppProperty extends Component {
                 parking_space: null,
                 downpayment: 0,
                 showWaterMark: false,
+                rider_id: null,
             },
             showAdditional: false,
             showCustomTitle: false,
@@ -224,6 +224,8 @@ class EditFieldAppProperty extends Component {
             amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
         }
 
+  //   console.log(property)
+
         let ownerCallingCode = this.setDialCode(callingCode)
         let ownerNumber = this.setPhoneNumber(ownerCallingCode, property.owner_phone)
         let pocCallingCode = this.setDialCode(callingCode1)
@@ -247,7 +249,6 @@ class EditFieldAppProperty extends Component {
                     ?
                     []
                     : property.property_images,
-                grade: property.grade,
                 status: property.status,
                 owner_phone: ownerNumber,
                 owner_name: property.owner_name,
@@ -269,6 +270,7 @@ class EditFieldAppProperty extends Component {
                 custom_title: property.custom_title ? property.custom_title : null,
                 show_address: property.show_address ? property.show_address : false,
                 video: property.video,
+                rider_id: property.rider_id
             },
             selectedCity: property.city ? { ...property.city, value: property.city.id } : null,
             selectedFeatures: amentities,
@@ -353,9 +355,9 @@ class EditFieldAppProperty extends Component {
             })
         } else {
             // ********* Call Add Inventory API here :)
-           // this.setState({ loading: true }, () => {
+           this.setState({ loading: true }, () => {
                 this.createOrEditProperty(formData);
-           // })
+           })
         }
     }
 
@@ -389,9 +391,10 @@ class EditFieldAppProperty extends Component {
         delete formData.floors;
         delete formData.year_built;
         delete formData.downpayment;
+        delete formData.grade;
 
         if (route.params.update) {
-            axios.patch(`/api/inventory/${property.id}`, formData)
+            axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, formData)
                 .then((res) => {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
@@ -514,7 +517,7 @@ class EditFieldAppProperty extends Component {
     deleteImage = (imageId) => {
         const { dispatch } = this.props;
         if (imageId) {
-            dispatch(removeImage(imageId)).then((response) => {
+            dispatch(removeImage(imageId, true)).then((response) => {
                 helper.successToast(response);
             });
         }
@@ -532,7 +535,7 @@ class EditFieldAppProperty extends Component {
         else {
             let location = await Location.getCurrentPositionAsync();
             this.handleForm(location.coords.latitude, 'lat');
-            this.handleForm(location.coords.longitude, 'lng');
+            this.handleForm(location.coords.longitude, 'lon');
         }
 
     };

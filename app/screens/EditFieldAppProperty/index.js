@@ -391,6 +391,7 @@ class EditFieldAppProperty extends Component {
         delete formData.floors;
         delete formData.year_built;
         delete formData.downpayment;
+        // grade not being saved in case of field properties
         delete formData.grade;
 
         if (route.params.update) {

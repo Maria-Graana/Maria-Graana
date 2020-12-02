@@ -227,9 +227,9 @@ class EditFieldAppProperty extends Component {
   //   console.log(property)
 
         let ownerCallingCode = this.setDialCode(callingCode)
-        let ownerNumber = this.setPhoneNumber(ownerCallingCode, property.owner_phone)
+        let ownerNumber = property.owner_phone ? this.setPhoneNumber(ownerCallingCode, property.owner_phone) : null;
         let pocCallingCode = this.setDialCode(callingCode1)
-        let pocNumber = this.setPhoneNumber(pocCallingCode, property.poc_phone)
+        let pocNumber = property.poc_phone ?this.setPhoneNumber(pocCallingCode, property.poc_phone) : null;
 
         this.setState({
             formData: {
@@ -391,6 +391,7 @@ class EditFieldAppProperty extends Component {
         delete formData.floors;
         delete formData.year_built;
         delete formData.downpayment;
+        // grade not being saved in case of field properties
         delete formData.grade;
 
         if (route.params.update) {
@@ -400,7 +401,7 @@ class EditFieldAppProperty extends Component {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         dispatch(flushImages());
                         // navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
-                        navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
+                        navigation.navigate('InventoryTabs', { update: false, screen: 'fields', params: { screen: 'InventoryTabs' } })
                     }
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')

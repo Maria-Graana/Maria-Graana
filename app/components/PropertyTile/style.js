@@ -51,12 +51,13 @@ imageStyle: {
     letterSpacing: 0.6,
   },
   priceTextStyle: {
-    width: wp('62%'),
+    flex:1,
     fontFamily: AppStyles.fonts.boldFont,
     fontSize: 22,
     color: AppStyles.colors.primaryColor,
     paddingLeft: wp('1%'),
     letterSpacing: 0.6,
+    marginRight:5,
   },
   textControlStyle: {
     paddingTop: hp('0.3%'),

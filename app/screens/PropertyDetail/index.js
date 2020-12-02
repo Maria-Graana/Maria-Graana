@@ -93,7 +93,7 @@ class PropertyDetail extends React.Component {
         .then((res) => {
           helper.successToast('PROPERTY APPROVED!')
           navigation.navigate('InventoryTabs', {
-            screen: 'ARMS',
+            screen: 'fields',
             params: { screen: 'InventoryTabs' },
           })
         })
@@ -182,6 +182,8 @@ class PropertyDetail extends React.Component {
       downPayment = parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : null
       floors = parsedFeatures && parsedFeatures.floors ? parsedFeatures.floors : null
     }
+
+    console.log(property)
 
     return !loading ? (
       <ScrollView

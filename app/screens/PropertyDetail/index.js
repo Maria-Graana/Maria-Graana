@@ -93,7 +93,7 @@ class PropertyDetail extends React.Component {
         .then((res) => {
           helper.successToast('PROPERTY APPROVED!')
           navigation.navigate('InventoryTabs', {
-            screen: 'ARMS',
+            screen: 'fields',
             params: { screen: 'InventoryTabs' },
           })
         })

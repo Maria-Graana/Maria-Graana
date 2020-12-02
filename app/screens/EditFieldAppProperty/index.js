@@ -400,7 +400,7 @@ class EditFieldAppProperty extends Component {
                         helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
                         dispatch(flushImages());
                         // navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
-                        navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
+                        navigation.navigate('InventoryTabs', { update: false, screen: 'fields', params: { screen: 'InventoryTabs' } })
                     }
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')

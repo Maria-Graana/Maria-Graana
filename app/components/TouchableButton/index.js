@@ -10,10 +10,11 @@ const TouchableButton = ({ label = '',
     containerBackgroundColor = AppStyles.colors.primaryColor,
     textColor = 'white',
     fontSize = 18,
+    disabled=false,
     fontFamily = AppStyles.fonts.semiBoldFont,
     loaderColor = 'white' }) => {
     return (
-        <TouchableOpacity disabled={loading} activeOpacity={.7} style={[containerStyle, { backgroundColor: containerBackgroundColor }]}
+        <TouchableOpacity disabled={loading || disabled} activeOpacity={.7} style={[containerStyle, { backgroundColor: containerBackgroundColor }]}
             onPress={onPress}>
             {
                 loading == true ?

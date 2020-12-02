@@ -60,6 +60,7 @@ class BuyPaymentView extends React.Component {
         sellerCommission = false;
       }
     }
+    let singleCommission = buyerCommission && sellerCommission ? true : false;
     const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
     const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
     // console.log(sellerCommission)
@@ -113,7 +114,7 @@ class BuyPaymentView extends React.Component {
                 {buyerCommission ? (
                   <TouchableOpacity
                     style={styles.addPaymentBtn}
-                    onPress={() => onAddCommissionPayment('buyer')}
+                    onPress={() => onAddCommissionPayment('buyer', singleCommission)}
                   >
                     <Image
                       style={styles.addPaymentBtnImg}
@@ -137,7 +138,7 @@ class BuyPaymentView extends React.Component {
                 {sellerCommission ? (
                   <TouchableOpacity
                     style={styles.addPaymentBtn}
-                    onPress={() => onAddCommissionPayment('seller')}
+                    onPress={() => onAddCommissionPayment('seller', singleCommission)}
                   >
                     <Image
                       style={styles.addPaymentBtnImg}

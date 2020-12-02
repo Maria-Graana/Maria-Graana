@@ -19,8 +19,9 @@ import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead';
 import Search from '../../components/Search';
 import { storeItem, getItem } from '../../actions/user';
+import Ability from '../../hoc/Ability'
 
-var BUTTONS = ['Share lead with other agent', 'Create new Rent lead for this client', 'Cancel'];
+var BUTTONS = ['Assign to team member', 'Share lead with other agent', 'Create new Rent lead for this client',  'Cancel'];
 var CANCEL_INDEX = 2;
 
 class RentLeads extends React.Component {
@@ -39,6 +40,7 @@ class RentLeads extends React.Component {
 			onEndReachedLoader: false,
 			showSearchBar: false,
 			searchText: '',
+			showAssignToButton: false,
 		}
 	}
 
@@ -166,11 +168,14 @@ class RentLeads extends React.Component {
 				title: 'Select an Option',
 			},
 			buttonIndex => {
-				if (buttonIndex === 0) {
+				if (buttonIndex === 1) {
 					//Share
 					this.navigateToShareScreen(val);
-				} else if (buttonIndex === 1) {
+				} else if (buttonIndex === 2) {
 					this.goToFormPage('AddRCMLead', 'RCM', val && val.customer ? val.customer : null, val.customer_id)
+				}
+				else if (buttonIndex === 0) {
+					this.checkAssignedLead(val)
 				}
 			}
 		);
@@ -253,6 +258,38 @@ class RentLeads extends React.Component {
 				.catch((error) => {
 					console.log(`ERROR: /api/leads/?id=${data.id}`, error)
 				})
+		}
+	}
+
+	checkAssignedLead = (lead) => {
+		const { user } = this.props
+		// Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
+		if (
+			Ability.canView(user.subRole, 'AssignLead') &&
+			lead.status !== StaticData.Constants.lead_closed_lost &&
+			lead.status !== StaticData.Constants.lead_closed_won
+		) {
+			// Lead can only be assigned to someone else if it is assigned to no one or to current user
+			if (lead.assigned_to_armsuser_id === null || user.id === lead.assigned_to_armsuser_id) {
+				this.setState({ showAssignToButton: true }, () => {
+					this.navigateToAssignLead(lead)
+				})
+			} else {
+				// Lead is already assigned to some other user (any other user)
+				this.setState({ showAssignToButton: false }, () => {
+					this.navigateToAssignLead(lead)
+				})
+			}
+		}
+	}
+
+	navigateToAssignLead = (lead) => {
+		const { navigation } = this.props
+		const { showAssignToButton } = this.state
+		if (showAssignToButton === true) {
+			navigation.navigate('AssignLead', { leadId: lead.id, type: 'Rent', screen: 'LeadDetail' })
+		} else {
+			helper.errorToast('Lead Already Assign')
 		}
 	}
 

@@ -267,7 +267,7 @@ class OfferModal extends React.Component {
           )}
           {showWarning ? (
             <View style={{ paddingHorizontal: 10 }}>
-              <Text>Please enter an agreed amount</Text>
+              <Text>Other agent has not made an offer yet</Text>
             </View>
           ) : null}
         </SafeAreaView>

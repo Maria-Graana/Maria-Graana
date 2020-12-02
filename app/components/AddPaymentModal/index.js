@@ -8,6 +8,7 @@ import PickerComponent from '../Picker/index';
 import StaticData from '../../StaticData';
 import ErrorMessage from '../../components/ErrorMessage'
 import times from '../../../assets/img/times.png'
+import moment from 'moment'
 
 class AddPaymentModal extends React.Component {
   constructor(props) {
@@ -29,12 +30,15 @@ class AddPaymentModal extends React.Component {
       goToPayAttachments,
       secondFormLeadData,
       remarks,
+      goToRemarks,
+      remarkActive,
+      remarkData,
+      remarksPaymentLoading,
     } = this.props
     return (
 
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
-
           {
             modalLoading === false ?
               <View style={styles.topHeader}>
@@ -88,16 +92,36 @@ class AddPaymentModal extends React.Component {
 
                   {
                     remarks != null &&
-                    <SimpleInputText
-                      name={'remarks'}
-                      fromatName={false}
-                      placeholder={'Remarks'}
-                      label={'REMARKS'}
-                      value={remarks}
-                      formatValue={''}
-                      editable={false}
-                    />
+
+                    <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { goToRemarks(!remarkActive, secondFormLeadData.id) }}>
+                      <Image style={[styles.arrowDownImg , remarkActive === true && styles.rotateImg ]} source={require('../../../assets/img/arrowDown.png')}></Image>
+                      <Text style={styles.addPaymentBtnText}>VIEW REMARKS</Text>
+                    </TouchableOpacity>
+
                   }
+
+                  {
+                    remarkActive === true &&
+                    <View style={[styles.collapseMain, styles.collapseOpen]}>
+                      <ScrollView style={{ height: 150 }}>
+                        {
+                          remarksPaymentLoading === false ?
+                            remarkData && remarkData.length && remarkData.map((item, index) => {
+                              return (
+                                <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
+                                  <View>
+                                    <Text style={[styles.smallText]}>{item.armsuser.firstName} {item.armsuser.lastName} <Text style={styles.smallestText}> ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})</Text></Text>
+                                    <Text style={styles.largeText}>{item.remarks}</Text>
+                                  </View>
+                                </View>
+                              )
+                            })
+                            : <Text>Fetching Data...</Text>
+                        }
+                      </ScrollView>
+                    </View>
+                  }
+
 
                   {
                     secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' &&
@@ -129,7 +153,7 @@ class AddPaymentModal extends React.Component {
                       <TouchableOpacity style={styles.bookedBtn} onPress={() => { addPaymentLoading != true && secondFormSubmit() }}>
                         {addPaymentLoading === false && <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />}
                         <Text style={styles.bookedBtnText}>
-                          {addPaymentLoading === true ? <ActivityIndicator size="small" color={'white'} style={styles.loaderTop}/> : 'OK'}
+                          {addPaymentLoading === true ? <ActivityIndicator size="small" color={'white'} style={styles.loaderTop} /> : 'OK'}
                         </Text>
                       </TouchableOpacity>
                   }

@@ -129,8 +129,8 @@ class PropertyDetail extends React.Component {
     let parkingSpace = ''
     let downPayment = ''
     let floors = ''
-    let pocName = '';
-    let pocPhone = '';
+    let pocName = ''
+    let pocPhone = ''
     if (!loading) {
       type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1)
       subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1)
@@ -143,15 +143,21 @@ class PropertyDetail extends React.Component {
       purpose = property && property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1)
       demandPrice = property && property.price
       description = property && property.description
-      grade = property && property.grade && property.grade === null || property && property.grade === '' ? '' : property && property.grade
+
+      grade =
+        (property && property.grade && property.grade === null) ||
+        (property && property.grade === '')
+          ? ''
+          : property && property.grade
      lattitude = property && property.lat === null ? '' : property.lat + '/'
      longitude = property && (property.lng === null || property.lon === null) ? '' : property.lng ? property.lng : property.lon
       ownerName = this.checkUserName(property)
       ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
-      address = property && property.customer && property.customer.address && property.customer.address
-      pocName = property && property.poc_name ? property.poc_name : '';
-      pocPhone = property && property.poc_phone ? property.poc_phone : '';
-      images = property && property.armsuser && property.armsPropertyImages ? property.armsPropertyImages : property.property_images ? property.property_images : []
+      address =
+        property && property.customer && property.customer.address && property.customer.address
+      pocName = property && property.poc_name ? property.poc_name : ''
+      pocPhone = property && property.poc_phone ? property.poc_phone : ''
+      images = property && property.armsPropertyImages
       parsedFeatures = JSON.parse(property && property.features)
       amentities = _.isEmpty(parsedFeatures) ? [] : _.keys(parsedFeatures)
       if (amentities.length) {
@@ -212,10 +218,10 @@ class PropertyDetail extends React.Component {
             <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
               {images && images.length
                 ? images.map((item, index) => {
-                  return (
-                    <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
-                  )
-                })
+                    return (
+                      <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
+                    )
+                  })
                 : null}
             </View>
 
@@ -342,8 +348,7 @@ class PropertyDetail extends React.Component {
               </>
             ) : null}
           </View>
-          {
-            editButtonHide === false &&
+          {editButtonHide === false && (
             <View style={styles.pad}>
               {
                 <MaterialCommunityIcons
@@ -356,7 +361,7 @@ class PropertyDetail extends React.Component {
                 />
               }
             </View>
-          }
+          )}
         </View>
         {/* **************************************** */}
         {
@@ -374,8 +379,8 @@ class PropertyDetail extends React.Component {
 
       </ScrollView>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

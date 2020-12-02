@@ -156,4 +156,42 @@ export default styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
+  collapseMain: {
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 4,
+  },
+
+  MainTileView: {
+    borderTopWidth: 1,
+    borderColor: '#ECECEC',
+    marginBottom: 10,
+    paddingTop: 5,
+  },
+  smallText: {
+    color: '#1F2029',
+    fontSize: 16,
+    marginBottom: 3,
+    textTransform: 'capitalize',
+  },
+  smallestText: {
+    fontSize: 12,
+  },
+  largeText: {
+    color: '#1F2029',
+    fontSize: 14,
+  },
+  noBorder: {
+    borderTopWidth: 0
+  },
+  arrowDownImg: {
+    marginTop: 1,
+    resizeMode: 'contain',
+    width: 17,
+    marginRight: 10,
+    height: 19,
+  },
+  rotateImg:{
+    transform: [{ rotate: "180deg" }]
+  },
 });

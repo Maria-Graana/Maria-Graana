@@ -94,6 +94,9 @@ class Payments extends Component {
 			remarks: null,
 			editaAbleForTokenScreenOne: false,
 			bookingDetailsModalActive: false,
+			paymentRemarkVisible: false,
+			remarksPaymentLoading: false,
+			remarksDataForPayment: [],
 		}
 	}
 
@@ -693,6 +696,7 @@ class Payments extends Component {
 				addPaymentModalToggleState: status,
 				remarks: null,
 				editaAble: false,
+				paymentRemarkVisible: false,
 			})
 		}
 	}
@@ -740,6 +744,7 @@ class Payments extends Component {
 						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
+							paymentRemarkVisible: false,
 						})
 					})
 			} else {
@@ -767,6 +772,7 @@ class Payments extends Component {
 						helper.errorToast('Payment Not Added')
 						this.setState({
 							addPaymentLoading: false,
+							paymentRemarkVisible: false,
 						})
 					})
 			}
@@ -807,6 +813,7 @@ class Payments extends Component {
 								addPaymentModalToggleState: false,
 								remainingPayment: remainingPayment - secondFormData.installmentAmount,
 								addPaymentLoading: false,
+								paymentRemarkVisible: false,
 							}, () => {
 								this.fetchLead();
 								Alert.alert(
@@ -840,6 +847,7 @@ class Payments extends Component {
 						addPaymentModalToggleState: false,
 						remainingPayment: remainingPayment - secondFormData.installmentAmount,
 						addPaymentLoading: false,
+						paymentRemarkVisible: false,
 					}, () => {
 						this.fetchLead();
 						Alert.alert(
@@ -864,7 +872,7 @@ class Payments extends Component {
 					details: '',
 					cmLeadId: this.props.lead.id,
 				},
-
+				paymentRemarkVisible: false,
 				addPaymentLoading: false,
 			}, () => {
 				this.fetchLead();
@@ -949,6 +957,7 @@ class Payments extends Component {
 		const { navigation } = this.props;
 		this.setState({
 			addPaymentModalToggleState: false,
+			paymentRemarkVisible: false,
 		})
 		navigation.navigate('AttachmentsForPayments');
 	}
@@ -977,6 +986,25 @@ class Payments extends Component {
 		this.setState({
 			tokenModalVisible: status,
 		})
+	}
+
+	goToRemarks = (status, id) => {
+		this.setState({
+			paymentRemarkVisible: status,
+			remarksPaymentLoading: true,
+		})
+		if (status === true) {
+			axios.get(`/api/leads/paymentremarks?id=${id}`)
+				.then((res) => {
+					this.setState({
+						remarksPaymentLoading: false,
+						remarksDataForPayment: res.data.remarks
+					})
+				}).catch((error) => {
+					console.log('/api/leads/paymentremarks?id - Error', error);
+					helper.errorToast('Payment Remarks API failed!!')
+				})
+		}
 	}
 
 	onHandleCloseLead = (reason) => {
@@ -1095,6 +1123,9 @@ class Payments extends Component {
 			cnicEditable,
 			leftSqft,
 			bookingDetailsModalActive,
+			paymentRemarkVisible,
+			remarksDataForPayment,
+			remarksPaymentLoading,
 		} = this.state
 		return (
 			<View>
@@ -1196,6 +1227,10 @@ class Payments extends Component {
 						secondHandleForm={this.secondHandleForm}
 						secondFormSubmit={this.secondFormSubmit}
 						goToPayAttachments={this.goToPayAttachments}
+						goToRemarks={this.goToRemarks}
+						remarkActive={paymentRemarkVisible}
+						remarkData={remarksDataForPayment}
+						remarksPaymentLoading={remarksPaymentLoading}
 					/>
 					<AddTokenModal
 						active={tokenModalVisible}

@@ -12,13 +12,24 @@ class SimpleInputField extends React.Component {
   }
 
   currencyConvert = (x) => {
-    x = x.toString();
-    var lastThree = x.substring(x.length - 3);
-    var otherNumbers = x.substring(0, x.length - 3);
-    if (otherNumbers != '')
-      lastThree = ',' + lastThree;
-    var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-    return res;
+    if (x < 0) {
+      var newX = x.substring(1)
+      newX = newX.toString();
+      var lastThree = newX.substring(newX.length - 3);
+      var otherNumbers = newX.substring(0, newX.length - 3);
+      if (otherNumbers != '')
+        lastThree = ',' + lastThree;
+      var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+      return '-' + res;
+    } else {
+      x = x.toString();
+      var lastThree = x.substring(x.length - 3);
+      var otherNumbers = x.substring(0, x.length - 3);
+      if (otherNumbers != '')
+        lastThree = ',' + lastThree;
+      var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+      return res;
+    }
   }
 
   render() {
@@ -36,7 +47,7 @@ class SimpleInputField extends React.Component {
     } = this.props
     const val = value != null || '' ? value.toString() : ''
     return (
-      <View style={[styles.mainInputParent, noMargin === true && {marginBottom: 0, marginTop: 0,}]}>
+      <View style={[styles.mainInputParent, noMargin === true && { marginBottom: 0, marginTop: 0, }]}>
         {/* label */}
         <Text style={[styles.labelStyle]}>{label}</Text>
 

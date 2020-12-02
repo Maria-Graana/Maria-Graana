@@ -41,6 +41,7 @@ import InventoryTabs from './InventoryTabNavigators'
 import Lead from './LeadsNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
 import PropertyTabs from './PropertyTabNavigator'
+import EditFieldAppProperty from '../screens/EditFieldAppProperty'
 
 const Stack = createStackNavigator()
 
@@ -368,6 +369,15 @@ function MainStack() {
         component={AssignLead}
         options={({ navigation, route }) => ({
           title: '',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="EditFieldAppProperty"
+        component={EditFieldAppProperty}
+        options={({ navigation, route }) => ({
+          title: 'Edit Property',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}

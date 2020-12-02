@@ -9,6 +9,7 @@ import { connect } from 'react-redux'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
+import TouchableButton from '../../components/TouchableButton'
 import helper from '../../helper'
 import styles from './style'
 
@@ -18,7 +19,7 @@ class PropertyDetail extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      property: {},
+      property: props.route.params.property ? props.route.params.property : null,
       loading: true,
     }
   }
@@ -31,19 +32,37 @@ class PropertyDetail extends React.Component {
 
   navigateTo = () => {
     const { route, navigation } = this.props
-    navigation.navigate('AddInventory', {
-      property: route.params.property,
-      update: route.params.update,
-    })
+    const { property, update, screenName } = route.params
+    if (screenName === 'FieldsInventories') {
+      navigation.navigate('EditFieldAppProperty', {
+        property: property,
+        update: update,
+      })
+    } else {
+      navigation.navigate('AddInventory', {
+        property: property,
+        update: update,
+      })
+    }
   }
 
   fetchProperty = () => {
-    const { route } = this.props
-    const { property } = route.params
-    let url = `/api/inventory/${property.id}`
-    if ('screen' in route.params) {
-      url = `/api/inventory/${property.arms_id}`
+    const { route, navigation } = this.props
+    const { screenName, screen } = route.params
+    const { property } = this.state
+    let url = ''
+    if (screenName === 'FieldsInventories' || screenName === 'GraanaInventories') {
+      // calling different api in case of field app and graana inventories, fetching graana/ field app property
+      url = `/api/inventory/portalproperty?id=${property.id}`
+    } else {
+      url = `/api/inventory/${property.id}` // for getting normal arms property
+      if ('screen' in route.params) {
+        if (screen === 'LeadDetail') {
+          url = `/api/inventory/${property.arms_id}` // for shortlist properties, call this url
+        }
+      }
     }
+
     axios
       .get(url)
       .then((res) => {
@@ -66,11 +85,28 @@ class PropertyDetail extends React.Component {
     }
   }
 
-  render() {
-    const { loading } = this.state
-    const { route, navigation } = this.props
-    const { property, editButtonHide } = route.params
+  approveProperty = (id) => {
+    let url = `/api/inventory/fieldProperty?id=${id}`
+    this.setState({ loading: true }, () => {
+      axios
+        .patch(url)
+        .then((res) => {
+          helper.successToast('PROPERTY APPROVED!')
+          navigation.navigate('InventoryTabs', {
+            screen: 'fields',
+            params: { screen: 'InventoryTabs' },
+          })
+        })
+        .catch((error) => {
+          console.log('ERROR API: /api/inventory/fieldProperty', error)
+        })
+    })
+  }
 
+  render() {
+    const { loading, property } = this.state
+    const { route, navigation } = this.props
+    const { editButtonHide, screenName } = route.params
     let type = ''
     let subtype = ''
     let areaName = ''
@@ -94,8 +130,12 @@ class PropertyDetail extends React.Component {
     let parkingSpace = ''
     let downPayment = ''
     let floors = ''
-    let pocName = '';
-    let pocPhone = '';
+    let pocName = ''
+    let pocPhone = ''
+    let riderName = ''
+    let riderPhone = ''
+    let rider = null
+    let riderCustomeTile = ''
     if (!loading) {
       type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1)
       subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1)
@@ -108,14 +148,25 @@ class PropertyDetail extends React.Component {
       purpose = property && property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1)
       demandPrice = property && property.price
       description = property && property.description
-      grade = property && property.grade && property.grade === null || property && property.grade === '' ? '' : property && property.grade
+
+      grade =
+        (property && property.grade && property.grade === null) ||
+        (property && property.grade === '')
+          ? ''
+          : property && property.grade
       lattitude = property && property.lat === null ? '' : property.lat + '/'
-      longitude = property && property.lng === null ? '' : property.lng
+      longitude =
+        property && (property.lng === null || property.lon === null)
+          ? ''
+          : property.lng
+          ? property.lng
+          : property.lon
       ownerName = this.checkUserName(property)
       ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
-      address = property && property.customer && property.customer.address && property.customer.address
-      pocName = property && property.poc_name ? property.poc_name : '';
-      pocPhone= property && property.poc_phone ? property.poc_phone : '';
+      address =
+        property && property.customer && property.customer.address && property.customer.address
+      pocName = property && property.poc_name ? property.poc_name : ''
+      pocPhone = property && property.poc_phone ? property.poc_phone : ''
       images = property && property.armsPropertyImages
       parsedFeatures = JSON.parse(property && property.features)
       amentities = _.isEmpty(parsedFeatures) ? [] : _.keys(parsedFeatures)
@@ -133,6 +184,13 @@ class PropertyDetail extends React.Component {
         parsedFeatures && parsedFeatures.parking_space ? parsedFeatures.parking_space : null
       downPayment = parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : null
       floors = parsedFeatures && parsedFeatures.floors ? parsedFeatures.floors : null
+      rider = property && property.rider ? property.rider : null
+      if (rider) {
+        if (rider.phone) riderPhone = rider.phone
+        if (rider.first_name) riderName = rider.first_name
+        if (rider.last_name) riderName = riderName + ' ' + rider.last_name
+      }
+      riderCustomeTile = property && property.custom_title ? property.custom_title : null
     }
 
     return !loading ? (
@@ -145,6 +203,12 @@ class PropertyDetail extends React.Component {
       >
         <View style={styles.outerContainer}>
           <View style={styles.innerContainer}>
+            {riderCustomeTile ? (
+              <>
+                <Text style={styles.headingText}> Customer Title </Text>
+                <Text style={styles.labelText}> {riderCustomeTile} </Text>
+              </>
+            ) : null}
             <Text style={styles.headingText}> Property Type </Text>
             <Text style={styles.labelText}> {type} </Text>
             <Text style={styles.headingText}> Property Sub Type </Text>
@@ -169,18 +233,20 @@ class PropertyDetail extends React.Component {
             {description ? (
               <>
                 <Text style={styles.headingText}> Description </Text>
-                <Text style={styles.labelText}> {helper.removeHtmlTags(description) } </Text>
+                <Text style={styles.labelText}> {helper.removeHtmlTags(description)} </Text>
               </>
             ) : null}
 
-            {images && images.length ? <Text style={styles.headingText}> Images </Text> : null}
+            {images && images.length && screenName !== 'FieldsInventories' ? (
+              <Text style={styles.headingText}> Images </Text>
+            ) : null}
             <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
               {images && images.length
                 ? images.map((item, index) => {
-                  return (
-                    <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
-                  )
-                })
+                    return (
+                      <Image key={index} source={{ uri: item.url }} style={[styles.imageStyle]} />
+                    )
+                  })
                 : null}
             </View>
 
@@ -264,7 +330,7 @@ class PropertyDetail extends React.Component {
                 <Text style={styles.labelText}> {address}</Text>
               </View>
             ) : null}
-             {pocName ? (
+            {pocName ? (
               <View>
                 <Text style={styles.headingText}>Point of Contact Name </Text>
                 <Text style={styles.labelText}> {pocName}</Text>
@@ -274,6 +340,18 @@ class PropertyDetail extends React.Component {
               <View>
                 <Text style={styles.headingText}> Point of Contact Phone </Text>
                 <Text style={styles.labelText}> {pocPhone}</Text>
+              </View>
+            ) : null}
+            {rider ? (
+              <View>
+                <Text style={styles.headingText}> Added By Contact Name </Text>
+                <Text style={styles.labelText}> {riderName}</Text>
+              </View>
+            ) : null}
+            {rider ? (
+              <View>
+                <Text style={styles.headingText}> Added By Contact Phone </Text>
+                <Text style={styles.labelText}> {riderPhone}</Text>
               </View>
             ) : null}
             <View>
@@ -307,8 +385,7 @@ class PropertyDetail extends React.Component {
               </>
             ) : null}
           </View>
-          {
-            editButtonHide === false &&
+          {editButtonHide === false && (
             <View style={styles.pad}>
               {
                 <MaterialCommunityIcons
@@ -321,13 +398,23 @@ class PropertyDetail extends React.Component {
                 />
               }
             </View>
-          }
-
+          )}
         </View>
+        {/* **************************************** */}
+        {property && property.status === 'onhold' && property.rider_id ? (
+          <View style={{ marginBottom: 25 }}>
+            <TouchableButton
+              containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+              label={'APPROVE PROPERTY'}
+              onPress={() => this.approveProperty(property.id)}
+              loading={loading}
+            />
+          </View>
+        ) : null}
       </ScrollView>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

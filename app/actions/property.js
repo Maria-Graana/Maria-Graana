@@ -7,9 +7,10 @@ export function flushImages() {
   };
 }
 
-export function removeImage(id) {
+export function removeImage(id, isFieldProperty = false) {
   return (dispatch, getState) => {
-    let promise = axios.delete(`/api/inventory/image/${id}`).then((response) => {
+    let url = isFieldProperty ? `api/inventory/fieldProperty/${id}` : `/api/inventory/image/${id}`
+    let promise = axios.delete(url).then((response) => {
       dispatch({
         type: types.IMAGE_REMOVE,
         payload: id,
@@ -41,14 +42,14 @@ export function addImage(image){
   }
 }
 
-export function uploadImage(image) {
+export function uploadImage(image, isGraana = false) {
   return (dispatch, getState) => {
     let index = getState().property.images.length;
 
     let fd = new FormData();
     fd.append('image', image);
     dispatch(addImage(image));
-    let promise = axios.post(`/api/inventory/image`, fd)
+    let promise = axios.post(`/api/inventory/image?graana=${isGraana}`, fd)
       .then(response => {
         dispatch({
           type: types.IMAGE_UPLOAD_SUCCESS,

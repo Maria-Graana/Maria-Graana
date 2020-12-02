@@ -158,7 +158,7 @@ export default styles = StyleSheet.create({
   },
   collapseMain: {
     backgroundColor: '#fff',
-    padding: 10,  
+    padding: 10,
     borderRadius: 4,
   },
 
@@ -183,5 +183,15 @@ export default styles = StyleSheet.create({
   },
   noBorder: {
     borderTopWidth: 0
+  },
+  arrowDownImg: {
+    marginTop: 1,
+    resizeMode: 'contain',
+    width: 17,
+    marginRight: 10,
+    height: 19,
+  },
+  rotateImg:{
+    transform: [{ rotate: "180deg" }]
   },
 });

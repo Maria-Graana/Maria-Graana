@@ -92,16 +92,10 @@ class AddPaymentModal extends React.Component {
 
                   {
                     remarks != null &&
-                    <TouchableOpacity style={styles.addPaymentBt} onPress={() => { goToRemarks(!remarkActive, secondFormLeadData.id) }}>
-                      <SimpleInputText
-                        name={'remarks'}
-                        fromatName={false}
-                        placeholder={'Remarks'}
-                        label={'REMARKS'}
-                        value={'View Remarks'}
-                        formatValue={''}
-                        editable={false}
-                      />
+
+                    <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { goToRemarks(!remarkActive, secondFormLeadData.id) }}>
+                      <Image style={[styles.arrowDownImg , remarkActive === true && styles.rotateImg ]} source={require('../../../assets/img/arrowDown.png')}></Image>
+                      <Text style={styles.addPaymentBtnText}>VIEW REMARKS</Text>
                     </TouchableOpacity>
 
                   }

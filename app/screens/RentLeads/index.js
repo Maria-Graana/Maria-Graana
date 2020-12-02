@@ -22,7 +22,7 @@ import { storeItem, getItem } from '../../actions/user';
 import Ability from '../../hoc/Ability'
 
 var BUTTONS = ['Assign to team member', 'Share lead with other agent', 'Create new Rent lead for this client',  'Cancel'];
-var CANCEL_INDEX = 2;
+var CANCEL_INDEX = 3;
 
 class RentLeads extends React.Component {
 	constructor(props) {

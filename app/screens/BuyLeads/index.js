@@ -22,7 +22,7 @@ import Ability from '../../hoc/Ability'
 import { storeItem, getItem } from '../../actions/user';
 
 var BUTTONS = ['Assign to team member', 'Share lead with other agent', 'Create new Buy lead for this client', 'Cancel'];
-var CANCEL_INDEX = 2;
+var CANCEL_INDEX = 3;
 
 class BuyLeads extends React.Component {
 	constructor(props) {

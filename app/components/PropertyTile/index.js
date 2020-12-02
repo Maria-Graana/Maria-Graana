@@ -51,6 +51,7 @@ class InventoryTile extends React.Component {
       checkForArmsProperty,
       whichProperties,
       graanaVerifeyModal,
+      index,
       screen,
     } = this.props
     const imagesList = data.armsPropertyImages
@@ -141,21 +142,23 @@ class InventoryTile extends React.Component {
             </View>
           )}
         </View>
-        {checkForGraanaProperties === true && (
-          <View style={{ width: wp('9%') }}>
-            <TouchableOpacity
-              style={{ alignItems: 'center', paddingBottom: 10 }}
-              onPress={() => {
-                graanaVerifeyModal(true, data.id)
-              }}
-            >
-              <Image
-                source={require('../../../assets/img/menuIcon2.png')}
-                style={{ width: 25, height: 25 }}
-              ></Image>
-            </TouchableOpacity>
-          </View>
-        )}
+        {checkForGraanaProperties === true &&
+          data.verifiedStatus &&
+          data.verifiedStatus != 'verified' && (
+            <View style={{ width: wp('9%') }}>
+              <TouchableOpacity
+                style={{ alignItems: 'center', paddingBottom: 10 }}
+                onPress={() => {
+                  graanaVerifeyModal(true, data.id)
+                }}
+              >
+                <Image
+                  source={require('../../../assets/img/threedots.png')}
+                  style={{ height: 20, resizeMode: 'contain' }}
+                ></Image>
+              </TouchableOpacity>
+            </View>
+          )}
 
         {(data.customer && data.customer.phone !== '') || screen === 'fields' ? (
           <View style={{ position: 'absolute', bottom: 5, left: wp('88%') }}>

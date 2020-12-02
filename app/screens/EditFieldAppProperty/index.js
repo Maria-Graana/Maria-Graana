@@ -227,9 +227,9 @@ class EditFieldAppProperty extends Component {
   //   console.log(property)
 
         let ownerCallingCode = this.setDialCode(callingCode)
-        let ownerNumber = this.setPhoneNumber(ownerCallingCode, property.owner_phone)
+        let ownerNumber = property.owner_phone ? this.setPhoneNumber(ownerCallingCode, property.owner_phone) : null;
         let pocCallingCode = this.setDialCode(callingCode1)
-        let pocNumber = this.setPhoneNumber(pocCallingCode, property.poc_phone)
+        let pocNumber = property.poc_phone ?this.setPhoneNumber(pocCallingCode, property.poc_phone) : null;
 
         this.setState({
             formData: {

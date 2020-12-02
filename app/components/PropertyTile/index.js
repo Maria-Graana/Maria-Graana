@@ -1,6 +1,6 @@
 /** @format */
 
-import { Feather, FontAwesome, Foundation, Ionicons } from '@expo/vector-icons'
+import { Feather, FontAwesome, Foundation, Ionicons, Entypo } from '@expo/vector-icons'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import {
   heightPercentageToDP as hp,
@@ -14,6 +14,7 @@ import _ from 'underscore'
 import { formatPrice } from '../../PriceFormate'
 import styles from './style'
 import helper from '../../helper'
+import { Menu } from 'react-native-paper'
 
 class InventoryTile extends React.Component {
   constructor(props) {
@@ -53,6 +54,9 @@ class InventoryTile extends React.Component {
       graanaVerifeyModal,
       index,
       screen,
+      showMenu,
+      approveProperty,
+      toggleMenu
     } = this.props
    const imagesList =  data.armsuser ? data.armsPropertyImages : data.property_images;
     const imagesCount = data.armsuser && data.armsPropertyImages ? data.armsPropertyImages.length : data.user && data.property_images ? data.property_images.length : null;
@@ -65,6 +69,8 @@ class InventoryTile extends React.Component {
         onLongPress={() => checkForArmsProperty === true && this.onLongPress(data.id)}
         activeOpacity={0.7}
       >
+
+        
         <View>
           {imagesList && imagesList.length ? (
             <Carousel
@@ -92,13 +98,41 @@ class InventoryTile extends React.Component {
           <Feather name={'camera'} color={'#fff'} size={16} />
           <Text style={styles.imageCount}>{imagesCount}</Text>
         </View>
+        
         <View style={{ width: checkForGraanaProperties === true ? wp('50%') : wp('60%') }}>
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.currencyTextStyle}>PKR</Text>
             <Text style={styles.priceTextStyle} numberOfLines={1}>
               {helper.checkPrice(data.price)}
             </Text>
+            {screen === 'fields' && data.status ==='onhold' ? (
+                  <Menu
+                    visible={showMenu}
+                    onDismiss={() => toggleMenu(false)}
+                    anchor={
+                      <Entypo
+                        onPress={() => toggleMenu(true)}
+                        name="dots-three-vertical"
+                        size={24}
+                        style={{marginHorizontal:10}}
+                      />
+                    }
+                  >
+                    <View>
+                      <Menu.Item
+                        onPress={() => {
+                          approveProperty(data.id)
+                        }}
+                        title="Approve Property"
+                      />
+                    </View>
+                  </Menu>
+                ) : null}
           </View>
+
+
+         
+
 
           <Text style={styles.textControlStyle} numberOfLines={1}>
             {data.custom_title === null || data.custom_title === ''
@@ -170,6 +204,8 @@ class InventoryTile extends React.Component {
             />
           </View>
         ) : null}
+
+        
       </TouchableOpacity>
     )
   }

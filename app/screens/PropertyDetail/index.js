@@ -183,6 +183,8 @@ class PropertyDetail extends React.Component {
       floors = parsedFeatures && parsedFeatures.floors ? parsedFeatures.floors : null
     }
 
+    console.log(property)
+
     return !loading ? (
       <ScrollView
         style={[

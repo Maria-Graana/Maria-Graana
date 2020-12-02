@@ -377,7 +377,7 @@ class LeadViewing extends React.Component {
                   fontFamily: AppStyles.fonts.defaultFont,
                 }}
               >
-                {moment(property.diaries[0].start).format('LLL')}
+                {moment(diary.start).format('LLL')}
               </Text>
             </Text>
           </TouchableOpacity>
@@ -613,8 +613,9 @@ class LeadViewing extends React.Component {
                         addProperty={this.addProperty}
                         viewingMenu={true}
                         goToPropertyComments={this.goToPropertyComments}
-                        toggleMenu={this.toggleMenu}
                         menuShow={menuShow}
+                        toggleMenu={this.toggleMenu}
+                        screen={'viewing'}
                       />
                     ) : (
                       <AgentTile
@@ -631,6 +632,7 @@ class LeadViewing extends React.Component {
                         goToPropertyComments={this.goToPropertyComments}
                         menuShow={menuShow}
                         toggleMenu={this.toggleMenu}
+                        screen={'viewing'}
                       />
                     )}
                     <View>{this.checkStatus(item.item)}</View>

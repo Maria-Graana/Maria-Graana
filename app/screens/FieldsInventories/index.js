@@ -38,6 +38,7 @@ class FieldsInventories extends React.Component {
       page: 1,
       pageSize: 20,
       onEndReachedLoader: false,
+      showMenu: false,
     }
   }
 
@@ -164,24 +165,27 @@ class FieldsInventories extends React.Component {
     return String(index)
   }
 
+  approveProperty = (id) => {
+    console.log(id)
+    let url = `/api/inventory/fieldProperty?id=${id}`
+    this.setState({ loading: true }, () => {
+      axios
+        .patch(url)
+        .then((res) => {
+          helper.successToast('PROPERTY APPROVED!')
+          this.getPropertyGraanaListing()
+        })
+        .catch((error) => {
+          console.log('ERROR API: /api/inventory/fieldProperty', error)
+        })
+    })
+  }
+
   render() {
-    const { propertiesList, loading, totalProperties, onEndReachedLoader } = this.state
+    const { propertiesList, loading, totalProperties, onEndReachedLoader, showMenu } = this.state
     const { user, route } = this.props
     return !loading ? (
       <View style={[AppStyles.container, { marginBottom: 25 }]}>
-        {/* {
-						Ability.canAdd(user.subRole, route.params.screen) ?
-							<Fab
-								active='true'
-								containerStyle={{ zIndex: 20 }}
-								style={{ backgroundColor: AppStyles.colors.primaryColor }}
-								position="bottomRight"
-								onPress={this.goToInventoryForm}
-							>
-								<Ionicons name="md-add" color="#ffffff" />
-							</Fab> :
-							null
-					} */}
 
         {/* ***** Main Tile Wrap */}
 
@@ -197,6 +201,9 @@ class FieldsInventories extends React.Component {
                 onLongPress={(id) => this.onHandleLongPress(id)}
                 onCall={this.onHandleOnCall}
                 screen={'fields'}
+                showMenu={showMenu}
+                toggleMenu = {(value)=> this.setState({showMenu:value})}
+                approveProperty={(id)=>this.approveProperty(id)}
               />
             )}
             onEndReached={() => {

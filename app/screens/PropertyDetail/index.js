@@ -93,7 +93,7 @@ class PropertyDetail extends React.Component {
         .then((res) => {
           helper.successToast('PROPERTY APPROVED!')
           navigation.navigate('InventoryTabs', {
-            screen: 'ARMS',
+            screen: 'fields',
             params: { screen: 'InventoryTabs' },
           })
         })
@@ -192,6 +192,8 @@ class PropertyDetail extends React.Component {
       }
       riderCustomeTile = property && property.custom_title ? property.custom_title : null
     }
+
+    console.log(property)
 
     return !loading ? (
       <ScrollView

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native'
 import Modal from 'react-native-modal';
 import { connect } from 'react-redux';
+import { Checkbox } from 'react-native-paper'
 import times from '../../../assets/img/times.png'
 import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index';
@@ -22,32 +23,57 @@ const AddCommissionModal = ({
     addPaymentLoading,
     lead,
     submitCommissionPayment,
+    commissionNotApplicableBuyer,
+    commissionNotApplicableSeller,
+    setCommissionApplicable,
+    isSingleCommission,
+    editable,
 }) => {
 
     const handleEmptyValue = (value) => {
         return value != null && value != '' ? value : ''
     }
-
+    let showNotApplicable = true;
     const [remarks, setRemarks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isCollapsed, setCollapsed] = useState(false);
+    const commissionNotApplicable = rcmPayment.addedBy === 'buyer' ? commissionNotApplicableBuyer : commissionNotApplicableSeller;
+    if(rcmPayment.addedBy === 'buyer'){
+        if(commissionNotApplicableBuyer){
+            showNotApplicable = true;
+       }
+       if(commissionNotApplicableSeller){
+            showNotApplicable = false
+       }
+    }
+    else{
+        if(commissionNotApplicableSeller){
+            showNotApplicable = true;
+       }
+       else{
+        if(commissionNotApplicableBuyer){
+            showNotApplicable = false
+       }
+       }
+    }
+
     const fetchRemarks = () => {
-        if(isCollapsed === false){
+        if (isCollapsed === false) {
             const url = `/api/leads/paymentremarks?id=${rcmPayment.id}`
             axios.get(url).then(response => {
-                    setRemarks(response.data.remarks);
-                    setLoading(false);
-                    setCollapsed(true)
-    
+                setRemarks(response.data.remarks);
+                setLoading(false);
+                setCollapsed(true)
+
             }).catch(error => {
                 console.log('`/api/leads/paymentremarks- Error', error);
                 setLoading(false);
             })
         }
-        else{
+        else {
             setCollapsed(!isCollapsed);
         }
-        
+
     }
     return (
         <Modal isVisible={rcmPayment.visible}>
@@ -58,11 +84,23 @@ const AddCommissionModal = ({
                         setCollapsed(false)
                         setRemarks([])
                         onModalCloseClick()
-                        }}>
+                    }}>
                         <Image source={times} style={styles.timesImg} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.moreViewContainer}>
+                      {/* **************************************** */}
+                      {
+                          isSingleCommission && showNotApplicable && editable === false ?  <TouchableOpacity onPress={() => setCommissionApplicable(!commissionNotApplicable)}
+                          style={styles.checkBoxRow}>
+                          <Checkbox color={AppStyles.colors.primaryColor}
+                              status={commissionNotApplicable ? 'checked' : 'unchecked'}
+                          />
+                          <Text>Commission Not Applicable</Text>
+                      </TouchableOpacity>
+                      : null
+                      }
+                     
                     <SimpleInputText
                         name={'installmentAmount'}
                         fromatName={false}
@@ -70,7 +108,7 @@ const AddCommissionModal = ({
                         label={'ENTER AMOUNT'}
                         value={rcmPayment.installmentAmount}
                         formatValue={rcmPayment.installmentAmount}
-                        editable={true}
+                        editable={!commissionNotApplicable}
                         keyboardType={'numeric'}
                         onChangeHandle={handleCommissionChange}
                     />
@@ -80,7 +118,7 @@ const AddCommissionModal = ({
 
                     <View style={[AppStyles.mainInputWrap]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <PickerComponent onValueChange={handleCommissionChange} data={StaticData.fullPaymentType} name={'type'} placeholder='Type' selectedItem={rcmPayment.type} />
+                            <PickerComponent enabled={!commissionNotApplicable} onValueChange={handleCommissionChange} data={StaticData.fullPaymentType} name={'type'} placeholder='Type' selectedItem={rcmPayment.type} />
                             {modalValidation === true && rcmPayment.type == '' && <ErrorMessage errorMessage={'Required'} />}
                         </View>
                     </View>
@@ -92,36 +130,37 @@ const AddCommissionModal = ({
                         label={'DETAILS'}
                         value={rcmPayment.details != '' ? rcmPayment.details : ''}
                         formatValue={''}
-                        editable={true}
+                        editable={!commissionNotApplicable}
                         onChangeHandle={handleCommissionChange}
                     />
 
                     {
                         rcmPayment.id &&
-
-                        <TouchableOpacity disabled={loading} style={styles.addPaymentBtn} onPress={() => { fetchRemarks() }}>
-                        <Image style={[styles.arrowDownImg , isCollapsed === true && styles.rotateImg ]} source={require('../../../assets/img/arrowDown.png')}></Image>
-                        <Text style={styles.addPaymentBtnText}>VIEW REMARKS</Text>
-                      </TouchableOpacity>
+                        <TouchableInput
+                            disabled={loading}
+                            onPress={() => fetchRemarks()}
+                            placeholder={'View Remarks'}
+                            showIconOrImage={false}
+                        />
                     }
 
                     {
                         loading === false && isCollapsed ?
-                        remarks.length > 0 ?
-                            <FlatList 
-                            style={{ minHeight: 20, maxHeight: 150 }}
-                            data={remarks}
-                                renderItem={({ item, index }) => <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
-                                    <View>
-                                      <Text style={[styles.smallText]}>{item.armsuser.firstName} {item.armsuser.lastName} <Text style={styles.smallestText}> ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})</Text></Text>
-                                        <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
+                            remarks.length > 0 ?
+                                <FlatList
+                                    style={{ minHeight: 20, maxHeight: 150 }}
+                                    data={remarks}
+                                    renderItem={({ item, index }) => <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
+                                        <View>
+                                            <Text style={[styles.smallText]}>{item.armsuser.firstName} {item.armsuser.lastName} <Text style={styles.smallestText}> ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})</Text></Text>
+                                            <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
+                                        </View>
                                     </View>
-                                </View>
-                                } 
-                                keyExtractor={(item)=> item.id.toString()}
+                                    }
+                                    keyExtractor={(item) => item.id.toString()}
                                 />
 
-                           : <ErrorMessage errorMessage={'No Payment Remarks Exists'}/>
+                                : <ErrorMessage errorMessage={'No Payment Remarks Exists'} />
                             :
                             null
                     }
@@ -159,7 +198,9 @@ const AddCommissionModal = ({
                                     onPress={() => submitCommissionPayment()} />
                             </View>
                             :
-                            <TouchableButton containerStyle={[styles.bookedBtn, { width: '100%' }]}
+                            <TouchableButton 
+                                disabled={commissionNotApplicable}
+                                containerStyle={[styles.bookedBtn, { width: '100%' }]}
                                 label={'OK'}
                                 fontFamily={AppStyles.fonts.boldFont}
                                 fontSize={18}
@@ -328,36 +369,30 @@ const styles = StyleSheet.create({
     cancelLight: {
         flex: 1,
     },
-  MainTileView: {
-    borderTopWidth: 1,
-    borderColor: '#ECECEC',
-    padding: 10,
-    backgroundColor:'white'
-  },
-  ssmallText: {
-    color: '#1F2029',
-    fontSize: 16,
-    marginBottom: 3,
-    textTransform: 'capitalize',
-  },
-  smallestText: {
-    fontSize: 12,
-  },
-  largeText: {
-    color: '#1F2029',
-    fontSize: 14,
-  },
-  noBorder: {
-    borderTopWidth: 0
-  },
-  arrowDownImg: {
-    marginTop: 1,
-    resizeMode: 'contain',
-    width: 17,
-    marginRight: 10,
-    height: 19,
-  },
-  rotateImg:{
-    transform: [{ rotate: "180deg" }]
-  },
+    MainTileView: {
+        borderTopWidth: 1,
+        borderColor: '#ECECEC',
+        padding: 10,
+        backgroundColor: 'white'
+    },
+    smallText: {
+        color: '#1F2029',
+        fontSize: 16,
+        marginBottom: 3,
+        textTransform: 'capitalize',
+    },
+    smallestText: {
+        fontSize: 12,
+    },
+    largeText: {
+        color: '#1F2029',
+        fontSize: 18,
+    },
+    noBorder: {
+        borderTopWidth: 0
+    },
+    checkBoxRow: {
+        flexDirection: 'row', 
+        alignItems:'center',
+    },
 })

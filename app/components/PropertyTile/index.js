@@ -45,10 +45,17 @@ class InventoryTile extends React.Component {
   }
 
   render() {
-    const { data, onCall, checkForArmsProperty, whichProperties, graanaVerifeyModal, screen } = this.props;
-    const imagesList = data.armsPropertyImages;
-    const ownerName = this.checkCustomerName(data);
-    const checkForGraanaProperties =  whichProperties === 'graanaProperties'
+    const {
+      data,
+      onCall,
+      checkForArmsProperty,
+      whichProperties,
+      graanaVerifeyModal,
+      screen,
+    } = this.props
+    const imagesList = data.armsPropertyImages
+    const ownerName = this.checkCustomerName(data)
+    const checkForGraanaProperties = whichProperties === 'graanaProperties'
     return (
       <TouchableOpacity
         style={styles.mainContainer}
@@ -101,15 +108,15 @@ class InventoryTile extends React.Component {
               : data.custom_title}
           </Text>
 
-          <Text style={[styles.textControlStyle, { paddingTop: 2 }]} numberOfLines={1}>
-            {ownerName}
-          </Text>
-
           {screen === 'fields' ? (
             <Text style={[styles.textControlStyle, { paddingTop: 2 }]} numberOfLines={1}>
               {data.poc_name && data.poc_name}
             </Text>
-          ) : null}
+          ) : (
+            <Text style={[styles.textControlStyle, { paddingTop: 2 }]} numberOfLines={1}>
+              {ownerName}
+            </Text>
+          )}
 
           <Text
             style={[styles.textControlStyle, { fontFamily: AppStyles.fonts.lightFont }]}
@@ -134,24 +141,33 @@ class InventoryTile extends React.Component {
             </View>
           )}
         </View>
-        {
-          checkForGraanaProperties === true &&
-          <View style={{ width: wp('9%'),}}>
-          <TouchableOpacity style={{alignItems: 'center',paddingBottom: 10,}} onPress={()=>{ graanaVerifeyModal(true, data.id) }}>
-            <Image source={require('../../../assets/img/menuIcon2.png')} style={{width: 25, height: 25 }}></Image>
-          </TouchableOpacity>
-        </View>
-        }
-        
-        {
-          data.customer && data.customer.phone !== ''  || screen === 'fields' ?
-            <View style={{ position: "absolute", bottom: 5, left: wp('82%') }}>
-              <Foundation name={'telephone'} onPress={() => onCall(data)} color={AppStyles.colors.subTextColor} size={30} style={styles.phoneButton} />
-            </View>
-            :
-            null
-        }
+        {checkForGraanaProperties === true && (
+          <View style={{ width: wp('9%') }}>
+            <TouchableOpacity
+              style={{ alignItems: 'center', paddingBottom: 10 }}
+              onPress={() => {
+                graanaVerifeyModal(true, data.id)
+              }}
+            >
+              <Image
+                source={require('../../../assets/img/menuIcon2.png')}
+                style={{ width: 25, height: 25 }}
+              ></Image>
+            </TouchableOpacity>
+          </View>
+        )}
 
+        {(data.customer && data.customer.phone !== '') || screen === 'fields' ? (
+          <View style={{ position: 'absolute', bottom: 5, left: wp('88%') }}>
+            <Foundation
+              name={'telephone'}
+              onPress={() => onCall(data)}
+              color={AppStyles.colors.subTextColor}
+              size={30}
+              style={styles.phoneButton}
+            />
+          </View>
+        ) : null}
       </TouchableOpacity>
     )
   }

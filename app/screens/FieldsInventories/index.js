@@ -111,8 +111,8 @@ class FieldsInventories extends React.Component {
     navigation.navigate('PropertyDetail', {
       property: data,
       update: true,
-      editButtonHide: true,
-      screen: 'fields',
+      editButtonHide: false,
+      screenName: 'FieldsInventories',
     })
   }
 

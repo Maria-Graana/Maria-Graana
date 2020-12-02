@@ -9,6 +9,7 @@ import { connect } from 'react-redux'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
+import TouchableButton from '../../components/TouchableButton'
 import helper from '../../helper'
 import styles from './style'
 
@@ -18,7 +19,7 @@ class PropertyDetail extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      property: {},
+      property: props.route.params.property ? props.route.params.property : null,
       loading: true,
     }
   }
@@ -31,25 +32,41 @@ class PropertyDetail extends React.Component {
 
   navigateTo = () => {
     const { route, navigation } = this.props
-    navigation.navigate('AddInventory', {
-      property: route.params.property,
-      update: route.params.update,
-    })
+    const { property, update, screenName } = route.params;
+    if (screenName === 'FieldsInventories') {
+      navigation.navigate('EditFieldAppProperty', {
+        property: property,
+        update: update
+      })
+    }
+    else {
+      navigation.navigate('AddInventory', {
+        property: property,
+        update: update,
+      })
+    }
   }
 
   fetchProperty = () => {
-    const { route } = this.props
-    const { property, screen } = route.params
-    let url = `/api/inventory/${property.id}`
-    if ('screen' in route.params) {
-      if (screen === 'LeadDetail') {
-        url = `/api/inventory/${property.arms_id}`
+    const { route, navigation } = this.props;
+    const {screenName} = route.params;
+    const { property } = this.state;
+    let url = '';
+    if(screenName === 'FieldsInventories' || screenName === 'GraanaInventories'){
+        // calling different api in case of field app and graana inventories, fetching graana/ field app property
+        url = `/api/inventory/portalproperty?id=${property.id}`
+    }
+    else{
+      url = `/api/inventory/${property.id}` // for getting normal arms property
+      if ('screen' in route.params) {
+        url = `/api/inventory/${property.arms_id}` // for shortlist properties, call this url
       }
     }
+   
     axios
       .get(url)
       .then((res) => {
-        this.setState({ property: res.data, loading: false })
+        this.setState({ property: res.data, loading:false });
       })
       .catch((error) => {
         console.log('ERROR API: /api/inventory/', error)
@@ -68,10 +85,26 @@ class PropertyDetail extends React.Component {
     }
   }
 
+  approveProperty = (id) => {
+    let url = `/api/inventory/fieldProperty?id=${id}`;
+    this.setState({ loading: true }, () => {
+      axios
+        .patch(url)
+        .then((res) => {
+          helper.successToast('PROPERTY APPROVED!')
+          navigation.navigate('InventoryTabs', {screen: 'ARMS', params: { screen: 'InventoryTabs' } })
+        })
+        .catch(error => {
+          console.log('ERROR API: /api/inventory/fieldProperty', error)
+        })
+    })
+
+  }
+
   render() {
-    const { loading } = this.state
+    const { loading, property } = this.state
     const { route, navigation } = this.props
-    const { property, editButtonHide } = route.params
+    const { editButtonHide } = route.params
 
     let type = ''
     let subtype = ''
@@ -110,13 +143,14 @@ class PropertyDetail extends React.Component {
       purpose = property && property.purpose.charAt(0).toUpperCase() + property.purpose.slice(1)
       demandPrice = property && property.price
       description = property && property.description
+
       grade =
         (property && property.grade && property.grade === null) ||
         (property && property.grade === '')
           ? ''
           : property && property.grade
-      lattitude = property && property.lat === null ? '' : property.lat + '/'
-      longitude = property && property.lng === null ? '' : property.lng
+     lattitude = property && property.lat === null ? '' : property.lat + '/'
+     longitude = property && (property.lng === null || property.lon === null) ? '' : property.lng ? property.lng : property.lon
       ownerName = this.checkUserName(property)
       ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
       address =
@@ -329,6 +363,20 @@ class PropertyDetail extends React.Component {
             </View>
           )}
         </View>
+        {/* **************************************** */}
+        {
+          property && property.status === 'onhold' && property.rider_id  ?
+            <View style={{ marginBottom: 25 }}>
+              <TouchableButton
+                containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+                label={'APPROVE PROPERTY'}
+                onPress={() => this.approveProperty(property.id)}
+                loading={loading}
+              />
+            </View>
+            : null
+        }
+
       </ScrollView>
     ) : (
       <Loader loading={loading} />

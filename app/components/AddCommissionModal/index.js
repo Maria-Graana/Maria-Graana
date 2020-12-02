@@ -98,12 +98,11 @@ const AddCommissionModal = ({
 
                     {
                         rcmPayment.id &&
-                        <TouchableInput
-                            disabled={loading}
-                            onPress={() =>  fetchRemarks()}
-                            placeholder={'View Remarks'}
-                            showIconOrImage={false}
-                        />
+
+                        <TouchableOpacity disabled={loading} style={styles.addPaymentBtn} onPress={() => { fetchRemarks() }}>
+                        <Image style={[styles.arrowDownImg , isCollapsed === true && styles.rotateImg ]} source={require('../../../assets/img/arrowDown.png')}></Image>
+                        <Text style={styles.addPaymentBtnText}>VIEW REMARKS</Text>
+                      </TouchableOpacity>
                     }
 
                     {
@@ -335,7 +334,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor:'white'
   },
-  smallText: {
+  ssmallText: {
     color: '#1F2029',
     fontSize: 16,
     marginBottom: 3,
@@ -346,9 +345,19 @@ const styles = StyleSheet.create({
   },
   largeText: {
     color: '#1F2029',
-    fontSize: 18,
+    fontSize: 14,
   },
   noBorder: {
     borderTopWidth: 0
+  },
+  arrowDownImg: {
+    marginTop: 1,
+    resizeMode: 'contain',
+    width: 17,
+    marginRight: 10,
+    height: 19,
+  },
+  rotateImg:{
+    transform: [{ rotate: "180deg" }]
   },
 })

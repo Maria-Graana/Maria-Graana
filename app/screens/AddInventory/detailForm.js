@@ -12,8 +12,8 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native'
-import { Button, Textarea } from 'native-base'
-import { Checkbox } from 'react-native-paper'
+import { Button, Textarea, CheckBox } from 'native-base'
+// import { Checkbox } from 'react-native-paper'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import PickerComponent from '../../components/Picker/index'
 import styles from './style'
@@ -84,9 +84,9 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <Checkbox
+            <CheckBox
               color={AppStyles.colors.primaryColor}
-              status={selectedFeatures.includes(item) ? 'checked' : 'unchecked'}
+              checked={selectedFeatures.includes(item) ? true : false}
               onPress={() => handleFeatures(item)}
             />
             <Text style={styles.featureText}>{item}</Text>
@@ -144,9 +144,9 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <Checkbox
+            <CheckBox
               color={AppStyles.colors.primaryColor}
-              status={selectedFeatures.includes(item) ? 'checked' : 'unchecked'}
+              checked={selectedFeatures.includes(item) ? true : false}
               onPress={() => handleFeatures(item)}
             />
             <Text style={styles.featureText}>{item}</Text>
@@ -163,9 +163,9 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <Checkbox
+            <CheckBox
               color={AppStyles.colors.primaryColor}
-              status={selectedFeatures.includes(item) ? 'checked' : 'unchecked'}
+              checked={selectedFeatures.includes(item) ? true : false}
               onPress={() => handleFeatures(item)}
             />
             <Text style={styles.featureText}>{item}</Text>
@@ -367,12 +367,18 @@ class DetailForm extends Component {
           </View>
         </View>
         {/* **************************************** */}
-        <TouchableOpacity disabled={formData.address === '' || formData.address === null} onPress={() => handleShowAddress(!formData.show_address)}
-          style={styles.checkBoxRow}>
-          <Checkbox color={AppStyles.colors.primaryColor}
-            status={formData.show_address ? 'checked' : 'unchecked'}
+        <TouchableOpacity
+          disabled={formData.address === '' || formData.address === null}
+          onPress={() => handleShowAddress(!formData.show_address)}
+          style={styles.checkBoxRow}
+        >
+          <CheckBox
+            color={AppStyles.colors.primaryColor}
+            checked={formData.show_address ? true : false}
+            style={{ width: 20, height: 22 }}
+            onPress={() => handleShowAddress(!formData.show_address)}
           />
-          <Text>Show Address on Listing</Text>
+          <Text style={{ marginHorizontal: 15 }}>Show Address on Listing</Text>
         </TouchableOpacity>
         {/* **************************************** */}
 
@@ -477,7 +483,9 @@ class DetailForm extends Component {
           onPress={showCustomTitleField}
           style={[AppStyles.mainInputWrap, styles.additonalViewContainer]}
         >
-          <Text style={styles.additionalInformationText}>{showCustomTitle ? 'Use System Generated Title' : 'Add a Custom Title'}</Text>
+          <Text style={styles.additionalInformationText}>
+            {showCustomTitle ? 'Use System Generated Title' : 'Add a Custom Title'}
+          </Text>
           <View style={styles.additionalDetailsIconView}>
             <Ionicons
               name={showCustomTitle ? 'ios-close-circle-outline' : 'ios-add-circle-outline'}
@@ -487,19 +495,21 @@ class DetailForm extends Component {
           </View>
         </TouchableOpacity>
 
-        {showCustomTitle ? <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              onChangeText={(text) => {
-                handleForm(text, 'custom_title')
-              }}
-              placeholderTextColor={'#a8a8aa'}
-              value={formData.custom_title}
-              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-              placeholder={'Enter Custom title'}
-            />
+        {showCustomTitle ? (
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                onChangeText={(text) => {
+                  handleForm(text, 'custom_title')
+                }}
+                placeholderTextColor={'#a8a8aa'}
+                value={formData.custom_title}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                placeholder={'Enter Custom title'}
+              />
+            </View>
           </View>
-        </View> : null}
+        ) : null}
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
@@ -532,19 +542,19 @@ class DetailForm extends Component {
               }
             </View>
           ) : (
-              <View style={styles.uploadImg}>
-                <Button
-                  style={[AppStyles.formBtn, styles.buttonWidth]}
-                  onPress={getImagesFromGallery}
-                >
-                  <Text style={AppStyles.btnText}>Upload From Gallery</Text>
-                </Button>
-                <Text style={{ marginVertical: 15 }}>OR</Text>
-                <Button style={[AppStyles.formBtn, styles.buttonWidth]} onPress={takePhotos}>
-                  <Text style={AppStyles.btnText}>Take Photos</Text>
-                </Button>
-              </View>
-            )}
+            <View style={styles.uploadImg}>
+              <Button
+                style={[AppStyles.formBtn, styles.buttonWidth]}
+                onPress={getImagesFromGallery}
+              >
+                <Text style={AppStyles.btnText}>Upload From Gallery</Text>
+              </Button>
+              <Text style={{ marginVertical: 15 }}>OR</Text>
+              <Button style={[AppStyles.formBtn, styles.buttonWidth]} onPress={takePhotos}>
+                <Text style={AppStyles.btnText}>Take Photos</Text>
+              </Button>
+            </View>
+          )}
         </View>
 
         {/* **************************************** */}
@@ -654,12 +664,17 @@ class DetailForm extends Component {
         />
 
         {/* **************************************** */}
-        <TouchableOpacity onPress={() => handleWaterMark(!formData.showWaterMark)}
-          style={styles.checkBoxRow}>
-          <Checkbox color={AppStyles.colors.primaryColor}
-            status={formData.showWaterMark ? 'checked' : 'unchecked'}
+        <TouchableOpacity
+          onPress={() => handleWaterMark(!formData.showWaterMark)}
+          style={[styles.checkBoxRow]}
+        >
+          <CheckBox
+            color={AppStyles.colors.primaryColor}
+            checked={formData.showWaterMark ? true : false}
+            style={{ width: 20, height: 22 }}
+            onPress={() => handleWaterMark(!formData.showWaterMark)}
           />
-          <Text>Show Watermark on Images</Text>
+          <Text style={{ marginHorizontal: 15 }}>Show Watermark on Images</Text>
         </TouchableOpacity>
 
         {/* **************************************** */}

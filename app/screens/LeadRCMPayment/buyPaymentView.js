@@ -6,10 +6,12 @@ import moment from 'moment'
 import StaticData from '../../StaticData'
 import InputField from '../../components/InputField'
 import CommissionTile from '../../components/CommissionTile'
+import { Checkbox } from 'react-native-paper'
 import _ from 'underscore'
 import styles from './styles'
 import { connect } from 'react-redux'
 import Ability from '../../hoc/Ability'
+import AppStyles from '../../AppStyles'
 
 class BuyPaymentView extends React.Component {
   constructor(props) {
@@ -34,6 +36,10 @@ class BuyPaymentView extends React.Component {
       editTile,
       user,
       currentProperty,
+      commissionNotApplicableBuyer,
+      commissionNotApplicableSeller,
+      setBuyerCommissionApplicable,
+      setSellerCommissionApplicable,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -63,7 +69,6 @@ class BuyPaymentView extends React.Component {
     let singleCommission = buyerCommission && sellerCommission ? true : false;
     const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
     const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
-    // console.log(sellerCommission)
 
     return (
       <View>
@@ -101,6 +106,20 @@ class BuyPaymentView extends React.Component {
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
         />
 
+        { // Checkbox
+          singleCommission && !buyer  && !isLeadClosed ?
+            <TouchableOpacity 
+            disabled={commissionNotApplicableSeller === true}
+            onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
+              style={styles.checkBoxRow}>
+              <Checkbox color={AppStyles.colors.primaryColor}
+                status={commissionNotApplicableBuyer ? 'checked' : 'unchecked'}
+              />
+              <Text style={{color : commissionNotApplicableSeller === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor}}>Buyer Commission Not Applicable</Text>
+            </TouchableOpacity>
+            : null
+        }
+
         {lead.commissions ? (
           buyer ? (
             <CommissionTile
@@ -113,8 +132,12 @@ class BuyPaymentView extends React.Component {
               <View>
                 {buyerCommission ? (
                   <TouchableOpacity
-                    style={styles.addPaymentBtn}
-                    onPress={() => onAddCommissionPayment('buyer', singleCommission)}
+                   disabled={singleCommission ? commissionNotApplicableBuyer : false}
+                    style={[styles.addPaymentBtn, {
+                      backgroundColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
+                      borderColor: commissionNotApplicableBuyer ? '#ddd' : '#fff'
+                    }]}
+                    onPress={() => onAddCommissionPayment('buyer')}
                   >
                     <Image
                       style={styles.addPaymentBtnImg}
@@ -127,6 +150,20 @@ class BuyPaymentView extends React.Component {
             )
         ) : null}
 
+        { // Checkbox
+          singleCommission && !seller  && !isLeadClosed?
+            <TouchableOpacity 
+            disabled={commissionNotApplicableBuyer === true}
+            onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
+              style={styles.checkBoxRow}>
+              <Checkbox color={AppStyles.colors.primaryColor}
+                status={commissionNotApplicableSeller ? 'checked' : 'unchecked'}
+              />
+              <Text style={{color : commissionNotApplicableBuyer === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor}}>Seller Commission Not Applicable</Text>
+            </TouchableOpacity>
+            : null
+        }
+
         {lead.commissions ? (
           seller ? (
             <CommissionTile data={seller}
@@ -137,8 +174,12 @@ class BuyPaymentView extends React.Component {
               <View>
                 {sellerCommission ? (
                   <TouchableOpacity
-                    style={styles.addPaymentBtn}
-                    onPress={() => onAddCommissionPayment('seller', singleCommission)}
+                    disabled={singleCommission ? commissionNotApplicableSeller : false}
+                    style={[styles.addPaymentBtn, {
+                      backgroundColor: commissionNotApplicableSeller ? '#ddd' : '#fff',
+                      borderColor: commissionNotApplicableSeller ? '#ddd' : '#fff'
+                    }]}
+                    onPress={() => onAddCommissionPayment('seller')}
                   >
                     <Image
                       style={styles.addPaymentBtnImg}
@@ -147,9 +188,9 @@ class BuyPaymentView extends React.Component {
                     <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
                   </TouchableOpacity>
                 ) : <View
-                  style={[styles.addPaymentBtn, {borderColor:'#ddd'}]}
-                > 
-                <Text style={[styles.addPaymentBtnText,{color: '#ddd'}]}> SELLER COMMISSION NOT APPLICABLE</Text>
+                  style={[styles.addPaymentBtn, { borderColor: '#ddd' }]}
+                >
+                    <Text style={[styles.addPaymentBtnText, { color: '#ddd' }]}> SELLER COMMISSION NOT APPLICABLE</Text>
                   </View>}
               </View>
             )

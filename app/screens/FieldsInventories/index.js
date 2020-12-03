@@ -112,7 +112,7 @@ class FieldsInventories extends React.Component {
     navigation.navigate('PropertyDetail', {
       property: data,
       update: true,
-      editButtonHide: false,
+      editButtonHide: data.status === 'onhold' ? false : true,
       screenName: 'FieldsInventories',
     })
   }

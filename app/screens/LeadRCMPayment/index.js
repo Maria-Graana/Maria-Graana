@@ -78,7 +78,6 @@ class LeadRCMPayment extends React.Component {
       editable: false,
       matchData: [],
       menuShow: false,
-      isSingleCommission: false,
       commissionNotApplicableBuyer: false,
       commissionNotApplicableSeller: false,
     }
@@ -231,7 +230,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   showLeadPaymentModal = () => {
-    const { lead, isSingleCommission } = this.state
+    const { lead } = this.state
     let commissionsLength = 2
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true) commissionsLength = 1
     if (lead.paymentProperty && lead.paymentProperty.origin === null) {
@@ -923,10 +922,8 @@ class LeadRCMPayment extends React.Component {
       callModal,
       modalValidation,
       addPaymentLoading,
-      isSingleCommission,
       commissionNotApplicableBuyer,
       commissionNotApplicableSeller,
-      //editable,
     } = this.state
     const { navigation, user, rcmPayment } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1035,12 +1032,11 @@ class LeadRCMPayment extends React.Component {
                         tokenDateStatus={tokenDateStatus}
                         tokenPriceFromat={tokenPriceFromat}
                         agreeAmountFromat={agreeAmountFromat}
-                        onAddCommissionPayment={(addedBy, isSingleCommission) =>
-                          this.onAddCommissionPayment(addedBy, isSingleCommission)
+                        onAddCommissionPayment={(addedBy) =>
+                          this.onAddCommissionPayment(addedBy)
                         }
                         editTile={this.setCommissionEditData}
                         user={user}
-                        isSingleCommission={isSingleCommission}
                         commissionNotApplicableBuyer={commissionNotApplicableBuyer}
                         commissionNotApplicableSeller={commissionNotApplicableSeller}
                         setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
@@ -1066,11 +1062,15 @@ class LeadRCMPayment extends React.Component {
                           tokenPriceFromat={tokenPriceFromat}
                           agreeAmountFromat={agreeAmountFromat}
                           monthlyFormatStatus={monthlyFormatStatus}
-                          onAddCommissionPayment={(addedBy, isSingleCommission) =>
-                            this.onAddCommissionPayment(addedBy, isSingleCommission)
+                          onAddCommissionPayment={(addedBy) =>
+                            this.onAddCommissionPayment(addedBy)
                           }
                           editTile={this.setCommissionEditData}
                           user={user}
+                          commissionNotApplicableBuyer={commissionNotApplicableBuyer}
+                          commissionNotApplicableSeller={commissionNotApplicableSeller}
+                          setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
+                          setSellerCommissionApplicable={this.setSellerCommissionApplicable}
                         />
                       )
                   ) : null}

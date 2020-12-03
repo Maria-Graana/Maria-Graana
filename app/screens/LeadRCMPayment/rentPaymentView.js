@@ -6,6 +6,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import CommissionTile from '../../components/CommissionTile'
+import { Checkbox } from 'react-native-paper'
 import InputField from '../../components/InputField'
 import PickerComponent from '../../components/Picker'
 import styles from './styles'
@@ -31,6 +32,10 @@ const RentPaymentView = (props) => {
     editTile,
     user,
     currentProperty,
+    commissionNotApplicableBuyer,
+    commissionNotApplicableSeller,
+    setBuyerCommissionApplicable,
+    setSellerCommissionApplicable,
   } = props
   let property = currentProperty[0]
   let subRole =
@@ -44,20 +49,20 @@ const RentPaymentView = (props) => {
     lead.status === StaticData.Constants.lead_closed_won
   let buyerCommission =
     lead.assigned_to_armsuser_id === user.id &&
-    (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
+      (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
       ? true
       : false
   let sellerCommission =
     property.assigned_to_armsuser_id === user.id ||
-    (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-    !Ability.canView(subRole, 'Leads')
+      (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
+      !Ability.canView(subRole, 'Leads')
       ? true
       : false
-      if(sellerCommission === true){
-        if(property.origin === null){
-          sellerCommission = false;
-        }
-      }
+  if (sellerCommission === true) {
+    if (property.origin === null) {
+      sellerCommission = false;
+    }
+  }
   let singleCommission = buyerCommission && sellerCommission ? true : false;
   const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
   const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
@@ -135,44 +140,73 @@ const RentPaymentView = (props) => {
         showDate={true}
         dateStatus={{ status: tokenDateStatus, name: 'token' }}
       />
-      {lead.commissions ? (
-          buyer ? (
-            <CommissionTile
-              data={buyer}
-              editTile={editTile}
-              commissionEdit={!buyerCommission}
-              title={buyer ? 'Buyer Commission Payment' : ''}
-            />
-          ) : (
-              <View>
-                {buyerCommission ? (
-                  <TouchableOpacity
-                    style={styles.addPaymentBtn}
-                    onPress={() => onAddCommissionPayment('buyer', singleCommission)}
-                  >
-                    <Image
-                      style={styles.addPaymentBtnImg}
-                      source={require('../../../assets/img/roundPlus.png')}
-                    ></Image>
-                    <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-                  </TouchableOpacity>
-                ) : null}
-              </View>
-            )
-        ) : null}
 
-        {lead.commissions ? (
-          seller ? (
-            <CommissionTile data={seller}
-             commissionEdit={!sellerCommission}
-             editTile={editTile} 
-             title={'Seller Commission Payment'} />
-          ) : (
+      {
+        singleCommission && !buyer ?
+          <TouchableOpacity
+            disabled={commissionNotApplicableSeller === true}
+            onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
+            style={styles.checkBoxRow}>
+            <Checkbox color={AppStyles.colors.primaryColor}
+              status={commissionNotApplicableBuyer ? 'checked' : 'unchecked'}
+            />
+            <Text style={{ color: commissionNotApplicableSeller === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor }}>Buyer Commission Not Applicable</Text>
+          </TouchableOpacity>
+          : null
+      }
+
+      {lead.commissions ? (
+        buyer ? (
+          <CommissionTile
+            data={buyer}
+            editTile={editTile}
+            commissionEdit={!buyerCommission}
+            title={buyer ? 'Buyer Commission Payment' : ''}
+          />
+        ) : (
+            <View>
+              {buyerCommission ? (
+                <TouchableOpacity
+                  style={styles.addPaymentBtn}
+                  onPress={() => onAddCommissionPayment('buyer')}
+                >
+                  <Image
+                    style={styles.addPaymentBtnImg}
+                    source={require('../../../assets/img/roundPlus.png')}
+                  ></Image>
+                  <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          )
+      ) : null}
+
+      {
+        singleCommission && !seller ?
+          <TouchableOpacity
+            disabled={commissionNotApplicableBuyer === true}
+            onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
+            style={styles.checkBoxRow}>
+            <Checkbox color={AppStyles.colors.primaryColor}
+              status={commissionNotApplicableSeller ? 'checked' : 'unchecked'}
+            />
+            <Text style={{ color: commissionNotApplicableBuyer === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor }}>Seller Commission Not Applicable</Text>
+          </TouchableOpacity>
+          : null
+      }
+
+      {lead.commissions ? (
+        seller ? (
+          <CommissionTile data={seller}
+            commissionEdit={!sellerCommission}
+            editTile={editTile}
+            title={'Seller Commission Payment'} />
+        ) : (
             <View>
               {sellerCommission ? (
                 <TouchableOpacity
                   style={styles.addPaymentBtn}
-                  onPress={() => onAddCommissionPayment('seller', singleCommission)}
+                  onPress={() => onAddCommissionPayment('seller')}
                 >
                   <Image
                     style={styles.addPaymentBtnImg}
@@ -183,9 +217,9 @@ const RentPaymentView = (props) => {
               ) : null}
             </View>
           )
-        ) : null}
-      </View>
-    )
+      ) : null}
+    </View>
+  )
 }
 
 export default RentPaymentView

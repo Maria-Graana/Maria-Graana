@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native'
 import Modal from 'react-native-modal';
 import { connect } from 'react-redux';
-import { Checkbox } from 'react-native-paper'
 import times from '../../../assets/img/times.png'
 import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index';
@@ -353,9 +352,5 @@ const styles = StyleSheet.create({
     },
     noBorder: {
         borderTopWidth: 0
-    },
-    checkBoxRow: {
-        flexDirection: 'row', 
-        alignItems:'center',
     },
 })

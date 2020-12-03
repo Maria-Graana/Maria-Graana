@@ -89,7 +89,7 @@ export default styles = StyleSheet.create({
     marginBottom: 0,
     justifyContent: 'center',
     alignItems:'center',
-    marginTop: 15,
+    marginTop: 10,
   },
   addPaymentBtnImg: {
     resizeMode: 'contain',
@@ -104,4 +104,8 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
   },
+  checkBoxRow: {
+    flexDirection: 'row', 
+    alignItems:'center',
+},
 });

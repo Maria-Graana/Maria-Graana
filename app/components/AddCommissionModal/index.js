@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native'
 import Modal from 'react-native-modal';
 import { connect } from 'react-redux';
-import { Checkbox } from 'react-native-paper'
 import times from '../../../assets/img/times.png'
 import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index';
@@ -23,39 +22,16 @@ const AddCommissionModal = ({
     addPaymentLoading,
     lead,
     submitCommissionPayment,
-    commissionNotApplicableBuyer,
-    commissionNotApplicableSeller,
-    setCommissionApplicable,
-    isSingleCommission,
-    editable,
 }) => {
 
     const handleEmptyValue = (value) => {
         return value != null && value != '' ? value : ''
     }
-    let showNotApplicable = true;
+   
     const [remarks, setRemarks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isCollapsed, setCollapsed] = useState(false);
-    const commissionNotApplicable = rcmPayment.addedBy === 'buyer' ? commissionNotApplicableBuyer : commissionNotApplicableSeller;
-    if(rcmPayment.addedBy === 'buyer'){
-        if(commissionNotApplicableBuyer){
-            showNotApplicable = true;
-       }
-       if(commissionNotApplicableSeller){
-            showNotApplicable = false
-       }
-    }
-    else{
-        if(commissionNotApplicableSeller){
-            showNotApplicable = true;
-       }
-       else{
-        if(commissionNotApplicableBuyer){
-            showNotApplicable = false
-       }
-       }
-    }
+    
 
     const fetchRemarks = () => {
         if (isCollapsed === false) {
@@ -90,17 +66,6 @@ const AddCommissionModal = ({
                 </View>
                 <View style={styles.moreViewContainer}>
                       {/* **************************************** */}
-                      {
-                          isSingleCommission && showNotApplicable && editable === false ?  <TouchableOpacity onPress={() => setCommissionApplicable(!commissionNotApplicable)}
-                          style={styles.checkBoxRow}>
-                          <Checkbox color={AppStyles.colors.primaryColor}
-                              status={commissionNotApplicable ? 'checked' : 'unchecked'}
-                          />
-                          <Text>Commission Not Applicable</Text>
-                      </TouchableOpacity>
-                      : null
-                      }
-                     
                     <SimpleInputText
                         name={'installmentAmount'}
                         fromatName={false}
@@ -108,7 +73,6 @@ const AddCommissionModal = ({
                         label={'ENTER AMOUNT'}
                         value={rcmPayment.installmentAmount}
                         formatValue={rcmPayment.installmentAmount}
-                        editable={!commissionNotApplicable}
                         keyboardType={'numeric'}
                         onChangeHandle={handleCommissionChange}
                     />
@@ -118,7 +82,7 @@ const AddCommissionModal = ({
 
                     <View style={[AppStyles.mainInputWrap]}>
                         <View style={[AppStyles.inputWrap]}>
-                            <PickerComponent enabled={!commissionNotApplicable} onValueChange={handleCommissionChange} data={StaticData.fullPaymentType} name={'type'} placeholder='Type' selectedItem={rcmPayment.type} />
+                            <PickerComponent  onValueChange={handleCommissionChange} data={StaticData.fullPaymentType} name={'type'} placeholder='Type' selectedItem={rcmPayment.type} />
                             {modalValidation === true && rcmPayment.type == '' && <ErrorMessage errorMessage={'Required'} />}
                         </View>
                     </View>
@@ -130,7 +94,6 @@ const AddCommissionModal = ({
                         label={'DETAILS'}
                         value={rcmPayment.details != '' ? rcmPayment.details : ''}
                         formatValue={''}
-                        editable={!commissionNotApplicable}
                         onChangeHandle={handleCommissionChange}
                     />
 
@@ -199,7 +162,6 @@ const AddCommissionModal = ({
                             </View>
                             :
                             <TouchableButton 
-                                disabled={commissionNotApplicable}
                                 containerStyle={[styles.bookedBtn, { width: '100%' }]}
                                 label={'OK'}
                                 fontFamily={AppStyles.fonts.boldFont}
@@ -390,9 +352,5 @@ const styles = StyleSheet.create({
     },
     noBorder: {
         borderTopWidth: 0
-    },
-    checkBoxRow: {
-        flexDirection: 'row', 
-        alignItems:'center',
     },
 })

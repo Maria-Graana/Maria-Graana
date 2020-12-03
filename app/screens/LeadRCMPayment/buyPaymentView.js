@@ -107,7 +107,7 @@ class BuyPaymentView extends React.Component {
         />
 
         {
-          singleCommission && !buyer ?
+          singleCommission && !buyer  && !isLeadClosed ?
             <TouchableOpacity 
             disabled={commissionNotApplicableSeller === true}
             onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
@@ -151,7 +151,7 @@ class BuyPaymentView extends React.Component {
         ) : null}
 
         {
-          singleCommission && !seller ?
+          singleCommission && !seller  && !isLeadClosed?
             <TouchableOpacity 
             disabled={commissionNotApplicableBuyer === true}
             onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}

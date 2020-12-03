@@ -142,7 +142,7 @@ const RentPaymentView = (props) => {
       />
 
       {
-        singleCommission && !buyer ?
+        singleCommission && !buyer  && !isLeadClosed ?
           <TouchableOpacity
             disabled={commissionNotApplicableSeller === true}
             onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
@@ -186,7 +186,7 @@ const RentPaymentView = (props) => {
       ) : null}
 
       {
-        singleCommission && !seller ?
+        singleCommission && !seller  && !isLeadClosed ?
           <TouchableOpacity
             disabled={commissionNotApplicableBuyer === true}
             onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}

@@ -190,8 +190,9 @@ class PropertyDetail extends React.Component {
         if (rider.first_name) riderName = rider.first_name
         if (rider.last_name) riderName = riderName + ' ' + rider.last_name
       }
-      riderCustomeTile = property && property.custom_title ? property.custom_title : null
+      riderCustomeTile = property && property.title ? property.title : null
     }
+
     return !loading ? (
       <ScrollView
         style={[

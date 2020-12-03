@@ -78,6 +78,9 @@ class LeadRCMPayment extends React.Component {
       editable: false,
       matchData: [],
       menuShow: false,
+      isSingleCommission: false,
+      commissionNotApplicableBuyer: false,
+      commissionNotApplicableSeller: false,
     }
   }
 
@@ -226,8 +229,9 @@ class LeadRCMPayment extends React.Component {
   }
 
   showLeadPaymentModal = () => {
-    const { lead } = this.state
+    const { lead, isSingleCommission } = this.state
     let commissionsLength = 2
+    if (isSingleCommission) commissionsLength = 1
     if (lead.paymentProperty && lead.paymentProperty.origin === null) {
       commissionsLength = 1
     }
@@ -236,7 +240,7 @@ class LeadRCMPayment extends React.Component {
       lead.commissions.map((item) => {
         if (item.status === 'cleared') cleared++
       })
-      if (cleared === commissionsLength) {
+      if (cleared >= commissionsLength) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
           isVisible: true,
@@ -650,9 +654,10 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
-  onAddCommissionPayment = (addedBy) => {
+  onAddCommissionPayment = (addedBy, isSingleCommission) => {
     const { dispatch, rcmPayment } = this.props
     dispatch(setRCMPayment({ ...rcmPayment, visible: true, addedBy }))
+    this.setState({ isSingleCommission })
   }
 
   onModalCloseClick = () => {
@@ -845,6 +850,15 @@ class LeadRCMPayment extends React.Component {
     }
   }
 
+  setCommissionApplicable = (value) => {
+    const { rcmPayment } = this.props
+    if (rcmPayment.addedBy === 'buyer') {
+      this.setState({ commissionNotApplicableBuyer: value })
+    } else {
+      this.setState({ commissionNotApplicableSeller: value })
+    }
+  }
+
   render() {
     const {
       menuShow,
@@ -873,8 +887,12 @@ class LeadRCMPayment extends React.Component {
       callModal,
       modalValidation,
       addPaymentLoading,
+      isSingleCommission,
+      commissionNotApplicableBuyer,
+      commissionNotApplicableSeller,
+      editable,
     } = this.state
-    const { navigation, user } = this.props
+    const { navigation, user, rcmPayment } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
 
     return !loading ? (
@@ -914,6 +932,11 @@ class LeadRCMPayment extends React.Component {
           submitCommissionPayment={() => this.submitCommissionPayment()}
           addPaymentLoading={addPaymentLoading}
           lead={lead}
+          isSingleCommission={isSingleCommission}
+          commissionNotApplicableBuyer={commissionNotApplicableBuyer}
+          commissionNotApplicableSeller={commissionNotApplicableSeller}
+          setCommissionApplicable={this.setCommissionApplicable}
+          editable={editable}
         />
 
         <HistoryModal
@@ -981,7 +1004,9 @@ class LeadRCMPayment extends React.Component {
                         tokenDateStatus={tokenDateStatus}
                         tokenPriceFromat={tokenPriceFromat}
                         agreeAmountFromat={agreeAmountFromat}
-                        onAddCommissionPayment={(addedBy) => this.onAddCommissionPayment(addedBy)}
+                        onAddCommissionPayment={(addedBy, isSingleCommission) =>
+                          this.onAddCommissionPayment(addedBy, isSingleCommission)
+                        }
                         editTile={this.setCommissionEditData}
                         user={user}
                       />
@@ -1005,7 +1030,9 @@ class LeadRCMPayment extends React.Component {
                         tokenPriceFromat={tokenPriceFromat}
                         agreeAmountFromat={agreeAmountFromat}
                         monthlyFormatStatus={monthlyFormatStatus}
-                        onAddCommissionPayment={(addedBy) => this.onAddCommissionPayment(addedBy)}
+                        onAddCommissionPayment={(addedBy, isSingleCommission) =>
+                          this.onAddCommissionPayment(addedBy, isSingleCommission)
+                        }
                         editTile={this.setCommissionEditData}
                         user={user}
                       />

@@ -106,8 +106,7 @@ class PropertyDetail extends React.Component {
   render() {
     const { loading, property } = this.state
     const { route, navigation } = this.props
-    const { editButtonHide } = route.params
-
+    const { editButtonHide, screenName } = route.params
     let type = ''
     let subtype = ''
     let areaName = ''
@@ -133,6 +132,10 @@ class PropertyDetail extends React.Component {
     let floors = ''
     let pocName = ''
     let pocPhone = ''
+    let riderName = ''
+    let riderPhone = ''
+    let rider = null
+    let riderCustomeTile = ''
     if (!loading) {
       type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1)
       subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1)
@@ -181,10 +184,14 @@ class PropertyDetail extends React.Component {
         parsedFeatures && parsedFeatures.parking_space ? parsedFeatures.parking_space : null
       downPayment = parsedFeatures && parsedFeatures.downpayment ? parsedFeatures.downpayment : null
       floors = parsedFeatures && parsedFeatures.floors ? parsedFeatures.floors : null
+      rider = property && property.rider ? property.rider : null
+      if (rider) {
+        if (rider.phone) riderPhone = rider.phone
+        if (rider.first_name) riderName = rider.first_name
+        if (rider.last_name) riderName = riderName + ' ' + rider.last_name
+      }
+      riderCustomeTile = property && property.custom_title ? property.custom_title : null
     }
-
-   // console.log(property)
-
     return !loading ? (
       <ScrollView
         style={[
@@ -195,6 +202,12 @@ class PropertyDetail extends React.Component {
       >
         <View style={styles.outerContainer}>
           <View style={styles.innerContainer}>
+            {riderCustomeTile ? (
+              <>
+                <Text style={styles.headingText}> Customer Title </Text>
+                <Text style={styles.labelText}> {riderCustomeTile} </Text>
+              </>
+            ) : null}
             <Text style={styles.headingText}> Property Type </Text>
             <Text style={styles.labelText}> {type} </Text>
             <Text style={styles.headingText}> Property Sub Type </Text>
@@ -223,7 +236,9 @@ class PropertyDetail extends React.Component {
               </>
             ) : null}
 
-            {images && images.length ? <Text style={styles.headingText}> Images </Text> : null}
+            {images && images.length && screenName !== 'FieldsInventories' ? (
+              <Text style={styles.headingText}> Images </Text>
+            ) : null}
             <View style={{ flex: 1, flexWrap: 'wrap', flexDirection: 'row' }}>
               {images && images.length
                 ? images.map((item, index) => {
@@ -324,6 +339,18 @@ class PropertyDetail extends React.Component {
               <View>
                 <Text style={styles.headingText}> Point of Contact Phone </Text>
                 <Text style={styles.labelText}> {pocPhone}</Text>
+              </View>
+            ) : null}
+            {rider ? (
+              <View>
+                <Text style={styles.headingText}> Added By Contact Name </Text>
+                <Text style={styles.labelText}> {riderName}</Text>
+              </View>
+            ) : null}
+            {rider ? (
+              <View>
+                <Text style={styles.headingText}> Added By Contact Phone </Text>
+                <Text style={styles.labelText}> {riderPhone}</Text>
               </View>
             ) : null}
             <View>

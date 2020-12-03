@@ -255,12 +255,12 @@ export default StaticData = {
   ],
   paymentPopupAnyPaymentAdded: [
     {
-      name: 'Refund Amount',
-      value: 'refund_amount',
+      name: 'Refund',
+      value: 'refund',
     },
     {
-      name: 'Adjustment to an other Project',
-      value: 'adjustment_to_an_other_project',
+      name: 'Adjustment',
+      value: 'adjustment',
     },
   ],
   projectType: [

@@ -106,7 +106,7 @@ class BuyPaymentView extends React.Component {
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
         />
 
-        {
+        { // Checkbox
           singleCommission && !buyer  && !isLeadClosed ?
             <TouchableOpacity 
             disabled={commissionNotApplicableSeller === true}
@@ -150,7 +150,7 @@ class BuyPaymentView extends React.Component {
             )
         ) : null}
 
-        {
+        { // Checkbox
           singleCommission && !seller  && !isLeadClosed?
             <TouchableOpacity 
             disabled={commissionNotApplicableBuyer === true}

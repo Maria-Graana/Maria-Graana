@@ -192,7 +192,6 @@ class PropertyDetail extends React.Component {
       }
       riderCustomeTile = property && property.custom_title ? property.custom_title : null
     }
-
     return !loading ? (
       <ScrollView
         style={[

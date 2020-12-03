@@ -115,7 +115,7 @@ class BuyPaymentView extends React.Component {
               <Checkbox color={AppStyles.colors.primaryColor}
                 status={commissionNotApplicableBuyer ? 'checked' : 'unchecked'}
               />
-              <Text style={{color : commissionNotApplicableSeller === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor}}>Buyer Commission Not Applicable</Text>
+              <Text style={{color : commissionNotApplicableSeller === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor}}>Set Buyer Commission As Not Applicable</Text>
             </TouchableOpacity>
             : null
         }
@@ -159,7 +159,7 @@ class BuyPaymentView extends React.Component {
               <Checkbox color={AppStyles.colors.primaryColor}
                 status={commissionNotApplicableSeller ? 'checked' : 'unchecked'}
               />
-              <Text style={{color : commissionNotApplicableBuyer === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor}}>Seller Commission Not Applicable</Text>
+              <Text style={{color : commissionNotApplicableBuyer === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor}}>Set Seller Commission As Not Applicable</Text>
             </TouchableOpacity>
             : null
         }

@@ -167,8 +167,12 @@ const RentPaymentView = (props) => {
             <View>
               {buyerCommission ? (
                 <TouchableOpacity
-                  style={styles.addPaymentBtn}
-                  onPress={() => onAddCommissionPayment('buyer')}
+                disabled={singleCommission ? commissionNotApplicableBuyer : false}
+                style={[styles.addPaymentBtn, {
+                  backgroundColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
+                  borderColor: commissionNotApplicableBuyer ? '#ddd' : '#fff'
+                }]}
+                onPress={() => onAddCommissionPayment('buyer')}
                 >
                   <Image
                     style={styles.addPaymentBtnImg}
@@ -205,8 +209,12 @@ const RentPaymentView = (props) => {
             <View>
               {sellerCommission ? (
                 <TouchableOpacity
-                  style={styles.addPaymentBtn}
-                  onPress={() => onAddCommissionPayment('seller')}
+                disabled={singleCommission ? commissionNotApplicableSeller : false}
+                style={[styles.addPaymentBtn, {
+                  backgroundColor: commissionNotApplicableSeller ? '#ddd' : '#fff',
+                  borderColor: commissionNotApplicableSeller ? '#ddd' : '#fff'
+                }]}
+                onPress={() => onAddCommissionPayment('seller')}
                 >
                   <Image
                     style={styles.addPaymentBtnImg}

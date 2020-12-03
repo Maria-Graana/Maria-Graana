@@ -932,11 +932,6 @@ class LeadRCMPayment extends React.Component {
           submitCommissionPayment={() => this.submitCommissionPayment()}
           addPaymentLoading={addPaymentLoading}
           lead={lead}
-          isSingleCommission={isSingleCommission}
-          commissionNotApplicableBuyer={commissionNotApplicableBuyer}
-          commissionNotApplicableSeller={commissionNotApplicableSeller}
-          setCommissionApplicable={this.setCommissionApplicable}
-          editable={editable}
         />
 
         <HistoryModal

@@ -643,11 +643,12 @@ export default StaticData = {
     { value: 'Payment', name: 'Other Payment' },
   ],
   statusOptions: [
-    { label: 'Pending Account', value: 'pendingAccountHq' },
+    { label: 'Pending Account', value: 'pendingAccount' },
     { label: 'Pending Sales', value: 'pendingSales' },
     { label: 'Pending at Bank', value: 'bankPending' },
     { label: 'Not Cleared', value: 'notCleared' },
     { label: 'Cleared', value: 'cleared' },
+    { label: 'Pending Account', value: 'pendingAccountHq' },
   ],
   leadClearedStatus: 'cleared',
   propsureReportTypes: [

@@ -517,7 +517,7 @@ class LeadDetail extends React.Component {
           <Text style={styles.headingText}>Additional Information </Text>
           <Text style={styles.labelText}>{lead.category ? lead.category : 'NA'} </Text>
         </View>
-        {showAssignToButton && purposeTab !== 'property' && (
+        {/* {showAssignToButton && purposeTab !== 'property' && (
           <View style={styles.assignButtonView}>
             <Button
               onPress={() => {
@@ -528,7 +528,7 @@ class LeadDetail extends React.Component {
               <Text style={AppStyles.btnTextBlue}>ASSIGN TO TEAM MEMBER</Text>
             </Button>
           </View>
-        )}
+        )} */}
 
         <View style={[AppStyles.assignButtonView]}>
           <Button

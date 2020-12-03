@@ -89,7 +89,7 @@ export default styles = StyleSheet.create({
     marginBottom: 0,
     justifyContent: 'center',
     alignItems:'center',
-    marginTop: 10,
+    //marginTop: 10,
   },
   addPaymentBtnImg: {
     resizeMode: 'contain',

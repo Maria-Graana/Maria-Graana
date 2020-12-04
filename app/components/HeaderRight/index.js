@@ -13,7 +13,7 @@ class HeaderRight extends React.Component {
   }
 
   showToast = () => {
-    helper.internetToast('No Internet Connection!')
+    helper.internetToast('This icon indicates that ARMS is currently not connected to internet!')
   }
 
   render() {

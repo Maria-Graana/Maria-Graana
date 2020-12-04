@@ -99,12 +99,10 @@ const AddCommissionModal = ({
 
                     {
                         rcmPayment.id &&
-                        <TouchableInput
-                            disabled={loading}
-                            onPress={() => fetchRemarks()}
-                            placeholder={'View Remarks'}
-                            showIconOrImage={false}
-                        />
+                        <TouchableOpacity  disabled={loading} style={styles.addPaymentBtn}  onPress={() => fetchRemarks()}>
+                        <Image style={[styles.arrowDownImg , isCollapsed === true && styles.rotateImg ]} source={require('../../../assets/img/arrowDown.png')}></Image>
+                        <Text style={styles.addPaymentBtnText}>VIEW REMARKS</Text>
+                      </TouchableOpacity>
                     }
 
                     {
@@ -211,25 +209,6 @@ const styles = StyleSheet.create({
         width: 10,
         height: 10,
         resizeMode: 'contain',
-    },
-    MainTileView: {
-        borderBottomWidth: 1,
-        borderColor: '#ECECEC',
-        paddingTop: 15,
-        paddingBottom: 15,
-    },
-    smallText: {
-        color: '#1F2029',
-        fontSize: 14,
-        marginBottom: 3,
-        textTransform: 'capitalize',
-    },
-    largeText: {
-        color: '#1F2029',
-        fontSize: 20,
-    },
-    noBorder: {
-        borderBottomWidth: 0
     },
     addPaymentBtn: {
         flexDirection: 'row',
@@ -342,15 +321,27 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 3,
         textTransform: 'capitalize',
-    },
-    smallestText: {
+      },
+      smallestText: {
         fontSize: 12,
-    },
-    largeText: {
+      },
+      largeText: {
         color: '#1F2029',
-        fontSize: 18,
-    },
+        fontSize: 14,
+      },
     noBorder: {
         borderTopWidth: 0
     },
+
+    arrowDownImg: {
+        marginTop: 1,
+        resizeMode: 'contain',
+        width: 17,
+        marginRight: 10,
+        height: 19,
+      },
+      rotateImg:{
+    
+        transform: [{ rotate: "180deg" }]
+      },
 })

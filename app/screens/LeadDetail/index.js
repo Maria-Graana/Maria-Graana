@@ -335,7 +335,7 @@ class LeadDetail extends React.Component {
           <View style={styles.rowContainer}>
             <View style={AppStyles.mb1}>
               <Text style={styles.headingText}>Client Name </Text>
-              <Text style={styles.labelText}>{customerName}</Text>
+              <Text style={styles.labelText}>{customerName === '' ? lead.customer && lead.customer.customerName: customerName}</Text>
             </View>
             {purposeTab !== 'property' && (
               <TouchableOpacity

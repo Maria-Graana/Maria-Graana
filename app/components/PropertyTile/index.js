@@ -54,7 +54,6 @@ class InventoryTile extends React.Component {
       graanaVerifeyModal,
       index,
       screen,
-      showMenu,
       approveProperty,
       toggleMenu
     } = this.props

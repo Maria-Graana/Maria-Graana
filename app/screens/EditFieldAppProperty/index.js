@@ -207,7 +207,7 @@ class EditFieldAppProperty extends Component {
             if (phone.startsWith(dialCode)) number = phone.replace(dialCode, "")
             else number = phone
         } else {
-            if (phone.startsWith(withoutPlus)) number = number.replace(withoutPlus, "")
+            if (phone.startsWith(withoutPlus)) number = phone.replace(withoutPlus, "")
             else number = phone
         }
         return number
@@ -223,9 +223,6 @@ class EditFieldAppProperty extends Component {
             amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
             amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
         }
-
-  //   console.log(property)
-
         let ownerCallingCode = this.setDialCode(callingCode)
         let ownerNumber = property.owner_phone ? this.setPhoneNumber(ownerCallingCode, property.owner_phone) : null;
         let pocCallingCode = this.setDialCode(callingCode1)

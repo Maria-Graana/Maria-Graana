@@ -753,6 +753,7 @@ class LeadRCMPayment extends React.Component {
         // commission update mode
         let body = { ...rcmPayment }
         delete body.visible
+        delete body.remarks;
         axios
           .patch(`/api/leads/project/payment?id=${body.id}`, body)
           .then((response) => {

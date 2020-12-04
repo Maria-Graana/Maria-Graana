@@ -110,7 +110,7 @@ class AddPaymentModal extends React.Component {
                               return (
                                 <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
                                   <View>
-                                    <Text style={[styles.smallText]}>{item.armsuser.firstName} {item.armsuser.lastName} <Text style={styles.smallestText}> ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})</Text></Text>
+                                    <Text style={[styles.smallText]}>{item.armsuser.firstName} {item.armsuser.lastName} <Text style={styles.smallestText}> ({moment(item.createdAt).format('hh:mm A, MMM DD, YYYY')})</Text></Text>
                                     <Text style={styles.largeText}>{item.remarks}</Text>
                                   </View>
                                 </View>

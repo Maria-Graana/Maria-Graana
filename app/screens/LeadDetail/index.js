@@ -421,7 +421,7 @@ class LeadDetail extends React.Component {
                 })
               : ''}
             {!lead.projectId && lead.city && ' - ' + lead.city.name}
-            {purposeTab === 'invest' && projectName}
+            {purposeTab === 'invest' && projectName != '' ? projectName : 'Project not specified'}
           </Text>
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Price Range </Text>

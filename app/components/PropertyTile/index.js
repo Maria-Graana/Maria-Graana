@@ -107,11 +107,11 @@ class InventoryTile extends React.Component {
             </Text>
             {screen === 'fields' && data.status ==='onhold' ? (
                   <Menu
-                    visible={showMenu}
-                    onDismiss={() => toggleMenu(false)}
+                    visible={data.showMenu}
+                    onDismiss={() => toggleMenu(false, data.id)}
                     anchor={
                       <Entypo
-                        onPress={() => toggleMenu(true)}
+                        onPress={() => toggleMenu(true, data.id)}
                         name="dots-three-vertical"
                         size={24}
                         style={{marginHorizontal:10}}

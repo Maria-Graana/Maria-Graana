@@ -335,7 +335,7 @@ class LeadDetail extends React.Component {
           <View style={styles.rowContainer}>
             <View style={AppStyles.mb1}>
               <Text style={styles.headingText}>Client Name </Text>
-              <Text style={styles.labelText}>{customerName}</Text>
+              <Text style={styles.labelText}>{customerName === '' ? lead.customer && lead.customer.customerName: customerName}</Text>
             </View>
             {purposeTab !== 'property' && (
               <TouchableOpacity
@@ -421,7 +421,7 @@ class LeadDetail extends React.Component {
                 })
               : ''}
             {!lead.projectId && lead.city && ' - ' + lead.city.name}
-            {purposeTab === 'invest' && projectName}
+            {purposeTab === 'invest' && projectName != '' ? projectName : 'Project not specified'}
           </Text>
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Price Range </Text>

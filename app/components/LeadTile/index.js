@@ -151,7 +151,7 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMain, AppStyles.mbTen]}>
                   <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
                     {/* Disabled Sentry in development  Sentry in */}
-                    {customerName}
+                    {customerName != '' ? customerName : data.customer && data.customer.customerName}
                   </Text>
                 </View>
 
@@ -219,7 +219,7 @@ class LeadTile extends React.Component {
                       ? data.armsLeadAreas[0].area.name + `${areasLength}` + ' - '
                       : ''}
                     {!data.projectId && data.city && data.city.name}
-                    {purposeTab === 'invest' && helper.capitalize(projectName)}
+                    {purposeTab === 'invest' && helper.capitalize(projectName != ''? projectName : 'Project not specified')}
                     {data.projectType &&
                       data.projectType != '' &&
                       ` - ${helper.capitalize(data.projectType)}`}

@@ -703,7 +703,7 @@ class Payments extends Component {
 
 	secondHandleForm = (value, name) => {
 		const { secondFormData, attachmentData, addPaymentModalToggleState } = this.state
-		const newSecondFormData = { ...secondFormData, ...attachmentData, visible: addPaymentModalToggleState }
+		const newSecondFormData = { ...secondFormData, attachments:[...this.props.CMPayment.attachments], visible: addPaymentModalToggleState }
 		newSecondFormData[name] = value
 		this.props.dispatch(setCMPaymennt(newSecondFormData))
 		this.setState({
@@ -720,7 +720,6 @@ class Payments extends Component {
 			remainingPayment,
 			paymentOldValue,
 		} = this.state
-
 		const { CMPayment } = this.props
 		if (secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' && secondFormData.type != '') {
 			this.setState({

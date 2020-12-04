@@ -760,13 +760,11 @@ class Payments extends Component {
 					total = remainingPayment
 				}
 				var body = {
-					// ...secondFormData,
-					details: secondFormData.details,
-					installmentAmount: secondFormData.installmentAmount,
-					type: secondFormData.type,
+					...secondFormData,
 					remainingPayment: total,
 					cmLeadId: this.props.lead.id,
 				}
+				delete body.remarks
 				console.log('Body ==============',body)
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {

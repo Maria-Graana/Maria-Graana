@@ -112,6 +112,7 @@ class Payments extends Component {
 		if (lead.paidProject && lead.paidProject != null) {
 			this.getFloors(lead.paidProject.id)
 		}
+		console.log('hello')
 	}
 
 	componentWillUnmount() {
@@ -703,7 +704,7 @@ class Payments extends Component {
 
 	secondHandleForm = (value, name) => {
 		const { secondFormData, attachmentData, addPaymentModalToggleState } = this.state
-		const newSecondFormData = { ...secondFormData, ...attachmentData, visible: addPaymentModalToggleState }
+		const newSecondFormData = { ...secondFormData, attachments:[...this.props.CMPayment.attachments], visible: addPaymentModalToggleState }
 		newSecondFormData[name] = value
 		this.props.dispatch(setCMPaymennt(newSecondFormData))
 		this.setState({
@@ -720,7 +721,6 @@ class Payments extends Component {
 			remainingPayment,
 			paymentOldValue,
 		} = this.state
-
 		const { CMPayment } = this.props
 		if (secondFormData.installmentAmount != null && secondFormData.installmentAmount != '' && secondFormData.type != '') {
 			this.setState({
@@ -734,6 +734,7 @@ class Payments extends Component {
 					unitStatus: this.props.lead.installmentDue,
 					unitId: this.props.lead.unitId,
 				}
+				
 				// ====================== API call for added Payments
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
@@ -763,6 +764,8 @@ class Payments extends Component {
 					remainingPayment: total,
 					cmLeadId: this.props.lead.id,
 				}
+				delete body.remarks
+				console.log('Body ==============',body)
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
 						// ====================== If have attachments then this check will b execute

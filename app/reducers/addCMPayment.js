@@ -7,11 +7,11 @@ const payment = {
 	cmLeadId: null,
 	details: '',
 	visible: false,
-	//fileName: '',
+	fileName: '',
 	attachments : [],
-	// uri: '',
-	// size: null,
-	// title: '',
+	uri: '',
+	size: null,
+	title: '',
 }
 
 const CMPayment = (state = payment, action) => {

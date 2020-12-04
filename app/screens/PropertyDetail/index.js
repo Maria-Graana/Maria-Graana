@@ -86,6 +86,7 @@ class PropertyDetail extends React.Component {
   }
 
   approveProperty = (id) => {
+    const {navigation} = this.props;
     let url = `/api/inventory/fieldProperty?id=${id}`
     this.setState({ loading: true }, () => {
       axios
@@ -93,12 +94,14 @@ class PropertyDetail extends React.Component {
         .then((res) => {
           helper.successToast('PROPERTY APPROVED!')
           navigation.navigate('InventoryTabs', {
-            screen: 'fields',
+            screen: 'Field App',
             params: { screen: 'InventoryTabs' },
           })
         })
         .catch((error) => {
           console.log('ERROR API: /api/inventory/fieldProperty', error)
+        }).finally(()=>{
+          this.setState({loading:false})
         })
     })
   }

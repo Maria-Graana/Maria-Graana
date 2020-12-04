@@ -112,6 +112,7 @@ class Payments extends Component {
 		if (lead.paidProject && lead.paidProject != null) {
 			this.getFloors(lead.paidProject.id)
 		}
+		console.log('hello')
 	}
 
 	componentWillUnmount() {
@@ -733,6 +734,7 @@ class Payments extends Component {
 					unitStatus: this.props.lead.installmentDue,
 					unitId: this.props.lead.unitId,
 				}
+				
 				// ====================== API call for added Payments
 				axios.post(`/api/leads/project/payments`, body)
 					.then((res) => {
@@ -758,10 +760,14 @@ class Payments extends Component {
 					total = remainingPayment
 				}
 				var body = {
-					...secondFormData,
+					// ...secondFormData,
+					details: secondFormData.details,
+					installmentAmount: secondFormData.installmentAmount,
+					type: secondFormData.type,
 					remainingPayment: total,
 					cmLeadId: this.props.lead.id,
 				}
+				console.log('Body ==============',body)
 				axios.patch(`/api/leads/project/payment?id=${paymentId}`, body)
 					.then((res) => {
 						// ====================== If have attachments then this check will b execute

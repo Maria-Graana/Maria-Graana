@@ -38,7 +38,6 @@ class FieldsInventories extends React.Component {
       page: 1,
       pageSize: 20,
       onEndReachedLoader: false,
-      showMenu: false,
     }
   }
 
@@ -181,8 +180,20 @@ class FieldsInventories extends React.Component {
     })
   }
 
+  toggleMenu = (val, id) => {
+    const { propertiesList } = this.state
+    let newPropertiesList = propertiesList.map((item) => {
+      if (item.id === id) {
+        item.showMenu = val
+        return item
+      } else return item
+    })
+    this.setState({ propertiesList: newPropertiesList })
+  }
+  
+
   render() {
-    const { propertiesList, loading, totalProperties, onEndReachedLoader, showMenu } = this.state
+    const { propertiesList, loading, totalProperties, onEndReachedLoader } = this.state
     const { user, route } = this.props
     return !loading ? (
       <View style={[AppStyles.container, { marginBottom: 25 }]}>
@@ -201,8 +212,7 @@ class FieldsInventories extends React.Component {
                 onLongPress={(id) => this.onHandleLongPress(id)}
                 onCall={this.onHandleOnCall}
                 screen={'fields'}
-                showMenu={showMenu}
-                toggleMenu = {(value)=> this.setState({showMenu:value})}
+                toggleMenu = {(value, id)=> this.toggleMenu(value, id)}
                 approveProperty={(id)=>this.approveProperty(id)}
               />
             )}

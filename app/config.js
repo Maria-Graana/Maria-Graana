@@ -3,10 +3,12 @@ import Constants from 'expo-constants';
 const config = {
 	development: {
 		apiPath: 'https://api.realtor.agency21.rocks',
+		mapUrl : 'https://maps.graana.rocks/api/map/',
 		channel: 'development'
 	},
 	staging: {
 		apiPath: "https://api.stage.realtor.agency21.rocks",
+		mapUrl : 'https://maps.graana.rocks/api/map/',
 		channel: 'staging'
 	},
 	production: {

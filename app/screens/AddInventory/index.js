@@ -59,6 +59,7 @@ class AddInventory extends Component {
                 imageIds: [],
                 lat: '',
                 lng: '',
+                propsure_id: '',
                 description: '',
                 general_size: null,
                 lisitng_type: 'mm',
@@ -592,6 +593,7 @@ class AddInventory extends Component {
             loading,
             showCustomTitle,
         } = this.state
+
         return (
             <StyleProvider style={getTheme(formTheme)}>
                 <KeyboardAvoidingView enabled>
@@ -636,6 +638,7 @@ class AddInventory extends Component {
                                     size={StaticData.oneToTen}
                                     latitude={formData.lat}
                                     longitude={formData.lng}
+                                    propsure_id={formData.propsure_id}
                                     price={formData.price}
                                     deleteImage={(image, index) => this.deleteImage(image, index)}
                                     buttonDisabled={buttonDisabled}
@@ -653,6 +656,7 @@ class AddInventory extends Component {
                                     handleWaterMark={this.handleWaterMark}
                                     showCustomTitleField={this.showCustomTitleField}
                                     showCustomTitle={showCustomTitle}
+                                    navigation = {this.props.navigation}
                                 />
                             </View>
                         </TouchableWithoutFeedback>

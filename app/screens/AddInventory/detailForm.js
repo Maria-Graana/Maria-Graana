@@ -282,6 +282,7 @@ class DetailForm extends Component {
       takePhotos,
       longitude,
       latitude,
+      propsure_id,
       buttonText,
       images,
       imageLoading,
@@ -621,6 +622,7 @@ class DetailForm extends Component {
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 keyboardType="numeric"
                 placeholder={'Latitude'}
+                editable={false}
               />
             </View>
           </View>
@@ -637,12 +639,18 @@ class DetailForm extends Component {
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 keyboardType="numeric"
                 placeholder={'Longitude'}
+                editable={false}
               />
             </View>
           </View>
 
           {/* **************************************** */}
-          <TouchableOpacity style={AppStyles.locationBtn} onPress={getCurrentLocation}>
+          {/* <TouchableOpacity style={AppStyles.locationBtn} onPress={getCurrentLocation}>
+            <Image source={LocationImg} style={AppStyles.locationIcon} />
+          </TouchableOpacity> */}
+          <TouchableOpacity style={AppStyles.locationBtn} onPress={() =>  { this.props.navigation.navigate('MapContainer',{
+            setvalue: handleForm
+          })}}>
             <Image source={LocationImg} style={AppStyles.locationIcon} />
           </TouchableOpacity>
         </View>

@@ -101,6 +101,7 @@ class LeadTile extends React.Component {
         : ''
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
+
     return (
       <TouchableOpacity
         onLongPress={() => handleLongPress(data)}
@@ -151,7 +152,9 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMain, AppStyles.mbTen]}>
                   <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
                     {/* Disabled Sentry in development  Sentry in */}
-                    {customerName != '' ? customerName : data.customer && data.customer.customerName}
+                    {customerName != ''
+                      ? customerName
+                      : data.customer && data.customer.customerName}
                   </Text>
                 </View>
 
@@ -215,11 +218,15 @@ class LeadTile extends React.Component {
                     style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
                     numberOfLines={1}
                   >
-                    {!data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 0
+                    {!data.projectId &&
+                    data.armsLeadAreas &&
+                    data.armsLeadAreas.length > 0 &&
+                    data.armsLeadAreas[0].area
                       ? data.armsLeadAreas[0].area.name + `${areasLength}` + ' - '
                       : ''}
                     {!data.projectId && data.city && data.city.name}
-                    {purposeTab === 'invest' && helper.capitalize(projectName != ''? projectName : 'Project not specified')}
+                    {purposeTab === 'invest' &&
+                      helper.capitalize(projectName != '' ? projectName : 'Project not specified')}
                     {data.projectType &&
                       data.projectType != '' &&
                       ` - ${helper.capitalize(data.projectType)}`}

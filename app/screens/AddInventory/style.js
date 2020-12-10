@@ -138,11 +138,10 @@ export default styles = StyleSheet.create({
     featureOpacity: {
         flexDirection: "row",
         width: '50%',
-        alignItems: 'center',
         padding: 5,
     },
     featureText: {
-        fontSize: 12,
+        fontSize: 10,
         color: AppStyles.colors.textColor,
     },
     buttonWidth: {
@@ -151,6 +150,18 @@ export default styles = StyleSheet.create({
     checkBoxRow: {
         flexDirection: 'row', 
         alignItems:'center',
-         padding: 5
+         padding: 5,
     },
+    geotagButton: {
+        justifyContent: 'center',
+        minHeight: 55,
+        borderRadius: 4,
+        padding: 15,
+    },
+    checkBox:{
+        width: 22, 
+        height: 22,
+        alignItems:'center',
+        marginRight:10,
+    }
 })

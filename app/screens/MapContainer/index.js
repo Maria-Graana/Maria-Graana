@@ -382,13 +382,12 @@ class MapContainer extends Component {
 
   onMarkThisProperty = (item) => {
     const point = this.getCentroid(JSON.parse(item.geoData));
-    const {setvalue} = this.props.route.params;
-    setvalue(point[0], 'lat')
-    setvalue(point[1], 'lng')
-    setvalue(item.id, 'propsure_id')
-    alert('Property Data Set')
-    this.props.navigation.goBack();
-  } 
+    const { mapValues, screenName } = this.props.route.params;
+    mapValues.lat = point[0];
+    mapValues.lng = point[1];
+    mapValues.propsure_id = item.id;
+    this.props.navigation.navigate(screenName, { mapValues });
+  }
 
   render() {
     // console.log('Configs Map URL : ', config.mapUrl);
@@ -550,8 +549,8 @@ class MapContainer extends Component {
                     )
                   })
                 ) : (
-                  <ActivityIndicator />
-                )}
+                    <ActivityIndicator />
+                  )}
               </ScrollView>
               <Button
                 title="Hide modal"
@@ -598,8 +597,8 @@ class MapContainer extends Component {
                     )
                   })
                 ) : (
-                  <ActivityIndicator />
-                )}
+                    <ActivityIndicator />
+                  )}
               </ScrollView>
               <Button
                 title="Hide modal"
@@ -652,8 +651,8 @@ class MapContainer extends Component {
                     )
                   })
                 ) : (
-                  <ActivityIndicator />
-                )}
+                    <ActivityIndicator />
+                  )}
               </ScrollView>
               <Button
                 title="Hide modal"
@@ -705,8 +704,8 @@ class MapContainer extends Component {
                     )
                   })
                 ) : (
-                  <ActivityIndicator />
-                )}
+                    <ActivityIndicator />
+                  )}
               </ScrollView>
               <Button
                 title="Hide modal"
@@ -761,8 +760,8 @@ class MapContainer extends Component {
                     )
                   })
                 ) : (
-                  <ActivityIndicator />
-                )}
+                    <ActivityIndicator />
+                  )}
               </ScrollView>
               <Button
                 title="Hide modal"
@@ -806,8 +805,8 @@ class MapContainer extends Component {
               {chosenCity ? (
                 <Text style={styles.labelStyle}>{chosenCity.city_name} |</Text>
               ) : (
-                <Text style={styles.promptStyle}>Select City</Text>
-              )}
+                  <Text style={styles.promptStyle}>Select City</Text>
+                )}
             </TouchableOpacity>
 
             {!!chosenCity && (
@@ -829,8 +828,8 @@ class MapContainer extends Component {
                     {chosen_housing_scheme.housing_scheme_name} |
                   </Text>
                 ) : (
-                  <Text style={styles.promptStyle}>Select Housing Scheme</Text>
-                )}
+                    <Text style={styles.promptStyle}>Select Housing Scheme</Text>
+                  )}
               </TouchableOpacity>
             )}
 
@@ -849,8 +848,8 @@ class MapContainer extends Component {
                 {chosen_phase_sector ? (
                   <Text style={styles.labelStyle}>{chosen_phase_sector.phase_sector_name} |</Text>
                 ) : (
-                  <Text style={styles.promptStyle}>Phase/Sector</Text>
-                )}
+                    <Text style={styles.promptStyle}>Phase/Sector</Text>
+                  )}
               </TouchableOpacity>
             )}
           </View>
@@ -873,8 +872,8 @@ class MapContainer extends Component {
                       {chosen_block_subsector.block_subsector_name} |
                     </Text>
                   ) : (
-                    <Text style={styles.promptStyle}>Block/Subsector</Text>
-                  )}
+                      <Text style={styles.promptStyle}>Block/Subsector</Text>
+                    )}
                 </TouchableOpacity>
               )}
 
@@ -909,8 +908,8 @@ class MapContainer extends Component {
                   {chosen_plot ? (
                     <Text style={styles.labelStyle}>{chosen_plot.Plot_No} |</Text>
                   ) : (
-                    <Text style={styles.promptStyle}>Select Plot</Text>
-                  )}
+                      <Text style={styles.promptStyle}>Select Plot</Text>
+                    )}
                 </TouchableOpacity>
               )}
             </View>

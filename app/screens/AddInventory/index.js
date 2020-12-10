@@ -59,7 +59,7 @@ class AddInventory extends Component {
                 imageIds: [],
                 lat: '',
                 lng: '',
-                propsure_id: '',
+                propsure_id: null,
                 description: '',
                 general_size: null,
                 lisitng_type: 'mm',
@@ -108,7 +108,7 @@ class AddInventory extends Component {
     }
 
     onScreenFocused = () => {
-        const { client, name, selectedCity, selectedPOC, selectedArea } = this.props.route.params;
+        const { client, name, selectedCity, selectedPOC, selectedArea, mapValues } = this.props.route.params;
         const { formData } = this.state;
         let copyObject = Object.assign({}, formData);
         if (client && name) {
@@ -127,6 +127,13 @@ class AddInventory extends Component {
         if (selectedArea) {
             copyObject.area_id = selectedArea.value;
             this.setState({ formData: copyObject, selectedArea })
+        }
+        if(mapValues){
+            copyObject.propsure_id = mapValues.propsure_id;
+            copyObject.lat = mapValues.lat;
+            copyObject.lng = mapValues.lng;
+            this.setState({ formData: copyObject})
+
         }
     }
 
@@ -168,6 +175,7 @@ class AddInventory extends Component {
                 status: property.status,
                 lat: property.lat,
                 lng: property.lng,
+                propsure_id : property.propsure_id,
                 description: property.description,
                 year_built: parsedFeatures.year_built ? parsedFeatures.year_built : null,
                 floors: (parsedFeatures.floors === null || parsedFeatures.floors === undefined) ? null : parsedFeatures.floors,
@@ -629,7 +637,6 @@ class AddInventory extends Component {
                                     clientName={clientName}
                                     handleClientClick={this.handleClientClick}
                                     propertyType={StaticData.type}
-                                    getCurrentLocation={this._getLocationAsync}
                                     getImagesFromGallery={() => this.getImagesFromGallery()}
                                     takePhotos={() => this.takePhotos()}
                                     selectSubType={selectSubType}

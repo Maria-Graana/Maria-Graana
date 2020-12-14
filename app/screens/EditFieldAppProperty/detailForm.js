@@ -12,8 +12,8 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native'
-import { Button, Textarea } from 'native-base'
-import { Checkbox } from 'react-native-paper'
+import { Button, Textarea, CheckBox, Body } from 'native-base'
+// import { Checkbox } from 'react-native-paper'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import PickerComponent from '../../components/Picker/index'
 import styles from './style'
@@ -84,12 +84,13 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <Checkbox
-              color={AppStyles.colors.primaryColor}
-              status={selectedFeatures.includes(item) ? 'checked' : 'unchecked'}
+           <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
-            />
-            <Text style={styles.featureText}>{item}</Text>
+              style={styles.checkBox}
+              checked={selectedFeatures.includes(item) ? true : false} />
+            <Body style={{ alignItems: 'flex-start' }}>
+              <Text style={{ marginLeft: 10 }}>{item}</Text>
+            </Body>
           </TouchableOpacity>
         )
       })
@@ -144,12 +145,13 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <Checkbox
-              color={AppStyles.colors.primaryColor}
-              status={selectedFeatures.includes(item) ? 'checked' : 'unchecked'}
+           <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
-            />
-            <Text style={styles.featureText}>{item}</Text>
+              style={styles.checkBox}
+              checked={selectedFeatures.includes(item) ? true : false} />
+            <Body style={{ alignItems: 'flex-start' }}>
+              <Text style={{ marginLeft: 10 }}>{item}</Text>
+            </Body>
           </TouchableOpacity>
         )
       })
@@ -163,12 +165,13 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <Checkbox
-              color={AppStyles.colors.primaryColor}
-              status={selectedFeatures.includes(item) ? 'checked' : 'unchecked'}
+           <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
-            />
-            <Text style={styles.featureText}>{item}</Text>
+              style={styles.checkBox}
+              checked={selectedFeatures.includes(item) ? true : false} />
+            <Body style={{ alignItems: 'flex-start' }}>
+              <Text style={{ marginLeft: 10 }}>{item}</Text>
+            </Body>
           </TouchableOpacity>
         )
       })
@@ -371,15 +374,20 @@ class DetailForm extends Component {
           </View>
         </View>
         {/* **************************************** */}
-        <TouchableOpacity disabled={formData.address === '' || formData.address === null} onPress={() => handleShowAddress(!formData.show_address)}
-          style={styles.checkBoxRow}>
-          <Checkbox color={AppStyles.colors.primaryColor}
-            status={formData.show_address ? 'checked' : 'unchecked'}
+        <TouchableOpacity
+          disabled={formData.address === '' || formData.address === null}
+          onPress={() => handleShowAddress(!formData.show_address)}
+          style={styles.checkBoxRow}
+        >
+          <CheckBox
+            color={AppStyles.colors.primaryColor}
+            checked={formData.show_address ? true : false}
+            style={styles.checkBox}
+            onPress={() => handleShowAddress(!formData.show_address)}
           />
-          <Text>Show Address on Listing</Text>
+          <Text style={{ marginHorizontal: 15 }}>Show Address on Listing</Text>
         </TouchableOpacity>
         {/* **************************************** */}
-
         <View style={AppStyles.multiFormInput}>
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>
@@ -712,12 +720,18 @@ class DetailForm extends Component {
 
 
         {/* **************************************** */}
-        <TouchableOpacity onPress={() => handleWaterMark(!formData.showWaterMark)}
-          style={styles.checkBoxRow}>
-          <Checkbox color={AppStyles.colors.primaryColor}
-            status={formData.showWaterMark ? 'checked' : 'unchecked'}
+       {/* **************************************** */}
+       <TouchableOpacity
+          onPress={() => handleWaterMark(!formData.showWaterMark)}
+          style={[styles.checkBoxRow]}
+        >
+          <CheckBox
+            color={AppStyles.colors.primaryColor}
+            checked={formData.showWaterMark ? true : false}
+            style={styles.checkBox}
+            onPress={() => handleWaterMark(!formData.showWaterMark)}
           />
-          <Text>Show Watermark on Images</Text>
+          <Text style={{ marginHorizontal: 15 }}>Show Watermark on Images</Text>
         </TouchableOpacity>
 
         {/* **************************************** */}

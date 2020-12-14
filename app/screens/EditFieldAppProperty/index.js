@@ -403,27 +403,27 @@ class EditFieldAppProperty extends Component {
         delete formData.grade;
 
         if (route.params.update) {
-            // axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, formData)
-            //     .then((res) => {
-            //         if (res.status === 200) {
-            //             helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
-            //             dispatch(flushImages());
-            //             navigation.navigate('InventoryTabs', { update: false, screen: 'Field App', params: { screen: 'InventoryTabs' } })
-            //         }
-            //         else {
-            //             helper.errorToast('ERROR: SOMETHING WENT WRONG')
-            //         }
-            //         this.setState({ loading: false })
+            axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, formData)
+                .then((res) => {
+                    if (res.status === 200) {
+                        helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
+                        dispatch(flushImages());
+                        navigation.navigate('InventoryTabs', { update: false, screen: 'Field App', params: { screen: 'InventoryTabs' } })
+                    }
+                    else {
+                        helper.errorToast('ERROR: SOMETHING WENT WRONG')
+                    }
+                    this.setState({ loading: false })
 
-            //     })
-            //     .catch((error) => {
-            //         this.setState({ loading: false })
-            //         helper.errorToast('ERROR: UPDATING PROPERTY')
-            //         console.log('error', error.message)
-            //     })
-            //     .finally(() => {
-            //         this.setState({ loading: false })
-            //     })
+                })
+                .catch((error) => {
+                    this.setState({ loading: false })
+                    helper.errorToast('ERROR: UPDATING PROPERTY')
+                    console.log('error', error.message)
+                })
+                .finally(() => {
+                    this.setState({ loading: false })
+                })
         }
     }
 

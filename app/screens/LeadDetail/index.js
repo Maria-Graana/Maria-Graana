@@ -536,7 +536,7 @@ class LeadDetail extends React.Component {
             }}
             style={[AppStyles.formBtn, styles.btn1]}
           >
-            <Text style={AppStyles.btnText}>OPEN LEAD WORKFLOW</Text>
+            <Text style={AppStyles.btnText}>Let’s Earn</Text>
           </Button>
         </View>
       </ScrollView>

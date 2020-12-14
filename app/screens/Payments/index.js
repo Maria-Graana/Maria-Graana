@@ -1335,7 +1335,7 @@ class Payments extends Component {
               pearlModal={true}
             />
           ) : null}
-          {secondScreenData ? (
+          {secondScreenData && secondScreenData.unit != null &&  secondScreenData.unit.id != null? (
             <BookingDetailsModal
               active={bookingDetailsModalActive}
               data={secondScreenData}

@@ -42,6 +42,7 @@ import Lead from './LeadsNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
 import PropertyTabs from './PropertyTabNavigator'
 import EditFieldAppProperty from '../screens/EditFieldAppProperty'
+import MapContainer from '../screens/MapContainer'
 
 const Stack = createStackNavigator()
 
@@ -390,6 +391,17 @@ function MainStack() {
           headerTitle: (props) => <HeaderTitle {...props} />,
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="MapContainer"
+        component={MapContainer}
+        options={({ navigation, route }) => ({
+          title: 'LOCATE PROPERTY ON MAP',
+          // headerTitle: (props) => <HeaderTitle {...props} />,
+          // headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          // headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}
       />

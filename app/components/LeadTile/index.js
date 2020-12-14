@@ -101,6 +101,7 @@ class LeadTile extends React.Component {
         : ''
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
+
     return (
       <TouchableOpacity
         onLongPress={() => handleLongPress(data)}

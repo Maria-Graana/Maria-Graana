@@ -304,6 +304,7 @@ class LeadDetail extends React.Component {
       let purpose = lead.purpose === 'sale' ? 'Buy' : 'Rent'
       type = purpose
     }
+
     return !loading ? (
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -335,7 +336,9 @@ class LeadDetail extends React.Component {
           <View style={styles.rowContainer}>
             <View style={AppStyles.mb1}>
               <Text style={styles.headingText}>Client Name </Text>
-              <Text style={styles.labelText}>{customerName === '' ? lead.customer && lead.customer.customerName: customerName}</Text>
+              <Text style={styles.labelText}>
+                {customerName === '' ? lead.customer && lead.customer.customerName : customerName}
+              </Text>
             </View>
             {purposeTab !== 'property' && (
               <TouchableOpacity
@@ -411,18 +414,26 @@ class LeadDetail extends React.Component {
           </Text>
           <View style={styles.underLine} />
           <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
-          <Text style={styles.labelText}>
-            {!lead.projectId && lead.armsLeadAreas && lead.armsLeadAreas.length
-              ? lead.armsLeadAreas[0].area &&
-                // lead.armsLeadAreas[0].area.name
-                lead.armsLeadAreas.map((item, index) => {
-                  var comma = index > 0 ? ', ' : ''
-                  return comma + item.area.name
-                })
-              : ''}
-            {!lead.projectId && lead.city && ' - ' + lead.city.name}
-            {purposeTab === 'invest' && projectName != '' ? projectName : 'Project not specified'}
-          </Text>
+          {purposeTab === 'invest' ? (
+            <Text style={styles.labelText}>
+              {projectName != '' ? projectName : 'Project not specified'}
+            </Text>
+          ) : (
+            <Text style={styles.labelText}>
+              {!lead.projectId &&
+              lead.armsLeadAreas &&
+              lead.armsLeadAreas.length &&
+              lead.armsLeadAreas[0].area
+                ? lead.armsLeadAreas[0].area &&
+                  // lead.armsLeadAreas[0].area.name
+                  lead.armsLeadAreas.map((item, index) => {
+                    var comma = index > 0 ? ', ' : ''
+                    return comma + item.area.name
+                  })
+                : 'Area not specified'}
+              {!lead.projectId && lead.city && ' - ' + lead.city.name}
+            </Text>
+          )}
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Price Range </Text>
           {!lead.projectId && lead.min_price && lead.price ? (
@@ -525,7 +536,7 @@ class LeadDetail extends React.Component {
             }}
             style={[AppStyles.formBtn, styles.btn1]}
           >
-            <Text style={AppStyles.btnText}>OPEN LEAD WORKFLOW</Text>
+            <Text style={AppStyles.btnText}>Let’s Earn</Text>
           </Button>
         </View>
       </ScrollView>

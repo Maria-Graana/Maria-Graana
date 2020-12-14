@@ -137,7 +137,12 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Category Charges</Text>
                     <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.unit.category_charges + '%')}
+                      {
+                        data.unit.category_charges != null ?
+                          this.handleEmptyValue(data.unit.category_charges + '%')
+                          :
+                          '0%'
+                      }
                     </Text>
                   </View>
                 </View>
@@ -164,16 +169,16 @@ class BookingDetailsModal extends React.Component {
               )}
               {/* ===================== */}
               {data.installmentDue === 'Sold on Installments Plan' ||
-              data.installmentDue === 'Sold on Monthly Installments Plan' ? (
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Down Payment</Text>
-                    <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.unit && data.unit.down_payment)}
-                    </Text>
+                data.installmentDue === 'Sold on Monthly Installments Plan' ? (
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Down Payment</Text>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValue(data.unit && data.unit.down_payment)}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              ) : null}
+                ) : null}
               {/* ===================== */}
               {data.installmentDue === 'Sold on Monthly Installments Plan' ? (
                 <View style={styles.MainTileView}>
@@ -185,17 +190,17 @@ class BookingDetailsModal extends React.Component {
                   </View>
                 </View>
               ) : (
-                data.installmentDue === 'Sold on Installments Plan' && (
-                  <View style={styles.MainTileView}>
-                    <View>
-                      <Text style={styles.smallText}>Quarterly Installment</Text>
-                      <Text style={styles.largeText}>
-                        {this.handleEmptyValue(data.unit && data.unit.quarterly_installments)}
-                      </Text>
+                  data.installmentDue === 'Sold on Installments Plan' && (
+                    <View style={styles.MainTileView}>
+                      <View>
+                        <Text style={styles.smallText}>Quarterly Installment</Text>
+                        <Text style={styles.largeText}>
+                          {this.handleEmptyValue(data.unit && data.unit.quarterly_installments)}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                )
-              )}
+                  )
+                )}
               {/* ===================== */}
               {data.installmentDue === 'Sold on Installments Plan' && (
                 <View style={styles.MainTileView}>
@@ -204,8 +209,8 @@ class BookingDetailsModal extends React.Component {
                     <Text style={styles.largeText}>
                       {this.handleEmptyValue(
                         data.paidProject &&
-                          data.paidProject.possession_charges +
-                            `${data.paidProject.possession_charges > 0 ? '%' : ''}`
+                        data.paidProject.possession_charges +
+                        `${data.paidProject.possession_charges > 0 ? '%' : ''}`
                       )}
                     </Text>
                   </View>

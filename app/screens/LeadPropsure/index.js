@@ -24,6 +24,7 @@ import styles from './styles'
 import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
 import * as Permissions from 'expo-permissions'
+import ViewDocs from '../../components/ViewDocs'
 
 class LeadPropsure extends React.Component {
   constructor(props) {
@@ -51,6 +52,8 @@ class LeadPropsure extends React.Component {
       callModal: false,
       meetings: [],
       menuShow: false,
+      showDoc: false,
+      docUrl: '',
     }
   }
 
@@ -78,6 +81,7 @@ class LeadPropsure extends React.Component {
       let doc = data.propsureDocs[0]
       const uri = doc.document
       let fileUri = FileSystem.documentDirectory + doc.fileName
+      this.setState({ showDoc: true, docUrl: uri, documentModalVisible: false })
       FileSystem.downloadAsync(uri, fileUri)
         .then(({ uri }) => {
           this.saveFile(uri)
@@ -508,6 +512,21 @@ class LeadPropsure extends React.Component {
     }
   }
 
+  closeDocsModal = () => {
+    const { showDoc } = this.state
+    if (!showDoc) {
+      this.setState({
+        showDoc: !showDoc,
+        documentModalVisible: false,
+      })
+    } else {
+      this.setState({
+        showDoc: !showDoc,
+        documentModalVisible: true,
+      })
+    }
+  }
+
   render() {
     const {
       menuShow,
@@ -526,6 +545,8 @@ class LeadPropsure extends React.Component {
       isCloseLeadVisible,
       checkReasonValidation,
       closedLeadEdit,
+      showDoc,
+      docUrl,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -566,6 +587,7 @@ class LeadPropsure extends React.Component {
           downloadFile={this.downloadFile}
           getAttachmentFromStorage={this.getAttachmentFromStorage}
         />
+        <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
         <View style={{ paddingBottom: 100 }}>
           {matchData.length ? (
             <FlatList

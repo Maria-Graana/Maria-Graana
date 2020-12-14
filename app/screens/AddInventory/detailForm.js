@@ -88,9 +88,9 @@ class DetailForm extends Component {
               onPress={() => handleFeatures(item)}
               checked={selectedFeatures.includes(item) ? true : false}
               style={styles.checkBox}
-              />
-            <Body>
-              <Text numberOfLines={1}>{item}</Text>
+            />
+            <Body style={{ alignItems: 'flex-start' }}>
+              <Text numberOfLines={1} style={{ marginLeft: 10 }}>{item}</Text>
             </Body>
           </TouchableOpacity>
         )
@@ -145,14 +145,14 @@ class DetailForm extends Component {
             key={item.toString()}
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
-            
+
           >
             <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
               style={styles.checkBox}
               checked={selectedFeatures.includes(item) ? true : false} />
-            <Body>
-              <Text>{item}</Text>
+            <Body style={{ alignItems: 'flex-start' }}>
+              <Text style={{ marginLeft: 10 }}>{item}</Text>
             </Body>
           </TouchableOpacity>
         )
@@ -171,8 +171,8 @@ class DetailForm extends Component {
               onPress={() => handleFeatures(item)}
               style={styles.checkBox}
               checked={selectedFeatures.includes(item) ? true : false} />
-            <Body>
-              <Text>{item}</Text>
+            <Body style={{ alignItems: 'flex-start' }}>
+              <Text style={{ marginLeft: 10 }}>{item}</Text>
             </Body>
           </TouchableOpacity>
         )
@@ -397,7 +397,7 @@ class DetailForm extends Component {
             label={'GEO TAGGING'}
             onPress={() => {
               this.props.navigation.navigate('MapContainer', {
-                mapValues: { lat: formData.lat, lng: formData.lat, propsure_id: formData.propsure_id },
+                mapValues: { lat: formData.lat, lng: formData.lng, propsure_id: formData.propsure_id },
                 screenName: 'AddInventory',
               })
             }}

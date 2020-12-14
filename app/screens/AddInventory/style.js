@@ -91,7 +91,7 @@ export default styles = StyleSheet.create({
     countPrice: {
         position: 'absolute',
         right: 0,
-        top: 0,
+        top: 15,
         backgroundColor: '#fff',
         fontSize: AppStyles.noramlSize.fontSize,
         fontFamily: AppStyles.fonts.defaultFont,

@@ -91,7 +91,7 @@ export default styles = StyleSheet.create({
     countPrice: {
         position: 'absolute',
         right: 0,
-        top: 0,
+        top: 15,
         backgroundColor: '#fff',
         fontSize: AppStyles.noramlSize.fontSize,
         fontFamily: AppStyles.fonts.defaultFont,
@@ -153,4 +153,16 @@ export default styles = StyleSheet.create({
         alignItems:'center',
          padding: 5
     },
+    geotagButton: {
+        justifyContent: 'center',
+        minHeight: 55,
+        borderRadius: 4,
+        padding: 15,
+    },
+    checkBox:{
+        width: 22, 
+        height: 22,
+        alignItems:'center',
+        marginRight:10,
+    }
 })

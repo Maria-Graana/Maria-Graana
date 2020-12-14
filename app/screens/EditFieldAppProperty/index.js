@@ -80,6 +80,7 @@ class EditFieldAppProperty extends Component {
                 downpayment: 0,
                 showWaterMark: false,
                 rider_id: null,
+                propsure_id: null,
             },
             showAdditional: false,
             showCustomTitle: false,
@@ -117,7 +118,7 @@ class EditFieldAppProperty extends Component {
     }
 
     onScreenFocused = () => {
-        const { selectedCity, selectedArea } = this.props.route.params;
+        const { selectedCity, selectedArea, mapValues } = this.props.route.params;
         const { formData } = this.state;
         let copyObject = Object.assign({}, formData);
         if (selectedCity) {
@@ -127,6 +128,13 @@ class EditFieldAppProperty extends Component {
         if (selectedArea) {
             copyObject.area_id = selectedArea.value;
             this.setState({ formData: copyObject, selectedArea })
+        }
+        if(mapValues){
+            copyObject.propsure_id = mapValues.propsure_id;
+            copyObject.lat = mapValues.lat;
+            copyObject.lon = mapValues.lng;
+            this.setState({ formData: copyObject})
+
         }
     }
 
@@ -227,7 +235,7 @@ class EditFieldAppProperty extends Component {
         let ownerNumber = property.owner_phone ? this.setPhoneNumber(ownerCallingCode, property.owner_phone) : null;
         let pocCallingCode = this.setDialCode(callingCode1)
         let pocNumber = property.poc_phone ?this.setPhoneNumber(pocCallingCode, property.poc_phone) : null;
-
+        console.log(property)
         this.setState({
             formData: {
                 id: property.id,
@@ -240,6 +248,7 @@ class EditFieldAppProperty extends Component {
                 size: property.size ? property.size : 0,
                 city_id: property.city_id,
                 area_id: property.area_id,
+                propsure_id: property.propsure_id,
                 address: property.address,
                 price: property.price ? property.price : 0,
                 imageIds: property.property_images.length === 0 || property.property_images === undefined
@@ -383,6 +392,8 @@ class EditFieldAppProperty extends Component {
         formData.ownerDialCode = callingCode
         formData.pocCountryCode = countryCode1;
         formData.pocDialCode = callingCode1
+        formData.owner_phone = callingCode.replace(/\+/g, "") + formData.owner_phone;
+        formData.poc_phone = callingCode1.replace(/\+/g, "") + formData.poc_phone;
         // deleting these keys below from formdata as they are sent in features instead of seperately
         delete formData.parking_space;
         delete formData.floors;
@@ -777,6 +788,7 @@ class EditFieldAppProperty extends Component {
                                     countryCode1={countryCode1}
                                     getTrimmedPhone={this.getTrimmedPhone}
                                     setFlagObject={this.setFlagObject}
+                                    navigation = {this.props.navigation}
                                 />
                             </View>
                         </TouchableWithoutFeedback>

@@ -1,23 +1,23 @@
 /** @format */
 
-import React from 'react'
-import { View, TextInput, TouchableOpacity, Image, Text } from 'react-native'
 import moment from 'moment'
-import StaticData from '../../StaticData'
-import InputField from '../../components/InputField'
-import CommissionTile from '../../components/CommissionTile'
+import React from 'react'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Checkbox } from 'react-native-paper'
 import _ from 'underscore'
-import styles from './styles'
-import { connect } from 'react-redux'
-import Ability from '../../hoc/Ability'
 import AppStyles from '../../AppStyles'
+import CommissionTile from '../../components/CommissionTile'
+import DocTile from '../../components/DocTile'
+import InputField from '../../components/InputField'
+import Ability from '../../hoc/Ability'
+import StaticData from '../../StaticData'
+import styles from './styles'
 
 class BuyPaymentView extends React.Component {
   constructor(props) {
     super(props)
   }
-  componentDidMount() { }
+  componentDidMount() {}
   render() {
     const {
       agreedAmount,
@@ -40,6 +40,13 @@ class BuyPaymentView extends React.Component {
       commissionNotApplicableSeller,
       setBuyerCommissionApplicable,
       setSellerCommissionApplicable,
+      uploadDocument,
+      uploadDocToServer,
+      agreementDoc,
+      checkListDoc,
+      legalAgreement,
+      legalCheckList,
+      downloadLegalDocs,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -52,21 +59,21 @@ class BuyPaymentView extends React.Component {
       lead.status === StaticData.Constants.lead_closed_won
     let buyerCommission =
       lead.assigned_to_armsuser_id === user.id &&
-        (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
+      (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
         ? true
         : false
     let sellerCommission =
       property.assigned_to_armsuser_id === user.id ||
-        (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-        !Ability.canView(subRole, 'Leads')
+      (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
+      !Ability.canView(subRole, 'Leads')
         ? true
         : false
     if (sellerCommission === true) {
       if (property.origin === null) {
-        sellerCommission = false;
+        sellerCommission = false
       }
     }
-    let singleCommission = buyerCommission && sellerCommission ? true : false;
+    let singleCommission = buyerCommission && sellerCommission ? true : false
     const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
     const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
 
@@ -106,18 +113,49 @@ class BuyPaymentView extends React.Component {
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
         />
 
-        { // Checkbox
-          singleCommission && !buyer  && !isLeadClosed ?
-            <TouchableOpacity 
-            disabled={commissionNotApplicableSeller === true}
-            onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
-              style={styles.checkBoxRow}>
-              <Checkbox color={AppStyles.colors.primaryColor}
+        <DocTile
+          title={'Signed Agreement'}
+          uploadDocument={uploadDocument}
+          category={'agreement'}
+          uploadDocToServer={uploadDocToServer}
+          agreementDoc={agreementDoc}
+          legalAgreement={legalAgreement}
+          downloadLegalDocs={downloadLegalDocs}
+        />
+        <DocTile
+          title={'CheckList'}
+          uploadDocument={uploadDocument}
+          category={'checklist'}
+          uploadDocToServer={uploadDocToServer}
+          checkListDoc={checkListDoc}
+          legalCheckList={legalCheckList}
+          downloadLegalDocs={downloadLegalDocs}
+        />
+
+        {
+          // Checkbox
+          singleCommission && !buyer && !isLeadClosed ? (
+            <TouchableOpacity
+              disabled={commissionNotApplicableSeller === true}
+              onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
+              style={styles.checkBoxRow}
+            >
+              <Checkbox
+                color={AppStyles.colors.primaryColor}
                 status={commissionNotApplicableBuyer ? 'checked' : 'unchecked'}
               />
-              <Text style={{color : commissionNotApplicableSeller === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor}}>Set Buyer Commission As Not Applicable</Text>
+              <Text
+                style={{
+                  color:
+                    commissionNotApplicableSeller === true
+                      ? AppStyles.colors.subTextColor
+                      : AppStyles.colors.textColor,
+                }}
+              >
+                Set Buyer Commission As Not Applicable
+              </Text>
             </TouchableOpacity>
-            : null
+          ) : null
         }
 
         {lead.commissions ? (
@@ -129,71 +167,94 @@ class BuyPaymentView extends React.Component {
               title={buyer ? 'Buyer Commission Payment' : ''}
             />
           ) : (
-              <View>
-                {buyerCommission ? (
-                  <TouchableOpacity
-                   disabled={singleCommission ? commissionNotApplicableBuyer : false}
-                    style={[styles.addPaymentBtn, {
+            <View>
+              {buyerCommission ? (
+                <TouchableOpacity
+                  disabled={singleCommission ? commissionNotApplicableBuyer : false}
+                  style={[
+                    styles.addPaymentBtn,
+                    {
                       backgroundColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
-                      borderColor: commissionNotApplicableBuyer ? '#ddd' : '#fff'
-                    }]}
-                    onPress={() => onAddCommissionPayment('buyer')}
-                  >
-                    <Image
-                      style={styles.addPaymentBtnImg}
-                      source={require('../../../assets/img/roundPlus.png')}
-                    ></Image>
-                    <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-                  </TouchableOpacity>
-                ) : null}
-              </View>
-            )
+                      borderColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
+                    },
+                  ]}
+                  onPress={() => onAddCommissionPayment('buyer')}
+                >
+                  <Image
+                    style={styles.addPaymentBtnImg}
+                    source={require('../../../assets/img/roundPlus.png')}
+                  ></Image>
+                  <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          )
         ) : null}
 
-        { // Checkbox
-          singleCommission && !seller  && !isLeadClosed?
-            <TouchableOpacity 
-            disabled={commissionNotApplicableBuyer === true}
-            onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
-              style={styles.checkBoxRow}>
-              <Checkbox color={AppStyles.colors.primaryColor}
+        {
+          // Checkbox
+          singleCommission && !seller && !isLeadClosed ? (
+            <TouchableOpacity
+              disabled={commissionNotApplicableBuyer === true}
+              onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
+              style={styles.checkBoxRow}
+            >
+              <Checkbox
+                color={AppStyles.colors.primaryColor}
                 status={commissionNotApplicableSeller ? 'checked' : 'unchecked'}
               />
-              <Text style={{color : commissionNotApplicableBuyer === true ? AppStyles.colors.subTextColor : AppStyles.colors.textColor}}>Set Seller Commission As Not Applicable</Text>
+              <Text
+                style={{
+                  color:
+                    commissionNotApplicableBuyer === true
+                      ? AppStyles.colors.subTextColor
+                      : AppStyles.colors.textColor,
+                }}
+              >
+                Set Seller Commission As Not Applicable
+              </Text>
             </TouchableOpacity>
-            : null
+          ) : null
         }
 
         {lead.commissions ? (
           seller ? (
-            <CommissionTile data={seller}
+            <CommissionTile
+              data={seller}
               commissionEdit={!sellerCommission}
               editTile={editTile}
-              title={'Seller Commission Payment'} />
+              title={'Seller Commission Payment'}
+            />
           ) : (
-              <View>
-                {sellerCommission ? (
-                  <TouchableOpacity
-                    disabled={singleCommission ? commissionNotApplicableSeller : false}
-                    style={[styles.addPaymentBtn, {
+            <View>
+              {sellerCommission ? (
+                <TouchableOpacity
+                  disabled={singleCommission ? commissionNotApplicableSeller : false}
+                  style={[
+                    styles.addPaymentBtn,
+                    {
                       backgroundColor: commissionNotApplicableSeller ? '#ddd' : '#fff',
-                      borderColor: commissionNotApplicableSeller ? '#ddd' : '#fff'
-                    }]}
-                    onPress={() => onAddCommissionPayment('seller')}
-                  >
-                    <Image
-                      style={styles.addPaymentBtnImg}
-                      source={require('../../../assets/img/roundPlus.png')}
-                    ></Image>
-                    <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
-                  </TouchableOpacity>
-                ) : <View
-                  style={[styles.addPaymentBtn, { borderColor: '#ddd' }]}
+                      borderColor: commissionNotApplicableSeller ? '#ddd' : '#fff',
+                    },
+                  ]}
+                  onPress={() => onAddCommissionPayment('seller')}
                 >
-                    <Text style={[styles.addPaymentBtnText, { color: '#ddd' }]}> SELLER COMMISSION NOT APPLICABLE</Text>
-                  </View>}
-              </View>
-            )
+                  <Image
+                    style={styles.addPaymentBtnImg}
+                    source={require('../../../assets/img/roundPlus.png')}
+                  ></Image>
+                  <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
+                </TouchableOpacity>
+              ) : (
+                <View style={[styles.addPaymentBtn, { borderColor: '#ddd' }]}>
+                  <Text style={[styles.addPaymentBtnText, { color: '#ddd' }]}>
+                    {' '}
+                    SELLER COMMISSION NOT APPLICABLE
+                  </Text>
+                </View>
+              )}
+            </View>
+          )
         ) : null}
       </View>
     )

@@ -153,6 +153,12 @@ export default styles = StyleSheet.create({
         alignItems:'center',
          padding: 5
     },
+    geotagButton: {
+        justifyContent: 'center',
+        minHeight: 55,
+        borderRadius: 4,
+        padding: 15,
+    },
     checkBox:{
         width: 22, 
         height: 22,

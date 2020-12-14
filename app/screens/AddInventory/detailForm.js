@@ -397,7 +397,7 @@ class DetailForm extends Component {
             label={'GEO TAGGING'}
             onPress={() => {
               this.props.navigation.navigate('MapContainer', {
-                mapValues: { lat: formData.lat, lng: formData.lat, propsure_id: formData.propsure_id },
+                mapValues: { lat: formData.lat, lng: formData.lng, propsure_id: formData.propsure_id },
                 screenName: 'AddInventory',
               })
             }}

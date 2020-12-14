@@ -312,7 +312,7 @@ class PropertyDetail extends React.Component {
             {lattitude || longitude ? (
               <View>
                 <Text style={styles.headingText}> Lattitude/Longitude </Text>
-                <Text style={styles.labelText}> {lattitude + longitude} </Text>
+                <Text style={styles.labelText} numberOfLines={1}> {lattitude + longitude} </Text>
               </View>
             ) : null}
             {ownerName ? (

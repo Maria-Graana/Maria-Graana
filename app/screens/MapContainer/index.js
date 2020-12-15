@@ -17,6 +17,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Image
 } from 'react-native'
 import MapView, { Geojson, Polygon, Marker } from 'react-native-maps'
 import Modal from 'react-native-modal'
@@ -93,6 +94,7 @@ class MapContainer extends Component {
       plots_unavailable: '',
       plot_geometry: '',
       loading_plots: false,
+      plot_markers: ''
     }
   }
 
@@ -117,7 +119,27 @@ class MapContainer extends Component {
     this.setCityFeature(item)
   }
 
+  fetchPlotData = async(propsure_id) => {
+    this.setState({
+      loading_plots: true
+    })
+    axios.get(`${config.mapUrl}plot/${propsure_id}?secure=true`)
+    .then(res => {
+      const plot = res.data;
+      this.setState({
+        chosen_plot : plot[0], 
+        loading_plots: false
+      })
+      this.setPlotFeature(plot)
+      this.onPlotSelect(plot[0])
+    }) 
+  }
+
   componentDidMount() {
+    const { mapValues : { propsure_id } } = this.props.route.params; 
+    if(propsure_id){
+      this.fetchPlotData(propsure_id);
+    }
     axios
       .get(`${config.mapUrl}cities?secure=true`)
       .then((res) => {
@@ -254,8 +276,10 @@ class MapContainer extends Component {
     const region = {
       latitude: center[0],
       longitude: center[1],
-      longitudeDelta: 0.013112984597682953,
-      latitudeDelta: 0.019562198109447593,
+      // longitudeDelta: 0.013112984597682953,
+      // latitudeDelta: 0.019562198109447593,
+      longitudeDelta: 0.003221668303012848,
+      latitudeDelta: 0.0048059579422243814,
     }
     mapRef.current.animateToRegion(region)
     this.setState({ region, phase_sector_modal: false, chosen_phase_sector: item })
@@ -318,10 +342,11 @@ class MapContainer extends Component {
       `${config.mapUrl}plots?phaseSectorId=${phaseSectorId}&&secure=true`
     )
     const data = resp.data
-    this.setPlotFeature(data)
     if (data.length <= 0) {
       this.setState({ plotsUnavailable: true })
     } else {
+      this.setPlotFeature(data)
+      this.setPlotMarkers(data)
       this.setState({
         plots: data,
         plotsUnavailable: false,
@@ -340,6 +365,8 @@ class MapContainer extends Component {
     if (data.length <= 0) {
       this.setState({ plotsUnavailable: true })
     } else {
+      this.setPlotFeature(data)
+      this.setPlotMarkers(data)
       this.setState({
         plots: data,
         plotsUnavailable: false,
@@ -377,6 +404,13 @@ class MapContainer extends Component {
     //console.log('Plots Features : ', plot_features)
     this.setState({
       plot_geometry: plot_features,
+    })
+  }
+
+  setPlotMarkers = (plots) => {
+    const plot_markers = plots.map((plot) => ({...plot, marker: this.getCentroid(JSON.parse(plot.geoData))}))
+    this.setState({
+      plot_markers
     })
   }
 
@@ -419,8 +453,13 @@ class MapContainer extends Component {
       plots_modal,
       plot_geometry,
       loading_plots,
+      //plot_markers,
     } = this.state
 
+    let {plot_markers} = this.state;
+    if(chosen_plot && plot_markers.length > 0) {
+      plot_markers = plot_markers.filter(plot => plot.id !== chosen_plot.id)
+    }
     return (
       <View style={styles.map}>
         <MapView
@@ -508,8 +547,24 @@ class MapContainer extends Component {
             ))}
 
           {!!chosen_plot && (
-            <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }} />
+            <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }}> 
+              <Image source={require('../../../assets/img/marker_arms.png')} style={{height: 45, width:45 }} />
+            </Marker>
           )}
+
+          {!!plot_markers && 
+            plot_markers.map((plot) => 
+            (
+              <Marker
+                key={plot.id + '_' + Date.now()}
+                coordinate={{ latitude : plot.marker[0], longitude : plot.marker[1]}}
+                onPress = {() => {
+                  this.onPlotSelect(plot)
+                }}
+              />
+            )
+          )}
+          
         </MapView>
 
         <SafeAreaView>
@@ -780,9 +835,15 @@ class MapContainer extends Component {
                   fontSize: 18,
                 }}
               >
-                Loading Plots...
+                Loading Data...
               </Text>
             </View>
+            <Button
+                title="Close"
+                onPress={() => {
+                  this.setState({ loading_plots: false })
+                }}
+              />
           </Modal>
 
           {/** Level 1 Search */}
@@ -931,7 +992,7 @@ class MapContainer extends Component {
                   style={{
                     marginRight: 32,
                     // marginTop : 28,
-                    borderWidth: '1px',
+                    borderWidth: 1,
                     borderColor: '#fff',
                     alignItems: 'center',
                     justifyContent: 'center',

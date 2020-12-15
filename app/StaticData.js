@@ -393,7 +393,7 @@ export default StaticData = {
     { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
   ],
   barCharData: {
-    labels: ['Open', 'Call', 'Meeting', 'Token', 'Payment', 'Won', 'Lost'],
+    labels: ['Created', 'Call', 'Meeting', 'Token', 'Payment', 'Won', 'Lost'],
     datasets: [
       {
         data: [0, 0, 0, 0, 0, 0, 0],
@@ -402,7 +402,7 @@ export default StaticData = {
     ],
   },
   rcmBarCharData: {
-    labels: ['Open', 'Called', 'Viewing', 'Offer', 'Propsure', 'Token', 'Payment', 'Won', 'Lost'],
+    labels: ['Created', 'Called', 'Viewing', 'Offer', 'Propsure', 'Payment', 'Won', 'Lost'],
     datasets: [
       {
         data: [0, 0, 0, 0, 0, 0, 0, 0],
@@ -667,11 +667,11 @@ export default StaticData = {
     'Energy Efficiency Report',
   ],
   graanaPropertiesStatusForRent: [
-        { label: 'Available for Rent', value: 'available_for_rent' },
-        { label: 'Rented', value: 'rented' },
-    ],
-    graanaPropertiesStatusForSale: [
-        { label: 'Available for Sale', value: 'available_for_sale' },
-        { label: 'Sold', value: 'sold' },
-    ]
+    { label: 'Available for Rent', value: 'available_for_rent' },
+    { label: 'Rented', value: 'rented' },
+  ],
+  graanaPropertiesStatusForSale: [
+    { label: 'Available for Sale', value: 'available_for_sale' },
+    { label: 'Sold', value: 'sold' },
+  ],
 }

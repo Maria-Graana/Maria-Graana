@@ -376,7 +376,11 @@ class LeadOffer extends React.Component {
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
-    navigation.navigate('Comments', { propertyId: data.id, screenName: 'offer' })
+    navigation.navigate('Comments', {
+      propertyId: data.id,
+      screenName: 'offer',
+      leadId: lead.id,
+    })
   }
 
   toggleMenu = (val, id) => {

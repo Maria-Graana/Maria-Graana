@@ -117,17 +117,7 @@ class RCMReport extends React.Component {
       fromDate: moment(_today).format(_format),
       toDate: moment(_today).format(_format),
       organizations: [],
-      graphLabels: [
-        'open',
-        'called',
-        'viewing',
-        'offer',
-        'propsure',
-        'token',
-        'payment',
-        'closed_won',
-        'closed_lost',
-      ],
+      graphLabels: ['created', 'called', 'viewing', 'offer', 'propsure', 'payment', 'won', 'lost'],
       leadsCount: 0,
       agentDate: false,
     }
@@ -256,28 +246,23 @@ class RCMReport extends React.Component {
   graphData = (data) => {
     const { graphLabels } = this.state
     let graph = _.clone(StaticData.rcmBarCharData)
-    let leadSigned = data.leadSigned || []
     let dataSets = []
     let labelCheck = false
-    if (leadSigned.length) {
+    if (data) {
       for (let label of graphLabels) {
-        labelCheck = false
-        for (let item of leadSigned) {
-          if (item.status === label) {
-            labelCheck = true
-            dataSets.push(item.totalDeals)
-            break
-          }
-        }
-        if (!labelCheck) {
+        if (data[label]) {
+          labelCheck = true
+          dataSets.push(data[label])
+        } else {
           dataSets.push(0)
         }
+        labelCheck = false
       }
       graph.datasets[0].data = dataSets
       this.setState({ graph })
     } else {
-      graph.datasets[0].data = [0, 0, 0, 0, 0, 0, 0, 0]
-      this.setState({ graph })
+      graph.datasets[0].data = [0, 0, 0, 0, 0, 0, 0]
+      this.setState({ graph: _.clone(StaticData.barCharData) })
     }
   }
 
@@ -1272,12 +1257,12 @@ class RCMReport extends React.Component {
                   containerStyle={styles.squareRight}
                   imagePath={LeadClosed}
                   label={'Deals Won'}
-                  total={dashBoardData.viewingConducted}
+                  total={dashBoardData.dealsWon}
                 />
                 <SquareContainer
                   imagePath={offersPlaced}
                   label={'Offers Placed'}
-                  total={dashBoardData.leadsOffers}
+                  total={dashBoardData.offer}
                 />
               </View>
               <View style={styles.sqaureView}>
@@ -1303,11 +1288,11 @@ class RCMReport extends React.Component {
                 <SquareContainer
                   imagePath={TotalCalls}
                   label={'Total Calls'}
-                  total={dashBoardData.totalCalls}
+                  total={dashBoardData.totalcalls}
                 />
               </View>
               <View style={styles.graphContainer}>
-                <Text style={styles.labelStyle}>Total Leads so far</Text>
+                <Text style={styles.labelStyle}>Lead Stats</Text>
                 <ScrollView horizontal={true}>
                   <BarChart
                     decimalPlaces={0.1}

@@ -747,7 +747,9 @@ class LeadRCMPayment extends React.Component {
   goToComments = () => {
     const { navigation } = this.props
     const { lead } = this.state
-    navigation.navigate('Comments', { rcmLeadId: lead.id })
+    navigation.navigate('Comments', {
+      rcmLeadId: lead.id,
+    })
   }
 
   navigateToDetails = () => {
@@ -1029,7 +1031,7 @@ class LeadRCMPayment extends React.Component {
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
-    navigation.navigate('Comments', { propertyId: data.id, screenName: 'payment' })
+    navigation.navigate('Comments', { propertyId: data.id, screenName: 'payment', leadId: lead.id })
   }
 
   toggleMenu = (val, id) => {

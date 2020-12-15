@@ -50,7 +50,7 @@ class CMReport extends React.Component {
         pendingAmount: 0,
         leadSigned: [],
       },
-      graphLabels: ['open', 'called', 'meeting', 'token', 'payment', 'closed_won', 'closed_lost'],
+      graphLabels: ['created', 'call', 'meeting', 'token', 'payment', 'won', 'lost'],
       showOrganizationFilter: false,
       quarters: [
         { value: 1, name: 'Q1', fromDate: '01-01', toDate: '03-31' },
@@ -241,22 +241,17 @@ class CMReport extends React.Component {
   graphData = (data) => {
     const { graphLabels } = this.state
     let graph = _.clone(StaticData.barCharData)
-    let leadSigned = data.leadSigned || []
     let dataSets = []
     let labelCheck = false
-    if (leadSigned.length) {
+    if (data) {
       for (let label of graphLabels) {
-        labelCheck = false
-        for (let item of leadSigned) {
-          if (item.status === label) {
-            labelCheck = true
-            dataSets.push(item.totalDeals)
-            break
-          }
-        }
-        if (!labelCheck) {
+        if (data[label]) {
+          labelCheck = true
+          dataSets.push(data[label])
+        } else {
           dataSets.push(0)
         }
+        labelCheck = false
       }
       graph.datasets[0].data = dataSets
       this.setState({ graph })
@@ -297,7 +292,6 @@ class CMReport extends React.Component {
 
   fetchReport = (url) => {
     this.setState({ loading: true })
-    console.log(url)
     axios
       .get(url)
       .then((res) => {
@@ -1205,17 +1199,17 @@ class CMReport extends React.Component {
                 <SquareContainer
                   containerStyle={styles.squareRight}
                   imagePath={leadsAssignedImg}
-                  label={'Company Generated Leads'}
+                  label={'CIF (Company)'}
                   total={dashBoardData.totalleadsAssigned}
                 />
                 <SquareContainer
                   imagePath={leadsCreatedImg}
-                  label={'Personal Leads'}
+                  label={'CIF (Personal)'}
                   total={dashBoardData.totalLeadsAdded}
                 />
               </View>
               <View style={styles.graphContainer}>
-                <Text style={styles.labelStyle}>Total Leads so far</Text>
+                <Text style={styles.labelStyle}>Lead Stats</Text>
                 <ScrollView horizontal={true}>
                   <BarChart
                     useShadowColorFromDataset={true}

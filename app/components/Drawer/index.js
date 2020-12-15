@@ -119,6 +119,14 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )}
+          {/* {Ability.canView(subRole, 'AssignAreas') && ( */}
+            <DrawerItem
+              screen={'Assigned Areas'}
+              navigateTo={() => {
+                this.navigateTo('AssignedAreas', { screen: 'AssignAreas' })
+              }}
+            />
+          {/* )} */}
           {/* {Ability.canView(role, 'CreateUser') && <DrawerItem screen={'Create User'} navigateTo={() => { this.navigateTo('CreateUser') }} />} */}
 
           <View style={styles.underLine} />

@@ -43,6 +43,7 @@ import RCMLeadTabs from './RCMTabNavigator'
 import PropertyTabs from './PropertyTabNavigator'
 import EditFieldAppProperty from '../screens/EditFieldAppProperty'
 import MapContainer from '../screens/MapContainer'
+import AssignedAreas from '../screens/AssignAreas'
 
 const Stack = createStackNavigator()
 
@@ -379,6 +380,15 @@ function MainStack() {
         component={EditFieldAppProperty}
         options={({ navigation, route }) => ({
           title: 'Edit Property',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="AssignedAreas"
+        component={AssignedAreas}
+        options={({ navigation, route }) => ({
+          title: 'ASSIGNED AREAS',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}

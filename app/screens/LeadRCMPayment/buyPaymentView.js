@@ -47,6 +47,7 @@ class BuyPaymentView extends React.Component {
       legalAgreement,
       legalCheckList,
       downloadLegalDocs,
+      onPaymentLongPress,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -163,6 +164,7 @@ class BuyPaymentView extends React.Component {
             <CommissionTile
               data={buyer}
               editTile={editTile}
+              onPaymentLongPress={()=>onPaymentLongPress(buyer)}
               commissionEdit={!buyerCommission}
               title={buyer ? 'Buyer Commission Payment' : ''}
             />
@@ -222,6 +224,7 @@ class BuyPaymentView extends React.Component {
             <CommissionTile
               data={seller}
               commissionEdit={!sellerCommission}
+              onPaymentLongPress={()=>onPaymentLongPress(seller)}
               editTile={editTile}
               title={'Seller Commission Payment'}
             />

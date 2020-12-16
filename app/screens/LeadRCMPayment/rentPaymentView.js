@@ -43,6 +43,7 @@ const RentPaymentView = (props) => {
     legalAgreement,
     legalCheckList,
     downloadLegalDocs,
+    onPaymentLongPress,
   } = props
   let property = currentProperty[0]
   let subRole =
@@ -195,6 +196,7 @@ const RentPaymentView = (props) => {
           <CommissionTile
             data={buyer}
             editTile={editTile}
+            onPaymentLongPress={()=>onPaymentLongPress(buyer)}
             commissionEdit={!buyerCommission}
             title={buyer ? 'Buyer Commission Payment' : ''}
           />
@@ -251,6 +253,7 @@ const RentPaymentView = (props) => {
           <CommissionTile
             data={seller}
             commissionEdit={!sellerCommission}
+            onPaymentLongPress={()=>onPaymentLongPress(seller)}
             editTile={editTile}
             title={'Seller Commission Payment'}
           />

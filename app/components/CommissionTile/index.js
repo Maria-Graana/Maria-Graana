@@ -17,12 +17,12 @@ class CommissionTile extends Component {
   }
 
   render() {
-    const { data, editTile, title, commissionEdit } = this.props;
+    const { data, editTile, title, commissionEdit, onPaymentLongPress } = this.props;
     var showStatus = data && data.status != '' ? StaticData.statusOptions.find((item) => { return item.value === data.status && item }) : { label: '', value: '' }
     var statusColor = showStatus && showStatus.value === StaticData.leadClearedStatus ? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
     return (
       data ?
-      <TouchableOpacity disabled={commissionEdit} onPress={() => { data.status != StaticData.leadClearedStatus ? editTile(data) : null }}>
+      <TouchableOpacity onLongPress ={data.status === 'pendingSales' || data.status === 'notCleared' || data.status === 'pendingAccount' ?onPaymentLongPress : null} disabled={commissionEdit} onPress={() => { data.status != StaticData.leadClearedStatus ? editTile(data) : null }}>
         <View style={[styles.tileTopWrap, {backgroundColor: commissionEdit ? '#ddd' : '#fff'}]}>
           <View style={styles.upperLayer}>
             <Text style={styles.paymnetHeading}>{title}</Text>

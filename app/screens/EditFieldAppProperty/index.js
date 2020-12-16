@@ -356,7 +356,9 @@ class EditFieldAppProperty extends Component {
             !formData.area_id ||
             !formData.size ||
             !formData.owner_name ||
-            !formData.owner_phone
+            !formData.owner_phone ||
+            !formData.poc_name ||
+            !formData.poc_phone
             // !formData.customer_id
         ) {
             this.setState({

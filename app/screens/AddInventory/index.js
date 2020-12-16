@@ -16,6 +16,7 @@ import _ from 'underscore';
 import ImageBrowser from '../../components/ImageBrowser/ImageBrowser';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { uploadImage, addImage, flushImages, removeImage, setImageLoading } from '../../actions/property'
+import config from '../../config'
 
 
 class AddInventory extends Component {
@@ -71,11 +72,12 @@ class AddInventory extends Component {
                 year_built: null,
                 floors: null,
                 parking_space: null,
+                geotagged_date: null,
                 downpayment: 0,
                 showWaterMark: false,
             },
             showAdditional: false,
-            showCustomTitle : false,
+            showCustomTitle: false,
             features: StaticData.residentialFeatures,
             facing: StaticData.facing,
             utilities: StaticData.residentialUtilities,
@@ -128,11 +130,11 @@ class AddInventory extends Component {
             copyObject.area_id = selectedArea.value;
             this.setState({ formData: copyObject, selectedArea })
         }
-        if(mapValues){
+        if (mapValues) {
             copyObject.propsure_id = mapValues.propsure_id;
             copyObject.lat = mapValues.lat;
             copyObject.lng = mapValues.lng;
-            this.setState({ formData: copyObject})
+            this.setState({ formData: copyObject })
 
         }
     }
@@ -151,7 +153,6 @@ class AddInventory extends Component {
             amentities = _.map(amentities, amentity => (amentity.split('_').join(' ').replace(/\b\w/g, l => l.toUpperCase())))
             amentities = _.without(amentities, 'Year Built', 'Floors', 'Downpayment', 'Parking Space');
         }
-        //console.log(property)
         this.setState({
             formData: {
                 id: property.id,
@@ -175,7 +176,8 @@ class AddInventory extends Component {
                 status: property.status,
                 lat: property.lat,
                 lng: property.lng,
-                propsure_id : property.propsure_id,
+                propsure_id: property.propsure_id,
+                geotagged_date: property.geotagged_date,
                 description: property.description,
                 year_built: parsedFeatures.year_built ? parsedFeatures.year_built : null,
                 floors: (parsedFeatures.floors === null || parsedFeatures.floors === undefined) ? null : parsedFeatures.floors,
@@ -273,7 +275,31 @@ class AddInventory extends Component {
         }
     }
 
-    createOrEditProperty = (formData) => {
+    updateMapLocation = async (property, data) => {
+        const { user } = this.props;
+        if (property.propsure_id !== data.propsure_id) {
+            const url = `${config.mapUrl}/arms-propsure`
+            const body = {
+                plot_id: data.propsure_id, // propsure_id value here
+                arms_id: property.id, // arms property id here
+                assigned_by: user.email // user's email
+            }
+            const response = await axios.post(url, body);
+            if (response.status === 200) {
+                const copyData = {...data};
+                copyData.geotagged_date = response.data.createdAt;
+                return copyData;
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            return data; // does not need to update map location because it is the same.
+        }
+    }
+
+    createOrEditProperty = async (formData) => {
         let features = {};
         const { navigation, route, dispatch } = this.props;
         const { selectedFeatures } = this.state;
@@ -300,28 +326,35 @@ class AddInventory extends Component {
         delete formData.year_built;
         delete formData.downpayment;
         if (route.params.update) {
-            axios.patch(`/api/inventory/${property.id}`, formData)
-                .then((res) => {
-                    if (res.status === 200) {
-                        helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
-                        dispatch(flushImages());
-                        // navigation.navigate('Inventory', { update: false, screen: 'Inventory' })
-                        navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
-                    }
-                    else {
-                        helper.errorToast('ERROR: SOMETHING WENT WRONG')
-                    }
-                    this.setState({ loading: false })
+            this.updateMapLocation(property, formData).then((data => {
+                if (data) {
+                    axios.patch(`/api/inventory/${property.id}`, data)
+                        .then((res) => {
+                            if (res.status === 200) {
+                                helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
+                                dispatch(flushImages());
+                                navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
+                            }
+                            else {
+                                helper.errorToast('ERROR: SOMETHING WENT WRONG')
+                            }
+                            this.setState({ loading: false })
 
-                })
-                .catch((error) => {
+                        })
+                        .catch((error) => {
+                            this.setState({ loading: false })
+                            helper.errorToast('ERROR: UPDATING PROPERTY')
+                            console.log('error', error.message)
+                        })
+                        .finally(() => {
+                            this.setState({ loading: false })
+                        })
+                }
+                else {
+                    helper.errorToast('ERROR: UPDATING MAP LOCATION');
                     this.setState({ loading: false })
-                    helper.errorToast('ERROR: UPDATING PROPERTY')
-                    console.log('error', error.message)
-                })
-                .finally(() => {
-                    this.setState({ loading: false })
-                })
+                }
+            }));
         }
         else {
             //console.log(formData)
@@ -663,7 +696,7 @@ class AddInventory extends Component {
                                     handleWaterMark={this.handleWaterMark}
                                     showCustomTitleField={this.showCustomTitleField}
                                     showCustomTitle={showCustomTitle}
-                                    navigation = {this.props.navigation}
+                                    navigation={this.props.navigation}
                                 />
                             </View>
                         </TouchableWithoutFeedback>

@@ -367,7 +367,7 @@ class DetailForm extends Component {
             containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: formData.propsure_id ? '90%' : '100%' }]}
             containerBackgroundColor={'white'}
             textColor={AppStyles.colors.primaryColor}
-            label={'GEO TAGGING'}
+            label={formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
             onPress={() => {
               this.props.navigation.navigate('MapContainer', {
                 mapValues: { lat: formData.lat, lng: formData.lon, propsure_id: formData.propsure_id },
@@ -740,6 +740,10 @@ class DetailForm extends Component {
             />
             {
               pocPhoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+            }
+
+            {
+              pocPhoneValidate == false && checkValidation === true && formData.poc_phone === '' && formData.poc_phone === null && <ErrorMessage errorMessage={'Required'} />
             }
           </View>
         </View>

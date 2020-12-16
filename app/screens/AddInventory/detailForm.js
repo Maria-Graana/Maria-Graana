@@ -10,6 +10,7 @@ import {
   ImageBackground,
   FlatList,
   Dimensions,
+  Platform,
   ActivityIndicator,
 } from 'react-native'
 import { Button, Textarea, CheckBox, ListItem, Body } from 'native-base'
@@ -87,7 +88,7 @@ class DetailForm extends Component {
             <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
               checked={selectedFeatures.includes(item) ? true : false}
-              style={styles.checkBox}
+              style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
             />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text numberOfLines={1} style={{ marginLeft: 10 }}>{item}</Text>
@@ -149,7 +150,7 @@ class DetailForm extends Component {
           >
             <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
-              style={styles.checkBox}
+              style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
               checked={selectedFeatures.includes(item) ? true : false} />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
@@ -169,7 +170,7 @@ class DetailForm extends Component {
           >
             <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
-              style={styles.checkBox}
+              style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
               checked={selectedFeatures.includes(item) ? true : false} />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
@@ -382,7 +383,7 @@ class DetailForm extends Component {
           <CheckBox
             color={AppStyles.colors.primaryColor}
             checked={formData.show_address ? true : false}
-            style={styles.checkBox}
+            style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
             onPress={() => handleShowAddress(!formData.show_address)}
           />
           <Text style={{ marginHorizontal: 15 }}>Show Address on Listing</Text>
@@ -710,7 +711,7 @@ class DetailForm extends Component {
           <CheckBox
             color={AppStyles.colors.primaryColor}
             checked={formData.showWaterMark ? true : false}
-            style={styles.checkBox}
+            style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
             onPress={() => handleWaterMark(!formData.showWaterMark)}
           />
           <Text style={{ marginHorizontal: 15 }}>Show Watermark on Images</Text>

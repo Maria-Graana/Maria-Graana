@@ -107,5 +107,6 @@ export default styles = StyleSheet.create({
   checkBoxRow: {
     flexDirection: 'row', 
     alignItems:'center',
+    paddingVertical:10,
 },
 });

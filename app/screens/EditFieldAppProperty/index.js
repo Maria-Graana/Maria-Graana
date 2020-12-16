@@ -17,6 +17,7 @@ import ImageBrowser from '../../components/ImageBrowser/ImageBrowser';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { uploadImage, addImage, flushImages, removeImage, setImageLoading } from '../../actions/property'
 import { getAllCountries } from 'react-native-country-picker-modal'
+import config from '../../config'
 
 
 class EditFieldAppProperty extends Component {
@@ -81,6 +82,7 @@ class EditFieldAppProperty extends Component {
                 showWaterMark: false,
                 rider_id: null,
                 propsure_id: null,
+                geotagged_date: null,
             },
             showAdditional: false,
             showCustomTitle: false,
@@ -129,11 +131,11 @@ class EditFieldAppProperty extends Component {
             copyObject.area_id = selectedArea.value;
             this.setState({ formData: copyObject, selectedArea })
         }
-        if(mapValues){
+        if (mapValues) {
             copyObject.propsure_id = mapValues.propsure_id;
             copyObject.lat = mapValues.lat;
             copyObject.lon = mapValues.lng;
-            this.setState({ formData: copyObject})
+            this.setState({ formData: copyObject })
 
         }
     }
@@ -201,7 +203,7 @@ class EditFieldAppProperty extends Component {
             }, () => {
                 this.setEditValues()
             }
-          
+
         )
     }
 
@@ -223,7 +225,7 @@ class EditFieldAppProperty extends Component {
 
     setEditValues = () => {
         const { route } = this.props
-        const {callingCode, countryCode, callingCode1, countryCode1} = this.state;
+        const { callingCode, countryCode, callingCode1, countryCode1 } = this.state;
         const { property } = route.params
         let parsedFeatures = property.features ? JSON.parse(property.features) : {};
         let amentities = _.isEmpty(parsedFeatures) ? [] : (_.keys(parsedFeatures));
@@ -234,8 +236,8 @@ class EditFieldAppProperty extends Component {
         let ownerCallingCode = this.setDialCode(callingCode)
         let ownerNumber = property.owner_phone ? this.setPhoneNumber(ownerCallingCode, property.owner_phone) : null;
         let pocCallingCode = this.setDialCode(callingCode1)
-        let pocNumber = property.poc_phone ?this.setPhoneNumber(pocCallingCode, property.poc_phone) : null;
-        console.log(property)
+        let pocNumber = property.poc_phone ? this.setPhoneNumber(pocCallingCode, property.poc_phone) : null;
+        //console.log(property)
         this.setState({
             formData: {
                 id: property.id,
@@ -249,6 +251,7 @@ class EditFieldAppProperty extends Component {
                 city_id: property.city_id,
                 area_id: property.area_id,
                 propsure_id: property.propsure_id,
+                geotagged_date: property.geotagged_date,
                 address: property.address,
                 price: property.price ? property.price : 0,
                 imageIds: property.property_images.length === 0 || property.property_images === undefined
@@ -258,7 +261,7 @@ class EditFieldAppProperty extends Component {
                 status: property.status,
                 owner_phone: ownerNumber,
                 owner_name: property.owner_name,
-                ownerDialCode:  ownerCallingCode,
+                ownerDialCode: ownerCallingCode,
                 ownerCountryCode: countryCode,
                 poc_phone: pocNumber,
                 poc_name: property.poc_name,
@@ -361,9 +364,33 @@ class EditFieldAppProperty extends Component {
             })
         } else {
             // ********* Call Add Inventory API here :)
-           this.setState({ loading: true }, () => {
+            this.setState({ loading: true }, () => {
                 this.createOrEditProperty(formData);
-           })
+            })
+        }
+    }
+
+    updateMapLocation = async (property, data) => {
+        const { user } = this.props;
+        if (property.propsure_id !== data.propsure_id) {
+            const url = `${config.mapUrl}/arms-propsure`
+            const body = {
+                plot_id: data.propsure_id, // propsure_id value here
+                arms_id: property.id, // arms property id here
+                assigned_by: user.email // user's email
+            }
+            const response = await axios.post(url, body);
+            if (response.status === 200) {
+                const copyData = { ...data };
+                copyData.geotagged_date = response.data.createdAt;
+                return copyData;
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            return data; // does not need to update map location because it is the same.
         }
     }
 
@@ -403,27 +430,35 @@ class EditFieldAppProperty extends Component {
         delete formData.grade;
 
         if (route.params.update) {
-            axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, formData)
-                .then((res) => {
-                    if (res.status === 200) {
-                        helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
-                        dispatch(flushImages());
-                        navigation.navigate('InventoryTabs', { update: false, screen: 'Field App', params: { screen: 'InventoryTabs' } })
-                    }
-                    else {
-                        helper.errorToast('ERROR: SOMETHING WENT WRONG')
-                    }
-                    this.setState({ loading: false })
+            this.updateMapLocation(property, formData).then((data => {
+                if (data) {
+                    axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, data)
+                        .then((res) => {
+                            if (res.status === 200) {
+                                helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
+                                dispatch(flushImages());
+                                navigation.navigate('InventoryTabs', { update: false, screen: 'Field App', params: { screen: 'InventoryTabs' } })
+                            }
+                            else {
+                                helper.errorToast('ERROR: SOMETHING WENT WRONG')
+                            }
+                            this.setState({ loading: false })
 
-                })
-                .catch((error) => {
+                        })
+                        .catch((error) => {
+                            this.setState({ loading: false })
+                            helper.errorToast('ERROR: UPDATING PROPERTY')
+                            console.log('error', error.message)
+                        })
+                        .finally(() => {
+                            this.setState({ loading: false })
+                        })
+                }
+                else {
+                    helper.errorToast('ERROR: UPDATING MAP LOCATION');
                     this.setState({ loading: false })
-                    helper.errorToast('ERROR: UPDATING PROPERTY')
-                    console.log('error', error.message)
-                })
-                .finally(() => {
-                    this.setState({ loading: false })
-                })
+                }
+            }));
         }
     }
 
@@ -660,7 +695,7 @@ class EditFieldAppProperty extends Component {
 
     setFlagObject = (object, name) => {
         if (name === 'owner_phone') {
-            this.setState({ countryCode: object.cca2, callingCode: '+' + object.callingCode[0]  })
+            this.setState({ countryCode: object.cca2, callingCode: '+' + object.callingCode[0] })
         }
         if (name === 'poc_phone') {
             this.setState({ countryCode1: object.cca2, callingCode1: '+' + object.callingCode[0] })
@@ -672,7 +707,7 @@ class EditFieldAppProperty extends Component {
         else this.setState({ phoneValidate: false })
     }
 
-    validatePocPhone (value) {
+    validatePocPhone(value) {
         if (value.length < 4 && value !== '') this.setState({ pocPhoneValidate: true })
         else this.setState({ pocPhoneValidate: false })
     }
@@ -788,7 +823,7 @@ class EditFieldAppProperty extends Component {
                                     countryCode1={countryCode1}
                                     getTrimmedPhone={this.getTrimmedPhone}
                                     setFlagObject={this.setFlagObject}
-                                    navigation = {this.props.navigation}
+                                    navigation={this.props.navigation}
                                 />
                             </View>
                         </TouchableWithoutFeedback>

@@ -33,6 +33,7 @@ class BuyPaymentView extends React.Component {
       editTile,
       user,
       currentProperty,
+      onPaymentLongPress,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -102,6 +103,7 @@ class BuyPaymentView extends React.Component {
               data={buyer}
               editTile={editTile}
               commissionEdit={!buyerCommission}
+              onPaymentLongPress={()=>onPaymentLongPress(buyer)}
               title={buyer ? 'Buyer Commission Payment' : ''}
             />
           ) : (
@@ -128,6 +130,7 @@ class BuyPaymentView extends React.Component {
               data={seller}
               commissionEdit={!sellerCommission}
               editTile={editTile}
+              onPaymentLongPress={()=>onPaymentLongPress(seller)}
               title={'Seller Commission Payment'}
             />
           ) : (

@@ -4,7 +4,8 @@ import axios from 'axios'
 import * as React from 'react'
 import { FlatList, KeyboardAvoidingView, Linking, Platform, Text, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import { ActionSheet } from 'native-base';
 import _ from 'underscore'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
@@ -20,6 +21,10 @@ import helper from '../../helper'
 import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
+import DeleteModal from '../../components/DeleteModal'
+
+var BUTTONS = ['Delete', 'Cancel'];
+var CANCEL_INDEX = 1;
 
 class PropertyRCMPayment extends React.Component {
   constructor(props) {
@@ -65,6 +70,7 @@ class PropertyRCMPayment extends React.Component {
       editable: false,
       matchData: [],
       menuShow: false,
+      deletePaymentVisible: false,
     }
   }
 
@@ -206,7 +212,7 @@ class PropertyRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -373,7 +379,7 @@ class PropertyRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
-    this.setState({ formData }, () => {})
+    this.setState({ formData }, () => { })
     if (formData.monthlyRent !== '' && name === 'monthlyRent') {
       this.setState({ showMonthlyRentArrow: true })
     }
@@ -485,7 +491,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -498,7 +504,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -668,8 +674,8 @@ class PropertyRCMPayment extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -759,6 +765,43 @@ class PropertyRCMPayment extends React.Component {
     }
   }
 
+  showHideDeletePayment = (val) => {
+    this.setState({ deletePaymentVisible: val })
+  }
+
+  deletePayment = async (reason) => {
+    const { rcmPayment } = this.props;
+    this.showHideDeletePayment(false);
+    const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`;
+    const response = await axios.delete(url);
+    if (response.data) {
+      helper.successToast(response.data.message);
+      this.fetchLead();
+    }
+    else {
+      helper.errorToast('ERROR DELETING PAYMENT!');
+    }
+  }
+
+  onPaymentLongPress = (data) => {
+    const { dispatch } = this.props
+    dispatch(setRCMPayment({ ...data }))
+    ActionSheet.show(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Select an Option',
+      },
+      buttonIndex => {
+        if (buttonIndex === 0) {
+          //Delete
+          this.showHideDeletePayment(true);
+        }
+      }
+    );
+  }
+
+
   render() {
     const {
       menuShow,
@@ -787,6 +830,7 @@ class PropertyRCMPayment extends React.Component {
       callModal,
       modalValidation,
       addPaymentLoading,
+      deletePaymentVisible,
     } = this.state
     const { navigation, user } = this.props
 
@@ -828,6 +872,9 @@ class PropertyRCMPayment extends React.Component {
           addPaymentLoading={addPaymentLoading}
           lead={lead}
         />
+        <DeleteModal isVisible={deletePaymentVisible}
+          deletePayment={(reason) => this.deletePayment(reason)}
+          showHideModal={(val) => this.showHideDeletePayment(val)} />
         {/* 
                 <HistoryModal
                     getCallHistory={this.getCallHistory}
@@ -857,20 +904,20 @@ class PropertyRCMPayment extends React.Component {
                       screen={'payment'}
                     />
                   ) : (
-                    <PropAgentTile
-                      data={_.clone(item.item)}
-                      user={user}
-                      displayChecks={this.displayChecks}
-                      showCheckBoxes={false}
-                      addProperty={this.addProperty}
-                      isMenuVisible={true}
-                      viewingMenu={false}
-                      goToPropertyComments={this.goToPropertyComments}
-                      toggleMenu={this.toggleMenu}
-                      menuShow={menuShow}
-                      screen={'payment'}
-                    />
-                  )}
+                      <PropAgentTile
+                        data={_.clone(item.item)}
+                        user={user}
+                        displayChecks={this.displayChecks}
+                        showCheckBoxes={false}
+                        addProperty={this.addProperty}
+                        isMenuVisible={true}
+                        viewingMenu={false}
+                        goToPropertyComments={this.goToPropertyComments}
+                        toggleMenu={this.toggleMenu}
+                        menuShow={menuShow}
+                        screen={'payment'}
+                      />
+                    )}
                 </View>
               )}
               ListFooterComponent={
@@ -878,8 +925,8 @@ class PropertyRCMPayment extends React.Component {
                   {lead.shortlist_id !== null ? (
                     lead.purpose === 'sale' ? (
                       <BuyPaymentView
-                      user={user}
-                      currentProperty={allProperties}
+                        user={user}
+                        currentProperty={allProperties}
                         lead={lead}
                         agreedAmount={agreedAmount}
                         showAgreedAmountArrow={showAgreedAmountArrow}
@@ -896,49 +943,51 @@ class PropertyRCMPayment extends React.Component {
                         agreeAmountFromat={agreeAmountFromat}
                         onAddCommissionPayment={this.onAddCommissionPayment}
                         editTile={this.setCommissionEditData}
+                        onPaymentLongPress={this.onPaymentLongPress}
                       />
                     ) : (
-                      <RentPaymentView
-                        user={user}
-                        currentProperty={allProperties}
-                        lead={lead}
-                        pickerData={pickerData}
-                        handleForm={this.handleForm}
-                        formData={formData}
-                        showMonthlyRentArrow={showMonthlyRentArrow}
-                        handleMonthlyRentPress={this.handleMonthlyRentPress}
-                        token={token}
-                        handleTokenAmountChange={this.handleTokenAmountChange}
-                        showTokenAmountArrow={showTokenAmountArrow}
-                        handleTokenAmountPress={this.handleTokenAmountPress}
-                        showAndHideStyling={this.showAndHideStyling}
-                        showStylingState={showStyling}
-                        tokenDateStatus={tokenDateStatus}
-                        tokenPriceFromat={tokenPriceFromat}
-                        agreeAmountFromat={agreeAmountFromat}
-                        monthlyFormatStatus={monthlyFormatStatus}
-                        onAddCommissionPayment={this.onAddCommissionPayment}
-                        editTile={this.setCommissionEditData}
-                      />
-                    )
+                        <RentPaymentView
+                          user={user}
+                          currentProperty={allProperties}
+                          lead={lead}
+                          pickerData={pickerData}
+                          handleForm={this.handleForm}
+                          formData={formData}
+                          showMonthlyRentArrow={showMonthlyRentArrow}
+                          handleMonthlyRentPress={this.handleMonthlyRentPress}
+                          token={token}
+                          handleTokenAmountChange={this.handleTokenAmountChange}
+                          showTokenAmountArrow={showTokenAmountArrow}
+                          handleTokenAmountPress={this.handleTokenAmountPress}
+                          showAndHideStyling={this.showAndHideStyling}
+                          showStylingState={showStyling}
+                          tokenDateStatus={tokenDateStatus}
+                          tokenPriceFromat={tokenPriceFromat}
+                          agreeAmountFromat={agreeAmountFromat}
+                          monthlyFormatStatus={monthlyFormatStatus}
+                          onAddCommissionPayment={this.onAddCommissionPayment}
+                          editTile={this.setCommissionEditData}
+                          onPaymentLongPress={this.onPaymentLongPress}
+                        />
+                      )
                   ) : null}
                 </View>
               }
               keyExtractor={(item, index) => item && item.id && item.id.toString()}
             />
           ) : (
-            <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-              <Text
-                style={{
-                  fontFamily: AppStyles.fonts.semiBoldFont,
-                  fontSize: AppStyles.fontSize.medium,
-                  color: AppStyles.colors.textColor,
-                }}
-              >
-                NO PROPERTY IS SELECTED FOR PAYMENT YET
+              <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                <Text
+                  style={{
+                    fontFamily: AppStyles.fonts.semiBoldFont,
+                    fontSize: AppStyles.fontSize.medium,
+                    color: AppStyles.colors.textColor,
+                  }}
+                >
+                  NO PROPERTY IS SELECTED FOR PAYMENT YET
               </Text>
-            </View>
-          )}
+              </View>
+            )}
           <View style={AppStyles.mainCMBottomNav}>
             <PropertyBottomNav
               goToAttachments={this.goToAttachments}
@@ -958,8 +1007,8 @@ class PropertyRCMPayment extends React.Component {
         </View>
       </KeyboardAvoidingView>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

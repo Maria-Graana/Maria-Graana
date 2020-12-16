@@ -33,6 +33,7 @@ const RentPaymentView = (props) => {
     editTile,
     currentProperty,
     user,
+    onPaymentLongPress
   } = props
   let property = currentProperty[0]
   let subRole =
@@ -142,6 +143,7 @@ const RentPaymentView = (props) => {
             data={buyer}
             editTile={editTile}
             commissionEdit={!buyerCommission}
+            onPaymentLongPress={()=>onPaymentLongPress(buyer)}
             title={buyer ? 'Buyer Commission Payment' : ''}
           />
         ) : (
@@ -168,6 +170,7 @@ const RentPaymentView = (props) => {
             data={seller}
             commissionEdit={!sellerCommission}
             editTile={editTile}
+            onPaymentLongPress={()=>onPaymentLongPress(seller)}
             title={'Seller Commission Payment'}
           />
         ) : (

@@ -144,6 +144,7 @@ class BuyPaymentView extends React.Component {
               <CheckBox
                 color={AppStyles.colors.primaryColor}
                 checked={commissionNotApplicableBuyer ? true : false}
+                onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
                 style={{marginRight:15}}
               />
               <Text
@@ -205,6 +206,7 @@ class BuyPaymentView extends React.Component {
               <CheckBox
                 color={AppStyles.colors.primaryColor}
                 checked={commissionNotApplicableSeller ? true : false}
+                onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
                 style={{marginRight:15}}
               />
               <Text

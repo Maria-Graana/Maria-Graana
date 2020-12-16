@@ -177,6 +177,8 @@ const RentPaymentView = (props) => {
           <CheckBox
             color={AppStyles.colors.primaryColor}
             checked={commissionNotApplicableBuyer ? true : false}
+            onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
+            style={styles.checkBoxRow}
           />
           <Text
             style={{
@@ -233,6 +235,8 @@ const RentPaymentView = (props) => {
           <CheckBox
             color={AppStyles.colors.primaryColor}
             checked={commissionNotApplicableSeller ? true : false}
+            onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
+            style={styles.checkBoxRow}
           />
           <Text
             style={{

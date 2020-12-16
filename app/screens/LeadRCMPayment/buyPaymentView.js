@@ -3,7 +3,7 @@
 import moment from 'moment'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
-import { Checkbox } from 'react-native-paper'
+import {CheckBox} from 'native-base';
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import CommissionTile from '../../components/CommissionTile'
@@ -141,9 +141,11 @@ class BuyPaymentView extends React.Component {
               onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
               style={styles.checkBoxRow}
             >
-              <Checkbox
+              <CheckBox
                 color={AppStyles.colors.primaryColor}
-                status={commissionNotApplicableBuyer ? 'checked' : 'unchecked'}
+                checked={commissionNotApplicableBuyer ? true : false}
+                onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
+                style={{marginRight:15}}
               />
               <Text
                 style={{
@@ -201,9 +203,11 @@ class BuyPaymentView extends React.Component {
               onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
               style={styles.checkBoxRow}
             >
-              <Checkbox
+              <CheckBox
                 color={AppStyles.colors.primaryColor}
-                status={commissionNotApplicableSeller ? 'checked' : 'unchecked'}
+                checked={commissionNotApplicableSeller ? true : false}
+                onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
+                style={{marginRight:15}}
               />
               <Text
                 style={{

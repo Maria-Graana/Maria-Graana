@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { View, FlatList, Animated, TouchableOpacity, Text } from 'react-native';
 import _ from 'underscore';
-import { Checkbox } from 'react-native-paper';
+import {CheckBox} from 'native-base';
 import fuzzy from 'fuzzy'
 import AppStyles from '../../AppStyles';
 import Loader from '../../components/loader';
@@ -64,7 +64,7 @@ class AreaPickerScreen extends React.Component {
     }
 
     setStatus = (item) => {
-        return _.contains(this.areaIds, item.value) ? 'checked' : 'unchecked';
+        return _.contains(this.areaIds, item.value) ? true : false;
     }
 
     renderListWithMultipleSelectOptions = ({ item }) => {
@@ -74,8 +74,8 @@ class AreaPickerScreen extends React.Component {
                 onPress={() => this.setSelectedArea(item)}>
                 <View style={styles.rowContainerMultipleStyle}>
                     <Text style={styles.rowTextStyle}>{item.name}</Text>
-                    <Checkbox
-                        status={this.setStatus(item)}
+                    <CheckBox
+                        checked={this.setStatus(item)}
                         color={AppStyles.colors.primaryColor}
                         onPress={() => this.setSelectedArea(item)}
                     />

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { View, FlatList, Animated, TextInput, TouchableOpacity, Text, Modal, SafeAreaView, Image } from 'react-native';
 import _ from 'underscore';
-import { Checkbox } from 'react-native-paper';
+import { CheckBox } from 'native-base';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import styles from './styles';
 import fuzzy from 'fuzzy'
@@ -57,7 +57,7 @@ class AreaPicker extends React.Component {
     }
 
     setStatus = (item) => {
-        return _.contains(this.areaIds, item.value) ? 'checked' : 'unchecked';
+        return _.contains(this.areaIds, item.value) ? true : false;
     }
 
     renderListWithMultipleSelectOptions = ({ item }) => {
@@ -66,10 +66,10 @@ class AreaPicker extends React.Component {
                 onPress={() => this.setSelectedArea(item)}>
                 <View style={{ width: wp('100%'), paddingTop: hp('1.5%'), paddingBottom: hp('1.5%'), flexDirection: 'row', alignItems: 'center', borderTopColor: '#ddd', borderTopWidth: 0.5, alignSelf: 'stretch' }}>
                     <Text style={{ color: AppStyles.colors.textColor, marginLeft: wp('2.5%'), fontSize: 18, width: wp('80%') }}>{item.name}</Text>
-                    <Checkbox
-                        status={this.setStatus(item)}
-                        color={AppStyles.colors.primaryColor}
+                    <CheckBox
                         onPress={() => this.setSelectedArea(item)}
+                        color={AppStyles.colors.primaryColor}
+                        checked={this.setStatus(item)}
                     />
                 </View>
             </TouchableOpacity>

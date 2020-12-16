@@ -163,5 +163,8 @@ export default styles = StyleSheet.create({
         height: 22,
         alignItems:'center',
         marginRight:10,
+    },
+    checkBoxMargin: {
+        marginRight:10,
     }
 })

@@ -47,6 +47,9 @@ class PropertyOffer extends React.Component {
       menuShow: false,
       btnLoading: false,
       showWarning: false,
+      customerNotZero: false,
+      sellerNotZero: false,
+      agreedNotZero: false,
     }
   }
 
@@ -136,7 +139,7 @@ class PropertyOffer extends React.Component {
     const { leadData } = this.state
     leadData[name] = value
     console.log('handleForm: ', value, name)
-    this.setState({ leadData })
+    this.setState({ leadData, agreedNotZero: false, sellerNotZero: false, customerNotZero: false })
   }
 
   // ************** types will be seller an customer... customer= lead agent, seller= property agent ****************
@@ -162,6 +165,12 @@ class PropertyOffer extends React.Component {
     const { leadData, currentProperty } = this.state
     const { lead } = this.props
     if (leadData.customer && leadData.customer !== '') {
+      if (Number(leadData.customer) === 0) {
+        this.setState({
+          customerNotZero: true,
+        })
+        return
+      }
       let body = {
         offer: leadData.customer,
         type: 'customer',
@@ -182,6 +191,12 @@ class PropertyOffer extends React.Component {
     const { leadData, currentProperty } = this.state
     const { lead } = this.props
     if (leadData.seller && leadData.seller !== '') {
+      if (Number(leadData.seller) === 0) {
+        this.setState({
+          sellerNotZero: true,
+        })
+        return
+      }
       let body = {
         offer: leadData.seller,
         type: 'seller',
@@ -395,6 +410,12 @@ class PropertyOffer extends React.Component {
     const { leadData, currentProperty } = this.state
     const { lead } = this.props
     if (leadData.agreed && leadData.agreed !== '') {
+      if (Number(leadData.agreed) === 0) {
+        this.setState({
+          agreedNotZero: true,
+        })
+        return
+      }
       let body = {
         offer: leadData.agreed,
         type: 'agreed',
@@ -504,6 +525,9 @@ class PropertyOffer extends React.Component {
       currentProperty,
       btnLoading,
       showWarning,
+      agreedNotZero,
+      sellerNotZero,
+      customerNotZero,
     } = this.state
     const { lead, navigation, user } = this.props
 
@@ -586,6 +610,9 @@ class PropertyOffer extends React.Component {
                   handleForm={this.handleForm}
                   disableButton={disableButton}
                   openModal={this.openChatModal}
+                  agreedNotZero={agreedNotZero}
+                  sellerNotZero={sellerNotZero}
+                  customerNotZero={customerNotZero}
                 />
               </View>
             ) : (

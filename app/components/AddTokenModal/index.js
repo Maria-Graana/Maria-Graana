@@ -1,11 +1,13 @@
+/** @format */
+
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-import Modal from 'react-native-modal';
+import Modal from 'react-native-modal'
 import SimpleInputText from '../SimpleInputField'
-import PickerComponent from '../Picker/index';
-import StaticData from '../../StaticData';
+import PickerComponent from '../Picker/index'
+import StaticData from '../../StaticData'
 import ErrorMessage from '../../components/ErrorMessage'
 import times from '../../../assets/img/times.png'
 
@@ -23,14 +25,19 @@ class AddTokenModal extends React.Component {
       addPaymentLoading,
       tokenModalToggle,
       remarks,
+      tokenNotZero,
     } = this.props
     return (
-
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
           <View style={styles.topHeader}>
             <Text style={styles.headingText}>Enter Token Details</Text>
-            <TouchableOpacity style={styles.timesBtn} onPress={() => { tokenModalToggle(false) }}>
+            <TouchableOpacity
+              style={styles.timesBtn}
+              onPress={() => {
+                tokenModalToggle(false)
+              }}
+            >
               <Image source={times} style={styles.timesImg} />
             </TouchableOpacity>
           </View>
@@ -39,11 +46,18 @@ class AddTokenModal extends React.Component {
             <View style={styles.moreViewContainer}>
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent onValueChange={handleForm} data={StaticData.paymentTypeForToken} name={'paymentTypeForToken'} placeholder='Payment Type' selectedItem={formData.paymentTypeForToken} />
-                  {firstScreenValidate === true && formData.paymentTypeForToken === '' && <ErrorMessage errorMessage={'Required'} />}
+                  <PickerComponent
+                    onValueChange={handleForm}
+                    data={StaticData.paymentTypeForToken}
+                    name={'paymentTypeForToken'}
+                    placeholder="Payment Type"
+                    selectedItem={formData.paymentTypeForToken}
+                  />
+                  {firstScreenValidate === true && formData.paymentTypeForToken === '' && (
+                    <ErrorMessage errorMessage={'Required'} />
+                  )}
                 </View>
               </View>
-
 
               <SimpleInputText
                 name={'token'}
@@ -56,13 +70,26 @@ class AddTokenModal extends React.Component {
                 keyboardType={'numeric'}
                 onChangeHandle={handleForm}
               />
-              {firstScreenValidate === true && formData.token === null || formData.token === '' ? <ErrorMessage errorMessage={'Required'} /> : null}
-
+              {tokenNotZero ? (
+                <ErrorMessage errorMessage={'Amount must be greater than 0'} />
+              ) : null}
+              {(firstScreenValidate === true && formData.token === null) ||
+              formData.token === '' ? (
+                <ErrorMessage errorMessage={'Required'} />
+              ) : null}
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent onValueChange={handleForm} data={StaticData.fullPaymentType} name={'type'} placeholder='Type' selectedItem={formData.type} />
-                  {firstScreenValidate === true && formData.type === '' && <ErrorMessage errorMessage={'Required'} />}
+                  <PickerComponent
+                    onValueChange={handleForm}
+                    data={StaticData.fullPaymentType}
+                    name={'type'}
+                    placeholder="Type"
+                    selectedItem={formData.type}
+                  />
+                  {firstScreenValidate === true && formData.type === '' && (
+                    <ErrorMessage errorMessage={'Required'} />
+                  )}
                 </View>
               </View>
 
@@ -70,26 +97,33 @@ class AddTokenModal extends React.Component {
                 name={'details'}
                 fromatName={false}
                 placeholder={'Details'}
-                label={'DETIALS'}
+                label={'DETAILS'}
                 value={formData.details != '' ? formData.details : ''}
                 formatValue={''}
                 editable={true}
                 onChangeHandle={handleForm}
               />
 
-              <TouchableOpacity style={styles.bookedBtn} onPress={() => { tokenModalToggle(false) }}>
-                <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} />
+              <TouchableOpacity
+                style={styles.bookedBtn}
+                onPress={() => {
+                  tokenModalToggle(false)
+                }}
+              >
+                <Image
+                  source={require('../../../assets/img/checkWhite.png')}
+                  style={styles.bookedBtnImage}
+                />
                 <Text style={styles.bookedBtnText}>
                   {addPaymentLoading === true ? 'Wait...' : 'OK'}
                 </Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
-
         </View>
       </Modal>
     )
   }
 }
 
-export default AddTokenModal;
+export default AddTokenModal

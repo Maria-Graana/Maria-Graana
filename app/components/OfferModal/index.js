@@ -20,6 +20,7 @@ import { formatPrice } from '../../PriceFormate'
 import styles from './style'
 import TouchableButton from '../../components/TouchableButton'
 import Ability from '../../hoc/Ability'
+import ErrorMessage from '../../components/ErrorMessage'
 
 class OfferModal extends React.Component {
   constructor(props) {
@@ -43,6 +44,9 @@ class OfferModal extends React.Component {
       loading,
       agreedAmount,
       showWarning,
+      customerNotZero,
+      sellerNotZero,
+      agreedNotZero,
     } = this.props
     let subRole =
       property &&
@@ -110,6 +114,9 @@ class OfferModal extends React.Component {
                     <Image source={addImg} style={[styles.addImg]} />
                   </TouchableOpacity>
                 </View>
+                {customerNotZero ? (
+                  <ErrorMessage errorMessage={'Amount must be greater than 0'} />
+                ) : null}
               </View>
             ) : (
               <View style={styles.mainInputWrap}>
@@ -160,6 +167,9 @@ class OfferModal extends React.Component {
                     <Image source={addImg} style={[styles.addImg]} />
                   </TouchableOpacity>
                 </View>
+                {sellerNotZero ? (
+                  <ErrorMessage errorMessage={'Amount must be greater than 0'} />
+                ) : null}
               </View>
             ) : (
               <View style={styles.mainInputWrap}>
@@ -265,6 +275,7 @@ class OfferModal extends React.Component {
               />
             </View>
           )}
+          {agreedNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {showWarning ? (
             <View style={{ paddingHorizontal: 10 }}>
               <Text>Other agent has not made an offer yet</Text>

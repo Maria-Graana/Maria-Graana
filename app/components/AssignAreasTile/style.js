@@ -7,8 +7,6 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderColor: '#eaeaea',
-    paddingTop: 5,
-    paddingBottom: 5,
   },
   leftWrap: {
     width: 50,

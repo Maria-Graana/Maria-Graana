@@ -3,7 +3,7 @@
 import moment from 'moment'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
-import {CheckBox} from 'native-base';
+import { CheckBox } from 'native-base'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import CommissionTile from '../../components/CommissionTile'
@@ -11,6 +11,7 @@ import DocTile from '../../components/DocTile'
 import InputField from '../../components/InputField'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
+import ErrorMessage from '../../components/ErrorMessage'
 import styles from './styles'
 
 class BuyPaymentView extends React.Component {
@@ -48,6 +49,10 @@ class BuyPaymentView extends React.Component {
       legalCheckList,
       downloadLegalDocs,
       onPaymentLongPress,
+      tokenNotZero,
+      agreedNotZero,
+      deleteDoc,
+      activityBool,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -95,7 +100,7 @@ class BuyPaymentView extends React.Component {
           editable={!isLeadClosed}
           showDate={false}
         />
-
+        {agreedNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
         <InputField
           label={'TOKEN'}
           placeholder={'Enter Token Amount'}
@@ -113,7 +118,7 @@ class BuyPaymentView extends React.Component {
           showDate={true}
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
         />
-
+        {tokenNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
         <DocTile
           title={'Signed Agreement'}
           uploadDocument={uploadDocument}
@@ -122,6 +127,8 @@ class BuyPaymentView extends React.Component {
           agreementDoc={agreementDoc}
           legalAgreement={legalAgreement}
           downloadLegalDocs={downloadLegalDocs}
+          deleteDoc={deleteDoc}
+          activityBool={activityBool}
         />
         <DocTile
           title={'CheckList'}
@@ -131,6 +138,8 @@ class BuyPaymentView extends React.Component {
           checkListDoc={checkListDoc}
           legalCheckList={legalCheckList}
           downloadLegalDocs={downloadLegalDocs}
+          deleteDoc={deleteDoc}
+          activityBool={activityBool}
         />
 
         {
@@ -145,7 +154,7 @@ class BuyPaymentView extends React.Component {
                 color={AppStyles.colors.primaryColor}
                 checked={commissionNotApplicableBuyer ? true : false}
                 onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
-                style={{marginRight:15}}
+                style={{ marginRight: 15 }}
               />
               <Text
                 style={{
@@ -166,7 +175,7 @@ class BuyPaymentView extends React.Component {
             <CommissionTile
               data={buyer}
               editTile={editTile}
-              onPaymentLongPress={()=>onPaymentLongPress(buyer)}
+              onPaymentLongPress={() => onPaymentLongPress(buyer)}
               commissionEdit={!buyerCommission}
               title={buyer ? 'Buyer Commission Payment' : ''}
             />
@@ -194,7 +203,6 @@ class BuyPaymentView extends React.Component {
             </View>
           )
         ) : null}
-
         {
           // Checkbox
           singleCommission && !seller && !isLeadClosed ? (
@@ -207,7 +215,7 @@ class BuyPaymentView extends React.Component {
                 color={AppStyles.colors.primaryColor}
                 checked={commissionNotApplicableSeller ? true : false}
                 onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
-                style={{marginRight:15}}
+                style={{ marginRight: 15 }}
               />
               <Text
                 style={{
@@ -228,7 +236,7 @@ class BuyPaymentView extends React.Component {
             <CommissionTile
               data={seller}
               commissionEdit={!sellerCommission}
-              onPaymentLongPress={()=>onPaymentLongPress(seller)}
+              onPaymentLongPress={() => onPaymentLongPress(seller)}
               editTile={editTile}
               title={'Seller Commission Payment'}
             />

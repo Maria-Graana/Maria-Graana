@@ -104,6 +104,8 @@ class Payments extends Component {
       paymentRemarkVisible: false,
       remarksPaymentLoading: false,
       remarksDataForPayment: [],
+      paymentNotZero: false,
+      tokenNotZero: false,
     }
   }
 
@@ -397,6 +399,8 @@ class Payments extends Component {
     this.setState(
       {
         formData: newFormData,
+        tokenNotZero: false,
+        paymentNotZero: false,
       },
       () => {
         //Set Discount Price
@@ -806,6 +810,8 @@ class Payments extends Component {
     this.props.dispatch(setCMPaymennt(newSecondFormData))
     this.setState({
       secondFormData: newSecondFormData,
+      tokenNotZero: false,
+      paymentNotZero: false,
     })
   }
 
@@ -821,6 +827,13 @@ class Payments extends Component {
       this.setState({
         addPaymentLoading: true,
       })
+      if (Number(secondFormData.installmentAmount) === 0) {
+        this.setState({
+          paymentNotZero: true,
+          addPaymentLoading: false,
+        })
+        return
+      }
       if (editaAble === false) {
         var body = {
           ...secondFormData,
@@ -1074,6 +1087,12 @@ class Payments extends Component {
 
   tokenModalToggle = (status) => {
     const { formData } = this.state
+    if (formData.token && Number(formData.token) === 0) {
+      this.setState({
+        tokenNotZero: true,
+      })
+      return
+    }
     if (formData.token != '') {
       this.setState({ tokenModalVisible: status })
     }
@@ -1260,6 +1279,8 @@ class Payments extends Component {
       paymentRemarkVisible,
       remarksDataForPayment,
       remarksPaymentLoading,
+      paymentNotZero,
+      tokenNotZero,
     } = this.state
     return (
       <View>
@@ -1335,7 +1356,7 @@ class Payments extends Component {
               pearlModal={true}
             />
           ) : null}
-          {secondScreenData && secondScreenData.unit != null &&  secondScreenData.unit.id != null? (
+          {secondScreenData && secondScreenData.unit != null && secondScreenData.unit.id != null ? (
             <BookingDetailsModal
               active={bookingDetailsModalActive}
               data={secondScreenData}
@@ -1373,6 +1394,7 @@ class Payments extends Component {
             remarkActive={paymentRemarkVisible}
             remarkData={remarksDataForPayment}
             remarksPaymentLoading={remarksPaymentLoading}
+            paymentNotZero={paymentNotZero}
           />
           <AddTokenModal
             active={tokenModalVisible}
@@ -1380,6 +1402,7 @@ class Payments extends Component {
             firstScreenValidate={firstScreenValidate}
             handleForm={this.handleForm}
             tokenModalToggle={this.tokenModalToggle}
+            tokenNotZero={tokenNotZero}
           />
         </View>
         <LeadRCMPaymentPopup

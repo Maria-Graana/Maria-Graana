@@ -4,8 +4,8 @@ import axios from 'axios'
 import * as React from 'react'
 import { FlatList, KeyboardAvoidingView, Linking, Platform, Text, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
-import { connect } from 'react-redux';
-import { ActionSheet } from 'native-base';
+import { connect } from 'react-redux'
+import { ActionSheet } from 'native-base'
 import _ from 'underscore'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
@@ -23,8 +23,8 @@ import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import DeleteModal from '../../components/DeleteModal'
 
-var BUTTONS = ['Delete', 'Cancel'];
-var CANCEL_INDEX = 1;
+var BUTTONS = ['Delete', 'Cancel']
+var CANCEL_INDEX = 1
 
 class PropertyRCMPayment extends React.Component {
   constructor(props) {
@@ -71,6 +71,11 @@ class PropertyRCMPayment extends React.Component {
       matchData: [],
       menuShow: false,
       deletePaymentVisible: false,
+      tokenNotZero: false,
+      agreedNotZero: false,
+      buyerNotZero: false,
+      sellerNotZero: false,
+      rentNotZero: false,
     }
   }
 
@@ -212,7 +217,7 @@ class PropertyRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -259,17 +264,17 @@ class PropertyRCMPayment extends React.Component {
 
   handleAgreedAmountChange = (agreedAmount) => {
     if (agreedAmount === '') {
-      this.setState({ agreedAmount: '' })
+      this.setState({ agreedAmount: '', agreedNotZero: false })
     } else if (agreedAmount !== '') {
-      this.setState({ agreedAmount, showAgreedAmountArrow: true })
+      this.setState({ agreedAmount, showAgreedAmountArrow: true, agreedNotZero: false })
     }
   }
 
   handleTokenAmountChange = (token) => {
     if (token === '') {
-      this.setState({ token: '' })
+      this.setState({ token: '', tokenNotZero: false })
     } else if (token !== '') {
-      this.setState({ token, showTokenAmountArrow: true })
+      this.setState({ token, showTokenAmountArrow: true, tokenNotZero: false })
     }
   }
 
@@ -285,6 +290,10 @@ class PropertyRCMPayment extends React.Component {
     const { token } = this.state
     const { lead } = this.state
     let payload = Object.create({})
+    if (Number(token) === 0) {
+      this.setState({ tokenNotZero: true })
+      return
+    }
     payload.token = this.convertToInteger(token)
     var leadId = []
     leadId.push(lead.id)
@@ -309,6 +318,10 @@ class PropertyRCMPayment extends React.Component {
     const { agreedAmount } = this.state
     const { lead } = this.state
     let payload = Object.create({})
+    if (Number(agreedAmount) === 0) {
+      this.setState({ agreedNotZero: true })
+      return
+    }
     payload.payment = this.convertToInteger(agreedAmount)
     var leadId = []
     leadId.push(lead.id)
@@ -379,7 +392,7 @@ class PropertyRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
-    this.setState({ formData }, () => { })
+    this.setState({ formData }, () => {})
     if (formData.monthlyRent !== '' && name === 'monthlyRent') {
       this.setState({ showMonthlyRentArrow: true })
     }
@@ -491,7 +504,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -504,7 +517,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -582,6 +595,7 @@ class PropertyRCMPayment extends React.Component {
     const { rcmPayment, dispatch } = this.props
     const newSecondFormData = { ...rcmPayment, visible: rcmPayment.visible }
     newSecondFormData[name] = value
+    this.setState({ buyerNotZero: false })
     dispatch(setRCMPayment(newSecondFormData))
   }
 
@@ -627,12 +641,15 @@ class PropertyRCMPayment extends React.Component {
     if (
       rcmPayment.installmentAmount != null &&
       rcmPayment.installmentAmount != '' &&
-      Number(rcmPayment.installmentAmount) !== 0 &&
       rcmPayment.type != ''
     ) {
       this.setState({
         addPaymentLoading: true,
       })
+      if (Number(rcmPayment.installmentAmount) === 0) {
+        this.setState({ buyerNotZero: true, addPaymentLoading: false })
+        return
+      }
       if (editable === false) {
         // for commission addition
         let body = { ...rcmPayment, rcmLeadId: lead.id, armsUserId: user.id, addedBy: 'seller' }
@@ -674,8 +691,8 @@ class PropertyRCMPayment extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                return !_.has(item, 'id')
-              })
+                  return !_.has(item, 'id')
+                })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -770,16 +787,15 @@ class PropertyRCMPayment extends React.Component {
   }
 
   deletePayment = async (reason) => {
-    const { rcmPayment } = this.props;
-    this.showHideDeletePayment(false);
-    const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`;
-    const response = await axios.delete(url);
+    const { rcmPayment } = this.props
+    this.showHideDeletePayment(false)
+    const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`
+    const response = await axios.delete(url)
     if (response.data) {
-      helper.successToast(response.data.message);
-      this.fetchLead();
-    }
-    else {
-      helper.errorToast('ERROR DELETING PAYMENT!');
+      helper.successToast(response.data.message)
+      this.fetchLead()
+    } else {
+      helper.errorToast('ERROR DELETING PAYMENT!')
     }
   }
 
@@ -792,15 +808,14 @@ class PropertyRCMPayment extends React.Component {
         cancelButtonIndex: CANCEL_INDEX,
         title: 'Select an Option',
       },
-      buttonIndex => {
+      (buttonIndex) => {
         if (buttonIndex === 0) {
           //Delete
-          this.showHideDeletePayment(true);
+          this.showHideDeletePayment(true)
         }
       }
-    );
+    )
   }
-
 
   render() {
     const {
@@ -831,6 +846,10 @@ class PropertyRCMPayment extends React.Component {
       modalValidation,
       addPaymentLoading,
       deletePaymentVisible,
+      tokenNotZero,
+      agreedNotZero,
+      buyerNotZero,
+      rentNotZero,
     } = this.state
     const { navigation, user } = this.props
 
@@ -871,10 +890,13 @@ class PropertyRCMPayment extends React.Component {
           submitCommissionPayment={() => this.submitCommissionPayment()}
           addPaymentLoading={addPaymentLoading}
           lead={lead}
+          paymentNotZero={buyerNotZero}
         />
-        <DeleteModal isVisible={deletePaymentVisible}
+        <DeleteModal
+          isVisible={deletePaymentVisible}
           deletePayment={(reason) => this.deletePayment(reason)}
-          showHideModal={(val) => this.showHideDeletePayment(val)} />
+          showHideModal={(val) => this.showHideDeletePayment(val)}
+        />
         {/* 
                 <HistoryModal
                     getCallHistory={this.getCallHistory}
@@ -904,20 +926,20 @@ class PropertyRCMPayment extends React.Component {
                       screen={'payment'}
                     />
                   ) : (
-                      <PropAgentTile
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        isMenuVisible={true}
-                        viewingMenu={false}
-                        goToPropertyComments={this.goToPropertyComments}
-                        toggleMenu={this.toggleMenu}
-                        menuShow={menuShow}
-                        screen={'payment'}
-                      />
-                    )}
+                    <PropAgentTile
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      isMenuVisible={true}
+                      viewingMenu={false}
+                      goToPropertyComments={this.goToPropertyComments}
+                      toggleMenu={this.toggleMenu}
+                      menuShow={menuShow}
+                      screen={'payment'}
+                    />
+                  )}
                 </View>
               )}
               ListFooterComponent={
@@ -944,50 +966,56 @@ class PropertyRCMPayment extends React.Component {
                         onAddCommissionPayment={this.onAddCommissionPayment}
                         editTile={this.setCommissionEditData}
                         onPaymentLongPress={this.onPaymentLongPress}
+                        tokenNotZero={tokenNotZero}
+                        agreedNotZero={agreedNotZero}
+                        rentNotZero={rentNotZero}
                       />
                     ) : (
-                        <RentPaymentView
-                          user={user}
-                          currentProperty={allProperties}
-                          lead={lead}
-                          pickerData={pickerData}
-                          handleForm={this.handleForm}
-                          formData={formData}
-                          showMonthlyRentArrow={showMonthlyRentArrow}
-                          handleMonthlyRentPress={this.handleMonthlyRentPress}
-                          token={token}
-                          handleTokenAmountChange={this.handleTokenAmountChange}
-                          showTokenAmountArrow={showTokenAmountArrow}
-                          handleTokenAmountPress={this.handleTokenAmountPress}
-                          showAndHideStyling={this.showAndHideStyling}
-                          showStylingState={showStyling}
-                          tokenDateStatus={tokenDateStatus}
-                          tokenPriceFromat={tokenPriceFromat}
-                          agreeAmountFromat={agreeAmountFromat}
-                          monthlyFormatStatus={monthlyFormatStatus}
-                          onAddCommissionPayment={this.onAddCommissionPayment}
-                          editTile={this.setCommissionEditData}
-                          onPaymentLongPress={this.onPaymentLongPress}
-                        />
-                      )
+                      <RentPaymentView
+                        user={user}
+                        currentProperty={allProperties}
+                        lead={lead}
+                        pickerData={pickerData}
+                        handleForm={this.handleForm}
+                        formData={formData}
+                        showMonthlyRentArrow={showMonthlyRentArrow}
+                        handleMonthlyRentPress={this.handleMonthlyRentPress}
+                        token={token}
+                        handleTokenAmountChange={this.handleTokenAmountChange}
+                        showTokenAmountArrow={showTokenAmountArrow}
+                        handleTokenAmountPress={this.handleTokenAmountPress}
+                        showAndHideStyling={this.showAndHideStyling}
+                        showStylingState={showStyling}
+                        tokenDateStatus={tokenDateStatus}
+                        tokenPriceFromat={tokenPriceFromat}
+                        agreeAmountFromat={agreeAmountFromat}
+                        monthlyFormatStatus={monthlyFormatStatus}
+                        onAddCommissionPayment={this.onAddCommissionPayment}
+                        editTile={this.setCommissionEditData}
+                        onPaymentLongPress={this.onPaymentLongPress}
+                        tokenNotZero={tokenNotZero}
+                        agreedNotZero={agreedNotZero}
+                        rentNotZero={rentNotZero}
+                      />
+                    )
                   ) : null}
                 </View>
               }
               keyExtractor={(item, index) => item && item.id && item.id.toString()}
             />
           ) : (
-              <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-                <Text
-                  style={{
-                    fontFamily: AppStyles.fonts.semiBoldFont,
-                    fontSize: AppStyles.fontSize.medium,
-                    color: AppStyles.colors.textColor,
-                  }}
-                >
-                  NO PROPERTY IS SELECTED FOR PAYMENT YET
+            <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+              <Text
+                style={{
+                  fontFamily: AppStyles.fonts.semiBoldFont,
+                  fontSize: AppStyles.fontSize.medium,
+                  color: AppStyles.colors.textColor,
+                }}
+              >
+                NO PROPERTY IS SELECTED FOR PAYMENT YET
               </Text>
-              </View>
-            )}
+            </View>
+          )}
           <View style={AppStyles.mainCMBottomNav}>
             <PropertyBottomNav
               goToAttachments={this.goToAttachments}
@@ -1007,8 +1035,8 @@ class PropertyRCMPayment extends React.Component {
         </View>
       </KeyboardAvoidingView>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

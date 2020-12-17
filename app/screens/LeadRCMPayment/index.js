@@ -974,8 +974,8 @@ class LeadRCMPayment extends React.Component {
           ...rcmPayment,
           rcmLeadId: lead.id,
           armsUserId: user.id,
+          paymentCategory: 'commission'
         }
-        //console.log(body)
         delete body.visible
         axios
           .post(`/api/leads/project/payments`, body)
@@ -1154,8 +1154,8 @@ class LeadRCMPayment extends React.Component {
     const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`
     const response = await axios.delete(url)
     if (response.data) {
+      this.fetchLead();
       helper.successToast(response.data.message)
-      this.fetchLead()
     } else {
       helper.errorToast('ERROR DELETING PAYMENT!')
     }

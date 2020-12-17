@@ -109,4 +109,10 @@ export default styles = StyleSheet.create({
     alignItems:'center',
     paddingVertical:10,
 },
+checkBox:{
+  width: 22, 
+  height: 22,
+  alignItems:'center',
+  marginRight:15,
+},
 });

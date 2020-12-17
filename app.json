@@ -43,6 +43,7 @@
     "android": {
       "package": "com.agency21.arms",
       "googleServicesFile": "./google-services.json",
+      "googleMaps": { "apiKey": "AIzaSyAn23x563AgxL5cANBS6wDNVjXeT7QCdJE" },
       "userInterfaceStyle": "automatic",
       "permissions": [
         "CAMERA",

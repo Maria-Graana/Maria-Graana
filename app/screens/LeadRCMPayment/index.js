@@ -196,7 +196,7 @@ class LeadRCMPayment extends React.Component {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
-      MediaLibrary.createAlbumAsync('Download', asset, false).then((res) => {
+      MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
         FileSystem.getContentUriAsync(fileUri).then((cUri) => {
           if (
             doc.fileType.includes('jpg') ||
@@ -638,7 +638,7 @@ class LeadRCMPayment extends React.Component {
     const { token } = this.state
     const { lead } = this.state
     let payload = Object.create({})
-    if (Number(token) === 0) {
+    if (Number(token) <= 0) {
       this.setState({ tokenNotZero: true })
       return
     }
@@ -666,7 +666,7 @@ class LeadRCMPayment extends React.Component {
     const { agreedAmount } = this.state
     const { lead } = this.state
     let payload = Object.create({})
-    if (Number(agreedAmount) === 0) {
+    if (Number(agreedAmount) <= 0) {
       this.setState({ agreedNotZero: true })
       return
     }
@@ -695,7 +695,7 @@ class LeadRCMPayment extends React.Component {
     const { monthlyRent } = formData
     const { lead } = this.state
     let payload = Object.create({})
-    if (Number(monthlyRent) === 0) {
+    if (Number(monthlyRent) <= 0) {
       this.setState({ rentNotZero: true })
       return
     }
@@ -1003,7 +1003,7 @@ class LeadRCMPayment extends React.Component {
       this.setState({
         addPaymentLoading: true,
       })
-      if (Number(rcmPayment.installmentAmount) === 0) {
+      if (Number(rcmPayment.installmentAmount) <= 0) {
         this.setState({ buyerNotZero: true, addPaymentLoading: false })
         return
       }
@@ -1013,7 +1013,7 @@ class LeadRCMPayment extends React.Component {
           ...rcmPayment,
           rcmLeadId: lead.id,
           armsUserId: user.id,
-          paymentCategory: 'commission'
+          paymentCategory: 'commission',
         }
         delete body.visible
         axios
@@ -1193,7 +1193,7 @@ class LeadRCMPayment extends React.Component {
     const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`
     const response = await axios.delete(url)
     if (response.data) {
-      this.fetchLead();
+      this.fetchLead()
       helper.successToast(response.data.message)
     } else {
       helper.errorToast('ERROR DELETING PAYMENT!')

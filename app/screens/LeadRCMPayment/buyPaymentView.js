@@ -131,7 +131,7 @@ class BuyPaymentView extends React.Component {
           activityBool={activityBool}
         />
         <DocTile
-          title={'CheckList'}
+          title={'Legal Process Checklist'}
           uploadDocument={uploadDocument}
           category={'checklist'}
           uploadDocToServer={uploadDocToServer}

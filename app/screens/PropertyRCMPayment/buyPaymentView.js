@@ -103,7 +103,7 @@ class BuyPaymentView extends React.Component {
               data={buyer}
               editTile={editTile}
               commissionEdit={!buyerCommission}
-              onPaymentLongPress={()=>onPaymentLongPress(buyer)}
+              onPaymentLongPress={() => onPaymentLongPress(buyer)}
               title={buyer ? 'Buyer Commission Payment' : ''}
             />
           ) : (
@@ -130,7 +130,7 @@ class BuyPaymentView extends React.Component {
               data={seller}
               commissionEdit={!sellerCommission}
               editTile={editTile}
-              onPaymentLongPress={()=>onPaymentLongPress(seller)}
+              onPaymentLongPress={() => onPaymentLongPress(seller)}
               title={'Seller Commission Payment'}
             />
           ) : (

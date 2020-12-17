@@ -254,13 +254,25 @@ class LeadRCMPayment extends React.Component {
           return
         }
         if (category === 'agreement') {
-          this.setState({
-            agreementDoc: item,
-          })
+          this.setState(
+            {
+              activityBool: true,
+              agreementDoc: item,
+            },
+            () => {
+              this.uploadDocToServer(category)
+            }
+          )
         } else {
-          this.setState({
-            checkListDoc: item,
-          })
+          this.setState(
+            {
+              activityBool: true,
+              checkListDoc: item,
+            },
+            () => {
+              this.uploadDocToServer(category)
+            }
+          )
         }
       })
       .catch((error) => {
@@ -274,7 +286,6 @@ class LeadRCMPayment extends React.Component {
     if (category === 'agreement') data = that.state.agreementDoc
     else data = that.state.checkListDoc
     if (data) {
-      that.setState({ activityBool: true })
       let document = {
         name: data.name,
         type: 'file/' + data.name.split('.').pop(),
@@ -290,18 +301,46 @@ class LeadRCMPayment extends React.Component {
             // newDoc.uploaded = true
             this.setState({
               legalAgreement: newDoc,
+              activityBool: false,
             })
           } else {
             let newDoc = this.state.legalCheckList
             // newDoc.uploaded = true
             this.setState({
               legalCheckList: newDoc,
+              activityBool: false,
             })
           }
           helper.successToast('File Uploaded!')
           that.getSelectedProperty(that.state.lead)
         })
         .catch((error) => {
+          console.log('error=>', error.message)
+        })
+    }
+  }
+
+  deleteDoc = (data) => {
+    if (data) {
+      axios
+        .delete(`/api/leads/legaldocument?id=${data.id}`)
+        .then((res) => {
+          if (data.category === 'agreement') {
+            this.setState({
+              legalAgreement: null,
+              agreementDoc: null,
+            })
+          } else {
+            this.setState({
+              legalCheckList: null,
+              checkListDoc: null,
+            })
+          }
+          helper.successToast('File Deleted!')
+          this.getSelectedProperty(this.state.lead)
+        })
+        .catch((error) => {
+          helper.errorToast('File Not Deleted!')
           console.log('error=>', error.message)
         })
     }
@@ -1221,6 +1260,7 @@ class LeadRCMPayment extends React.Component {
       agreedNotZero,
       buyerNotZero,
       rentNotZero,
+      activityBool,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1327,6 +1367,7 @@ class LeadRCMPayment extends React.Component {
                   {lead.shortlist_id !== null ? (
                     lead.purpose === 'sale' ? (
                       <BuyPaymentView
+                        deleteDoc={this.deleteDoc}
                         uploadDocument={this.uploadDocument}
                         uploadDocToServer={this.uploadDocToServer}
                         legalAgreement={legalAgreement}
@@ -1359,9 +1400,11 @@ class LeadRCMPayment extends React.Component {
                         onPaymentLongPress={this.onPaymentLongPress}
                         tokenNotZero={tokenNotZero}
                         agreedNotZero={agreedNotZero}
+                        activityBool={activityBool}
                       />
                     ) : (
                       <RentPaymentView
+                        deleteDoc={this.deleteDoc}
                         uploadDocument={this.uploadDocument}
                         uploadDocToServer={this.uploadDocToServer}
                         agreementDoc={agreementDoc}
@@ -1398,6 +1441,7 @@ class LeadRCMPayment extends React.Component {
                         tokenNotZero={tokenNotZero}
                         agreedNotZero={agreedNotZero}
                         rentNotZero={rentNotZero}
+                        activityBool={activityBool}
                       />
                     )
                   ) : null}

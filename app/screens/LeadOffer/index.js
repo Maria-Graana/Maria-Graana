@@ -47,6 +47,9 @@ class LeadOffer extends React.Component {
       matchData: [],
       menuShow: false,
       showWarning: false,
+      customerNotZero: false,
+      sellerNotZero: false,
+      agreedNotZero: false,
     }
   }
 
@@ -134,7 +137,7 @@ class LeadOffer extends React.Component {
   handleForm = (value, name) => {
     const { leadData } = this.state
     leadData[name] = value
-    this.setState({ leadData })
+    this.setState({ leadData, agreedNotZero: false, sellerNotZero: false, customerNotZero: false })
   }
 
   fetchOffers = () => {
@@ -159,6 +162,12 @@ class LeadOffer extends React.Component {
     const { leadData, currentProperty } = this.state
     const { lead } = this.props
     if (leadData.customer && leadData.customer !== '') {
+      if (Number(leadData.customer) === 0) {
+        this.setState({
+          customerNotZero: true,
+        })
+        return
+      }
       let body = {
         offer: leadData.customer,
         type: 'customer',
@@ -179,6 +188,12 @@ class LeadOffer extends React.Component {
     const { leadData, currentProperty } = this.state
     const { lead } = this.props
     if (leadData.seller && leadData.seller !== '') {
+      if (Number(leadData.seller) === 0) {
+        this.setState({
+          sellerNotZero: true,
+        })
+        return
+      }
       let body = {
         offer: leadData.seller,
         type: 'seller',
@@ -398,6 +413,12 @@ class LeadOffer extends React.Component {
     const { leadData, currentProperty } = this.state
     const { lead } = this.props
     if (leadData.agreed && leadData.agreed !== '') {
+      if (Number(leadData.agreed) === 0) {
+        this.setState({
+          agreedNotZero: true,
+        })
+        return
+      }
       let body = {
         offer: leadData.agreed,
         type: 'agreed',
@@ -505,6 +526,9 @@ class LeadOffer extends React.Component {
       currentProperty,
       btnLoading,
       showWarning,
+      agreedNotZero,
+      sellerNotZero,
+      customerNotZero,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -588,6 +612,9 @@ class LeadOffer extends React.Component {
                   handleForm={this.handleForm}
                   disableButton={disableButton}
                   openModal={this.openChatModal}
+                  agreedNotZero={agreedNotZero}
+                  sellerNotZero={sellerNotZero}
+                  customerNotZero={customerNotZero}
                 />
               </View>
             ) : (

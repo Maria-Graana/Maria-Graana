@@ -51,6 +51,8 @@ class BuyPaymentView extends React.Component {
       onPaymentLongPress,
       tokenNotZero,
       agreedNotZero,
+      deleteDoc,
+      activityBool,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -125,6 +127,8 @@ class BuyPaymentView extends React.Component {
           agreementDoc={agreementDoc}
           legalAgreement={legalAgreement}
           downloadLegalDocs={downloadLegalDocs}
+          deleteDoc={deleteDoc}
+          activityBool={activityBool}
         />
         <DocTile
           title={'CheckList'}
@@ -134,6 +138,8 @@ class BuyPaymentView extends React.Component {
           checkListDoc={checkListDoc}
           legalCheckList={legalCheckList}
           downloadLegalDocs={downloadLegalDocs}
+          deleteDoc={deleteDoc}
+          activityBool={activityBool}
         />
 
         {

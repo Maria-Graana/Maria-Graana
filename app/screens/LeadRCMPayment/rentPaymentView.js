@@ -47,6 +47,8 @@ const RentPaymentView = (props) => {
     onPaymentLongPress,
     tokenNotZero,
     rentNotZero,
+    deleteDoc,
+    activityBool,
   } = props
   let property = currentProperty[0]
   let subRole =
@@ -103,6 +105,8 @@ const RentPaymentView = (props) => {
         agreementDoc={agreementDoc}
         legalAgreement={legalAgreement}
         downloadLegalDocs={downloadLegalDocs}
+        deleteDoc={deleteDoc}
+        activityBool={activityBool}
       />
       <DocTile
         title={'CheckList'}
@@ -112,6 +116,8 @@ const RentPaymentView = (props) => {
         checkListDoc={checkListDoc}
         legalCheckList={legalCheckList}
         downloadLegalDocs={downloadLegalDocs}
+        deleteDoc={deleteDoc}
+        activityBool={activityBool}
       />
 
       <View style={[AppStyles.mainInputWrap]}>

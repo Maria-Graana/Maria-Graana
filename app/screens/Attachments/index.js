@@ -95,7 +95,6 @@ class Attachments extends Component {
     axios
       .get(url)
       .then((response) => {
-        console.log('response.data: ', response.data)
         this.setState({
           attachmentRows: response.data,
           formData: { title: '', fileName: '', size: '', uri: '' },
@@ -198,7 +197,6 @@ class Attachments extends Component {
       let fileUri = FileSystem.documentDirectory + doc.fileName
       FileSystem.downloadAsync(doc.value, fileUri)
         .then(({ uri }) => {
-          console.log('uri: ', uri)
           this.saveFile(uri, doc)
         })
         .catch((error) => {
@@ -233,7 +231,6 @@ class Attachments extends Component {
 
   // *******  View Legal Documents  *************
   viewAttachments = (data) => {
-    console.log(data)
     this.setState({
       showDoc: true,
       docUrl: data.value,

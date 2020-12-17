@@ -97,7 +97,7 @@ class AddTokenModal extends React.Component {
                 name={'details'}
                 fromatName={false}
                 placeholder={'Details'}
-                label={'DETIALS'}
+                label={'DETAILS'}
                 value={formData.details != '' ? formData.details : ''}
                 formatValue={''}
                 editable={true}

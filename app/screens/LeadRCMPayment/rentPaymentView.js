@@ -3,7 +3,7 @@
 import moment from 'moment'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
-import {CheckBox} from 'native-base';
+import { CheckBox } from 'native-base'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import CommissionTile from '../../components/CommissionTile'
@@ -11,6 +11,7 @@ import DocTile from '../../components/DocTile'
 import InputField from '../../components/InputField'
 import PickerComponent from '../../components/Picker'
 import Ability from '../../hoc/Ability'
+import ErrorMessage from '../../components/ErrorMessage'
 import styles from './styles'
 
 const RentPaymentView = (props) => {
@@ -44,6 +45,8 @@ const RentPaymentView = (props) => {
     legalCheckList,
     downloadLegalDocs,
     onPaymentLongPress,
+    tokenNotZero,
+    rentNotZero,
   } = props
   let property = currentProperty[0]
   let subRole =
@@ -91,7 +94,7 @@ const RentPaymentView = (props) => {
         editable={!isLeadClosed}
         showDate={false}
       />
-
+      {rentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
       <DocTile
         title={'Signed Agreement'}
         uploadDocument={uploadDocument}
@@ -167,6 +170,7 @@ const RentPaymentView = (props) => {
         showDate={true}
         dateStatus={{ status: tokenDateStatus, name: 'token' }}
       />
+      {tokenNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
 
       {singleCommission && !buyer && !isLeadClosed ? (
         <TouchableOpacity
@@ -198,7 +202,7 @@ const RentPaymentView = (props) => {
           <CommissionTile
             data={buyer}
             editTile={editTile}
-            onPaymentLongPress={()=>onPaymentLongPress(buyer)}
+            onPaymentLongPress={() => onPaymentLongPress(buyer)}
             commissionEdit={!buyerCommission}
             title={buyer ? 'Buyer Commission Payment' : ''}
           />
@@ -256,7 +260,7 @@ const RentPaymentView = (props) => {
           <CommissionTile
             data={seller}
             commissionEdit={!sellerCommission}
-            onPaymentLongPress={()=>onPaymentLongPress(seller)}
+            onPaymentLongPress={() => onPaymentLongPress(seller)}
             editTile={editTile}
             title={'Seller Commission Payment'}
           />

@@ -9,4 +9,9 @@ export default styles = StyleSheet.create({
         resizeMode: 'contain',
         alignSelf: 'center',
     },
+    checkBox:{
+        width: 22, 
+        height: 22,
+        alignItems:'center',
+    },
 });

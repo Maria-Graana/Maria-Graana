@@ -15,5 +15,10 @@ export default styles = StyleSheet.create({
         color: AppStyles.colors.textColor, 
         fontSize: 18, 
         width: wp('80%') 
-     }
+     },
+     checkBox:{
+      width: 22, 
+      height: 22,
+      alignItems:'center',
+  },
 })

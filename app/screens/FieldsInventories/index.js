@@ -230,7 +230,7 @@ class FieldsInventories extends React.Component {
               }
             }}
             onEndReachedThreshold={0.5}
-            keyExtractor={(item, index) => this.setKey(index)}
+            keyExtractor={(item, index) => `${item.id}-${Math.random()}`}
           />
         ) : (
           <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />

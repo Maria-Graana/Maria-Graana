@@ -363,7 +363,7 @@ class DetailForm extends Component {
 
         {/* **************************************** */}
 
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableButton
             containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
             containerBackgroundColor={'white'}
@@ -378,21 +378,10 @@ class DetailForm extends Component {
               })
             }}
           />
-
-          {
-            formData.propsure_id &&
-            <Ionicons
-              name="ios-checkmark-circle-outline"
-              size={32}
-              color={AppStyles.colors.primaryColor}
-              style={{ marginHorizontal: 10 }}
-            />
-          }
-
-        </View>
-
-        <View style={AppStyles.latLngMain}>
+        </View> */}
           {/* **************************************** */}
+
+        {/* <View style={AppStyles.latLngMain}>
           <View
             style={[
               AppStyles.mainInputWrap,
@@ -411,13 +400,12 @@ class DetailForm extends Component {
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 keyboardType="numeric"
                 placeholder={'Latitude'}
-                editable={false}
               />
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
+          {/* <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
             <View style={[AppStyles.inputWrap]}>
               <TextInput
                 placeholderTextColor={'#a8a8aa'}
@@ -433,7 +421,7 @@ class DetailForm extends Component {
             </View>
           </View>
 
-        </View>
+        </View> */}
 
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
@@ -677,6 +665,52 @@ class DetailForm extends Component {
         ) : null}
 
         {showAdditional ? this._renderAdditionalView() : null}
+
+        <View style={AppStyles.latLngMain}>
+          {/* **************************************** */}
+          <View
+            style={[
+              AppStyles.mainInputWrap,
+              AppStyles.latLngInputWrap,
+              AppStyles.noMargin,
+              AppStyles.borderrightLat,
+            ]}
+          >
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                onChangeText={(text) => {
+                  handleForm(text, 'lat')
+                }}
+                value={latitude === null ? '' : String(latitude)}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                keyboardType="numeric"
+                placeholder={'Latitude'}
+              />
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin]}>
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                onChangeText={(text) => {
+                  handleForm(text, 'lon')
+                }}
+                value={longitude === null ? '' : String(longitude)}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                keyboardType="numeric"
+                placeholder={'Longitude'}
+              />
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <TouchableOpacity style={AppStyles.locationBtn} onPress={getCurrentLocation}>
+            <Image source={LocationImg} style={AppStyles.locationIcon} />
+          </TouchableOpacity>
+        </View>
 
         {/* **************************************** */}
         <Text style={AppStyles.mainInputWrap}>Owner Name</Text>

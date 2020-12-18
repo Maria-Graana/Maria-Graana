@@ -301,6 +301,7 @@ class DetailForm extends Component {
       handleWaterMark,
       showCustomTitle,
       showCustomTitleField,
+      getCurrentLocation,
     } = this.props
 
     const { size_unit } = this.props.formData
@@ -390,7 +391,7 @@ class DetailForm extends Component {
         </TouchableOpacity>
         {/* **************************************** */}
 
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableButton
             containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
             containerBackgroundColor={'white'}
@@ -405,10 +406,9 @@ class DetailForm extends Component {
               })
             }}
           />
-        </View>
+        </View> */}
 
-        <View style={AppStyles.latLngMain}>
-          {/* **************************************** */}
+        {/* <View style={AppStyles.latLngMain}>
           <View
             style={[
               AppStyles.mainInputWrap,
@@ -427,13 +427,12 @@ class DetailForm extends Component {
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 keyboardType="numeric"
                 placeholder={'Latitude'}
-                editable={false}
               />
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
+          {/* <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
             <View style={[AppStyles.inputWrap]}>
               <TextInput
                 placeholderTextColor={'#a8a8aa'}
@@ -447,7 +446,7 @@ class DetailForm extends Component {
                 editable={false}
               />
             </View>
-          </View>
+          </View> */}
 
           {/* **************************************** */}
           {/* <TouchableOpacity style={AppStyles.locationBtn} onPress={() =>  { this.props.navigation.navigate('MapContainer',{
@@ -455,7 +454,7 @@ class DetailForm extends Component {
           })}}>
             <Image source={LocationImg} style={AppStyles.locationIcon} />
           </TouchableOpacity> */}
-        </View>
+        {/* </View> */}
 
         {/* **************************************** */}
         <View style={AppStyles.multiFormInput}>
@@ -676,6 +675,52 @@ class DetailForm extends Component {
         ) : null}
 
         {showAdditional ? this._renderAdditionalView() : null}
+
+        <View style={AppStyles.latLngMain}>
+          {/* **************************************** */}
+          <View
+            style={[
+              AppStyles.mainInputWrap,
+              AppStyles.latLngInputWrap,
+              AppStyles.noMargin,
+              AppStyles.borderrightLat,
+            ]}
+          >
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                onChangeText={(text) => {
+                  handleForm(text, 'lat')
+                }}
+                value={latitude === null ? '' : String(latitude)}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                keyboardType="numeric"
+                placeholder={'Latitude'}
+              />
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin]}>
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                onChangeText={(text) => {
+                  handleForm(text, 'lng')
+                }}
+                value={longitude === null ? '' : String(longitude)}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                keyboardType="numeric"
+                placeholder={'Longitude'}
+              />
+            </View>
+          </View>
+
+          {/* **************************************** */}
+          <TouchableOpacity style={AppStyles.locationBtn} onPress={getCurrentLocation}>
+            <Image source={LocationImg} style={AppStyles.locationIcon} />
+          </TouchableOpacity>
+        </View>
 
 
         {/* **************************************** */}

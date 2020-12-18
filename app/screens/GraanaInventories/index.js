@@ -72,7 +72,7 @@ class GraanaInventories extends React.Component {
 
 	getPropertyGraanaListing = () => {
 		const { propertiesList, page, pageSize } = this.state;
-		const url = `/api/inventory/all?propType=graana`
+		const url = `/api/inventory/all?propType=graana&pageSize=${pageSize}&page=${page}`
 		axios.get(url).then((response) => {
 			if (response.status == 200) {
 				this.setState({

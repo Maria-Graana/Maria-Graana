@@ -433,7 +433,7 @@ class EditFieldAppProperty extends Component {
         if (route.params.update) {
             // this.updateMapLocation(property, formData).then((data => {
                 // if (data) {
-                    axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, data)
+                    axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, formData)
                         .then((res) => {
                             if (res.status === 200) {
                                 helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')

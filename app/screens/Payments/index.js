@@ -81,7 +81,7 @@ class Payments extends Component {
       // 		:
       // 		false
       // 	: true,
-      firstScreenDone: lead.unit != null ? false : true,
+      firstScreenDone: lead.unit != null && lead.unit.id != null ? false : true,
       secondScreenData: lead,
       addPaymentModalToggleState: false,
       secondCheckValidation: false,

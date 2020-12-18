@@ -87,14 +87,15 @@ class AddInventory extends Component {
 
 
     componentDidMount() {
-        const { route, navigation, user } = this.props;
+        const {navigation} = this.props;
         navigation.addListener('focus', () => {
+            const { route, user } = this.props;
             this.onScreenFocused()
+            if (route.params.update) {
+                navigation.setOptions({ title: 'EDIT PROPERTY' })
+                this.setEditValues()
+            }
         })
-        if (route.params.update) {
-            navigation.setOptions({ title: 'EDIT PROPERTY' })
-            this.setEditValues()
-        }
     }
 
     componentDidUpdate(prevProps, prevState) {

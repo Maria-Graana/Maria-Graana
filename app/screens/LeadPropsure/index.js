@@ -105,7 +105,7 @@ class LeadPropsure extends React.Component {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
-      MediaLibrary.createAlbumAsync('Download', asset, false).then((res) => {
+      MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
         helper.successToast('File Downloaded!')
         FileSystem.getContentUriAsync(fileUri).then((cUri) => {
           let fileType = doc.fileName.split('.').pop()

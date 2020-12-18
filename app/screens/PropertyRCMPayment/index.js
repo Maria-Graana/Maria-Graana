@@ -290,7 +290,7 @@ class PropertyRCMPayment extends React.Component {
     const { token } = this.state
     const { lead } = this.state
     let payload = Object.create({})
-    if (Number(token) === 0) {
+    if (Number(token) <= 0) {
       this.setState({ tokenNotZero: true })
       return
     }
@@ -318,7 +318,7 @@ class PropertyRCMPayment extends React.Component {
     const { agreedAmount } = this.state
     const { lead } = this.state
     let payload = Object.create({})
-    if (Number(agreedAmount) === 0) {
+    if (Number(agreedAmount) <= 0) {
       this.setState({ agreedNotZero: true })
       return
     }
@@ -646,7 +646,7 @@ class PropertyRCMPayment extends React.Component {
       this.setState({
         addPaymentLoading: true,
       })
-      if (Number(rcmPayment.installmentAmount) === 0) {
+      if (Number(rcmPayment.installmentAmount) <= 0) {
         this.setState({ buyerNotZero: true, addPaymentLoading: false })
         return
       }

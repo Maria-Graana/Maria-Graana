@@ -162,7 +162,7 @@ class LeadOffer extends React.Component {
     const { leadData, currentProperty } = this.state
     const { lead } = this.props
     if (leadData.customer && leadData.customer !== '') {
-      if (Number(leadData.customer) === 0) {
+      if (Number(leadData.customer) <= 0) {
         this.setState({
           customerNotZero: true,
         })
@@ -188,7 +188,7 @@ class LeadOffer extends React.Component {
     const { leadData, currentProperty } = this.state
     const { lead } = this.props
     if (leadData.seller && leadData.seller !== '') {
-      if (Number(leadData.seller) === 0) {
+      if (Number(leadData.seller) <= 0) {
         this.setState({
           sellerNotZero: true,
         })
@@ -413,7 +413,7 @@ class LeadOffer extends React.Component {
     const { leadData, currentProperty } = this.state
     const { lead } = this.props
     if (leadData.agreed && leadData.agreed !== '') {
-      if (Number(leadData.agreed) === 0) {
+      if (Number(leadData.agreed) <= 0) {
         this.setState({
           agreedNotZero: true,
         })

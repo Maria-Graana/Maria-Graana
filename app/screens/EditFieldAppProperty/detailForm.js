@@ -87,7 +87,7 @@ class DetailForm extends Component {
           >
             <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
-              style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
+              style={styles.checkBox}
               checked={selectedFeatures.includes(item) ? true : false} />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
@@ -148,7 +148,7 @@ class DetailForm extends Component {
           >
             <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
-              style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
+              style={styles.checkBox}
               checked={selectedFeatures.includes(item) ? true : false} />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
@@ -168,7 +168,7 @@ class DetailForm extends Component {
           >
             <CheckBox color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
-              style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
+              style={styles.checkBox}
               checked={selectedFeatures.includes(item) ? true : false} />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
@@ -365,10 +365,12 @@ class DetailForm extends Component {
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableButton
-            containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: formData.propsure_id ? '90%' : '100%' }]}
+            containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
             containerBackgroundColor={'white'}
             textColor={AppStyles.colors.primaryColor}
             label={formData.propsure_id ? 'GEO TAGGED (BETA)' : 'GEO TAGGING (BETA)'}
+            iconName="ios-checkmark-circle-outline"
+            showIcon={ formData.propsure_id ? true: false}
             onPress={() => {
               this.props.navigation.navigate('MapContainer', {
                 mapValues: { lat: formData.lat, lng: formData.lon, propsure_id: formData.propsure_id },
@@ -455,7 +457,7 @@ class DetailForm extends Component {
           <CheckBox
             color={AppStyles.colors.primaryColor}
             checked={formData.show_address ? true : false}
-            style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
+            style={styles.checkBox}
             onPress={() => handleShowAddress(!formData.show_address)}
           />
           <Text style={{ marginHorizontal: 15 }}>Show Address on Listing</Text>
@@ -759,7 +761,7 @@ class DetailForm extends Component {
           <CheckBox
             color={AppStyles.colors.primaryColor}
             checked={formData.showWaterMark ? true : false}
-            style={Platform.OS === 'android' ? styles.checkBox : styles.checkBoxMargin}
+            style={styles.checkBox}
             onPress={() => handleWaterMark(!formData.showWaterMark)}
           />
           <Text style={{ marginHorizontal: 15 }}>Show Watermark on Images</Text>

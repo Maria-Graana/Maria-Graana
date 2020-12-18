@@ -81,7 +81,7 @@ class Payments extends Component {
       // 		:
       // 		false
       // 	: true,
-      firstScreenDone: lead.unit != null ? false : true,
+      firstScreenDone: lead.unit != null && lead.unit.id != null ? false : true,
       secondScreenData: lead,
       addPaymentModalToggleState: false,
       secondCheckValidation: false,
@@ -827,7 +827,7 @@ class Payments extends Component {
       this.setState({
         addPaymentLoading: true,
       })
-      if (Number(secondFormData.installmentAmount) === 0) {
+      if (Number(secondFormData.installmentAmount) <= 0) {
         this.setState({
           paymentNotZero: true,
           addPaymentLoading: false,
@@ -1087,7 +1087,7 @@ class Payments extends Component {
 
   tokenModalToggle = (status) => {
     const { formData } = this.state
-    if (formData.token && Number(formData.token) === 0) {
+    if (formData.token && Number(formData.token) <= 0) {
       this.setState({
         tokenNotZero: true,
       })

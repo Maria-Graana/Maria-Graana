@@ -131,7 +131,7 @@ class BuyPaymentView extends React.Component {
           activityBool={activityBool}
         />
         <DocTile
-          title={'CheckList'}
+          title={'Legal Process Checklist'}
           uploadDocument={uploadDocument}
           category={'checklist'}
           uploadDocToServer={uploadDocToServer}
@@ -154,7 +154,7 @@ class BuyPaymentView extends React.Component {
                 color={AppStyles.colors.primaryColor}
                 checked={commissionNotApplicableBuyer ? true : false}
                 onPress={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
-                style={{ marginRight: 15 }}
+                style={styles.checkBox}
               />
               <Text
                 style={{
@@ -215,7 +215,7 @@ class BuyPaymentView extends React.Component {
                 color={AppStyles.colors.primaryColor}
                 checked={commissionNotApplicableSeller ? true : false}
                 onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
-                style={{ marginRight: 15 }}
+                style={styles.checkBox}
               />
               <Text
                 style={{

@@ -78,6 +78,7 @@ class AreaPickerScreen extends React.Component {
                         checked={this.setStatus(item)}
                         color={AppStyles.colors.primaryColor}
                         onPress={() => this.setSelectedArea(item)}
+                        style={styles.checkBox}
                     />
                 </View>
             </TouchableOpacity>

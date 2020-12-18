@@ -16,9 +16,7 @@ class ViewDocs extends React.Component {
 
     return (
       <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
-        <SafeAreaView
-          style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}
-        >
+        <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
           <AntDesign
             style={styles.closeStyle}
             onPress={closeModal}
@@ -33,12 +31,12 @@ class ViewDocs extends React.Component {
               source={{
                 uri: url,
               }}
-              resizeMode={'center'}
               style={{
                 flex: 1,
                 alignSelf: 'center',
                 height: 350,
                 width: 350,
+                resizeMode: 'contain',
               }}
             />
           )}

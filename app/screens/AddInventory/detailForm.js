@@ -395,7 +395,7 @@ class DetailForm extends Component {
             containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: formData.propsure_id ? '90%' : '100%' }]}
             containerBackgroundColor={'white'}
             textColor={AppStyles.colors.primaryColor}
-            label={ formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
+            label={ formData.propsure_id ? 'GEO TAGGED (BETA)' : 'GEO TAGGING (BETA)'}
             onPress={() => {
               this.props.navigation.navigate('MapContainer', {
                 mapValues: { lat: formData.lat, lng: formData.lng, propsure_id: formData.propsure_id },

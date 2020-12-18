@@ -62,7 +62,7 @@ class FieldsInventories extends React.Component {
 
   getPropertyGraanaListing = () => {
     const { propertiesList, page, pageSize } = this.state
-    const url = `/api/inventory/all?propType=fields`
+    const url = `/api/inventory/all?propType=fields&pageSize=${pageSize}&page=${page}`
     axios
       .get(url)
       .then((response) => {
@@ -73,7 +73,7 @@ class FieldsInventories extends React.Component {
             totalProperties: response.data.count,
             onEndReachedLoader: false,
             loading: false,
-          })
+          });
         }
       })
       .catch((error) => {

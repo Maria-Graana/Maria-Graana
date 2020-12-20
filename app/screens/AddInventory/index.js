@@ -131,13 +131,12 @@ class AddInventory extends Component {
             copyObject.area_id = selectedArea.value;
             this.setState({ formData: copyObject, selectedArea })
         }
-        // if (mapValues) {
-        //     copyObject.propsure_id = mapValues.propsure_id;
-        //     copyObject.lat = mapValues.lat;
-        //     copyObject.lng = mapValues.lng;
-        //     this.setState({ formData: copyObject })
-
-        // }
+        if (mapValues) {
+            copyObject.propsure_id = mapValues.propsure_id;
+            copyObject.lat = mapValues.lat;
+            copyObject.lng = mapValues.lng;
+            this.setState({ formData: copyObject })
+        }
     }
 
     clearAreaOnCityChange = () => {
@@ -327,9 +326,9 @@ class AddInventory extends Component {
         delete formData.year_built;
         delete formData.downpayment;
         if (route.params.update) {
-            // this.updateMapLocation(property, formData).then((data => {
-                // if (data) {
-                    axios.patch(`/api/inventory/${property.id}`, formData)
+            this.updateMapLocation(property, formData).then((data => {
+                if (data) {
+                    axios.patch(`/api/inventory/${property.id}`, data)
                         .then((res) => {
                             if (res.status === 200) {
                                 helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
@@ -350,15 +349,14 @@ class AddInventory extends Component {
                         .finally(() => {
                             this.setState({ loading: false })
                         })
-            //     }
-            //     else {
-            //         helper.errorToast('ERROR: UPDATING MAP LOCATION');
-            //         this.setState({ loading: false })
-            //     }
-            // }));
+                }
+                else {
+                    helper.errorToast('ERROR: UPDATING MAP LOCATION');
+                    this.setState({ loading: false })
+                }
+            }));
         }
         else {
-            //console.log(formData)
             axios.post(`/api/inventory/create`, formData)
                 .then((res) => {
                     // console.log(res.data)

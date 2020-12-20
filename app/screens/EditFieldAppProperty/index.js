@@ -131,12 +131,12 @@ class EditFieldAppProperty extends Component {
             copyObject.area_id = selectedArea.value;
             this.setState({ formData: copyObject, selectedArea })
         }
-        // if (mapValues) {
-        //     copyObject.propsure_id = mapValues.propsure_id;
-        //     copyObject.lat = mapValues.lat;
-        //     copyObject.lon = mapValues.lng;
-        //     this.setState({ formData: copyObject })
-        // }
+        if (mapValues) {
+            copyObject.propsure_id = mapValues.propsure_id;
+            copyObject.lat = mapValues.lat;
+            copyObject.lon = mapValues.lng;
+            this.setState({ formData: copyObject })
+        }
     }
 
     clearAreaOnCityChange = () => {
@@ -431,9 +431,9 @@ class EditFieldAppProperty extends Component {
         delete formData.grade;
 
         if (route.params.update) {
-            // this.updateMapLocation(property, formData).then((data => {
-                // if (data) {
-                    axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, formData)
+            this.updateMapLocation(property, formData).then((data => {
+                if (data) {
+                    axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, data)
                         .then((res) => {
                             if (res.status === 200) {
                                 helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
@@ -454,12 +454,12 @@ class EditFieldAppProperty extends Component {
                         .finally(() => {
                             this.setState({ loading: false })
                         })
-                // }
-                // else {
-                //     helper.errorToast('ERROR: UPDATING MAP LOCATION');
-                //     this.setState({ loading: false })
-                // }
-            // }));
+                }
+                else {
+                    helper.errorToast('ERROR: UPDATING MAP LOCATION');
+                    this.setState({ loading: false })
+                }
+            }));
         }
     }
 

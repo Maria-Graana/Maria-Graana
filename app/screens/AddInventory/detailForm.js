@@ -391,14 +391,14 @@ class DetailForm extends Component {
         </TouchableOpacity>
         {/* **************************************** */}
 
-        {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableButton
             containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
             containerBackgroundColor={'white'}
             textColor={AppStyles.colors.primaryColor}
-            label={ formData.propsure_id ? 'GEO TAGGED (BETA)' : 'GEO TAGGING (BETA)'}
+            label={formData.propsure_id ? 'GEO TAGGED (BETA)' : 'GEO TAGGING (BETA)'}
             iconName="ios-checkmark-circle-outline"
-            showIcon={ formData.propsure_id ? true: false}
+            showIcon={formData.propsure_id ? true : false}
             onPress={() => {
               this.props.navigation.navigate('MapContainer', {
                 mapValues: { lat: formData.lat, lng: formData.lng, propsure_id: formData.propsure_id },
@@ -406,9 +406,9 @@ class DetailForm extends Component {
               })
             }}
           />
-        </View> */}
+        </View>
 
-        {/* <View style={AppStyles.latLngMain}>
+        <View style={AppStyles.latLngMain}>
           <View
             style={[
               AppStyles.mainInputWrap,
@@ -429,10 +429,10 @@ class DetailForm extends Component {
                 placeholder={'Latitude'}
               />
             </View>
-          </View> */}
+          </View>
 
           {/* **************************************** */}
-          {/* <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
+          <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
             <View style={[AppStyles.inputWrap]}>
               <TextInput
                 placeholderTextColor={'#a8a8aa'}
@@ -446,15 +446,8 @@ class DetailForm extends Component {
                 editable={false}
               />
             </View>
-          </View> */}
-
-          {/* **************************************** */}
-          {/* <TouchableOpacity style={AppStyles.locationBtn} onPress={() =>  { this.props.navigation.navigate('MapContainer',{
-            setvalue: handleForm
-          })}}>
-            <Image source={LocationImg} style={AppStyles.locationIcon} />
-          </TouchableOpacity> */}
-        {/* </View> */}
+          </View>
+        </View>
 
         {/* **************************************** */}
         <View style={AppStyles.multiFormInput}>
@@ -675,53 +668,6 @@ class DetailForm extends Component {
         ) : null}
 
         {showAdditional ? this._renderAdditionalView() : null}
-
-        <View style={AppStyles.latLngMain}>
-          {/* **************************************** */}
-          <View
-            style={[
-              AppStyles.mainInputWrap,
-              AppStyles.latLngInputWrap,
-              AppStyles.noMargin,
-              AppStyles.borderrightLat,
-            ]}
-          >
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput
-                placeholderTextColor={'#a8a8aa'}
-                onChangeText={(text) => {
-                  handleForm(text, 'lat')
-                }}
-                value={latitude === null ? '' : String(latitude)}
-                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                keyboardType="numeric"
-                placeholder={'Latitude'}
-              />
-            </View>
-          </View>
-
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.latLngInputWrap, AppStyles.noMargin]}>
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput
-                placeholderTextColor={'#a8a8aa'}
-                onChangeText={(text) => {
-                  handleForm(text, 'lng')
-                }}
-                value={longitude === null ? '' : String(longitude)}
-                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                keyboardType="numeric"
-                placeholder={'Longitude'}
-              />
-            </View>
-          </View>
-
-          {/* **************************************** */}
-          <TouchableOpacity style={AppStyles.locationBtn} onPress={getCurrentLocation}>
-            <Image source={LocationImg} style={AppStyles.locationIcon} />
-          </TouchableOpacity>
-        </View>
-
 
         {/* **************************************** */}
         <TouchableInput

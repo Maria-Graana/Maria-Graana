@@ -406,7 +406,7 @@ class RCMReport extends React.Component {
     if (filterLabel === 'Weekly') {
       this.updateWeekDay(day)
     } else {
-      let newDate = moment(dateString).format(_format)
+      let newDate = moment(dateString).format('LL')
       this.setState(
         {
           selectedDate: newDate,

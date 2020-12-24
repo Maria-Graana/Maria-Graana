@@ -34,7 +34,7 @@ const { width, height } = Dimensions.get('screen')
 
 const ASPECT_RATIO = width / height
 
-const height_factor_level1 = Platform.OS === 'ios' ? 0.87 : 0.870899
+const height_factor_level1 = Platform.OS === 'ios' ? 0.87 : 0.84899
 const height_factor_level2 = Platform.OS === 'ios' ? 0.719 : 0.719
 // const latitudeDelta = 0.035
 // const longitudeDelta = 0.035
@@ -284,9 +284,11 @@ class MapContainer extends Component {
       .get(`${config.mapUrl}phase-sector?housingSchemeId=${housingSchemeId}&&secure=true`)
       .then((resp) => {
         const data = resp.data
-        // if(data.length < 0){
-        //   this.fetchBlockSubsectorByHousingScheme(housingSchemeId)
-        // }
+        if(data.length <= 0){
+          //console.log('Phase sectors : ', data)
+
+          this.fetchBlockSubsectorByHousingScheme(housingSchemeId)
+        }
         this.setState({
           phase_sectors: data,
         })
@@ -325,24 +327,31 @@ class MapContainer extends Component {
     )
     const data = resp.data
     //console.log('Block Subsector data : ', data)
-    this.setState({
-      block_subsectors: data,
-    })
-
+    
     if (data.length <= 0) {
       this.fetchPlotsByPhaseSector(phaseSectorId)
+    } else {
+      this.setState({
+        block_subsectors: data,
+      })
     }
   }
 
-  // fetchBlockSubsectorByHousingScheme = async(housingSchemeId) => {
-  //   console.log('Housing scheme Id : ', housingSchemeId)
-  //   const resp = await axios.get(
-  //     `${config.mapUrl}block-subsector?housingSchemeId=${housingSchemeId}&&secure=true`
-  //   )
-  //   const data = resp.data
-  //   console.log('Block Subsector data : ', data)
-    
-  // }
+  fetchBlockSubsectorByHousingScheme = async(housingSchemeId) => {
+    console.log('Housing scheme Id : ', housingSchemeId)
+    const resp = await axios.get(
+      `${config.mapUrl}block-subsector?housingSchemeId=${housingSchemeId}&&secure=true`
+    )
+    const data = resp.data
+    if (data.length <= 0) {
+      this.fetchPlotsByHousingScheme(housingSchemeId)
+    } else {
+      this.setState({
+        block_subsectors: data,
+      })
+    }
+    // console.log('Block Subsector data : ', data)
+  }
   onBlockSubsectorSelect = (item) => {
     const center = this.getCentroid(JSON.parse(item.geoData))
     // console.log('center : ', item.latLon.coordinates)
@@ -366,7 +375,38 @@ class MapContainer extends Component {
     })
     this.fetchPlotsByBlockSubsector(item.id)
   }
-
+  
+  fetchPlotsByHousingScheme = async (housingSchemeId) => {
+    this.setState({
+      loading_plots: true,
+    })
+    const resp = await axios.get(
+      `${config.mapUrl}plots?housingSchemeId=${housingSchemeId}&&secure=true`
+    )
+    const data = resp.data
+    if (data.length <= 0) {
+      this.setState({ plotsUnavailable: true })
+    } else {
+      let item = this.state.chosen_housing_scheme;
+      const center = this.getCentroid(JSON.parse(item.geoData))
+    // console.log('center : ', item.latLon.coordinates)
+      const region = {
+        latitude: center[0],
+        longitude: center[1],
+        longitudeDelta: 0.013112984597682953,
+        latitudeDelta: 0.019562198109447593,
+      }
+      mapRef.current.animateToRegion(region)
+      this.setPlotFeature(data)
+      this.setPlotMarkers(data)
+      this.setState({
+        plots: data,
+        plotsUnavailable: false,
+        loading_plots: false,
+        region,
+      })
+    }
+  }
   fetchPlotsByPhaseSector = async (phaseSectorId) => {
     this.setState({
       loading_plots: true,
@@ -407,6 +447,7 @@ class MapContainer extends Component {
       })
     }
   }
+
   onPlotSelect = (item) => {
     const center = this.getCentroid(JSON.parse(item.geoData))
     // console.log('center : ', item.latLon.coordinates)
@@ -943,7 +984,7 @@ class MapContainer extends Component {
                   fontSize: 18,
                 }}
               >
-                Loading Data...
+                Loading Plot Data...
               </Text>
             </View>
             <Button
@@ -964,8 +1005,10 @@ class MapContainer extends Component {
                   chosen_housing_scheme: '',
                   phase_sectors: '',
                   chosen_phase_sector: '',
+                  phase_sector_geometry:'',
                   block_subsectors: '',
                   chosen_block_subsector: '',
+                  block_subsector_geometry: '',
                   plots: '',
                   plot_geometry : '',
                   chosen_plot: '',
@@ -993,10 +1036,14 @@ class MapContainer extends Component {
                     housing_scheme_modal: true,
                     phase_sectors: '',
                     chosen_phase_sector: '',
+                    phase_sector_geometry: '',
                     block_subsectors: '',
                     chosen_block_subsector: '',
+                    block_subsector_geometry: '',
                     plots: '',
                     chosen_plot: '',
+                    plot_geometry: '', 
+                    plot_markers: '',
                   })
                 }}
               >
@@ -1013,37 +1060,40 @@ class MapContainer extends Component {
                   )}
               </TouchableOpacity>
             )}
-
             
           </View>
 
           {/** Level 2 search */}
-          {phase_sectors || block_subsectors || plots ? (
+          {chosen_housing_scheme ? (
             <View style={styles.inputStyleLevel2}>
-              {!!chosen_housing_scheme && (
-              <TouchableOpacity
-                onPress={() => {
-                  this.setState({
-                    phase_sector_modal: true,
-                    block_subsectors: '',
-                    chosen_block_subsector: '',
-                    plots: '',
-                    chosen_plot: '',
-                  })
-                }}
-              >
-                {chosen_phase_sector ? (
-                  <View>
-                    <Text style={styles.labelStyle}>{`${chosen_phase_sector.phase_sector_name} `} 
-                    <Ionicons name="ios-close-circle-outline" size={20} color="#0F73EE" /> | </Text>
-                  </View>
-                ) : (
-                  <View>
-                    <Text style={styles.promptStyle}>Phase/Sector</Text>
-                  </View>
-                  )}
-              </TouchableOpacity>
-            )}
+              {phase_sectors.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    this.setState({
+                      phase_sector_modal: true,
+                      block_subsectors: '', 
+                      block_subsector_geometry: '',
+                      chosen_block_subsector: '',
+                      plots: '',
+                      plot_markers : '',
+                      plot_geometry : '',
+                      chosen_plot: '',
+                    })
+                  }}
+                >
+                  {chosen_phase_sector ? (
+                    <View>
+                      <Text style={styles.labelStyle}>
+                        {chosen_phase_sector.phase_sector_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> |
+                      </Text> 
+                    </View>
+                  ) : (
+                    <View>
+                      <Text style={styles.promptStyle}>Phase/Sector</Text>
+                    </View>
+                    )}
+                </TouchableOpacity>
+              )}
               {block_subsectors.length > 0 && (
                 <TouchableOpacity
                   onPress={() => {
@@ -1055,13 +1105,13 @@ class MapContainer extends Component {
                   }}
                 >
                   {chosen_block_subsector ? (
-                    <View style={styles.commonPadding}>
+                    <View>
                       <Text style={styles.labelStyle}>
-                        {chosen_block_subsector.block_subsector_name} |
+                        {chosen_block_subsector.block_subsector_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> |
                       </Text>
                     </View>
                   ) : (
-                    <View style={styles.commonPadding}>
+                    <View>
                       <Text style={styles.promptStyle}>Block/Subsector</Text>
                     </View>
                     )}
@@ -1091,15 +1141,13 @@ class MapContainer extends Component {
               {!!plots && (
                 <TouchableOpacity
                 >
-                  {chosen_plot ? (
-                    <View>
-                      <Text style={styles.labelStyle}>{chosen_plot.Plot_No}</Text>
-                    </View>
-                  ) : (
-                    <View>
-                      <Text style={styles.promptStyle}>Select Plot</Text>
-                    </View>
-                    )}
+                  {
+                    !!chosen_plot && (
+                      <View>
+                        <Text style={styles.labelStyle}>{chosen_plot.Plot_No}</Text>
+                      </View>
+                    )
+                  }
                 </TouchableOpacity>
               )}
             </View>
@@ -1241,7 +1289,9 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
     borderColor: '#fff',
-    borderRadius: 12,
+    // borderRadius: 12,
+    borderTopLeftRadius : 12,
+    borderTopRightRadius : 12,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -1255,7 +1305,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     flexDirection: 'row',
     bottom: height * height_factor_level2,
-    //width: width * 0.9,
+    width: width * 0.912,
     height: 52,
     borderWidth: 1,
     marginLeft: 18,
@@ -1264,7 +1314,8 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
     borderColor: '#fff',
-    borderRadius: 12,
+    borderBottomLeftRadius : 12, 
+    borderBottomRightRadius : 12,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

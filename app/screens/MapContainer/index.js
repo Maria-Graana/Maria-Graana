@@ -13,12 +13,15 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
-  // FlatList,
+  FlatList,
   Platform,
   ScrollView,
   ActivityIndicator,
   Image
 } from 'react-native'
+import { AntDesign } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'; 
+
 import MapView, { Geojson, Polygon, Marker } from 'react-native-maps'
 import Modal from 'react-native-modal'
 //import { Button } from 'native-base';
@@ -26,35 +29,73 @@ import { connect } from 'react-redux'
 
 import { setAddPropertyParams } from '../../actions/property'
 import config from '../../config'
-const { width, height } = Dimensions.get('window')
+// import { FlatList } from 'react-native-gesture-handler'
+
+const { width, height } = Dimensions.get('screen')
 
 const ASPECT_RATIO = width / height
 
-const height_factor_level1 = Platform.OS === 'ios' ? 0.781 : 0.85
-const height_factor_level2 = Platform.OS === 'ios' ? 0.74 : 0.77
-// const latitudeDelta = 0.035
-// const longitudeDelta = 0.035
 
 const latitudeDelta = 0.12
 const longitudeDelta = latitudeDelta * ASPECT_RATIO
 
 const mapRef = React.createRef()
 
-// render feature layer for seached items
-// render points on top of plots (only that are not tagged)
-// on click of point open bottom sheet
-// separate screen for each list dropdown with a close button
-/**
- * --housing schemes
- * --phase sectors
- * --block subsector
- * --plots
- */
 
-const Item = ({ city_name }) => (
-  <View>
-    <Text style={{ color: '#000' }}>City : {city_name}</Text>
+const CityRenderItem = ({ item, onCitySelect }) => (
+  <View
+    key={item.id}
+    style={{
+      flex: 1,
+      padding: 10,
+    }}
+  >
+    <TouchableOpacity
+      onPress={() => {
+        onCitySelect(item)
+      }}
+    >
+      <View>
+        <Text style={{ fontSize: 18 }}> {item.city_name} </Text>
+      </View>
+    </TouchableOpacity>
   </View>
+)
+
+const HousingSchemeRenderItem = ({ item, onHousingSchemeSelect }) =>  (
+  <View
+    key={item.id}
+    style={{
+      flex: 1,
+      padding: 10,
+    }}
+  >
+    <TouchableOpacity
+      onPress={() => {
+        onHousingSchemeSelect(item)
+      }}
+    >
+      <View>
+        <Text style={{ fontSize: 18 }}> {item.housing_scheme_name} </Text>
+      </View>
+    </TouchableOpacity>
+  </View>
+)
+
+const PlotMarker = ({ id }) => (
+  <Image 
+    key={id}
+    source={require('../../../assets/img/marker_plot.png')}
+    style={{ height : 20, width : 20}}
+  />
+)
+
+const SelectedMarker = ({ id }) => (
+  <Image 
+    key={id}
+    source={require('../../../assets/img/marker_arms.png')}
+    style={{ height : 45, width : 45}}
+  />
 )
 
 class MapContainer extends Component {
@@ -192,7 +233,9 @@ class MapContainer extends Component {
             //console.log('city Tapped', item)
           }}
         >
-          <Text>{item.city_name}</Text>
+          <View>
+            <Text>{item.city_name}</Text>
+          </View>
         </TouchableOpacity>
 
         {/* <Text>{item.USD.symbol}</Text>
@@ -254,6 +297,7 @@ class MapContainer extends Component {
       housing_scheme_geometry,
     })
     this.fetchPhaseSector(item.id)
+    // this.fetchBlockSubsectorByHousingScheme(item.id)
   }
 
   fetchPhaseSector = async (housingSchemeId) => {
@@ -261,7 +305,11 @@ class MapContainer extends Component {
       .get(`${config.mapUrl}phase-sector?housingSchemeId=${housingSchemeId}&&secure=true`)
       .then((resp) => {
         const data = resp.data
-        //console.log('phase sectors data : ', data)
+        if(data.length <= 0){
+          //console.log('Phase sectors : ', data)
+
+          this.fetchBlockSubsectorByHousingScheme(housingSchemeId)
+        }
         this.setState({
           phase_sectors: data,
         })
@@ -276,10 +324,8 @@ class MapContainer extends Component {
     const region = {
       latitude: center[0],
       longitude: center[1],
-      // longitudeDelta: 0.013112984597682953,
-      // latitudeDelta: 0.019562198109447593,
-      longitudeDelta: 0.003221668303012848,
-      latitudeDelta: 0.0048059579422243814,
+      "latitudeDelta": 0.003141324497256903,
+      "longitudeDelta": 0.0022208693873437824,
     }
     mapRef.current.animateToRegion(region)
     this.setState({ region, phase_sector_modal: false, chosen_phase_sector: item })
@@ -302,13 +348,30 @@ class MapContainer extends Component {
     )
     const data = resp.data
     //console.log('Block Subsector data : ', data)
-    this.setState({
-      block_subsectors: data,
-    })
-
+    
     if (data.length <= 0) {
       this.fetchPlotsByPhaseSector(phaseSectorId)
+    } else {
+      this.setState({
+        block_subsectors: data,
+      })
     }
+  }
+
+  fetchBlockSubsectorByHousingScheme = async(housingSchemeId) => {
+    console.log('Housing scheme Id : ', housingSchemeId)
+    const resp = await axios.get(
+      `${config.mapUrl}block-subsector?housingSchemeId=${housingSchemeId}&&secure=true`
+    )
+    const data = resp.data
+    if (data.length <= 0) {
+      this.fetchPlotsByHousingScheme(housingSchemeId)
+    } else {
+      this.setState({
+        block_subsectors: data,
+      })
+    }
+    // console.log('Block Subsector data : ', data)
   }
   onBlockSubsectorSelect = (item) => {
     const center = this.getCentroid(JSON.parse(item.geoData))
@@ -333,7 +396,38 @@ class MapContainer extends Component {
     })
     this.fetchPlotsByBlockSubsector(item.id)
   }
-
+  
+  fetchPlotsByHousingScheme = async (housingSchemeId) => {
+    this.setState({
+      loading_plots: true,
+    })
+    const resp = await axios.get(
+      `${config.mapUrl}plots?housingSchemeId=${housingSchemeId}&&secure=true`
+    )
+    const data = resp.data
+    if (data.length <= 0) {
+      this.setState({ plotsUnavailable: true })
+    } else {
+      let item = this.state.chosen_housing_scheme;
+      const center = this.getCentroid(JSON.parse(item.geoData))
+    // console.log('center : ', item.latLon.coordinates)
+      const region = {
+        latitude: center[0],
+        longitude: center[1],
+        longitudeDelta: 0.013112984597682953,
+        latitudeDelta: 0.019562198109447593,
+      }
+      mapRef.current.animateToRegion(region)
+      this.setPlotFeature(data)
+      this.setPlotMarkers(data)
+      this.setState({
+        plots: data,
+        plotsUnavailable: false,
+        loading_plots: false,
+        region,
+      })
+    }
+  }
   fetchPlotsByPhaseSector = async (phaseSectorId) => {
     this.setState({
       loading_plots: true,
@@ -374,6 +468,7 @@ class MapContainer extends Component {
       })
     }
   }
+
   onPlotSelect = (item) => {
     const center = this.getCentroid(JSON.parse(item.geoData))
     // console.log('center : ', item.latLon.coordinates)
@@ -424,8 +519,6 @@ class MapContainer extends Component {
   }
 
   render() {
-    // console.log('Configs Map URL : ', config.mapUrl);
-    //const renderItem = ({ item }) => <Item title={item.city_name} />
     const {
       region,
       panding,
@@ -457,9 +550,6 @@ class MapContainer extends Component {
     } = this.state
 
     let {plot_markers} = this.state;
-    if(chosen_plot && plot_markers.length > 0) {
-      plot_markers = plot_markers.filter(plot => plot.id !== chosen_plot.id)
-    }
     return (
       <View style={styles.map}>
         <MapView
@@ -482,8 +572,7 @@ class MapContainer extends Component {
               strokeWidth={2}
               opacity={0}
               onPress={(e) => {
-                //e.stopPropagation()
-                //console.log('DAT GEOJSON')
+                
               }}
             />
           )}
@@ -546,22 +635,34 @@ class MapContainer extends Component {
               />
             ))}
 
-          {!!chosen_plot && (
+          {/* {!!chosen_plot && (
             <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }}> 
               <Image source={require('../../../assets/img/marker_arms.png')} style={{height: 45, width:45 }} />
             </Marker>
-          )}
+          )} */}
 
           {!!plot_markers && 
-            plot_markers.map((plot) => 
+            plot_markers.map((plot, index) => 
             (
               <Marker
-                key={plot.id + '_' + Date.now()}
+                key={index}
+                tracksViewChanges={false}
                 coordinate={{ latitude : plot.marker[0], longitude : plot.marker[1]}}
                 onPress = {() => {
                   this.onPlotSelect(plot)
                 }}
-              />
+              >
+                {chosen_plot.id !== plot.id ? 
+                  <PlotMarker 
+                      id={index}
+                  />
+                  :
+                  <SelectedMarker 
+                    id={plot.id}
+                  />
+                }
+              </Marker>
+                
             )
           )}
           
@@ -569,7 +670,14 @@ class MapContainer extends Component {
 
         <SafeAreaView>
           {/** City Modal */}
-          <Modal isVisible={this.state.city_modal} backdropOpacity={1.0} backdropColor="white">
+          <View style = {{ flex : 1}}>
+          <Modal 
+            useNativeDriver={true} 
+            isVisible={this.state.city_modal} 
+            backdropOpacity={1.0} 
+            backdropColor="white"
+            hideModalContentWhileAnimating={true}
+          >
             <View
               style={{
                 flex: 1,
@@ -577,38 +685,31 @@ class MapContainer extends Component {
               }}
             >
               <View style={{ padding: 10, marginTop: 46 }}>
-                <Text style={{ fontSize: 18, color: 'blue' }}>Choose City : </Text>
+                <Text style={{ fontSize: 24, color: '#0F73EE' }}>Choose City</Text>
               </View>
               <ScrollView style={{ flex: 1 }}>
                 {cities ? (
-                  cities.map((item) => {
-                    return (
-                      <View
-                        key={item.id}
-                        style={{
-                          flex: 1,
-                          padding: 10,
-                          // backgroundColor: 'red',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => {
-                            this.onCitySelect(item)
-                          }}
-                        >
-                          <Text style={{ fontSize: 22 }}> {item.city_name} </Text>
-                        </TouchableOpacity>
-                      </View>
-                    )
-                  })
+                  <FlatList 
+                    data={cities}
+                    renderItem={({ item }) => (
+                      <CityRenderItem 
+                        item={item}
+                        onCitySelect={this.onCitySelect}
+                      />
+                    )}
+                    keyExtractor={item => item.id}
+                  />
+
                 ) : (
-                    <ActivityIndicator />
+                    <ActivityIndicator 
+                      color = {'#0F73EE'}
+                      size={'large'}
+                    />
                   )}
+                
               </ScrollView>
               <Button
-                title="Hide modal"
+                title="Close"
                 onPress={() => {
                   this.setState({ city_modal: false })
                 }}
@@ -616,7 +717,13 @@ class MapContainer extends Component {
             </View>
           </Modal>
           {/** Housing Scheme Modal */}
-          <Modal isVisible={housing_scheme_modal} backdropOpacity={1.0} backdropColor="white">
+          <Modal 
+            useNativeDriver={true} 
+            isVisible={housing_scheme_modal} 
+            backdropOpacity={1.0} 
+            backdropColor="white"
+            hideModalContentWhileAnimating={true}
+          >
             <View
               style={{
                 flex: 1,
@@ -624,39 +731,36 @@ class MapContainer extends Component {
               }}
             >
               <View style={{ padding: 10, marginTop: 46 }}>
-                <Text style={{ fontSize: 18, color: 'blue' }}>Choose Housing Scheme : </Text>
+                <View style = {{
+                  flexDirection : 'row', 
+                  justifyContent : 'space-between'
+                }}>
+                  <View style={styles.modalLabelStyle}>
+                    <Text style = {{ fontSize : 18}}>{chosenCity.city_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> </Text>
+                  </View>
+                </View>
               </View>
               <ScrollView style={{ flex: 1 }}>
                 {housing_schemes ? (
-                  housing_schemes.map((item) => {
-                    return (
-                      <View
-                        key={item.id}
-                        style={{
-                          flex: 1,
-                          padding: 10,
-                          // backgroundColor: 'red',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => {
-                            // this.onCitySelect(item)
-                            this.onHousingSchemeSelect(item)
-                          }}
-                        >
-                          <Text style={{ fontSize: 22 }}> - {item.housing_scheme_name} </Text>
-                        </TouchableOpacity>
-                      </View>
-                    )
-                  })
+                  <FlatList
+                    data={housing_schemes}
+                    renderItem={({ item }) => (
+                      <HousingSchemeRenderItem 
+                        item={item}
+                        onHousingSchemeSelect={this.onHousingSchemeSelect}
+                      />
+                    )}
+                    keyExtractor={item => item.id}
+                  /> 
                 ) : (
-                    <ActivityIndicator />
+                    <ActivityIndicator 
+                      color = {'#0F73EE'}
+                      size={'large'}
+                    />
                   )}
               </ScrollView>
               <Button
-                title="Hide modal"
+                title="Close"
                 onPress={() => {
                   this.setState({ housing_scheme_modal: false })
                 }}
@@ -664,21 +768,37 @@ class MapContainer extends Component {
             </View>
           </Modal>
           {/**Phase Sector Modal */}
-          <Modal isVisible={phase_sector_modal} backdropOpacity={1.0} backdropColor="white">
+          <Modal
+            useNativeDriver={true} 
+            isVisible={phase_sector_modal} 
+            backdropOpacity={1.0} 
+            backdropColor="white"
+            hideModalContentWhileAnimating={true}
+          >
             <View
               style={{
                 flex: 1,
                 // backgroundColor : 'green'
-                justifyContent: 'center',
-                alignItems: 'center',
+                // justifyContent: 'center',
+                // alignItems: 'center',
               }}
             >
               <View style={{ padding: 10, marginTop: 46 }}>
+                <View style = {{
+                  flexDirection : 'row', 
+                  justifyContent : 'space-between'
+                }}>
+                  <View style={styles.modalLabelStyle}>
+                    <Text style = {{ fontSize : 18}}>{chosenCity.city_name}, {chosen_housing_scheme.housing_scheme_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> </Text>
+                  </View>
+                </View>
+              </View>
+              {/* <View style={styles.modalLabelStyle}>
                 <Text>
                   {chosenCity.city_name}, {chosen_housing_scheme.housing_scheme_name}
                 </Text>
-                <Text style={{ fontSize: 18, color: 'blue' }}>Choose Phase/Sector : </Text>
-              </View>
+                <Text style={{ fontSize: 18, color: 'blue' }}>Select Phase: </Text>
+              </View> */}
               <ScrollView style={{ flex: 1 }}>
                 {phase_sectors ? (
                   phase_sectors.map((item) => {
@@ -700,17 +820,22 @@ class MapContainer extends Component {
                             this.onPhaseSectorSelect(item)
                           }}
                         >
-                          <Text style={{ fontSize: 22 }}> {item.phase_sector_name} </Text>
+                          <View>
+                            <Text style={{ fontSize: 22 }}> {item.phase_sector_name} </Text>
+                          </View>
                         </TouchableOpacity>
                       </View>
                     )
                   })
                 ) : (
-                    <ActivityIndicator />
+                    <ActivityIndicator 
+                      color = {'#0F73EE'}
+                      size={'large'}
+                    />
                   )}
               </ScrollView>
               <Button
-                title="Hide modal"
+                title="Close"
                 onPress={() => {
                   this.setState({ phase_sector_modal: false })
                 }}
@@ -718,7 +843,13 @@ class MapContainer extends Component {
             </View>
           </Modal>
           {/**Block SubSector Modal */}
-          <Modal isVisible={block_subsector_modal} backdropOpacity={1.0} backdropColor="white">
+          <Modal 
+            useNativeDriver={true} 
+            isVisible={block_subsector_modal} 
+            backdropOpacity={1.0} 
+            backdropColor="white"
+            hideModalContentWhileAnimating={true}
+          >
             <View
               style={{
                 flex: 1,
@@ -726,12 +857,27 @@ class MapContainer extends Component {
               }}
             >
               <View style={{ padding: 10, marginTop: 46 }}>
+                <View style = {{
+                  flexDirection : 'row', 
+                  justifyContent : 'space-between'
+                }}>
+                  <View style={styles.modalLabelStyle}>
+                    <Text style = {{ fontSize : 18}}>
+                      {chosenCity.city_name}, 
+                      {chosen_housing_scheme.housing_scheme_name},
+                      {chosen_phase_sector.phase_sector_name} 
+                      <AntDesign name="rightcircle" size={18} color="#0F73EE" /> 
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              {/* <View style={{ padding: 10, marginTop: 46 }}>
                 <Text>
                   {chosenCity.city_name}, {chosen_housing_scheme.housing_scheme_name},
                   {chosen_phase_sector.phase_sector_name}
                 </Text>
                 <Text style={{ fontSize: 18, color: 'blue' }}>Choose Block/SubSector : </Text>
-              </View>
+              </View> */}
               <ScrollView style={{ flex: 1 }}>
                 {block_subsectors ? (
                   block_subsectors.map((item) => {
@@ -753,17 +899,22 @@ class MapContainer extends Component {
                             this.onBlockSubsectorSelect(item)
                           }}
                         >
-                          <Text style={{ fontSize: 22 }}> {item.block_subsector_name} </Text>
+                          <View>
+                            <Text style={{ fontSize: 22 }}> {item.block_subsector_name} </Text>
+                          </View>
                         </TouchableOpacity>
                       </View>
                     )
                   })
                 ) : (
-                    <ActivityIndicator />
+                    <ActivityIndicator 
+                      color = {'#0F73EE'}
+                      size={'large'}
+                    />
                   )}
               </ScrollView>
               <Button
-                title="Hide modal"
+                title="Close"
                 onPress={() => {
                   this.setState({ block_subsector_modal: false })
                 }}
@@ -771,7 +922,12 @@ class MapContainer extends Component {
             </View>
           </Modal>
 
-          <Modal isVisible={plots_modal} backdropOpacity={1.0} backdropColor="white">
+          <Modal 
+            useNativeDriver={true}
+            isVisible={plots_modal} 
+            backdropOpacity={1.0} 
+            backdropColor="white"
+          >
             <View
               style={{
                 flex: 1,
@@ -790,10 +946,10 @@ class MapContainer extends Component {
               </View>
               <ScrollView style={{ flex: 1 }}>
                 {plots ? (
-                  plots.map((item) => {
+                  plots.map((item, index) => {
                     return (
                       <View
-                        key={item.id}
+                        key={index}
                         style={{
                           flex: 1,
                           padding: 10,
@@ -809,17 +965,22 @@ class MapContainer extends Component {
                             this.onPlotSelect(item)
                           }}
                         >
-                          <Text style={{ fontSize: 22 }}> {item.Plot_No} </Text>
+                          <View>
+                            <Text style={{ fontSize: 22 }}> {item.Plot_No} </Text>
+                          </View>
                         </TouchableOpacity>
                       </View>
                     )
                   })
                 ) : (
-                    <ActivityIndicator />
+                    <ActivityIndicator 
+                      color = {'#0F73EE'}
+                      size={'large'}
+                    />
                   )}
               </ScrollView>
               <Button
-                title="Hide modal"
+                title="Close"
                 onPress={() => {
                   this.setState({ plots_modal: false })
                 }}
@@ -827,7 +988,12 @@ class MapContainer extends Component {
             </View>
           </Modal>
 
-          <Modal isVisible={loading_plots} backdropOpacity={0.5} backdropColor="white">
+          <Modal 
+            useNativeDriver={true} 
+            isVisible={loading_plots} 
+            backdropOpacity={0.5} 
+            backdropColor="white"
+          >
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <Text
                 style={{
@@ -835,7 +1001,7 @@ class MapContainer extends Component {
                   fontSize: 18,
                 }}
               >
-                Loading Data...
+                Loading Plot Data...
               </Text>
             </View>
             <Button
@@ -856,17 +1022,27 @@ class MapContainer extends Component {
                   chosen_housing_scheme: '',
                   phase_sectors: '',
                   chosen_phase_sector: '',
+                  phase_sector_geometry:'',
                   block_subsectors: '',
                   chosen_block_subsector: '',
+                  block_subsector_geometry: '',
                   plots: '',
+                  plot_geometry : '',
                   chosen_plot: '',
                 })
               }}
             >
               {chosenCity ? (
-                <Text style={styles.labelStyle}>{chosenCity.city_name} |</Text>
+                <View>
+                  <Text style={styles.labelStyle}>
+                    {chosenCity.city_name}  <AntDesign name="rightcircle" size={18} color="#0F73EE" /> | 
+                  </Text>
+
+                </View>
               ) : (
-                  <Text style={styles.promptStyle}>Select City</Text>
+                  <View>
+                    <Text style={styles.promptStyle}>Select City</Text>
+                  </View>
                 )}
             </TouchableOpacity>
 
@@ -877,108 +1053,116 @@ class MapContainer extends Component {
                     housing_scheme_modal: true,
                     phase_sectors: '',
                     chosen_phase_sector: '',
+                    phase_sector_geometry: '',
                     block_subsectors: '',
                     chosen_block_subsector: '',
+                    block_subsector_geometry: '',
                     plots: '',
                     chosen_plot: '',
+                    plot_geometry: '', 
+                    plot_markers: '',
                   })
                 }}
               >
                 {chosen_housing_scheme ? (
-                  <Text style={styles.labelStyle}>
-                    {chosen_housing_scheme.housing_scheme_name} |
-                  </Text>
+                  <View>
+                    <Text style={styles.labelStyle}>
+                      {`${chosen_housing_scheme.housing_scheme_name}`} <AntDesign name="rightcircle" size={18} color="#0F73EE" />
+                    </Text>
+                  </View>
                 ) : (
-                    <Text style={styles.promptStyle}>Select Housing Scheme</Text>
+                    <View>
+                      <Text style={styles.promptStyle}>Select Housing Scheme</Text>
+                    </View>
                   )}
               </TouchableOpacity>
             )}
 
-            {!!chosen_housing_scheme && (
+            {phase_sectors.length > 0 && (
               <TouchableOpacity
                 onPress={() => {
                   this.setState({
                     phase_sector_modal: true,
-                    block_subsectors: '',
+                    block_subsectors: '', 
+                    block_subsector_geometry: '',
                     chosen_block_subsector: '',
                     plots: '',
+                    plot_markers : '',
+                    plot_geometry : '',
                     chosen_plot: '',
                   })
                 }}
               >
                 {chosen_phase_sector ? (
-                  <Text style={styles.labelStyle}>{chosen_phase_sector.phase_sector_name} |</Text>
+                  <View>
+                    <Text style={styles.labelStyle}>
+                      {chosen_phase_sector.phase_sector_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> |
+                    </Text> 
+                  </View>
                 ) : (
+                  <View>
                     <Text style={styles.promptStyle}>Phase/Sector</Text>
+                  </View>
                   )}
+              </TouchableOpacity>
+            )}
+            {block_subsectors.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  this.setState({
+                    block_subsector_modal: true,
+                    plots: '',
+                    chosen_plot: '',
+                  })
+                }}
+              >
+                {chosen_block_subsector ? (
+                  <View>
+                    <Text style={styles.labelStyle}>
+                      {chosen_block_subsector.block_subsector_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> |
+                    </Text>
+                  </View>
+                ) : (
+                  <View>
+                    <Text style={styles.promptStyle}>Block/Subsector</Text>
+                  </View>
+                  )}
+              </TouchableOpacity>
+            )}
+
+            {!!plots && (
+              <TouchableOpacity
+              >
+                {
+                  !!chosen_plot && (
+                    <View>
+                      <Text style={styles.labelStyle}>{chosen_plot.Plot_No}</Text>
+                    </View>
+                  )
+                }
               </TouchableOpacity>
             )}
           </View>
 
-          {/** Level 2 search */}
-          {block_subsectors || plots ? (
-            <View style={styles.inputStyleLevel2}>
-              {block_subsectors.length > 0 && (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.setState({
-                      block_subsector_modal: true,
-                      plots: '',
-                      chosen_plot: '',
-                    })
-                  }}
-                >
-                  {chosen_block_subsector ? (
-                    <Text style={styles.labelStyle}>
-                      {chosen_block_subsector.block_subsector_name} |
-                    </Text>
-                  ) : (
-                      <Text style={styles.promptStyle}>Block/Subsector</Text>
-                    )}
-                </TouchableOpacity>
-              )}
-
-              {/* { */}
-
-              {/* {!!chosen_block_subsector && (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.setState({
-                      block_subsector_modal: true,
-                    })
-                  }}
-                >
-                  {chosen_block_subsector ? (
-                    <Text style={styles.labelStyle}>
-                      {chosen_block_subsector.block_subsector_name} |
-                    </Text>
-                  ) : (
-                    <Text style={styles.promptStyle}>Select Block/Subsector</Text>
-                  )}
-                </TouchableOpacity>
-              )} */}
-
-              {!!plots && (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.setState({
-                      plots_modal: true,
-                    })
-                  }}
-                >
-                  {chosen_plot ? (
-                    <Text style={styles.labelStyle}>{chosen_plot.Plot_No} |</Text>
-                  ) : (
-                      <Text style={styles.promptStyle}>Select Plot</Text>
-                    )}
-                </TouchableOpacity>
-              )}
-            </View>
-          ) : null}
-
           {!!chosen_plot && (
             <View style={styles.footer}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style = {{ 
+                alignItems : 'center',
+              }}>
+                <TouchableOpacity onPress = {() => {
+                  this.setState({
+                    chosen_plot : false
+                  })
+                }}>
+                  <View>
+                    <AntDesign name="downcircle" size={24} color="#0F73EE" />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={{ 
+                flexDirection: 'row', 
+                justifyContent: 'space-between',
+              }}>
                 <Text
                   style={{
                     ...styles.region,
@@ -989,24 +1173,10 @@ class MapContainer extends Component {
                   Plot # {chosen_plot.Plot_No}
                 </Text>
                 <View
-                  style={{
-                    marginRight: 32,
-                    // marginTop : 28,
-                    borderWidth: 1,
-                    borderColor: '#fff',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    //backgroundColor : '#ddd',
-                    //padding : 8,
-                    height: 48,
-                    width: 132,
-                    marginTop: 24,
-                    borderRadius: 32,
-                    // marginTop : 32
-                  }}
+                  style={styles.legalStatusStyle}
                 >
-                  <Text style={{ color: '#fff', fontSize: 18, fontWeight: '800' }}>
-                    {chosen_plot.Legal_Status}
+                  <Text style={{ color: '#fff', fontSize: 17, fontWeight: '800' }}>
+                    {chosen_plot.Legal_Status == 'Approved' ? 'Approved' : 'Unknown'}
                   </Text>
                 </View>
               </View>
@@ -1025,16 +1195,7 @@ class MapContainer extends Component {
                 }}
               >
                 <View
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: width * 0.88,
-                    backgroundColor: '#0F73EE',
-                    padding: 15,
-                    marginLeft: 24,
-                    marginTop: 18,
-                    borderRadius: 12,
-                  }}
+                  style={styles.buttonStyle}
                 >
                   <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>
                     MARK THIS PROPERTY
@@ -1044,6 +1205,7 @@ class MapContainer extends Component {
               {/* <Text style={styles.region}>{JSON.stringify(region, null, 2)}</Text> */}
             </View>
           )}
+          </View>
         </SafeAreaView>
       </View>
     )
@@ -1051,15 +1213,13 @@ class MapContainer extends Component {
 }
 
 export default MapContainer
-// export default connect((store) => {
-//   return {
-//     addPropertyParams: store.property.addPropertyParams,
-//   }
-// })(MapContainer)
 
 const styles = StyleSheet.create({
   map: {
     flex: 1,
+  },
+  commonPadding : {
+    padding : 5
   },
   modal: {
     flex: 1,
@@ -1079,6 +1239,46 @@ const styles = StyleSheet.create({
     top: '50%',
   },
 
+  modalLabelStyle : {
+    flexWrap: 'wrap',
+    backgroundColor : '#fff',
+    borderRadius : 32, 
+    paddingVertical: 6, 
+    paddingHorizontal: 15,
+    shadowColor: "#000",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+  },
+
+  buttonStyle : {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: width * 0.88,
+    backgroundColor: '#0F73EE',
+    padding: 15,
+    marginLeft: 16,
+    marginTop: 18,
+    borderRadius: 12,
+  },
+
+  legalStatusStyle : {
+    marginRight: 32,
+    
+    borderWidth: 1,
+    borderColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 42,
+    width: 132,
+    borderRadius: 32,
+  },
+
   isPanding: {
     marginTop: -64,
   },
@@ -1088,49 +1288,26 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     flexDirection: 'row',
-    bottom: height * height_factor_level1,
-    height: 52,
-    borderWidth: 1,
-    marginLeft: 18,
-    marginRight: 18,
-    marginTop: 18,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderColor: '#fff',
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 4.65,
-    elevation: 7,
-  },
-  inputStyleLevel2: {
     position: 'absolute',
-    flexDirection: 'row',
-    bottom: height * height_factor_level2,
-    width: width * 0.9,
-    height: 52,
-    borderWidth: 1,
-    marginLeft: 18,
-    marginRight: 18,
-    // marginTop: 18,
-    padding: 10,
     backgroundColor: '#fff',
-    borderColor: '#fff',
-    borderRadius: 12,
+    flexWrap: 'wrap',
+    flexShrink: -1,
+    bottom: height - 268,
+    width: '95%',
+    borderRadius : 12,
+    margin: 12, 
+    padding: 5, 
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 4.65,
+      height: 3
+    }, 
+    shadowOpacity: 0.29, 
+    shadowRadius: 4.65, 
     elevation: 7,
   },
   footer: {
+    padding : 10,
     backgroundColor: 'rgba(0, 0, 0, 0.80)',
     // backgroundColor: 'rgb(0, 0, 0)',
     bottom: 0,
@@ -1138,29 +1315,31 @@ const styles = StyleSheet.create({
     width: '100%',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    height: 250,
+    height: 240,
   },
   region: {
     color: '#fff',
     lineHeight: 28,
-    margin: 24,
+    marginLeft : 16,
   },
   promptStyle: {
-    fontSize: 16,
+    fontSize: 20,
     color: '#454F64',
-    marginTop: 4,
+    // marginTop: ,
+    padding: 5
   },
 
   labelStyle: {
-    fontSize: 16,
-    color: '#0F73EE',
-    marginTop: 4,
+    fontSize: 20,
+    color: '#000',
+    //marginTop: 4,
     fontWeight: 'bold',
+    padding: 5
   },
 
   plotInfoStyle: {
     color: '#fff',
-    marginLeft: 24,
+    marginLeft: 16,
     fontSize: 20,
     fontWeight: '600',
   },

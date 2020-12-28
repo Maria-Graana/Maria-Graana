@@ -13,7 +13,7 @@ const config = {
 	},
 	production: {
 		apiPath: 'https://apiarmsm.agency21.com.pk',
-		mapUrl : 'https://www.graana.com/map/',
+		mapUrl : 'https://www.graana.com/api/map/',
 		channel: 'production'
 	},
 };

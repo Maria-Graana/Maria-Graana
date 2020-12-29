@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.2.201",
+    "version": "1.2.203",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "splash": {
@@ -43,9 +43,6 @@
     "android": {
       "package": "com.agency21.arms",
       "googleServicesFile": "./google-services.json",
-      "config": {
-        "googleMaps": { "apiKey": "AIzaSyAn23x563AgxL5cANBS6wDNVjXeT7QCdJE" }
-        },
       "userInterfaceStyle": "automatic",
       "permissions": [
         "CAMERA",

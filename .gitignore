@@ -18,4 +18,5 @@ npm-debug.*
 ## Dependency directories ##
 ----------------------------
 /node_modules
+/.github
 

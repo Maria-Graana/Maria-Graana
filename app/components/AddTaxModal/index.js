@@ -12,7 +12,7 @@ import ErrorMessage from '../../components/ErrorMessage'
 import times from '../../../assets/img/times.png'
 import moment from 'moment'
 
-class AddPaymentModal extends React.Component {
+class AddTaxModal extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -21,14 +21,12 @@ class AddPaymentModal extends React.Component {
     const {
       active,
       secondHandleForm,
-      addPaymentModalToggle,
+      addTaxModalToggle,
       secondFormData,
       secondFormSubmit,
       secondCheckValidation,
       modalLoading,
       addPaymentLoading,
-      attechmentModalToggle,
-      formData,
       goToPayAttachments,
       secondFormLeadData,
       remarks,
@@ -43,11 +41,11 @@ class AddPaymentModal extends React.Component {
         <View style={[styles.modalMain]}>
           {modalLoading === false ? (
             <View style={styles.topHeader}>
-              <Text style={styles.headingText}>Enter Details</Text>
+              <Text style={styles.headingText}>Add Tax Details</Text>
               <TouchableOpacity
                 style={styles.timesBtn}
                 onPress={() => {
-                  addPaymentModalToggle(false)
+                  addTaxModalToggle(false)
                 }}
               >
                 <Image source={times} style={styles.timesImg} />
@@ -63,7 +61,7 @@ class AddPaymentModal extends React.Component {
                   name={'installmentAmount'}
                   fromatName={false}
                   placeholder={'Enter Amount'}
-                  label={'ENTER AMOUNT'}
+                  label={'ENTER TAX AMOUNT'}
                   value={
                     secondFormData.installmentAmount != null
                       ? secondFormData.installmentAmount
@@ -182,7 +180,7 @@ class AddPaymentModal extends React.Component {
                     <TouchableOpacity
                       style={[styles.bookedBtn, styles.reSubmitBtns, styles.cancelLight]}
                       onPress={() => {
-                        addPaymentModalToggle(false)
+                        addTaxModalToggle(false)
                       }}
                     >
                       {/* <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> */}
@@ -192,7 +190,7 @@ class AddPaymentModal extends React.Component {
                     <TouchableOpacity
                       style={[styles.bookedBtn, styles.reSubmitBtns, styles.reSubmitLight]}
                       onPress={() => {
-                        addPaymentLoading != true && secondFormSubmit('payment')
+                        addPaymentLoading != true && secondFormSubmit('tax')
                       }}
                     >
                       {/* <Image source={require('../../../assets/img/checkWhite.png')} style={styles.bookedBtnImage} /> */}
@@ -207,7 +205,7 @@ class AddPaymentModal extends React.Component {
                   <TouchableOpacity
                     style={styles.bookedBtn}
                     onPress={() => {
-                      addPaymentLoading != true && secondFormSubmit('payment')
+                      addPaymentLoading != true && secondFormSubmit('tax')
                     }}
                   >
                     {addPaymentLoading === false && (
@@ -234,4 +232,4 @@ class AddPaymentModal extends React.Component {
   }
 }
 
-export default AddPaymentModal
+export default AddTaxModal

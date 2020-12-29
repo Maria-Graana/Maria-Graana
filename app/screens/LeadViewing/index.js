@@ -71,6 +71,7 @@ class LeadViewing extends React.Component {
       .get(`/api/leads/${lead.id}/shortlist`)
       .then((res) => {
         matches = helper.propertyIdCheck(res.data.rows)
+        console.log(res.data.rows)
         this.setState({
           loading: false,
           matchData: matches,
@@ -414,6 +415,16 @@ class LeadViewing extends React.Component {
     }
   }
 
+  bookAnotherViewing = (property) => {
+    const { lead, user } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    console.log('property: ', property)
+    if (leadAssignedSharedStatus) {
+      this.openModal()
+      this.setProperty(property)
+    }
+  }
+
   doneViewing = (property) => {
     const { user } = this.props
     if (property.diaries.length) {
@@ -606,6 +617,7 @@ class LeadViewing extends React.Component {
                   <View style={{ marginVertical: 3 }}>
                     {this.ownProperty(item.item) ? (
                       <MatchTile
+                        bookAnotherViewing={this.bookAnotherViewing}
                         deleteProperty={this.deleteProperty}
                         cancelViewing={this.cancelViewing}
                         doneViewing={this.doneViewing}
@@ -623,6 +635,7 @@ class LeadViewing extends React.Component {
                       />
                     ) : (
                       <AgentTile
+                        bookAnotherViewing={this.bookAnotherViewing}
                         deleteProperty={this.deleteProperty}
                         cancelViewing={this.cancelViewing}
                         doneViewing={this.doneViewing}

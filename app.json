@@ -44,6 +44,9 @@
       "package": "com.agency21.arms",
       "googleServicesFile": "./google-services.json",
       "userInterfaceStyle": "automatic",
+      "config": {
+        "googleMaps": { "apiKey": "AIzaSyAn23x563AgxL5cANBS6wDNVjXeT7QCdJE" }
+        },
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",

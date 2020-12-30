@@ -391,7 +391,7 @@ class DetailForm extends Component {
         </TouchableOpacity>
         {/* **************************************** */}
 
-        {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableButton
             containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
             containerBackgroundColor={'white'}
@@ -406,7 +406,7 @@ class DetailForm extends Component {
               })
             }}
           />
-        </View> */}
+        </View>
 
         <View style={AppStyles.latLngMain}>
           <View
@@ -427,12 +427,13 @@ class DetailForm extends Component {
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 keyboardType="numeric"
                 placeholder={'Latitude'}
+                editable={false}
               />
             </View>
-          </View> */}
+          </View>
 
           {/* **************************************** */}
-          {/* <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
+          <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
             <View style={[AppStyles.inputWrap]}>
               <TextInput
                 placeholderTextColor={'#a8a8aa'}

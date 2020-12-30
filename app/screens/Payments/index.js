@@ -48,9 +48,10 @@ class Payments extends Component {
         unitType: '',
         pearlName: 'New Pearl',
         paymentTypeForToken: 'Token',
+        taxIncluded: true,
       },
       cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
-      secondFormData: { ...this.props.CMPayment },
+      secondFormData: { ...this.props.CMPayment, outstandingTax: lead.outstandingTax },
       unitId: null,
       unitPrice: null,
       checkPaymentPlan: {
@@ -687,6 +688,7 @@ class Payments extends Component {
           : formData.cnic.replace(/[^\w\s]/gi, ''),
       // cnic: formData.cnic,
       customerId: lead.customer.id,
+      taxIncluded: formData.taxIncluded
     }
     var leadId = []
     leadId.push(lead.id)
@@ -858,20 +860,20 @@ class Payments extends Component {
           .post(`/api/leads/project/payments`, body)
           .then((res) => {
             // ====================== If have attachments then this check will b execute
-            if(secondFormData.whichModalVisible === 'taxModal'){
+            if (secondFormData.whichModalVisible === 'taxModal') {
               this.submitAttachment(
                 res.data.id,
                 false,
                 remainingPayment
               )
-            }else{
+            } else {
               this.submitAttachment(
                 res.data.id,
                 false,
                 remainingPayment - secondFormData.installmentAmount
               )
             }
-            
+
           })
           .catch(() => {
             console.log('/api/leads/project/payments - Error', error)
@@ -902,7 +904,7 @@ class Payments extends Component {
             cmLeadId: this.props.lead.id,
           }
           delete body.remarks
-        }else{
+        } else {
           var body = {
             ...secondFormData,
             remainingPayment: total,
@@ -917,9 +919,9 @@ class Payments extends Component {
           .patch(`/api/leads/project/payment?id=${paymentId}`, body)
           .then((res) => {
             // ====================== If have attachments then this check will b execute
-            if(secondFormData.whichModalVisible === 'taxModal'){
+            if (secondFormData.whichModalVisible === 'taxModal') {
               this.submitAttachment(paymentId, true, remainingPayment)
-            }else{
+            } else {
               this.submitAttachment(paymentId, true, total)
             }
           })
@@ -942,6 +944,7 @@ class Payments extends Component {
   submitAttachment = (paymentId, checkForEdit, totalRemaining) => {
     const { secondFormData, remainingPayment } = this.state
     const { CMPayment } = this.props
+    const taxNotIncludeInRemainingPayment = secondFormData.whichModalVisible === 'taxModal'
     var message =
       checkForEdit === true
         ? 'Payment Updated'
@@ -968,7 +971,7 @@ class Payments extends Component {
               this.setState(
                 {
                   addPaymentModalToggleState: false,
-                  remainingPayment: remainingPayment - secondFormData.installmentAmount,
+                  remainingPayment: totalRemaining,
                   addPaymentLoading: false,
                   paymentRemarkVisible: false,
                 },
@@ -992,7 +995,7 @@ class Payments extends Component {
           this.setState(
             {
               addPaymentModalToggleState: false,
-              remainingPayment: remainingPayment - secondFormData.installmentAmount,
+              remainingPayment: totalRemaining,
               addPaymentLoading: false,
               paymentRemarkVisible: false,
             },
@@ -1061,8 +1064,8 @@ class Payments extends Component {
           installmentAmount: null,
           type: editLeadData.type,
           visible: true,
-          paymentCategory: editLeadData.paymentCategory === 'payment' ? 'paymentModal' : 'taxModal',
-          whichModalVisible: editLeadData.paymentCategory === 'payment' ? 'paymentModal' : 'taxModal',
+          paymentCategory: editLeadData.paymentCategory === 'taxModal' ? 'taxModal' : 'paymentModal',
+          whichModalVisible: editLeadData.paymentCategory === 'taxModal' ? 'taxModal' : 'paymentModal',
           taxIncluded: editLeadData.taxIncluded,
         }
         this.props.dispatch(setCMPaymennt(setValuesForRedux))
@@ -1073,8 +1076,8 @@ class Payments extends Component {
             cmLeadId: this.props.lead.id,
             details: editLeadData.details,
             remarks: editLeadData.remarks,
-            paymentCategory: editLeadData.paymentCategory === 'payment' ? 'paymentModal' : 'taxModal',
-            whichModalVisible: editLeadData.paymentCategory === 'payment' ? 'paymentModal' : 'taxModal',
+            paymentCategory: editLeadData.paymentCategory === 'tax' ? 'taxModal' : 'paymentModal',
+            whichModalVisible: editLeadData.paymentCategory === 'tax' ? 'taxModal' : 'paymentModal',
             taxIncluded: editLeadData.taxIncluded,
           },
           addPaymentModalToggleState: true,
@@ -1142,6 +1145,7 @@ class Payments extends Component {
     if (formData.token != '') {
       this.setState({ tokenModalVisible: status })
     }
+
     this.setState({
       tokenModalVisible: status,
     })

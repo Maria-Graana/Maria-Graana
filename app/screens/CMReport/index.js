@@ -388,7 +388,7 @@ class CMReport extends React.Component {
     if (filterLabel === 'Weekly') {
       this.updateWeekDay(day)
     } else {
-      let newDate = moment(dateString).format(_format)
+      let newDate = moment(dateString).format('LL')
       this.setState(
         {
           selectedDate: newDate,
@@ -556,10 +556,13 @@ class CMReport extends React.Component {
         agentFormData.agent
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily')
+    if (filterLabel === 'Daily') {
+      let date = new Date(selectedDate)
+      date = moment(date).format(_format)
       url = `/api/leads/project/report?scope=agent&q=${
         agentFormData.agent
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${date}`
+    }
     if (filterLabel === 'Yearly')
       url = `/api/leads/project/report?scope=agent&q=${
         agentFormData.agent
@@ -644,10 +647,13 @@ class CMReport extends React.Component {
         zoneFormData.zone
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily')
+    if (filterLabel === 'Daily') {
+      let date = new Date(selectedDate)
+      date = moment(date).format(_format)
       url = `/api/leads/project/report?scope=team&q=${
         zoneFormData.zone
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${date}`
+    }
     if (filterLabel === 'Yearly')
       url = `/api/leads/project/report?scope=team&q=${
         zoneFormData.zone
@@ -728,10 +734,13 @@ class CMReport extends React.Component {
         regionFormData.organization
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily')
+    if (filterLabel === 'Daily') {
+      let date = new Date(selectedDate)
+      date = moment(date).format(_format)
       url = `/api/leads/project/report?scope=region&q=${regionFormData.region}&organizationId=${
         regionFormData.organization
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${date}`
+    }
     if (filterLabel === 'Yearly')
       url = `/api/leads/project/report?scope=region&q=${regionFormData.region}&organizationId=${
         regionFormData.organization
@@ -816,8 +825,11 @@ class CMReport extends React.Component {
       if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
       url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily')
-      url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+    if (filterLabel === 'Daily') {
+      let date = new Date(selectedDate)
+      date = moment(date).format(_format)
+      url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${date}`
+    }
     if (filterLabel === 'Yearly')
       url = `/api/leads/project/report?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
     if (filterLabel === 'Weekly')

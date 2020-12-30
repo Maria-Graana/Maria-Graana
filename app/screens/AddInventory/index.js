@@ -89,12 +89,13 @@ class AddInventory extends Component {
     componentDidMount() {
         const { navigation, route } = this.props;
         navigation.addListener('focus', () => {
+            const { route, user } = this.props;
             this.onScreenFocused()
+            if (route.params.update) {
+                navigation.setOptions({ title: 'EDIT PROPERTY' })
+                this.setEditValues()
+            }
         })
-        if (route.params.update) {
-            navigation.setOptions({ title: 'EDIT PROPERTY' })
-            this.setEditValues()
-        }
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -325,9 +326,9 @@ class AddInventory extends Component {
         delete formData.year_built;
         delete formData.downpayment;
         if (route.params.update) {
-            this.updateMapLocation(property, formData).then((data => {
-                if (data) {
-                    axios.patch(`/api/inventory/${property.id}`, data)
+            // this.updateMapLocation(property, formData).then((data => {
+                // if (data) {
+                    axios.patch(`/api/inventory/${property.id}`, formData)
                         .then((res) => {
                             if (res.status === 200) {
                                 helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
@@ -348,12 +349,12 @@ class AddInventory extends Component {
                         .finally(() => {
                             this.setState({ loading: false })
                         })
-                }
-                else {
-                    helper.errorToast('ERROR: UPDATING MAP LOCATION');
-                    this.setState({ loading: false })
-                }
-            }));
+            //     }
+            //     else {
+            //         helper.errorToast('ERROR: UPDATING MAP LOCATION');
+            //         this.setState({ loading: false })
+            //     }
+            // }));
         }
         else {
             axios.post(`/api/inventory/create`, formData)

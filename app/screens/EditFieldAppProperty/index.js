@@ -431,9 +431,9 @@ class EditFieldAppProperty extends Component {
         delete formData.grade;
 
         if (route.params.update) {
-            this.updateMapLocation(property, formData).then((data => {
-                if (data) {
-                    axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, data)
+            // this.updateMapLocation(property, formData).then((data => {
+                // if (data) {
+                    axios.patch(`/api/inventory/update/fieldProperties?id=${property.id}`, formData)
                         .then((res) => {
                             if (res.status === 200) {
                                 helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
@@ -454,12 +454,12 @@ class EditFieldAppProperty extends Component {
                         .finally(() => {
                             this.setState({ loading: false })
                         })
-                }
-                else {
-                    helper.errorToast('ERROR: UPDATING MAP LOCATION');
-                    this.setState({ loading: false })
-                }
-            }));
+                // }
+                // else {
+                //     helper.errorToast('ERROR: UPDATING MAP LOCATION');
+                //     this.setState({ loading: false })
+                // }
+            // }));
         }
     }
 

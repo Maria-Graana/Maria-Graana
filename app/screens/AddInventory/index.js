@@ -87,15 +87,14 @@ class AddInventory extends Component {
 
 
     componentDidMount() {
-        const {navigation} = this.props;
+        const { navigation, route } = this.props;
         navigation.addListener('focus', () => {
-            const { route, user } = this.props;
             this.onScreenFocused()
-            if (route.params.update) {
-                navigation.setOptions({ title: 'EDIT PROPERTY' })
-                this.setEditValues()
-            }
         })
+        if (route.params.update) {
+            navigation.setOptions({ title: 'EDIT PROPERTY' })
+            this.setEditValues()
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -286,7 +285,7 @@ class AddInventory extends Component {
             }
             const response = await axios.post(url, body);
             if (response.status === 200) {
-                const copyData = {...data};
+                const copyData = { ...data };
                 copyData.geotagged_date = response.data.createdAt;
                 return copyData;
             }
@@ -689,7 +688,7 @@ class AddInventory extends Component {
                                     facing={facing}
                                     selectedFeatures={selectedFeatures}
                                     handleFeatures={(value) => this.handleFeatures(value)}
-                                    getCurrentLocation = {this._getLocationAsync}
+                                    getCurrentLocation={this._getLocationAsync}
                                     loading={loading}
                                     handlePointOfContact={this.handlePointOfContact}
                                     handleShowAddress={this.handleShowAddress}

@@ -74,7 +74,7 @@ class FormScreenSecond extends Component {
               checkLeadClosedOrNot === true &&
               <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true, 'paymentModal') }}>
                 <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                <Text style={styles.addPaymentBtnText}>ADD {data.payment && data.payment.length > 0 ? "MORE" : ''} PAYMENT</Text>
+                <Text style={styles.addPaymentBtnText}>ADD PAYMENT</Text>
               </TouchableOpacity>
             }
 
@@ -82,23 +82,41 @@ class FormScreenSecond extends Component {
               checkLeadClosedOrNot === true &&
               <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true, 'taxModal') }}>
                 <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
-                <Text style={styles.addPaymentBtnText}>ADD PAYMENT TAX</Text>
+                <Text style={styles.addPaymentBtnText}>ADD TAX</Text>
               </TouchableOpacity>
             }
 
           </View>
 
           <View style={styles.firstContainer}>
-            <SimpleInputText
-              name={'remainingPayment'}
-              fromatName={'remainingPayment'}
-              placeholder={'Remaining Payment'}
-              label={'REMAINING PAYMENT'}
-              value={remainingPayment}
-              formatValue={remainingPayment}
-              editable={false}
-              keyboardType={'numeric'}
-            />
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{width: '49%', marginRight: 7}}>
+                <SimpleInputText
+                  name={'remainingPayment'}
+                  fromatName={'remainingPayment'}
+                  placeholder={'Remaining Payment'}
+                  label={'REMAINING PAYMENT'}
+                  value={remainingPayment}
+                  formatValue={remainingPayment}
+                  editable={false}
+                  keyboardType={'numeric'}
+                />
+              </View>
+              <View  style={{width: '49%'}}>
+                <SimpleInputText
+                  name={'outstandingTax'}
+                  fromatName={'outstandingTax'}
+                  placeholder={'Outstanding Tax'}
+                  label={'OUTSTANDING TAX'}
+                  value={data.outstandingTax}
+                  formatValue={data.outstandingTax}
+                  editable={false}
+                  keyboardType={'numeric'}
+                />
+              </View>
+            </View>
+
+
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

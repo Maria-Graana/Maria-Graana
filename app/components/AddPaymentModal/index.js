@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
-import { CheckBox, ListItem, Body } from 'native-base'
+import { CheckBox, ListItem, Body, Switch } from 'native-base'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal'
@@ -39,12 +39,13 @@ class AddPaymentModal extends React.Component {
       remarksPaymentLoading,
       paymentNotZero,
     } = this.props
+
     return (
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
           {modalLoading === false ? (
             <View style={styles.topHeader}>
-              <Text style={styles.headingText}>Enter Details</Text>
+              <Text style={styles.headingText}>Enter {secondFormData.whichModalVisible === 'taxModal' ? 'Tax' : ''} Details</Text>
               <TouchableOpacity
                 style={styles.timesBtn}
                 onPress={() => {
@@ -60,13 +61,23 @@ class AddPaymentModal extends React.Component {
           {modalLoading === false ? (
             <ScrollView>
               {
-                secondFormData.whichModalVisible === 'paymentModal' &&
+                secondFormData.whichModalVisible != 'paymentModal' || secondFormData.whichModalVisible != 'token' &&
                 <View>
                   <ListItem style={{ borderBottomWidth: 0, paddingBottom: 0, }} onPress={() => { secondHandleForm(!secondFormData.taxIncluded, 'taxIncluded') }}>
-                    <CheckBox color={AppStyles.colors.primaryColor}
+                    {/* <CheckBox color={AppStyles.colors.primaryColor}
                       checked={secondFormData.taxIncluded}
+                    /> */}
+                    <Switch
+                      value={secondFormData.taxIncluded}
+                      trackColor={{ true: AppStyles.colors.primaryColor, false: 'grey' }}
+                      onValueChange={() => { secondHandleForm(!secondFormData.taxIncluded, 'taxIncluded') }}
+                      thumbColor={'#fff'}
                     />
-                    <Body><Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold', }}>Tax Not Included</Text></Body>
+                    <Body>
+                      <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold', }}>
+                        {secondFormData.taxIncluded === true ? 'Tax Not Included' : 'Tax Included'}
+                      </Text>
+                    </Body>
                   </ListItem>
                 </View>
               }

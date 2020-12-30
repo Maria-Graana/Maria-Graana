@@ -13,7 +13,7 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
-  // FlatList,
+  FlatList,
   Platform,
   ScrollView,
   ActivityIndicator,
@@ -29,35 +29,56 @@ import { connect } from 'react-redux'
 
 import { setAddPropertyParams } from '../../actions/property'
 import config from '../../config'
+// import { FlatList } from 'react-native-gesture-handler'
 
 const { width, height } = Dimensions.get('screen')
 
 const ASPECT_RATIO = width / height
 
-const height_factor_level1 = Platform.OS === 'ios' ? 0.87 : 0.84899
-const height_factor_level2 = Platform.OS === 'ios' ? 0.719 : 0.719
-// const latitudeDelta = 0.035
-// const longitudeDelta = 0.035
 
 const latitudeDelta = 0.12
 const longitudeDelta = latitudeDelta * ASPECT_RATIO
 
 const mapRef = React.createRef()
 
-// render feature layer for seached items
-// render points on top of plots (only that are not tagged)
-// on click of point open bottom sheet
-// separate screen for each list dropdown with a close button
-/**
- * --housing schemes
- * --phase sectors
- * --block subsector
- * --plots
- */
 
-const Item = ({ city_name }) => (
-  <View>
-    <Text style={{ color: '#000' }}>City : {city_name}</Text>
+const CityRenderItem = ({ item, onCitySelect }) => (
+  <View
+    key={item.id}
+    style={{
+      flex: 1,
+      padding: 10,
+    }}
+  >
+    <TouchableOpacity
+      onPress={() => {
+        onCitySelect(item)
+      }}
+    >
+      <View>
+        <Text style={{ fontSize: 18 }}> {item.city_name} </Text>
+      </View>
+    </TouchableOpacity>
+  </View>
+)
+
+const HousingSchemeRenderItem = ({ item, onHousingSchemeSelect }) =>  (
+  <View
+    key={item.id}
+    style={{
+      flex: 1,
+      padding: 10,
+    }}
+  >
+    <TouchableOpacity
+      onPress={() => {
+        onHousingSchemeSelect(item)
+      }}
+    >
+      <View>
+        <Text style={{ fontSize: 18 }}> {item.housing_scheme_name} </Text>
+      </View>
+    </TouchableOpacity>
   </View>
 )
 
@@ -498,8 +519,6 @@ class MapContainer extends Component {
   }
 
   render() {
-    // console.log('Configs Map URL : ', config.mapUrl);
-    //const renderItem = ({ item }) => <Item title={item.city_name} />
     const {
       region,
       panding,
@@ -531,9 +550,6 @@ class MapContainer extends Component {
     } = this.state
 
     let {plot_markers} = this.state;
-    // if(chosen_plot && plot_markers.length > 0) {
-    //   plot_markers = plot_markers.filter(plot => plot.id !== chosen_plot.id)
-    // }
     return (
       <View style={styles.map}>
         <MapView
@@ -556,8 +572,7 @@ class MapContainer extends Component {
               strokeWidth={2}
               opacity={0}
               onPress={(e) => {
-                //e.stopPropagation()
-                //console.log('DAT GEOJSON')
+                
               }}
             />
           )}
@@ -670,40 +685,28 @@ class MapContainer extends Component {
               }}
             >
               <View style={{ padding: 10, marginTop: 46 }}>
-                <Text style={{ fontSize: 18, color: 'blue' }}>Choose City : </Text>
+                <Text style={{ fontSize: 24, color: '#0F73EE' }}>Choose City</Text>
               </View>
               <ScrollView style={{ flex: 1 }}>
                 {cities ? (
-                  cities.map((item) => {
-                    return (
-                      <View
-                        key={item.id}
-                        style={{
-                          flex: 1,
-                          padding: 10,
-                          // backgroundColor: 'red',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => {
-                            this.onCitySelect(item)
-                          }}
-                        >
-                          <View>
-                            <Text style={{ fontSize: 22 }}> {item.city_name} </Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                    )
-                  })
+                  <FlatList 
+                    data={cities}
+                    renderItem={({ item }) => (
+                      <CityRenderItem 
+                        item={item}
+                        onCitySelect={this.onCitySelect}
+                      />
+                    )}
+                    keyExtractor={item => item.id}
+                  />
+
                 ) : (
                     <ActivityIndicator 
                       color = {'#0F73EE'}
                       size={'large'}
                     />
                   )}
+                
               </ScrollView>
               <Button
                 title="Close"
@@ -720,7 +723,6 @@ class MapContainer extends Component {
             backdropOpacity={1.0} 
             backdropColor="white"
             hideModalContentWhileAnimating={true}
-
           >
             <View
               style={{
@@ -729,35 +731,27 @@ class MapContainer extends Component {
               }}
             >
               <View style={{ padding: 10, marginTop: 46 }}>
-                <Text style={{ fontSize: 18, color: 'blue' }}>Choose Housing Scheme : </Text>
+                <View style = {{
+                  flexDirection : 'row', 
+                  justifyContent : 'space-between'
+                }}>
+                  <View style={styles.modalLabelStyle}>
+                    <Text style = {{ fontSize : 18}}>{chosenCity.city_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> </Text>
+                  </View>
+                </View>
               </View>
               <ScrollView style={{ flex: 1 }}>
                 {housing_schemes ? (
-                  housing_schemes.map((item) => {
-                    return (
-                      <View
-                        key={item.id}
-                        style={{
-                          flex: 1,
-                          padding: 10,
-                          // backgroundColor: 'red',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => {
-                            // this.onCitySelect(item)
-                            this.onHousingSchemeSelect(item)
-                          }}
-                        >
-                          <View>
-                            <Text style={{ fontSize: 22 }}> - {item.housing_scheme_name} </Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                    )
-                  })
+                  <FlatList
+                    data={housing_schemes}
+                    renderItem={({ item }) => (
+                      <HousingSchemeRenderItem 
+                        item={item}
+                        onHousingSchemeSelect={this.onHousingSchemeSelect}
+                      />
+                    )}
+                    keyExtractor={item => item.id}
+                  /> 
                 ) : (
                     <ActivityIndicator 
                       color = {'#0F73EE'}
@@ -780,22 +774,31 @@ class MapContainer extends Component {
             backdropOpacity={1.0} 
             backdropColor="white"
             hideModalContentWhileAnimating={true}
-
           >
             <View
               style={{
                 flex: 1,
                 // backgroundColor : 'green'
-                justifyContent: 'center',
-                alignItems: 'center',
+                // justifyContent: 'center',
+                // alignItems: 'center',
               }}
             >
               <View style={{ padding: 10, marginTop: 46 }}>
+                <View style = {{
+                  flexDirection : 'row', 
+                  justifyContent : 'space-between'
+                }}>
+                  <View style={styles.modalLabelStyle}>
+                    <Text style = {{ fontSize : 18}}>{chosenCity.city_name}, {chosen_housing_scheme.housing_scheme_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> </Text>
+                  </View>
+                </View>
+              </View>
+              {/* <View style={styles.modalLabelStyle}>
                 <Text>
                   {chosenCity.city_name}, {chosen_housing_scheme.housing_scheme_name}
                 </Text>
                 <Text style={{ fontSize: 18, color: 'blue' }}>Select Phase: </Text>
-              </View>
+              </View> */}
               <ScrollView style={{ flex: 1 }}>
                 {phase_sectors ? (
                   phase_sectors.map((item) => {
@@ -846,7 +849,6 @@ class MapContainer extends Component {
             backdropOpacity={1.0} 
             backdropColor="white"
             hideModalContentWhileAnimating={true}
-
           >
             <View
               style={{
@@ -855,12 +857,27 @@ class MapContainer extends Component {
               }}
             >
               <View style={{ padding: 10, marginTop: 46 }}>
+                <View style = {{
+                  flexDirection : 'row', 
+                  justifyContent : 'space-between'
+                }}>
+                  <View style={styles.modalLabelStyle}>
+                    <Text style = {{ fontSize : 18}}>
+                      {chosenCity.city_name}, 
+                      {chosen_housing_scheme.housing_scheme_name},
+                      {chosen_phase_sector.phase_sector_name} 
+                      <AntDesign name="rightcircle" size={18} color="#0F73EE" /> 
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              {/* <View style={{ padding: 10, marginTop: 46 }}>
                 <Text>
                   {chosenCity.city_name}, {chosen_housing_scheme.housing_scheme_name},
                   {chosen_phase_sector.phase_sector_name}
                 </Text>
                 <Text style={{ fontSize: 18, color: 'blue' }}>Choose Block/SubSector : </Text>
-              </View>
+              </View> */}
               <ScrollView style={{ flex: 1 }}>
                 {block_subsectors ? (
                   block_subsectors.map((item) => {
@@ -1050,7 +1067,7 @@ class MapContainer extends Component {
                 {chosen_housing_scheme ? (
                   <View>
                     <Text style={styles.labelStyle}>
-                      {`  ${chosen_housing_scheme.housing_scheme_name}`}
+                      {`${chosen_housing_scheme.housing_scheme_name}`} <AntDesign name="rightcircle" size={18} color="#0F73EE" />
                     </Text>
                   </View>
                 ) : (
@@ -1060,98 +1077,72 @@ class MapContainer extends Component {
                   )}
               </TouchableOpacity>
             )}
-            
-          </View>
 
-          {/** Level 2 search */}
-          {chosen_housing_scheme ? (
-            <View style={styles.inputStyleLevel2}>
-              {phase_sectors.length > 0 && (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.setState({
-                      phase_sector_modal: true,
-                      block_subsectors: '', 
-                      block_subsector_geometry: '',
-                      chosen_block_subsector: '',
-                      plots: '',
-                      plot_markers : '',
-                      plot_geometry : '',
-                      chosen_plot: '',
-                    })
-                  }}
-                >
-                  {chosen_phase_sector ? (
-                    <View>
-                      <Text style={styles.labelStyle}>
-                        {chosen_phase_sector.phase_sector_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> |
-                      </Text> 
-                    </View>
-                  ) : (
-                    <View>
-                      <Text style={styles.promptStyle}>Phase/Sector</Text>
-                    </View>
-                    )}
-                </TouchableOpacity>
-              )}
-              {block_subsectors.length > 0 && (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.setState({
-                      block_subsector_modal: true,
-                      plots: '',
-                      chosen_plot: '',
-                    })
-                  }}
-                >
-                  {chosen_block_subsector ? (
-                    <View>
-                      <Text style={styles.labelStyle}>
-                        {chosen_block_subsector.block_subsector_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> |
-                      </Text>
-                    </View>
-                  ) : (
-                    <View>
-                      <Text style={styles.promptStyle}>Block/Subsector</Text>
-                    </View>
-                    )}
-                </TouchableOpacity>
-              )}
-
-              {/* { */}
-
-              {/* {!!chosen_block_subsector && (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.setState({
-                      block_subsector_modal: true,
-                    })
-                  }}
-                >
-                  {chosen_block_subsector ? (
+            {phase_sectors.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  this.setState({
+                    phase_sector_modal: true,
+                    block_subsectors: '', 
+                    block_subsector_geometry: '',
+                    chosen_block_subsector: '',
+                    plots: '',
+                    plot_markers : '',
+                    plot_geometry : '',
+                    chosen_plot: '',
+                  })
+                }}
+              >
+                {chosen_phase_sector ? (
+                  <View>
                     <Text style={styles.labelStyle}>
-                      {chosen_block_subsector.block_subsector_name} |
-                    </Text>
-                  ) : (
-                    <Text style={styles.promptStyle}>Select Block/Subsector</Text>
+                      {chosen_phase_sector.phase_sector_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> |
+                    </Text> 
+                  </View>
+                ) : (
+                  <View>
+                    <Text style={styles.promptStyle}>Phase/Sector</Text>
+                  </View>
                   )}
-                </TouchableOpacity>
-              )} */}
+              </TouchableOpacity>
+            )}
+            {block_subsectors.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  this.setState({
+                    block_subsector_modal: true,
+                    plots: '',
+                    chosen_plot: '',
+                  })
+                }}
+              >
+                {chosen_block_subsector ? (
+                  <View>
+                    <Text style={styles.labelStyle}>
+                      {chosen_block_subsector.block_subsector_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> |
+                    </Text>
+                  </View>
+                ) : (
+                  <View>
+                    <Text style={styles.promptStyle}>Block/Subsector</Text>
+                  </View>
+                  )}
+              </TouchableOpacity>
+            )}
 
-              {!!plots && (
-                <TouchableOpacity
-                >
-                  {
-                    !!chosen_plot && (
-                      <View>
-                        <Text style={styles.labelStyle}>{chosen_plot.Plot_No}</Text>
-                      </View>
-                    )
-                  }
-                </TouchableOpacity>
-              )}
-            </View>
-          ) : null}
+            {!!plots && (
+              <TouchableOpacity
+              >
+                {
+                  !!chosen_plot && (
+                    <View>
+                      <Text style={styles.labelStyle}>{chosen_plot.Plot_No}</Text>
+                    </View>
+                  )
+                }
+              </TouchableOpacity>
+            )}
+          </View>
 
           {!!chosen_plot && (
             <View style={styles.footer}>
@@ -1248,6 +1239,23 @@ const styles = StyleSheet.create({
     top: '50%',
   },
 
+  modalLabelStyle : {
+    flexWrap: 'wrap',
+    backgroundColor : '#fff',
+    borderRadius : 32, 
+    paddingVertical: 6, 
+    paddingHorizontal: 15,
+    shadowColor: "#000",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+  },
+
   buttonStyle : {
     justifyContent: 'center',
     alignItems: 'center',
@@ -1280,49 +1288,22 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     flexDirection: 'row',
-    bottom: height * height_factor_level1,
-    height: 52,
-    borderWidth: 1,
-    marginLeft: 18,
-    marginRight: 18,
-    marginTop: 18,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderColor: '#fff',
-    // borderRadius: 12,
-    borderTopLeftRadius : 12,
-    borderTopRightRadius : 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 4.65,
-    elevation: 7,
-  },
-  inputStyleLevel2: {
     position: 'absolute',
-    flexDirection: 'row',
-    bottom: height * height_factor_level2,
-    width: width * 0.912,
-    height: 52,
-    borderWidth: 1,
-    marginLeft: 18,
-    marginRight: 18,
-    // marginTop: 18,
-    padding: 10,
     backgroundColor: '#fff',
-    borderColor: '#fff',
-    borderBottomLeftRadius : 12, 
-    borderBottomRightRadius : 12,
+    flexWrap: 'wrap',
+    flexShrink: -1,
+    bottom: height - 268,
+    width: '95%',
+    borderRadius : 12,
+    margin: 12, 
+    padding: 5, 
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 4.65,
+      height: 3
+    }, 
+    shadowOpacity: 0.29, 
+    shadowRadius: 4.65, 
     elevation: 7,
   },
   footer: {
@@ -1345,6 +1326,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#454F64',
     // marginTop: ,
+    padding: 5
   },
 
   labelStyle: {
@@ -1352,6 +1334,7 @@ const styles = StyleSheet.create({
     color: '#000',
     //marginTop: 4,
     fontWeight: 'bold',
+    padding: 5
   },
 
   plotInfoStyle: {

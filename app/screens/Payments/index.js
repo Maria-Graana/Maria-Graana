@@ -9,6 +9,7 @@ import FormScreenOne from './FormScreenOne'
 import FormScreenSecond from './FormScreenSecond'
 import StaticData from '../../StaticData'
 import { ProgressBar } from 'react-native-paper'
+import { ActionSheet } from 'native-base'
 import helper from '../../helper'
 import { setlead } from '../../actions/lead'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
@@ -20,7 +21,10 @@ import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style'
 import { setCMPaymennt } from '../../actions/addCMPayment'
+import DeleteModal from '../../components/DeleteModal'
 
+var BUTTONS = ['Delete', 'Cancel']
+var CANCEL_INDEX = 1
 class Payments extends Component {
   constructor(props) {
     super(props)
@@ -107,6 +111,8 @@ class Payments extends Component {
       remarksDataForPayment: [],
       paymentNotZero: false,
       tokenNotZero: false,
+      deletePaymentVisible: false,
+
     }
   }
 
@@ -1287,6 +1293,43 @@ class Payments extends Component {
     lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
   }
 
+  showHideDeletePayment = (val) => {
+    this.setState({ deletePaymentVisible: val })
+  }
+
+  deletePayment = async (reason) => {
+    const { CMPayment } = this.props
+    //console.log(CMPayment) // you have complete data of cm payment here
+    this.showHideDeletePayment(false)
+    console.log('delete payment');
+    // const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`
+    // const response = await axios.delete(url)
+    // if (response.data) {
+    //   this.fetchLead()
+    //   helper.successToast(response.data.message)
+    // } else {
+    //   helper.errorToast('ERROR DELETING PAYMENT!')
+    // }
+  }
+
+  onPaymentLongPress = (data) => {
+    const { dispatch } = this.props
+    dispatch(setCMPaymennt({ ...data }))
+    ActionSheet.show(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Select an Option',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          //Delete
+          this.showHideDeletePayment(true)
+        }
+      }
+    )
+  }
+
   render() {
     const {
       progressValue,
@@ -1331,6 +1374,7 @@ class Payments extends Component {
       remarksPaymentLoading,
       paymentNotZero,
       tokenNotZero,
+      deletePaymentVisible,
     } = this.state
     return (
       <View>
@@ -1383,6 +1427,7 @@ class Payments extends Component {
                   addPaymentModalToggle={this.addPaymentModalToggle}
                   currencyConvert={this.currencyConvert}
                   editTile={this.editTile}
+                  onPaymentLongPress={this.onPaymentLongPress}
                 />
               </View>
             </ScrollView>
@@ -1463,6 +1508,11 @@ class Payments extends Component {
           closeModal={() => this.closeModal()}
           changeReason={this.handleReasonChange}
           onPress={this.onHandleCloseLead}
+        />
+         <DeleteModal
+          isVisible={deletePaymentVisible}
+          deletePayment={(reason) => this.deletePayment(reason)}
+          showHideModal={(val) => this.showHideDeletePayment(val)}
         />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav

@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
+import { CheckBox, ListItem, Body } from 'native-base'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal'
@@ -54,10 +55,22 @@ class AddPaymentModal extends React.Component {
               </TouchableOpacity>
             </View>
           ) : (
-            <Text style={{ padding: 10 }}>Fetching Data...</Text>
-          )}
+              <Text style={{ padding: 10 }}>Fetching Data...</Text>
+            )}
           {modalLoading === false ? (
             <ScrollView>
+              {
+                secondFormData.whichModalVisible === 'paymentModal' &&
+                <View>
+                  <ListItem style={{ borderBottomWidth: 0, paddingBottom: 0, }} onPress={() => { secondHandleForm(!secondFormData.taxIncluded, 'taxIncluded') }}>
+                    <CheckBox color={AppStyles.colors.primaryColor}
+                      checked={secondFormData.taxIncluded}
+                    />
+                    <Body><Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold', }}>Tax Not Included</Text></Body>
+                  </ListItem>
+                </View>
+              }
+
               <View style={styles.moreViewContainer}>
                 <SimpleInputText
                   name={'installmentAmount'}
@@ -83,9 +96,9 @@ class AddPaymentModal extends React.Component {
                 ) : null}
                 {secondCheckValidation === true ? (
                   secondFormData.installmentAmount === null ||
-                  secondFormData.installmentAmount === '' ? (
-                    <ErrorMessage errorMessage={'Required'} />
-                  ) : null
+                    secondFormData.installmentAmount === '' ? (
+                      <ErrorMessage errorMessage={'Required'} />
+                    ) : null
                 ) : null}
 
                 <View style={[AppStyles.mainInputWrap]}>
@@ -154,8 +167,8 @@ class AddPaymentModal extends React.Component {
                           )
                         })
                       ) : (
-                        <Text>Fetching Data...</Text>
-                      )}
+                          <Text>Fetching Data...</Text>
+                        )}
                     </ScrollView>
                   </View>
                 )}
@@ -204,27 +217,27 @@ class AddPaymentModal extends React.Component {
                     </TouchableOpacity>
                   </View>
                 ) : (
-                  <TouchableOpacity
-                    style={styles.bookedBtn}
-                    onPress={() => {
-                      addPaymentLoading != true && secondFormSubmit()
-                    }}
-                  >
-                    {addPaymentLoading === false && (
-                      <Image
-                        source={require('../../../assets/img/checkWhite.png')}
-                        style={styles.bookedBtnImage}
-                      />
-                    )}
-                    <Text style={styles.bookedBtnText}>
-                      {addPaymentLoading === true ? (
-                        <ActivityIndicator size="small" color={'white'} style={styles.loaderTop} />
-                      ) : (
-                        'OK'
+                    <TouchableOpacity
+                      style={styles.bookedBtn}
+                      onPress={() => {
+                        addPaymentLoading != true && secondFormSubmit()
+                      }}
+                    >
+                      {addPaymentLoading === false && (
+                        <Image
+                          source={require('../../../assets/img/checkWhite.png')}
+                          style={styles.bookedBtnImage}
+                        />
                       )}
-                    </Text>
-                  </TouchableOpacity>
-                )}
+                      <Text style={styles.bookedBtnText}>
+                        {addPaymentLoading === true ? (
+                          <ActivityIndicator size="small" color={'white'} style={styles.loaderTop} />
+                        ) : (
+                            'OK'
+                          )}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
               </View>
             </ScrollView>
           ) : null}

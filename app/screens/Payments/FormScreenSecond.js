@@ -72,9 +72,17 @@ class FormScreenSecond extends Component {
 
             {
               checkLeadClosedOrNot === true &&
-              <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true) }}>
+              <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true, 'paymentModal') }}>
                 <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
                 <Text style={styles.addPaymentBtnText}>ADD {data.payment && data.payment.length > 0 ? "MORE" : ''} PAYMENT</Text>
+              </TouchableOpacity>
+            }
+
+            {
+              checkLeadClosedOrNot === true &&
+              <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true, 'taxModal') }}>
+                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+                <Text style={styles.addPaymentBtnText}>ADD PAYMENT TAX</Text>
               </TouchableOpacity>
             }
 

@@ -17,7 +17,8 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
-  Image
+  Image, 
+  TextInput
 } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons'; 
@@ -26,6 +27,11 @@ import MapView, { Geojson, Polygon, Marker } from 'react-native-maps'
 import Modal from 'react-native-modal'
 //import { Button } from 'native-base';
 import { connect } from 'react-redux'
+import {
+  widthPercentageToDP as wp, 
+  heightPercentageToDP as hp
+} from 'react-native-responsive-screen';
+
 
 import { setAddPropertyParams } from '../../actions/property'
 import config from '../../config'
@@ -119,6 +125,8 @@ class MapContainer extends Component {
       chosen_housing_scheme: '',
       housing_scheme_geometry: '',
       housing_scheme_modal: false,
+      housing_scheme_search: '',
+      filtered_housing_schemes : '',
 
       phase_sectors: '',
       chosen_phase_sector: '',
@@ -167,6 +175,15 @@ class MapContainer extends Component {
     axios.get(`${config.mapUrl}plot/${propsure_id}?secure=true`)
     .then(res => {
       const plot = res.data;
+      let data = plot[0];
+      if(data.city) { 
+        this.fetchCityById(data.city.id) 
+        this.fetchHousingSchemes(data.id)
+      }
+      if(data.housing_scheme) { 
+        this.fetchHousingSchemeById(data.housing_scheme.id) 
+      }
+      if(data.phase_sector) { this.fetchPhaseSectorById(data.phase_sector.id) }
       this.setState({
         chosen_plot : plot[0], 
         loading_plots: false
@@ -177,9 +194,10 @@ class MapContainer extends Component {
   }
 
   componentDidMount() {
-    const { mapValues : { propsure_id } } = this.props.route.params; 
+    const { mapValues : { propsure_id, lat, lng } } = this.props.route.params; 
     if(propsure_id){
       this.fetchPlotData(propsure_id);
+      this.fetchPlotsByPoint(lat,lng);
     }
     axios
       .get(`${config.mapUrl}cities?secure=true`)
@@ -266,6 +284,39 @@ class MapContainer extends Component {
     this.fetchHousingSchemes(item.id)
   }
 
+  fetchCityById = async(id) => {
+    
+    let resp = await axios.get(`${config.mapUrl}city/${id}?secure=true`); 
+    const data = resp.data;
+    //console.log('City by Id : ', data) 
+    this.setState({
+      chosenCity : data[0]
+    })
+    this.fetchHousingSchemes(data[0].id)
+  }
+
+  fetchHousingSchemeById = async(id) => {
+    let resp = await axios.get(`${config.mapUrl}housing-scheme/${id}?secure=true`); 
+    const data = resp.data;
+    //console.log('housing scheme by Id : ', data) 
+
+    this.setState({
+      chosen_housing_scheme : data[0]
+    })
+    this.fetchPhaseSector(data[0].id)
+  }
+  fetchPhaseSectorById = async(id) => {
+    
+    let resp = await axios.get(`${config.mapUrl}phase-sector-by-id/${id}?secure=true`); 
+    const data = resp.data; 
+    //console.log('phase sector by Id : ', data) 
+
+    this.setState({
+      chosen_phase_sector : data[0],
+      phase_sectors: data
+    })
+  }
+  
   fetchHousingSchemes = async (cityId) => {
     // console.log('Fetching housing schemes for : ', cityId)
     const resp = await axios.get(`${config.mapUrl}housing-scheme?cityId=${cityId}&&secure=true`)
@@ -285,7 +336,12 @@ class MapContainer extends Component {
       latitudeDelta: 0.04274851510675859,
     }
     mapRef.current.animateToRegion(region)
-    this.setState({ region, housing_scheme_modal: false, chosen_housing_scheme: item })
+    this.setState({ 
+      region, 
+      housing_scheme_modal: false, 
+      chosen_housing_scheme: item,
+      housing_scheme_search : ''
+    })
     // set city feature
     //this.setCityFeature(item)
     this.setHousingSchemeFeature(item)
@@ -298,6 +354,18 @@ class MapContainer extends Component {
     })
     this.fetchPhaseSector(item.id)
     // this.fetchBlockSubsectorByHousingScheme(item.id)
+  }
+
+  onHousingSchemeSearch = (search) => {
+    let total_housing_schemes = this.state.housing_schemes;
+    let filtered_housing_schemes = total_housing_schemes.filter((housing_scheme) => {
+        return housing_scheme.housing_scheme_name.toLowerCase().match(search.toLowerCase())
+      }
+    ); 
+    this.setState({
+      housing_scheme_search : search,
+      filtered_housing_schemes
+    })
   }
 
   fetchPhaseSector = async (housingSchemeId) => {
@@ -359,7 +427,7 @@ class MapContainer extends Component {
   }
 
   fetchBlockSubsectorByHousingScheme = async(housingSchemeId) => {
-    console.log('Housing scheme Id : ', housingSchemeId)
+    // console.log('Housing scheme Id : ', housingSchemeId)
     const resp = await axios.get(
       `${config.mapUrl}block-subsector?housingSchemeId=${housingSchemeId}&&secure=true`
     )
@@ -406,7 +474,8 @@ class MapContainer extends Component {
     )
     const data = resp.data
     if (data.length <= 0) {
-      this.setState({ plotsUnavailable: true })
+      this.setState({ plotsUnavailable: true, loading_plots : false })
+      alert('No Plots available in this area')
     } else {
       let item = this.state.chosen_housing_scheme;
       const center = this.getCentroid(JSON.parse(item.geoData))
@@ -458,6 +527,23 @@ class MapContainer extends Component {
     const data = resp.data
     if (data.length <= 0) {
       this.setState({ plotsUnavailable: true })
+    } else {
+      this.setPlotFeature(data)
+      this.setPlotMarkers(data)
+      this.setState({
+        plots: data,
+        plotsUnavailable: false,
+        loading_plots: false,
+      })
+    }
+  }
+
+  fetchPlotsByPoint = async (lat, lng) => {
+    let resp = await axios.post(`${config.mapUrl}plots-by-point`, {"lon" : lng, "lat" : lat}); 
+    // console.log('Plots by Point : ', plots); 
+    const data = resp.data
+    if (data.length <= 0) {
+      this.setState({ plotsUnavailable: true, loading_plots : false })
     } else {
       this.setPlotFeature(data)
       this.setPlotMarkers(data)
@@ -530,6 +616,8 @@ class MapContainer extends Component {
       chosen_housing_scheme,
       housing_scheme_modal,
       housing_scheme_geometry,
+      housing_scheme_search,
+      filtered_housing_schemes,
 
       phase_sectors,
       chosen_phase_sector,
@@ -548,7 +636,10 @@ class MapContainer extends Component {
       loading_plots,
       //plot_markers,
     } = this.state
-
+    // console.log('Chosen Plot : ', chosen_plot);
+    // console.log('Chosen City', chosenCity); 
+    // console.log('Chosen Housing Scheme', chosen_housing_scheme); 
+    // console.log('Chosen Phase Sector', chosen_phase_sector); 
     let {plot_markers} = this.state;
     return (
       <View style={styles.map}>
@@ -736,14 +827,28 @@ class MapContainer extends Component {
                   justifyContent : 'space-between'
                 }}>
                   <View style={styles.modalLabelStyle}>
-                    <Text style = {{ fontSize : 18}}>{chosenCity.city_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> </Text>
+                    <Text style = {{ fontSize : 20}}>{chosenCity.city_name} <AntDesign name="rightcircle" size={18} color="#0F73EE" /> </Text>
                   </View>
                 </View>
+                <TextInput 
+                  style = {{
+                    marginTop : 10, 
+                    width : wp('80%'), 
+                    padding : 10, 
+                    fontSize : 18, 
+                    borderBottomWidth : 1, 
+                    borderBottomColor : '#ddd'
+                  }}
+                  placeholder={'Search Housing Schemes...'}
+                  onChangeText = {(text) => {this.onHousingSchemeSearch(text)}}
+                  autoCorrect={false}
+                  clearButtonMode={'always'}
+                />
               </View>
               <ScrollView style={{ flex: 1 }}>
                 {housing_schemes ? (
                   <FlatList
-                    data={housing_schemes}
+                    data={housing_scheme_search ? filtered_housing_schemes : housing_schemes}
                     renderItem={({ item }) => (
                       <HousingSchemeRenderItem 
                         item={item}
@@ -1186,8 +1291,8 @@ class MapContainer extends Component {
               </Text>
               <Text style={styles.plotInfoStyle}>Street {chosen_plot.Street}</Text>
               <Text style={styles.plotInfoStyle}>
-                {chosen_housing_scheme.housing_scheme_name}/{chosen_phase_sector.phase_sector_name},{' '}
-                {chosenCity.city_name}
+                {chosen_plot.housing_scheme ? chosen_plot.housing_scheme.housing_scheme_name: ''}/{chosen_plot.phase_sector ? chosen_plot.phase_sector.phase_sector_name: ''},{' '}
+                {chosen_plot.city ? chosen_plot.city.city_name : ''}
               </Text>
               <TouchableOpacity
                 onPress={() => {
@@ -1292,7 +1397,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flexWrap: 'wrap',
     flexShrink: -1,
-    bottom: height - 268,
+    top: - (hp('84%')),
     width: '95%',
     borderRadius : 12,
     margin: 12, 

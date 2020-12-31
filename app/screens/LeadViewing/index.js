@@ -105,7 +105,7 @@ class LeadViewing extends React.Component {
     })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -335,53 +335,56 @@ class LeadViewing extends React.Component {
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
-      if (diary && diary.status === 'completed') {
+      if (diaries && diaries.length > 0) {
         return (
-          <TouchableOpacity
-            style={{
-              backgroundColor: AppStyles.colors.primaryColor,
-              height: 30,
-              borderBottomEndRadius: 10,
-              borderBottomLeftRadius: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
-              VIEWING DONE
-            </Text>
-          </TouchableOpacity>
-        )
-      } else if (diary && diary.status === 'pending') {
-        return (
-          <TouchableOpacity
-            style={{
-              backgroundColor: 'white',
-              height: 30,
-              borderBottomEndRadius: 10,
-              borderBottomLeftRadius: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onPress={() => {
-              if (leadAssignedSharedStatus) {
-                this.openModal()
-                this.updateProperty(property)
-              }
-            }}
-          >
-            <Text style={{ fontFamily: AppStyles.fonts.lightFont }}>
-              Viewing at{' '}
-              <Text
+          <View style={{position: 'relative', top: -3}}>
+            {diary && diary.status === 'pending' &&
+              <TouchableOpacity
                 style={{
-                  color: AppStyles.colors.primaryColor,
-                  fontFamily: AppStyles.fonts.defaultFont,
+                  backgroundColor: 'white',
+                  height: 30,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={() => {
+                  if (leadAssignedSharedStatus) {
+                    this.openModal()
+                    this.updateProperty(property)
+                  }
                 }}
               >
-                {moment(diary.start).format('LLL')}
+                <Text style={{ fontFamily: AppStyles.fonts.lightFont }}>
+                  Viewing at{' '}
+                  <Text
+                    style={{
+                      color: AppStyles.colors.primaryColor,
+                      fontFamily: AppStyles.fonts.defaultFont,
+                    }}
+                  >
+                    {moment(diary.start).format('LLL')}
+                  </Text>
+                </Text>
+              </TouchableOpacity>
+            }
+            {/* {diaries && diaries.length > 0 && */}
+            <TouchableOpacity
+              style={{
+                backgroundColor: AppStyles.colors.primaryColor,
+                height: 30,
+                borderBottomEndRadius: 10,
+                borderBottomLeftRadius: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'row',
+              }}
+            >
+              <Text style={{ color: 'white',  fontFamily: AppStyles.fonts.defaultFont }}>
+                VIEWING DONE 
               </Text>
-            </Text>
-          </TouchableOpacity>
+              <Text style={styles.countStyle}>{`${diary && diary.status === 'pending' ? diaries.length - 1 : diaries.length}`}</Text>
+            </TouchableOpacity>
+            {/* } */}
+          </View>
         )
       }
     } else {
@@ -634,38 +637,38 @@ class LeadViewing extends React.Component {
                         screen={'viewing'}
                       />
                     ) : (
-                      <AgentTile
-                        bookAnotherViewing={this.bookAnotherViewing}
-                        deleteProperty={this.deleteProperty}
-                        cancelViewing={this.cancelViewing}
-                        doneViewing={this.doneViewing}
-                        isMenuVisible={showMenuItem && isMenuVisible}
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        viewingMenu={true}
-                        goToPropertyComments={this.goToPropertyComments}
-                        menuShow={menuShow}
-                        toggleMenu={this.toggleMenu}
-                        screen={'viewing'}
-                      />
-                    )}
+                        <AgentTile
+                          bookAnotherViewing={this.bookAnotherViewing}
+                          deleteProperty={this.deleteProperty}
+                          cancelViewing={this.cancelViewing}
+                          doneViewing={this.doneViewing}
+                          isMenuVisible={showMenuItem && isMenuVisible}
+                          data={_.clone(item.item)}
+                          user={user}
+                          displayChecks={this.displayChecks}
+                          showCheckBoxes={false}
+                          addProperty={this.addProperty}
+                          viewingMenu={true}
+                          goToPropertyComments={this.goToPropertyComments}
+                          menuShow={menuShow}
+                          toggleMenu={this.toggleMenu}
+                          screen={'viewing'}
+                        />
+                      )}
                     <View>{this.checkStatus(item.item)}</View>
                   </View>
                 )}
                 keyExtractor={(item, index) => item.id.toString()}
               />
             ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
+                <>
+                  <Image
+                    source={require('../../../assets/img/no-result-found.png')}
+                    resizeMode={'center'}
+                    style={{ alignSelf: 'center', width: 300, height: 300 }}
+                  />
+                </>
+              )}
           </View>
         </View>
 
@@ -696,8 +699,8 @@ class LeadViewing extends React.Component {
         />
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

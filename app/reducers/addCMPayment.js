@@ -12,7 +12,7 @@ const payment = {
 	uri: '',
 	size: null,
 	title: '',
-	taxIncluded: true,
+	taxIncluded: false,
 	paymentCategory: '',
 	whichModalVisible: '',
 }

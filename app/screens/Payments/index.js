@@ -1299,20 +1299,14 @@ class Payments extends Component {
 
   deletePayment = async (reason) => {
     const { CMPayment } = this.props
-    const { remainingPayment, secondFormData } = this.state
-    var newsecondFormData = { ...secondFormData }
+    const { remainingPayment } = this.state
 
     // you have complete data of cm payment here
     this.showHideDeletePayment(false)
     const url = `/api/leads/payment?id=${CMPayment.id}&reason=${reason}`
     const response = await axios.delete(url)
     if (response.data) {
-      if (CMPayment.paymentCategory === 'tax') {
-        newsecondFormData['outstandingTax'] = outstandingTax + CMPayment.installmentAmount
-        this.setState({
-          secondFormData: newsecondFormData,
-        })
-      } else {
+      if (CMPayment.paymentCategory != 'tax') {
         this.setState({
           remainingPayment: remainingPayment + CMPayment.installmentAmount,
         })

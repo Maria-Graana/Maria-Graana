@@ -29,6 +29,7 @@ class FormScreenSecond extends Component {
       paymentPreviewLoading,
       checkLeadClosedOrNot,
       onlyReadFormData,
+      secondFormData,
       toggleBookingDetailsModal,
       tileForToken,
       onPaymentLongPress,
@@ -97,8 +98,8 @@ class FormScreenSecond extends Component {
                   fromatName={'remainingPayment'}
                   placeholder={'Remaining Payment'}
                   label={'REMAINING PAYMENT'}
-                  value={remainingPayment}
-                  formatValue={remainingPayment}
+                  value={data.remainingPayment}
+                  formatValue={data.remainingPayment}
                   editable={false}
                   keyboardType={'numeric'}
                 />

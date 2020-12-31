@@ -1299,17 +1299,20 @@ class Payments extends Component {
 
   deletePayment = async (reason) => {
     const { CMPayment } = this.props
-    //console.log(CMPayment) // you have complete data of cm payment here
+    const { remainingPayment } = this.state
+    // you have complete data of cm payment here
     this.showHideDeletePayment(false)
-    console.log('delete payment');
-    // const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`
-    // const response = await axios.delete(url)
-    // if (response.data) {
-    //   this.fetchLead()
-    //   helper.successToast(response.data.message)
-    // } else {
-    //   helper.errorToast('ERROR DELETING PAYMENT!')
-    // }
+    const url = `/api/leads/payment?id=${CMPayment.id}&reason=${reason}`
+    const response = await axios.delete(url)
+    if (response.data) {
+      this.setState({
+        remainingPayment: remainingPayment + CMPayment.installmentAmount,
+      })
+      this.fetchLead()
+      helper.successToast(response.data.message)
+    } else {
+      helper.errorToast('ERROR DELETING PAYMENT!')
+    }
   }
 
   onPaymentLongPress = (data) => {
@@ -1509,7 +1512,7 @@ class Payments extends Component {
           changeReason={this.handleReasonChange}
           onPress={this.onHandleCloseLead}
         />
-         <DeleteModal
+        <DeleteModal
           isVisible={deletePaymentVisible}
           deletePayment={(reason) => this.deletePayment(reason)}
           showHideModal={(val) => this.showHideDeletePayment(val)}

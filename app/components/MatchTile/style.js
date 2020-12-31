@@ -11,9 +11,9 @@ export default styles = StyleSheet.create({
   tileContainer: {
     backgroundColor: 'white',
     flex: 1,
-    // borderRadius: 5,
-    borderTopEndRadius: 10,
-    borderTopLeftRadius: 10,
+    borderRadius: 5,
+    // borderTopEndRadius: 10,
+    // borderTopLeftRadius: 10,
     height: 150,
     flexDirection: 'row'
   },

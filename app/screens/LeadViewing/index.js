@@ -337,7 +337,7 @@ class LeadViewing extends React.Component {
       let diary = _.find(diaries, (item) => user.id === item.userId)
       if (diaries && diaries.length > 0) {
         return (
-          <View style={{position: 'relative', top: -3}}>
+          <View>
             {diary && diary.status === 'pending' &&
               <TouchableOpacity
                 style={{

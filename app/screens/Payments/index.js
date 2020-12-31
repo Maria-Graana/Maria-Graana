@@ -52,7 +52,7 @@ class Payments extends Component {
         unitType: '',
         pearlName: 'New Pearl',
         paymentTypeForToken: 'Token',
-        taxIncluded: true,
+        taxIncluded: false,
       },
       cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
       secondFormData: { ...this.props.CMPayment, outstandingTax: lead.outstandingTax },
@@ -149,7 +149,7 @@ class Payments extends Component {
       visible: status,
       attachments: [],
       paymentCategory: '',
-      taxIncluded: true,
+      taxIncluded: false,
       whichModalVisible: modalOpenFor ? modalOpenFor === 'taxModal' ? 'taxModal' : 'paymentModal' : '',
     }
     this.setState({ secondFormData: newObject }, () => {
@@ -860,7 +860,7 @@ class Payments extends Component {
         if (secondFormData.whichModalVisible === 'taxModal') {
           delete body.remainingPayment
         }
-        // console.log('=====BOdy =====', body)
+        // console.log('BOdy added==========', body)
         // ====================== API call for added Payments
         axios
           .post(`/api/leads/project/payments`, body)
@@ -920,7 +920,7 @@ class Payments extends Component {
           delete body.remainingPayment
         }
 
-        // console.log('Body ==============', body)
+        // console.log('Body update ================', body)
         axios
           .patch(`/api/leads/project/payment?id=${paymentId}`, body)
           .then((res) => {
@@ -1025,7 +1025,7 @@ class Payments extends Component {
             cmLeadId: this.props.lead.id,
             paymentCategory: '',
             whichModalVisible: '',
-            taxIncluded: true,
+            taxIncluded: false,
           },
           paymentRemarkVisible: false,
           addPaymentLoading: false,
@@ -1304,18 +1304,36 @@ class Payments extends Component {
     // you have complete data of cm payment here
     this.showHideDeletePayment(false)
     const url = `/api/leads/payment?id=${CMPayment.id}&reason=${reason}`
-    const response = await axios.delete(url)
-    if (response.data) {
-      if (CMPayment.paymentCategory != 'tax') {
-        this.setState({
-          remainingPayment: remainingPayment + CMPayment.installmentAmount,
-        })
-      }
-      this.fetchLead()
-      helper.successToast(response.data.message)
-    } else {
-      helper.errorToast('ERROR DELETING PAYMENT!')
-    }
+    // const response = await axios.delete(url)
+    console.log(url)
+    axios.delete(url)
+      .then((response) => {
+
+        if (CMPayment.paymentCategory != 'tax') {
+          this.setState({
+            remainingPayment: remainingPayment + CMPayment.installmentAmount,
+          })
+        }
+        this.fetchLead()
+        helper.successToast(response.data.message)
+      }).catch((error) => {
+        console.log(`/api/leads/payment?id=&reason= - ${error}` )
+        helper.errorToast('ERROR DELETING PAYMENT!')
+      })
+    // if (response.data) {
+    //   console.log(2)
+
+    //   if (CMPayment.paymentCategory != 'tax') {
+    //     this.setState({
+    //       remainingPayment: remainingPayment + CMPayment.installmentAmount,
+    //     })
+    //   }
+    //   this.fetchLead()
+    //   helper.successToast(response.data.message)
+    // } else {
+    //   console.log(1)
+    //   helper.errorToast('ERROR DELETING PAYMENT!')
+    // }
   }
 
   onPaymentLongPress = (data) => {

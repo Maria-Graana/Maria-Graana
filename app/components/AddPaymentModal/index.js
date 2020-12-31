@@ -75,7 +75,7 @@ class AddPaymentModal extends React.Component {
                     />
                     <Body>
                       <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold', }}>
-                        {secondFormData.taxIncluded === true ? 'Tax Not Included' : 'Tax Included'}
+                        {secondFormData.taxIncluded === false ? 'Tax Not Included' : 'Tax Included'}
                       </Text>
                     </Body>
                   </ListItem>

@@ -1423,6 +1423,8 @@ class Payments extends Component {
       paymentNotZero,
       tokenNotZero,
       deletePaymentVisible,
+      addTaxToggleState,
+      taxNotZero,
     } = this.state
     return (
       <View>

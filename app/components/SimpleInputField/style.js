@@ -53,7 +53,8 @@ export default styles = StyleSheet.create({
     right: 0,
     top: 2,
     color: '#959597',
-    fontWeight: '600'
+    fontWeight: '600',
+    backgroundColor: '#fff',
   },
   inputCheckBtn: {
     backgroundColor: '#0E73EE',

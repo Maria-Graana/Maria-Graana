@@ -93,19 +93,7 @@ class FormScreenSecond extends Component {
                 <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
                 <Text style={styles.addPaymentBtnText}>ADD TAX</Text>
               </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              style={styles.addPaymentBtn}
-              onPress={() => {
-                addTaxModalToggle(true)
-              }}
-            >
-              <Image
-                style={styles.addPaymentBtnImg}
-                source={require('../../../assets/img/roundPlus.png')}
-              ></Image>
-              <Text style={styles.addPaymentBtnText}>ADD TAX PAYMENT</Text>
-            </TouchableOpacity>
+            }
           </View>
 
           <View style={styles.firstContainer}>

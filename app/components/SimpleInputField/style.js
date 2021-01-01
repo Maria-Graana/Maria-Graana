@@ -50,8 +50,8 @@ export default styles = StyleSheet.create({
   },
   BottomFormat: {
     position: 'absolute',
-    right: 20,
-    top: 0,
+    right: 0,
+    top: 2,
     color: '#959597',
     fontWeight: '600'
   },

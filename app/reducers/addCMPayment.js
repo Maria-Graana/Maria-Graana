@@ -12,6 +12,9 @@ const payment = {
 	uri: '',
 	size: null,
 	title: '',
+	taxIncluded: false,
+	paymentCategory: '',
+	whichModalVisible: '',
 }
 
 const CMPayment = (state = payment, action) => {

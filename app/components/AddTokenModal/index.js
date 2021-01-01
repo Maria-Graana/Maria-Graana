@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native'
+import { CheckBox, ListItem, Body, Switch } from 'native-base'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal'
@@ -43,6 +44,21 @@ class AddTokenModal extends React.Component {
           </View>
 
           <ScrollView>
+            <View>
+              <ListItem style={{ borderBottomWidth: 0, paddingBottom: 0, }} onPress={() => { handleForm(!formData.taxIncluded, 'taxIncluded') }}>
+                <Switch
+                  value={formData.taxIncluded}
+                  trackColor={{ true: AppStyles.colors.primaryColor, false: 'grey' }}
+                  onValueChange={() => { handleForm(!formData.taxIncluded, 'taxIncluded') }}
+                  thumbColor={'#fff'}
+                />
+                <Body>
+                  <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold', }}>
+                    {formData.taxIncluded === true ? 'Tax Not Included' : 'Tax Included'}
+                  </Text>
+                </Body>
+              </ListItem>
+            </View>
             <View style={styles.moreViewContainer}>
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -74,9 +90,9 @@ class AddTokenModal extends React.Component {
                 <ErrorMessage errorMessage={'Amount must be greater than 0'} />
               ) : null}
               {(firstScreenValidate === true && formData.token === null) ||
-              formData.token === '' ? (
-                <ErrorMessage errorMessage={'Required'} />
-              ) : null}
+                formData.token === '' ? (
+                  <ErrorMessage errorMessage={'Required'} />
+                ) : null}
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>

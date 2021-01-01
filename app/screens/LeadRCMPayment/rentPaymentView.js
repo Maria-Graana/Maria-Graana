@@ -216,7 +216,7 @@ const RentPaymentView = (props) => {
           <View>
             {buyerCommission ? (
               <TouchableOpacity
-                disabled={singleCommission ? commissionNotApplicableBuyer : false}
+                disabled={singleCommission ? commissionNotApplicableBuyer : isLeadClosed}
                 style={[
                   styles.addPaymentBtn,
                   {
@@ -276,7 +276,7 @@ const RentPaymentView = (props) => {
           <View>
             {sellerCommission ? (
               <TouchableOpacity
-                disabled={singleCommission ? commissionNotApplicableSeller : false}
+                disabled={singleCommission ? commissionNotApplicableSeller : isLeadClosed}
                 style={[
                   styles.addPaymentBtn,
                   {

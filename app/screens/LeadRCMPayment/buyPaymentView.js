@@ -183,7 +183,7 @@ class BuyPaymentView extends React.Component {
             <View>
               {buyerCommission ? (
                 <TouchableOpacity
-                  disabled={singleCommission ? commissionNotApplicableBuyer : false}
+                  disabled={singleCommission ? commissionNotApplicableBuyer : isLeadClosed}
                   style={[
                     styles.addPaymentBtn,
                     {
@@ -244,7 +244,7 @@ class BuyPaymentView extends React.Component {
             <View>
               {sellerCommission ? (
                 <TouchableOpacity
-                  disabled={singleCommission ? commissionNotApplicableSeller : false}
+                  disabled={singleCommission  ? commissionNotApplicableSeller : isLeadClosed}
                   style={[
                     styles.addPaymentBtn,
                     {

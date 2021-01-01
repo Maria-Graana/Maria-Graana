@@ -35,6 +35,9 @@ const RentPaymentView = (props) => {
     user,
     onPaymentLongPress,
   } = props
+  const isLeadClosed =
+  lead.status === StaticData.Constants.lead_closed_lost ||
+  lead.status === StaticData.Constants.lead_closed_won
   let property = currentProperty[0]
   let subRole =
     property &&
@@ -43,13 +46,13 @@ const RentPaymentView = (props) => {
     property.armsuser.armsUserRole.subRole
   let buyerCommission =
     lead.assigned_to_armsuser_id === user.id &&
-    (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
+    (Ability.canEdit(subRole, 'Leads') || property.origin !== 'arms')
       ? true
       : false
   let sellerCommission =
     property.assigned_to_armsuser_id === user.id ||
     (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-    !Ability.canView(subRole, 'Leads')
+    !Ability.canEdit(subRole, 'Leads')
       ? true
       : false
   if (sellerCommission === true) {
@@ -150,6 +153,7 @@ const RentPaymentView = (props) => {
           <View>
             {buyerCommission ? (
               <TouchableOpacity
+                disabled={isLeadClosed}
                 style={styles.addPaymentBtn}
                 onPress={() => onAddCommissionPayment('buyer')}
               >
@@ -177,6 +181,7 @@ const RentPaymentView = (props) => {
           <View>
             {sellerCommission ? (
               <TouchableOpacity
+                disabled={isLeadClosed}
                 style={styles.addPaymentBtn}
                 onPress={() => onAddCommissionPayment('seller')}
               >

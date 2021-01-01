@@ -699,9 +699,6 @@ class Payments extends Component {
     }
     var leadId = []
     leadId.push(lead.id)
-    console.log('remainingPayment: ', remainingPayment)
-    console.log('formData: ', formData)
-    console.log('first body: ', body)
     axios
       .patch(`/api/leads/project`, body, { params: { id: leadId } })
       .then((res) => {
@@ -884,7 +881,6 @@ class Payments extends Component {
         if (secondFormData.whichModalVisible === 'taxModal') {
           delete body.remainingPayment
         }
-        // console.log('BOdy added==========', body)
         // ====================== API call for added Payments
         axios
           .post(`/api/leads/project/payments`, body)
@@ -944,7 +940,6 @@ class Payments extends Component {
           delete body.remainingPayment
         }
 
-        // console.log('Body update ================', body)
         axios
           .patch(`/api/leads/project/payment?id=${paymentId}`, body)
           .then((res) => {
@@ -1328,8 +1323,6 @@ class Payments extends Component {
     // you have complete data of cm payment here
     this.showHideDeletePayment(false)
     const url = `/api/leads/payment?id=${CMPayment.id}&reason=${reason}`
-    // const response = await axios.delete(url)
-    console.log(url)
     axios.delete(url)
       .then((response) => {
 
@@ -1344,20 +1337,6 @@ class Payments extends Component {
         console.log(`/api/leads/payment?id=&reason= - ${error}` )
         helper.errorToast('ERROR DELETING PAYMENT!')
       })
-    // if (response.data) {
-    //   console.log(2)
-
-    //   if (CMPayment.paymentCategory != 'tax') {
-    //     this.setState({
-    //       remainingPayment: remainingPayment + CMPayment.installmentAmount,
-    //     })
-    //   }
-    //   this.fetchLead()
-    //   helper.successToast(response.data.message)
-    // } else {
-    //   console.log(1)
-    //   helper.errorToast('ERROR DELETING PAYMENT!')
-    // }
   }
 
   onPaymentLongPress = (data) => {
@@ -1423,6 +1402,8 @@ class Payments extends Component {
       paymentNotZero,
       tokenNotZero,
       deletePaymentVisible,
+      addTaxToggleState,
+      taxNotZero,
     } = this.state
     return (
       <View>

@@ -7,6 +7,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Menu } from 'react-native-paper'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
+import { formatPrice } from '../../PriceFormate'
 import helper from '../../helper'
 import styles from './style'
 
@@ -89,7 +90,15 @@ class AgentTile extends React.Component {
   }
 
   render() {
-    let { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen } = this.props
+    let {
+      data,
+      isMenuVisible,
+      showCheckBoxes,
+      viewingMenu,
+      menuShow,
+      screen,
+      bookAnotherViewing,
+    } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
@@ -122,7 +131,10 @@ class AgentTile extends React.Component {
             <View>
               <Text style={styles.currencyText}>
                 {' '}
-                PKR <Text style={styles.priceText}>{data.price}</Text>{' '}
+                PKR{' '}
+                <Text style={styles.priceText}>
+                  {formatPrice(data && data.price && data.price)}
+                </Text>{' '}
               </Text>
               <Text numberOfLines={1} style={styles.marlaText}>
                 {' '}
@@ -227,6 +239,12 @@ class AgentTile extends React.Component {
                         </View>
                       ) : (
                         <View>
+                          <Menu.Item
+                            onPress={() => {
+                              bookAnotherViewing(data)
+                            }}
+                            title="Book Another Viewing"
+                          />
                           <Menu.Item
                             onPress={() => {
                               this.props.goToPropertyComments(data)

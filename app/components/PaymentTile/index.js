@@ -1,18 +1,20 @@
+/** @format */
+
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, } from 'react-native'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 import styles from './style'
-import { connect } from 'react-redux';
-import { formatPrice } from '../../PriceFormate';
+import { connect } from 'react-redux'
+import { formatPrice } from '../../PriceFormate'
 import moment from 'moment'
-import StaticData from '../../StaticData';
+import StaticData from '../../StaticData'
 
 class PaymentTile extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			menuShow: false
-		}
-	}
+  constructor(props) {
+    super(props)
+    this.state = {
+      menuShow: false,
+    }
+  }
 
 	render() {
 		const {
@@ -49,10 +51,10 @@ class PaymentTile extends React.Component {
 }
 
 mapStateToProps = (store) => {
-	return {
-		user: store.user.user,
-		contacts: store.contacts.contacts,
-	}
+  return {
+    user: store.user.user,
+    contacts: store.contacts.contacts,
+  }
 }
 
 export default connect(mapStateToProps)(PaymentTile)

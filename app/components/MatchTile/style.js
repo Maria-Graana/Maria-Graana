@@ -12,6 +12,8 @@ export default styles = StyleSheet.create({
     backgroundColor: 'white',
     flex: 1,
     borderRadius: 5,
+    // borderTopEndRadius: 10,
+    // borderTopLeftRadius: 10,
     height: 150,
     flexDirection: 'row'
   },

@@ -65,13 +65,13 @@ class BuyPaymentView extends React.Component {
       lead.status === StaticData.Constants.lead_closed_won
     let buyerCommission =
       lead.assigned_to_armsuser_id === user.id &&
-      (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
+      (Ability.canEdit(subRole, 'Leads') || property.origin !== 'arms')
         ? true
         : false
     let sellerCommission =
       property.assigned_to_armsuser_id === user.id ||
       (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-      !Ability.canView(subRole, 'Leads')
+      !Ability.canEdit(subRole, 'Leads')
         ? true
         : false
     if (sellerCommission === true) {
@@ -261,12 +261,7 @@ class BuyPaymentView extends React.Component {
                   <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
                 </TouchableOpacity>
               ) : (
-                <View style={[styles.addPaymentBtn, { borderColor: '#ddd' }]}>
-                  <Text style={[styles.addPaymentBtnText, { color: '#ddd' }]}>
-                    {' '}
-                    SELLER COMMISSION NOT APPLICABLE
-                  </Text>
-                </View>
+               null
               )}
             </View>
           )

@@ -406,7 +406,7 @@ class RCMReport extends React.Component {
     if (filterLabel === 'Weekly') {
       this.updateWeekDay(day)
     } else {
-      let newDate = moment(dateString).format('LL')
+      let newDate = moment(dateString).format(_format)
       this.setState(
         {
           selectedDate: newDate,
@@ -574,13 +574,10 @@ class RCMReport extends React.Component {
         agentFormData.agent
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily') {
-      let date = new Date(selectedDate)
-      date = moment(date).format(_format)
+    if (filterLabel === 'Daily')
       url = `/api/leads/reports?scope=agent&q=${
         agentFormData.agent
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${date}`
-    }
+      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
     if (filterLabel === 'Yearly')
       url = `/api/leads/reports?scope=agent&q=${
         agentFormData.agent
@@ -665,13 +662,10 @@ class RCMReport extends React.Component {
         zoneFormData.zone
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily') {
-      let date = new Date(selectedDate)
-      date = moment(date).format(_format)
+    if (filterLabel === 'Daily')
       url = `/api/leads/reports?scope=team&q=${
         zoneFormData.zone
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${date}`
-    }
+      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
     if (filterLabel === 'Yearly')
       url = `/api/leads/reports?scope=team&q=${
         zoneFormData.zone
@@ -752,13 +746,10 @@ class RCMReport extends React.Component {
         regionFormData.organization
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily') {
-      let date = new Date(selectedDate)
-      date = moment(date).format(_format)
+    if (filterLabel === 'Daily')
       url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${
         regionFormData.organization
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${date}`
-    }
+      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
     if (filterLabel === 'Yearly')
       url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${
         regionFormData.organization
@@ -842,11 +833,8 @@ class RCMReport extends React.Component {
       if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
       url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily') {
-      let date = new Date(selectedDate)
-      date = moment(date).format(_format)
-      url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${date}`
-    }
+    if (filterLabel === 'Daily')
+      url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
     if (filterLabel === 'Yearly')
       url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
     if (filterLabel === 'Weekly')

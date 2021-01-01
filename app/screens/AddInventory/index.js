@@ -87,15 +87,14 @@ class AddInventory extends Component {
 
 
     componentDidMount() {
-        const {navigation} = this.props;
+        const { navigation, route } = this.props;
         navigation.addListener('focus', () => {
-            const { route, user } = this.props;
             this.onScreenFocused()
-            if (route.params.update) {
-                navigation.setOptions({ title: 'EDIT PROPERTY' })
-                this.setEditValues()
-            }
         })
+        if (route.params.update) {
+            navigation.setOptions({ title: 'EDIT PROPERTY' })
+            this.setEditValues()
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -131,13 +130,12 @@ class AddInventory extends Component {
             copyObject.area_id = selectedArea.value;
             this.setState({ formData: copyObject, selectedArea })
         }
-        // if (mapValues) {
-        //     copyObject.propsure_id = mapValues.propsure_id;
-        //     copyObject.lat = mapValues.lat;
-        //     copyObject.lng = mapValues.lng;
-        //     this.setState({ formData: copyObject })
-
-        // }
+        if (mapValues) {
+            copyObject.propsure_id = mapValues.propsure_id;
+            copyObject.lat = mapValues.lat;
+            copyObject.lng = mapValues.lng;
+            this.setState({ formData: copyObject })
+        }
     }
 
     clearAreaOnCityChange = () => {
@@ -287,7 +285,7 @@ class AddInventory extends Component {
             }
             const response = await axios.post(url, body);
             if (response.status === 200) {
-                const copyData = {...data};
+                const copyData = { ...data };
                 copyData.geotagged_date = response.data.createdAt;
                 return copyData;
             }
@@ -327,9 +325,9 @@ class AddInventory extends Component {
         delete formData.year_built;
         delete formData.downpayment;
         if (route.params.update) {
-            // this.updateMapLocation(property, formData).then((data => {
-                // if (data) {
-                    axios.patch(`/api/inventory/${property.id}`, formData)
+            this.updateMapLocation(property, formData).then((data => {
+                if (data) {
+                    axios.patch(`/api/inventory/${property.id}`, data)
                         .then((res) => {
                             if (res.status === 200) {
                                 helper.successToast('PROPERTY UPDATED SUCCESSFULLY!')
@@ -350,15 +348,14 @@ class AddInventory extends Component {
                         .finally(() => {
                             this.setState({ loading: false })
                         })
-            //     }
-            //     else {
-            //         helper.errorToast('ERROR: UPDATING MAP LOCATION');
-            //         this.setState({ loading: false })
-            //     }
-            // }));
+                }
+                else {
+                    helper.errorToast('ERROR: UPDATING MAP LOCATION');
+                    this.setState({ loading: false })
+                }
+            }));
         }
         else {
-            //console.log(formData)
             axios.post(`/api/inventory/create`, formData)
                 .then((res) => {
                     // console.log(res.data)
@@ -691,7 +688,7 @@ class AddInventory extends Component {
                                     facing={facing}
                                     selectedFeatures={selectedFeatures}
                                     handleFeatures={(value) => this.handleFeatures(value)}
-                                    getCurrentLocation = {this._getLocationAsync}
+                                    getCurrentLocation={this._getLocationAsync}
                                     loading={loading}
                                     handlePointOfContact={this.handlePointOfContact}
                                     handleShowAddress={this.handleShowAddress}

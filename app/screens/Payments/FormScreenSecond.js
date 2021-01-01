@@ -35,7 +35,6 @@ class FormScreenSecond extends Component {
       tileForToken,
       onPaymentLongPress,
     } = this.props
-    console.log('data: ', data)
     return (
       <SafeAreaView style={styles.removePad}>
         <KeyboardAvoidingView>

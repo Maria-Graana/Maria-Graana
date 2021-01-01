@@ -106,6 +106,7 @@ export default class App extends React.Component {
 
   navigateRoutes = (content) => {
     if (content) {
+      console.log(content.data);
       let data = content.data
       let leadId = data && data.leadId && data.leadId
       let lead = { id: leadId }
@@ -117,10 +118,40 @@ export default class App extends React.Component {
           purposeTab: 'invest',
           lead: lead,
         })
-      if (data.type === 'buyLead')
-        RootNavigation.navigateTo('LeadDetail', { screen: 'Buy', purposeTab: 'sale', lead: lead })
-      if (data.type === 'rentLead')
-        RootNavigation.navigateTo('LeadDetail', { screen: 'Rent', purposeTab: 'rent', lead: lead })
+      if (data.type === 'buyLead') {
+        if (data.leadStatus === 'payment') {
+          RootNavigation.navigateTo('RCMLeadTabs', {
+            screen: 'Payment',
+            lead: lead,
+          })
+        }
+        else if (data.leadStatus === 'propsure') {
+          RootNavigation.navigateTo('RCMLeadTabs', {
+            screen: 'Propsure',
+            lead: lead,
+          })
+        }
+        else {
+          RootNavigation.navigateTo('LeadDetail', { screen: 'Buy', purposeTab: 'sale', lead: lead })
+        }
+      }
+      if (data.type === 'rentLead') {
+        if (data.leadStatus === 'payment') {
+          RootNavigation.navigateTo('RCMLeadTabs', {
+            screen: 'Payment',
+            lead: lead,
+          })
+        }
+        else if (data.leadStatus === 'propsure') {
+          RootNavigation.navigateTo('RCMLeadTabs', {
+            screen: 'Propsure',
+            lead: lead,
+          })
+        }
+        else {
+          RootNavigation.navigateTo('LeadDetail', { screen: 'Rent', purposeTab: 'rent', lead: lead })
+        }
+      }
       if (data.type === 'diary')
         RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
     }

@@ -16,6 +16,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import BookingDetailsModal from '../../components/BookingDetailsModal'
 import AddPaymentModal from '../../components/AddPaymentModal'
+import AddTaxModal from '../../components/AddTaxModal'
 import AddTokenModal from '../../components/AddTokenModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import styles from './style'
@@ -84,6 +85,7 @@ class Payments extends Component {
       firstScreenDone: lead.unit != null && lead.unit.id != null ? false : true,
       secondScreenData: lead,
       addPaymentModalToggleState: false,
+      addTaxToggleState: false,
       secondCheckValidation: false,
       editaAble: false,
       paymentId: null,
@@ -106,6 +108,7 @@ class Payments extends Component {
       remarksDataForPayment: [],
       paymentNotZero: false,
       tokenNotZero: false,
+      taxEditable: false,
     }
   }
 
@@ -688,6 +691,9 @@ class Payments extends Component {
     }
     var leadId = []
     leadId.push(lead.id)
+    console.log('remainingPayment: ', remainingPayment)
+    console.log('formData: ', formData)
+    console.log('first body: ', body)
     axios
       .patch(`/api/leads/project`, body, { params: { id: leadId } })
       .then((res) => {
@@ -794,6 +800,26 @@ class Payments extends Component {
         addPaymentModalToggleState: status,
         remarks: null,
         editaAble: false,
+        paymentRemarkVisible: false,
+      })
+    }
+  }
+
+  addTaxModalToggle = (status) => {
+    if (status === true) {
+      this.clearPaymentsValuesFromRedux(status)
+      this.setState({
+        addTaxToggleState: status,
+        secondCheckValidation: false,
+        secondFormLeadData: {},
+        taxEditable: false,
+      })
+    } else if (status === false) {
+      this.clearPaymentsValuesFromRedux(status)
+      this.setState({
+        addTaxToggleState: status,
+        remarks: null,
+        taxEditable: false,
         paymentRemarkVisible: false,
       })
     }
@@ -1281,6 +1307,8 @@ class Payments extends Component {
       remarksPaymentLoading,
       paymentNotZero,
       tokenNotZero,
+      taxNotZero,
+      addTaxToggleState,
     } = this.state
     return (
       <View>
@@ -1331,6 +1359,7 @@ class Payments extends Component {
                   onlyReadFormData={formData}
                   toggleBookingDetailsModal={this.toggleBookingDetailsModal}
                   addPaymentModalToggle={this.addPaymentModalToggle}
+                  addTaxModalToggle={this.addTaxModalToggle}
                   currencyConvert={this.currencyConvert}
                   editTile={this.editTile}
                 />
@@ -1395,6 +1424,24 @@ class Payments extends Component {
             remarkData={remarksDataForPayment}
             remarksPaymentLoading={remarksPaymentLoading}
             paymentNotZero={paymentNotZero}
+          />
+          <AddTaxModal
+            active={addTaxToggleState}
+            secondFormData={secondFormData}
+            secondCheckValidation={secondCheckValidation}
+            modalLoading={modalLoading}
+            addPaymentLoading={addPaymentLoading}
+            remarks={remarks}
+            secondFormLeadData={secondFormLeadData}
+            addTaxModalToggle={this.addTaxModalToggle}
+            secondHandleForm={this.secondHandleForm}
+            secondFormSubmit={this.secondFormSubmit}
+            goToPayAttachments={this.goToPayAttachments}
+            goToRemarks={this.goToRemarks}
+            remarkActive={paymentRemarkVisible}
+            remarkData={remarksDataForPayment}
+            remarksPaymentLoading={remarksPaymentLoading}
+            taxNotZero={taxNotZero}
           />
           <AddTokenModal
             active={tokenModalVisible}

@@ -6,6 +6,7 @@ import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Menu } from 'react-native-paper'
 import Carousel from 'react-native-snap-carousel'
+import { formatPrice } from '../../PriceFormate'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
@@ -126,7 +127,15 @@ class MatchTile extends React.Component {
   }
 
   render() {
-    let { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen } = this.props
+    let {
+      data,
+      isMenuVisible,
+      showCheckBoxes,
+      viewingMenu,
+      menuShow,
+      screen,
+      bookAnotherViewing,
+    } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let imagesList = this.checkImages()
     let show = isMenuVisible
@@ -190,7 +199,10 @@ class MatchTile extends React.Component {
             <View>
               <Text style={styles.currencyText}>
                 {' '}
-                PKR <Text style={styles.priceText}>{data.price}</Text>{' '}
+                PKR{' '}
+                <Text style={styles.priceText}>
+                  {formatPrice(data && data.price && data.price)}
+                </Text>{' '}
               </Text>
               <Text numberOfLines={1} style={styles.marlaText}>
                 {' '}
@@ -292,6 +304,12 @@ class MatchTile extends React.Component {
                       </View>
                     ) : (
                       <View>
+                        <Menu.Item
+                          onPress={() => {
+                            bookAnotherViewing(data)
+                          }}
+                          title="Book Another Viewing"
+                        />
                         <Menu.Item
                           onPress={() => {
                             this.props.goToPropertyComments(data)

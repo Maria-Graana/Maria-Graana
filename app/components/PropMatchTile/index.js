@@ -6,6 +6,7 @@ import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Menu } from 'react-native-paper'
 import Carousel from 'react-native-snap-carousel'
+import { formatPrice } from '../../PriceFormate'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
@@ -177,7 +178,10 @@ class PropMatchTile extends React.Component {
             <View>
               <Text style={styles.currencyText}>
                 {' '}
-                PKR <Text style={styles.priceText}>{data.price}</Text>{' '}
+                PKR{' '}
+                <Text style={styles.priceText}>
+                  {formatPrice(data && data.price && data.price)}
+                </Text>{' '}
               </Text>
               <Text numberOfLines={1} style={styles.marlaText}>
                 {' '}

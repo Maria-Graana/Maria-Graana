@@ -361,7 +361,7 @@ class LeadRCMPayment extends React.Component {
       addPaymentLoading: false,
       editable: false,
     })
-    dispatch(setRCMPayment(newData))
+    dispatch(setRCMPayment({ ...newData }))
   }
 
   componentWillUnmount() {
@@ -1027,15 +1027,15 @@ class LeadRCMPayment extends React.Component {
                   this.uploadAttachment(paymentAttachment, response.data.id)
                 )
               } else {
-                this.fetchLead()
                 this.clearReduxAndStateValues()
+                this.fetchLead()
                 helper.successToast('Commission Payment Added')
               }
             }
           })
           .catch((error) => {
-            helper.errorToast('Error Adding Commission Payment', error)
             this.clearReduxAndStateValues()
+            helper.errorToast('Error Adding Commission Payment', error)
           })
       } else {
         // commission update mode
@@ -1193,6 +1193,7 @@ class LeadRCMPayment extends React.Component {
     const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`
     const response = await axios.delete(url)
     if (response.data) {
+      this.clearReduxAndStateValues()
       this.fetchLead()
       helper.successToast(response.data.message)
     } else {

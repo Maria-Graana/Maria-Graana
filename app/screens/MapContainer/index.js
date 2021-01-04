@@ -1289,7 +1289,7 @@ class MapContainer extends Component {
               <Text style={styles.plotInfoStyle}>
                 {chosen_plot.total_area} {chosen_plot.Area_In}
               </Text>
-              <Text style={styles.plotInfoStyle}>Street {chosen_plot.Street}</Text>
+              {!!chosen_plot.Street && <Text style={styles.plotInfoStyle}>Street {chosen_plot.Street}</Text> }
               <Text style={styles.plotInfoStyle}>
                 {chosen_plot.housing_scheme ? chosen_plot.housing_scheme.housing_scheme_name: ''}/{chosen_plot.phase_sector ? chosen_plot.phase_sector.phase_sector_name: ''},{' '}
                 {chosen_plot.city ? chosen_plot.city.city_name : ''}
@@ -1302,7 +1302,7 @@ class MapContainer extends Component {
                 <View
                   style={styles.buttonStyle}
                 >
-                  <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>
+                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>
                     MARK THIS PROPERTY
                   </Text>
                 </View>
@@ -1368,7 +1368,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F73EE',
     padding: 15,
     marginLeft: 16,
-    marginTop: 18,
+    marginTop: 14,
     borderRadius: 12,
   },
 
@@ -1420,7 +1420,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    height: 240,
+    height: 250,
   },
   region: {
     color: '#fff',

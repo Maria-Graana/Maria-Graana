@@ -54,7 +54,7 @@ class AddTokenModal extends React.Component {
                 />
                 <Body>
                   <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold', }}>
-                    {formData.taxIncluded === true ? 'Tax Not Included' : 'Tax Included'}
+                    {formData.taxIncluded === false || formData.taxIncluded === null ? 'Tax Not Included' : 'Tax Included'}
                   </Text>
                 </Body>
               </ListItem>

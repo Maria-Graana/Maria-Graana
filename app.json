@@ -62,7 +62,7 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 5,
+      "versionCode": 6,
       "useNextNotificationsApi": true
     },
     "notification": {

@@ -71,7 +71,6 @@ class LeadViewing extends React.Component {
       .get(`/api/leads/${lead.id}/shortlist`)
       .then((res) => {
         matches = helper.propertyIdCheck(res.data.rows)
-        console.log(res.data.rows)
         this.setState({
           loading: false,
           matchData: matches,
@@ -335,6 +334,7 @@ class LeadViewing extends React.Component {
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
+      let viewingDoneCount = diaries && diaries.filter((item) => {return item.status === 'completed' && item.status})
       if (diaries && diaries.length > 0) {
         return (
           <View>
@@ -366,8 +366,9 @@ class LeadViewing extends React.Component {
                 </Text>
               </TouchableOpacity>
             }
-            {/* {diaries && diaries.length > 0 && */}
-            <TouchableOpacity
+            {
+              viewingDoneCount && viewingDoneCount.length > 0 &&
+              <TouchableOpacity
               style={{
                 backgroundColor: AppStyles.colors.primaryColor,
                 height: 30,
@@ -381,8 +382,10 @@ class LeadViewing extends React.Component {
               <Text style={{ color: 'white',  fontFamily: AppStyles.fonts.defaultFont }}>
                 VIEWING DONE 
               </Text>
-              <Text style={styles.countStyle}>{`${diary && diary.status === 'pending' ? diaries.length - 1 : diaries.length}`}</Text>
+              {/* <Text style={styles.countStyle}>{`${diaries.length === 1 ? diaries.length  : diaries.length - 1}`}</Text> */}
+              <Text style={styles.countStyle}>{`${viewingDoneCount.length}`}</Text>
             </TouchableOpacity>
+            }
             {/* } */}
           </View>
         )
@@ -421,7 +424,6 @@ class LeadViewing extends React.Component {
   bookAnotherViewing = (property) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
-    console.log('property: ', property)
     if (leadAssignedSharedStatus) {
       this.openModal()
       this.setProperty(property)

@@ -179,7 +179,7 @@ const role = {
         access: { v: true, a: true, e: true, d: true },
       },
       { role: 'group_head', access: { v: true, a: true, e: true, d: true } },
-      { role: 'country_head', access: { v: true, a: true, e: true, d: true } },
+      { role: 'country_head', access: { v: true, a: false, e: false, d: false } },
       { role: 'regional_head', access: { v: true, a: true, e: true, d: true } },
       { role: 'zonal_manager', access: { v: true, a: true, e: true, d: true } },
       {
@@ -188,11 +188,11 @@ const role = {
       },
       {
         role: 'business_centre_manager',
-        access: { v: true, a: true, e: true, d: true },
+        access: { v: true, a: false, e: false, d: false },
       },
       {
         role: 'call_centre_manager',
-        access: { v: true, a: true, e: true, d: true },
+        access: { v: true, a: false, e: false, d: false },
       },
       { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
       { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },

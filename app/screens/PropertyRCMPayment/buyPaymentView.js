@@ -36,23 +36,23 @@ class BuyPaymentView extends React.Component {
       onPaymentLongPress,
     } = this.props
     let property = currentProperty[0]
+    const isLeadClosed =
+    lead.status === StaticData.Constants.lead_closed_lost ||
+    lead.status === StaticData.Constants.lead_closed_won
     let subRole =
       property &&
       property.armsuser &&
       property.armsuser.armsUserRole &&
       property.armsuser.armsUserRole.subRole
-    const isLeadClosed =
-      lead.status === StaticData.Constants.lead_closed_lost ||
-      lead.status === StaticData.Constants.lead_closed_won
     let buyerCommission =
       lead.assigned_to_armsuser_id === user.id &&
-      (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
+      (Ability.canEdit(subRole, 'Leads') || property.origin !== 'arms')
         ? true
         : false
     let sellerCommission =
       property.assigned_to_armsuser_id === user.id ||
       (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-      !Ability.canView(subRole, 'Leads')
+      !Ability.canEdit(subRole, 'Leads')
         ? true
         : false
     if (sellerCommission === true) {
@@ -110,6 +110,7 @@ class BuyPaymentView extends React.Component {
             <View>
               {buyerCommission ? (
                 <TouchableOpacity
+                   disabled={isLeadClosed}
                   style={styles.addPaymentBtn}
                   onPress={() => onAddCommissionPayment('buyer')}
                 >
@@ -137,6 +138,7 @@ class BuyPaymentView extends React.Component {
             <View>
               {sellerCommission ? (
                 <TouchableOpacity
+                  disabled={isLeadClosed}
                   style={styles.addPaymentBtn}
                   onPress={() => onAddCommissionPayment('seller')}
                 >

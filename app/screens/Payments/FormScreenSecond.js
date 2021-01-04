@@ -103,8 +103,8 @@ class FormScreenSecond extends Component {
                   fromatName={'remainingPayment'}
                   placeholder={'Remaining Payment'}
                   label={'REMAINING PAYMENT'}
-                  value={data.remainingPayment}
-                  formatValue={data.remainingPayment}
+                  value={remainingPayment}
+                  formatValue={remainingPayment}
                   editable={false}
                   keyboardType={'numeric'}
                 />

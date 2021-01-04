@@ -52,9 +52,18 @@ class PropertyPropsure extends React.Component {
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.fetchLead()
-      this.getCallHistory()
-      this.fetchProperties()
+      if (this.props.route.params && this.props.route.params.isFromNotification) {
+        const { lead } = this.props.route.params;
+        this.fetchLead(lead)
+        this.getCallHistory(lead)
+        this.fetchProperties(lead)
+      }
+      else {
+        const { lead } = this.props;
+        this.fetchLead(lead)
+        this.getCallHistory(lead)
+        this.fetchProperties(lead)
+      }
     })
   }
 
@@ -62,8 +71,7 @@ class PropertyPropsure extends React.Component {
     this._unsubscribe()
   }
 
-  fetchProperties = () => {
-    const { lead } = this.props
+  fetchProperties = (lead) => {
     const { rcmProgressBar } = StaticData
     let matches = []
     this.setState({ loading: true }, () => {
@@ -90,8 +98,7 @@ class PropertyPropsure extends React.Component {
     })
   }
 
-  fetchLead = () => {
-    const { lead } = this.props
+  fetchLead = (lead) => {
     axios
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
@@ -102,7 +109,7 @@ class PropertyPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -152,8 +159,8 @@ class PropertyPropsure extends React.Component {
       axios
         .post(`/api/leads/propsure/${lead.id}`, body)
         .then((response) => {
-          this.fetchLead()
-          this.fetchProperties()
+          this.fetchLead(lead)
+          this.fetchProperties(lead)
         })
         .catch((error) => {
           console.log(error)
@@ -215,6 +222,7 @@ class PropertyPropsure extends React.Component {
   }
 
   uploadAttachment(file, propsureId) {
+    const {lead} = this.props;
     this.closeDocumentModal()
     let document = {
       name: file.name,
@@ -226,8 +234,8 @@ class PropertyPropsure extends React.Component {
     axios
       .post(`api/leads/propsureDoc?id=${propsureId}`, fd)
       .then((response) => {
-        this.fetchProperties()
-        this.fetchLead()
+        this.fetchProperties(lead)
+        this.fetchLead(lead)
       })
       .catch((error) => {
         console.log('error=>', error.message)
@@ -359,8 +367,7 @@ class PropertyPropsure extends React.Component {
     this.setState({ callModal: !callModal })
   }
 
-  getCallHistory = () => {
-    const { lead } = this.props
+  getCallHistory = (lead) => {
     axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
       this.setState({ meetings: res.data.rows })
     })
@@ -499,20 +506,20 @@ class PropertyPropsure extends React.Component {
                       screen={'propsure'}
                     />
                   ) : (
-                    <PropAgentTile
-                      data={_.clone(item.item)}
-                      user={user}
-                      displayChecks={this.displayChecks}
-                      showCheckBoxes={false}
-                      addProperty={this.addProperty}
-                      isMenuVisible={true}
-                      viewingMenu={false}
-                      goToPropertyComments={this.goToPropertyComments}
-                      toggleMenu={this.toggleMenu}
-                      menuShow={menuShow}
-                      screen={'propsure'}
-                    />
-                  )}
+                      <PropAgentTile
+                        data={_.clone(item.item)}
+                        user={user}
+                        displayChecks={this.displayChecks}
+                        showCheckBoxes={false}
+                        addProperty={this.addProperty}
+                        isMenuVisible={true}
+                        viewingMenu={false}
+                        goToPropertyComments={this.goToPropertyComments}
+                        toggleMenu={this.toggleMenu}
+                        menuShow={menuShow}
+                        screen={'propsure'}
+                      />
+                    )}
                   <View>
                     {item.item.propsures.length === 0
                       ? this.renderPropsureVerificationView(item.item)
@@ -523,14 +530,14 @@ class PropertyPropsure extends React.Component {
               keyExtractor={(item, index) => item.id.toString()}
             />
           ) : (
-            <>
-              <Image
-                source={require('../../../assets/img/no-result-found.png')}
-                resizeMode={'center'}
-                style={{ alignSelf: 'center', width: 300, height: 300 }}
-              />
-            </>
-          )}
+              <>
+                <Image
+                  source={require('../../../assets/img/no-result-found.png')}
+                  resizeMode={'center'}
+                  style={{ alignSelf: 'center', width: 300, height: 300 }}
+                />
+              </>
+            )}
         </View>
         <View style={AppStyles.mainCMBottomNav}>
           <PropertyBottomNav
@@ -559,8 +566,8 @@ class PropertyPropsure extends React.Component {
         />
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

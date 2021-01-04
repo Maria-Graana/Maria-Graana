@@ -81,8 +81,16 @@ class PropertyRCMPayment extends React.Component {
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.getCallHistory()
-      this.getSelectedProperty(this.state.lead)
+      if (this.props.route.params && this.props.route.params.isFromNotification) {
+       const {lead } = this.props.route.params;
+        this.getCallHistory(lead)
+        this.getSelectedProperty(lead)
+      }
+      else {
+        const { lead } = this.props;
+        this.getCallHistory(lead)
+        this.getSelectedProperty(lead)
+      }
     })
   }
 
@@ -217,7 +225,7 @@ class PropertyRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -392,7 +400,7 @@ class PropertyRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
-    this.setState({ formData }, () => {})
+    this.setState({ formData }, () => { })
     if (formData.monthlyRent !== '' && name === 'monthlyRent') {
       this.setState({ showMonthlyRentArrow: true })
     }
@@ -504,7 +512,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -517,7 +525,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -575,8 +583,7 @@ class PropertyRCMPayment extends React.Component {
     this.setState({ callModal: !callModal })
   }
 
-  getCallHistory = () => {
-    const { lead } = this.props
+  getCallHistory = (lead) => {
     axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
       this.setState({ meetings: res.data.rows })
     })
@@ -691,8 +698,8 @@ class PropertyRCMPayment extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -792,6 +799,7 @@ class PropertyRCMPayment extends React.Component {
     const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`
     const response = await axios.delete(url)
     if (response.data) {
+      this.clearReduxAndStateValues();
       helper.successToast(response.data.message)
       this.fetchLead()
     } else {
@@ -926,20 +934,20 @@ class PropertyRCMPayment extends React.Component {
                       screen={'payment'}
                     />
                   ) : (
-                    <PropAgentTile
-                      data={_.clone(item.item)}
-                      user={user}
-                      displayChecks={this.displayChecks}
-                      showCheckBoxes={false}
-                      addProperty={this.addProperty}
-                      isMenuVisible={true}
-                      viewingMenu={false}
-                      goToPropertyComments={this.goToPropertyComments}
-                      toggleMenu={this.toggleMenu}
-                      menuShow={menuShow}
-                      screen={'payment'}
-                    />
-                  )}
+                      <PropAgentTile
+                        data={_.clone(item.item)}
+                        user={user}
+                        displayChecks={this.displayChecks}
+                        showCheckBoxes={false}
+                        addProperty={this.addProperty}
+                        isMenuVisible={true}
+                        viewingMenu={false}
+                        goToPropertyComments={this.goToPropertyComments}
+                        toggleMenu={this.toggleMenu}
+                        menuShow={menuShow}
+                        screen={'payment'}
+                      />
+                    )}
                 </View>
               )}
               ListFooterComponent={
@@ -971,51 +979,51 @@ class PropertyRCMPayment extends React.Component {
                         rentNotZero={rentNotZero}
                       />
                     ) : (
-                      <RentPaymentView
-                        user={user}
-                        currentProperty={allProperties}
-                        lead={lead}
-                        pickerData={pickerData}
-                        handleForm={this.handleForm}
-                        formData={formData}
-                        showMonthlyRentArrow={showMonthlyRentArrow}
-                        handleMonthlyRentPress={this.handleMonthlyRentPress}
-                        token={token}
-                        handleTokenAmountChange={this.handleTokenAmountChange}
-                        showTokenAmountArrow={showTokenAmountArrow}
-                        handleTokenAmountPress={this.handleTokenAmountPress}
-                        showAndHideStyling={this.showAndHideStyling}
-                        showStylingState={showStyling}
-                        tokenDateStatus={tokenDateStatus}
-                        tokenPriceFromat={tokenPriceFromat}
-                        agreeAmountFromat={agreeAmountFromat}
-                        monthlyFormatStatus={monthlyFormatStatus}
-                        onAddCommissionPayment={this.onAddCommissionPayment}
-                        editTile={this.setCommissionEditData}
-                        onPaymentLongPress={this.onPaymentLongPress}
-                        tokenNotZero={tokenNotZero}
-                        agreedNotZero={agreedNotZero}
-                        rentNotZero={rentNotZero}
-                      />
-                    )
+                        <RentPaymentView
+                          user={user}
+                          currentProperty={allProperties}
+                          lead={lead}
+                          pickerData={pickerData}
+                          handleForm={this.handleForm}
+                          formData={formData}
+                          showMonthlyRentArrow={showMonthlyRentArrow}
+                          handleMonthlyRentPress={this.handleMonthlyRentPress}
+                          token={token}
+                          handleTokenAmountChange={this.handleTokenAmountChange}
+                          showTokenAmountArrow={showTokenAmountArrow}
+                          handleTokenAmountPress={this.handleTokenAmountPress}
+                          showAndHideStyling={this.showAndHideStyling}
+                          showStylingState={showStyling}
+                          tokenDateStatus={tokenDateStatus}
+                          tokenPriceFromat={tokenPriceFromat}
+                          agreeAmountFromat={agreeAmountFromat}
+                          monthlyFormatStatus={monthlyFormatStatus}
+                          onAddCommissionPayment={this.onAddCommissionPayment}
+                          editTile={this.setCommissionEditData}
+                          onPaymentLongPress={this.onPaymentLongPress}
+                          tokenNotZero={tokenNotZero}
+                          agreedNotZero={agreedNotZero}
+                          rentNotZero={rentNotZero}
+                        />
+                      )
                   ) : null}
                 </View>
               }
               keyExtractor={(item, index) => item && item.id && item.id.toString()}
             />
           ) : (
-            <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-              <Text
-                style={{
-                  fontFamily: AppStyles.fonts.semiBoldFont,
-                  fontSize: AppStyles.fontSize.medium,
-                  color: AppStyles.colors.textColor,
-                }}
-              >
-                NO PROPERTY IS SELECTED FOR PAYMENT YET
+              <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                <Text
+                  style={{
+                    fontFamily: AppStyles.fonts.semiBoldFont,
+                    fontSize: AppStyles.fontSize.medium,
+                    color: AppStyles.colors.textColor,
+                  }}
+                >
+                  NO PROPERTY IS SELECTED FOR PAYMENT YET
               </Text>
-            </View>
-          )}
+              </View>
+            )}
           <View style={AppStyles.mainCMBottomNav}>
             <PropertyBottomNav
               goToAttachments={this.goToAttachments}
@@ -1035,8 +1043,8 @@ class PropertyRCMPayment extends React.Component {
         </View>
       </KeyboardAvoidingView>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

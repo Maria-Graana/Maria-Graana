@@ -106,7 +106,6 @@ export default class App extends React.Component {
 
   navigateRoutes = (content) => {
     if (content) {
-      console.log(content.data);
       let data = content.data
       let leadId = data && data.leadId && data.leadId
       let lead = { id: leadId }
@@ -120,16 +119,48 @@ export default class App extends React.Component {
         })
       if (data.type === 'buyLead') {
         if (data.leadStatus === 'payment') {
+          if(data.notificationFor === 'buyer') {
+          // buyer screen
           RootNavigation.navigateTo('RCMLeadTabs', {
             screen: 'Payment',
-            lead: lead,
+            params: {
+              isFromNotification: true,
+              lead: lead
+            }
           })
+          }
+          else{
+            // seller screen
+            RootNavigation.navigateTo('PropertyTabs', {
+              screen: 'Payment',
+              params: {
+                isFromNotification: true,
+                lead: lead
+              }
+            })
+          }
         }
         else if (data.leadStatus === 'propsure') {
-          RootNavigation.navigateTo('RCMLeadTabs', {
-            screen: 'Propsure',
-            lead: lead,
-          })
+          if(data.notificationFor === 'buyer') {
+            // buyer screen
+            RootNavigation.navigateTo('RCMLeadTabs', {
+              screen: 'Propsure',
+              params: {
+                isFromNotification: true,
+                lead: lead
+              }
+            })
+            }
+            else{
+              // seller screen
+              RootNavigation.navigateTo('PropertyTabs', {
+                screen: 'Propsure',
+                params: {
+                  isFromNotification: true,
+                  lead: lead
+                }
+              })
+            }
         }
         else {
           RootNavigation.navigateTo('LeadDetail', { screen: 'Buy', purposeTab: 'sale', lead: lead })
@@ -137,16 +168,48 @@ export default class App extends React.Component {
       }
       if (data.type === 'rentLead') {
         if (data.leadStatus === 'payment') {
-          RootNavigation.navigateTo('RCMLeadTabs', {
-            screen: 'Payment',
-            lead: lead,
-          })
+          if(data.notificationFor === 'buyer') {
+            // buyer screen
+            RootNavigation.navigateTo('RCMLeadTabs', {
+              screen: 'Payment',
+              params: {
+                isFromNotification: true,
+                lead: lead
+              }
+            })
+            }
+            else{
+              // seller screen
+              RootNavigation.navigateTo('PropertyTabs', {
+                screen: 'Payment',
+                params: {
+                  isFromNotification: true,
+                  lead: lead
+                }
+              })
+            }
         }
         else if (data.leadStatus === 'propsure') {
-          RootNavigation.navigateTo('RCMLeadTabs', {
-            screen: 'Propsure',
-            lead: lead,
-          })
+          if(data.notificationFor === 'buyer') {
+            // buyer screen
+            RootNavigation.navigateTo('RCMLeadTabs', {
+              screen: 'Propsure',
+              params: {
+                isFromNotification: true,
+                lead: lead
+              }
+            })
+            }
+            else{
+              // seller screen
+              RootNavigation.navigateTo('PropertyTabs', {
+                screen: 'Propsure',
+                params: {
+                  isFromNotification: true,
+                  lead: lead
+                }
+              })
+            }
         }
         else {
           RootNavigation.navigateTo('LeadDetail', { screen: 'Rent', purposeTab: 'rent', lead: lead })

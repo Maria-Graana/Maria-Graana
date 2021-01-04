@@ -13,22 +13,32 @@ class SimpleInputField extends React.Component {
 
   currencyConvert = (x) => {
     if (x < 0) {
-      var newX = x.substring(1)
-      newX = newX.toString();
-      var lastThree = newX.substring(newX.length - 3);
-      var otherNumbers = newX.substring(0, newX.length - 3);
+      var newX = x
+      newX = newX.toString().split(".");
+      var lastThree = newX[0].substring(newX[0].length - 3);
+      var otherNumbers = newX[0].substring(0, newX[0].length - 3);
       if (otherNumbers != '')
         lastThree = ',' + lastThree;
       var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-      return '-' + res;
+      var afterDotVal = newX[1]
+      if (afterDotVal) {
+        return res + '.' + afterDotVal.substring(0, 2);
+      } else {
+        return ''+res;
+      }
     } else {
-      x = x.toString();
-      var lastThree = x.substring(x.length - 3);
-      var otherNumbers = x.substring(0, x.length - 3);
+      x = x.toString().split(".");
+      var lastThree = x[0].substring(x[0].length - 3);
+      var otherNumbers = x[0].substring(0, x[0].length - 3);
       if (otherNumbers != '')
         lastThree = ',' + lastThree;
       var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-      return res;
+      var afterDotVal = x[1]
+      if (afterDotVal) {
+        return res + '.' + afterDotVal.substring(0, 2);
+      } else {
+        return res;
+      }
     }
   }
 

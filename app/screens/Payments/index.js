@@ -94,7 +94,7 @@ class Payments extends Component {
       secondCheckValidation: false,
       editaAble: false,
       paymentId: null,
-      remainingPayment: lead.remainingPayment != null ? lead.remainingPayment : '',
+      remainingPayment: '',
       paymentOldValue: null,
       modalLoading: false,
       firstScreenConfirmLoading: false,
@@ -199,6 +199,7 @@ class Payments extends Component {
             progressValue: cmProgressBar[res.data.status] || 0,
             paymentPreviewLoading: false,
             secondScreenData: res.data,
+            remainingPayment: res.data.remainingPayment && res.data.remainingPayment != null ? res.data.remainingPayment : '',
           },
           () => {
             if (functionCallingFor === 'leadClose') {
@@ -1319,18 +1320,12 @@ class Payments extends Component {
   deletePayment = async (reason) => {
     const { CMPayment } = this.props
     const { remainingPayment } = this.state
-
+    var newremainingPayment = remainingPayment
     // you have complete data of cm payment here
     this.showHideDeletePayment(false)
     const url = `/api/leads/payment?id=${CMPayment.id}&reason=${reason}`
     axios.delete(url)
       .then((response) => {
-
-        if (CMPayment.paymentCategory != 'tax') {
-          this.setState({
-            remainingPayment: remainingPayment + CMPayment.installmentAmount,
-          })
-        }
         this.fetchLead()
         helper.successToast(response.data.message)
       }).catch((error) => {

@@ -74,7 +74,6 @@ class AddPaymentModal extends React.Component {
                       thumbColor={'#fff'}
                     />
                     <Body>
-                      {console.log(secondFormData.taxIncluded)}
                       <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold', }}>
                         {secondFormData.taxIncluded === false || secondFormData.taxIncluded === null ? 'Tax Not Included' : 'Tax Included'}
                       </Text>

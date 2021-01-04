@@ -159,8 +159,8 @@ class PropertyPropsure extends React.Component {
       axios
         .post(`/api/leads/propsure/${lead.id}`, body)
         .then((response) => {
-          this.fetchLead()
-          this.fetchProperties()
+          this.fetchLead(lead)
+          this.fetchProperties(lead)
         })
         .catch((error) => {
           console.log(error)
@@ -222,6 +222,7 @@ class PropertyPropsure extends React.Component {
   }
 
   uploadAttachment(file, propsureId) {
+    const {lead} = this.props;
     this.closeDocumentModal()
     let document = {
       name: file.name,
@@ -233,8 +234,8 @@ class PropertyPropsure extends React.Component {
     axios
       .post(`api/leads/propsureDoc?id=${propsureId}`, fd)
       .then((response) => {
-        this.fetchProperties()
-        this.fetchLead()
+        this.fetchProperties(lead)
+        this.fetchLead(lead)
       })
       .catch((error) => {
         console.log('error=>', error.message)

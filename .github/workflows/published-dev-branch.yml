@@ -1,8 +1,8 @@
-name: published-devvs.yml
+name: publish-expo-dev.yml
 on:
   push:
     tags:
-      - "+[0-999]+.[0-999]+.[0-999]-dev-pubs"
+      - "devp-[0-999]+.[0-999]+.[0-999]+"
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
           #  aws-region: us-east-1
           # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           #AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          #AWS_DEFAULT_REGION: 'us-east-1'
+        #AWS_DEFAULT_REGION: 'us-east-1'
 
 
       #- name: Check changes

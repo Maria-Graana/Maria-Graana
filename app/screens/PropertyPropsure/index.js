@@ -52,14 +52,14 @@ class PropertyPropsure extends React.Component {
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      const {isFromNotification = false, lead} = this.props.route.params;
-      if(isFromNotification){
-      this.fetchLead(lead)
-      this.getCallHistory(lead)
-      this.fetchProperties(lead)
+      if (this.props.route.params && this.props.route.params.isFromNotification) {
+        const { lead } = this.props.route.params;
+        this.fetchLead(lead)
+        this.getCallHistory(lead)
+        this.fetchProperties(lead)
       }
-      else{
-        const {lead} = this.state;
+      else {
+        const { lead } = this.props;
         this.fetchLead(lead)
         this.getCallHistory(lead)
         this.fetchProperties(lead)
@@ -109,7 +109,7 @@ class PropertyPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -505,20 +505,20 @@ class PropertyPropsure extends React.Component {
                       screen={'propsure'}
                     />
                   ) : (
-                    <PropAgentTile
-                      data={_.clone(item.item)}
-                      user={user}
-                      displayChecks={this.displayChecks}
-                      showCheckBoxes={false}
-                      addProperty={this.addProperty}
-                      isMenuVisible={true}
-                      viewingMenu={false}
-                      goToPropertyComments={this.goToPropertyComments}
-                      toggleMenu={this.toggleMenu}
-                      menuShow={menuShow}
-                      screen={'propsure'}
-                    />
-                  )}
+                      <PropAgentTile
+                        data={_.clone(item.item)}
+                        user={user}
+                        displayChecks={this.displayChecks}
+                        showCheckBoxes={false}
+                        addProperty={this.addProperty}
+                        isMenuVisible={true}
+                        viewingMenu={false}
+                        goToPropertyComments={this.goToPropertyComments}
+                        toggleMenu={this.toggleMenu}
+                        menuShow={menuShow}
+                        screen={'propsure'}
+                      />
+                    )}
                   <View>
                     {item.item.propsures.length === 0
                       ? this.renderPropsureVerificationView(item.item)
@@ -529,14 +529,14 @@ class PropertyPropsure extends React.Component {
               keyExtractor={(item, index) => item.id.toString()}
             />
           ) : (
-            <>
-              <Image
-                source={require('../../../assets/img/no-result-found.png')}
-                resizeMode={'center'}
-                style={{ alignSelf: 'center', width: 300, height: 300 }}
-              />
-            </>
-          )}
+              <>
+                <Image
+                  source={require('../../../assets/img/no-result-found.png')}
+                  resizeMode={'center'}
+                  style={{ alignSelf: 'center', width: 300, height: 300 }}
+                />
+              </>
+            )}
         </View>
         <View style={AppStyles.mainCMBottomNav}>
           <PropertyBottomNav
@@ -565,8 +565,8 @@ class PropertyPropsure extends React.Component {
         />
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

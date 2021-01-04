@@ -52,9 +52,18 @@ class PropertyPropsure extends React.Component {
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.fetchLead()
-      this.getCallHistory()
-      this.fetchProperties()
+      const {isFromNotification = false, lead} = this.props.route.params;
+      if(isFromNotification){
+      this.fetchLead(lead)
+      this.getCallHistory(lead)
+      this.fetchProperties(lead)
+      }
+      else{
+        const {lead} = this.state;
+        this.fetchLead(lead)
+        this.getCallHistory(lead)
+        this.fetchProperties(lead)
+      }
     })
   }
 
@@ -62,8 +71,7 @@ class PropertyPropsure extends React.Component {
     this._unsubscribe()
   }
 
-  fetchProperties = () => {
-    const { lead } = this.props
+  fetchProperties = (lead) => {
     const { rcmProgressBar } = StaticData
     let matches = []
     this.setState({ loading: true }, () => {
@@ -90,8 +98,7 @@ class PropertyPropsure extends React.Component {
     })
   }
 
-  fetchLead = () => {
-    const { lead } = this.props
+  fetchLead = (lead) => {
     axios
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
@@ -359,8 +366,7 @@ class PropertyPropsure extends React.Component {
     this.setState({ callModal: !callModal })
   }
 
-  getCallHistory = () => {
-    const { lead } = this.props
+  getCallHistory = (lead) => {
     axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
       this.setState({ meetings: res.data.rows })
     })

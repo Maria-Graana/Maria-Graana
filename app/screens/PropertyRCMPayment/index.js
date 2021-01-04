@@ -81,8 +81,17 @@ class PropertyRCMPayment extends React.Component {
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.getCallHistory()
-      this.getSelectedProperty(this.state.lead)
+      const {isFromNotification = false, lead} = this.props.route.params;
+      if(isFromNotification){
+        this.getCallHistory(lead)
+        this.getSelectedProperty(lead)
+      }
+      else{
+        const {lead} = this.state;
+        this.getCallHistory(lead)
+        this.getSelectedProperty(lead)
+      }
+     
     })
   }
 
@@ -575,8 +584,7 @@ class PropertyRCMPayment extends React.Component {
     this.setState({ callModal: !callModal })
   }
 
-  getCallHistory = () => {
-    const { lead } = this.props
+  getCallHistory = (lead) => {
     axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
       this.setState({ meetings: res.data.rows })
     })
@@ -792,6 +800,7 @@ class PropertyRCMPayment extends React.Component {
     const url = `/api/leads/payment?id=${rcmPayment.id}&reason=${reason}`
     const response = await axios.delete(url)
     if (response.data) {
+      this.clearReduxAndStateValues();
       helper.successToast(response.data.message)
       this.fetchLead()
     } else {

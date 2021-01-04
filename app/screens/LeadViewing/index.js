@@ -334,7 +334,8 @@ class LeadViewing extends React.Component {
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
-      let viewingDoneCount = diaries && diaries.filter((item) => {return item.status === 'completed' && item.status})
+      let viewingDoneCount = diaries && diaries.filter((item) => { return item.status === 'completed' && item.status })
+      let greaterOneViewing = viewingDoneCount && viewingDoneCount.length > 1
       if (diaries && diaries.length > 0) {
         return (
           <View>
@@ -369,22 +370,24 @@ class LeadViewing extends React.Component {
             {
               viewingDoneCount && viewingDoneCount.length > 0 &&
               <TouchableOpacity
-              style={{
-                backgroundColor: AppStyles.colors.primaryColor,
-                height: 30,
-                borderBottomEndRadius: 10,
-                borderBottomLeftRadius: 10,
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'row',
-              }}
-            >
-              <Text style={{ color: 'white',  fontFamily: AppStyles.fonts.defaultFont }}>
-                VIEWING DONE 
+                style={{
+                  backgroundColor: AppStyles.colors.primaryColor,
+                  height: 30,
+                  borderBottomEndRadius: 10,
+                  borderBottomLeftRadius: 10,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}
+              >
+                <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
+                  VIEWING{greaterOneViewing && 'S'} DONE
               </Text>
-              {/* <Text style={styles.countStyle}>{`${diaries.length === 1 ? diaries.length  : diaries.length - 1}`}</Text> */}
-              <Text style={styles.countStyle}>{`${viewingDoneCount.length}`}</Text>
-            </TouchableOpacity>
+                {
+                  greaterOneViewing &&
+                  <Text style={styles.countStyle}>{`${viewingDoneCount.length}`}</Text>
+                }
+              </TouchableOpacity>
             }
             {/* } */}
           </View>

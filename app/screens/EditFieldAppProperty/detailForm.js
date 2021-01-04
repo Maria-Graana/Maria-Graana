@@ -368,7 +368,7 @@ class DetailForm extends Component {
             containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
             containerBackgroundColor={'white'}
             textColor={AppStyles.colors.primaryColor}
-            label={formData.propsure_id ? 'GEO TAGGED (BETA)' : 'GEO TAGGING (BETA)'}
+            label={formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
             iconName="ios-checkmark-circle-outline"
             showIcon={ formData.propsure_id ? true: false}
             onPress={() => {

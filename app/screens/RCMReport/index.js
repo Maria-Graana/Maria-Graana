@@ -1032,6 +1032,8 @@ class RCMReport extends React.Component {
   updateMonth = () => {}
 
   render() {
+    const { user } = this.props
+    const { organization } = user
     const {
       leadsCount,
       viewLoader,
@@ -1223,95 +1225,107 @@ class RCMReport extends React.Component {
                 deals={''}
                 targetNumber={dashBoardData.totalRevenue}
               />
-              <View style={styles.sqaureView}>
-                {/* <SquareContainer
-                  containerStyle={styles.squareRight}
-                  imagePath={comissionRevenueImg}
-                  label={"Commission Revenue"}
-                  total={dashBoardData.totalRevenue}
-                /> */}
-              </View>
-              <View style={styles.sqaureView}>
-                <SquareContainer
-                  containerStyle={styles.squareRight}
-                  imagePath={leadsAssignedImg}
-                  label={'CIFs (Company)'}
-                  total={dashBoardData.totalleadsAssigned}
-                />
-
-                <SquareContainer
-                  // containerStyle={styles.squareRight}
-                  imagePath={leadsCreatedImg}
-                  label={'CIFs (Personal)'}
-                  total={dashBoardData.totalLeadsAdded}
-                />
-
-                {/* <SquareContainer
-                  imagePath={clientsAddedImg}
-                  label={"Clients Added"}
-                  total={dashBoardData.clientsAdded}
-                /> */}
-              </View>
-              <View style={styles.sqaureView}>
-                <SquareContainer
-                  containerStyle={styles.squareRight}
-                  imagePath={LeadClosed}
-                  label={'Deals Won'}
-                  total={dashBoardData.dealsWon}
-                />
-                <SquareContainer
-                  imagePath={offersPlaced}
-                  label={'Offers Placed'}
-                  total={dashBoardData.offer}
-                />
-              </View>
-              <View style={styles.sqaureView}>
-                <SquareContainer
-                  containerStyle={styles.squareRight}
-                  imagePath={viewingConductedImg}
-                  label={'Viewings Conducted'}
-                  total={dashBoardData.viewingConducted}
-                />
-                <SquareContainer
-                  imagePath={viewingOverdueImg}
-                  label={'Viewings Overdue'}
-                  total={dashBoardData.viewingOverdue}
-                />
-              </View>
-              <View style={styles.sqaureView}>
-                <SquareContainer
-                  containerStyle={styles.squareRight}
-                  imagePath={firstCall}
-                  label={'1st Calls'}
-                  total={dashBoardData.firstCalls}
-                />
-                <SquareContainer
-                  imagePath={TotalCalls}
-                  label={'Total Calls'}
-                  total={dashBoardData.totalcalls}
-                />
-              </View>
-              <View style={styles.graphContainer}>
-                <Text style={styles.labelStyle}>Lead Stats</Text>
-                <ScrollView horizontal={true}>
-                  <BarChart
-                    decimalPlaces={0.1}
-                    verticalLabelRotation={30}
-                    showValuesOnTopOfBars={true}
-                    useShadowColorFromDataset={true}
-                    withInnerLines={false}
-                    withDots={false}
-                    fromZero={true}
-                    withHorizontalLabels={false}
-                    showBarTops={true}
-                    width={width}
-                    height={height}
-                    data={graph}
-                    chartConfig={chartConfig}
-                    style={graphStyle}
+              {organization.isOrganization ? (
+                <View style={styles.sqaureView}>
+                  <SquareContainer
+                    containerStyle={styles.squareRight}
+                    imagePath={leadsAssignedImg}
+                    label={'CIFs (Company)'}
+                    total={dashBoardData.totalleadsAssigned}
                   />
-                </ScrollView>
-              </View>
+                  <SquareContainer
+                    // containerStyle={styles.squareRight}
+                    imagePath={leadsCreatedImg}
+                    label={'Deals Won'}
+                    total={dashBoardData.dealsWon}
+                  />
+                </View>
+              ) : null}
+              {!organization.isOrganization && (
+                <View style={styles.sqaureView}>
+                  <SquareContainer
+                    containerStyle={styles.squareRight}
+                    imagePath={leadsAssignedImg}
+                    label={'CIFs (Company)'}
+                    total={dashBoardData.totalleadsAssigned}
+                  />
+
+                  <SquareContainer
+                    // containerStyle={styles.squareRight}
+                    imagePath={leadsCreatedImg}
+                    label={'CIFs (Personal)'}
+                    total={dashBoardData.totalLeadsAdded}
+                  />
+                </View>
+              )}
+              {!organization.isOrganization && (
+                <View style={styles.sqaureView}>
+                  <SquareContainer
+                    containerStyle={styles.squareRight}
+                    imagePath={LeadClosed}
+                    label={'Deals Won'}
+                    total={dashBoardData.dealsWon}
+                  />
+                  <SquareContainer
+                    imagePath={offersPlaced}
+                    label={'Offers Placed'}
+                    total={dashBoardData.offer}
+                  />
+                </View>
+              )}
+              {!organization.isOrganization && (
+                <View style={styles.sqaureView}>
+                  <SquareContainer
+                    containerStyle={styles.squareRight}
+                    imagePath={viewingConductedImg}
+                    label={'Viewings Conducted'}
+                    total={dashBoardData.viewingConducted}
+                  />
+                  <SquareContainer
+                    imagePath={viewingOverdueImg}
+                    label={'Viewings Overdue'}
+                    total={dashBoardData.viewingOverdue}
+                  />
+                </View>
+              )}
+              {!organization.isOrganization && (
+                <View style={styles.sqaureView}>
+                  <SquareContainer
+                    containerStyle={styles.squareRight}
+                    imagePath={firstCall}
+                    label={'1st Calls'}
+                    total={dashBoardData.firstCalls}
+                  />
+                  <SquareContainer
+                    imagePath={TotalCalls}
+                    label={'Total Calls'}
+                    total={dashBoardData.totalcalls}
+                  />
+                </View>
+              )}
+              {!organization.isOrganization && (
+                <View style={styles.graphContainer}>
+                  <Text style={styles.labelStyle}>Lead Stats</Text>
+                  <ScrollView horizontal={true}>
+                    <BarChart
+                      decimalPlaces={0.1}
+                      verticalLabelRotation={30}
+                      showValuesOnTopOfBars={true}
+                      useShadowColorFromDataset={true}
+                      withInnerLines={false}
+                      withDots={false}
+                      fromZero={true}
+                      withHorizontalLabels={false}
+                      showBarTops={true}
+                      width={width}
+                      height={height}
+                      data={graph}
+                      chartConfig={chartConfig}
+                      style={graphStyle}
+                    />
+                  </ScrollView>
+                </View>
+              )}
             </View>
           </ScrollView>
         ) : (

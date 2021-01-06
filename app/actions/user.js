@@ -140,7 +140,7 @@ export function checkToken() {
           .then((response) => {
             setAuthorizationToken(token)
             setBaseUrl()
-            // console.log(response.data)
+            response.data.organization.isOrganization = true
             dispatch({
               type: types.SET_USER,
               payload: { ...response.data },

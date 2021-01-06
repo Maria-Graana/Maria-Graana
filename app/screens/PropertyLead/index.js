@@ -370,15 +370,15 @@ class PropertyLead extends React.Component {
           actions={[
             {
               icon: 'plus',
-              label: 'Investment Lead',
-              color: AppStyles.colors.primaryColor,
-              onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
-            },
-            {
-              icon: 'plus',
               label: 'Buy/Rent Lead',
               color: AppStyles.colors.primaryColor,
               onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
+            },
+            {
+              icon: 'plus',
+              label: 'Investment Lead',
+              color: AppStyles.colors.primaryColor,
+              onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
             },
           ]}
           onStateChange={({ open }) => this.setState({ open })}

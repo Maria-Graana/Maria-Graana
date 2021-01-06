@@ -75,6 +75,7 @@ class AddInventory extends Component {
                 geotagged_date: null,
                 downpayment: 0,
                 showWaterMark: false,
+                leadId: null,
             },
             showAdditional: false,
             showCustomTitle: false,
@@ -88,12 +89,26 @@ class AddInventory extends Component {
 
     componentDidMount() {
         const { navigation, route } = this.props;
+        const { screenName, lead } = route.params;
         navigation.addListener('focus', () => {
             this.onScreenFocused()
         })
         if (route.params.update) {
             navigation.setOptions({ title: 'EDIT PROPERTY' })
             this.setEditValues()
+        }
+        // from lead viewing screen, adding a new property for shortlist
+        if (screenName && screenName === 'leadViewing' && lead) {
+            const { formData } = this.state;
+            let copyObject = Object.assign({}, formData);
+            copyObject.city_id = lead.city_id;
+            copyObject.purpose = lead.purpose;
+            copyObject.type = lead.type;
+            copyObject.subtype = lead.subtype;
+            copyObject.leadId = lead.id;
+            this.setState({ formData: copyObject, selectedCity: { ...lead.city, value: lead.city.id } }, () => {
+                this.selectSubtype(lead.type);
+            });
         }
     }
 
@@ -356,27 +371,54 @@ class AddInventory extends Component {
             }));
         }
         else {
-            axios.post(`/api/inventory/create`, formData)
-                .then((res) => {
-                    // console.log(res.data)
+            const { screenName, lead } = route.params;
+            if (screenName && screenName === 'leadViewing') {
+                // adding property for lead viewing and shortlisting it in lead workflow
+                axios.post(`/api/inventory/create`, formData).then(() => {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
                         dispatch(flushImages());
-                        navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
+                        navigation.navigate('RCMLeadTabs', {
+                            screen: 'Viewing',
+                            params: { lead: lead },
+                        })
                     }
                     else {
                         helper.errorToast('ERROR: SOMETHING WENT WRONG')
                     }
                     this.setState({ loading: false })
+                }).catch((error) => {
+                    console.log(error.message);
                 })
-                .catch((error) => {
-                    this.setState({ loading: false })
-                    helper.errorToast('ERROR: ADDING PROPERTY')
-                    console.log('error', error.message)
-                })
-                .finally(() => {
-                    this.setState({ loading: false })
-                })
+                    .finally(() => {
+                        this.setState({ loading: false })
+                    })
+            }
+            else {
+                // adding property for normal flow
+                axios.post(`/api/inventory/create`, formData)
+                    .then((res) => {
+                        // console.log(res.data)
+                        if (res.status === 200) {
+                            helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
+                            dispatch(flushImages());
+                            navigation.navigate('InventoryTabs', { update: false, screen: 'ARMS', params: { screen: 'InventoryTabs' } })
+                        }
+                        else {
+                            helper.errorToast('ERROR: SOMETHING WENT WRONG')
+                        }
+                        this.setState({ loading: false })
+                    })
+                    .catch((error) => {
+                        this.setState({ loading: false })
+                        helper.errorToast('ERROR: ADDING PROPERTY')
+                        console.log('error', error.message)
+                    })
+                    .finally(() => {
+                        this.setState({ loading: false })
+                    })
+            }
+
         }
     }
 

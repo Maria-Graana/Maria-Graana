@@ -512,6 +512,14 @@ class LeadViewing extends React.Component {
     })
   }
 
+  goToPropertyScreen = () => {
+    const {lead, navigation} = this.props;
+    navigation.navigate('AddInventory', {
+      lead: lead,
+      screenName : 'leadViewing'
+    })
+  }
+
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
@@ -690,7 +698,9 @@ class LeadViewing extends React.Component {
             customer={lead.customer}
             lead={lead}
             goToHistory={this.goToHistory}
+            goToPropertyScreen = {this.goToPropertyScreen}
             getCallHistory={this.getCallHistory}
+            isFromViewingScreen={true}
           />
         </View>
         <LeadRCMPaymentPopup

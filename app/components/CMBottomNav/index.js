@@ -100,7 +100,9 @@ class CMBottomNav extends React.Component {
 			alreadyClosedLead,
 			callButton,
 			goToHistory,
-			closeLeadFor
+			closeLeadFor,
+			goToPropertyScreen,
+			isFromViewingScreen,
 		} = this.props
 		const { visible } = this.state
 
@@ -157,6 +159,7 @@ class CMBottomNav extends React.Component {
 									<Text style={[styles.bottomNavBtnText, visible === true && styles.colorWhite]}>Menu</Text>
 								</TouchableOpacity>
 							}>
+							{isFromViewingScreen ? <Menu.Item onPress={() => { goToPropertyScreen(); this.openMenu(false) }} icon={require('../../../assets/img/properties-icon-l.png')} title="Add Property" /> : null}
 							<Menu.Item onPress={() => { goToComments(); this.openMenu(false) }} icon={require('../../../assets/img/msg.png')} title="Comments" />
 							<Menu.Item onPress={() => { goToAttachments(); this.openMenu(false) }} icon={require('../../../assets/img/files.png')} title="Files" />
 							<Menu.Item onPress={() => { goToHistory(); this.openMenu(false) }} icon={require('../../../assets/img/callIcon.png')} title="Call History" />

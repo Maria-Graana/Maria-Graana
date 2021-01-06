@@ -64,6 +64,7 @@ class InnerForm extends Component {
       details: formData.details,
       type: formData.type,
       createdAt: new Date(),
+      paymentCategory: formData.paymentTypeForToken,
     }
     let checkForPearlArea =
       unitPearlDetailsData.pearlArea < 50 ? StaticData.onlyUnitType : StaticData.unitType

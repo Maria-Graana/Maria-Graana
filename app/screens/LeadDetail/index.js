@@ -27,11 +27,16 @@ class LeadDetail extends React.Component {
       showAssignToButton: false,
       editDes: false,
       description: '',
+      mainButtonText: `Let’s Earn`,
+      fromScreen: null,
     }
   }
 
   componentDidMount() {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      if (this.props.route.params && this.props.route.params.isFromLeadWorkflow) {
+        this.setState({ mainButtonText: 'Go Back', fromScreen: this.props.route.params.fromScreen })
+      }
       this.purposeTab()
     })
   }
@@ -177,6 +182,66 @@ class LeadDetail extends React.Component {
     }
   }
 
+  goBack = () => {
+    const { lead, type, fromScreen } = this.state
+    const { navigation } = this.props;
+    let page = '';
+    if(type === 'Investment') {
+          // CM LEAD FLOW
+          if (fromScreen === 'payments') {
+            page = 'Payments'
+          } else if(fromScreen === 'meetings') {
+            page = 'Meetings'
+          }
+          navigation.navigate('CMLeadTabs', {
+            screen: page,
+            params: { lead: lead },
+          })
+    }
+    else if(type === 'Property'){
+      // PROPERTY RCM LEAD FLOW
+      if (fromScreen === 'viewing') {
+        page = 'Viewing'
+      }
+      if (fromScreen === 'offer') {
+        page = 'Offer'
+      }
+      if (fromScreen === 'propsure') {
+        page = 'Propsure'
+      }
+      if (fromScreen === 'payment') {
+        page = 'Payment'
+      }
+      navigation.navigate('PropertyTabs', {
+        screen: page,
+        params: { lead: lead },
+      })
+    }
+    else{
+      // NORMAL RCM LEAD FLOW
+      if (fromScreen === 'match') {
+        page = 'Match'
+      }
+      if (fromScreen === 'viewing') {
+        page = 'Viewing'
+      }
+      if (fromScreen === 'offer') {
+        page = 'Offer'
+      }
+      if (fromScreen === 'propsure') {
+        page = 'Propsure'
+      }
+      if (fromScreen === 'payment') {
+        page = 'Payment'
+      }
+      navigation.navigate('RCMLeadTabs', {
+        screen: page,
+        params: { lead: lead }
+      })
+    }
+    
+  }
+
   navigateToAssignLead = () => {
     const { navigation } = this.props
     const { lead, type } = this.state
@@ -263,9 +328,8 @@ class LeadDetail extends React.Component {
     const { lead } = this.state
     if (lead.origin) {
       if (lead.origin === 'arms') {
-        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${
-          lead.creator ? `(${lead.creator.firstName} ${lead.creator.lastName})` : ''
-        }`
+        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${lead.creator ? `(${lead.creator.firstName} ${lead.creator.lastName})` : ''
+          }`
       } else {
         return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`
       }
@@ -293,7 +357,7 @@ class LeadDetail extends React.Component {
   }
 
   render() {
-    let { type, lead, customerName, showAssignToButton, loading, editDes, description } = this.state
+    let { type, lead, customerName, showAssignToButton, mainButtonText, fromScreen, loading, editDes, description } = this.state
     const { user, route } = this.props
     const { purposeTab } = route.params
     let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
@@ -327,8 +391,8 @@ class LeadDetail extends React.Component {
                 ) : lead.status === 'meeting' ? (
                   lead.status.split('_').join(' ').toUpperCase() + ' PLANNED'
                 ) : (
-                  lead.status.split('_').join(' ').toUpperCase()
-                )}
+                      lead.status.split('_').join(' ').toUpperCase()
+                    )}
               </Text>
             </View>
           </View>
@@ -374,12 +438,12 @@ class LeadDetail extends React.Component {
                   </TouchableOpacity>
                 </View>
               ) : (
-                <Text style={styles.labelText}>
-                  {lead.description && lead.description !== ''
-                    ? lead.description.replace(regex, '')
-                    : null}
-                </Text>
-              )}
+                  <Text style={styles.labelText}>
+                    {lead.description && lead.description !== ''
+                      ? lead.description.replace(regex, '')
+                      : null}
+                  </Text>
+                )}
             </View>
             <View style={styles.viewTwo}>
               {editDes === true ? (
@@ -393,16 +457,16 @@ class LeadDetail extends React.Component {
                   <Image source={require('../../../assets/img/times.png')} style={styles.editImg} />
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.editDescription(true)
-                  }}
-                  style={styles.editDesBtn}
-                  activeOpacity={0.6}
-                >
-                  <Image source={require('../../../assets/img/edit.png')} style={styles.editImg} />
-                </TouchableOpacity>
-              )}
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.editDescription(true)
+                    }}
+                    style={styles.editDesBtn}
+                    activeOpacity={0.6}
+                  >
+                    <Image source={require('../../../assets/img/edit.png')} style={styles.editImg} />
+                  </TouchableOpacity>
+                )}
             </View>
           </View>
           <View style={styles.underLine} />
@@ -419,21 +483,21 @@ class LeadDetail extends React.Component {
               {projectName != '' ? projectName : 'Project not specified'}
             </Text>
           ) : (
-            <Text style={styles.labelText}>
-              {!lead.projectId &&
-              lead.armsLeadAreas &&
-              lead.armsLeadAreas.length &&
-              lead.armsLeadAreas[0].area
-                ? lead.armsLeadAreas[0].area &&
+              <Text style={styles.labelText}>
+                {!lead.projectId &&
+                  lead.armsLeadAreas &&
+                  lead.armsLeadAreas.length &&
+                  lead.armsLeadAreas[0].area
+                  ? lead.armsLeadAreas[0].area &&
                   // lead.armsLeadAreas[0].area.name
                   lead.armsLeadAreas.map((item, index) => {
                     var comma = index > 0 ? ', ' : ''
                     return comma + item.area.name
                   })
-                : 'Area not specified'}
-              {!lead.projectId && lead.city && ' - ' + lead.city.name}
-            </Text>
-          )}
+                  : 'Area not specified'}
+                {!lead.projectId && lead.city && ' - ' + lead.city.name}
+              </Text>
+            )}
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Price Range </Text>
           {!lead.projectId && lead.min_price && lead.price ? (
@@ -471,35 +535,35 @@ class LeadDetail extends React.Component {
           </Text>
           <View style={styles.underLine} />
           {lead.shared_with_armsuser_id &&
-          user.id !== lead.shared_with_armsuser_id &&
-          lead.shareUser ? (
-            <>
-              <Text style={styles.headingText}>Shared with</Text>
-              <Text style={styles.labelText}>
-                {lead.shareUser.firstName +
-                  ' ' +
-                  lead.shareUser.lastName +
-                  ', ' +
-                  lead.shareUser.phoneNumber}{' '}
-              </Text>
-              <View style={styles.underLine} />
-            </>
-          ) : null}
+            user.id !== lead.shared_with_armsuser_id &&
+            lead.shareUser ? (
+              <>
+                <Text style={styles.headingText}>Shared with</Text>
+                <Text style={styles.labelText}>
+                  {lead.shareUser.firstName +
+                    ' ' +
+                    lead.shareUser.lastName +
+                    ', ' +
+                    lead.shareUser.phoneNumber}{' '}
+                </Text>
+                <View style={styles.underLine} />
+              </>
+            ) : null}
           {lead.shared_with_armsuser_id &&
-          user.id === lead.shared_with_armsuser_id &&
-          lead.armsuser ? (
-            <>
-              <Text style={styles.headingText}>Shared by</Text>
-              <Text style={styles.labelText}>
-                {lead.armsuser.firstName +
-                  ' ' +
-                  lead.armsuser.lastName +
-                  ', ' +
-                  (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
-              </Text>
-              <View style={styles.underLine} />
-            </>
-          ) : null}
+            user.id === lead.shared_with_armsuser_id &&
+            lead.armsuser ? (
+              <>
+                <Text style={styles.headingText}>Shared by</Text>
+                <Text style={styles.labelText}>
+                  {lead.armsuser.firstName +
+                    ' ' +
+                    lead.armsuser.lastName +
+                    ', ' +
+                    (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
+                </Text>
+                <View style={styles.underLine} />
+              </>
+            ) : null}
           {lead.sharedAt ? (
             <>
               <Text style={styles.headingText}>Shared at</Text>
@@ -532,17 +596,17 @@ class LeadDetail extends React.Component {
         <View style={[AppStyles.assignButtonView]}>
           <Button
             onPress={() => {
-              this.navigateTo()
+              fromScreen ? this.goBack() : this.navigateTo()
             }}
             style={[AppStyles.formBtn, styles.btn1]}
           >
-            <Text style={AppStyles.btnText}>Let’s Earn</Text>
+            <Text style={AppStyles.btnText}>{mainButtonText}</Text>
           </Button>
         </View>
       </ScrollView>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

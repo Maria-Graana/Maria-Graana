@@ -503,6 +503,8 @@ class LeadViewing extends React.Component {
     this.props.navigation.navigate('LeadDetail', {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
+      isFromLeadWorkflow: true,
+      fromScreen: 'viewing'
     })
   }
 

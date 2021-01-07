@@ -67,22 +67,28 @@ class LeadViewing extends React.Component {
     const { lead } = this.props
     const { rcmProgressBar } = StaticData
     let matches = []
-    axios
-      .get(`/api/leads/${lead.id}/shortlist`)
-      .then((res) => {
-        matches = helper.propertyIdCheck(res.data.rows)
-        this.setState({
-          loading: false,
-          matchData: matches,
-          progressValue: rcmProgressBar[lead.status],
+    this.setState({ loading: true }, () => {
+      axios
+        .get(`/api/leads/${lead.id}/shortlist`)
+        .then((res) => {
+          matches = helper.propertyIdCheck(res.data.rows)
+          this.setState({
+            loading: false,
+            matchData: matches,
+            progressValue: rcmProgressBar[lead.status],
+          })
         })
-      })
-      .catch((error) => {
-        console.log(error)
-        this.setState({
-          loading: false,
+        .catch((error) => {
+          console.log(error)
+          this.setState({
+            loading: false,
+          })
+        }).finally(() => {
+          this.setState({
+            loading: false,
+          })
         })
-      })
+    })
   }
 
   fetchLead = () => {
@@ -513,10 +519,10 @@ class LeadViewing extends React.Component {
   }
 
   goToPropertyScreen = () => {
-    const {lead, navigation} = this.props;
+    const { lead, navigation } = this.props;
     navigation.navigate('AddInventory', {
       lead: lead,
-      screenName : 'leadViewing'
+      screenName: 'leadViewing'
     })
   }
 
@@ -698,7 +704,7 @@ class LeadViewing extends React.Component {
             customer={lead.customer}
             lead={lead}
             goToHistory={this.goToHistory}
-            goToPropertyScreen = {this.goToPropertyScreen}
+            goToPropertyScreen={this.goToPropertyScreen}
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
           />

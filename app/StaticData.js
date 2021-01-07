@@ -326,7 +326,14 @@ export default StaticData = {
     { value: 'propsure', name: 'Propsure' },
     { value: 'token', name: 'Deal Signed - Token' },
     { value: 'payment', name: 'Payments' },
-    { value: 'closed', name: 'Closed' },
+    { value: 'closed_won', name: 'Closed Won' },
+    { value: 'closed_lost', name: 'Closed Lost' },
+  ],
+  ppBuyRentFilter: [
+    { value: 'called', name: 'Called' },
+    { value: 'viewing', name: 'Viewing' },
+    { value: 'closed_won', name: 'Closed Won' },
+    { value: 'closed_lost', name: 'Closed Lost' },
   ],
   investmentFilter: [
     { value: 'all', name: 'All' },

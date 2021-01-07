@@ -37,8 +37,7 @@ class CustomDrawerContent extends React.Component {
 
   render() {
     const { user, count } = this.props
-    const { subRole, organization } = user
-    const { isOrganization } = organization
+    const { subRole } = user
     let label = helper.checkChannel(config.channel)
     return (
       <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
@@ -112,7 +111,7 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )}
-          {Ability.canView(subRole, 'Targets', isOrganization) && (
+          {Ability.canView(subRole, 'Targets') && (
             <DrawerItem
               screen={'Targets'}
               navigateTo={() => {
@@ -120,7 +119,7 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )}
-          {Ability.canView(subRole, 'AssignedAreas', isOrganization) && (
+          {Ability.canView(subRole, 'AssignedAreas') && (
             <DrawerItem
               screen={'Assigned Areas'}
               navigateTo={() => {

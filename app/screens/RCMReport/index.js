@@ -1225,7 +1225,7 @@ class RCMReport extends React.Component {
                 deals={''}
                 targetNumber={dashBoardData.totalRevenue}
               />
-              {organization.isOrganization ? (
+              {organization.isPP ? (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1241,7 +1241,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               ) : null}
-              {!organization.isOrganization && (
+              {!organization.isPP && (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1258,7 +1258,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               )}
-              {!organization.isOrganization && (
+              {!organization.isPP && (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1273,7 +1273,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               )}
-              {!organization.isOrganization && (
+              {!organization.isPP && (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1288,7 +1288,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               )}
-              {!organization.isOrganization && (
+              {!organization.isPP && (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1303,7 +1303,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               )}
-              {!organization.isOrganization && (
+              {!organization.isPP && (
                 <View style={styles.graphContainer}>
                   <Text style={styles.labelStyle}>Lead Stats</Text>
                   <ScrollView horizontal={true}>

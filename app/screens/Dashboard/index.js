@@ -45,7 +45,7 @@ class Dashboard extends React.Component {
 
     return (
       <View style={[AppStyles.mb1]}>
-        {this.props.user.organization.isOrganization ? (
+        {this.props.user.organization.isPP ? (
           <DashboardTile
             image={buyrentReportTile}
             label={'RCMReport'}

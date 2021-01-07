@@ -40,14 +40,13 @@ class RootStack extends React.Component {
 
   render() {
     const { user, token, loading } = this.props
-    console.log('user: ', user)
     return (
       <SafeAreaProvider>
         {user && loading === false && token ? (
           <Drawer.Navigator
             drawerContent={({ navigation }) => <CustomDrawerContent navigation={navigation} />}
           >
-            {user.organization.isOrganization ? (
+            {user.organization.isPP ? (
               <Drawer.Screen name="PPMainStack" component={PPMainStack} />
             ) : (
               <Drawer.Screen name="MainStack" component={MainStack} />

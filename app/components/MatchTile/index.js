@@ -201,7 +201,7 @@ class MatchTile extends React.Component {
                 {' '}
                 PKR{' '}
                 <Text style={styles.priceText}>
-                  {formatPrice(data && data.price && data.price)}
+                  {data && data.price ===0 ? '0' : formatPrice(data && data.price && data.price)}
                 </Text>{' '}
               </Text>
               <Text numberOfLines={1} style={styles.marlaText}>

@@ -374,7 +374,7 @@ class AddInventory extends Component {
             const { screenName, lead } = route.params;
             if (screenName && screenName === 'leadViewing') {
                 // adding property for lead viewing and shortlisting it in lead workflow
-                axios.post(`/api/inventory/create`, formData).then(() => {
+                axios.post(`/api/inventory/create`, formData).then((res) => {
                     if (res.status === 200) {
                         helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
                         dispatch(flushImages());

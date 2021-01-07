@@ -101,12 +101,14 @@ class AddInventory extends Component {
         if (screenName && screenName === 'leadViewing' && lead) {
             const { formData } = this.state;
             let copyObject = Object.assign({}, formData);
+            const area = lead.armsLeadAreas && lead.armsLeadAreas[0] ? lead.armsLeadAreas[0].area : null;
             copyObject.city_id = lead.city_id;
+            copyObject.area_id = area.id;
             copyObject.purpose = lead.purpose;
             copyObject.type = lead.type;
             copyObject.subtype = lead.subtype;
             copyObject.leadId = lead.id;
-            this.setState({ formData: copyObject, selectedCity: { ...lead.city, value: lead.city.id } }, () => {
+            this.setState({ formData: copyObject, selectedCity: { ...lead.city, value: lead.city.id }, selectedArea: {...area, value: area.id} }, () => {
                 this.selectSubtype(lead.type);
             });
         }
@@ -130,7 +132,9 @@ class AddInventory extends Component {
         let copyObject = Object.assign({}, formData);
         if (client && name) {
             copyObject.customer_id = client.id;
-            this.setState({ formData: copyObject, clientName: name, selectedClient: client })
+            copyObject.poc_name = name ? name : null;
+            copyObject.poc_phone = client.contact1 ? client.contact1 : null;
+            this.setState({ formData: copyObject, clientName: name, selectedClient: client, selectedPOC: client })
         }
         if (selectedPOC) {
             copyObject.poc_name = selectedPOC.firstName && selectedPOC.lastName ? selectedPOC.firstName + ' ' + selectedPOC.lastName : null;

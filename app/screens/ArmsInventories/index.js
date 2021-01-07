@@ -61,7 +61,7 @@ class ArmsInventories extends React.Component {
 
   getPropertyArmsListing = () => {
     const { propertiesList, page, pageSize } = this.state
-    const url = `/api/inventory/all?propType=arms`
+    const url = `/api/inventory/all?propType=arms&pageSize=${pageSize}&page=${page}`
     axios
       .get(url)
       .then((response) => {

@@ -6,7 +6,7 @@ import { Button } from 'native-base'
 import React from 'react'
 import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
-import { setlead } from '../../actions/lead'
+import { goBack, setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
 import helper from '../../helper'
@@ -35,7 +35,11 @@ class LeadDetail extends React.Component {
   componentDidMount() {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromLeadWorkflow) {
+        // this.props.navigation.setParams({ goBack: () => this.goBack() });
         this.setState({ mainButtonText: 'Go Back', fromScreen: this.props.route.params.fromScreen })
+      }
+      else{
+        this.setState({ mainButtonText: `Let's Earn`, fromScreen: null })
       }
       this.purposeTab()
     })
@@ -50,6 +54,7 @@ class LeadDetail extends React.Component {
           type: 'Investment',
         },
         () => {
+          this.props.navigation.setParams({type: 'Investment'})
           this.fetchLead('/api/leads/project/byId')
         }
       )
@@ -59,6 +64,7 @@ class LeadDetail extends React.Component {
           type: 'Buy',
         },
         () => {
+          this.props.navigation.setParams({type: 'Buy'})
           this.fetchLead('api/leads/byId')
         }
       )
@@ -68,6 +74,7 @@ class LeadDetail extends React.Component {
           type: 'Property',
         },
         () => {
+          this.props.navigation.setParams({type: 'Property'})
           this.fetchLead('api/leads/byId')
         }
       )
@@ -77,6 +84,7 @@ class LeadDetail extends React.Component {
           type: 'Rent',
         },
         () => {
+          this.props.navigation.setParams({type: 'Rent'})
           this.fetchLead('api/leads/byId')
         }
       )
@@ -185,61 +193,7 @@ class LeadDetail extends React.Component {
   goBack = () => {
     const { lead, type, fromScreen } = this.state
     const { navigation } = this.props;
-    let page = '';
-    if(type === 'Investment') {
-          // CM LEAD FLOW
-          if (fromScreen === 'payments') {
-            page = 'Payments'
-          } else if(fromScreen === 'meetings') {
-            page = 'Meetings'
-          }
-          navigation.navigate('CMLeadTabs', {
-            screen: page,
-            params: { lead: lead },
-          })
-    }
-    else if(type === 'Property'){
-      // PROPERTY RCM LEAD FLOW
-      if (fromScreen === 'viewing') {
-        page = 'Viewing'
-      }
-      if (fromScreen === 'offer') {
-        page = 'Offer'
-      }
-      if (fromScreen === 'propsure') {
-        page = 'Propsure'
-      }
-      if (fromScreen === 'payment') {
-        page = 'Payment'
-      }
-      navigation.navigate('PropertyTabs', {
-        screen: page,
-        params: { lead: lead },
-      })
-    }
-    else{
-      // NORMAL RCM LEAD FLOW
-      if (fromScreen === 'match') {
-        page = 'Match'
-      }
-      if (fromScreen === 'viewing') {
-        page = 'Viewing'
-      }
-      if (fromScreen === 'offer') {
-        page = 'Offer'
-      }
-      if (fromScreen === 'propsure') {
-        page = 'Propsure'
-      }
-      if (fromScreen === 'payment') {
-        page = 'Payment'
-      }
-      navigation.navigate('RCMLeadTabs', {
-        screen: page,
-        params: { lead: lead }
-      })
-    }
-    
+    goBack({lead, type, fromScreen, navigation})
   }
 
   navigateToAssignLead = () => {

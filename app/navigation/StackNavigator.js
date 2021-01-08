@@ -43,6 +43,7 @@ import PropertyTabs from './PropertyTabNavigator'
 import EditFieldAppProperty from '../screens/EditFieldAppProperty'
 import MapContainer from '../screens/MapContainer'
 import AssignedAreas from '../screens/AssignAreas'
+import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 
 const Stack = createStackNavigator()
 
@@ -192,7 +193,8 @@ function MainStack() {
         component={LeadDetail}
         options={({ navigation, route }) => ({
           title: 'LEAD DETAILS',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          // headerLeft : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft:  route.params.isFromLeadWorkflow ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation}/> : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}

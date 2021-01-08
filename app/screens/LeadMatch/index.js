@@ -644,7 +644,7 @@ class LeadMatch extends React.Component {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
       isFromLeadWorkflow: true,
-      fromScreen: 'viewing'
+      fromScreen: 'match'
     })
   }
 

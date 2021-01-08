@@ -26,7 +26,6 @@ export function removelead(lead){
 
 export function goBack(object) {
  const { lead, type, fromScreen, navigation} = object;
- console.log(type);
  let page = '';
  if(type === 'Investment') {
        // CM LEAD FLOW

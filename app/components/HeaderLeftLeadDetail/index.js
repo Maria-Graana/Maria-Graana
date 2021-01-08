@@ -29,7 +29,7 @@ export default class HeaderLeftLeadDetail extends React.Component {
 const styles = StyleSheet.create({
     viewWrap: {
         paddingLeft: 15,
-        width: 40
+        width: 40,
     },
     iconWrap: {
         paddingLeft: 5

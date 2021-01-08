@@ -550,11 +550,12 @@ class LeadViewing extends React.Component {
   }
 
   addProperty = (data) => {
+    console.log(data)
     this.redirectProperty(data)
   }
 
   redirectProperty = (property) => {
-    if (property.origin === 'arms') {
+    if (property.origin === 'arms' || property.origin === 'arms_lead') {
       if (this.ownProperty(property))
         this.props.navigation.navigate('PropertyDetail', {
           property: property,

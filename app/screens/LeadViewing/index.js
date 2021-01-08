@@ -550,7 +550,6 @@ class LeadViewing extends React.Component {
   }
 
   addProperty = (data) => {
-    console.log(data)
     this.redirectProperty(data)
   }
 

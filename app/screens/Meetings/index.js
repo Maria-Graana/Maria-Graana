@@ -396,7 +396,11 @@ class Meetings extends Component {
   }
 
   navigateTo = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, 
+      purposeTab: 'invest',
+      isFromLeadWorkflow: true,
+      fromScreen: 'meetings'
+     })
   }
 
   handleReasonChange = (value) => {

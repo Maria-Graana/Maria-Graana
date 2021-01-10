@@ -374,7 +374,11 @@ class PropertyOffer extends React.Component {
   }
 
   navigateToDetails = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'property' })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, 
+      purposeTab: 'property',
+      isFromLeadWorkflow: true,
+      fromScreen: 'offer'
+     })
   }
 
   goToHistory = () => {

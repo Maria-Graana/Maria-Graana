@@ -6,7 +6,7 @@ import { Button } from 'native-base'
 import React from 'react'
 import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
-import { setlead } from '../../actions/lead'
+import { goBack, setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
 import helper from '../../helper'
@@ -27,11 +27,20 @@ class LeadDetail extends React.Component {
       showAssignToButton: false,
       editDes: false,
       description: '',
+      mainButtonText: `Let’s Earn`,
+      fromScreen: null,
     }
   }
 
   componentDidMount() {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      if (this.props.route.params && this.props.route.params.isFromLeadWorkflow) {
+        // this.props.navigation.setParams({ goBack: () => this.goBack() });
+        this.setState({ mainButtonText: 'Go Back', fromScreen: this.props.route.params.fromScreen })
+      }
+      else{
+        this.setState({ mainButtonText: `Let's Earn`, fromScreen: null })
+      }
       this.purposeTab()
     })
   }
@@ -45,6 +54,7 @@ class LeadDetail extends React.Component {
           type: 'Investment',
         },
         () => {
+          this.props.navigation.setParams({type: 'Investment'})
           this.fetchLead('/api/leads/project/byId')
         }
       )
@@ -54,6 +64,7 @@ class LeadDetail extends React.Component {
           type: 'Buy',
         },
         () => {
+          this.props.navigation.setParams({type: 'Buy'})
           this.fetchLead('api/leads/byId')
         }
       )
@@ -63,6 +74,7 @@ class LeadDetail extends React.Component {
           type: 'Property',
         },
         () => {
+          this.props.navigation.setParams({type: 'Property'})
           this.fetchLead('api/leads/byId')
         }
       )
@@ -72,6 +84,7 @@ class LeadDetail extends React.Component {
           type: 'Rent',
         },
         () => {
+          this.props.navigation.setParams({type: 'Rent'})
           this.fetchLead('api/leads/byId')
         }
       )
@@ -177,6 +190,12 @@ class LeadDetail extends React.Component {
     }
   }
 
+  goBack = () => {
+    const { lead, type, fromScreen } = this.state
+    const { navigation } = this.props;
+    goBack({lead, type, fromScreen, navigation})
+  }
+
   navigateToAssignLead = () => {
     const { navigation } = this.props
     const { lead, type } = this.state
@@ -263,9 +282,8 @@ class LeadDetail extends React.Component {
     const { lead } = this.state
     if (lead.origin) {
       if (lead.origin === 'arms') {
-        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${
-          lead.creator ? `(${lead.creator.firstName} ${lead.creator.lastName})` : ''
-        }`
+        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${lead.creator ? `(${lead.creator.firstName} ${lead.creator.lastName})` : ''
+          }`
       } else {
         return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`
       }
@@ -293,7 +311,7 @@ class LeadDetail extends React.Component {
   }
 
   render() {
-    let { type, lead, customerName, showAssignToButton, loading, editDes, description } = this.state
+    let { type, lead, customerName, showAssignToButton, mainButtonText, fromScreen, loading, editDes, description } = this.state
     const { user, route } = this.props
     const { purposeTab } = route.params
     let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
@@ -327,8 +345,8 @@ class LeadDetail extends React.Component {
                 ) : lead.status === 'meeting' ? (
                   lead.status.split('_').join(' ').toUpperCase() + ' PLANNED'
                 ) : (
-                  lead.status.split('_').join(' ').toUpperCase()
-                )}
+                      lead.status.split('_').join(' ').toUpperCase()
+                    )}
               </Text>
             </View>
           </View>
@@ -374,12 +392,12 @@ class LeadDetail extends React.Component {
                   </TouchableOpacity>
                 </View>
               ) : (
-                <Text style={styles.labelText}>
-                  {lead.description && lead.description !== ''
-                    ? lead.description.replace(regex, '')
-                    : null}
-                </Text>
-              )}
+                  <Text style={styles.labelText}>
+                    {lead.description && lead.description !== ''
+                      ? lead.description.replace(regex, '')
+                      : null}
+                  </Text>
+                )}
             </View>
             <View style={styles.viewTwo}>
               {editDes === true ? (
@@ -393,16 +411,16 @@ class LeadDetail extends React.Component {
                   <Image source={require('../../../assets/img/times.png')} style={styles.editImg} />
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.editDescription(true)
-                  }}
-                  style={styles.editDesBtn}
-                  activeOpacity={0.6}
-                >
-                  <Image source={require('../../../assets/img/edit.png')} style={styles.editImg} />
-                </TouchableOpacity>
-              )}
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.editDescription(true)
+                    }}
+                    style={styles.editDesBtn}
+                    activeOpacity={0.6}
+                  >
+                    <Image source={require('../../../assets/img/edit.png')} style={styles.editImg} />
+                  </TouchableOpacity>
+                )}
             </View>
           </View>
           <View style={styles.underLine} />
@@ -419,21 +437,21 @@ class LeadDetail extends React.Component {
               {projectName != '' ? projectName : 'Project not specified'}
             </Text>
           ) : (
-            <Text style={styles.labelText}>
-              {!lead.projectId &&
-              lead.armsLeadAreas &&
-              lead.armsLeadAreas.length &&
-              lead.armsLeadAreas[0].area
-                ? lead.armsLeadAreas[0].area &&
+              <Text style={styles.labelText}>
+                {!lead.projectId &&
+                  lead.armsLeadAreas &&
+                  lead.armsLeadAreas.length &&
+                  lead.armsLeadAreas[0].area
+                  ? lead.armsLeadAreas[0].area &&
                   // lead.armsLeadAreas[0].area.name
                   lead.armsLeadAreas.map((item, index) => {
                     var comma = index > 0 ? ', ' : ''
                     return comma + item.area.name
                   })
-                : 'Area not specified'}
-              {!lead.projectId && lead.city && ' - ' + lead.city.name}
-            </Text>
-          )}
+                  : 'Area not specified'}
+                {!lead.projectId && lead.city && ' - ' + lead.city.name}
+              </Text>
+            )}
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Price Range </Text>
           {!lead.projectId && lead.min_price && lead.price ? (
@@ -471,35 +489,35 @@ class LeadDetail extends React.Component {
           </Text>
           <View style={styles.underLine} />
           {lead.shared_with_armsuser_id &&
-          user.id !== lead.shared_with_armsuser_id &&
-          lead.shareUser ? (
-            <>
-              <Text style={styles.headingText}>Shared with</Text>
-              <Text style={styles.labelText}>
-                {lead.shareUser.firstName +
-                  ' ' +
-                  lead.shareUser.lastName +
-                  ', ' +
-                  lead.shareUser.phoneNumber}{' '}
-              </Text>
-              <View style={styles.underLine} />
-            </>
-          ) : null}
+            user.id !== lead.shared_with_armsuser_id &&
+            lead.shareUser ? (
+              <>
+                <Text style={styles.headingText}>Shared with</Text>
+                <Text style={styles.labelText}>
+                  {lead.shareUser.firstName +
+                    ' ' +
+                    lead.shareUser.lastName +
+                    ', ' +
+                    lead.shareUser.phoneNumber}{' '}
+                </Text>
+                <View style={styles.underLine} />
+              </>
+            ) : null}
           {lead.shared_with_armsuser_id &&
-          user.id === lead.shared_with_armsuser_id &&
-          lead.armsuser ? (
-            <>
-              <Text style={styles.headingText}>Shared by</Text>
-              <Text style={styles.labelText}>
-                {lead.armsuser.firstName +
-                  ' ' +
-                  lead.armsuser.lastName +
-                  ', ' +
-                  (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
-              </Text>
-              <View style={styles.underLine} />
-            </>
-          ) : null}
+            user.id === lead.shared_with_armsuser_id &&
+            lead.armsuser ? (
+              <>
+                <Text style={styles.headingText}>Shared by</Text>
+                <Text style={styles.labelText}>
+                  {lead.armsuser.firstName +
+                    ' ' +
+                    lead.armsuser.lastName +
+                    ', ' +
+                    (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
+                </Text>
+                <View style={styles.underLine} />
+              </>
+            ) : null}
           {lead.sharedAt ? (
             <>
               <Text style={styles.headingText}>Shared at</Text>
@@ -532,17 +550,17 @@ class LeadDetail extends React.Component {
         <View style={[AppStyles.assignButtonView]}>
           <Button
             onPress={() => {
-              this.navigateTo()
+              fromScreen ? this.goBack() : this.navigateTo()
             }}
             style={[AppStyles.formBtn, styles.btn1]}
           >
-            <Text style={AppStyles.btnText}>Let’s Earn</Text>
+            <Text style={AppStyles.btnText}>{mainButtonText}</Text>
           </Button>
         </View>
       </ScrollView>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

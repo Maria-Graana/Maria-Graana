@@ -1125,7 +1125,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   redirectProperty = (property) => {
-    if (property.origin === 'arms') {
+    if (property.origin === 'arms' || property.origin === 'arms_lead') {
       if (this.ownProperty(property))
         this.props.navigation.navigate('PropertyDetail', {
           property: property,

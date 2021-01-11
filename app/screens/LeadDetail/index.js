@@ -35,7 +35,6 @@ class LeadDetail extends React.Component {
   componentDidMount() {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromLeadWorkflow) {
-        // this.props.navigation.setParams({ goBack: () => this.goBack() });
         this.setState({ mainButtonText: 'Go Back', fromScreen: this.props.route.params.fromScreen })
       }
       else{

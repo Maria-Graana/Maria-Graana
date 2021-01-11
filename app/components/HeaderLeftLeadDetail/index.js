@@ -15,7 +15,6 @@ export default class HeaderLeftLeadDetail extends React.Component {
                 <View style={styles.viewWrap}>
 
                     <TouchableOpacity onPress={() => {
-                        navigation.setParams({ goBack: null, isFromLeadWorkflow: false, type: null, fromScreen: null })
                         goBack({lead, type, fromScreen, navigation})
                     }}>
                         <Ionicons name="ios-arrow-round-back" color="#484848" size={40} style={styles.iconWrap} />

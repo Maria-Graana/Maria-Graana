@@ -80,5 +80,5 @@ export function goBack(object) {
      params: { lead: lead }
    })
  }
-
+ navigation.setParams({ isFromLeadWorkflow: false, type: null, fromScreen: null })
 }

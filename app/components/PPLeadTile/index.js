@@ -5,13 +5,15 @@ import moment from 'moment'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
+import { Entypo, Feather, FontAwesome, Ionicons } from '@expo/vector-icons'
+import { Menu } from 'react-native-paper'
 import phone from '../../../assets/img/phone2.png'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
 
-class LeadTile extends React.Component {
+class PPLeadTile extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -71,6 +73,8 @@ class LeadTile extends React.Component {
       handleLongPress,
       displayPhone,
       propertyLead,
+      redirectToCompare,
+      changeLeadStatus,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -101,51 +105,26 @@ class LeadTile extends React.Component {
         : ''
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
-    console.log('data: ', data)
+
     return (
       <TouchableOpacity
-        onLongPress={() => handleLongPress(data)}
-        onPress={() => {
-          navigateTo(data)
-        }}
+      // onLongPress={() => handleLongPress(data)}
+      // onPress={() => {
+      //   navigateTo(data)
+      // }}
       >
         <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>
           <View style={[styles.rightContentView]}>
-            <View style={styles.topIcons}>
+            <TouchableOpacity onPress={() => changeLeadStatus()} style={styles.topIcons}>
               <View style={styles.extraStatus}>
                 <Text
                   style={[changeStatusColor, AppStyles.mrFive, styles.viewStyle]}
                   numberOfLines={1}
                 >
-                  {/* Disabled Sentry in development  Sentry in */}
-                  {data.status === 'token' ? (
-                    <Text>DEAL SIGNED - TOKEN</Text>
-                  ) : data.status === 'meeting' ? (
-                    data.status.split('_').join(' ').toUpperCase() + ' PLANNED'
-                  ) : (
-                    data.status.split('_').join(' ').toUpperCase()
-                  )}
+                  {data.status.split('_').join(' ').toUpperCase()}
                 </Text>
-
-                {data.shared_with_armsuser_id && (
-                  <View style={styles.sharedLead}>
-                    <Text
-                      style={[
-                        AppStyles.mrFive,
-                        styles.viewStyle,
-                        {
-                          color: AppStyles.colors.primaryColor,
-                          fontSize: AppStyles.noramlSize.fontSize,
-                          fontFamily: AppStyles.fonts.lightFont,
-                        },
-                      ]}
-                    >
-                      Shared Lead
-                    </Text>
-                  </View>
-                )}
               </View>
-            </View>
+            </TouchableOpacity>
             <View style={[styles.contentMainWrap]}>
               <View style={styles.leftContent}>
                 {/* ****** Name Wrap */}
@@ -170,47 +149,39 @@ class LeadTile extends React.Component {
                       ]}
                       numberOfLines={1}
                     >
-                      {data.description}
+                      {/* {data.description} */}
                     </Text>
                   </View>
                 )}
-                {purposeTab != 'invest' ? (
-                  <View style={[styles.contentMultiMain]}>
-                    {!data.projectId && data.min_price && data.price ? (
-                      <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
-                        {helper.convertPriceToString(
-                          data.min_price,
-                          data.price,
-                          StaticData.Constants.any_value
-                        )}
-                      </Text>
-                    ) : null}
-                  </View>
-                ) : (
-                  <View style={[styles.contentMultiMain]}>
-                    {data.projectId && data.minPrice && data.maxPrice ? (
-                      <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
-                        {helper.convertPriceToString(
-                          data.minPrice,
-                          data.maxPrice,
-                          StaticData.Constants.any_value
-                        )}
-                      </Text>
-                    ) : null}
-                  </View>
-                )}
-                {/* ****** Address Wrap */}
+                <View style={[styles.contentMultiMain]}>
+                  {data.projectId && data.minPrice && data.maxPrice ? (
+                    <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
+                      Price Range - 5 lacs to 10 lacs
+                      {/* {helper.convertPriceToString(
+                        data.minPrice,
+                        data.maxPrice,
+                        StaticData.Constants.any_value
+                      )} */}
+                    </Text>
+                  ) : null}
+                </View>
+                {/* ****** Price Range */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  {data.size != null && !data.projectId && (
-                    <Text
-                      style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
-                      numberOfLines={1}
-                    >
-                      {leadSize}
-                      {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
-                      {data.purpose === 'sale' ? 'Buy' : 'Rent'}
-                    </Text>
-                  )}
+                  <Text
+                    style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
+                    numberOfLines={1}
+                  >
+                    Price Range - 5 lacs to 10 lacs
+                  </Text>
+                </View>
+                {/* ****** Description */}
+                <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                  <Text
+                    style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
+                    numberOfLines={1}
+                  >
+                    This is a property for rent
+                  </Text>
                 </View>
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
@@ -225,13 +196,24 @@ class LeadTile extends React.Component {
                       ? data.armsLeadAreas[0].area.name + `${areasLength}` + ' - '
                       : ''}
                     {!data.projectId && data.city && data.city.name}
-                    {purposeTab === 'invest' &&
-                      helper.capitalize(projectName != '' ? projectName : 'Project not specified')}
-                    {data.projectType &&
-                      data.projectType != '' &&
-                      ` - ${helper.capitalize(data.projectType)}`}
                   </Text>
                 </View>
+                {/* ****** Compare URL */}
+                <TouchableOpacity
+                  onPress={() =>
+                    redirectToCompare(
+                      `https://www.graana.com/compare?&propertyId=269312&propertyId=253394&propertyId=237261&compareType=residential`
+                    )
+                  }
+                  style={[styles.contentMultiMain, AppStyles.mbFive]}
+                >
+                  <Text
+                    style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
+                    numberOfLines={1}
+                  >
+                    {`https://www.graana.com/compare?&propertyId=269312&propertyId=253394&propertyId=237261&compareType=residential`}
+                  </Text>
+                </TouchableOpacity>
                 {/* ****** Location Wrap */}
                 <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
                   <Text
@@ -257,6 +239,34 @@ class LeadTile extends React.Component {
               </View>
             </View>
           </View>
+          <View style={styles.phoneIcon}>
+            <Menu
+              visible={true}
+              onDismiss={() => this.props.toggleMenu(false, data.id)}
+              anchor={
+                <Entypo
+                  onPress={() => this.props.toggleMenu(true, data.id)}
+                  name="dots-three-vertical"
+                  size={20}
+                />
+              }
+            >
+              <View>
+                <Menu.Item
+                  onPress={() => {
+                    this.props.goToPropertyComments(data)
+                  }}
+                  title="Comments"
+                />
+                <Menu.Item
+                  onPress={() => {
+                    this.props.doneViewing(data)
+                  }}
+                  title="Viewing done"
+                />
+              </View>
+            </Menu>
+          </View>
         </View>
       </TouchableOpacity>
     )
@@ -270,4 +280,4 @@ mapStateToProps = (store) => {
   }
 }
 
-export default connect(mapStateToProps)(LeadTile)
+export default connect(mapStateToProps)(PPLeadTile)

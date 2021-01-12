@@ -330,6 +330,7 @@ export default StaticData = {
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
   ppBuyRentFilter: [
+    { value: 'all', name: 'All' },
     { value: 'called', name: 'Called' },
     { value: 'viewing', name: 'Viewing' },
     { value: 'closed_won', name: 'Closed Won' },

@@ -12,6 +12,7 @@ import SortImg from '../../../assets/img/sort.png'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import LeadTile from '../../components/LeadTile'
+import PPLeadTile from '../../components/PPLeadTile'
 import axios from 'axios'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
@@ -315,6 +316,25 @@ class RentLeads extends React.Component {
     }
   }
 
+  redirectToCompare = (url) => {
+    console.log('url: ', url)
+    if (url) {
+      // let url = `https://dev.graana.rocks/property/${property.graana_id}`
+      // if (config.channel === 'staging')
+      //   url = `https://staging.graana.rocks/property/${property.graana_id}`
+      // if (config.channel === 'production')
+      //   url = `https://www.graana.com/property/${property.graana_id}`
+      Linking.canOpenURL(url)
+        .then((supported) => {
+          if (!supported) helper.errorToast(`No application available open this Url`)
+          else return Linking.openURL(url)
+        })
+        .catch((err) => console.error('An error occurred', err))
+    }
+  }
+
+  changeLeadStatus = () => {}
+
   render() {
     const {
       leadsData,
@@ -392,7 +412,17 @@ class RentLeads extends React.Component {
             data={leadsData}
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
-              <LeadTile
+              // <LeadTile
+              //   updateStatus={this.updateStatus}
+              //   dispatch={this.props.dispatch}
+              //   purposeTab={'rent'}
+              //   user={user}
+              //   data={item}
+              //   navigateTo={this.navigateTo}
+              //   callNumber={this.callNumber}
+              //   handleLongPress={this.handleLongPress}
+              // />
+              <PPLeadTile
                 updateStatus={this.updateStatus}
                 dispatch={this.props.dispatch}
                 purposeTab={'rent'}
@@ -401,6 +431,8 @@ class RentLeads extends React.Component {
                 navigateTo={this.navigateTo}
                 callNumber={this.callNumber}
                 handleLongPress={this.handleLongPress}
+                changeLeadStatus={this.changeLeadStatus}
+                redirectToCompare={this.redirectToCompare}
               />
             )}
             onEndReached={() => {

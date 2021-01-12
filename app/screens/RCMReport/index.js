@@ -129,6 +129,7 @@ class RCMReport extends React.Component {
 
   checkRole = () => {
     const { user } = this.props
+    const { organization } = user
     let { regionFormData, agentFormData, zoneFormData } = this.state
     let agentRole = [
       'area_manager',
@@ -165,10 +166,33 @@ class RCMReport extends React.Component {
       user.subRole === 'zonal_manager' ||
       user.subRole === 'branch_manager' ||
       user.subRole === 'business_centre_manager' ||
-      user.subRole === 'call_centre_manager'
+      user.subRole === 'call_centre_manager' ||
+      user.subRole === 'pp_manager'
     ) {
       let organizations = [{ value: user.organizationId, name: user.organizationName }]
-      if ('region' in user && 'armsTeam' in user && user.armsTeam && user.region) {
+      if (organization.isPP) {
+        zoneFormData = {
+          organization: user.organizationId,
+          region: null,
+          zone: user.armsTeam.id,
+        }
+        this.setState(
+          {
+            lastLabel: 'Team',
+            footerLabel: 'Team',
+            organizations,
+            regionFormData,
+            agentFormData,
+            zoneFormData,
+            regionText: user.armsTeam.teamName + ', ' + user.organizationName,
+            regions: [],
+            zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }],
+          },
+          () => {
+            this.checkDate()
+          }
+        )
+      } else if ('region' in user && 'armsTeam' in user && user.armsTeam && user.region) {
         zoneFormData = {
           organization: user.organizationId,
           region: user.region.id,
@@ -528,9 +552,11 @@ class RCMReport extends React.Component {
 
   submitAgentFilter = () => {
     const { agentFormData, regions, zones, agents } = this.state
+    const { user } = this.props
+    const { organization } = user
     if (
       !agentFormData.organization ||
-      !agentFormData.region ||
+      (!agentFormData.region && !organization.isPP) ||
       !agentFormData.zone ||
       !agentFormData.agent
     ) {
@@ -550,7 +576,9 @@ class RCMReport extends React.Component {
         backCheck: true,
         showAgentFilter: false,
         checkValidation: false,
-        regionText: agent.name + ', ' + zone.name + ', ' + region.name + ', ' + org.name,
+        regionText: !organization.isPP
+          ? agent.name + ', ' + zone.name + ', ' + region.name + ', ' + org.name
+          : agent.name + ', ' + zone.name + ', ' + org.name,
       })
       this.agentUrl()
     }
@@ -574,10 +602,12 @@ class RCMReport extends React.Component {
         agentFormData.agent
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily')
+    if (filterLabel === 'Daily') {
+      let dailyDate = moment(new Date(selectedDate)).format('MM-DD-YYYY')
       url = `/api/leads/reports?scope=agent&q=${
         agentFormData.agent
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${dailyDate}`
+    }
     if (filterLabel === 'Yearly')
       url = `/api/leads/reports?scope=agent&q=${
         agentFormData.agent
@@ -624,7 +654,13 @@ class RCMReport extends React.Component {
 
   submitZoneFilter = () => {
     const { zoneFormData, regions, zones } = this.state
-    if (!zoneFormData.organization || !zoneFormData.region || !zoneFormData.zone) {
+    const { user } = this.props
+    const { organization } = user
+    if (
+      !zoneFormData.organization ||
+      (!zoneFormData.region && !organization.isPP) ||
+      !zoneFormData.zone
+    ) {
       this.setState({ checkValidation: true })
     } else {
       let region = _.find(regions, function (item) {
@@ -638,7 +674,9 @@ class RCMReport extends React.Component {
         backCheck: true,
         showZoneFilter: false,
         checkValidation: false,
-        regionText: zone.name + ', ' + region.name + ', ' + org.name,
+        regionText: !organization.isPP
+          ? zone.name + ', ' + region.name + ', ' + org.name
+          : zone.name + ', ' + org.name,
       })
       this.teamUrl()
     }
@@ -662,10 +700,12 @@ class RCMReport extends React.Component {
         zoneFormData.zone
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily')
+    if (filterLabel === 'Daily') {
+      let dailyDate = moment(new Date(selectedDate)).format('MM-DD-YYYY')
       url = `/api/leads/reports?scope=team&q=${
         zoneFormData.zone
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${dailyDate}`
+    }
     if (filterLabel === 'Yearly')
       url = `/api/leads/reports?scope=team&q=${
         zoneFormData.zone
@@ -746,10 +786,12 @@ class RCMReport extends React.Component {
         regionFormData.organization
       }&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily')
+    if (filterLabel === 'Daily') {
+      let dailyDate = moment(new Date(selectedDate)).format('MM-DD-YYYY')
       url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${
         regionFormData.organization
-      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+      }&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${dailyDate}`
+    }
     if (filterLabel === 'Yearly')
       url = `/api/leads/reports?scope=region&q=${regionFormData.region}&organizationId=${
         regionFormData.organization
@@ -833,8 +875,10 @@ class RCMReport extends React.Component {
       if (selectedMonth.toString().length === 1) selectedMonth = '0' + selectedMonth
       url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&month=${selectedYear}-${selectedMonth}`
     }
-    if (filterLabel === 'Daily')
-      url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${selectedDate}`
+    if (filterLabel === 'Daily') {
+      let dailyDate = moment(new Date(selectedDate)).format('MM-DD-YYYY')
+      url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&fromDate=${dailyDate}`
+    }
     if (filterLabel === 'Yearly')
       url = `/api/leads/reports?scope=organization&q=${selectedOrganization}&timePeriod=${filterLabel.toLocaleLowerCase()}&year=${selectedYear}`
     if (filterLabel === 'Weekly')
@@ -1153,6 +1197,7 @@ class RCMReport extends React.Component {
           organizations={organizations}
           openPopup={showAgentFilter}
           closeFilters={this.closeFilters}
+          user={user}
         />
         <ZoneFilter
           zones={zones}
@@ -1165,6 +1210,7 @@ class RCMReport extends React.Component {
           organizations={organizations}
           openPopup={showZoneFilter}
           closeFilters={this.closeFilters}
+          user={user}
         />
         <OrganizationFilter
           organizations={organizations}

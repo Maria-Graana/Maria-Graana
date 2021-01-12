@@ -46,7 +46,7 @@ class RootStack extends React.Component {
           <Drawer.Navigator
             drawerContent={({ navigation }) => <CustomDrawerContent navigation={navigation} />}
           >
-            {user.organization.isPP ? (
+            {true ? (
               <Drawer.Screen name="PPMainStack" component={PPMainStack} />
             ) : (
               <Drawer.Screen name="MainStack" component={MainStack} />

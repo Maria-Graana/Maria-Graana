@@ -90,7 +90,6 @@ export function setuser(data) {
         setAuthorizationToken(response.data.token)
         setBaseUrl()
         dispatch(checkToken())
-        response.data.organization.isPP = true
         dispatch({
           type: types.SET_USER,
           payload: { ...response.data },
@@ -141,7 +140,7 @@ export function checkToken() {
           .then((response) => {
             setAuthorizationToken(token)
             setBaseUrl()
-            response.data.organization.isPP = true
+            console.log(response.data)
             dispatch({
               type: types.SET_USER,
               payload: { ...response.data },

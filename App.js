@@ -48,7 +48,7 @@ export default class App extends React.Component {
   async componentDidMount() {
     this.setState({ isReady: true }, () => {
       NetInfo.addEventListener((state) => {
-        store.dispatch(setInternetConnection(state.isConnected))
+        store.dispatch(setInternetConnection(state.isConnected && state.isInternetReachable))
       })
     })
 

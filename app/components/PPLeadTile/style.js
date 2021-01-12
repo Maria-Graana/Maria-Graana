@@ -10,6 +10,7 @@ export default styles = StyleSheet.create({
     borderRadius: 4,
     flexDirection: 'row',
     marginBottom: 10,
+    flex: 1,
   },
   // leftimgView: {
   //   width: '40%',
@@ -39,27 +40,21 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
   },
   topIcons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    position: 'absolute',
-    top: 10,
-    right: 10,
+    // flexDirection: 'row',
+    // justifyContent: 'flex-end',
+    // width: 200,
+    // position: 'absolute',
+    // top: 10,
+    // right: 10,
   },
   normalText: {
     width: '100%',
   },
-  contentMainWrap: {
-    position: 'relative',
-    flexDirection: 'row',
-    marginTop: 5,
-  },
+  contentMainWrap: {},
   leftContent: {
     width: '85%',
   },
-  phoneMain: {
-    justifyContent: 'flex-end',
-    width: '15%',
-  },
+  phoneMain: {},
   tokenLabel: {
     borderWidth: 1,
     borderColor: '#2A7EF0',
@@ -128,8 +123,9 @@ export default styles = StyleSheet.create({
     paddingVertical: 5,
   },
   phoneIcon: {
-    justifyContent: 'space-between',
-    padding: 10,
-    paddingBottom: 0,
+    // justifyContent: 'space-between',
+    // padding: 10,
+    // paddingBottom: 0,
+    // width: 100,
   },
 })

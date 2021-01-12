@@ -325,6 +325,7 @@ class RCMReport extends React.Component {
       .get(url)
       .then((res) => {
         let totalLeadsWithCommision = res.data.totalLeadsWithCommision
+        console.log('res.data: ', res.data)
         this.graphData(res.data)
         this.setState({
           dashBoardData: res.data,
@@ -1277,7 +1278,7 @@ class RCMReport extends React.Component {
                     containerStyle={styles.squareRight}
                     imagePath={leadsAssignedImg}
                     label={'CIFs (Company)'}
-                    total={dashBoardData.totalleadsAssigned}
+                    total={Number(dashBoardData.totalleadsAssigned)}
                   />
                   <SquareContainer
                     // containerStyle={styles.squareRight}

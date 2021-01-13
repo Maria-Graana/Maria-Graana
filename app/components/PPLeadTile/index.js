@@ -204,7 +204,7 @@ class PPLeadTile extends React.Component {
                   ]}
                   numberOfLines={1}
                 >
-                  Graana Portal
+                  {data.graana_property_id ? 'Property URL: view' : 'Shortlisted properties: View'}
                 </Text>
               </TouchableOpacity>
             ) : null}

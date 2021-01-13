@@ -17,6 +17,7 @@ import axios from 'axios'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import { FAB } from 'react-native-paper'
+import { Fab } from 'native-base'
 import Loader from '../../components/loader'
 import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead'
@@ -496,39 +497,40 @@ class RentLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        <FAB.Group
-          open={open}
-          icon="plus"
-          style={{ marginBottom: 16 }}
-          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-          color={AppStyles.bgcWhite.backgroundColor}
-          actions={
-            user.organization && user.organization.isPP
-              ? [
-                  {
-                    icon: 'plus',
-                    label: 'Buy/Rent Lead',
-                    color: AppStyles.colors.primaryColor,
-                    onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
-                  },
-                ]
-              : [
-                  {
-                    icon: 'plus',
-                    label: 'Buy/Rent Lead',
-                    color: AppStyles.colors.primaryColor,
-                    onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
-                  },
-                  {
-                    icon: 'plus',
-                    label: 'Investment Lead',
-                    color: AppStyles.colors.primaryColor,
-                    onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
-                  },
-                ]
-          }
-          onStateChange={({ open }) => this.setState({ open })}
-        />
+        {user.organization && user.organization.isPP ? (
+          <Fab
+            active="true"
+            containerStyle={{ zIndex: 20 }}
+            style={{ backgroundColor: AppStyles.colors.primaryColor }}
+            position="bottomRight"
+            onPress={() => this.goToFormPage('AddRCMLead', 'RCM', null, null)}
+          >
+            <Ionicons name="md-add" color="#ffffff" />
+          </Fab>
+        ) : (
+          <FAB.Group
+            open={open}
+            icon="plus"
+            style={{ marginBottom: 16 }}
+            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+            color={AppStyles.bgcWhite.backgroundColor}
+            actions={[
+              {
+                icon: 'plus',
+                label: 'Buy/Rent Lead',
+                color: AppStyles.colors.primaryColor,
+                onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
+              },
+              {
+                icon: 'plus',
+                label: 'Investment Lead',
+                color: AppStyles.colors.primaryColor,
+                onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
+              },
+            ]}
+            onStateChange={({ open }) => this.setState({ open })}
+          />
+        )}
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}

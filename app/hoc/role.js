@@ -55,15 +55,15 @@ const role = {
       { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
       {
         role: 'call_centre_manager',
-        access: { v: true, a: false, e: false, d: false },
+        access: { v: true, a: true, e: true, d: true },
       },
       {
         role: 'call_centre_warrior',
-        access: { v: true, a: false, e: false, d: false },
+        access: { v: true, a: true, e: true, d: true },
       },
       {
         role: 'call_centre_agent',
-        access: { v: true, a: false, e: false, d: false },
+        access: { v: true, a: true, e: true, d: true },
       },
     ],
   },
@@ -87,15 +87,15 @@ const role = {
       { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
       {
         role: 'call_centre_manager',
-        access: { v: true, a: false, e: false, d: false },
+        access: { v: true, a: true, e: true, d: true },
       },
       {
         role: 'call_centre_warrior',
-        access: { v: true, a: false, e: false, d: false },
+        access: { v: true, a: true, e: true, d: true },
       },
       {
         role: 'call_centre_agent',
-        access: { v: true, a: false, e: false, d: false },
+        access: { v: true, a: true, e: true, d: true },
       },
     ],
   },

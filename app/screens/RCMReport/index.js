@@ -325,7 +325,6 @@ class RCMReport extends React.Component {
       .get(url)
       .then((res) => {
         let totalLeadsWithCommision = res.data.totalLeadsWithCommision
-        console.log('res.data: ', res.data)
         this.graphData(res.data)
         this.setState({
           dashBoardData: res.data,
@@ -1265,19 +1264,37 @@ class RCMReport extends React.Component {
         {!loading ? (
           <ScrollView style={styles.scrollContainer}>
             <View style={{}}>
-              <RectangleDaily
-                label={'Commission Revenue'}
-                leadsCount={leadsCount}
-                deals={''}
-                targetNumber={dashBoardData.totalRevenue}
-              />
-              {user.organization && user.organization.isPP ? (
+              {user.organization && !user.organization.isPP && (
+                <RectangleDaily
+                  label={'Commission Revenue'}
+                  leadsCount={leadsCount}
+                  deals={''}
+                  targetNumber={dashBoardData.totalRevenue}
+                />
+              )}
+              {user.organization && user.organization.isPP && (
+                <View style={{ marginLeft: 10 }}>
+                  <SquareContainer
+                    containerStyle={styles.squareRight}
+                    imagePath={leadsAssignedImg}
+                    label={'Leads'}
+                    total={dashBoardData.totalleadsAssigned}
+                  />
+                  <SquareContainer
+                    containerStyle={[styles.squareRight, { marginVertical: 10 }]}
+                    imagePath={leadsCreatedImg}
+                    label={'Deals Won'}
+                    total={dashBoardData.dealsWon}
+                  />
+                </View>
+              )}
+              {user.organization && !user.organization.isPP ? (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
                     imagePath={leadsAssignedImg}
                     label={'CIFs (Company)'}
-                    total={Number(dashBoardData.totalleadsAssigned)}
+                    total={dashBoardData.totalleadsAssigned}
                   />
                   <SquareContainer
                     // containerStyle={styles.squareRight}

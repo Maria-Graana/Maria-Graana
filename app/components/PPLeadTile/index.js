@@ -12,13 +12,11 @@ import AppStyles from '../../AppStyles'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
+import _ from 'underscore'
 
 class PPLeadTile extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      openModel: false,
-    }
   }
 
   call = (data) => {
@@ -46,7 +44,6 @@ class PPLeadTile extends React.Component {
     }
     if (purposeTab === 'invest') body.leadId = data.id
     else body.armsLeadId = data.id
-
     axios.post(`api/leads/project/meeting`, body).then((res) => {})
   }
 
@@ -65,12 +62,25 @@ class PPLeadTile extends React.Component {
     return size
   }
 
-  changeLeadStatus = () => {
-    const { openModel } = this.state
-    console.log('openModel: ', openModel)
-    this.setState({
-      openModel: !openModel,
+  leadMenu = (lead) => {
+    let { ppbuyRentFilter } = StaticData
+    const { PPLeadStatusUpdate } = this.props
+    let { status } = lead
+    let items = []
+    let statuses = _.reject(ppbuyRentFilter, function (item) {
+      return item.value === lead.status
     })
+    for (const status of statuses) {
+      items.push(
+        <Menu.Item
+          onPress={() => {
+            PPLeadStatusUpdate(lead, status.value)
+          }}
+          title={status.name}
+        />
+      )
+    }
+    return items
   }
 
   render() {
@@ -85,7 +95,9 @@ class PPLeadTile extends React.Component {
       displayPhone,
       propertyLead,
       redirectToCompare,
+      changeLeadStatus,
     } = this.props
+    const { organization } = user
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
       data.shared_with_armsuser_id == user.id ||
@@ -115,7 +127,11 @@ class PPLeadTile extends React.Component {
         : ''
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
-    const { openModel } = this.state
+    let leadOwner =
+      data.assigned_to_armsuser_id == user.id ||
+      data.shared_with_armsuser_id == user.id ||
+      propertyLead
+    if (data.status === 'closed_won' || data.status === 'closed_lost') leadOwner = false
     return (
       <TouchableOpacity
         // onLongPress={() => handleLongPress(data)}
@@ -132,36 +148,31 @@ class PPLeadTile extends React.Component {
                 {customerName != '' ? customerName : data.customer && data.customer.customerName}
               </Text>
             </View>
-            <View style={[styles.contentMultiMain]}>
-              {data.projectId && data.minPrice && data.maxPrice ? (
-                <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
-                  Price Range - 5 lacs to 10 lacs
-                  {/* {helper.convertPriceToString(
-                        data.minPrice,
-                        data.maxPrice,
-                        StaticData.Constants.any_value
-                      )} */}
-                </Text>
-              ) : null}
-            </View>
+
             {/* ****** Price Range */}
-            <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-              <Text
-                style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
-                numberOfLines={1}
-              >
-                Price Range - 5 lacs to 10 lacs
+            <View style={[styles.contentMultiMain]}>
+              <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
+                Price Range{' '}
+                {helper.convertPriceToString(
+                  data.minPrice,
+                  data.maxPrice,
+                  StaticData.Constants.any_value
+                )}
               </Text>
             </View>
+
             {/* ****** Description */}
-            <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-              <Text
-                style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
-                numberOfLines={1}
-              >
-                This is a property for rent
-              </Text>
-            </View>
+            {data.description ? (
+              <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                <Text
+                  style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
+                  numberOfLines={1}
+                >
+                  {data.description}
+                </Text>
+              </View>
+            ) : null}
+
             {/* ****** Location Wrap */}
             <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
               <Text
@@ -177,22 +188,26 @@ class PPLeadTile extends React.Component {
                 {!data.projectId && data.city && data.city.name}
               </Text>
             </View>
+
             {/* ****** Compare URL */}
-            <TouchableOpacity
-              onPress={() =>
-                redirectToCompare(
-                  `https://www.graana.com/compare?&propertyId=269312&propertyId=253394&propertyId=237261&compareType=residential`
-                )
-              }
-              style={[styles.contentMultiMain, AppStyles.mbFive]}
-            >
-              <Text
-                style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
-                numberOfLines={1}
+            {data.origin !== 'arms' ? (
+              <TouchableOpacity
+                onPress={() => redirectToCompare(data)}
+                style={[styles.contentMultiMain, AppStyles.mbFive]}
               >
-                {`https://www.graana.com/compare?&propertyId=269312&propertyId=253394&propertyId=237261&compareType=residential`}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.normalText,
+                    AppStyles.darkColor,
+                    AppStyles.mrTen,
+                    { textDecorationLine: 'underline' },
+                  ]}
+                  numberOfLines={1}
+                >
+                  Graana Portal
+                </Text>
+              </TouchableOpacity>
+            ) : null}
             <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
               <Text
                 style={[styles.normalText, styles.lightColor, AppStyles.mrTen]}
@@ -205,10 +220,15 @@ class PPLeadTile extends React.Component {
           </View>
           <View style={{ justifyContent: 'space-between' }}>
             <Menu
-              visible={openModel}
-              onDismiss={() => this.changeLeadStatus()}
+              visible={data.menu}
+              onDismiss={() => changeLeadStatus(data)}
               anchor={
-                <TouchableOpacity onPress={() => this.changeLeadStatus()} style={{}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (leadOwner) changeLeadStatus(data)
+                  }}
+                  style={{}}
+                >
                   <View style={{}}>
                     <Text style={[changeStatusColor, AppStyles.mrFive]} numberOfLines={1}>
                       {data.status.split('_').join(' ').toUpperCase()}
@@ -217,12 +237,7 @@ class PPLeadTile extends React.Component {
                 </TouchableOpacity>
               }
             >
-              <View>
-                <Menu.Item onPress={() => {}} title="Called" />
-                <Menu.Item onPress={() => {}} title="Viewing" />
-                <Menu.Item onPress={() => {}} title="Closed Won" />
-                <Menu.Item onPress={() => {}} title="Closed Lost" />
-              </View>
+              <View>{this.leadMenu(data)}</View>
             </Menu>
             <View style={{ alignSelf: 'flex-end' }}>
               {showPhone ? (

@@ -101,12 +101,15 @@ class LeadTile extends React.Component {
         : ''
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
+    const { organization } = user
     console.log('data: ', data)
     return (
       <TouchableOpacity
-        onLongPress={() => handleLongPress(data)}
+        onLongPress={() => {
+          if (!organization.isPP) handleLongPress(data)
+        }}
         onPress={() => {
-          navigateTo(data)
+          if (!organization.isPP) navigateTo(data)
         }}
       >
         <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>

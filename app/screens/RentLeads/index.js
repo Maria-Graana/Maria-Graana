@@ -23,6 +23,7 @@ import { setlead } from '../../actions/lead'
 import Search from '../../components/Search'
 import { storeItem, getItem } from '../../actions/user'
 import Ability from '../../hoc/Ability'
+import _ from 'underscore'
 
 var BUTTONS = [
   'Assign to team member',
@@ -106,8 +107,11 @@ class RentLeads extends React.Component {
     axios
       .get(`${query}`)
       .then((res) => {
+        let leadNewData = helper.leadMenu(
+          page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
+        )
         this.setState({
-          leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+          leadsData: leadNewData,
           loading: false,
           onEndReachedLoader: false,
           totalLeads: res.data.count,
@@ -316,14 +320,9 @@ class RentLeads extends React.Component {
     }
   }
 
-  redirectToCompare = (url) => {
-    console.log('url: ', url)
-    if (url) {
-      // let url = `https://dev.graana.rocks/property/${property.graana_id}`
-      // if (config.channel === 'staging')
-      //   url = `https://staging.graana.rocks/property/${property.graana_id}`
-      // if (config.channel === 'production')
-      //   url = `https://www.graana.com/property/${property.graana_id}`
+  redirectToCompare = (lead) => {
+    if (lead && lead.graana_property_id) {
+      let url = `${config.graanaUrl}/property/${lead.graana_property_id}`
       Linking.canOpenURL(url)
         .then((supported) => {
           if (!supported) helper.errorToast(`No application available open this Url`)
@@ -333,7 +332,43 @@ class RentLeads extends React.Component {
     }
   }
 
-  changeLeadStatus = () => {}
+  changeLeadStatus = (lead) => {
+    const { leadsData } = this.state
+    if (leadsData.length) {
+      let leadNewData = leadsData.map((item, index) => {
+        if (item.id === lead.id) {
+          item.menu = !item.menu
+          return item
+        } else {
+          return item
+        }
+      })
+      this.setState({
+        leadsData: [...leadNewData],
+      })
+    }
+  }
+
+  PPLeadStatusUpdate = (data, status) => {
+    var leadId = []
+    leadId.push(data.id)
+    if (data.status === 'open') {
+      axios
+        .patch(
+          `/api/leads`,
+          {
+            status: 'called',
+          },
+          { params: { id: leadId } }
+        )
+        .then((res) => {
+          this.fetchLeads()
+        })
+        .catch((error) => {
+          console.log(`ERROR: /api/leads/?id=${data.id}`, error)
+        })
+    }
+  }
 
   render() {
     const {
@@ -409,31 +444,37 @@ class RentLeads extends React.Component {
         </View>
         {leadsData && leadsData.length > 0 ? (
           <FlatList
-            data={leadsData}
+            data={_.clone(leadsData)}
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
-              // <LeadTile
-              //   updateStatus={this.updateStatus}
-              //   dispatch={this.props.dispatch}
-              //   purposeTab={'rent'}
-              //   user={user}
-              //   data={item}
-              //   navigateTo={this.navigateTo}
-              //   callNumber={this.callNumber}
-              //   handleLongPress={this.handleLongPress}
-              // />
-              <PPLeadTile
-                updateStatus={this.updateStatus}
-                dispatch={this.props.dispatch}
-                purposeTab={'rent'}
-                user={user}
-                data={item}
-                navigateTo={this.navigateTo}
-                callNumber={this.callNumber}
-                handleLongPress={this.handleLongPress}
-                changeLeadStatus={this.changeLeadStatus}
-                redirectToCompare={this.redirectToCompare}
-              />
+              <View>
+                {!organization.isPP ? (
+                  <LeadTile
+                    updateStatus={this.updateStatus}
+                    dispatch={this.props.dispatch}
+                    purposeTab={'rent'}
+                    user={user}
+                    data={{ ...item }}
+                    navigateTo={this.navigateTo}
+                    callNumber={this.callNumber}
+                    handleLongPress={this.handleLongPress}
+                  />
+                ) : (
+                  <PPLeadTile
+                    updateStatus={this.updateStatus}
+                    dispatch={this.props.dispatch}
+                    purposeTab={'rent'}
+                    user={user}
+                    data={{ ...item }}
+                    navigateTo={this.navigateTo}
+                    callNumber={this.callNumber}
+                    handleLongPress={this.handleLongPress}
+                    changeLeadStatus={this.changeLeadStatus}
+                    redirectToCompare={this.redirectToCompare}
+                    PPLeadStatusUpdate={this.PPLeadStatusUpdate}
+                  />
+                )}
+              </View>
             )}
             onEndReached={() => {
               if (leadsData.length < totalLeads) {

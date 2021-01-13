@@ -305,6 +305,13 @@ export default StaticData = {
     { value: 'deal_signed', name: 'Deal Signed' },
     { value: 'cancel_meeting', name: 'Cancel Meeting' },
   ],
+  ppbuyRentFilter: [
+    { value: 'open', name: 'Open' },
+    { value: 'called', name: 'Called' },
+    { value: 'viewing', name: 'Viewing' },
+    { value: 'closed_won', name: 'Closed Won' },
+    { value: 'closed_lost', name: 'Closed Lost' },
+  ],
   buyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },

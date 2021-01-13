@@ -61,55 +61,76 @@ class FormScreenSecond extends Component {
               {/* <View style={[styles.tileWrap, styles.scrollHeight, data.payment != null && data.payment.length < 3 ? styles.scrollHeightAuto : null]}> */}
               <View style={[styles.tileWrap, styles.scrollHeight]}>
                 <ScrollView>
-
-                  {
-                    paymentPreviewLoading === true ?
-                      <Text style={{ padding: 10, }}>Loading...</Text>
-                      :
-                      data && data.payment && data.payment.length > 0 ?
-                        data.payment.map((item, index) => {
-                          return (
-                            <PaymentTile onPaymentLongPress={() => onPaymentLongPress(item)} tileForToken={false} currencyConvert={currencyConvert} key={index} count={index} data={item} editTile={editTile} checkLeadClosedOrNot={checkLeadClosedOrNot} />
-                          )
-                        })
-                        : <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>
-                  }
+                  {paymentPreviewLoading === true ? (
+                    <Text style={{ padding: 10 }}>Loading...</Text>
+                  ) : data && data.payment && data.payment.length > 0 ? (
+                    data.payment.map((item, index) => {
+                      return (
+                        <PaymentTile
+                          onPaymentLongPress={() => onPaymentLongPress(item)}
+                          tileForToken={false}
+                          currencyConvert={currencyConvert}
+                          key={index}
+                          count={index}
+                          data={item}
+                          editTile={editTile}
+                          checkLeadClosedOrNot={checkLeadClosedOrNot}
+                        />
+                      )
+                    })
+                  ) : (
+                    <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>
+                  )}
                 </ScrollView>
               </View>
             </View>
 
-            {
-              checkLeadClosedOrNot === true &&
-              <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true, 'paymentModal') }}>
-                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+            {checkLeadClosedOrNot === true && (
+              <TouchableOpacity
+                style={styles.addPaymentBtn}
+                onPress={() => {
+                  addPaymentModalToggle(true, 'paymentModal')
+                }}
+              >
+                <Image
+                  style={styles.addPaymentBtnImg}
+                  source={require('../../../assets/img/roundPlus.png')}
+                ></Image>
                 <Text style={styles.addPaymentBtnText}>ADD PAYMENT</Text>
               </TouchableOpacity>
-            }
+            )}
 
-            {
-              checkLeadClosedOrNot === true &&
-              <TouchableOpacity style={styles.addPaymentBtn} onPress={() => { addPaymentModalToggle(true, 'taxModal') }}>
-                <Image style={styles.addPaymentBtnImg} source={require('../../../assets/img/roundPlus.png')}></Image>
+            {checkLeadClosedOrNot === true && (
+              <TouchableOpacity
+                style={styles.addPaymentBtn}
+                onPress={() => {
+                  addPaymentModalToggle(true, 'taxModal')
+                }}
+              >
+                <Image
+                  style={styles.addPaymentBtnImg}
+                  source={require('../../../assets/img/roundPlus.png')}
+                ></Image>
                 <Text style={styles.addPaymentBtnText}>ADD TAX</Text>
               </TouchableOpacity>
-            }
+            )}
           </View>
 
           <View style={styles.firstContainer}>
             <View style={{ flexDirection: 'row' }}>
-              <View style={{width: '49%', marginRight: 7}}>
+              <View style={{ width: '49%', marginRight: 7 }}>
                 <SimpleInputText
                   name={'remainingPayment'}
                   fromatName={'remainingPayment'}
                   placeholder={'Remaining Payment'}
                   label={'REMAINING PAYMENT'}
-                  value={remainingPayment}
-                  formatValue={remainingPayment}
+                  value={remainingPayment === '' ? '0' : remainingPayment}
+                  formatValue={remainingPayment === '' ? '0' : remainingPayment}
                   editable={false}
                   keyboardType={'numeric'}
                 />
               </View>
-              <View  style={{width: '49%'}}>
+              <View style={{ width: '49%' }}>
                 <SimpleInputText
                   name={'outstandingTax'}
                   fromatName={'outstandingTax'}
@@ -122,8 +143,6 @@ class FormScreenSecond extends Component {
                 />
               </View>
             </View>
-
-
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

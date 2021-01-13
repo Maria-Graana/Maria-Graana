@@ -373,6 +373,8 @@ class LeadOffer extends React.Component {
     this.props.navigation.navigate('LeadDetail', {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
+      isFromLeadWorkflow: true,
+      fromScreen: 'offer'
     })
   }
 
@@ -481,7 +483,7 @@ class LeadOffer extends React.Component {
   }
 
   redirectProperty = (property) => {
-    if (property.origin === 'arms') {
+    if (property.origin === 'arms' || property.origin === 'arms_lead') {
       if (this.ownProperty(property))
         this.props.navigation.navigate('PropertyDetail', {
           property: property,

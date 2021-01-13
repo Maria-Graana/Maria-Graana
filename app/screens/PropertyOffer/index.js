@@ -374,7 +374,11 @@ class PropertyOffer extends React.Component {
   }
 
   navigateToDetails = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'property' })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, 
+      purposeTab: 'property',
+      isFromLeadWorkflow: true,
+      fromScreen: 'offer'
+     })
   }
 
   goToHistory = () => {
@@ -480,7 +484,7 @@ class PropertyOffer extends React.Component {
   }
 
   redirectProperty = (property) => {
-    if (property.origin === 'arms') {
+    if (property.origin === 'arms' || property.origin === 'arms_lead') {
       if (this.ownProperty(property))
         this.props.navigation.navigate('PropertyDetail', {
           property: property,

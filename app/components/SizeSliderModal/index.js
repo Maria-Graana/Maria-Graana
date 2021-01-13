@@ -58,15 +58,17 @@ const SizeSliderModal = ({
         setRangeString(helper.convertSizeToString(initialValue, finalValue,StaticData.Constants.size_any_value, sizeUnit));
     }, [initialValue, finalValue])
 
+
     const onSliderValueChange = (values) => {
         const start = values[0];
         const end = values[values.length - 1];
         setMinValue(arrayValues[start])
         setMaxValue(arrayValues[end])
-        setStringValues({ ...stringValues, sizeMin: arrayValues[start] === arrayValues[arrayValues.length - 1] ? null : currencyConvert(arrayValues[start]), sizeMax: arrayValues[end] === arrayValues[arrayValues.length - 1] ? null : currencyConvert(arrayValues[end]) })
-        setRangeString(helper.convertSizeToString(arrayValues[start], arrayValues[end], StaticData.Constants.size_any_value, unit));
+        setStringValues({ ...stringValues, 
+            sizeMin: arrayValues[start] === arrayValues[arrayValues.length - 1] ? null : String(arrayValues[start]), 
+            sizeMax: arrayValues[end] === arrayValues[arrayValues.length - 1] ? null : String(arrayValues[end]) })
+        setRangeString(helper.convertSizeToString(arrayValues[start], arrayValues[end], StaticData.Constants.size_any_value, unit))
     }
-
 
     const handleMinSizeChange = (value) => {
         setStringValues({ ...stringValues, sizeMin: String(value) });
@@ -156,7 +158,7 @@ const SizeSliderModal = ({
                     <TextInput
                         placeholder={'Any'}
                         value={stringValues.sizeMin}
-                        onBlur={() => setStringValues({ ...stringValues, sizeMin: currencyConvert(stringValues.sizeMin) })}
+                        onBlur={() => setStringValues({ ...stringValues, sizeMin: stringValues.sizeMin ? currencyConvert(stringValues.sizeMin) : '' })}
                         onFocus={() => setStringValues({ ...stringValues, sizeMin: stringValues.sizeMin ? removeCommas(stringValues.sizeMin) : '' })}
                         onChangeText={(text) => handleMinSizeChange(text)}
                         placeholderTextColor="#96999E"
@@ -165,7 +167,7 @@ const SizeSliderModal = ({
                     <TextInput
                         placeholder={'Any'}
                         value={stringValues.sizeMax}
-                        onBlur={() => setStringValues({ ...stringValues, sizeMax: currencyConvert(stringValues.sizeMax) })}
+                        onBlur={() => setStringValues({ ...stringValues,  sizeMax: stringValues.sizeMax ? currencyConvert(stringValues.sizeMax) : '' })}
                         onFocus={() => setStringValues({ ...stringValues, sizeMax: stringValues.sizeMax ? removeCommas(stringValues.sizeMax) : '' })}
                         placeholderTextColor="#96999E"
                         onChangeText={(text) => handleMaxSizeChange(text)}

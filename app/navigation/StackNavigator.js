@@ -26,7 +26,6 @@ import Comments from '../screens/Comments'
 import CreateUser from '../screens/CreateUser'
 import Dashboard from '../screens/Dashboard'
 import Diary from '../screens/Diary/index'
-import Inventory from '../screens/Inventory/index'
 import Landing from '../screens/Landing/index'
 import LeadDetail from '../screens/LeadDetail'
 import PropertyDetail from '../screens/PropertyDetail'
@@ -44,6 +43,7 @@ import PropertyTabs from './PropertyTabNavigator'
 import EditFieldAppProperty from '../screens/EditFieldAppProperty'
 import MapContainer from '../screens/MapContainer'
 import AssignedAreas from '../screens/AssignAreas'
+import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 
 const Stack = createStackNavigator()
 
@@ -93,16 +93,6 @@ function MainStack() {
         component={TeamDiary}
         options={({ navigation, route }) => ({
           title: 'SELECT TEAM MEMBER',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerRight: (props) => <HeaderRight navigation={navigation} />,
-          headerTitleAlign: 'center',
-        })}
-      />
-      <Stack.Screen
-        name="PROPERTIES"
-        component={Inventory}
-        options={({ navigation, route }) => ({
-          title: 'PROPERTY LISTING',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
@@ -203,7 +193,8 @@ function MainStack() {
         component={LeadDetail}
         options={({ navigation, route }) => ({
           title: 'LEAD DETAILS',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          // headerLeft : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft:  route.params.isFromLeadWorkflow ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation}/> : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}

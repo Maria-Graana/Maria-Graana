@@ -113,12 +113,12 @@ class LeadRCMPayment extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params;
-        this.getCallHistory(lead)
+        this.getCallHistory()
         this.getSelectedProperty(lead)
       }
       else {
         const { lead } = this.props;
-        this.getCallHistory(lead)
+        this.getCallHistory()
         this.getSelectedProperty(lead)
       }
     })
@@ -826,6 +826,8 @@ class LeadRCMPayment extends React.Component {
     this.props.navigation.navigate('LeadDetail', {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
+      isFromLeadWorkflow: true,
+      fromScreen: 'payment'
     })
   }
 
@@ -940,10 +942,21 @@ class LeadRCMPayment extends React.Component {
     this.setState({ callModal: !callModal })
   }
 
-  getCallHistory = (lead) => {
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
-    })
+  getCallHistory = () => {
+    let leadObject = null;
+    if (this.props.route.params && this.props.route.params.isFromNotification) {
+      const { lead } = this.props.route.params;
+      leadObject = lead;
+    }
+    else {
+      const { lead } = this.props;
+      leadObject = lead;
+    }
+    if(leadObject){
+      axios.get(`/api/diary/all?armsLeadId=${leadObject.id}`).then((res) => {
+        this.setState({ meetings: res.data.rows })
+      })
+    }
   }
 
   onAddCommissionPayment = (addedBy) => {
@@ -1123,7 +1136,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   redirectProperty = (property) => {
-    if (property.origin === 'arms') {
+    if (property.origin === 'arms' || property.origin === 'arms_lead') {
       if (this.ownProperty(property))
         this.props.navigation.navigate('PropertyDetail', {
           property: property,

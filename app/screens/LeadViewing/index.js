@@ -67,22 +67,28 @@ class LeadViewing extends React.Component {
     const { lead } = this.props
     const { rcmProgressBar } = StaticData
     let matches = []
-    axios
-      .get(`/api/leads/${lead.id}/shortlist`)
-      .then((res) => {
-        matches = helper.propertyIdCheck(res.data.rows)
-        this.setState({
-          loading: false,
-          matchData: matches,
-          progressValue: rcmProgressBar[lead.status],
+    this.setState({ loading: true }, () => {
+      axios
+        .get(`/api/leads/${lead.id}/shortlist`)
+        .then((res) => {
+          matches = helper.propertyIdCheck(res.data.rows)
+          this.setState({
+            loading: false,
+            matchData: matches,
+            progressValue: rcmProgressBar[lead.status],
+          })
         })
-      })
-      .catch((error) => {
-        console.log(error)
-        this.setState({
-          loading: false,
+        .catch((error) => {
+          console.log(error)
+          this.setState({
+            loading: false,
+          })
+        }).finally(() => {
+          this.setState({
+            loading: false,
+          })
         })
-      })
+    })
   }
 
   fetchLead = () => {
@@ -497,6 +503,8 @@ class LeadViewing extends React.Component {
     this.props.navigation.navigate('LeadDetail', {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
+      isFromLeadWorkflow: true,
+      fromScreen: 'viewing'
     })
   }
 
@@ -509,6 +517,14 @@ class LeadViewing extends React.Component {
     const { lead } = this.props
     axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
       this.setState({ meetings: res.data.rows })
+    })
+  }
+
+  goToPropertyScreen = () => {
+    const { lead, navigation } = this.props;
+    navigation.navigate('AddInventory', {
+      lead: lead,
+      screenName: 'leadViewing'
     })
   }
 
@@ -538,7 +554,7 @@ class LeadViewing extends React.Component {
   }
 
   redirectProperty = (property) => {
-    if (property.origin === 'arms') {
+    if (property.origin === 'arms' || property.origin === 'arms_lead') {
       if (this.ownProperty(property))
         this.props.navigation.navigate('PropertyDetail', {
           property: property,
@@ -690,7 +706,9 @@ class LeadViewing extends React.Component {
             customer={lead.customer}
             lead={lead}
             goToHistory={this.goToHistory}
+            goToPropertyScreen={this.goToPropertyScreen}
             getCallHistory={this.getCallHistory}
+            isFromViewingScreen={true}
           />
         </View>
         <LeadRCMPaymentPopup

@@ -46,6 +46,7 @@ class InnerForm extends Component {
       leftSqft,
       cnicEditable,
       unitPearlDetailsData,
+      cnicValidate,
     } = this.props
     const checkForTokenEdit = formData.token === '' || formData.token === null ? false : true
     const checkForUnitIdavail =
@@ -300,8 +301,8 @@ class InnerForm extends Component {
             )}
             {(firstScreenValidate === true && formData.cnic === null) || formData.cnic === '' ? (
               <ErrorMessage errorMessage={'Required'} />
-            ) : formData.cnic && formData.cnic.length < 15 && firstScreenValidate === true ? (
-              <ErrorMessage errorMessage={'Enter Valid CNIC'} />
+            ) : cnicValidate ? (
+              <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
             ) : null}
 
             {/* **************************************** */}

@@ -27,10 +27,10 @@ export default function LeadsNavigator() {
         },
       }}
     >
-      <Tab.Screen name="Invest" component={InvestLeads} />
-      <Tab.Screen name="Buy" component={BuyLeads} />
       <Tab.Screen name="Rent" component={RentLeads} />
-      <Tab.Screen name="Property" component={PropertyLead} />
+      <Tab.Screen name="Buy" component={BuyLeads} />
+      <Tab.Screen name="Sell/Rent Out" component={PropertyLead} />
+      <Tab.Screen name="Invest" component={InvestLeads} />
     </Tab.Navigator>
   )
 }

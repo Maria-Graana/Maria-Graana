@@ -64,13 +64,13 @@ class LeadPropsure extends React.Component {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params;
         this.fetchLead(lead)
-        this.getCallHistory(lead)
+        this.getCallHistory()
         this.fetchProperties(lead)
       }
       else {
         const { lead } = this.props;
         this.fetchLead(lead)
-        this.getCallHistory(lead)
+        this.getCallHistory()
         this.fetchProperties(lead)
       }
     })
@@ -463,6 +463,8 @@ class LeadPropsure extends React.Component {
     this.props.navigation.navigate('LeadDetail', {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
+      isFromLeadWorkflow: true,
+      fromScreen: 'propsure'
     })
   }
 
@@ -471,10 +473,21 @@ class LeadPropsure extends React.Component {
     this.setState({ callModal: !callModal })
   }
 
-  getCallHistory = (lead) => {
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
-    })
+  getCallHistory = () => {
+    let leadObject = null;
+    if (this.props.route.params && this.props.route.params.isFromNotification) {
+      const { lead } = this.props.route.params;
+      leadObject = lead;
+    }
+    else {
+      const { lead } = this.props;
+      leadObject = lead;
+    }
+    if(leadObject){
+      axios.get(`/api/diary/all?armsLeadId=${leadObject.id}`).then((res) => {
+        this.setState({ meetings: res.data.rows })
+      })
+    }
   }
 
   goToPropertyComments = (data) => {
@@ -514,7 +527,7 @@ class LeadPropsure extends React.Component {
   }
 
   redirectProperty = (property) => {
-    if (property.origin === 'arms') {
+    if (property.origin === 'arms'|| property.origin === 'arms_lead' ) {
       if (this.ownProperty(property))
         this.props.navigation.navigate('PropertyDetail', {
           property: property,

@@ -267,7 +267,7 @@ const helper = {
     })
   },
   checkPrice(price, showPkr = false) {
-    if (price === null) {
+    if (price === null || price === 0) {
       return '0'
     } else if (Number(price) === StaticData.Constants.any_value) {
       return 'Any'

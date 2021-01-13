@@ -52,7 +52,7 @@ class RentLeads extends React.Component {
       showAssignToButton: false,
     }
   }
-
+  
   componentDidMount() {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.onFocus()
@@ -387,6 +387,7 @@ class RentLeads extends React.Component {
     const { organization } = user
     let leadStatus = StaticData.buyRentFilter
     if (organization.isPP) leadStatus = StaticData.ppBuyRentFilter
+    
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}

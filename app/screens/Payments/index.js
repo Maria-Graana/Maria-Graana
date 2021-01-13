@@ -151,7 +151,11 @@ class Payments extends Component {
       attachments: [],
       paymentCategory: '',
       taxIncluded: false,
-      whichModalVisible: modalOpenFor ? modalOpenFor === 'taxModal' ? 'taxModal' : 'paymentModal' : '',
+      whichModalVisible: modalOpenFor
+        ? modalOpenFor === 'taxModal'
+          ? 'taxModal'
+          : 'paymentModal'
+        : '',
     }
     this.setState({ secondFormData: newObject }, () => {
       this.props.dispatch(setCMPaymennt(newObject))
@@ -169,16 +173,16 @@ class Payments extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-      ; (newcheckPaymentPlan['rental'] =
-        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-        this.setState(
-          {
-            checkPaymentPlan: newcheckPaymentPlan,
-          },
-          () => {
-            this.setPaymentPlanArray(lead)
-          }
-        )
+    ;(newcheckPaymentPlan['rental'] =
+      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+      this.setState(
+        {
+          checkPaymentPlan: newcheckPaymentPlan,
+        },
+        () => {
+          this.setPaymentPlanArray(lead)
+        }
+      )
   }
 
   fetchLead = (functionCallingFor) => {
@@ -199,7 +203,10 @@ class Payments extends Component {
             progressValue: cmProgressBar[res.data.status] || 0,
             paymentPreviewLoading: false,
             secondScreenData: res.data,
-            remainingPayment: res.data.remainingPayment && res.data.remainingPayment != null ? res.data.remainingPayment : '',
+            remainingPayment:
+              res.data.remainingPayment && res.data.remainingPayment != null
+                ? res.data.remainingPayment
+                : '',
           },
           () => {
             if (functionCallingFor === 'leadClose') {
@@ -333,10 +340,11 @@ class Payments extends Component {
     ) {
       array.push({
         value: 'Sold on Investment Plan',
-        name: `Investment Plan ${lead.paidProject.full_payment_discount > 0
-          ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`
-          : ''
-          }`,
+        name: `Investment Plan ${
+          lead.paidProject.full_payment_discount > 0
+            ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`
+            : ''
+        }`,
       })
     }
     if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null) {
@@ -696,7 +704,7 @@ class Payments extends Component {
           : formData.cnic.replace(/[^\w\s]/gi, ''),
       // cnic: formData.cnic,
       customerId: lead.customer.id,
-      taxIncluded: formData.taxIncluded
+      taxIncluded: formData.taxIncluded,
     }
     var leadId = []
     leadId.push(lead.id)
@@ -873,7 +881,12 @@ class Payments extends Component {
         }
         var body = {
           ...secondFormData,
-          paymentCategory: secondFormData.whichModalVisible === 'taxModal' ? 'tax' : secondFormData.whichModalVisible === 'paymentModal' ? 'payment' : 'token',
+          paymentCategory:
+            secondFormData.whichModalVisible === 'taxModal'
+              ? 'tax'
+              : secondFormData.whichModalVisible === 'paymentModal'
+              ? 'payment'
+              : 'token',
           cmLeadId: this.props.lead.id,
           remainingPayment: remainingPayment - secondFormData.installmentAmount,
           unitStatus: this.props.lead.installmentDue,
@@ -888,11 +901,7 @@ class Payments extends Component {
           .then((res) => {
             // ====================== If have attachments then this check will b execute
             if (secondFormData.whichModalVisible === 'taxModal') {
-              this.submitAttachment(
-                res.data.id,
-                false,
-                remainingPayment
-              )
+              this.submitAttachment(res.data.id, false, remainingPayment)
             } else {
               this.submitAttachment(
                 res.data.id,
@@ -900,7 +909,6 @@ class Payments extends Component {
                 remainingPayment - secondFormData.installmentAmount
               )
             }
-
           })
           .catch(() => {
             console.log('/api/leads/project/payments - Error', error)
@@ -911,9 +919,7 @@ class Payments extends Component {
             })
           })
       } else {
-
-
-        // If the payment type is payment or token so this check will be run 
+        // If the payment type is payment or token so this check will be run
         if (secondFormData.whichModalVisible != 'taxModal') {
           var total = ''
           if (paymentOldValue > secondFormData.installmentAmount) {
@@ -1090,8 +1096,10 @@ class Payments extends Component {
           installmentAmount: null,
           type: editLeadData.type,
           visible: true,
-          paymentCategory: editLeadData.paymentCategory === 'taxModal' ? 'taxModal' : 'paymentModal',
-          whichModalVisible: editLeadData.paymentCategory === 'taxModal' ? 'taxModal' : 'paymentModal',
+          paymentCategory:
+            editLeadData.paymentCategory === 'taxModal' ? 'taxModal' : 'paymentModal',
+          whichModalVisible:
+            editLeadData.paymentCategory === 'taxModal' ? 'taxModal' : 'paymentModal',
           taxIncluded: editLeadData.taxIncluded,
         }
         this.props.dispatch(setCMPaymennt(setValuesForRedux))
@@ -1157,7 +1165,11 @@ class Payments extends Component {
   }
 
   navigateTo = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, purposeTab: 'invest' })
+    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, 
+      purposeTab: 'invest',
+      isFromLeadWorkflow: true,
+      fromScreen: 'payments'
+     })
   }
 
   tokenModalToggle = (status) => {
@@ -1220,7 +1232,7 @@ class Payments extends Component {
           helper.errorToast('Closed lead API failed!!')
         })
     } else {
-      ; ('Please select a reason for lead closure!')
+      ;('Please select a reason for lead closure!')
     }
   }
 
@@ -1324,12 +1336,14 @@ class Payments extends Component {
     // you have complete data of cm payment here
     this.showHideDeletePayment(false)
     const url = `/api/leads/payment?id=${CMPayment.id}&reason=${reason}`
-    axios.delete(url)
+    axios
+      .delete(url)
       .then((response) => {
         this.fetchLead()
         helper.successToast(response.data.message)
-      }).catch((error) => {
-        console.log(`/api/leads/payment?id=&reason= - ${error}` )
+      })
+      .catch((error) => {
+        console.log(`/api/leads/payment?id=&reason= - ${error}`)
         helper.errorToast('ERROR DELETING PAYMENT!')
       })
   }

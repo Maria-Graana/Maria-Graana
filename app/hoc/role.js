@@ -53,6 +53,18 @@ const role = {
       { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
       { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
       { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
+      {
+        role: 'call_centre_manager',
+        access: { v: true, a: false, e: false, d: false },
+      },
+      {
+        role: 'call_centre_warrior',
+        access: { v: true, a: false, e: false, d: false },
+      },
+      {
+        role: 'call_centre_agent',
+        access: { v: true, a: false, e: false, d: false },
+      },
     ],
   },
   InventoryTabs: {
@@ -73,6 +85,18 @@ const role = {
       { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
       { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
       { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
+      {
+        role: 'call_centre_manager',
+        access: { v: true, a: false, e: false, d: false },
+      },
+      {
+        role: 'call_centre_warrior',
+        access: { v: true, a: false, e: false, d: false },
+      },
+      {
+        role: 'call_centre_agent',
+        access: { v: true, a: false, e: false, d: false },
+      },
     ],
   },
   TeamDiary: {

@@ -26,7 +26,6 @@ import Comments from '../screens/Comments'
 import CreateUser from '../screens/CreateUser'
 import Dashboard from '../screens/Dashboard'
 import Diary from '../screens/Diary/index'
-import Inventory from '../screens/Inventory/index'
 import Landing from '../screens/Landing/index'
 import LeadDetail from '../screens/LeadDetail'
 import PropertyDetail from '../screens/PropertyDetail'
@@ -91,16 +90,6 @@ function PPMainStack() {
         component={TeamDiary}
         options={({ navigation, route }) => ({
           title: 'SELECT TEAM MEMBER',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerRight: (props) => <HeaderRight navigation={navigation} />,
-          headerTitleAlign: 'center',
-        })}
-      />
-      <Stack.Screen
-        name="PROPERTIES"
-        component={Inventory}
-        options={({ navigation, route }) => ({
-          title: 'PROPERTY LISTING',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',

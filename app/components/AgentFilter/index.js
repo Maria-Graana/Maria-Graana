@@ -33,7 +33,6 @@ class AgentFilter extends React.Component {
       organizations,
       checkValidation,
     } = this.props
-    const { organization } = user
     return (
       <Modal visible={openPopup} animationType="slide" onRequestClose={closeFilters}>
         <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
@@ -64,7 +63,7 @@ class AgentFilter extends React.Component {
                 <ErrorMessage errorMessage={'Required'} />
               )}
             </View>
-            {!organization.isPP ? (
+            {user.organization && !user.organization.isPP ? (
               <View style={styles.pad5}>
                 <PickerComponent
                   clearOnChange={true}

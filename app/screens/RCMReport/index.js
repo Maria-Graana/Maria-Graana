@@ -170,7 +170,7 @@ class RCMReport extends React.Component {
       user.subRole === 'pp_manager'
     ) {
       let organizations = [{ value: user.organizationId, name: user.organizationName }]
-      if (organization.isPP) {
+      if (user.organization && user.organization.isPP) {
         zoneFormData = {
           organization: user.organizationId,
           region: null,
@@ -554,10 +554,9 @@ class RCMReport extends React.Component {
   submitAgentFilter = () => {
     const { agentFormData, regions, zones, agents } = this.state
     const { user } = this.props
-    const { organization } = user
     if (
       !agentFormData.organization ||
-      (!agentFormData.region && !organization.isPP) ||
+      (!agentFormData.region && user.organization && !user.organization.isPP) ||
       !agentFormData.zone ||
       !agentFormData.agent
     ) {
@@ -577,9 +576,10 @@ class RCMReport extends React.Component {
         backCheck: true,
         showAgentFilter: false,
         checkValidation: false,
-        regionText: !organization.isPP
-          ? agent.name + ', ' + zone.name + ', ' + region.name + ', ' + org.name
-          : agent.name + ', ' + zone.name + ', ' + org.name,
+        regionText:
+          user.organization && !user.organization.isPP
+            ? agent.name + ', ' + zone.name + ', ' + region.name + ', ' + org.name
+            : agent.name + ', ' + zone.name + ', ' + org.name,
       })
       this.agentUrl()
     }
@@ -656,10 +656,9 @@ class RCMReport extends React.Component {
   submitZoneFilter = () => {
     const { zoneFormData, regions, zones } = this.state
     const { user } = this.props
-    const { organization } = user
     if (
       !zoneFormData.organization ||
-      (!zoneFormData.region && !organization.isPP) ||
+      (!zoneFormData.region && user.organization && !user.organization.isPP) ||
       !zoneFormData.zone
     ) {
       this.setState({ checkValidation: true })
@@ -675,9 +674,10 @@ class RCMReport extends React.Component {
         backCheck: true,
         showZoneFilter: false,
         checkValidation: false,
-        regionText: !organization.isPP
-          ? zone.name + ', ' + region.name + ', ' + org.name
-          : zone.name + ', ' + org.name,
+        regionText:
+          user.organization && !user.organization.isPP
+            ? zone.name + ', ' + region.name + ', ' + org.name
+            : zone.name + ', ' + org.name,
       })
       this.teamUrl()
     }
@@ -1078,7 +1078,6 @@ class RCMReport extends React.Component {
 
   render() {
     const { user } = this.props
-    const { organization } = user
     const {
       leadsCount,
       viewLoader,
@@ -1272,7 +1271,7 @@ class RCMReport extends React.Component {
                 deals={''}
                 targetNumber={dashBoardData.totalRevenue}
               />
-              {organization.isPP ? (
+              {user.organization && user.organization.isPP ? (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1288,7 +1287,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               ) : null}
-              {!organization.isPP && (
+              {user.organization && !user.organization.isPP && (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1305,7 +1304,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               )}
-              {!organization.isPP && (
+              {user.organization && !user.organization.isPP && (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1320,7 +1319,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               )}
-              {!organization.isPP && (
+              {user.organization && !user.organization.isPP && (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1335,7 +1334,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               )}
-              {!organization.isPP && (
+              {user.organization && !user.organization.isPP && (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1350,7 +1349,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               )}
-              {!organization.isPP && (
+              {user.organization && !user.organization.isPP && (
                 <View style={styles.graphContainer}>
                   <Text style={styles.labelStyle}>Lead Stats</Text>
                   <ScrollView horizontal={true}>

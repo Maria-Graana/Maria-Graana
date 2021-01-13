@@ -52,7 +52,7 @@ class RentLeads extends React.Component {
       showAssignToButton: false,
     }
   }
-  
+
   componentDidMount() {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.onFocus()
@@ -384,10 +384,9 @@ class RentLeads extends React.Component {
       showSearchBar,
     } = this.state
     const { user } = this.props
-    const { organization } = user
     let leadStatus = StaticData.buyRentFilter
-    if (organization.isPP) leadStatus = StaticData.ppBuyRentFilter
-    
+    if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
+
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
@@ -449,7 +448,7 @@ class RentLeads extends React.Component {
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
               <View>
-                {!organization.isPP ? (
+                {user.organization && !user.organization.isPP ? (
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
@@ -504,7 +503,7 @@ class RentLeads extends React.Component {
           fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
           color={AppStyles.bgcWhite.backgroundColor}
           actions={
-            organization.isPP
+            user.organization && user.organization.isPP
               ? [
                   {
                     icon: 'plus',

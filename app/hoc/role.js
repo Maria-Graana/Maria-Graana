@@ -31,6 +31,8 @@ const role = {
         role: 'call_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
+      { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
   Inventory: {
@@ -49,6 +51,8 @@ const role = {
       },
       { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
       { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
+      { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
   InventoryTabs: {
@@ -67,6 +71,8 @@ const role = {
       },
       { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
       { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
+      { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
   TeamDiary: {
@@ -91,6 +97,7 @@ const role = {
         role: 'call_centre_manager',
         access: { v: true, a: true, e: true, d: true },
       },
+      { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
     ],
   },
   Client: {
@@ -129,6 +136,8 @@ const role = {
         role: 'call_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
+      { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
   Targets: {
@@ -208,6 +217,8 @@ const role = {
         role: 'call_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
+      { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
   CreateUser: {
@@ -258,6 +269,8 @@ const role = {
         role: 'call_centre_agent',
         access: { v: true, a: true, e: true, d: true },
       },
+      { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
   AssignLead: {
@@ -291,6 +304,8 @@ const role = {
         role: 'call_centre_manager',
         access: { v: true, a: false, e: false, d: false },
       },
+      { role: 'pp_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'pp_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
   AssignedAreas: {

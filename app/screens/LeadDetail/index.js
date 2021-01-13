@@ -321,7 +321,7 @@ class LeadDetail extends React.Component {
       let purpose = lead.purpose === 'sale' ? 'Buy' : 'Rent'
       type = purpose
     }
-
+    console.log('lead: ', lead)
     return !loading ? (
       <ScrollView
         showsVerticalScrollIndicator={false}

@@ -97,6 +97,16 @@ const helper = {
     var sub = moment(paktz, _format).subtract(duration).format()
     return new Date(sub)
   },
+  leadMenu(data) {
+    let lead = []
+    if (data.length) {
+      data.map((item, index) => {
+        item.menu = false
+        lead.push(item)
+      })
+      return lead
+    } else return []
+  },
   propertyCheck(data) {
     let matches = []
     if (data.length) {
@@ -423,7 +433,7 @@ const helper = {
     }
     if (identifier) {
       Notifications.cancelScheduledNotificationAsync(identifier)
-        .then((notification) => { })
+        .then((notification) => {})
         .catch((error) => {
           console.log(error)
         })
@@ -503,6 +513,8 @@ const helper = {
     }
   },
   convertPriceToString(start, end, maxValue) {
+    if (!start) start = 0
+    if (!end) end = 0
     if (start === 0 && end === 0) {
       return 'PKR: 0'
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
@@ -582,12 +594,10 @@ const helper = {
     }
   },
   removeHtmlTags(str) {
-    if ((str === null) || (str === ''))
-      return false;
-    else
-      str = str.toString();
-    return str.replace(/<[^>]*>/g, '');
-  }
+    if (str === null || str === '') return false
+    else str = str.toString()
+    return str.replace(/<[^>]*>/g, '')
+  },
 }
 
 module.exports = helper

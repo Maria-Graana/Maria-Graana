@@ -12,6 +12,7 @@ import SortImg from '../../../assets/img/sort.png'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import LeadTile from '../../components/LeadTile'
+import PPLeadTile from '../../components/PPLeadTile'
 import axios from 'axios'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
@@ -22,6 +23,7 @@ import { setlead } from '../../actions/lead'
 import Search from '../../components/Search'
 import { storeItem, getItem } from '../../actions/user'
 import Ability from '../../hoc/Ability'
+import _ from 'underscore'
 
 var BUTTONS = [
   'Assign to team member',
@@ -50,7 +52,7 @@ class RentLeads extends React.Component {
       showAssignToButton: false,
     }
   }
-
+  
   componentDidMount() {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.onFocus()
@@ -105,8 +107,11 @@ class RentLeads extends React.Component {
     axios
       .get(`${query}`)
       .then((res) => {
+        let leadNewData = helper.leadMenu(
+          page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
+        )
         this.setState({
-          leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+          leadsData: leadNewData,
           loading: false,
           onEndReachedLoader: false,
           totalLeads: res.data.count,
@@ -315,6 +320,56 @@ class RentLeads extends React.Component {
     }
   }
 
+  redirectToCompare = (lead) => {
+    if (lead && lead.graana_property_id) {
+      let url = `${config.graanaUrl}/property/${lead.graana_property_id}`
+      Linking.canOpenURL(url)
+        .then((supported) => {
+          if (!supported) helper.errorToast(`No application available open this Url`)
+          else return Linking.openURL(url)
+        })
+        .catch((err) => console.error('An error occurred', err))
+    }
+  }
+
+  changeLeadStatus = (lead) => {
+    const { leadsData } = this.state
+    if (leadsData.length) {
+      let leadNewData = leadsData.map((item, index) => {
+        if (item.id === lead.id) {
+          item.menu = !item.menu
+          return item
+        } else {
+          return item
+        }
+      })
+      this.setState({
+        leadsData: [...leadNewData],
+      })
+    }
+  }
+
+  PPLeadStatusUpdate = (data, status) => {
+    var leadId = []
+    leadId.push(data.id)
+    if (data.status === 'open') {
+      axios
+        .patch(
+          `/api/leads`,
+          {
+            status: 'called',
+          },
+          { params: { id: leadId } }
+        )
+        .then((res) => {
+          this.fetchLeads()
+        })
+        .catch((error) => {
+          console.log(`ERROR: /api/leads/?id=${data.id}`, error)
+        })
+    }
+  }
+
   render() {
     const {
       leadsData,
@@ -329,7 +384,10 @@ class RentLeads extends React.Component {
       showSearchBar,
     } = this.state
     const { user } = this.props
+    const { organization } = user
     let leadStatus = StaticData.buyRentFilter
+    if (organization.isPP) leadStatus = StaticData.ppBuyRentFilter
+    
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
@@ -387,19 +445,37 @@ class RentLeads extends React.Component {
         </View>
         {leadsData && leadsData.length > 0 ? (
           <FlatList
-            data={leadsData}
+            data={_.clone(leadsData)}
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
-              <LeadTile
-                updateStatus={this.updateStatus}
-                dispatch={this.props.dispatch}
-                purposeTab={'rent'}
-                user={user}
-                data={item}
-                navigateTo={this.navigateTo}
-                callNumber={this.callNumber}
-                handleLongPress={this.handleLongPress}
-              />
+              <View>
+                {!organization.isPP ? (
+                  <LeadTile
+                    updateStatus={this.updateStatus}
+                    dispatch={this.props.dispatch}
+                    purposeTab={'rent'}
+                    user={user}
+                    data={{ ...item }}
+                    navigateTo={this.navigateTo}
+                    callNumber={this.callNumber}
+                    handleLongPress={this.handleLongPress}
+                  />
+                ) : (
+                  <PPLeadTile
+                    updateStatus={this.updateStatus}
+                    dispatch={this.props.dispatch}
+                    purposeTab={'rent'}
+                    user={user}
+                    data={{ ...item }}
+                    navigateTo={this.navigateTo}
+                    callNumber={this.callNumber}
+                    handleLongPress={this.handleLongPress}
+                    changeLeadStatus={this.changeLeadStatus}
+                    redirectToCompare={this.redirectToCompare}
+                    PPLeadStatusUpdate={this.PPLeadStatusUpdate}
+                  />
+                )}
+              </View>
             )}
             onEndReached={() => {
               if (leadsData.length < totalLeads) {
@@ -427,20 +503,31 @@ class RentLeads extends React.Component {
           style={{ marginBottom: 16 }}
           fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
           color={AppStyles.bgcWhite.backgroundColor}
-          actions={[
-            {
-              icon: 'plus',
-              label: 'Buy/Rent Lead',
-              color: AppStyles.colors.primaryColor,
-              onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
-            },
-            {
-              icon: 'plus',
-              label: 'Investment Lead',
-              color: AppStyles.colors.primaryColor,
-              onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
-            },
-          ]}
+          actions={
+            organization.isPP
+              ? [
+                  {
+                    icon: 'plus',
+                    label: 'Buy/Rent Lead',
+                    color: AppStyles.colors.primaryColor,
+                    onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
+                  },
+                ]
+              : [
+                  {
+                    icon: 'plus',
+                    label: 'Buy/Rent Lead',
+                    color: AppStyles.colors.primaryColor,
+                    onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
+                  },
+                  {
+                    icon: 'plus',
+                    label: 'Investment Lead',
+                    color: AppStyles.colors.primaryColor,
+                    onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
+                  },
+                ]
+          }
           onStateChange={({ open }) => this.setState({ open })}
         />
         <SortModal

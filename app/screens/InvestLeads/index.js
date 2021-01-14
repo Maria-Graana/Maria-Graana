@@ -143,7 +143,7 @@ class InvestLeads extends React.Component {
     const { navigation } = this.props
     this.props.dispatch(setlead(data))
     let page = ''
-    if (data.status === 'open') {
+    if (data.readAt === null) {
       this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'invest' })
     } else {
       if (

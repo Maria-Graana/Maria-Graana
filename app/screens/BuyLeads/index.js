@@ -152,9 +152,12 @@ class BuyLeads extends React.Component {
   navigateTo = (data) => {
     this.props.dispatch(setlead(data))
     let page = ''
-    if (data.status === 'open') {
+    if (data.readAt === null) {
       this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
     } else {
+      if(data.status == 'open') {
+        page = 'Match'
+      }
       if (data.status === 'viewing') {
         page = 'Viewing'
       }

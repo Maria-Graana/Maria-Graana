@@ -355,12 +355,13 @@ class RentLeads extends React.Component {
   PPLeadStatusUpdate = (data, status) => {
     var leadId = []
     leadId.push(data.id)
-    if (data.status === 'open') {
+    this.changeLeadStatus(data)
+    if (data) {
       axios
         .patch(
           `/api/leads`,
           {
-            status: 'called',
+            status: status,
           },
           { params: { id: leadId } }
         )

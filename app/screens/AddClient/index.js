@@ -334,7 +334,7 @@ class AddClient extends Component {
       first_name: helper.capitalize(formData.firstName),
       last_name: helper.capitalize(formData.lastName),
       email: formData.email,
-      cnic: formData.cnic,
+      cnic: formData.cnic & (formData.cnic === '') ? null : formData.cnic,
       phone: {
         countryCode: newCallingCode === '+92' ? 'PK' : countryCode,
         phone:
@@ -437,14 +437,19 @@ class AddClient extends Component {
             })
         } else {
           let body = this.updatePayload()
+          console.log('body: ', body)
           this.setState({ loading: true })
           axios
             .patch(`/api/customer/update?id=${client.id}`, body)
             .then((res) => {
-              helper.successToast('CLIENT UPDATED')
-              body.name = body.first_name + ' ' + body.last_name
-              // this.call(body)
-              navigation.goBack()
+              if (res.data.message) {
+                helper.errorToast(res.data.message)
+              } else {
+                helper.successToast('CLIENT UPDATED')
+                body.name = body.first_name + ' ' + body.last_name
+                // this.call(body)
+                navigation.goBack()
+              }
             })
             .catch((error) => {
               console.log(error)

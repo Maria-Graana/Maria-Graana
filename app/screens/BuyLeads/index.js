@@ -354,7 +354,6 @@ class BuyLeads extends React.Component {
     leadId.push(data.id)
     this.changeLeadStatus(data)
     if (data) {
-      console.log(leadId, status)
       axios
         .patch(
           `/api/leads`,

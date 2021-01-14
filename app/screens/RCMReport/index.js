@@ -385,8 +385,12 @@ class RCMReport extends React.Component {
       user.subRole !== 'business_centre_manager' &&
       user.subRole !== 'call_centre_manager'
     ) {
+      let url = `/api/user/teams?status=true&organizationId=${org.value}&all=true&regionId=${value}`
+      if (user.organization && user.organization.isPP) {
+        url = `/api/user/teams?status=true&organizationId=${org.value}&all=true`
+      }
       axios
-        .get(`/api/user/teams?status=true&organizationId=${org.value}&all=true&regionId=${value}`)
+        .get(url)
         .then((res) => {
           let zones = []
           res &&
@@ -539,11 +543,16 @@ class RCMReport extends React.Component {
 
   handleAgentForm = (value, name) => {
     const { agentFormData } = this.state
+    const { user } = this.props
     if (name === 'organization') {
       agentFormData.region = ''
       agentFormData.zone = ''
       agentFormData.agent = ''
-      this.fetchRegions(value)
+      if (user.organization && user.organization.isPP) {
+        this.fetchZones(value, 'zone')
+      } else {
+        this.fetchRegions(value)
+      }
     }
     if (name === 'zone') agentFormData.agent = ''
     agentFormData[name] = value
@@ -642,11 +651,16 @@ class RCMReport extends React.Component {
 
   handleZoneForm = (value, name) => {
     const { zoneFormData } = this.state
+    const { user } = this.props
     zoneFormData[name] = value
     if (name === 'organization') {
       zoneFormData.region = ''
       zoneFormData.zone = ''
-      this.fetchRegions(value)
+      if (user.organization && user.organization.isPP) {
+        this.fetchZones(value, 'zone')
+      } else {
+        this.fetchRegions(value)
+      }
     }
     if (name === 'region') zoneFormData.zone = ''
     this.setState({ zoneFormData })

@@ -328,6 +328,8 @@ class BuyLeads extends React.Component {
         })
         .catch((err) => console.error('An error occurred', err))
     }
+    if (lead && lead.propertyLink) {
+    }
   }
 
   changeLeadStatus = (lead) => {

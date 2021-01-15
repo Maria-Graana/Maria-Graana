@@ -25,6 +25,7 @@ import Search from '../../components/Search'
 import { storeItem, getItem } from '../../actions/user'
 import Ability from '../../hoc/Ability'
 import _ from 'underscore'
+import config from '../../config'
 
 var BUTTONS = [
   'Assign to team member',

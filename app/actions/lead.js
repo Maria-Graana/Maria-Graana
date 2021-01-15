@@ -34,6 +34,7 @@ export function goBack(object) {
        } else if(fromScreen === 'meetings') {
          page = 'Meetings'
        }
+       navigation.setParams({ isFromLeadWorkflow: false, type: null, fromScreen: null })
        navigation.navigate('CMLeadTabs', {
          screen: page,
          params: { lead: lead },
@@ -53,6 +54,7 @@ export function goBack(object) {
    if (fromScreen === 'payment') {
      page = 'Payment'
    }
+   navigation.setParams({ isFromLeadWorkflow: false, type: null, fromScreen: null })
    navigation.navigate('PropertyTabs', {
      screen: page,
      params: { lead: lead },
@@ -75,10 +77,10 @@ export function goBack(object) {
    if (fromScreen === 'payment') {
      page = 'Payment'
    }
+   navigation.setParams({ isFromLeadWorkflow: false, type: null, fromScreen: null })
    navigation.navigate('RCMLeadTabs', {
      screen: page,
      params: { lead: lead }
    })
  }
- navigation.setParams({ isFromLeadWorkflow: false, type: null, fromScreen: null })
 }

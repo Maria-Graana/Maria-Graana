@@ -152,9 +152,13 @@ class RentLeads extends React.Component {
   navigateTo = (data) => {
     this.props.dispatch(setlead(data))
     let page = ''
-    if (data.status === 'open') {
+    console.log(data.status)
+    if (data.readAt === null) {
       this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
     } else {
+      if(data.status === 'open') {
+        page = 'Match'
+      }
       if (data.status === 'viewing') {
         page = 'Viewing'
       }

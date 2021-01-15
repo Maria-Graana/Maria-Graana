@@ -1158,6 +1158,15 @@ class RCMReport extends React.Component {
       marginVertical: 8,
       ...chartConfig.style,
     }
+    let totalLeadsCopy =
+      dashBoardData.totalleadsAssigned === '' || !dashBoardData.totalleadsAssigned
+        ? 0
+        : Number(dashBoardData.totalleadsAssigned)
+    let totalLeadAssignedCopy =
+      dashBoardData.totalLeadsAdded === '' || !dashBoardData.totalLeadsAdded
+        ? 0
+        : Number(dashBoardData.totalLeadsAdded)
+
     return !viewLoader ? (
       <View style={[AppStyles.mb1, { backgroundColor: '#ffffff' }]}>
         <View style={styles.buttonsContainer}>
@@ -1300,11 +1309,7 @@ class RCMReport extends React.Component {
                     containerStyle={styles.squareRight}
                     imagePath={leadsAssignedImg}
                     label={'Leads'}
-                    total={
-                      dashBoardData.totalleadsAssigned === '' || !dashBoardData.totalleadsAssigned
-                        ? 0
-                        : dashBoardData.totalleadsAssigned
-                    }
+                    total={totalLeadAssignedCopy + totalLeadsCopy}
                   />
                   <SquareContainer
                     containerStyle={[styles.squareRight, { marginVertical: 10 }]}
@@ -1313,7 +1318,7 @@ class RCMReport extends React.Component {
                     total={
                       dashBoardData.dealsWon === '' || !dashBoardData.dealsWon
                         ? 0
-                        : dashBoardData.totalleadsAssigned
+                        : dashBoardData.dealsWon
                     }
                   />
                 </View>

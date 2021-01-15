@@ -138,7 +138,11 @@ class PPLeadTile extends React.Component {
         // onPress={() => {
         //   navigateTo(data)
         // }}
-        style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory, { flex: 1 }]}
+        style={[
+          styles.tileMainWrap,
+          data.readAt === null && styles.selectedInventory,
+          { flex: 1, padding: 10 },
+        ]}
       >
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 1 }}>
@@ -151,7 +155,7 @@ class PPLeadTile extends React.Component {
 
             {/* ****** Price Range */}
             <View style={[styles.contentMultiMain]}>
-              <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
+              <Text style={[styles.priceText, AppStyles.mbFive]}>
                 Price Range{' '}
                 {helper.convertPriceToString(
                   data.minPrice,

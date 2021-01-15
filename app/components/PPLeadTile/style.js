@@ -99,7 +99,7 @@ export default styles = StyleSheet.create({
   },
   priceText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   priceColor: {
     color: '#2A7EF0',

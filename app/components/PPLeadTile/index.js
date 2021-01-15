@@ -190,7 +190,7 @@ class PPLeadTile extends React.Component {
             </View>
 
             {/* ****** Compare URL */}
-            {data.origin !== 'arms' ? (
+            {/* {data.origin !== 'arms' ? (
               <TouchableOpacity
                 onPress={() => redirectToCompare(data)}
                 style={[styles.contentMultiMain, AppStyles.mbFive]}
@@ -207,7 +207,7 @@ class PPLeadTile extends React.Component {
                   {data.graana_property_id ? 'Property URL: view' : 'Shortlisted properties: View'}
                 </Text>
               </TouchableOpacity>
-            ) : null}
+            ) : null} */}
             <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
               <Text
                 style={[styles.normalText, styles.lightColor, AppStyles.mrTen]}

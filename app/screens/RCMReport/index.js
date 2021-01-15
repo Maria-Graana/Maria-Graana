@@ -171,32 +171,40 @@ class RCMReport extends React.Component {
     ) {
       let organizations = [{ value: user.organizationId, name: user.organizationName }]
       if (user.organization && user.organization.isPP) {
-        zoneFormData = {
-          organization: user.organizationId,
-          region: null,
-          zone: user.armsTeam.id,
-        }
-        this.setState(
-          {
-            lastLabel: 'Team',
-            footerLabel: 'Team',
-            organizations,
-            regionFormData,
-            agentFormData,
-            zoneFormData,
-            regionText: user.armsTeam.teamName + ', ' + user.organizationName,
-            regions: [],
-            zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }],
-          },
-          () => {
-            this.checkDate()
+        if ('armsTeam' in user && user.armsTeam) {
+          zoneFormData = {
+            organization: user.organizationId,
+            region: null,
+            zone: user && user.armsTeam && user.armsTeam.id,
           }
-        )
+          this.setState(
+            {
+              lastLabel: 'Team',
+              footerLabel: 'Team',
+              organizations,
+              regionFormData,
+              agentFormData,
+              zoneFormData,
+              regionText:
+                user && user.armsTeam && user.armsTeam.teamName + ', ' + user.organizationName,
+              regions: [],
+              zones: [
+                {
+                  value: user && user.armsTeam && user.armsTeam.id,
+                  name: user && user.armsTeam && user.armsTeam.teamName,
+                },
+              ],
+            },
+            () => {
+              this.checkDate()
+            }
+          )
+        } else helper.errorToast('Error: Displaying Dashboard')
       } else if ('region' in user && 'armsTeam' in user && user.armsTeam && user.region) {
         zoneFormData = {
           organization: user.organizationId,
           region: user.region.id,
-          zone: user.armsTeam.id,
+          zone: user && user.armsTeam && user.armsTeam.id,
         }
         this.setState(
           {
@@ -209,7 +217,9 @@ class RCMReport extends React.Component {
             regionText:
               user.armsTeam.teamName + ', ' + user.region.name + ', ' + user.organizationName,
             regions: [{ value: user.region.id, name: user.region.name }],
-            zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }],
+            zones: [
+              { value: user && user.armsTeam && user.armsTeam.id, name: user.armsTeam.teamName },
+            ],
           },
           () => {
             this.checkDate()
@@ -234,7 +244,7 @@ class RCMReport extends React.Component {
       let newAgentForm = {
         organization: user.organizationId,
         region: user.region.id,
-        zone: user.armsTeam.id,
+        zone: user && user.armsTeam && user.armsTeam.id,
         agent: user.id,
       }
       this.setState(
@@ -246,17 +256,16 @@ class RCMReport extends React.Component {
           filterLabel: 'Daily',
           agentFormData: newAgentForm,
           regionText:
-            user.firstName +
-            ' ' +
-            user.lastName +
-            ', ' +
-            user.armsTeam.teamName +
-            ', ' +
-            user.region.name +
-            ', ' +
-            user.organizationName,
+            user.firstName + ' ' + user.lastName + ', ' + user &&
+            user.armsTeam &&
+            user.armsTeam.teamName + ', ' + user.region.name + ', ' + user.organizationName,
           regions: [{ value: user.region.id, name: user.region.name }],
-          zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }],
+          zones: [
+            {
+              value: user && user.armsTeam && user.armsTeam.id,
+              name: user && user.armsTeam && user.armsTeam.teamName,
+            },
+          ],
           agents: [{ value: user.id, name: user.firstName + ' ' + user.lastName }],
           agentDate: true,
         },
@@ -1149,7 +1158,6 @@ class RCMReport extends React.Component {
       marginVertical: 8,
       ...chartConfig.style,
     }
-
     return !viewLoader ? (
       <View style={[AppStyles.mb1, { backgroundColor: '#ffffff' }]}>
         <View style={styles.buttonsContainer}>
@@ -1292,13 +1300,21 @@ class RCMReport extends React.Component {
                     containerStyle={styles.squareRight}
                     imagePath={leadsAssignedImg}
                     label={'Leads'}
-                    total={dashBoardData.totalleadsAssigned}
+                    total={
+                      dashBoardData.totalleadsAssigned === '' || !dashBoardData.totalleadsAssigned
+                        ? 0
+                        : dashBoardData.totalleadsAssigned
+                    }
                   />
                   <SquareContainer
                     containerStyle={[styles.squareRight, { marginVertical: 10 }]}
                     imagePath={leadsCreatedImg}
                     label={'Deals Won'}
-                    total={dashBoardData.dealsWon}
+                    total={
+                      dashBoardData.dealsWon === '' || !dashBoardData.dealsWon
+                        ? 0
+                        : dashBoardData.totalleadsAssigned
+                    }
                   />
                 </View>
               )}

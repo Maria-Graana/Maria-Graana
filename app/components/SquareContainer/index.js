@@ -32,7 +32,7 @@ class SqaureContainer extends React.Component {
         </View>
         <View style={styles.headView}>
           <Text style={styles.totalText}>
-            {total ? parseInt(formatPrice(total)) : formatPrice(0)}
+            {total && total !== '' && total !== 0 ? parseInt(formatPrice(total)) : 0}
           </Text>
           <Text style={styles.headingText}>{label}</Text>
         </View>

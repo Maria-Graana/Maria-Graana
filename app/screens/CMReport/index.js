@@ -167,7 +167,7 @@ class CMReport extends React.Component {
         zoneFormData = {
           organization: user.organizationId,
           region: user.region.id,
-          zone: user.armsTeam.id,
+          zone: user && user.armsTeam && user.armsTeam.id,
         }
         this.setState(
           {
@@ -180,7 +180,9 @@ class CMReport extends React.Component {
             regionText:
               user.armsTeam.teamName + ', ' + user.region.name + ', ' + user.organizationName,
             regions: [{ value: user.region.id, name: user.region.name }],
-            zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }],
+            zones: [
+              { value: user && user.armsTeam && user.armsTeam.id, name: user.armsTeam.teamName },
+            ],
           },
           () => {
             this.checkDate()
@@ -205,7 +207,7 @@ class CMReport extends React.Component {
       let newAgentForm = {
         organization: user.organizationId,
         region: user.region.id,
-        zone: user.armsTeam.id,
+        zone: user && user.armsTeam && user.armsTeam.id,
         agent: user.id,
       }
       this.setState(
@@ -227,7 +229,9 @@ class CMReport extends React.Component {
             ', ' +
             user.organizationName,
           regions: [{ value: user.region.id, name: user.region.name }],
-          zones: [{ value: user.armsTeam.id, name: user.armsTeam.teamName }],
+          zones: [
+            { value: user && user.armsTeam && user.armsTeam.id, name: user.armsTeam.teamName },
+          ],
           agents: [{ value: user.id, name: user.firstName + ' ' + user.lastName }],
           agentDate: true,
         },

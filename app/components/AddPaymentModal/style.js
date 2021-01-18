@@ -63,7 +63,7 @@ export default styles = StyleSheet.create({
     letterSpacing: 2,
     borderRadius: 4,
     justifyContent: 'center',
-    marginTop: 15,
+    marginVertical: 15,
   },
   addPaymentBtnImg: {
     resizeMode: 'contain',

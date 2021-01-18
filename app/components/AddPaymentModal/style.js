@@ -62,7 +62,6 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
     borderRadius: 4,
-    marginBottom: 15,
     justifyContent: 'center',
     marginTop: 15,
   },

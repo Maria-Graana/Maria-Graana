@@ -38,8 +38,8 @@ class AddPaymentModal extends React.Component {
       remarkData,
       remarksPaymentLoading,
       paymentNotZero,
+      isAttachmentRequired,
     } = this.props
-
     return (
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
@@ -200,6 +200,12 @@ class AddPaymentModal extends React.Component {
                       <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
                     </TouchableOpacity>
                   )}
+
+                  {
+                    isAttachmentRequired  ?
+                     <ErrorMessage containerStyle={{marginVertical: 5}} errorMessage={'Attachment Required'} />
+                     : null
+                  }
 
                 {secondFormLeadData.status === 'pendingSales' ? (
                   <View style={styles.reSubmiitBtnMain}>

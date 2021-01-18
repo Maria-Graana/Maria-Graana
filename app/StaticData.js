@@ -647,6 +647,8 @@ export default StaticData = {
     { value: 'e-Gateway', name: 'E-Gateway' },
     { value: 'Buy Back Adjustment', name: 'Buy Back Adjustment' },
     { value: 'Inter Mall Adjustment', name: 'Inter Mall Adjustment' },
+    { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
+    { value: 'Rent Adjustment', name: 'Rent Adjustment' },
   ],
   unitType: [
     { value: 'fullUnit', name: 'Full Unit' },

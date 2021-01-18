@@ -114,6 +114,7 @@ class Payments extends Component {
       paymentNotZero: false,
       tokenNotZero: false,
       deletePaymentVisible: false,
+      isAttachmentRequired: false,
     }
   }
 
@@ -138,6 +139,7 @@ class Payments extends Component {
   reopenPaymentModal = () => {
     this.setState({
       addPaymentModalToggleState: this.props.CMPayment.visible,
+      isAttachmentRequired: false,
     })
   }
 
@@ -173,16 +175,16 @@ class Payments extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-    ;(newcheckPaymentPlan['rental'] =
-      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-      this.setState(
-        {
-          checkPaymentPlan: newcheckPaymentPlan,
-        },
-        () => {
-          this.setPaymentPlanArray(lead)
-        }
-      )
+      ; (newcheckPaymentPlan['rental'] =
+        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+        this.setState(
+          {
+            checkPaymentPlan: newcheckPaymentPlan,
+          },
+          () => {
+            this.setPaymentPlanArray(lead)
+          }
+        )
   }
 
   fetchLead = (functionCallingFor) => {
@@ -340,11 +342,10 @@ class Payments extends Component {
     ) {
       array.push({
         value: 'Sold on Investment Plan',
-        name: `Investment Plan ${
-          lead.paidProject.full_payment_discount > 0
-            ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`
-            : ''
-        }`,
+        name: `Investment Plan ${lead.paidProject.full_payment_discount > 0
+          ? `(Full Payment Disc: ${lead.paidProject.full_payment_discount}%)`
+          : ''
+          }`,
       })
     }
     if (checkPaymentPlan.rental === true && lead.paidProject != null && lead.paidProject != null) {
@@ -852,6 +853,7 @@ class Payments extends Component {
       secondFormData: newSecondFormData,
       tokenNotZero: false,
       paymentNotZero: false,
+      isAttachmentRequired: false,
     })
   }
 
@@ -859,6 +861,10 @@ class Payments extends Component {
   secondFormSubmit = () => {
     const { secondFormData, editaAble, paymentId, remainingPayment, paymentOldValue } = this.state
     const { CMPayment } = this.props
+    if (secondFormData.type !== '' && (secondFormData.type === 'Rebate Adjustment') && secondFormData.attachments && secondFormData.attachments.length === 0) {
+      this.setState({ isAttachmentRequired: true })
+      return;
+    }
     if (
       secondFormData.installmentAmount != null &&
       secondFormData.installmentAmount != '' &&
@@ -885,8 +891,8 @@ class Payments extends Component {
             secondFormData.whichModalVisible === 'taxModal'
               ? 'tax'
               : secondFormData.whichModalVisible === 'paymentModal'
-              ? 'payment'
-              : 'token',
+                ? 'payment'
+                : 'token',
           cmLeadId: this.props.lead.id,
           remainingPayment: remainingPayment - secondFormData.installmentAmount,
           unitStatus: this.props.lead.installmentDue,
@@ -1165,11 +1171,12 @@ class Payments extends Component {
   }
 
   navigateTo = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, 
+    this.props.navigation.navigate('LeadDetail', {
+      lead: this.props.lead,
       purposeTab: 'invest',
       isFromLeadWorkflow: true,
       fromScreen: 'payments'
-     })
+    })
   }
 
   tokenModalToggle = (status) => {
@@ -1232,7 +1239,7 @@ class Payments extends Component {
           helper.errorToast('Closed lead API failed!!')
         })
     } else {
-      ;('Please select a reason for lead closure!')
+      ; ('Please select a reason for lead closure!')
     }
   }
 
@@ -1413,6 +1420,7 @@ class Payments extends Component {
       deletePaymentVisible,
       addTaxToggleState,
       taxNotZero,
+      isAttachmentRequired,
     } = this.state
     return (
       <View>
@@ -1529,6 +1537,7 @@ class Payments extends Component {
             remarkData={remarksDataForPayment}
             remarksPaymentLoading={remarksPaymentLoading}
             paymentNotZero={paymentNotZero}
+            isAttachmentRequired={isAttachmentRequired}
           />
           <AddTaxModal
             active={addTaxToggleState}

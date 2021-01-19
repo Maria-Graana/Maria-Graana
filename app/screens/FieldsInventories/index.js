@@ -38,6 +38,8 @@ class FieldsInventories extends React.Component {
       page: 1,
       pageSize: 20,
       onEndReachedLoader: false,
+      selectedProperty: null,
+      showMenu: false,
     }
   }
 
@@ -165,7 +167,6 @@ class FieldsInventories extends React.Component {
   }
 
   approveProperty = (id) => {
-    console.log(id)
     let url = `/api/inventory/fieldProperty?id=${id}`
     this.setState({ loading: true }, () => {
       axios
@@ -180,20 +181,17 @@ class FieldsInventories extends React.Component {
     })
   }
 
-  toggleMenu = (val, id) => {
-    const { propertiesList } = this.state
-    let newPropertiesList = propertiesList.map((item) => {
-      if (item.id === id) {
-        item.showMenu = val
-        return item
-      } else return item
-    })
-    this.setState({ propertiesList: newPropertiesList })
+  showMenuOptions = (data) => {
+    this.setState({ selectedProperty: data, showMenu: true })
   }
-  
+
+  hideMenu = () => {
+    this.setState({ selectedProperty: null, showMenu: false })
+  }
+
 
   render() {
-    const { propertiesList, loading, totalProperties, onEndReachedLoader } = this.state
+    const { propertiesList, loading, totalProperties, onEndReachedLoader, selectedProperty, showMenu } = this.state
     const { user, route } = this.props
     return !loading ? (
       <View style={[AppStyles.container, { marginBottom: 25 }]}>
@@ -212,8 +210,11 @@ class FieldsInventories extends React.Component {
                 onLongPress={(id) => this.onHandleLongPress(id)}
                 onCall={this.onHandleOnCall}
                 screen={'fields'}
-                toggleMenu = {(value, id)=> this.toggleMenu(value, id)}
-                approveProperty={(id)=>this.approveProperty(id)}
+                selectedProperty={selectedProperty}
+                showMenu={showMenu}
+                showMenuOptions={(data) => this.showMenuOptions(data)}
+                hideMenu={() => this.hideMenu()}
+                approveProperty={(id) => this.approveProperty(id)}
               />
             )}
             onEndReached={() => {
@@ -230,17 +231,17 @@ class FieldsInventories extends React.Component {
               }
             }}
             onEndReachedThreshold={0.5}
-            keyExtractor={(item, index) => `${item.id}-${Math.random()}`}
+            keyExtractor={(item, index) => `${item.id}`}
           />
         ) : (
-          <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
-        )}
+            <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
+          )}
 
         {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

@@ -195,6 +195,8 @@ export default StaticData = {
       name: 'Client not satisfied with options',
       value: 'client_not_satisfied',
     },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   leadCloseReasonsWithPayment: [
     {
@@ -335,6 +337,8 @@ export default StaticData = {
     { value: 'payment', name: 'Payments' },
     { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   ppBuyRentFilter: [
     { value: 'all', name: 'All' },

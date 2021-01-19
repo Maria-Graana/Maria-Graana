@@ -6,6 +6,7 @@ import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'
 import styles from './styles'
 import AppStyles from '../../AppStyles'
 import { Button } from 'native-base'
+import { formatPrice } from '../../PriceFormate'
 import ErrorMessage from '../../components/ErrorMessage'
 import Loader from '../loader'
 import { ActivityIndicator } from 'react-native-paper'
@@ -20,7 +21,6 @@ const PropsureDocumentPopup = (props) => {
     uploadReport,
     downloadFile,
   } = props
-  // console.log('pendingPropsures: ', pendingPropsures)
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView
@@ -50,7 +50,7 @@ const PropsureDocumentPopup = (props) => {
                 }}
                 activeOpacity={0.7}
               >
-                <View style={[AppStyles.flexDirectionRow, AppStyles.bgcWhite]}>
+                <View style={[AppStyles.flexDirectionRow, AppStyles.bgcWhite, styles.tileView]}>
                   <View
                     style={[
                       {
@@ -127,6 +127,9 @@ const PropsureDocumentPopup = (props) => {
                       />
                     </View>
                   )}
+                  <Text style={styles.reportPrice}>
+                    <Text style={styles.pkr}>PKR</Text> 100
+                  </Text>
                 </View>
               </TouchableOpacity>
               {item.showMsg ? (
@@ -143,8 +146,17 @@ const PropsureDocumentPopup = (props) => {
                     } */}
 
         <View style={[AppStyles.mainInputWrap, { marginLeft: 25, marginRight: 25 }]}>
+          <View style={styles.totalView}>
+            <Text style={[AppStyles.btnText, { color: AppStyles.colors.textColor }]}>
+              Total Amount
+            </Text>
+            <Text style={[AppStyles.btnText, { color: AppStyles.colors.primaryColor }]}>
+              <Text style={styles.pkr}>PKR </Text>
+              {100 === 0 ? 0 : parseInt(formatPrice(100))}
+            </Text>
+          </View>
           <Button style={[AppStyles.formBtn, { marginVertical: 10 }]} onPress={onPress}>
-            <Text style={AppStyles.btnText}>DONE</Text>
+            <Text style={AppStyles.btnText}>ADD PAYMENT</Text>
           </Button>
         </View>
       </SafeAreaView>

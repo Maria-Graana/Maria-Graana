@@ -1,57 +1,79 @@
+/** @format */
+
+import { AntDesign } from '@expo/vector-icons'
+import { Button, CheckBox } from 'native-base'
 import React from 'react'
-import {
-    View,
-    Text,
-    Image,
-    Modal,
-    SafeAreaView,
-    TouchableOpacity,
-    FlatList
-} from 'react-native'
-import { AntDesign } from '@expo/vector-icons';
+import { FlatList, Modal, SafeAreaView, Text, View } from 'react-native'
+import { Divider } from 'react-native-paper'
+import AppStyles from '../../AppStyles'
+import { formatPrice } from '../../PriceFormate'
 import styles from './styles'
-import AppStyles from '../../AppStyles';
-import { Button, CheckBox } from 'native-base';
-import ErrorMessage from '../ErrorMessage'
-import { Divider } from 'react-native-paper';
 
 const PropsureReportsPopup = (props) => {
-    const { isVisible, closeModal, onPress, addRemoveReport, selectedReports, reports, checkValidation } = props;
-    return (
-        <Modal
-            visible={isVisible}
-            animationType="slide"
-            onRequestClose={closeModal}
-        >
-            <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
-                <AntDesign style={styles.closeStyle} onPress={closeModal} name="close" size={26} color={AppStyles.colors.textColor} />
-                <FlatList data={reports}
-                    style={{ marginTop: 25}}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item }) =>
-                        <View>
-                            <View style={styles.reportRow}>
-                                <CheckBox checked={selectedReports.includes(item)} style={{ marginHorizontal: 5 }}
-                                    onPress={() => addRemoveReport(item)}
-                                    color={AppStyles.colors.primaryColor} />
-                                <Text   onPress={() => addRemoveReport(item)} style={styles.reportName}>{item}</Text>
-                            </View>
-                            <Divider />
-                        </View>
-
-                    }
-                />
-
-                <View style={[AppStyles.mainInputWrap, styles.buttonExtraStyle]}>
-                    <Button
-                        style={[AppStyles.formBtn, { marginTop: 10 }]} onPress={onPress}>
-                        <Text style={AppStyles.btnText}>REQUEST VERIFICATION</Text>
-                    </Button>
+  const {
+    isVisible,
+    closeModal,
+    onPress,
+    addRemoveReport,
+    selectedReports,
+    reports,
+    totalReportPrice,
+    checkValidation,
+  } = props
+  return (
+    <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
+      <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
+        <AntDesign
+          style={styles.closeStyle}
+          onPress={closeModal}
+          name="close"
+          size={26}
+          color={AppStyles.colors.textColor}
+        />
+        <FlatList
+          data={reports}
+          style={{ marginTop: 25 }}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View>
+              <View style={styles.reportRow}>
+                <View style={styles.totalView}>
+                  <CheckBox
+                    checked={selectedReports.some((report) => item.name === report.name)}
+                    style={{ marginHorizontal: 5 }}
+                    onPress={() => addRemoveReport(item)}
+                    color={AppStyles.colors.primaryColor}
+                  />
+                  <Text onPress={() => addRemoveReport(item)} style={styles.reportName}>
+                    {item.name}
+                  </Text>
                 </View>
-            </SafeAreaView>
-        </Modal>
-    )
+                <Text style={styles.reportPrice}>
+                  <Text style={styles.pkr}>PKR</Text> {item.price}
+                </Text>
+              </View>
+              <Divider />
+            </View>
+          )}
+        />
+
+        <View style={[AppStyles.mainInputWrap, styles.buttonExtraStyle]}>
+          <View style={styles.totalView}>
+            <Text style={[AppStyles.btnText, { color: AppStyles.colors.textColor }]}>
+              Total Amount
+            </Text>
+            <Text style={[AppStyles.btnText, { color: AppStyles.colors.primaryColor }]}>
+              <Text style={styles.pkr}>PKR </Text>
+              {totalReportPrice === 0 ? 0 : parseInt(formatPrice(totalReportPrice))}
+            </Text>
+          </View>
+          <Button style={[AppStyles.formBtn, { marginTop: 10 }]} onPress={onPress}>
+            <Text style={AppStyles.btnText}>REQUEST VERIFICATION</Text>
+          </Button>
+        </View>
+      </SafeAreaView>
+    </Modal>
+  )
 }
 
 export default PropsureReportsPopup
-

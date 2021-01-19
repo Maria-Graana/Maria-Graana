@@ -26,7 +26,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Permissions from 'expo-permissions'
 import * as IntentLauncher from 'expo-intent-launcher'
 import ViewDocs from '../../components/ViewDocs'
-import lead from '../../reducers/lead'
+import PaymentMethods from '../../PaymentMethods'
 
 class LeadPropsure extends React.Component {
   constructor(props) {
@@ -56,19 +56,19 @@ class LeadPropsure extends React.Component {
       menuShow: false,
       showDoc: false,
       docUrl: '',
+      totalReportPrice: 0,
     }
   }
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
-        const { lead } = this.props.route.params;
+        const { lead } = this.props.route.params
         this.fetchLead(lead)
         this.getCallHistory()
         this.fetchProperties(lead)
-      }
-      else {
-        const { lead } = this.props;
+      } else {
+        const { lead } = this.props
         this.fetchLead(lead)
         this.getCallHistory()
         this.fetchProperties(lead)
@@ -173,7 +173,7 @@ class LeadPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -212,24 +212,24 @@ class LeadPropsure extends React.Component {
       alert('Please select at least one report!')
     } else {
       // ********* Call Add Attachment API here :)
-      this.closeModal()
-      const body = {
-        packageName: selectedReports,
-        propertyId: selectedPropertyId,
-        pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
-        org: selectedProperty.arms_id ? 'arms' : 'graana',
-      }
-      // console.log(body)
-      axios
-        .post(`/api/leads/propsure/${lead.id}`, body)
-        .then((response) => {
-          this.fetchLead(lead)
-          this.fetchProperties(lead)
-        })
-        .catch((error) => {
-          console.log(error)
-          this.setState({ selectedPropertyId: null, selectedReports: [], selectedProperty: null })
-        })
+      // this.closeModal()
+      // const body = {
+      //   packageName: selectedReports,
+      //   propertyId: selectedPropertyId,
+      //   pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
+      //   org: selectedProperty.arms_id ? 'arms' : 'graana',
+      // }
+      // // console.log(body)
+      // axios
+      //   .post(`/api/leads/propsure/${lead.id}`, body)
+      //   .then((response) => {
+      //     this.fetchLead(lead)
+      //     this.fetchProperties(lead)
+      //   })
+      //   .catch((error) => {
+      //     console.log(error)
+      //     this.setState({ selectedPropertyId: null, selectedReports: [], selectedProperty: null })
+      //   })
     }
   }
 
@@ -464,7 +464,7 @@ class LeadPropsure extends React.Component {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
       isFromLeadWorkflow: true,
-      fromScreen: 'propsure'
+      fromScreen: 'propsure',
     })
   }
 
@@ -474,16 +474,15 @@ class LeadPropsure extends React.Component {
   }
 
   getCallHistory = () => {
-    let leadObject = null;
+    let leadObject = null
     if (this.props.route.params && this.props.route.params.isFromNotification) {
-      const { lead } = this.props.route.params;
-      leadObject = lead;
+      const { lead } = this.props.route.params
+      leadObject = lead
+    } else {
+      const { lead } = this.props
+      leadObject = lead
     }
-    else {
-      const { lead } = this.props;
-      leadObject = lead;
-    }
-    if(leadObject){
+    if (leadObject) {
       axios.get(`/api/diary/all?armsLeadId=${leadObject.id}`).then((res) => {
         this.setState({ meetings: res.data.rows })
       })
@@ -514,12 +513,16 @@ class LeadPropsure extends React.Component {
   addRemoveReport = (report) => {
     const { selectedReports } = this.state
     let reports = [...selectedReports]
-    if (reports.includes(report, 0)) {
+    let totalReportPrice = 0
+    if (reports.some((item) => item.name === report.name)) {
       reports = _.without(reports, report)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     } else {
       reports.push(report)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     }
-    this.setState({ selectedReports: reports })
+    console.log('addRemoveReport: ', reports)
+    this.setState({ selectedReports: reports, totalReportPrice: totalReportPrice })
   }
 
   addProperty = (data) => {
@@ -527,7 +530,7 @@ class LeadPropsure extends React.Component {
   }
 
   redirectProperty = (property) => {
-    if (property.origin === 'arms'|| property.origin === 'arms_lead' ) {
+    if (property.origin === 'arms' || property.origin === 'arms_lead') {
       if (this.ownProperty(property))
         this.props.navigation.navigate('PropertyDetail', {
           property: property,
@@ -585,10 +588,11 @@ class LeadPropsure extends React.Component {
       closedLeadEdit,
       showDoc,
       docUrl,
+      totalReportPrice,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
-
+    console.log('totalReportPrice: ', totalReportPrice)
     return !loading ? (
       <View
         style={[
@@ -615,6 +619,7 @@ class LeadPropsure extends React.Component {
           isVisible={isVisible}
           closeModal={() => this.closeModal()}
           onPress={this.onHandleRequestVerification}
+          totalReportPrice={totalReportPrice}
         />
         <PropsureDocumentPopup
           pendingPropsures={_.clone(pendingPropsures)}
@@ -647,20 +652,20 @@ class LeadPropsure extends React.Component {
                       screen={'propsure'}
                     />
                   ) : (
-                      <AgentTile
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        isMenuVisible={showMenuItem}
-                        viewingMenu={false}
-                        goToPropertyComments={this.goToPropertyComments}
-                        toggleMenu={this.toggleMenu}
-                        menuShow={menuShow}
-                        screen={'propsure'}
-                      />
-                    )}
+                    <AgentTile
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      isMenuVisible={showMenuItem}
+                      viewingMenu={false}
+                      goToPropertyComments={this.goToPropertyComments}
+                      toggleMenu={this.toggleMenu}
+                      menuShow={menuShow}
+                      screen={'propsure'}
+                    />
+                  )}
                   <View>
                     {item.item.propsures.length === 0
                       ? this.renderPropsureVerificationView(item.item)
@@ -671,14 +676,14 @@ class LeadPropsure extends React.Component {
               keyExtractor={(item, index) => item.id.toString()}
             />
           ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
+            <>
+              <Image
+                source={require('../../../assets/img/no-result-found.png')}
+                resizeMode={'center'}
+                style={{ alignSelf: 'center', width: 300, height: 300 }}
+              />
+            </>
+          )}
         </View>
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
@@ -707,8 +712,8 @@ class LeadPropsure extends React.Component {
         />
       </View>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

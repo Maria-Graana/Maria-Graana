@@ -59,6 +59,7 @@ class InventoryTile extends React.Component {
       showMenu,
       showMenuOptions,
       hideMenu,
+      showHideRejectPropertyModal,
     } = this.props
     const imagesList = data.armsuser ? data.armsPropertyImages : data.property_images;
     const imagesCount = data.armsuser && data.armsPropertyImages ? data.armsPropertyImages.length : data.user && data.property_images ? data.property_images.length : null;
@@ -129,6 +130,13 @@ class InventoryTile extends React.Component {
                         approveProperty(data.id)
                       }}
                       title="Approve Property"
+                    />
+
+                    <Menu.Item
+                      onPress={() => {
+                        showHideRejectPropertyModal(true)
+                      }}
+                      title="Reject Property"
                     />
                   </View>
                 </Menu>

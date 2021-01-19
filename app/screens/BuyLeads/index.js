@@ -452,8 +452,7 @@ class BuyLeads extends React.Component {
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
               <View>
-                {(!user.organization && user.subRole === 'group_management') ||
-                (user.organization && !user.organization.isPP) ? (
+                {user.organization && !user.organization.isPP ? (
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}

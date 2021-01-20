@@ -695,4 +695,22 @@ export default StaticData = {
     { label: 'Available for Sale', value: 'available_for_sale' },
     { label: 'Sold', value: 'sold' },
   ],
+  areaManagerCheckList: [
+    'Client Pre-Viewing Follow Up Call - 30 Minutes Prior to Viewing',
+    'PP/POC Pre-Viewing Follow Up Call - 30 Minutes Prior to Viewing',
+    'Reach viewing location - 15 Minutes Prior to Viewing',
+    'Ensure Key by PP/POC',
+    'Visit the property before viewing with the client',
+    'Sell core features of property as required by client',
+    'Brief and try to sign-up on service charge agreeement SCA by the client',
+    'Pitch Propsure Service/Brochure',
+    'Up Sell other services (As and when Applicable)'
+  ],
+  realEstateAgentsCheckList: [
+    'Client Pre-Viewing Follow Up Call (For Keys/Visit) - 1 Hrs Prior to Viewing',
+    'Coordination Call with Graana AM/Buyer Side - 30 Minutes Prior to Viewing',
+    'Reach viewing location - 15 Minutes Prior to Viewing',
+    'Ensure Key from owner',
+    'Sell core features of property as required by client',
+  ]
 }

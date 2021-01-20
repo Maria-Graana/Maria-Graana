@@ -257,7 +257,7 @@ class GraanaInventories extends React.Component {
 									}
 								}}
 								onEndReachedThreshold={0.5}
-								keyExtractor={(item, index) =>  `${item.id}-${Math.random()}`}
+								keyExtractor={(item, index) =>  `${item.id}`}
 							/>
 							:
 							<NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />

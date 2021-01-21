@@ -254,6 +254,8 @@ export default StaticData = {
       name: 'Client is an Agent',
       value: 'client_is_an_agent',
     },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   paymentPopupAnyPaymentAdded: [
     {
@@ -371,6 +373,8 @@ export default StaticData = {
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   cmLeadBtnOption: [
     { value: 'attachment', name: 'Attachment' },

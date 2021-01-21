@@ -66,9 +66,7 @@ const RentPaymentView = (props) => {
       ? true
       : false
   let sellerCommission =
-    property.assigned_to_armsuser_id === user.id ||
-    (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-    !Ability.canView(subRole, 'Leads')
+    property.assigned_to_armsuser_id === user.id || !Ability.canView(subRole, 'Leads')
       ? true
       : false
   // if (sellerCommission === true) {
@@ -79,6 +77,14 @@ const RentPaymentView = (props) => {
   let singleCommission = buyerCommission && sellerCommission ? true : false
   const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
   const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
+
+  // console.log('subRole: ', subRole)
+  // console.log('property.assigned_to_armsuser_id: ', property.assigned_to_armsuser_id)
+  // console.log('lead.assigned_to_armsuser_id: ', lead.assigned_to_armsuser_id)
+  // console.log('lead.buyerCommission: ', buyerCommission)
+  // console.log('property.origin: ', property.origin)
+  // console.log('sellerCommission: ', sellerCommission)
+  // console.log('user.id: ', user.id)
   return (
     <View>
       <InputField
@@ -128,7 +134,7 @@ const RentPaymentView = (props) => {
             data={pickerData}
             selectedItem={formData.contract_months}
             enabled={!isLeadClosed}
-            placeholder="Contact duration (No of months)"
+            placeholder="Contract duration (No of months)"
           />
         </View>
       </View>

@@ -82,7 +82,11 @@ class BuyPaymentView extends React.Component {
     let singleCommission = buyerCommission && sellerCommission ? true : false
     const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
     const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
-
+    // console.log('subRole: ', subRole)
+    // console.log('property.assigned_to_armsuser_id: ', property.assigned_to_armsuser_id)
+    // console.log('lead.assigned_to_armsuser_id: ', lead.assigned_to_armsuser_id)
+    // console.log('lead.buyerCommission: ', buyerCommission)
+    // console.log('sellerCommission: ', sellerCommission)
     return (
       <View>
         <InputField

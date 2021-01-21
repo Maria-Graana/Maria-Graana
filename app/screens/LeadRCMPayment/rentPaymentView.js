@@ -71,11 +71,11 @@ const RentPaymentView = (props) => {
     !Ability.canView(subRole, 'Leads')
       ? true
       : false
-  if (sellerCommission === true) {
-    if (property.origin === null) {
-      sellerCommission = false
-    }
-  }
+  // if (sellerCommission === true) {
+  //   if (property.origin === null) {
+  //     sellerCommission = false
+  //   }
+  // }
   let singleCommission = buyerCommission && sellerCommission ? true : false
   const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
   const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
@@ -248,7 +248,6 @@ const RentPaymentView = (props) => {
             checked={commissionNotApplicableSeller ? true : false}
             onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
             style={styles.checkBox}
-          
           />
           <Text
             style={{

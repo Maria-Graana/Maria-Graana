@@ -38,9 +38,15 @@ const PropsureDocumentPopup = (props) => {
           style={{ marginTop: 35 }}
           renderItem={({ item }) => (
             <View style={[styles.viewContainer]}>
-              <Text
-                style={{ color: AppStyles.colors.textColor, marginVertical: 5 }}
-              >{`${item.package}`}</Text>
+              <View style={styles.tileView}>
+                <Text
+                  style={{ color: AppStyles.colors.textColor, marginVertical: 5 }}
+                >{`${item.package}`}</Text>
+                <Text style={styles.reportPrice}>
+                  <Text style={styles.pkr}>PKR</Text> 100
+                </Text>
+              </View>
+
               <TouchableOpacity
                 disabled={item.isLoading && item.status === 'verified'}
                 onPress={() => {
@@ -127,9 +133,6 @@ const PropsureDocumentPopup = (props) => {
                       />
                     </View>
                   )}
-                  <Text style={styles.reportPrice}>
-                    <Text style={styles.pkr}>PKR</Text> 100
-                  </Text>
                 </View>
               </TouchableOpacity>
               {item.showMsg ? (

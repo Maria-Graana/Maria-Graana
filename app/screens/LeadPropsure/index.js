@@ -27,6 +27,8 @@ import * as Permissions from 'expo-permissions'
 import * as IntentLauncher from 'expo-intent-launcher'
 import ViewDocs from '../../components/ViewDocs'
 import PaymentMethods from '../../PaymentMethods'
+import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
+import { setRCMPayment } from '../../actions/rcmPayment'
 
 class LeadPropsure extends React.Component {
   constructor(props) {
@@ -57,11 +59,14 @@ class LeadPropsure extends React.Component {
       showDoc: false,
       docUrl: '',
       totalReportPrice: 0,
+      modalValidation: false,
+      addPaymentLoading: false,
     }
   }
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      console.log('rcmPayment: ', this.props.rcmPayment)
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
         this.fetchLead(lead)
@@ -77,6 +82,7 @@ class LeadPropsure extends React.Component {
   }
 
   componentWillUnmount() {
+    this.clearReduxAndStateValues()
     this._unsubscribe()
   }
 
@@ -139,6 +145,7 @@ class LeadPropsure extends React.Component {
     const { rcmProgressBar } = StaticData
     let matches = []
     this.setState({ loading: true }, () => {
+      console.log(`/api/leads/${lead.id}/shortlist`)
       axios
         .get(`/api/leads/${lead.id}/shortlist`)
         .then((res) => {
@@ -247,6 +254,12 @@ class LeadPropsure extends React.Component {
 
   closeDocumentModal = () => {
     this.setState({ documentModalVisible: false, file: null })
+    this.onAddCommissionPayment()
+  }
+
+  onAddCommissionPayment = () => {
+    const { dispatch, rcmPayment } = this.props
+    dispatch(setRCMPayment({ ...rcmPayment, visible: true }))
   }
 
   getAttachmentFromStorage = (id) => {
@@ -568,6 +581,133 @@ class LeadPropsure extends React.Component {
     }
   }
 
+  goToPayAttachments = () => {
+    const { rcmPayment, dispatch, navigation } = this.props
+    dispatch(setRCMPayment({ ...rcmPayment, visible: false }))
+    navigation.navigate('RCMAttachment')
+  }
+
+  setCommissionEditData = (data) => {
+    const { dispatch } = this.props
+    this.setState({ editable: true })
+    dispatch(setRCMPayment({ ...data, visible: true }))
+  }
+
+  handleCommissionChange = (value, name) => {
+    const { rcmPayment, dispatch } = this.props
+    const newSecondFormData = { ...rcmPayment, visible: rcmPayment.visible }
+    newSecondFormData[name] = value
+    this.setState({ buyerNotZero: false })
+    console.log('newSecondFormData: ', newSecondFormData)
+    dispatch(setRCMPayment(newSecondFormData))
+  }
+
+  clearReduxAndStateValues = () => {
+    const { dispatch } = this.props
+    const newData = {
+      installmentAmount: null,
+      type: '',
+      rcmLeadId: null,
+      details: '',
+      visible: false,
+      paymentAttachments: [],
+    }
+    this.setState({
+      modalValidation: false,
+      addPaymentLoading: false,
+      editable: false,
+    })
+    dispatch(setRCMPayment({ ...newData }))
+  }
+
+  onModalCloseClick = () => {
+    this.clearReduxAndStateValues()
+  }
+
+  submitCommissionPayment = () => {
+    const { rcmPayment, user } = this.props
+    const { lead, editable } = this.state
+    console.log('submitCommissionPayment rcm: ', rcmPayment)
+    // if (
+    //   rcmPayment.installmentAmount != null &&
+    //   rcmPayment.installmentAmount != '' &&
+    //   rcmPayment.type != ''
+    // ) {
+    //   this.setState({
+    //     addPaymentLoading: true,
+    //   })
+    //   if (Number(rcmPayment.installmentAmount) <= 0) {
+    //     this.setState({ buyerNotZero: true, addPaymentLoading: false })
+    //     return
+    //   }
+    //   if (editable === false) {
+    //     // for commission addition
+    //     let body = {
+    //       ...rcmPayment,
+    //       rcmLeadId: lead.id,
+    //       armsUserId: user.id,
+    //       paymentCategory: 'commission',
+    //     }
+    //     delete body.visible
+    //     axios
+    //       .post(`/api/leads/project/payments`, body)
+    //       .then((response) => {
+    //         if (response.data) {
+    //           // check if some attachment exists so upload that as well to server with payment id.
+    //           if (rcmPayment.paymentAttachments.length > 0) {
+    //             rcmPayment.paymentAttachments.map((paymentAttachment) =>
+    //               // payment attachments
+    //               this.uploadAttachment(paymentAttachment, response.data.id)
+    //             )
+    //           } else {
+    //             this.clearReduxAndStateValues()
+    //             this.fetchLead()
+    //             helper.successToast('Commission Payment Added')
+    //           }
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         this.clearReduxAndStateValues()
+    //         helper.errorToast('Error Adding Commission Payment', error)
+    //       })
+    //   } else {
+    //     // commission update mode
+    //     let body = { ...rcmPayment }
+    //     delete body.visible
+    //     delete body.remarks
+    //     axios
+    //       .patch(`/api/leads/project/payment?id=${body.id}`, body)
+    //       .then((response) => {
+    //         // upload only the new attachments that do not have id with them in object.
+    //         const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
+    //           ? _.filter(rcmPayment.paymentAttachments, (item) => {
+    //               return !_.has(item, 'id')
+    //             })
+    //           : []
+    //         if (filterAttachmentsWithoutId.length > 0) {
+    //           filterAttachmentsWithoutId.map((item, index) => {
+    //             // payment attachments
+    //             this.uploadAttachment(item, body.id)
+    //           })
+    //         } else {
+    //           this.fetchLead()
+    //           this.clearReduxAndStateValues()
+    //           helper.successToast('Commission Payment Updated')
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         helper.errorToast('Error Updating Commission Payment', error)
+    //         this.clearReduxAndStateValues()
+    //       })
+    //   }
+    // } else {
+    //   // Installment amount or type is missing so validation goes true, show error
+    //   this.setState({
+    //     modalValidation: true,
+    //   })
+    // }
+  }
+
   render() {
     const {
       menuShow,
@@ -589,10 +729,13 @@ class LeadPropsure extends React.Component {
       showDoc,
       docUrl,
       totalReportPrice,
+      addPaymentLoading,
+      modalValidation,
+      buyerNotZero,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
-    console.log('totalReportPrice: ', totalReportPrice)
+
     return !loading ? (
       <View
         style={[
@@ -631,6 +774,16 @@ class LeadPropsure extends React.Component {
           getAttachmentFromStorage={this.getAttachmentFromStorage}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
+        <AddRCMPaymentModal
+          onModalCloseClick={this.onModalCloseClick}
+          handleCommissionChange={this.handleCommissionChange}
+          modalValidation={modalValidation}
+          goToPayAttachments={() => this.goToPayAttachments()}
+          submitCommissionPayment={() => this.submitCommissionPayment()}
+          addPaymentLoading={addPaymentLoading}
+          lead={lead}
+          paymentNotZero={buyerNotZero}
+        />
         <View style={{ paddingBottom: 100 }}>
           {matchData.length ? (
             <FlatList
@@ -721,6 +874,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    rcmPayment: store.RCMPayment.RCMPayment,
   }
 }
 

@@ -22,7 +22,7 @@ export default styles = StyleSheet.create({
     paddingVertical: 5,
   },
   reportPrice: {
-    marginRight: 25,
+    marginRight: 0,
     fontFamily: AppStyles.fonts.semiBoldFont,
     fontSize: AppStyles.fontSize.medium,
     color: AppStyles.colors.primaryColor,

@@ -8,14 +8,14 @@ import times from '../../../assets/img/times.png'
 import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index'
 import StaticData from '../../StaticData'
-import ErrorMessage from '../../components/ErrorMessage'
-import TouchableButton from '../../components/TouchableButton'
-import TouchableInput from '../../components/TouchableInput'
+import ErrorMessage from '../ErrorMessage'
+import TouchableButton from '../TouchableButton'
+import TouchableInput from '../TouchableInput'
 import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
 
-const AddCommissionModal = ({
+const AddRCMPaymentModal = ({
   onModalCloseClick,
   handleCommissionChange,
   modalValidation,
@@ -212,7 +212,7 @@ mapStateToProps = (store) => {
   }
 }
 
-export default connect(mapStateToProps)(AddCommissionModal)
+export default connect(mapStateToProps)(AddRCMPaymentModal)
 
 const styles = StyleSheet.create({
   modalMain: {

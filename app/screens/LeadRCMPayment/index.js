@@ -510,9 +510,9 @@ class LeadRCMPayment extends React.Component {
     let commissionsLength = 2
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true)
       commissionsLength = 1
-    if (lead.paymentProperty && lead.paymentProperty.origin === null) {
-      commissionsLength = 1
-    }
+    // if (lead.paymentProperty && lead.paymentProperty.origin === null) {
+    //   commissionsLength = 1
+    // }
     let cleared = 0
     if (lead.commissions.length) {
       lead.commissions.map((item) => {

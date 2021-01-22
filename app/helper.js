@@ -598,6 +598,13 @@ const helper = {
     else str = str.toString()
     return str.replace(/<[^>]*>/g, '')
   },
+  checkPP(user) {
+    if (user) {
+      const { organization } = user
+      if (organization) return organization.isPP
+      if (user.subRole === 'group_management') return false
+    } else return false
+  },
 }
 
 module.exports = helper

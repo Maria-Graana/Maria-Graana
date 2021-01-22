@@ -137,6 +137,7 @@ class RCMReport extends React.Component {
       'business_centre_agent',
       'call_centre_warrior',
       'call_centre_agent',
+      'pp_agent',
     ]
     if (agentRole.includes(user.subRole)) {
       this.setAgentView()
@@ -239,41 +240,77 @@ class RCMReport extends React.Component {
 
   setAgentView = () => {
     const { user } = this.props
-    if (user && 'region' in user && 'armsTeam' in user && user.armsTeam && user.region) {
-      let organizations = [{ value: user.organizationId, name: user.organizationName }]
-      let newAgentForm = {
-        organization: user.organizationId,
-        region: user.region.id,
-        zone: user && user.armsTeam && user.armsTeam.id,
-        agent: user.id,
-      }
-      this.setState(
-        {
-          showFooter: false,
-          lastLabel: 'Agent',
-          footerLabel: 'Agent',
-          organizations,
-          filterLabel: 'Daily',
-          agentFormData: newAgentForm,
-          regionText:
-            user.firstName + ' ' + user.lastName + ', ' + user &&
-            user.armsTeam &&
-            user.armsTeam.teamName + ', ' + user.region.name + ', ' + user.organizationName,
-          regions: [{ value: user.region.id, name: user.region.name }],
-          zones: [
-            {
-              value: user && user.armsTeam && user.armsTeam.id,
-              name: user && user.armsTeam && user.armsTeam.teamName,
-            },
-          ],
-          agents: [{ value: user.id, name: user.firstName + ' ' + user.lastName }],
-          agentDate: true,
-        },
-        () => {
-          this.checkDate()
+    if (!helper.checkPP(user)) {
+      if (user && 'region' in user && 'armsTeam' in user && user.armsTeam && user.region) {
+        let organizations = [{ value: user.organizationId, name: user.organizationName }]
+        let newAgentForm = {
+          organization: user.organizationId,
+          region: user.region.id,
+          zone: user && user.armsTeam && user.armsTeam.id,
+          agent: user.id,
         }
-      )
-    } else helper.errorToast('Error: Displaying Dashboard')
+        this.setState(
+          {
+            showFooter: false,
+            lastLabel: 'Agent',
+            footerLabel: 'Agent',
+            organizations,
+            filterLabel: 'Daily',
+            agentFormData: newAgentForm,
+            regionText:
+              user.firstName + ' ' + user.lastName + ', ' + user &&
+              user.armsTeam &&
+              user.armsTeam.teamName + ', ' + user.region.name + ', ' + user.organizationName,
+            regions: [{ value: user.region.id, name: user.region.name }],
+            zones: [
+              {
+                value: user && user.armsTeam && user.armsTeam.id,
+                name: user && user.armsTeam && user.armsTeam.teamName,
+              },
+            ],
+            agents: [{ value: user.id, name: user.firstName + ' ' + user.lastName }],
+            agentDate: true,
+          },
+          () => {
+            this.checkDate()
+          }
+        )
+      } else helper.errorToast('Error: Displaying Dashboard')
+    } else {
+      if (user && 'armsTeam' in user && user.armsTeam) {
+        let organizations = [{ value: user.organizationId, name: user.organizationName }]
+        let newAgentForm = {
+          organization: user.organizationId,
+          zone: user && user.armsTeam && user.armsTeam.id,
+          agent: user.id,
+        }
+        this.setState(
+          {
+            showFooter: false,
+            lastLabel: 'Agent',
+            footerLabel: 'Agent',
+            organizations,
+            filterLabel: 'Daily',
+            agentFormData: newAgentForm,
+            regionText:
+              user.firstName + ' ' + user.lastName + ', ' + user &&
+              user.armsTeam &&
+              user.armsTeam.teamName + ', ' + user.organizationName,
+            zones: [
+              {
+                value: user && user.armsTeam && user.armsTeam.id,
+                name: user && user.armsTeam && user.armsTeam.teamName,
+              },
+            ],
+            agents: [{ value: user.id, name: user.firstName + ' ' + user.lastName }],
+            agentDate: true,
+          },
+          () => {
+            this.checkDate()
+          }
+        )
+      } else helper.errorToast('Error: Displaying Dashboard')
+    }
   }
 
   graphData = (data) => {
@@ -1166,7 +1203,6 @@ class RCMReport extends React.Component {
       dashBoardData.totalLeadsAdded === '' || !dashBoardData.totalLeadsAdded
         ? 0
         : Number(dashBoardData.totalLeadsAdded)
-
     return !viewLoader ? (
       <View style={[AppStyles.mb1, { backgroundColor: '#ffffff' }]}>
         <View style={styles.buttonsContainer}>
@@ -1295,15 +1331,15 @@ class RCMReport extends React.Component {
         {!loading ? (
           <ScrollView style={styles.scrollContainer}>
             <View style={{}}>
-              {user.organization && !user.organization.isPP && (
+              {!helper.checkPP(user) ? (
                 <RectangleDaily
                   label={'Commission Revenue'}
                   leadsCount={leadsCount}
                   deals={''}
                   targetNumber={dashBoardData.totalRevenue}
                 />
-              )}
-              {user.organization && user.organization.isPP && (
+              ) : null}
+              {helper.checkPP(user) && (
                 <View style={{ marginLeft: 10 }}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1323,23 +1359,7 @@ class RCMReport extends React.Component {
                   />
                 </View>
               )}
-              {user.organization && !user.organization.isPP ? (
-                <View style={styles.sqaureView}>
-                  <SquareContainer
-                    containerStyle={styles.squareRight}
-                    imagePath={leadsAssignedImg}
-                    label={'CIFs (Company)'}
-                    total={dashBoardData.totalleadsAssigned}
-                  />
-                  <SquareContainer
-                    // containerStyle={styles.squareRight}
-                    imagePath={leadsCreatedImg}
-                    label={'Deals Won'}
-                    total={dashBoardData.dealsWon}
-                  />
-                </View>
-              ) : null}
-              {user.organization && !user.organization.isPP && (
+              {!helper.checkPP(user) ? (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1355,8 +1375,8 @@ class RCMReport extends React.Component {
                     total={dashBoardData.totalLeadsAdded}
                   />
                 </View>
-              )}
-              {user.organization && !user.organization.isPP && (
+              ) : null}
+              {!helper.checkPP(user) ? (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1370,8 +1390,8 @@ class RCMReport extends React.Component {
                     total={dashBoardData.offer}
                   />
                 </View>
-              )}
-              {user.organization && !user.organization.isPP && (
+              ) : null}
+              {!helper.checkPP(user) ? (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1385,8 +1405,8 @@ class RCMReport extends React.Component {
                     total={dashBoardData.viewingOverdue}
                   />
                 </View>
-              )}
-              {user.organization && !user.organization.isPP && (
+              ) : null}
+              {!helper.checkPP(user) ? (
                 <View style={styles.sqaureView}>
                   <SquareContainer
                     containerStyle={styles.squareRight}
@@ -1400,8 +1420,8 @@ class RCMReport extends React.Component {
                     total={dashBoardData.totalcalls}
                   />
                 </View>
-              )}
-              {user.organization && !user.organization.isPP && (
+              ) : null}
+              {!helper.checkPP(user) ? (
                 <View style={styles.graphContainer}>
                   <Text style={styles.labelStyle}>Lead Stats</Text>
                   <ScrollView horizontal={true}>
@@ -1423,7 +1443,7 @@ class RCMReport extends React.Component {
                     />
                   </ScrollView>
                 </View>
-              )}
+              ) : null}
             </View>
           </ScrollView>
         ) : (

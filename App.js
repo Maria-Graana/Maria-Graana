@@ -171,7 +171,7 @@ export default class App extends React.Component {
           }
         } else {
           RootNavigation.navigateTo('Leads', {
-            screen: 'Leads',
+            screen: 'Buy',
           })
         }
       }
@@ -226,7 +226,7 @@ export default class App extends React.Component {
           }
         } else {
           RootNavigation.navigateTo('Leads', {
-            screen: 'Leads',
+            screen: 'Rent',
           })
         }
       }

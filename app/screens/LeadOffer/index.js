@@ -75,7 +75,6 @@ class LeadOffer extends React.Component {
           loading: false,
           matchData: matches,
           progressValue: rcmProgressBar[lead.status],
-          offerReadOnly: false,
         })
       })
       .catch((error) => {
@@ -120,6 +119,7 @@ class LeadOffer extends React.Component {
       {
         modalActive: !modalActive,
         showWarning: false,
+        offerReadOnly: false,
       },
       () => {
         if (!this.state.modalActive) {
@@ -454,7 +454,6 @@ class LeadOffer extends React.Component {
         offer: leadData.agreed,
         type: 'agreed',
       }
-      console.log('body: ', body)
       this.setState({ disableButton: true, btnLoading: true })
       axios
         .post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)

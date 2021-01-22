@@ -78,13 +78,6 @@ const RentPaymentView = (props) => {
   const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
   const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
 
-  // console.log('subRole: ', subRole)
-  // console.log('property.assigned_to_armsuser_id: ', property.assigned_to_armsuser_id)
-  // console.log('lead.assigned_to_armsuser_id: ', lead.assigned_to_armsuser_id)
-  // console.log('lead.buyerCommission: ', buyerCommission)
-  // console.log('property.origin: ', property.origin)
-  // console.log('sellerCommission: ', sellerCommission)
-  // console.log('user.id: ', user.id)
   return (
     <View>
       <InputField

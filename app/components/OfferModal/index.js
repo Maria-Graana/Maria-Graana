@@ -63,9 +63,7 @@ class OfferModal extends React.Component {
 
     // if lead assigned to current user OR lead assigned to current user and property origin must not be arms then show seller (clients offer)
     let showSeller =
-      property.assigned_to_armsuser_id === user.id ||
-      (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-      !Ability.canView(subRole, 'Leads')
+      property.assigned_to_armsuser_id === user.id || !Ability.canView(subRole, 'Leads')
         ? true
         : false
 

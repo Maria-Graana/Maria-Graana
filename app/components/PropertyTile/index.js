@@ -67,7 +67,7 @@ class InventoryTile extends React.Component {
     const checkForGraanaProperties = whichProperties === 'graanaProperties'
     return (
       <TouchableOpacity
-        style={[styles.mainContainer, {backgroundColor: data.status === 'rejected' ? AppStyles.colors.subTextColor : '#fff'}]}
+        style={[styles.mainContainer, {backgroundColor: data.status === 'rejected' ?'#ddd' : '#fff'}]}
         onPress={() => this.onPress(data)}
         onLongPress={() => checkForArmsProperty === true && this.onLongPress(data.id)}
         activeOpacity={0.7}

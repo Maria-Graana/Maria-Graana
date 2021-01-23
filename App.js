@@ -111,108 +111,123 @@ export default class App extends React.Component {
       let lead = { id: leadId }
       if (data.type === 'local')
         RootNavigation.navigateTo('Diary', { openDate: data.date, screen: 'Diary' })
-      if (data.type === 'investLead')
-        RootNavigation.navigateTo('LeadDetail', {
-          screen: 'Invest',
-          purposeTab: 'invest',
-          lead: lead,
-        })
-      if (data.type === 'buyLead') {
-        if (data.leadStatus === 'payment') {
-          if(data.notificationFor === 'buyer') {
-          // buyer screen
-          RootNavigation.navigateTo('RCMLeadTabs', {
-            screen: 'Payment',
-            params: {
-              isFromNotification: true,
-              lead: lead
-            }
+      if (data.type === 'investLead') {
+        if (!data.isPP) {
+          RootNavigation.navigateTo('LeadDetail', {
+            screen: 'Invest',
+            purposeTab: 'invest',
+            lead: lead,
           })
-          }
-          else{
-            // seller screen
-            RootNavigation.navigateTo('PropertyTabs', {
-              screen: 'Payment',
-              params: {
-                isFromNotification: true,
-                lead: lead
-              }
-            })
-          }
-        }
-        else if (data.leadStatus === 'propsure') {
-          if(data.notificationFor === 'buyer') {
-            // buyer screen
-            RootNavigation.navigateTo('RCMLeadTabs', {
-              screen: 'Propsure',
-              params: {
-                isFromNotification: true,
-                lead: lead
-              }
-            })
-            }
-            else{
-              // seller screen
-              RootNavigation.navigateTo('PropertyTabs', {
-                screen: 'Propsure',
-                params: {
-                  isFromNotification: true,
-                  lead: lead
-                }
-              })
-            }
-        }
-        else {
-          RootNavigation.navigateTo('LeadDetail', { screen: 'Buy', purposeTab: 'sale', lead: lead })
         }
       }
-      if (data.type === 'rentLead') {
-        if (data.leadStatus === 'payment') {
-          if(data.notificationFor === 'buyer') {
-            // buyer screen
-            RootNavigation.navigateTo('RCMLeadTabs', {
-              screen: 'Payment',
-              params: {
-                isFromNotification: true,
-                lead: lead
-              }
-            })
-            }
-            else{
+      if (data.type === 'buyLead') {
+        if (!data.isPP) {
+          if (data.leadStatus === 'payment') {
+            if (data.notificationFor === 'buyer') {
+              // buyer screen
+              RootNavigation.navigateTo('RCMLeadTabs', {
+                screen: 'Payment',
+                params: {
+                  isFromNotification: true,
+                  lead: lead,
+                },
+              })
+            } else {
               // seller screen
               RootNavigation.navigateTo('PropertyTabs', {
                 screen: 'Payment',
                 params: {
                   isFromNotification: true,
-                  lead: lead
-                }
+                  lead: lead,
+                },
               })
             }
-        }
-        else if (data.leadStatus === 'propsure') {
-          if(data.notificationFor === 'buyer') {
-            // buyer screen
-            RootNavigation.navigateTo('RCMLeadTabs', {
-              screen: 'Propsure',
-              params: {
-                isFromNotification: true,
-                lead: lead
-              }
-            })
-            }
-            else{
+          } else if (data.leadStatus === 'propsure') {
+            if (data.notificationFor === 'buyer') {
+              // buyer screen
+              RootNavigation.navigateTo('RCMLeadTabs', {
+                screen: 'Propsure',
+                params: {
+                  isFromNotification: true,
+                  lead: lead,
+                },
+              })
+            } else {
               // seller screen
               RootNavigation.navigateTo('PropertyTabs', {
                 screen: 'Propsure',
                 params: {
                   isFromNotification: true,
-                  lead: lead
-                }
+                  lead: lead,
+                },
               })
             }
+          } else {
+            RootNavigation.navigateTo('LeadDetail', {
+              screen: 'Buy',
+              purposeTab: 'sale',
+              lead: lead,
+            })
+          }
+        } else {
+          RootNavigation.navigateTo('Leads', {
+            screen: 'Buy',
+          })
         }
-        else {
-          RootNavigation.navigateTo('LeadDetail', { screen: 'Rent', purposeTab: 'rent', lead: lead })
+      }
+      if (data.type === 'rentLead') {
+        if (!data.isPP) {
+          if (data.leadStatus === 'payment') {
+            if (data.notificationFor === 'buyer') {
+              // buyer screen
+              RootNavigation.navigateTo('RCMLeadTabs', {
+                screen: 'Payment',
+                params: {
+                  isFromNotification: true,
+                  lead: lead,
+                },
+              })
+            } else {
+              // seller screen
+              RootNavigation.navigateTo('PropertyTabs', {
+                screen: 'Payment',
+                params: {
+                  isFromNotification: true,
+                  lead: lead,
+                },
+              })
+            }
+          } else if (data.leadStatus === 'propsure') {
+            if (data.notificationFor === 'buyer') {
+              // buyer screen
+              RootNavigation.navigateTo('RCMLeadTabs', {
+                screen: 'Propsure',
+                params: {
+                  isFromNotification: true,
+                  lead: lead,
+                },
+              })
+            } else {
+              // seller screen
+              RootNavigation.navigateTo('PropertyTabs', {
+                screen: 'Propsure',
+                params: {
+                  isFromNotification: true,
+                  lead: lead,
+                },
+              })
+            }
+          } else {
+            RootNavigation.navigateTo('LeadDetail', {
+              screen: 'Rent',
+              purposeTab: 'rent',
+              lead: lead,
+            })
+          }
+        } else {
+          RootNavigation.navigateTo('Leads', {
+            screen: 'Rent',
+          })
         }
       }
       if (data.type === 'diary')

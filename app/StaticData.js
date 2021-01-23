@@ -195,6 +195,8 @@ export default StaticData = {
       name: 'Client not satisfied with options',
       value: 'client_not_satisfied',
     },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   leadCloseReasonsWithPayment: [
     {
@@ -252,6 +254,8 @@ export default StaticData = {
       name: 'Client is an Agent',
       value: 'client_is_an_agent',
     },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   paymentPopupAnyPaymentAdded: [
     {
@@ -335,6 +339,8 @@ export default StaticData = {
     { value: 'payment', name: 'Payments' },
     { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   ppBuyRentFilter: [
     { value: 'all', name: 'All' },
@@ -367,6 +373,8 @@ export default StaticData = {
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   cmLeadBtnOption: [
     { value: 'attachment', name: 'Attachment' },
@@ -646,7 +654,6 @@ export default StaticData = {
     { value: 'bank-Transfer', name: 'Bank-Transfer' },
     { value: 'e-Gateway', name: 'E-Gateway' },
     { value: 'Buy Back Adjustment', name: 'Buy Back Adjustment' },
-    { value: 'Inter Mall Adjustment', name: 'Inter Mall Adjustment' },
     { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
     { value: 'Rent Adjustment', name: 'Rent Adjustment' },
   ],

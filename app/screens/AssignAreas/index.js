@@ -31,7 +31,7 @@ class AssignAreas extends React.Component {
 		this.setState({
 			loading: true
 		})
-		axios.get(`/api/user/userareas?userId=${user.id}`)
+		axios.get(`/api/user/userAreaGroups?userId=${user.id}`)
 			.then((res) => {
 				this.setState({
 					assignedAreas: res.data,

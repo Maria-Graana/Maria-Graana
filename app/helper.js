@@ -456,6 +456,16 @@ const helper = {
       }
     } else return false
   },
+  checkAssignedSharedStatusANDReadOnly(user, lead) {
+    if (user && lead) {
+      if (user.id === lead.assigned_to_armsuser_id || user.id === lead.shared_with_armsuser_id)
+        return true
+      else {
+        this.leadNotAssignedToast()
+        return false
+      }
+    } else return false
+  },
   propertyCheckAssignedSharedStatus(user, lead) {
     if (user && lead) {
       if (

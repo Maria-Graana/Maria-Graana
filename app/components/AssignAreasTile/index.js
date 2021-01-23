@@ -21,8 +21,8 @@ class AssignAreas extends React.Component {
           </View>
         </View>
         <View style={styles.rightWrap}>
-          {<Text style={styles.cityName}>{data.area.name}</Text>}
-          <Text style={styles.areaName}>{data.area && data.area.city.name}</Text>
+          {<Text style={styles.cityName}>{data.name}</Text>}
+          <Text style={styles.areaName}>{data.city && data.city.name}</Text>
         </View>
       </View>
     )

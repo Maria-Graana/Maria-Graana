@@ -55,9 +55,13 @@ class InventoryTile extends React.Component {
       index,
       screen,
       approveProperty,
-      toggleMenu
+      selectedProperty,
+      showMenu,
+      showMenuOptions,
+      hideMenu,
+      showHideRejectPropertyModal,
     } = this.props
-   const imagesList =  data.armsuser ? data.armsPropertyImages : data.property_images;
+    const imagesList = data.armsuser ? data.armsPropertyImages : data.property_images;
     const imagesCount = data.armsuser && data.armsPropertyImages ? data.armsPropertyImages.length : data.user && data.property_images ? data.property_images.length : null;
     const ownerName = this.checkCustomerName(data)
     const checkForGraanaProperties = whichProperties === 'graanaProperties'
@@ -69,7 +73,7 @@ class InventoryTile extends React.Component {
         activeOpacity={0.7}
       >
 
-        
+
         <View>
           {imagesList && imagesList.length ? (
             <Carousel
@@ -87,50 +91,61 @@ class InventoryTile extends React.Component {
               containerCustomStyle={{ position: 'relative' }}
             />
           ) : (
-            <Image
-              source={require('../../../assets/images/no-image-found.png')}
-              style={styles.imageStyle}
-            />
-          )}
+              <Image
+                source={require('../../../assets/images/no-image-found.png')}
+                style={styles.imageStyle}
+              />
+            )}
         </View>
         <View style={styles.imageCountViewStyle}>
           <Feather name={'camera'} color={'#fff'} size={16} />
           <Text style={styles.imageCount}>{imagesCount}</Text>
         </View>
-        
+
         <View style={{ width: checkForGraanaProperties === true ? wp('50%') : wp('60%') }}>
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.currencyTextStyle}>PKR</Text>
             <Text style={styles.priceTextStyle} numberOfLines={1}>
               {helper.checkPrice(data.price)}
             </Text>
-            {screen === 'fields' && data.status ==='onhold' ? (
-                  <Menu
-                    visible={data.showMenu}
-                    onDismiss={() => toggleMenu(false, data.id)}
-                    anchor={
-                      <Entypo
-                        onPress={() => toggleMenu(true, data.id)}
-                        name="dots-three-vertical"
-                        size={24}
-                        style={{marginHorizontal:10}}
-                      />
-                    }
-                  >
-                    <View>
-                      <Menu.Item
-                        onPress={() => {
-                          approveProperty(data.id)
-                        }}
-                        title="Approve Property"
-                      />
-                    </View>
-                  </Menu>
-                ) : null}
+            {screen === 'fields' && data.status === 'onhold' ? (
+              <View style={{
+                alignSelf: 'flex-end',
+                margin: 8
+              }}>
+                <Menu
+                  visible={showMenu && data.id === selectedProperty.id}
+                  onDismiss={() => hideMenu()}
+                  anchor={
+                    <Entypo
+                      onPress={() => showMenuOptions(data)}
+                      name="dots-three-vertical"
+                      size={24}
+                    />
+                  }
+                >
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        approveProperty(data.id)
+                      }}
+                      title="Approve Property"
+                    />
+
+                    <Menu.Item
+                      onPress={() => {
+                        showHideRejectPropertyModal(true)
+                      }}
+                      title="Reject Property"
+                    />
+                  </View>
+                </Menu>
+              </View>
+            ) : null}
           </View>
 
 
-         
+
 
 
           <Text style={styles.textControlStyle} numberOfLines={1}>
@@ -146,10 +161,10 @@ class InventoryTile extends React.Component {
               {data.poc_name && data.poc_name}
             </Text>
           ) : (
-            <Text style={[styles.textControlStyle, { paddingTop: 2 }]} numberOfLines={1}>
-              {ownerName}
-            </Text>
-          )}
+              <Text style={[styles.textControlStyle, { paddingTop: 2 }]} numberOfLines={1}>
+                {ownerName}
+              </Text>
+            )}
 
           <Text
             style={[styles.textControlStyle, { fontFamily: AppStyles.fonts.lightFont }]}
@@ -204,7 +219,7 @@ class InventoryTile extends React.Component {
           </View>
         ) : null}
 
-        
+
       </TouchableOpacity>
     )
   }

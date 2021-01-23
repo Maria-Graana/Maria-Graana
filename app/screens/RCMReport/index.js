@@ -421,7 +421,6 @@ class RCMReport extends React.Component {
     const { user } = this.props
     let armsZone = false
     let org = {}
-
     if (check === 'zone') org = this.organizationName(zoneFormData.organization)
     if (check === 'agent') org = this.organizationName(agentFormData.organization)
     if (org && org.name && org.name === 'Agency21') armsZone = true
@@ -431,9 +430,11 @@ class RCMReport extends React.Component {
       user.subRole !== 'business_centre_manager' &&
       user.subRole !== 'call_centre_manager'
     ) {
-      let url = `/api/user/teams?status=true&organizationId=${org.value}&all=true&regionId=${value}`
-      if (user.organization && user.organization.isPP) {
-        url = `/api/user/teams?status=true&organizationId=${org.value}&all=true`
+      let url = ``
+      if (helper.checkPP(user)) {
+        url = `/api/user/teams?status=true&organizationId=${value}&all=true`
+      } else {
+        url = `/api/user/teams?status=true&organizationId=${org.value}&all=true&regionId=${value}`
       }
       axios
         .get(url)
@@ -594,7 +595,7 @@ class RCMReport extends React.Component {
       agentFormData.region = ''
       agentFormData.zone = ''
       agentFormData.agent = ''
-      if (user.organization && user.organization.isPP) {
+      if (helper.checkPP(user)) {
         this.fetchZones(value, 'zone')
       } else {
         this.fetchRegions(value)

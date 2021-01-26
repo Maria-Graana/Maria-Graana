@@ -10,6 +10,7 @@ import { formatPrice } from '../../PriceFormate'
 import ErrorMessage from '../../components/ErrorMessage'
 import Loader from '../loader'
 import { ActivityIndicator } from 'react-native-paper'
+import CommissionTile from '../CommissionTile'
 
 const PropsureDocumentPopup = (props) => {
   const {
@@ -20,6 +21,8 @@ const PropsureDocumentPopup = (props) => {
     getAttachmentFromStorage,
     uploadReport,
     downloadFile,
+    propsureOutstandingPayment,
+    selectedProperty,
   } = props
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
@@ -39,11 +42,16 @@ const PropsureDocumentPopup = (props) => {
           renderItem={({ item }) => (
             <View style={[styles.viewContainer]}>
               <View style={styles.tileView}>
-                <Text
-                  style={{ color: AppStyles.colors.textColor, marginVertical: 5 }}
-                >{`${item.package}`}</Text>
+                <Text style={{ color: AppStyles.colors.textColor, marginVertical: 5 }}>{`${
+                  item.propsureReport && item.propsureReport.title && item.propsureReport.title
+                }`}</Text>
                 <Text style={styles.reportPrice}>
-                  <Text style={styles.pkr}>PKR</Text> 100
+                  <Text style={styles.pkr}>PKR</Text>{' '}
+                  {parseInt(
+                    formatPrice(
+                      item.propsureReport && item.propsureReport.fee && item.propsureReport.fee
+                    )
+                  )}
                 </Text>
               </View>
 
@@ -148,19 +156,35 @@ const PropsureDocumentPopup = (props) => {
                         checkValidation === true && selectedFile === null && <ErrorMessage errorMessage={'Required'} />
                     } */}
 
-        <View style={[AppStyles.mainInputWrap, { marginLeft: 25, marginRight: 25 }]}>
+        <View style={[AppStyles.mainInputWrap, { backgroundColor: '#fff' }]}>
           <View style={styles.totalView}>
             <Text style={[AppStyles.btnText, { color: AppStyles.colors.textColor }]}>
-              Total Amount
+              {selectedProperty && selectedProperty.cmInstallment
+                ? 'Outstanding Amount'
+                : 'Total Amount'}
             </Text>
             <Text style={[AppStyles.btnText, { color: AppStyles.colors.primaryColor }]}>
               <Text style={styles.pkr}>PKR </Text>
-              {100 === 0 ? 0 : parseInt(formatPrice(100))}
+              {propsureOutstandingPayment === 0
+                ? 0
+                : parseInt(formatPrice(propsureOutstandingPayment))}
             </Text>
           </View>
-          <Button style={[AppStyles.formBtn, { marginVertical: 10 }]} onPress={onPress}>
-            <Text style={AppStyles.btnText}>ADD PAYMENT</Text>
-          </Button>
+          <View style={{ margin: 10 }}>
+            {selectedProperty && selectedProperty.cmInstallment ? (
+              <CommissionTile
+                data={selectedProperty.cmInstallment}
+                editTile={() => {}}
+                onPaymentLongPress={() => onPaymentLongPress(buyer)}
+                commissionEdit={false}
+                title={'Propsure Services Payment'}
+              />
+            ) : (
+              <Button style={[AppStyles.formBtn, { marginVertical: 10 }]} onPress={onPress}>
+                <Text style={AppStyles.btnText}>ADD PAYMENT</Text>
+              </Button>
+            )}
+          </View>
         </View>
       </SafeAreaView>
     </Modal>

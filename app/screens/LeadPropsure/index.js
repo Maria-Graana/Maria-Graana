@@ -61,22 +61,24 @@ class LeadPropsure extends React.Component {
       totalReportPrice: 0,
       modalValidation: false,
       addPaymentLoading: false,
+      propsureReportTypes: [],
     }
   }
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      console.log('rcmPayment: ', this.props.rcmPayment)
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
         this.fetchLead(lead)
         this.getCallHistory()
         this.fetchProperties(lead)
+        this.fetchPropsureReportsList()
       } else {
         const { lead } = this.props
         this.fetchLead(lead)
         this.getCallHistory()
         this.fetchProperties(lead)
+        this.fetchPropsureReportsList()
       }
     })
   }
@@ -84,6 +86,19 @@ class LeadPropsure extends React.Component {
   componentWillUnmount() {
     this.clearReduxAndStateValues()
     this._unsubscribe()
+  }
+
+  fetchPropsureReportsList = () => {
+    axios
+      .get(`/api/inventory/listpropsureReports`)
+      .then((res) => {
+        this.setState({
+          propsureReportTypes: res.data,
+        })
+      })
+      .catch((error) => {
+        console.log(`ERROR: api/inventory/listpropsureReports: ${error}`)
+      })
   }
 
   callback = (downloadProgress) => {
@@ -145,7 +160,6 @@ class LeadPropsure extends React.Component {
     const { rcmProgressBar } = StaticData
     let matches = []
     this.setState({ loading: true }, () => {
-      console.log(`/api/leads/${lead.id}/shortlist`)
       axios
         .get(`/api/leads/${lead.id}/shortlist`)
         .then((res) => {
@@ -196,51 +210,7 @@ class LeadPropsure extends React.Component {
     }
   }
 
-  closeModal = () => {
-    this.setState({ isVisible: false })
-  }
-
-  showReportsModal = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
-    if (leadAssignedSharedStatus) {
-      this.setState({
-        isVisible: true,
-        selectedPropertyId: property.id,
-        selectedProperty: property,
-      })
-    }
-  }
-
-  onHandleRequestVerification = () => {
-    const { lead } = this.props
-    const { selectedReports, selectedPropertyId, selectedProperty } = this.state
-    if (selectedReports.length === 0) {
-      alert('Please select at least one report!')
-    } else {
-      // ********* Call Add Attachment API here :)
-      // this.closeModal()
-      // const body = {
-      //   packageName: selectedReports,
-      //   propertyId: selectedPropertyId,
-      //   pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
-      //   org: selectedProperty.arms_id ? 'arms' : 'graana',
-      // }
-      // // console.log(body)
-      // axios
-      //   .post(`/api/leads/propsure/${lead.id}`, body)
-      //   .then((response) => {
-      //     this.fetchLead(lead)
-      //     this.fetchProperties(lead)
-      //   })
-      //   .catch((error) => {
-      //     console.log(error)
-      //     this.setState({ selectedPropertyId: null, selectedReports: [], selectedProperty: null })
-      //   })
-    }
-  }
-
-  showDocumentModal = (propsureReports) => {
+  showDocumentModal = (propsureReports, property) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
     if (leadAssignedSharedStatus) {
@@ -248,6 +218,8 @@ class LeadPropsure extends React.Component {
         documentModalVisible: true,
         pendingPropsures: propsureReports,
         checkValidation: false,
+        selectedPropertyId: property.id,
+        selectedProperty: property,
       })
     }
   }
@@ -255,6 +227,10 @@ class LeadPropsure extends React.Component {
   closeDocumentModal = () => {
     this.setState({ documentModalVisible: false, file: null })
     this.onAddCommissionPayment()
+  }
+
+  closeDocument = () => {
+    this.setState({ documentModalVisible: false })
   }
 
   onAddCommissionPayment = () => {
@@ -379,7 +355,7 @@ class LeadPropsure extends React.Component {
         <TouchableOpacity
           style={[styles.viewButtonStyle, { backgroundColor: '#FCD12A' }]}
           activeOpacity={0.7}
-          onPress={() => this.showDocumentModal(propsures)}
+          onPress={() => this.showDocumentModal(propsures, item)}
         >
           <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>
             PENDING VERIFICATION
@@ -391,7 +367,7 @@ class LeadPropsure extends React.Component {
         <TouchableOpacity
           style={[styles.viewButtonStyle, { backgroundColor: AppStyles.colors.primaryColor }]}
           activeOpacity={0.7}
-          onPress={() => this.showDocumentModal(propsures)}
+          onPress={() => this.showDocumentModal(propsures, item)}
         >
           <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>VERIFIED</Text>
         </TouchableOpacity>
@@ -527,14 +503,13 @@ class LeadPropsure extends React.Component {
     const { selectedReports } = this.state
     let reports = [...selectedReports]
     let totalReportPrice = 0
-    if (reports.some((item) => item.name === report.name)) {
+    if (reports.some((item) => item.title === report.title)) {
       reports = _.without(reports, report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     } else {
       reports.push(report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     }
-    console.log('addRemoveReport: ', reports)
     this.setState({ selectedReports: reports, totalReportPrice: totalReportPrice })
   }
 
@@ -552,11 +527,7 @@ class LeadPropsure extends React.Component {
         })
       else helper.warningToast(`You cannot view other agent's property details!`)
     } else {
-      let url = `https://dev.graana.rocks/property/${property.graana_id}`
-      if (config.channel === 'staging')
-        url = `https://staging.graana.rocks/property/${property.graana_id}`
-      if (config.channel === 'production')
-        url = `https://www.graana.com/property/${property.graana_id}`
+      let url = `${config.graanaUrl}/property/${property.graana_id}`
       Linking.canOpenURL(url)
         .then((supported) => {
           if (!supported) helper.errorToast(`No application available open this Url`)
@@ -581,9 +552,58 @@ class LeadPropsure extends React.Component {
     }
   }
 
-  goToPayAttachments = () => {
+  // <<<<<<<<<<<<<<<<<< Requent Propsure Documents >>>>>>>>>>>>>>>>>>
+  closeModal = () => {
+    this.setState({ isVisible: false })
+  }
+
+  showReportsModal = (property) => {
+    const { lead, user } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    if (leadAssignedSharedStatus) {
+      this.setState({
+        isVisible: true,
+        selectedPropertyId: property.id,
+        selectedProperty: property,
+      })
+    }
+  }
+
+  onHandleRequestVerification = () => {
+    const { lead } = this.props
+    const { selectedReports, selectedPropertyId, selectedProperty, totalReportPrice } = this.state
+    if (selectedReports.length === 0) {
+      alert('Please select at least one report!')
+    } else {
+      // ********* Call Add Attachment API here :)
+      this.closeModal()
+      const body = {
+        packageName: _.pluck(selectedReports, 'title'),
+        propertyId: selectedPropertyId,
+        pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
+        org: selectedProperty.arms_id ? 'arms' : 'graana',
+        propsureIds: _.pluck(selectedReports, 'id'),
+        outstandingPropsure: totalReportPrice,
+      }
+      axios
+        .post(`/api/leads/propsure/${lead.id}`, body)
+        .then((response) => {
+          this.fetchLead(lead)
+          this.fetchProperties(lead)
+        })
+        .catch((error) => {
+          console.log(error)
+          this.setState({ selectedPropertyId: null, selectedReports: [], selectedProperty: null })
+        })
+    }
+  }
+
+  // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow Start >>>>>>>>>>>>>>>>>>
+  goToPayAttachments = (selectedProperty) => {
     const { rcmPayment, dispatch, navigation } = this.props
-    dispatch(setRCMPayment({ ...rcmPayment, visible: false }))
+    dispatch(
+      setRCMPayment({ ...rcmPayment, visible: false, selectedPropertyId: selectedProperty.id })
+    )
     navigation.navigate('RCMAttachment')
   }
 
@@ -598,7 +618,6 @@ class LeadPropsure extends React.Component {
     const newSecondFormData = { ...rcmPayment, visible: rcmPayment.visible }
     newSecondFormData[name] = value
     this.setState({ buyerNotZero: false })
-    console.log('newSecondFormData: ', newSecondFormData)
     dispatch(setRCMPayment(newSecondFormData))
   }
 
@@ -625,88 +644,87 @@ class LeadPropsure extends React.Component {
   }
 
   submitCommissionPayment = () => {
-    const { rcmPayment, user } = this.props
-    const { lead, editable } = this.state
-    console.log('submitCommissionPayment rcm: ', rcmPayment)
-    // if (
-    //   rcmPayment.installmentAmount != null &&
-    //   rcmPayment.installmentAmount != '' &&
-    //   rcmPayment.type != ''
-    // ) {
-    //   this.setState({
-    //     addPaymentLoading: true,
-    //   })
-    //   if (Number(rcmPayment.installmentAmount) <= 0) {
-    //     this.setState({ buyerNotZero: true, addPaymentLoading: false })
-    //     return
-    //   }
-    //   if (editable === false) {
-    //     // for commission addition
-    //     let body = {
-    //       ...rcmPayment,
-    //       rcmLeadId: lead.id,
-    //       armsUserId: user.id,
-    //       paymentCategory: 'commission',
-    //     }
-    //     delete body.visible
-    //     axios
-    //       .post(`/api/leads/project/payments`, body)
-    //       .then((response) => {
-    //         if (response.data) {
-    //           // check if some attachment exists so upload that as well to server with payment id.
-    //           if (rcmPayment.paymentAttachments.length > 0) {
-    //             rcmPayment.paymentAttachments.map((paymentAttachment) =>
-    //               // payment attachments
-    //               this.uploadAttachment(paymentAttachment, response.data.id)
-    //             )
-    //           } else {
-    //             this.clearReduxAndStateValues()
-    //             this.fetchLead()
-    //             helper.successToast('Commission Payment Added')
-    //           }
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         this.clearReduxAndStateValues()
-    //         helper.errorToast('Error Adding Commission Payment', error)
-    //       })
-    //   } else {
-    //     // commission update mode
-    //     let body = { ...rcmPayment }
-    //     delete body.visible
-    //     delete body.remarks
-    //     axios
-    //       .patch(`/api/leads/project/payment?id=${body.id}`, body)
-    //       .then((response) => {
-    //         // upload only the new attachments that do not have id with them in object.
-    //         const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
-    //           ? _.filter(rcmPayment.paymentAttachments, (item) => {
-    //               return !_.has(item, 'id')
-    //             })
-    //           : []
-    //         if (filterAttachmentsWithoutId.length > 0) {
-    //           filterAttachmentsWithoutId.map((item, index) => {
-    //             // payment attachments
-    //             this.uploadAttachment(item, body.id)
-    //           })
-    //         } else {
-    //           this.fetchLead()
-    //           this.clearReduxAndStateValues()
-    //           helper.successToast('Commission Payment Updated')
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         helper.errorToast('Error Updating Commission Payment', error)
-    //         this.clearReduxAndStateValues()
-    //       })
-    //   }
-    // } else {
-    //   // Installment amount or type is missing so validation goes true, show error
-    //   this.setState({
-    //     modalValidation: true,
-    //   })
-    // }
+    const { rcmPayment, user, lead } = this.props
+    const { propsureOutstandingPayment } = lead
+    const { selectedProperty } = this.state
+    let remainingReportPrice =
+      Number(propsureOutstandingPayment) - Number(rcmPayment.installmentAmount)
+    if (
+      rcmPayment.installmentAmount != null &&
+      rcmPayment.installmentAmount != '' &&
+      rcmPayment.type != ''
+    ) {
+      this.setState({
+        addPaymentLoading: true,
+      })
+      if (Number(rcmPayment.installmentAmount) <= 0) {
+        this.setState({ buyerNotZero: true, addPaymentLoading: false })
+        return
+      }
+      let body = {
+        ...rcmPayment,
+        rcmLeadId: lead.id,
+        armsUserId: user.id,
+        outstandingPayment: remainingReportPrice,
+        addedBy: 'buyer',
+        amount: rcmPayment.installmentAmount,
+        shortlistPropertyId: rcmPayment.selectedPropertyId,
+      }
+      delete body.visible
+      delete body.installmentAmount
+      delete body.selectedPropertyId
+      axios
+        .post(`/api/leads/propsurePayment`, body)
+        .then((response) => {
+          if (response.data) {
+            // check if some attachment exists so upload that as well to server with payment id.
+            if (rcmPayment.paymentAttachments.length > 0) {
+              rcmPayment.paymentAttachments.map((paymentAttachment) =>
+                // payment attachments
+                this.uploadPaymentAttachment(paymentAttachment, response.data.id)
+              )
+            } else {
+              this.clearReduxAndStateValues()
+              this.fetchLead(lead)
+              helper.successToast('Propsure Payment Added')
+            }
+          }
+        })
+        .catch((error) => {
+          this.clearReduxAndStateValues()
+          console.log('Error: ', error)
+          helper.errorToast('Error Adding Propsure Payment')
+        })
+    }
   }
+
+  uploadPaymentAttachment = (paymentAttachment, paymentId) => {
+    const { lead } = this.props
+    let attachment = {
+      name: paymentAttachment.fileName,
+      type: 'file/' + paymentAttachment.fileName.split('.').pop(),
+      uri: paymentAttachment.uri,
+    }
+    let fd = new FormData()
+    fd.append('file', attachment)
+    fd.append('title', paymentAttachment.title)
+    fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
+    // ====================== API call for Attachments base on Payment ID
+    axios
+      .post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
+      .then((res) => {
+        if (res.data) {
+          this.fetchLead(lead)
+          this.fetchProperties(lead)
+          this.clearReduxAndStateValues()
+        }
+      })
+      .catch((error) => {
+        helper.errorToast('Attachment Error: ', error)
+      })
+  }
+
+  // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
 
   render() {
     const {
@@ -732,6 +750,8 @@ class LeadPropsure extends React.Component {
       addPaymentLoading,
       modalValidation,
       buyerNotZero,
+      propsureReportTypes,
+      selectedProperty,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -756,7 +776,7 @@ class LeadPropsure extends React.Component {
           openPopup={callModal}
         />
         <PropsureReportsPopup
-          reports={StaticData.propsureReportTypes}
+          reports={propsureReportTypes}
           addRemoveReport={(item) => this.addRemoveReport(item)}
           selectedReports={selectedReports}
           isVisible={isVisible}
@@ -768,17 +788,19 @@ class LeadPropsure extends React.Component {
           pendingPropsures={_.clone(pendingPropsures)}
           isVisible={documentModalVisible}
           uploadReport={(report, propsureId) => this.uploadAttachment(report, propsureId)}
-          closeModal={() => this.closeDocumentModal()}
+          closeModal={() => this.closeDocument()}
           onPress={() => this.closeDocumentModal()}
           downloadFile={this.downloadFile}
           getAttachmentFromStorage={this.getAttachmentFromStorage}
+          propsureOutstandingPayment={lead.propsureOutstandingPayment}
+          selectedProperty={selectedProperty}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}
           handleCommissionChange={this.handleCommissionChange}
           modalValidation={modalValidation}
-          goToPayAttachments={() => this.goToPayAttachments()}
+          goToPayAttachments={() => this.goToPayAttachments(selectedProperty)}
           submitCommissionPayment={() => this.submitCommissionPayment()}
           addPaymentLoading={addPaymentLoading}
           lead={lead}

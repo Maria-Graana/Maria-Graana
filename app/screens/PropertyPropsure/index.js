@@ -16,6 +16,9 @@ import PropertyBottomNav from '../../components/PropertyBottomNav'
 import PropMatchTile from '../../components/PropMatchTile'
 import PropsureDocumentPopup from '../../components/PropsureDocumentPopup/index'
 import PropsureReportsPopup from '../../components/PropsureReportsPopup/index'
+import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
+import PaymentMethods from '../../PaymentMethods'
+import { setRCMPayment } from '../../actions/rcmPayment'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
@@ -47,19 +50,21 @@ class PropertyPropsure extends React.Component {
       callModal: false,
       meetings: [],
       menuShow: false,
+      totalReportPrice: 0,
+      modalValidation: false,
+      addPaymentLoading: false,
     }
   }
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
-        const { lead } = this.props.route.params;
+        const { lead } = this.props.route.params
         this.fetchLead(lead)
         this.getCallHistory(lead)
         this.fetchProperties(lead)
-      }
-      else {
-        const { lead } = this.props;
+      } else {
+        const { lead } = this.props
         this.fetchLead(lead)
         this.getCallHistory(lead)
         this.fetchProperties(lead)
@@ -109,7 +114,7 @@ class PropertyPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -132,13 +137,11 @@ class PropertyPropsure extends React.Component {
   showReportsModal = (property) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
-    if (leadAssignedSharedStatus) {
-      this.setState({
-        isVisible: true,
-        selectedPropertyId: property.id,
-        selectedProperty: property,
-      })
-    }
+    this.setState({
+      isVisible: true,
+      selectedPropertyId: property.id,
+      selectedProperty: property,
+    })
   }
 
   onHandleRequestVerification = () => {
@@ -172,17 +175,25 @@ class PropertyPropsure extends React.Component {
   showDocumentModal = (propsureReports) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
-    if (leadAssignedSharedStatus) {
-      this.setState({
-        documentModalVisible: true,
-        pendingPropsures: propsureReports,
-        checkValidation: false,
-      })
-    }
+    this.setState({
+      documentModalVisible: true,
+      pendingPropsures: propsureReports,
+      checkValidation: false,
+    })
   }
 
   closeDocumentModal = () => {
     this.setState({ documentModalVisible: false, file: null })
+    this.onAddCommissionPayment()
+  }
+
+  closeDocument = () => {
+    this.setState({ documentModalVisible: false })
+  }
+
+  onAddCommissionPayment = () => {
+    const { dispatch, rcmPayment } = this.props
+    dispatch(setRCMPayment({ ...rcmPayment, visible: true }))
   }
 
   getAttachmentFromStorage = (id) => {
@@ -222,7 +233,7 @@ class PropertyPropsure extends React.Component {
   }
 
   uploadAttachment(file, propsureId) {
-    const {lead} = this.props;
+    const { lead } = this.props
     this.closeDocumentModal()
     let document = {
       name: file.name,
@@ -246,7 +257,7 @@ class PropertyPropsure extends React.Component {
     const { lead, user } = this.props
     return (
       <TouchableOpacity
-        disabled={helper.isSellerOrBuyer(item, lead, user)}
+        // disabled={helper.isSellerOrBuyer(item, lead, user)}
         key={item.id.toString()}
         onPress={() => this.showReportsModal(item)}
         style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]}
@@ -266,7 +277,7 @@ class PropertyPropsure extends React.Component {
     if (filteredPropsuresReport && filteredPropsuresReport.length) {
       return (
         <TouchableOpacity
-          disabled={helper.isSellerOrBuyer(item, lead, user)}
+          // disabled={helper.isSellerOrBuyer(item, lead, user)}
           style={[styles.viewButtonStyle, { backgroundColor: '#FCD12A' }]}
           activeOpacity={0.7}
           onPress={() => this.showDocumentModal(item.propsures)}
@@ -348,6 +359,20 @@ class PropertyPropsure extends React.Component {
     })
   }
 
+  addRemoveReport = (report) => {
+    const { selectedReports } = this.state
+    let reports = [...selectedReports]
+    let totalReportPrice = 0
+    if (reports.some((item) => item.name === report.name)) {
+      reports = _.without(reports, report)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
+    } else {
+      reports.push(report)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
+    }
+    this.setState({ selectedReports: reports, totalReportPrice: totalReportPrice })
+  }
+
   goToAttachments = () => {
     const { lead, navigation } = this.props
     navigation.navigate('Attachments', { rcmLeadId: lead.id })
@@ -359,10 +384,11 @@ class PropertyPropsure extends React.Component {
   }
 
   navigateToDetails = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, 
-      purposeTab: 'property' ,
+    this.props.navigation.navigate('LeadDetail', {
+      lead: this.props.lead,
+      purposeTab: 'property',
       isFromLeadWorkflow: true,
-      fromScreen: 'propsure'
+      fromScreen: 'propsure',
     })
   }
 
@@ -433,6 +459,132 @@ class PropertyPropsure extends React.Component {
     }
   }
 
+  goToPayAttachments = () => {
+    const { rcmPayment, dispatch, navigation } = this.props
+    dispatch(setRCMPayment({ ...rcmPayment, visible: false }))
+    navigation.navigate('RCMAttachment')
+  }
+
+  setCommissionEditData = (data) => {
+    const { dispatch } = this.props
+    this.setState({ editable: true })
+    dispatch(setRCMPayment({ ...data, visible: true }))
+  }
+
+  handleCommissionChange = (value, name) => {
+    const { rcmPayment, dispatch } = this.props
+    const newSecondFormData = { ...rcmPayment, visible: rcmPayment.visible }
+    newSecondFormData[name] = value
+    this.setState({ buyerNotZero: false })
+    dispatch(setRCMPayment(newSecondFormData))
+  }
+
+  clearReduxAndStateValues = () => {
+    const { dispatch } = this.props
+    const newData = {
+      installmentAmount: null,
+      type: '',
+      rcmLeadId: null,
+      details: '',
+      visible: false,
+      paymentAttachments: [],
+    }
+    this.setState({
+      modalValidation: false,
+      addPaymentLoading: false,
+      editable: false,
+    })
+    dispatch(setRCMPayment({ ...newData }))
+  }
+
+  onModalCloseClick = () => {
+    this.clearReduxAndStateValues()
+  }
+
+  submitCommissionPayment = () => {
+    const { rcmPayment, user } = this.props
+    const { lead, editable } = this.state
+    console.log('submitCommissionPayment rcm: ', rcmPayment)
+    // if (
+    //   rcmPayment.installmentAmount != null &&
+    //   rcmPayment.installmentAmount != '' &&
+    //   rcmPayment.type != ''
+    // ) {
+    //   this.setState({
+    //     addPaymentLoading: true,
+    //   })
+    //   if (Number(rcmPayment.installmentAmount) <= 0) {
+    //     this.setState({ buyerNotZero: true, addPaymentLoading: false })
+    //     return
+    //   }
+    //   if (editable === false) {
+    //     // for commission addition
+    //     let body = {
+    //       ...rcmPayment,
+    //       rcmLeadId: lead.id,
+    //       armsUserId: user.id,
+    //       paymentCategory: 'commission',
+    //     }
+    //     delete body.visible
+    //     axios
+    //       .post(`/api/leads/project/payments`, body)
+    //       .then((response) => {
+    //         if (response.data) {
+    //           // check if some attachment exists so upload that as well to server with payment id.
+    //           if (rcmPayment.paymentAttachments.length > 0) {
+    //             rcmPayment.paymentAttachments.map((paymentAttachment) =>
+    //               // payment attachments
+    //               this.uploadAttachment(paymentAttachment, response.data.id)
+    //             )
+    //           } else {
+    //             this.clearReduxAndStateValues()
+    //             this.fetchLead()
+    //             helper.successToast('Commission Payment Added')
+    //           }
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         this.clearReduxAndStateValues()
+    //         helper.errorToast('Error Adding Commission Payment', error)
+    //       })
+    //   } else {
+    //     // commission update mode
+    //     let body = { ...rcmPayment }
+    //     delete body.visible
+    //     delete body.remarks
+    //     axios
+    //       .patch(`/api/leads/project/payment?id=${body.id}`, body)
+    //       .then((response) => {
+    //         // upload only the new attachments that do not have id with them in object.
+    //         const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
+    //           ? _.filter(rcmPayment.paymentAttachments, (item) => {
+    //               return !_.has(item, 'id')
+    //             })
+    //           : []
+    //         if (filterAttachmentsWithoutId.length > 0) {
+    //           filterAttachmentsWithoutId.map((item, index) => {
+    //             // payment attachments
+    //             this.uploadAttachment(item, body.id)
+    //           })
+    //         } else {
+    //           this.fetchLead()
+    //           this.clearReduxAndStateValues()
+    //           helper.successToast('Commission Payment Updated')
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         helper.errorToast('Error Updating Commission Payment', error)
+    //         this.clearReduxAndStateValues()
+    //       })
+    //   }
+    // } else {
+    //   // Installment amount or type is missing so validation goes true, show error
+    //   this.setState({
+    //     modalValidation: true,
+    //   })
+    // }
+  }
+
   render() {
     const {
       menuShow,
@@ -451,6 +603,10 @@ class PropertyPropsure extends React.Component {
       isCloseLeadVisible,
       checkReasonValidation,
       closedLeadEdit,
+      totalReportPrice,
+      addPaymentLoading,
+      modalValidation,
+      buyerNotZero,
     } = this.state
     const { lead, navigation, user } = this.props
 
@@ -480,14 +636,25 @@ class PropertyPropsure extends React.Component {
           isVisible={isVisible}
           closeModal={() => this.closeModal()}
           onPress={this.onHandleRequestVerification}
+          totalReportPrice={totalReportPrice}
         />
         <PropsureDocumentPopup
           pendingPropsures={pendingPropsures}
           isVisible={documentModalVisible}
           uploadReport={(report, propsureId) => this.uploadAttachment(report, propsureId)}
-          closeModal={() => this.closeDocumentModal()}
+          closeModal={() => this.closeDocument()}
           onPress={() => this.closeDocumentModal()}
           getAttachmentFromStorage={this.getAttachmentFromStorage}
+        />
+        <AddRCMPaymentModal
+          onModalCloseClick={this.onModalCloseClick}
+          handleCommissionChange={this.handleCommissionChange}
+          modalValidation={modalValidation}
+          goToPayAttachments={() => this.goToPayAttachments()}
+          submitCommissionPayment={() => this.submitCommissionPayment()}
+          addPaymentLoading={addPaymentLoading}
+          lead={lead}
+          paymentNotZero={buyerNotZero}
         />
         <View style={{ paddingBottom: 100 }}>
           {matchData.length ? (
@@ -510,20 +677,20 @@ class PropertyPropsure extends React.Component {
                       screen={'propsure'}
                     />
                   ) : (
-                      <PropAgentTile
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        isMenuVisible={true}
-                        viewingMenu={false}
-                        goToPropertyComments={this.goToPropertyComments}
-                        toggleMenu={this.toggleMenu}
-                        menuShow={menuShow}
-                        screen={'propsure'}
-                      />
-                    )}
+                    <PropAgentTile
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      isMenuVisible={true}
+                      viewingMenu={false}
+                      goToPropertyComments={this.goToPropertyComments}
+                      toggleMenu={this.toggleMenu}
+                      menuShow={menuShow}
+                      screen={'propsure'}
+                    />
+                  )}
                   <View>
                     {item.item.propsures.length === 0
                       ? this.renderPropsureVerificationView(item.item)
@@ -534,14 +701,14 @@ class PropertyPropsure extends React.Component {
               keyExtractor={(item, index) => item.id.toString()}
             />
           ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
+            <>
+              <Image
+                source={require('../../../assets/img/no-result-found.png')}
+                resizeMode={'center'}
+                style={{ alignSelf: 'center', width: 300, height: 300 }}
+              />
+            </>
+          )}
         </View>
         <View style={AppStyles.mainCMBottomNav}>
           <PropertyBottomNav
@@ -570,8 +737,8 @@ class PropertyPropsure extends React.Component {
         />
       </View>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

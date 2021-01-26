@@ -39,17 +39,17 @@ const PropsureReportsPopup = (props) => {
               <View style={styles.reportRow}>
                 <View style={styles.totalView}>
                   <CheckBox
-                    checked={selectedReports.some((report) => item.name === report.name)}
+                    checked={selectedReports.some((report) => item.title === report.title)}
                     style={{ marginHorizontal: 5 }}
                     onPress={() => addRemoveReport(item)}
                     color={AppStyles.colors.primaryColor}
                   />
                   <Text onPress={() => addRemoveReport(item)} style={styles.reportName}>
-                    {item.name}
+                    {item.title}
                   </Text>
                 </View>
                 <Text style={styles.reportPrice}>
-                  <Text style={styles.pkr}>PKR</Text> {item.price}
+                  <Text style={styles.pkr}>PKR</Text> {item.fee}
                 </Text>
               </View>
               <Divider />

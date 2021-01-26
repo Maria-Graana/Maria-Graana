@@ -9,8 +9,7 @@ import {
 
 export default styles = StyleSheet.create({
   viewContainer: {
-    marginLeft: 25,
-    marginRight: 25,
+    marginHorizontal: 10,
     justifyContent: 'center',
     marginVertical: 15,
     borderRadius: 4,
@@ -40,6 +39,6 @@ export default styles = StyleSheet.create({
   totalView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 10,
+    margin: 10,
   },
 })

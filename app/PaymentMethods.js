@@ -5,7 +5,7 @@ const PaymentMethods = {
     let total = 0
     if (reports && reports.length) {
       reports.map((item, index) => {
-        total = Number(total) + Number(item.price)
+        total = Number(total) + Number(item.fee)
       })
       return total
     } else {

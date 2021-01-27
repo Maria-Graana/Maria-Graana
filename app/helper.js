@@ -598,6 +598,19 @@ const helper = {
     else str = str.toString()
     return str.replace(/<[^>]*>/g, '')
   },
+  AddPropsureReportsFee(pendingPropsures) {
+    let total = 0
+    if (pendingPropsures && pendingPropsures.length) {
+      pendingPropsures.map((item) => {
+        if (item.propsureReport && item.propsureReport.fee) {
+          total = Number(total) + Number(item.propsureReport.fee)
+        }
+      })
+      return total
+    } else {
+      return total
+    }
+  },
 }
 
 module.exports = helper

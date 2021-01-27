@@ -11,6 +11,7 @@ import ErrorMessage from '../../components/ErrorMessage'
 import Loader from '../loader'
 import { ActivityIndicator } from 'react-native-paper'
 import CommissionTile from '../CommissionTile'
+import helper from '../../helper'
 
 const PropsureDocumentPopup = (props) => {
   const {
@@ -23,7 +24,10 @@ const PropsureDocumentPopup = (props) => {
     downloadFile,
     propsureOutstandingPayment,
     selectedProperty,
+    editable,
+    onPaymentLongPress,
   } = props
+  let totalReportsFree = helper.AddPropsureReportsFee(pendingPropsures)
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView
@@ -159,32 +163,30 @@ const PropsureDocumentPopup = (props) => {
         <View style={[AppStyles.mainInputWrap, { backgroundColor: '#fff' }]}>
           <View style={styles.totalView}>
             <Text style={[AppStyles.btnText, { color: AppStyles.colors.textColor }]}>
-              {selectedProperty && selectedProperty.cmInstallment
-                ? 'Outstanding Amount'
-                : 'Total Amount'}
+              Total Amount
             </Text>
             <Text style={[AppStyles.btnText, { color: AppStyles.colors.primaryColor }]}>
               <Text style={styles.pkr}>PKR </Text>
-              {propsureOutstandingPayment === 0
-                ? 0
-                : parseInt(formatPrice(propsureOutstandingPayment))}
+              {totalReportsFree === 0 ? 0 : parseInt(formatPrice(totalReportsFree))}
             </Text>
           </View>
-          <View style={{ margin: 10 }}>
-            {selectedProperty && selectedProperty.cmInstallment ? (
-              <CommissionTile
-                data={selectedProperty.cmInstallment}
-                editTile={() => {}}
-                onPaymentLongPress={() => onPaymentLongPress(buyer)}
-                commissionEdit={false}
-                title={'Propsure Services Payment'}
-              />
-            ) : (
-              <Button style={[AppStyles.formBtn, { marginVertical: 10 }]} onPress={onPress}>
-                <Text style={AppStyles.btnText}>ADD PAYMENT</Text>
-              </Button>
-            )}
-          </View>
+          {totalReportsFree !== 0 && (
+            <View style={{ margin: 10 }}>
+              {selectedProperty && selectedProperty.cmInstallment ? (
+                <CommissionTile
+                  data={selectedProperty.cmInstallment}
+                  editTile={editable}
+                  onPaymentLongPress={() => onPaymentLongPress()}
+                  commissionEdit={false}
+                  title={'Propsure Services Payment'}
+                />
+              ) : (
+                <Button style={[AppStyles.formBtn, { marginVertical: 10 }]} onPress={onPress}>
+                  <Text style={AppStyles.btnText}>ADD PAYMENT</Text>
+                </Button>
+              )}
+            </View>
+          )}
         </View>
       </SafeAreaView>
     </Modal>

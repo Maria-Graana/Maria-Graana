@@ -29,6 +29,11 @@ import ViewDocs from '../../components/ViewDocs'
 import PaymentMethods from '../../PaymentMethods'
 import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import { setRCMPayment } from '../../actions/rcmPayment'
+import DeleteModal from '../../components/DeleteModal'
+import { ActionSheet } from 'native-base'
+
+var BUTTONS = ['Delete', 'Cancel']
+var CANCEL_INDEX = 1
 
 class LeadPropsure extends React.Component {
   constructor(props) {
@@ -62,6 +67,9 @@ class LeadPropsure extends React.Component {
       modalValidation: false,
       addPaymentLoading: false,
       propsureReportTypes: [],
+      editable: false,
+      deletePaymentVisible: false,
+      previousPayment: 0,
     }
   }
 
@@ -211,9 +219,20 @@ class LeadPropsure extends React.Component {
   }
 
   showDocumentModal = (propsureReports, property) => {
-    const { lead, user } = this.props
+    const { lead, user, dispatch } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
     if (leadAssignedSharedStatus) {
+      let installment = property.cmInstallment
+        ? property.cmInstallment
+        : {
+            installmentAmount: null,
+            type: '',
+            rcmLeadId: null,
+            details: '',
+            visible: false,
+            paymentAttachments: [],
+          }
+      dispatch(setRCMPayment(installment))
       this.setState({
         documentModalVisible: true,
         pendingPropsures: propsureReports,
@@ -577,12 +596,18 @@ class LeadPropsure extends React.Component {
     } else {
       // ********* Call Add Attachment API here :)
       this.closeModal()
+      let reportIds = _.map(selectedReports, function (item) {
+        return {
+          id: item.id,
+          fee: item.fee,
+        }
+      })
       const body = {
         packageName: _.pluck(selectedReports, 'title'),
         propertyId: selectedPropertyId,
         pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
         org: selectedProperty.arms_id ? 'arms' : 'graana',
-        propsureIds: _.pluck(selectedReports, 'id'),
+        propsureIds: reportIds,
         outstandingPropsure: totalReportPrice,
       }
       axios
@@ -599,6 +624,46 @@ class LeadPropsure extends React.Component {
   }
 
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow Start >>>>>>>>>>>>>>>>>>
+
+  showHideDeletePayment = (val) => {
+    this.setState({ deletePaymentVisible: val, documentModalVisible: false })
+  }
+
+  deletePayment = async (reason) => {
+    const { rcmPayment, lead } = this.props
+    this.showHideDeletePayment(false)
+    const { propsureOutstandingPayment } = lead
+    const { installmentAmount } = rcmPayment
+    let totalPayment = Number(propsureOutstandingPayment) + Number(installmentAmount)
+    let url = `/api/leads/deletePropsurePayment?id=${rcmPayment.id}&reason=${reason}&leadId=${lead.id}&outstandingPayment=${totalPayment}`
+    const response = await axios.delete(url)
+    if (response.data) {
+      this.clearReduxAndStateValues()
+      this.fetchLead(lead)
+      this.fetchProperties(lead)
+      helper.successToast(response.data)
+    } else {
+      helper.errorToast('ERROR DELETING PROPSURE PAYMENT!')
+    }
+  }
+
+  onPaymentLongPress = () => {
+    const { dispatch } = this.props
+    ActionSheet.show(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Select an Option',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          //Delete
+          this.showHideDeletePayment(true)
+        }
+      }
+    )
+  }
+
   goToPayAttachments = (selectedProperty) => {
     const { rcmPayment, dispatch, navigation } = this.props
     dispatch(
@@ -609,13 +674,22 @@ class LeadPropsure extends React.Component {
 
   setCommissionEditData = (data) => {
     const { dispatch } = this.props
-    this.setState({ editable: true })
+    this.setState({
+      editable: true,
+      documentModalVisible: false,
+      previousPayment: data.installmentAmount,
+    })
     dispatch(setRCMPayment({ ...data, visible: true }))
   }
 
   handleCommissionChange = (value, name) => {
     const { rcmPayment, dispatch } = this.props
-    const newSecondFormData = { ...rcmPayment, visible: rcmPayment.visible }
+    const { selectedProperty } = this.state
+    const newSecondFormData = {
+      ...rcmPayment,
+      visible: rcmPayment.visible,
+      selectedPropertyId: selectedProperty.id,
+    }
     newSecondFormData[name] = value
     this.setState({ buyerNotZero: false })
     dispatch(setRCMPayment(newSecondFormData))
@@ -631,12 +705,12 @@ class LeadPropsure extends React.Component {
       visible: false,
       paymentAttachments: [],
     }
+    dispatch(setRCMPayment({ ...newData }))
     this.setState({
       modalValidation: false,
       addPaymentLoading: false,
       editable: false,
     })
-    dispatch(setRCMPayment({ ...newData }))
   }
 
   onModalCloseClick = () => {
@@ -645,10 +719,8 @@ class LeadPropsure extends React.Component {
 
   submitCommissionPayment = () => {
     const { rcmPayment, user, lead } = this.props
+    const { editable, selectedProperty, previousPayment } = this.state
     const { propsureOutstandingPayment } = lead
-    const { selectedProperty } = this.state
-    let remainingReportPrice =
-      Number(propsureOutstandingPayment) - Number(rcmPayment.installmentAmount)
     if (
       rcmPayment.installmentAmount != null &&
       rcmPayment.installmentAmount != '' &&
@@ -661,40 +733,95 @@ class LeadPropsure extends React.Component {
         this.setState({ buyerNotZero: true, addPaymentLoading: false })
         return
       }
-      let body = {
-        ...rcmPayment,
-        rcmLeadId: lead.id,
-        armsUserId: user.id,
-        outstandingPayment: remainingReportPrice,
-        addedBy: 'buyer',
-        amount: rcmPayment.installmentAmount,
-        shortlistPropertyId: rcmPayment.selectedPropertyId,
-      }
-      delete body.visible
-      delete body.installmentAmount
-      delete body.selectedPropertyId
-      axios
-        .post(`/api/leads/propsurePayment`, body)
-        .then((response) => {
-          if (response.data) {
-            // check if some attachment exists so upload that as well to server with payment id.
-            if (rcmPayment.paymentAttachments.length > 0) {
-              rcmPayment.paymentAttachments.map((paymentAttachment) =>
+      if (editable === false) {
+        // for commission addition
+        let body = {
+          ...rcmPayment,
+          rcmLeadId: lead.id,
+          armsUserId: user.id,
+          outstandingPayment:
+            Number(propsureOutstandingPayment) - Number(rcmPayment.installmentAmount),
+          addedBy: 'buyer',
+          amount: rcmPayment.installmentAmount,
+          shortlistPropertyId: rcmPayment.selectedPropertyId,
+        }
+        delete body.visible
+        delete body.installmentAmount
+        delete body.selectedPropertyId
+        axios
+          .post(`/api/leads/propsurePayment`, body)
+          .then((response) => {
+            if (response.data) {
+              // check if some attachment exists so upload that as well to server with payment id.
+              if (rcmPayment.paymentAttachments.length > 0) {
+                rcmPayment.paymentAttachments.map((paymentAttachment) =>
+                  // payment attachments
+                  this.uploadPaymentAttachment(paymentAttachment, response.data.id)
+                )
+              } else {
+                this.clearReduxAndStateValues()
+                this.fetchLead(lead)
+                this.getCallHistory()
+                this.fetchProperties(lead)
+                this.fetchPropsureReportsList()
+                helper.successToast('Propsure Payment Added')
+              }
+            }
+          })
+          .catch((error) => {
+            this.clearReduxAndStateValues()
+            console.log('Error: ', error)
+            helper.errorToast('Error Adding Propsure Payment')
+          })
+      } else {
+        // commission update mode
+        let remaingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
+        remaingFee = remaingFee - Number(rcmPayment.installmentAmount)
+        let body = {
+          ...rcmPayment,
+          rcmLeadId: lead.id,
+          armsUserId: user.id,
+          outstandingPayment: remaingFee,
+          addedBy: 'buyer',
+          installmentAmount: rcmPayment.installmentAmount,
+          shortlistPropertyId: rcmPayment.selectedPropertyId,
+        }
+        delete body.visible
+        delete body.remarks
+        delete body.selectedPropertyId
+        axios
+          .patch(`/api/leads/project/payment?id=${body.id}`, body)
+          .then((response) => {
+            // upload only the new attachments that do not have id with them in object.
+            const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
+              ? _.filter(rcmPayment.paymentAttachments, (item) => {
+                  return !_.has(item, 'id')
+                })
+              : []
+            if (filterAttachmentsWithoutId.length > 0) {
+              filterAttachmentsWithoutId.map((item, index) => {
                 // payment attachments
                 this.uploadPaymentAttachment(paymentAttachment, response.data.id)
-              )
+              })
             } else {
-              this.clearReduxAndStateValues()
               this.fetchLead(lead)
-              helper.successToast('Propsure Payment Added')
+              this.getCallHistory()
+              this.fetchProperties(lead)
+              this.fetchPropsureReportsList()
+              this.clearReduxAndStateValues()
+              helper.successToast('Propsure Payment Updated')
             }
-          }
-        })
-        .catch((error) => {
-          this.clearReduxAndStateValues()
-          console.log('Error: ', error)
-          helper.errorToast('Error Adding Propsure Payment')
-        })
+          })
+          .catch((error) => {
+            helper.errorToast('Error Updating Propsure Payment', error)
+            this.clearReduxAndStateValues()
+          })
+      }
+    } else {
+      // Installment amount or type is missing so validation goes true, show error
+      this.setState({
+        modalValidation: true,
+      })
     }
   }
 
@@ -752,6 +879,7 @@ class LeadPropsure extends React.Component {
       buyerNotZero,
       propsureReportTypes,
       selectedProperty,
+      deletePaymentVisible,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -794,6 +922,8 @@ class LeadPropsure extends React.Component {
           getAttachmentFromStorage={this.getAttachmentFromStorage}
           propsureOutstandingPayment={lead.propsureOutstandingPayment}
           selectedProperty={selectedProperty}
+          editable={this.setCommissionEditData}
+          onPaymentLongPress={this.onPaymentLongPress}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
         <AddRCMPaymentModal
@@ -805,6 +935,11 @@ class LeadPropsure extends React.Component {
           addPaymentLoading={addPaymentLoading}
           lead={lead}
           paymentNotZero={buyerNotZero}
+        />
+        <DeleteModal
+          isVisible={deletePaymentVisible}
+          deletePayment={(reason) => this.deletePayment(reason)}
+          showHideModal={(val) => this.showHideDeletePayment(val)}
         />
         <View style={{ paddingBottom: 100 }}>
           {matchData.length ? (

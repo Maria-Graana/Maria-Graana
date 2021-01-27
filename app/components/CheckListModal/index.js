@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import {
     StyleSheet,
     Text,
@@ -15,7 +15,6 @@ import { CheckBox, Textarea } from 'native-base';
 import { AntDesign } from '@expo/vector-icons';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import TouchableButton from '../TouchableButton';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 

@@ -23,6 +23,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import config from '../../config'
 import CheckListModal from '../../components/CheckListModal'
+import ViewCheckListModal from '../../components/ViewCheckListModal'
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -56,6 +57,8 @@ class LeadViewing extends React.Component {
       isCheckListModalVisible: false,
       selectedCheckList: [],
       userFeedback: null,
+      viewCheckListModal: false,
+      selectedViewingData: null,
     }
   }
 
@@ -393,7 +396,9 @@ class LeadViewing extends React.Component {
                   alignItems: 'center',
                   flexDirection: 'row',
                 }}
-                onPress={()=> console.log('show check list')}
+                onPress={() => {
+                  this.simplifyViewingData(viewingDoneCount)
+                }}
               >
                 <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
                   VIEWING{greaterOneViewing && 'S'} DONE
@@ -439,6 +444,27 @@ class LeadViewing extends React.Component {
     }
   }
 
+  simplifyViewingData = (data) => {
+    let simpleData = [...data]
+    simpleData = simpleData.map((item, index) => {
+      return { ...item, checkList: _.keys(JSON.parse(item.checkList)), isExpanded: false, title: data.length > 1 ? `Details for Viewing 0${index + 1} ` : `Details for Viewing` }
+    })
+    this.setState({ selectedViewingData: simpleData }, () => {
+      this.toggleViewCheckList(true);
+    })
+  }
+
+  toggleExpandable = (status , id) => {
+    const { selectedViewingData} = this.state;
+    let copyViewingData= [...selectedViewingData];
+    copyViewingData= copyViewingData.map((item) => { return item.id === id  ? {...item, isExpanded: status} :  {...item, isExpanded: false}  });
+    this.setState({selectedViewingData: copyViewingData});
+  }
+
+  toggleViewCheckList = (value) => {
+    this.setState({ viewCheckListModal: value });
+  }
+
   bookAnotherViewing = (property) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
@@ -457,14 +483,14 @@ class LeadViewing extends React.Component {
       if (diary.status === 'pending' && selectedCheckList.length > 0 && userFeedback !== '' && userFeedback !== null) {
         let checkList = {};
         selectedCheckList.map((item, index) => {
-          checkList[item.toLowerCase()] = true;
-      })
-      let stringifiedObj = JSON.stringify(checkList);
-      let body = {
-        status: 'completed',
-        checkList: stringifiedObj,
-        customer_feedback: userFeedback
-      }
+          checkList[item] = true;
+        })
+        let stringifiedObj = JSON.stringify(checkList);
+        let body = {
+          status: 'completed',
+          checkList: stringifiedObj,
+          customer_feedback: userFeedback
+        }
         axios
           .patch(`/api/diary/update?id=${diary.id}`, body)
           .then((res) => {
@@ -632,6 +658,8 @@ class LeadViewing extends React.Component {
       isCheckListModalVisible,
       selectedCheckList,
       userFeedback,
+      selectedViewingData,
+      viewCheckListModal,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -661,6 +689,12 @@ class LeadViewing extends React.Component {
           setUserFeedback={(value) => this.setState({ userFeedback: value })}
           viewingDone={() => this.doneViewing(this.state.currentProperty)}
           loading={loading}
+        />
+
+        <ViewCheckListModal viewCheckList={viewCheckListModal}
+          toggleViewCheckList={(value) => this.toggleViewCheckList(value)}
+          selectedViewingData={selectedViewingData}
+          toggleExpandable={(status, id) => this.toggleExpandable(status, id)}
         />
         <View
           style={[

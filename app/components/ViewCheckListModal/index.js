@@ -45,7 +45,7 @@ const ViewCheckListModal = ({ viewCheckList, toggleViewCheckList, selectedViewin
                                         <View>
                                             {
                                                 item.checkList.map((item) => (
-                                                    <View style={styles.itemRow}>
+                                                    <View key={item} style={styles.itemRow}>
                                                         <Ionicons name="ios-checkmark-circle-outline" size={26} color={AppStyles.colors.primaryColor} />
                                                         <Text style={styles.itemText}>{item}</Text>
                                                     </View>

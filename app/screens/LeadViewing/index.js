@@ -680,7 +680,7 @@ class LeadViewing extends React.Component {
           closePopup={this.goToHistory}
           openPopup={callModal}
         />
-        <CheckListModal data={StaticData.areaManagerCheckList}
+        <CheckListModal data={user.subRole === 'sales_agent'  ? StaticData.realEstateAgentsCheckList : StaticData.areaManagerCheckList}
           selectedCheckList={selectedCheckList}
           isVisible={isCheckListModalVisible}
           togglePopup={(val) => this.toggleCheckListModal(val)}

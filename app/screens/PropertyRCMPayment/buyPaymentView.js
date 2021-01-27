@@ -37,8 +37,8 @@ class BuyPaymentView extends React.Component {
     } = this.props
     let property = currentProperty[0]
     const isLeadClosed =
-    lead.status === StaticData.Constants.lead_closed_lost ||
-    lead.status === StaticData.Constants.lead_closed_won
+      lead.status === StaticData.Constants.lead_closed_lost ||
+      lead.status === StaticData.Constants.lead_closed_won
     let subRole =
       property &&
       property.armsuser &&
@@ -55,11 +55,11 @@ class BuyPaymentView extends React.Component {
       !Ability.canEdit(subRole, 'Leads')
         ? true
         : false
-    if (sellerCommission === true) {
-      if (property.origin === null) {
-        sellerCommission = false
-      }
-    }
+    // if (sellerCommission === true) {
+    //   if (property.origin === null) {
+    //     sellerCommission = false
+    //   }
+    // }
     const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
     const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
     return (
@@ -110,7 +110,7 @@ class BuyPaymentView extends React.Component {
             <View>
               {buyerCommission ? (
                 <TouchableOpacity
-                   disabled={isLeadClosed}
+                  disabled={isLeadClosed}
                   style={styles.addPaymentBtn}
                   onPress={() => onAddCommissionPayment('buyer')}
                 >

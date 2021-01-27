@@ -36,8 +36,8 @@ const RentPaymentView = (props) => {
     onPaymentLongPress,
   } = props
   const isLeadClosed =
-  lead.status === StaticData.Constants.lead_closed_lost ||
-  lead.status === StaticData.Constants.lead_closed_won
+    lead.status === StaticData.Constants.lead_closed_lost ||
+    lead.status === StaticData.Constants.lead_closed_won
   let property = currentProperty[0]
   let subRole =
     property &&
@@ -55,11 +55,11 @@ const RentPaymentView = (props) => {
     !Ability.canEdit(subRole, 'Leads')
       ? true
       : false
-  if (sellerCommission === true) {
-    if (property.origin === null) {
-      sellerCommission = false
-    }
-  }
+  // if (sellerCommission === true) {
+  //   if (property.origin === null) {
+  //     sellerCommission = false
+  //   }
+  // }
   const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
   const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
 

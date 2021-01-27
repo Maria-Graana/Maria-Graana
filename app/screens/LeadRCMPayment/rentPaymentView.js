@@ -66,19 +66,18 @@ const RentPaymentView = (props) => {
       ? true
       : false
   let sellerCommission =
-    property.assigned_to_armsuser_id === user.id ||
-    (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-    !Ability.canView(subRole, 'Leads')
+    property.assigned_to_armsuser_id === user.id || !Ability.canView(subRole, 'Leads')
       ? true
       : false
-  if (sellerCommission === true) {
-    if (property.origin === null) {
-      sellerCommission = false
-    }
-  }
+  // if (sellerCommission === true) {
+  //   if (property.origin === null) {
+  //     sellerCommission = false
+  //   }
+  // }
   let singleCommission = buyerCommission && sellerCommission ? true : false
   const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
   const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
+
   return (
     <View>
       <InputField
@@ -128,7 +127,7 @@ const RentPaymentView = (props) => {
             data={pickerData}
             selectedItem={formData.contract_months}
             enabled={!isLeadClosed}
-            placeholder="Contact duration (No of months)"
+            placeholder="Contract duration (No of months)"
           />
         </View>
       </View>
@@ -248,7 +247,6 @@ const RentPaymentView = (props) => {
             checked={commissionNotApplicableSeller ? true : false}
             onPress={() => setSellerCommissionApplicable(!commissionNotApplicableSeller)}
             style={styles.checkBox}
-          
           />
           <Text
             style={{

@@ -104,10 +104,18 @@ class LeadTile extends React.Component {
     return (
       <TouchableOpacity
         onLongPress={() => {
-          if (user.organization && !user.organization.isPP) handleLongPress(data)
+          if (
+            (!user.organization && user.subRole === 'group_management') ||
+            (user.organization && !user.organization.isPP)
+          )
+            handleLongPress(data)
         }}
         onPress={() => {
-          if (user.organization && !user.organization.isPP) navigateTo(data)
+          if (
+            (!user.organization && user.subRole === 'group_management') ||
+            (user.organization && !user.organization.isPP)
+          )
+            navigateTo(data)
         }}
       >
         <View style={[styles.tileMainWrap, data.readAt === null && styles.selectedInventory]}>

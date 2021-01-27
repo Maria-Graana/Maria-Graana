@@ -50,6 +50,7 @@ class PropertyOffer extends React.Component {
       customerNotZero: false,
       sellerNotZero: false,
       agreedNotZero: false,
+      offerReadOnly: false,
     }
   }
 
@@ -74,6 +75,7 @@ class PropertyOffer extends React.Component {
           loading: false,
           matchData: matches,
           progressValue: rcmProgressBar[lead.status],
+          offerReadOnly: false,
         })
       })
       .catch((error) => {
@@ -286,9 +288,30 @@ class PropertyOffer extends React.Component {
     navigation.navigate('Comments', { rcmLeadId: lead.id })
   }
 
+  openOfferModalReadOnly = () => {
+    const { modalActive } = this.state
+    this.setState(
+      {
+        modalActive: !modalActive,
+        showWarning: false,
+        offerReadOnly: true,
+      },
+      () => {
+        if (!this.state.modalActive) {
+          this.fetchLead()
+          this.fetchProperties()
+        }
+      }
+    )
+  }
+
   checkStatus = (property) => {
     const { lead, user } = this.props
     let leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
+    const leadAssignedSharedStatusAndReadOnly = helper.checkAssignedSharedStatusANDReadOnly(
+      user,
+      lead
+    )
     leadAssignedSharedStatus = true
     if (property.agreedOffer.length) {
       return (
@@ -301,11 +324,15 @@ class PropertyOffer extends React.Component {
             justifyContent: 'center',
             alignItems: 'center',
           }}
+          onPress={() => {
+            this.openOfferModalReadOnly()
+            this.setProperty(property)
+          }}
         >
           <Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>
             Agreed Amount:{' '}
             <Text style={{ fontFamily: AppStyles.fonts.defaultFont }}>
-              {property.agreedOffer[0].offer}
+              {property && property.agreedOffer[0].offer}
             </Text>
           </Text>
         </TouchableOpacity>
@@ -374,11 +401,12 @@ class PropertyOffer extends React.Component {
   }
 
   navigateToDetails = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, 
+    this.props.navigation.navigate('LeadDetail', {
+      lead: this.props.lead,
       purposeTab: 'property',
       isFromLeadWorkflow: true,
-      fromScreen: 'offer'
-     })
+      fromScreen: 'offer',
+    })
   }
 
   goToHistory = () => {
@@ -532,6 +560,7 @@ class PropertyOffer extends React.Component {
       agreedNotZero,
       sellerNotZero,
       customerNotZero,
+      offerReadOnly,
     } = this.state
     const { lead, navigation, user } = this.props
 
@@ -617,6 +646,7 @@ class PropertyOffer extends React.Component {
                   agreedNotZero={agreedNotZero}
                   sellerNotZero={sellerNotZero}
                   customerNotZero={customerNotZero}
+                  offerReadOnly={offerReadOnly}
                 />
               </View>
             ) : (

@@ -456,6 +456,16 @@ const helper = {
       }
     } else return false
   },
+  checkAssignedSharedStatusANDReadOnly(user, lead) {
+    if (user && lead) {
+      if (user.id === lead.assigned_to_armsuser_id || user.id === lead.shared_with_armsuser_id)
+        return true
+      else {
+        this.leadNotAssignedToast()
+        return false
+      }
+    } else return false
+  },
   propertyCheckAssignedSharedStatus(user, lead) {
     if (user && lead) {
       if (
@@ -597,6 +607,13 @@ const helper = {
     if (str === null || str === '') return false
     else str = str.toString()
     return str.replace(/<[^>]*>/g, '')
+  },
+  checkPP(user) {
+    if (user) {
+      const { organization } = user
+      if (organization) return organization.isPP
+      if (user.subRole === 'group_management') return false
+    } else return false
   },
 }
 

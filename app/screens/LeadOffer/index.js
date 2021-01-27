@@ -50,6 +50,7 @@ class LeadOffer extends React.Component {
       customerNotZero: false,
       sellerNotZero: false,
       agreedNotZero: false,
+      offerReadOnly: false,
     }
   }
 
@@ -118,6 +119,7 @@ class LeadOffer extends React.Component {
       {
         modalActive: !modalActive,
         showWarning: false,
+        offerReadOnly: false,
       },
       () => {
         if (!this.state.modalActive) {
@@ -283,9 +285,30 @@ class LeadOffer extends React.Component {
     navigation.navigate('Comments', { rcmLeadId: lead.id })
   }
 
+  openOfferModalReadOnly = () => {
+    const { modalActive } = this.state
+    this.setState(
+      {
+        modalActive: !modalActive,
+        showWarning: false,
+        offerReadOnly: true,
+      },
+      () => {
+        if (!this.state.modalActive) {
+          this.fetchLead()
+          this.fetchProperties()
+        }
+      }
+    )
+  }
+
   checkStatus = (property) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const leadAssignedSharedStatusAndReadOnly = helper.checkAssignedSharedStatusANDReadOnly(
+      user,
+      lead
+    )
     if (property.agreedOffer.length) {
       return (
         <TouchableOpacity
@@ -297,11 +320,17 @@ class LeadOffer extends React.Component {
             justifyContent: 'center',
             alignItems: 'center',
           }}
+          onPress={() => {
+            if (leadAssignedSharedStatusAndReadOnly) {
+              this.openOfferModalReadOnly()
+              this.setProperty(property)
+            }
+          }}
         >
           <Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>
             Agreed Amount:{' '}
             <Text style={{ fontFamily: AppStyles.fonts.defaultFont }}>
-              {property.agreedOffer[0].offer}
+              {property && property.agreedOffer[0].offer}
             </Text>
           </Text>
         </TouchableOpacity>
@@ -374,7 +403,7 @@ class LeadOffer extends React.Component {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
       isFromLeadWorkflow: true,
-      fromScreen: 'offer'
+      fromScreen: 'offer',
     })
   }
 
@@ -438,7 +467,7 @@ class LeadOffer extends React.Component {
   }
 
   agreedAmount = (value) => {
-    const { offerChat, currentProperty } = this.state
+    const { offerChat, currentProperty, offerReadOnly } = this.state
     const { lead } = this.props
     let offer = []
     let offerId = null
@@ -531,6 +560,7 @@ class LeadOffer extends React.Component {
       agreedNotZero,
       sellerNotZero,
       customerNotZero,
+      offerReadOnly,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -617,6 +647,7 @@ class LeadOffer extends React.Component {
                   agreedNotZero={agreedNotZero}
                   sellerNotZero={sellerNotZero}
                   customerNotZero={customerNotZero}
+                  offerReadOnly={offerReadOnly}
                 />
               </View>
             ) : (

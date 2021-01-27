@@ -90,7 +90,8 @@ class LeadViewing extends React.Component {
           this.setState({
             loading: false,
           })
-        }).finally(() => {
+        })
+        .finally(() => {
           this.setState({
             loading: false,
           })
@@ -117,7 +118,7 @@ class LeadViewing extends React.Component {
     })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -351,12 +352,16 @@ class LeadViewing extends React.Component {
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
-      let viewingDoneCount = diaries && diaries.filter((item) => { return item.status === 'completed' && item.status })
+      let viewingDoneCount =
+        diaries &&
+        diaries.filter((item) => {
+          return item.status === 'completed' && item.userId === user.id
+        })
       let greaterOneViewing = viewingDoneCount && viewingDoneCount.length > 1
       if (diaries && diaries.length > 0) {
         return (
           <View>
-            {diary && diary.status === 'pending' &&
+            {diary && diary.status === 'pending' ? (
               <TouchableOpacity
                 style={{
                   backgroundColor: 'white',
@@ -491,6 +496,7 @@ class LeadViewing extends React.Component {
           checkList: stringifiedObj,
           customer_feedback: userFeedback
         }
+        console.log('doneViewing: ', `/api/diary/update?id=${diary.id}`, body)
         axios
           .patch(`/api/diary/update?id=${diary.id}`, body)
           .then((res) => {
@@ -551,7 +557,7 @@ class LeadViewing extends React.Component {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
       isFromLeadWorkflow: true,
-      fromScreen: 'viewing'
+      fromScreen: 'viewing',
     })
   }
 
@@ -568,10 +574,10 @@ class LeadViewing extends React.Component {
   }
 
   goToPropertyScreen = () => {
-    const { lead, navigation } = this.props;
+    const { lead, navigation } = this.props
     navigation.navigate('AddInventory', {
       lead: lead,
-      screenName: 'leadViewing'
+      screenName: 'leadViewing',
     })
   }
 
@@ -762,14 +768,14 @@ class LeadViewing extends React.Component {
                 keyExtractor={(item, index) => item.id.toString()}
               />
             ) : (
-                <>
-                  <Image
-                    source={require('../../../assets/img/no-result-found.png')}
-                    resizeMode={'center'}
-                    style={{ alignSelf: 'center', width: 300, height: 300 }}
-                  />
-                </>
-              )}
+              <>
+                <Image
+                  source={require('../../../assets/img/no-result-found.png')}
+                  resizeMode={'center'}
+                  style={{ alignSelf: 'center', width: 300, height: 300 }}
+                />
+              </>
+            )}
           </View>
         </View>
 
@@ -802,8 +808,8 @@ class LeadViewing extends React.Component {
         />
       </View>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

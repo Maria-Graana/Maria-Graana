@@ -11,7 +11,6 @@ export default styles = StyleSheet.create({
     shadowColor: 'lightgrey',
     shadowOpacity: 1,
     borderRadius: 4,
-    backgroundColor: '#ffffff',
     paddingHorizontal: 10,
     paddingVertical: 10,
     marginTop: 10,

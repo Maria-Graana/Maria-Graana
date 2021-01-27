@@ -22,6 +22,7 @@ import TimerNotification from '../../LocalNotifications'
 import CMBottomNav from '../../components/CMBottomNav'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import config from '../../config'
+import CheckListModal from '../../components/CheckListModal'
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -52,6 +53,9 @@ class LeadViewing extends React.Component {
       callModal: false,
       meetings: [],
       matchData: [],
+      isCheckListModalVisible: false,
+      selectedCheckList: [],
+      userFeedback: null,
     }
   }
 
@@ -334,6 +338,10 @@ class LeadViewing extends React.Component {
       })
   }
 
+  toggleCheckListModal = (toggleState, data) => {
+    this.setState({ isCheckListModalVisible: toggleState, currentProperty: data ? data : null, selectedCheckList: [], userFeedback: null })
+  }
+
   checkStatus = (property) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
@@ -385,6 +393,7 @@ class LeadViewing extends React.Component {
                   alignItems: 'center',
                   flexDirection: 'row',
                 }}
+                onPress={()=> console.log('show check list')}
               >
                 <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
                   VIEWING{greaterOneViewing && 'S'} DONE
@@ -441,22 +450,34 @@ class LeadViewing extends React.Component {
 
   doneViewing = (property) => {
     const { user } = this.props
+    const { selectedCheckList, userFeedback } = this.state;
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
-      if (diary.status === 'pending') {
-        let body = {
-          status: 'completed',
-        }
+      if (diary.status === 'pending' && selectedCheckList.length > 0 && userFeedback !== '' && userFeedback !== null) {
+        let checkList = {};
+        selectedCheckList.map((item, index) => {
+          checkList[item.toLowerCase()] = true;
+      })
+      let stringifiedObj = JSON.stringify(checkList);
+      let body = {
+        status: 'completed',
+        checkList: stringifiedObj,
+        customer_feedback: userFeedback
+      }
         axios
           .patch(`/api/diary/update?id=${diary.id}`, body)
           .then((res) => {
             this.setState({ loading: true })
+            this.toggleCheckListModal(false, null)
             this.fetchProperties()
           })
           .catch((error) => {
             console.log(error)
           })
+      }
+      else {
+        alert('Please fill the checklist and user feedback to continue!')
       }
     }
   }
@@ -577,6 +598,18 @@ class LeadViewing extends React.Component {
     }
   }
 
+  handleCheckListSelection = (item) => {
+    if (this.state.selectedCheckList.includes(item)) {
+      let temp = this.state.selectedCheckList;
+      delete temp[temp.indexOf(item)];
+      this.setState({ selectedCheckList: temp })
+    } else {
+      let temp = this.state.selectedCheckList;
+      temp.push(item);
+      this.setState({ selectedCheckList: temp });
+    }
+  }
+
   render() {
     const {
       menuShow,
@@ -596,6 +629,9 @@ class LeadViewing extends React.Component {
       checkReasonValidation,
       closedLeadEdit,
       addLoading,
+      isCheckListModalVisible,
+      selectedCheckList,
+      userFeedback,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -615,6 +651,16 @@ class LeadViewing extends React.Component {
           data={meetings}
           closePopup={this.goToHistory}
           openPopup={callModal}
+        />
+        <CheckListModal data={StaticData.areaManagerCheckList}
+          selectedCheckList={selectedCheckList}
+          isVisible={isCheckListModalVisible}
+          togglePopup={(val) => this.toggleCheckListModal(val)}
+          setSelected={(item) => this.handleCheckListSelection(item)}
+          userFeedback={userFeedback}
+          setUserFeedback={(value) => this.setState({ userFeedback: value })}
+          viewingDone={() => this.doneViewing(this.state.currentProperty)}
+          loading={loading}
         />
         <View
           style={[
@@ -644,7 +690,7 @@ class LeadViewing extends React.Component {
                         bookAnotherViewing={this.bookAnotherViewing}
                         deleteProperty={this.deleteProperty}
                         cancelViewing={this.cancelViewing}
-                        doneViewing={this.doneViewing}
+                        toggleCheckListModal={(toggleState, data) => this.toggleCheckListModal(toggleState, data)}
                         isMenuVisible={showMenuItem && isMenuVisible}
                         data={_.clone(item.item)}
                         user={user}
@@ -662,7 +708,7 @@ class LeadViewing extends React.Component {
                           bookAnotherViewing={this.bookAnotherViewing}
                           deleteProperty={this.deleteProperty}
                           cancelViewing={this.cancelViewing}
-                          doneViewing={this.doneViewing}
+                          toggleCheckListModal={(toggleState, data) => this.toggleCheckListModal(toggleState, data)}
                           isMenuVisible={showMenuItem && isMenuVisible}
                           data={_.clone(item.item)}
                           user={user}

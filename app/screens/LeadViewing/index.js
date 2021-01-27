@@ -360,92 +360,90 @@ class LeadViewing extends React.Component {
       let greaterOneViewing = viewingDoneCount && viewingDoneCount.length > 1
       if (diaries && diaries.length > 0) {
         return (
-          <View>
-            {diary && diary.status === 'pending' ? (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: 'white',
-                  height: 30,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={() => {
-                  if (leadAssignedSharedStatus) {
-                    this.openModal()
-                    this.updateProperty(property)
-                  }
-                }}
-              >
-                <Text style={{ fontFamily: AppStyles.fonts.lightFont }}>
-                  Viewing at{' '}
-                  <Text
-                    style={{
-                      color: AppStyles.colors.primaryColor,
-                      fontFamily: AppStyles.fonts.defaultFont,
-                    }}
-                  >
-                    {moment(diary.start).format('LLL')}
+            <View>
+              {diary && diary.status === 'pending' &&
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: 'white',
+                    height: 30,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  onPress={() => {
+                    if (leadAssignedSharedStatus) {
+                      this.openModal()
+                      this.updateProperty(property)
+                    }
+                  }}
+                >
+                  <Text style={{ fontFamily: AppStyles.fonts.lightFont }}>
+                    Viewing at{' '}
+                    <Text
+                      style={{
+                        color: AppStyles.colors.primaryColor,
+                        fontFamily: AppStyles.fonts.defaultFont,
+                      }}
+                    >
+                      {moment(diary.start).format('LLL')}
+                    </Text>
                   </Text>
+                </TouchableOpacity>
+              }
+              {
+                viewingDoneCount && viewingDoneCount.length > 0 &&
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: AppStyles.colors.primaryColor,
+                    height: 30,
+                    borderBottomEndRadius: 10,
+                    borderBottomLeftRadius: 10,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                  }}
+                  onPress={()=>this.simplifyViewingData(viewingDoneCount)}
+                >
+                  <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
+                    VIEWING{greaterOneViewing && 'S'} DONE
                 </Text>
-              </TouchableOpacity>
-            }
-            {
-              viewingDoneCount && viewingDoneCount.length > 0 &&
-              <TouchableOpacity
-                style={{
-                  backgroundColor: AppStyles.colors.primaryColor,
-                  height: 30,
-                  borderBottomEndRadius: 10,
-                  borderBottomLeftRadius: 10,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}
-                onPress={() => {
-                  this.simplifyViewingData(viewingDoneCount)
-                }}
-              >
-                <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
-                  VIEWING{greaterOneViewing && 'S'} DONE
-              </Text>
-                {
-                  greaterOneViewing &&
-                  <Text style={styles.countStyle}>{`${viewingDoneCount.length}`}</Text>
-                }
-              </TouchableOpacity>
-            }
-            {/* } */}
-          </View>
-        )
-      }
-    } else {
-      return (
-        <TouchableOpacity
-          style={{
-            backgroundColor: 'white',
-            height: 30,
-            borderBottomEndRadius: 10,
-            borderBottomLeftRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          onPress={() => {
-            if (leadAssignedSharedStatus) {
-              this.openModal()
-              this.setProperty(property)
-            }
-          }}
-        >
-          <Text
+                  {
+                    greaterOneViewing &&
+                    <Text style={styles.countStyle}>{`${viewingDoneCount.length}`}</Text>
+                  }
+                </TouchableOpacity>
+              }
+              {/* } */}
+            </View>
+          )
+        }
+      } else {
+        return (
+          <TouchableOpacity
             style={{
-              color: AppStyles.colors.primaryColor,
-              fontFamily: AppStyles.fonts.defaultFont,
+              backgroundColor: 'white',
+              height: 30,
+              borderBottomEndRadius: 10,
+              borderBottomLeftRadius: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              if (leadAssignedSharedStatus) {
+                this.openModal()
+                this.setProperty(property)
+              }
             }}
           >
-            BOOK VIEWING
-          </Text>
-        </TouchableOpacity>
-      )
+            <Text
+              style={{
+                color: AppStyles.colors.primaryColor,
+                fontFamily: AppStyles.fonts.defaultFont,
+              }}
+            >
+              BOOK VIEWING
+            </Text>
+          </TouchableOpacity>
+        )
     }
   }
 

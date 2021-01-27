@@ -653,9 +653,19 @@ export default StaticData = {
     { value: 'Remittance', name: 'Remittance' },
     { value: 'bank-Transfer', name: 'Bank-Transfer' },
     { value: 'e-Gateway', name: 'E-Gateway' },
+    { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
+  ],
+  investFullPaymentType: [
+    { value: 'cash', name: 'Cash' },
+    { value: 'cheque', name: 'Cheque' },
+    { value: 'pay-Order', name: 'Pay-Order' },
+    { value: 'Remittance', name: 'Remittance' },
+    { value: 'bank-Transfer', name: 'Bank-Transfer' },
+    { value: 'e-Gateway', name: 'E-Gateway' },
     { value: 'Buy Back Adjustment', name: 'Buy Back Adjustment' },
     { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
     { value: 'Rent Adjustment', name: 'Rent Adjustment' },
+    { value: 'Inter-Mall adjustment', name: 'Inter-Mall adjustment' },
   ],
   unitType: [
     { value: 'fullUnit', name: 'Full Unit' },
@@ -715,5 +725,5 @@ export default StaticData = {
     'Reach viewing location - 15 Minutes Prior to Viewing',
     'Ensure Key from owner',
     'Sell core features of property as required by client',
-  ]
+  ],
 }

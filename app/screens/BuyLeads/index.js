@@ -332,6 +332,13 @@ class BuyLeads extends React.Component {
         .catch((err) => console.error('An error occurred', err))
     }
     if (lead && lead.propertyLink) {
+      let url = `${config.graanaUrl}/api/dhoondho/shared-property/${lead.propertyLink}`
+      Linking.canOpenURL(url)
+        .then((supported) => {
+          if (!supported) helper.errorToast(`No application available open this Url`)
+          else return Linking.openURL(url)
+        })
+        .catch((err) => console.error('An error occurred', err))
     }
   }
 

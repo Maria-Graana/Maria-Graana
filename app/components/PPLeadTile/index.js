@@ -194,6 +194,24 @@ class PPLeadTile extends React.Component {
             </View>
 
             {/* ****** Compare URL */}
+            {data.origin !== 'arms' && data.propertyLink ? (
+              <View style={[AppStyles.mbFive, { flex: 1, alignItems: 'baseline' }]}>
+                <Text style={[AppStyles.darkColor]} numberOfLines={1}>
+                  ShortListed roperty URL:{' '}
+                  <Text
+                    onPress={() => redirectToCompare(data)}
+                    style={[
+                      AppStyles.darkColor,
+                      // AppStyles.mrTen,
+                      { textDecorationLine: 'underline' },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    View
+                  </Text>
+                </Text>
+              </View>
+            ) : null}
             {data.origin !== 'arms' && data.graana_property_id ? (
               <View style={[AppStyles.mbFive, { flex: 1, alignItems: 'baseline' }]}>
                 <Text style={[AppStyles.darkColor]} numberOfLines={1}>

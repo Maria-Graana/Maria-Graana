@@ -45,7 +45,9 @@ class AddPaymentModal extends React.Component {
         <View style={[styles.modalMain]}>
           {modalLoading === false ? (
             <View style={styles.topHeader}>
-              <Text style={styles.headingText}>Enter {secondFormData.whichModalVisible === 'taxModal' ? 'Tax' : ''} Details</Text>
+              <Text style={styles.headingText}>
+                Enter {secondFormData.whichModalVisible === 'taxModal' ? 'Tax' : ''} Details
+              </Text>
               <TouchableOpacity
                 style={styles.timesBtn}
                 onPress={() => {
@@ -56,31 +58,41 @@ class AddPaymentModal extends React.Component {
               </TouchableOpacity>
             </View>
           ) : (
-              <Text style={{ padding: 10 }}>Fetching Data...</Text>
-            )}
+            <Text style={{ padding: 10 }}>Fetching Data...</Text>
+          )}
           {modalLoading === false ? (
             <ScrollView>
-              {
-                secondFormData.whichModalVisible != 'paymentModal' || secondFormData.whichModalVisible != 'token' &&
-                <View>
-                  <ListItem style={{ borderBottomWidth: 0, paddingBottom: 0, }} onPress={() => { secondHandleForm(!secondFormData.taxIncluded, 'taxIncluded') }}>
-                    {/* <CheckBox color={AppStyles.colors.primaryColor}
+              {secondFormData.whichModalVisible != 'paymentModal' ||
+                (secondFormData.whichModalVisible != 'token' && (
+                  <View>
+                    <ListItem
+                      style={{ borderBottomWidth: 0, paddingBottom: 0 }}
+                      onPress={() => {
+                        secondHandleForm(!secondFormData.taxIncluded, 'taxIncluded')
+                      }}
+                    >
+                      {/* <CheckBox color={AppStyles.colors.primaryColor}
                       checked={secondFormData.taxIncluded}
                     /> */}
-                    <Switch
-                      value={secondFormData.taxIncluded}
-                      trackColor={{ true: AppStyles.colors.primaryColor, false: 'grey' }}
-                      onValueChange={() => { secondHandleForm(!secondFormData.taxIncluded, 'taxIncluded') }}
-                      thumbColor={'#fff'}
-                    />
-                    <Body>
-                      <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold', }}>
-                        {secondFormData.taxIncluded === false || secondFormData.taxIncluded === null ? 'Tax Not Included' : 'Tax Included'}
-                      </Text>
-                    </Body>
-                  </ListItem>
-                </View>
-              }
+                      <Switch
+                        value={secondFormData.taxIncluded}
+                        trackColor={{ true: AppStyles.colors.primaryColor, false: 'grey' }}
+                        onValueChange={() => {
+                          secondHandleForm(!secondFormData.taxIncluded, 'taxIncluded')
+                        }}
+                        thumbColor={'#fff'}
+                      />
+                      <Body>
+                        <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold' }}>
+                          {secondFormData.taxIncluded === false ||
+                          secondFormData.taxIncluded === null
+                            ? 'Tax Not Included'
+                            : 'Tax Included'}
+                        </Text>
+                      </Body>
+                    </ListItem>
+                  </View>
+                ))}
 
               <View style={styles.moreViewContainer}>
                 <SimpleInputText
@@ -107,16 +119,16 @@ class AddPaymentModal extends React.Component {
                 ) : null}
                 {secondCheckValidation === true ? (
                   secondFormData.installmentAmount === null ||
-                    secondFormData.installmentAmount === '' ? (
-                      <ErrorMessage errorMessage={'Required'} />
-                    ) : null
+                  secondFormData.installmentAmount === '' ? (
+                    <ErrorMessage errorMessage={'Required'} />
+                  ) : null
                 ) : null}
 
                 <View style={[AppStyles.mainInputWrap]}>
                   <View style={[AppStyles.inputWrap]}>
                     <PickerComponent
                       onValueChange={secondHandleForm}
-                      data={StaticData.fullPaymentType}
+                      data={StaticData.investFullPaymentType}
                       name={'type'}
                       placeholder="Type"
                       selectedItem={secondFormData.type}
@@ -178,8 +190,8 @@ class AddPaymentModal extends React.Component {
                           )
                         })
                       ) : (
-                          <Text>Fetching Data...</Text>
-                        )}
+                        <Text>Fetching Data...</Text>
+                      )}
                     </ScrollView>
                   </View>
                 )}
@@ -201,11 +213,12 @@ class AddPaymentModal extends React.Component {
                     </TouchableOpacity>
                   )}
 
-                  {
-                    isAttachmentRequired  ?
-                     <ErrorMessage containerStyle={{marginVertical: 5}} errorMessage={'Attachment Required'} />
-                     : null
-                  }
+                {isAttachmentRequired ? (
+                  <ErrorMessage
+                    containerStyle={{ marginVertical: 5 }}
+                    errorMessage={'Attachment Required'}
+                  />
+                ) : null}
 
                 {secondFormLeadData.status === 'pendingSales' ? (
                   <View style={styles.reSubmiitBtnMain}>
@@ -234,27 +247,27 @@ class AddPaymentModal extends React.Component {
                     </TouchableOpacity>
                   </View>
                 ) : (
-                    <TouchableOpacity
-                      style={styles.bookedBtn}
-                      onPress={() => {
-                        addPaymentLoading != true && secondFormSubmit()
-                      }}
-                    >
-                      {addPaymentLoading === false && (
-                        <Image
-                          source={require('../../../assets/img/checkWhite.png')}
-                          style={styles.bookedBtnImage}
-                        />
+                  <TouchableOpacity
+                    style={styles.bookedBtn}
+                    onPress={() => {
+                      addPaymentLoading != true && secondFormSubmit()
+                    }}
+                  >
+                    {addPaymentLoading === false && (
+                      <Image
+                        source={require('../../../assets/img/checkWhite.png')}
+                        style={styles.bookedBtnImage}
+                      />
+                    )}
+                    <Text style={styles.bookedBtnText}>
+                      {addPaymentLoading === true ? (
+                        <ActivityIndicator size="small" color={'white'} style={styles.loaderTop} />
+                      ) : (
+                        'OK'
                       )}
-                      <Text style={styles.bookedBtnText}>
-                        {addPaymentLoading === true ? (
-                          <ActivityIndicator size="small" color={'white'} style={styles.loaderTop} />
-                        ) : (
-                            'OK'
-                          )}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </ScrollView>
           ) : null}

@@ -760,14 +760,13 @@ class PropertyPropsure extends React.Component {
       const response = await axios.delete(url, {
         params: params,
       })
-      if (response.data) {
-        console.log('response: ', response.data)
+      if (response.data && response.data.message) {
+        helper.warningToast(response.data.message)
+      } else {
         this.clearReduxAndStateValues()
         this.fetchLead(lead)
         this.fetchProperties(lead)
-        helper.successToast(response.data)
-      } else {
-        helper.errorToast('ERROR DELETING PROPSURE PAYMENT!')
+        helper.successToast('PROPSURE CANCEL REQUEST SUCCESSFULL')
       }
     } else {
       helper.warningToast('NO PROPSURE REQUEST AVAILABLE!')

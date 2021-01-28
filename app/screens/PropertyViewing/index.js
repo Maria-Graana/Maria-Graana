@@ -20,6 +20,8 @@ import helper from '../../helper'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import styles from './style'
+import CheckListModal from '../../components/CheckListModal'
+import ViewCheckListModal from '../../components/ViewCheckListModal'
 
 class PropertyViewing extends React.Component {
   constructor(props) {
@@ -50,6 +52,11 @@ class PropertyViewing extends React.Component {
       callModal: false,
       meetings: [],
       matchData: [],
+      isCheckListModalVisible: false,
+      selectedCheckList: [],
+      userFeedback: null,
+      viewCheckListModal: false,
+      selectedViewingData: null,
     }
   }
 
@@ -102,7 +109,7 @@ class PropertyViewing extends React.Component {
     })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -327,12 +334,21 @@ class PropertyViewing extends React.Component {
       })
   }
 
+  toggleCheckListModal = (toggleState, data) => {
+    this.setState({ isCheckListModalVisible: toggleState, currentProperty: data ? data : null, selectedCheckList: [], userFeedback: null })
+  }
+
   checkStatus = (property) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
+      let viewingDone =
+      diaries &&
+      diaries.filter((item) => {
+        return item.status === 'completed' && item.userId === user.id
+      })
       if (diary && diary.status === 'completed') {
         return (
           <TouchableOpacity
@@ -344,6 +360,7 @@ class PropertyViewing extends React.Component {
               justifyContent: 'center',
               alignItems: 'center',
             }}
+            onPress={()=>this.simplifyViewingData(viewingDone)}
           >
             <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
               VIEWING DONE
@@ -385,56 +402,74 @@ class PropertyViewing extends React.Component {
     } else {
       return (
         <View></View>
-        // <TouchableOpacity
-        //   style={{
-        //     backgroundColor: 'white',
-        //     height: 30,
-        //     borderBottomEndRadius: 10,
-        //     borderBottomLeftRadius: 10,
-        //     justifyContent: 'center',
-        //     alignItems: 'center',
-        //   }}
-        //   onPress={() => {
-        //     if (leadAssignedSharedStatus) {
-        //       this.openModal()
-        //       this.setProperty(property)
-        //     }
-        //   }}
-        // >
-        //   <Text
-        //     style={{
-        //       color: AppStyles.colors.primaryColor,
-        //       fontFamily: AppStyles.fonts.defaultFont,
-        //     }}
-        //   >
-        //     BOOK VIEWING
-        //   </Text>
-        // </TouchableOpacity>
       )
+    }
+  }
+
+  simplifyViewingData = (data) => {
+    let simpleData = [...data]
+    simpleData = simpleData.map((item, index) => {
+      return { ...item, checkList: _.keys(JSON.parse(item.checkList)), isExpanded: false, title: data.length > 1 ? `Details for Viewing 0${index + 1} ` : `Details for Viewing` }
+    })
+    this.setState({ selectedViewingData: simpleData }, () => {
+      this.toggleViewCheckList(true);
+    })
+  }
+
+  toggleExpandable = (status , id) => {
+    const { selectedViewingData} = this.state;
+    let copyViewingData= [...selectedViewingData];
+    copyViewingData= copyViewingData.map((item) => { return item.id === id  ? {...item, isExpanded: status} :  {...item, isExpanded: false}  });
+    this.setState({selectedViewingData: copyViewingData});
+  }
+
+  toggleViewCheckList = (value) => {
+    this.setState({ viewCheckListModal: value });
+  }
+
+  bookAnotherViewing = (property) => {
+    const { lead, user } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    if (leadAssignedSharedStatus) {
+      this.openModal()
+      this.setProperty(property)
     }
   }
 
   doneViewing = (property) => {
     const { user } = this.props
+    const { selectedCheckList, userFeedback } = this.state;
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
-      if (diary.status === 'pending') {
+      if (diary.status === 'pending' && selectedCheckList.length > 0 && userFeedback !== '' && userFeedback !== null) {
+        let checkList = {};
+        selectedCheckList.map((item, index) => {
+          checkList[item] = true;
+        })
+        let stringifiedObj = JSON.stringify(checkList);
         let body = {
           status: 'completed',
+          checkList: stringifiedObj,
+          customer_feedback: userFeedback
         }
         axios
           .patch(`/api/diary/update?id=${diary.id}`, body)
           .then((res) => {
             this.setState({ loading: true })
+            this.toggleCheckListModal(false, null)
             this.fetchProperties()
           })
           .catch((error) => {
             console.log(error)
           })
       }
+      else {
+        alert('Please fill the checklist and user feedback to continue!')
+      }
     }
   }
+
 
   cancelViewing = (property) => {
     const { lead } = this.props
@@ -475,8 +510,9 @@ class PropertyViewing extends React.Component {
   }
 
   navigateToDetails = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, 
-      purposeTab: 'property' ,
+    this.props.navigation.navigate('LeadDetail', {
+      lead: this.props.lead,
+      purposeTab: 'property',
       isFromLeadWorkflow: true,
       fromScreen: 'match'
     })
@@ -539,6 +575,18 @@ class PropertyViewing extends React.Component {
     }
   }
 
+  handleCheckListSelection = (item) => {
+    if (this.state.selectedCheckList.includes(item)) {
+      let temp = this.state.selectedCheckList;
+      delete temp[temp.indexOf(item)];
+      this.setState({ selectedCheckList: temp })
+    } else {
+      let temp = this.state.selectedCheckList;
+      temp.push(item);
+      this.setState({ selectedCheckList: temp });
+    }
+  }
+
   render() {
     const {
       menuShow,
@@ -558,6 +606,11 @@ class PropertyViewing extends React.Component {
       checkReasonValidation,
       closedLeadEdit,
       addLoading,
+      isCheckListModalVisible,
+      selectedCheckList,
+      userFeedback,
+      selectedViewingData,
+      viewCheckListModal,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = true
@@ -578,6 +631,23 @@ class PropertyViewing extends React.Component {
           closePopup={this.goToHistory}
           openPopup={callModal}
         /> */}
+
+        <CheckListModal data={user.subRole === 'sales_agent' ? StaticData.realEstateAgentsCheckList : StaticData.areaManagerCheckList}
+          selectedCheckList={selectedCheckList}
+          isVisible={isCheckListModalVisible}
+          togglePopup={(val) => this.toggleCheckListModal(val)}
+          setSelected={(item) => this.handleCheckListSelection(item)}
+          userFeedback={userFeedback}
+          setUserFeedback={(value) => this.setState({ userFeedback: value })}
+          viewingDone={() => this.doneViewing(this.state.currentProperty)}
+          loading={loading}
+        />
+
+        <ViewCheckListModal viewCheckList={viewCheckListModal}
+          toggleViewCheckList={(value) => this.toggleViewCheckList(value)}
+          selectedViewingData={selectedViewingData}
+          toggleExpandable={(status, id) => this.toggleExpandable(status, id)}
+        />
         <View
           style={[
             AppStyles.container,
@@ -605,7 +675,7 @@ class PropertyViewing extends React.Component {
                       <PropMatchTile
                         deleteProperty={this.deleteProperty}
                         cancelViewing={this.cancelViewing}
-                        doneViewing={this.doneViewing}
+                        toggleCheckListModal={(toggleState, data) => this.toggleCheckListModal(toggleState, data)}
                         isMenuVisible={isMenuVisible}
                         data={_.clone(item.item)}
                         user={user}
@@ -619,37 +689,37 @@ class PropertyViewing extends React.Component {
                         screen={'viewing'}
                       />
                     ) : (
-                      <PropAgentTile
-                        deleteProperty={this.deleteProperty}
-                        cancelViewing={this.cancelViewing}
-                        doneViewing={this.doneViewing}
-                        isMenuVisible={isMenuVisible}
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        viewingMenu={true}
-                        goToPropertyComments={this.goToPropertyComments}
-                        menuShow={menuShow}
-                        toggleMenu={this.toggleMenu}
-                        screen={'viewing'}
-                      />
-                    )}
+                        <PropAgentTile
+                          deleteProperty={this.deleteProperty}
+                          cancelViewing={this.cancelViewing}
+                          toggleCheckListModal={(toggleState, data) => this.toggleCheckListModal(toggleState, data)}
+                          isMenuVisible={isMenuVisible}
+                          data={_.clone(item.item)}
+                          user={user}
+                          displayChecks={this.displayChecks}
+                          showCheckBoxes={false}
+                          addProperty={this.addProperty}
+                          viewingMenu={true}
+                          goToPropertyComments={this.goToPropertyComments}
+                          menuShow={menuShow}
+                          toggleMenu={this.toggleMenu}
+                          screen={'viewing'}
+                        />
+                      )}
                     <View>{this.checkStatus(item.item)}</View>
                   </View>
                 )}
                 keyExtractor={(item, index) => item.id.toString()}
               />
             ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
+                <>
+                  <Image
+                    source={require('../../../assets/img/no-result-found.png')}
+                    resizeMode={'center'}
+                    style={{ alignSelf: 'center', width: 300, height: 300 }}
+                  />
+                </>
+              )}
           </View>
         </View>
         <View style={AppStyles.mainCMBottomNav}>
@@ -679,8 +749,8 @@ class PropertyViewing extends React.Component {
         />
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

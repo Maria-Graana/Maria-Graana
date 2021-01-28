@@ -78,7 +78,7 @@ class PropAgentTile extends React.Component {
   }
 
   render() {
-    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen } = this.props
+    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen, toggleCheckListModal } = this.props
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
     let showDone = this.checkDiaryStatus(data)
@@ -226,7 +226,7 @@ class PropAgentTile extends React.Component {
                             />
                             <Menu.Item
                               onPress={() => {
-                                this.props.doneViewing(data)
+                                toggleCheckListModal(true, data)
                               }}
                               title="Viewing done"
                             />

@@ -90,7 +90,7 @@ class AddTaxModal extends React.Component {
                   <View style={[AppStyles.inputWrap]}>
                     <PickerComponent
                       onValueChange={secondHandleForm}
-                      data={StaticData.fullPaymentType}
+                      data={StaticData.investFullPaymentType}
                       name={'type'}
                       placeholder="Type"
                       selectedItem={secondFormData.type}

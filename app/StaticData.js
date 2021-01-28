@@ -195,6 +195,8 @@ export default StaticData = {
       name: 'Client not satisfied with options',
       value: 'client_not_satisfied',
     },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   leadCloseReasonsWithPayment: [
     {
@@ -252,6 +254,8 @@ export default StaticData = {
       name: 'Client is an Agent',
       value: 'client_is_an_agent',
     },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   paymentPopupAnyPaymentAdded: [
     {
@@ -335,6 +339,8 @@ export default StaticData = {
     { value: 'payment', name: 'Payments' },
     { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   ppBuyRentFilter: [
     { value: 'all', name: 'All' },
@@ -367,6 +373,8 @@ export default StaticData = {
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
+    { value: 'low_budget', name: 'Low Budget' },
+    { value: 'different_city', name: 'Different City' },
   ],
   cmLeadBtnOption: [
     { value: 'attachment', name: 'Attachment' },
@@ -645,10 +653,19 @@ export default StaticData = {
     { value: 'Remittance', name: 'Remittance' },
     { value: 'bank-Transfer', name: 'Bank-Transfer' },
     { value: 'e-Gateway', name: 'E-Gateway' },
+    { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
+  ],
+  investFullPaymentType: [
+    { value: 'cash', name: 'Cash' },
+    { value: 'cheque', name: 'Cheque' },
+    { value: 'pay-Order', name: 'Pay-Order' },
+    { value: 'Remittance', name: 'Remittance' },
+    { value: 'bank-Transfer', name: 'Bank-Transfer' },
+    { value: 'e-Gateway', name: 'E-Gateway' },
     { value: 'Buy Back Adjustment', name: 'Buy Back Adjustment' },
-    { value: 'Inter Mall Adjustment', name: 'Inter Mall Adjustment' },
     { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
     { value: 'Rent Adjustment', name: 'Rent Adjustment' },
+    { value: 'Inter-Mall adjustment', name: 'Inter-Mall adjustment' },
   ],
   unitType: [
     { value: 'fullUnit', name: 'Full Unit' },
@@ -690,5 +707,23 @@ export default StaticData = {
   graanaPropertiesStatusForSale: [
     { label: 'Available for Sale', value: 'available_for_sale' },
     { label: 'Sold', value: 'sold' },
+  ],
+  areaManagerCheckList: [
+    'Client Pre-Viewing Follow Up Call - 30 Minutes Prior to Viewing',
+    'PP/POC Pre-Viewing Follow Up Call - 30 Minutes Prior to Viewing',
+    'Reach viewing location - 15 Minutes Prior to Viewing',
+    'Ensure Key by PP/POC',
+    'Visit the property before viewing with the client',
+    'Sell core features of property as required by client',
+    'Brief and try to sign-up on service charge agreeement SCA by the client',
+    'Pitch Propsure Service/Brochure',
+    'Up Sell other services (As and when Applicable)',
+  ],
+  realEstateAgentsCheckList: [
+    'Client Pre-Viewing Follow Up Call (For Keys/Visit) - 1 Hrs Prior to Viewing',
+    'Coordination Call with Graana AM/Buyer Side - 30 Minutes Prior to Viewing',
+    'Reach viewing location - 15 Minutes Prior to Viewing',
+    'Ensure Key from owner',
+    'Sell core features of property as required by client',
   ],
 }

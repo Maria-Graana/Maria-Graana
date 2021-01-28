@@ -156,7 +156,7 @@ class RentLeads extends React.Component {
     if (data.readAt === null) {
       this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
     } else {
-      if(data.status === 'open') {
+      if (data.status === 'open') {
         page = 'Match'
       }
       if (data.status === 'viewing') {
@@ -336,7 +336,14 @@ class RentLeads extends React.Component {
         })
         .catch((err) => console.error('An error occurred', err))
     }
-    if (lead && lead.propertyLink) {
+    if (lead && lead.wanted_id) {
+      let url = `${config.graanaUrl}/api/dhoondho/shared-property/${lead.wanted_id}`
+      Linking.canOpenURL(url)
+        .then((supported) => {
+          if (!supported) helper.errorToast(`No application available open this Url`)
+          else return Linking.openURL(url)
+        })
+        .catch((err) => console.error('An error occurred', err))
     }
   }
 
@@ -457,7 +464,8 @@ class RentLeads extends React.Component {
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
               <View>
-                {user.organization && !user.organization.isPP ? (
+                {(!user.organization && user.subRole === 'group_management') ||
+                (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}

@@ -510,9 +510,9 @@ class LeadRCMPayment extends React.Component {
     let commissionsLength = 2
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true)
       commissionsLength = 1
-    if (lead.paymentProperty && lead.paymentProperty.origin === null) {
-      commissionsLength = 1
-    }
+    // if (lead.paymentProperty && lead.paymentProperty.origin === null) {
+    //   commissionsLength = 1
+    // }
     let cleared = 0
     if (lead.commissions.length) {
       lead.commissions.map((item) => {
@@ -652,6 +652,8 @@ class LeadRCMPayment extends React.Component {
     payload.token = this.convertToInteger(token)
     var leadId = []
     leadId.push(lead.id)
+    console.log('`/api/leads`')
+    console.log('`/api/leads`', payload)
     axios
       .patch(`/api/leads`, payload, { params: { id: leadId } })
       .then((response) => {

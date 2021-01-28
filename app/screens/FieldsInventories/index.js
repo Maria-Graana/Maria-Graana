@@ -24,6 +24,7 @@ import helper from '../../helper'
 import { ActivityIndicator } from 'react-native-paper'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import { Fields } from 'expo-contacts'
+import RejectPropertyModal from '../../components/RejectPropertyModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -38,13 +39,16 @@ class FieldsInventories extends React.Component {
       page: 1,
       pageSize: 20,
       onEndReachedLoader: false,
+      selectedProperty: null,
+      showMenu: false,
+      rejectPropertyVisible: false,
     }
   }
 
   componentDidMount() {
     const { navigation } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
-      this.getPropertyGraanaListing()
+      this.getFieldsListing()
     })
   }
 
@@ -60,7 +64,7 @@ class FieldsInventories extends React.Component {
     })
   }
 
-  getPropertyGraanaListing = () => {
+  getFieldsListing = () => {
     const { propertiesList, page, pageSize } = this.state
     const url = `/api/inventory/all?propType=fields&pageSize=${pageSize}&page=${page}`
     axios
@@ -96,7 +100,7 @@ class FieldsInventories extends React.Component {
         if (response.status === 200) {
           helper.successToast('PROPERTY DELETED SUCCESSFULLY!')
           that.setState({ loading: true }, () => {
-            that.getPropertyGraanaListing()
+            that.getFieldsListing()
           })
         }
       })
@@ -164,15 +168,22 @@ class FieldsInventories extends React.Component {
     return String(index)
   }
 
+  showMenuOptions = (data) => {
+    this.setState({ selectedProperty: data, showMenu: true })
+  }
+
+  hideMenu = () => {
+    this.setState({ selectedProperty: null, showMenu: false })
+  }
+
   approveProperty = (id) => {
-    console.log(id)
     let url = `/api/inventory/fieldProperty?id=${id}`
     this.setState({ loading: true }, () => {
       axios
         .patch(url)
         .then((res) => {
           helper.successToast('PROPERTY APPROVED!')
-          this.getPropertyGraanaListing()
+          this.getFieldsListing()
         })
         .catch((error) => {
           console.log('ERROR API: /api/inventory/fieldProperty', error)
@@ -180,23 +191,39 @@ class FieldsInventories extends React.Component {
     })
   }
 
-  toggleMenu = (val, id) => {
-    const { propertiesList } = this.state
-    let newPropertiesList = propertiesList.map((item) => {
-      if (item.id === id) {
-        item.showMenu = val
-        return item
-      } else return item
+  rejectProperty = (reason) => {
+    const { selectedProperty } = this.state;
+    let url = `/api/inventory/fieldProperty?id=${selectedProperty.id}&approve=${false}`
+    let body = { reason }
+    this.setState({ loading: true }, () => {
+      axios
+        .patch(url, body)
+        .then((res) => {
+          helper.successToast('PROPERTY REJECTED!')
+          this.getFieldsListing()
+        })
+        .catch((error) => {
+          console.log('ERROR API: /api/inventory/fieldProperty', error)
+        }).finally(() => {
+          this.showHideRejectPropertyModal(false)
+        })
     })
-    this.setState({ propertiesList: newPropertiesList })
   }
-  
+
+  showHideRejectPropertyModal = (val) => {
+    this.setState({ rejectPropertyVisible: val, showMenu: false })
+  }
+
 
   render() {
-    const { propertiesList, loading, totalProperties, onEndReachedLoader } = this.state
+    const { propertiesList, loading, totalProperties, onEndReachedLoader, selectedProperty, showMenu, rejectPropertyVisible } = this.state
     const { user, route } = this.props
     return !loading ? (
       <View style={[AppStyles.container, { marginBottom: 25 }]}>
+
+        <RejectPropertyModal isVisible={rejectPropertyVisible}
+          rejectProperty={(reason) => this.rejectProperty(reason)}
+          showHideModal={(val) => this.showHideRejectPropertyModal(val)} />
 
         {/* ***** Main Tile Wrap */}
 
@@ -212,8 +239,12 @@ class FieldsInventories extends React.Component {
                 onLongPress={(id) => this.onHandleLongPress(id)}
                 onCall={this.onHandleOnCall}
                 screen={'fields'}
-                toggleMenu = {(value, id)=> this.toggleMenu(value, id)}
-                approveProperty={(id)=>this.approveProperty(id)}
+                selectedProperty={selectedProperty}
+                showMenu={showMenu}
+                showMenuOptions={(data) => this.showMenuOptions(data)}
+                hideMenu={() => this.hideMenu()}
+                approveProperty={(id) => this.approveProperty(id)}
+                showHideRejectPropertyModal={(val) => this.showHideRejectPropertyModal(val)}
               />
             )}
             onEndReached={() => {
@@ -224,23 +255,23 @@ class FieldsInventories extends React.Component {
                     onEndReachedLoader: true,
                   },
                   () => {
-                    this.getPropertyGraanaListing()
+                    this.getFieldsListing()
                   }
                 )
               }
             }}
             onEndReachedThreshold={0.5}
-            keyExtractor={(item, index) => `${item.id}-${Math.random()}`}
+            keyExtractor={(item, index) => `${item.id}`}
           />
         ) : (
-          <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
-        )}
+            <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
+          )}
 
         {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

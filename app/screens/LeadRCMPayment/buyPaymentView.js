@@ -60,7 +60,7 @@ class BuyPaymentView extends React.Component {
       property.armsuser &&
       property.armsuser.armsUserRole &&
       property.armsuser.armsUserRole.subRole
-    const isLeadClosed = 
+    const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
     let buyerCommission =
@@ -69,16 +69,14 @@ class BuyPaymentView extends React.Component {
         ? true
         : false
     let sellerCommission =
-      property.assigned_to_armsuser_id === user.id ||
-      (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-      !Ability.canEdit(subRole, 'Leads')
+      property.assigned_to_armsuser_id === user.id || !Ability.canEdit(subRole, 'Leads')
         ? true
         : false
-    if (sellerCommission === true) {
-      if (property.origin === null) {
-        sellerCommission = false
-      }
-    }
+    // if (sellerCommission === true) {
+    //   if (property.origin === null) {
+    //     sellerCommission = false
+    //   }
+    // }
     let singleCommission = buyerCommission && sellerCommission ? true : false
     const buyer = _.find(lead.commissions, (commission) => commission.addedBy === 'buyer')
     const seller = _.find(lead.commissions, (commission) => commission.addedBy === 'seller')
@@ -187,7 +185,8 @@ class BuyPaymentView extends React.Component {
                   style={[
                     styles.addPaymentBtn,
                     {
-                      backgroundColor: commissionNotApplicableBuyer || isLeadClosed ? '#ddd' : '#fff',
+                      backgroundColor:
+                        commissionNotApplicableBuyer || isLeadClosed ? '#ddd' : '#fff',
                       borderColor: commissionNotApplicableBuyer || isLeadClosed ? '#ddd' : '#fff',
                     },
                   ]}
@@ -244,11 +243,12 @@ class BuyPaymentView extends React.Component {
             <View>
               {sellerCommission ? (
                 <TouchableOpacity
-                  disabled={singleCommission  ? commissionNotApplicableSeller : isLeadClosed}
+                  disabled={singleCommission ? commissionNotApplicableSeller : isLeadClosed}
                   style={[
                     styles.addPaymentBtn,
                     {
-                      backgroundColor: commissionNotApplicableSeller || isLeadClosed ? '#ddd' : '#fff',
+                      backgroundColor:
+                        commissionNotApplicableSeller || isLeadClosed ? '#ddd' : '#fff',
                       borderColor: commissionNotApplicableSeller || isLeadClosed ? '#ddd' : '#fff',
                     },
                   ]}
@@ -260,9 +260,7 @@ class BuyPaymentView extends React.Component {
                   ></Image>
                   <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
                 </TouchableOpacity>
-              ) : (
-               null
-              )}
+              ) : null}
             </View>
           )
         ) : null}

@@ -45,7 +45,8 @@ class ReportFooter extends React.Component {
             />
             <Text style={label === 'Team' ? styles.selectedText : styles.textStyle}>Team</Text>
           </Button>
-          {user.subRole !== 'pp_manager' &&
+          {user.subRole !== 'pp_agent' &&
+          user.subRole !== 'pp_manager' &&
           user.subRole !== 'zonal_manager' &&
           user.subRole !== 'branch_manager' &&
           user.subRole !== 'business_centre_manager' &&
@@ -65,7 +66,8 @@ class ReportFooter extends React.Component {
               </Text>
             </Button>
           ) : null}
-          {user.subRole !== 'pp_manager' &&
+          {user.subRole !== 'pp_agent' &&
+          user.subRole !== 'pp_manager' &&
           user.subRole !== 'regional_head' &&
           user.subRole !== 'zonal_manager' &&
           user.subRole !== 'branch_manager' &&

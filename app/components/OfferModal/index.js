@@ -47,6 +47,7 @@ class OfferModal extends React.Component {
       customerNotZero,
       sellerNotZero,
       agreedNotZero,
+      offerReadOnly,
     } = this.props
     let subRole =
       property &&
@@ -63,12 +64,9 @@ class OfferModal extends React.Component {
 
     // if lead assigned to current user OR lead assigned to current user and property origin must not be arms then show seller (clients offer)
     let showSeller =
-      property.assigned_to_armsuser_id === user.id ||
-      (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-      !Ability.canView(subRole, 'Leads')
+      property.assigned_to_armsuser_id === user.id || !Ability.canView(subRole, 'Leads')
         ? true
         : false
-
     return (
       <Modal
         visible={active}
@@ -92,7 +90,7 @@ class OfferModal extends React.Component {
           {/* **************************************** */}
           <View style={[styles.mainTopHeader]}>
             {/* ******************Left Input */}
-            {showCustomer ? (
+            {showCustomer && !offerReadOnly ? (
               <View style={styles.mainInputWrap}>
                 <Text style={styles.offerColor}>Client's Offers</Text>
                 <View style={styles.inputWrap}>
@@ -145,7 +143,7 @@ class OfferModal extends React.Component {
               </View>
             )}
             {/* {!theirsCheck ? ( */}
-            {showSeller ? (
+            {showSeller && !offerReadOnly ? (
               <View style={styles.mainInputWrap}>
                 <Text style={styles.offerColor}>Owner's Offers</Text>
                 <View style={styles.inputWrap}>
@@ -257,7 +255,7 @@ class OfferModal extends React.Component {
                   }}
                 />
                 <TouchableOpacity
-                  disabled={disableButton}
+                  disabled={disableButton || offerReadOnly}
                   onPress={placeAgreedOffer}
                   style={[styles.addBtnColorLeft, styles.sideBtnInputLast]}
                 >
@@ -268,6 +266,7 @@ class OfferModal extends React.Component {
           ) : (
             <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
               <TouchableButton
+                disabled={offerReadOnly}
                 containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
                 label={'ACCEPT OFFER'}
                 onPress={() => agreedAmount(showCustomer === true ? 'showCustomer' : 'showSeller')}

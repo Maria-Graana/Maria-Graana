@@ -98,6 +98,7 @@ class AgentTile extends React.Component {
       menuShow,
       screen,
       bookAnotherViewing,
+      toggleCheckListModal,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let agentName = data ? this.displayName(data) : ''
@@ -248,7 +249,7 @@ class AgentTile extends React.Component {
                               />
                               <Menu.Item
                                 onPress={() => {
-                                  this.props.doneViewing(data)
+                                  toggleCheckListModal(true, data)
                                 }}
                                 title="Viewing done"
                               />

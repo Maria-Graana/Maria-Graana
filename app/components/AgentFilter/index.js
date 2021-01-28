@@ -9,6 +9,7 @@ import PickerComponent from '../Picker/index'
 import styles from './style'
 import { Button } from 'native-base'
 import ErrorMessage from '../ErrorMessage/index'
+import helper from '../../helper'
 import _ from 'underscore'
 
 class AgentFilter extends React.Component {
@@ -63,7 +64,7 @@ class AgentFilter extends React.Component {
                 <ErrorMessage errorMessage={'Required'} />
               )}
             </View>
-            {user.organization && !user.organization.isPP ? (
+            {!helper.checkPP(user) ? (
               <View style={styles.pad5}>
                 <PickerComponent
                   clearOnChange={true}

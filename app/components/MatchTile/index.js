@@ -135,6 +135,7 @@ class MatchTile extends React.Component {
       menuShow,
       screen,
       bookAnotherViewing,
+      toggleCheckListModal,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let imagesList = this.checkImages()
@@ -179,11 +180,11 @@ class MatchTile extends React.Component {
                 containerCustomStyle={{ position: 'relative' }}
               />
             ) : (
-              <Image
-                source={require('../../../assets/images/no-image-found.png')}
-                style={styles.noImage}
-              />
-            )}
+                <Image
+                  source={require('../../../assets/images/no-image-found.png')}
+                  style={styles.noImage}
+                />
+              )}
           </View>
           <View style={styles.imageCountViewStyle}>
             <Feather name={'camera'} color={'#fff'} size={16} />
@@ -313,7 +314,7 @@ class MatchTile extends React.Component {
                             />
                             <Menu.Item
                               onPress={() => {
-                                this.props.doneViewing(data)
+                                toggleCheckListModal(true, data)
                               }}
                               title="Viewing done"
                             />
@@ -325,38 +326,38 @@ class MatchTile extends React.Component {
                             />
                           </View>
                         ) : (
-                          <View>
-                            <Menu.Item
-                              onPress={() => {
-                                this.props.goToPropertyComments(data)
-                              }}
-                              title="Comments"
-                            />
-                            <Menu.Item
-                              onPress={() => {
-                                this.props.deleteProperty(data)
-                              }}
-                              title="Remove from the list"
-                            />
-                          </View>
-                        )}
+                            <View>
+                              <Menu.Item
+                                onPress={() => {
+                                  this.props.goToPropertyComments(data)
+                                }}
+                                title="Comments"
+                              />
+                              <Menu.Item
+                                onPress={() => {
+                                  this.props.deleteProperty(data)
+                                }}
+                                title="Remove from the list"
+                              />
+                            </View>
+                          )}
                       </View>
                     ) : (
-                      <View>
-                        <Menu.Item
-                          onPress={() => {
-                            bookAnotherViewing(data)
-                          }}
-                          title="Book Another Viewing"
-                        />
-                        <Menu.Item
-                          onPress={() => {
-                            this.props.goToPropertyComments(data)
-                          }}
-                          title="Comments"
-                        />
-                      </View>
-                    )}
+                        <View>
+                          <Menu.Item
+                            onPress={() => {
+                              bookAnotherViewing(data)
+                            }}
+                            title="Book Another Viewing"
+                          />
+                          <Menu.Item
+                            onPress={() => {
+                              this.props.goToPropertyComments(data)
+                            }}
+                            title="Comments"
+                          />
+                        </View>
+                      )}
                   </View>
                 </Menu>
                 {showDone ? (
@@ -380,7 +381,7 @@ class MatchTile extends React.Component {
                       />
                       <Menu.Item
                         onPress={() => {
-                          this.props.doneViewing(data)
+                          toggleCheckListModal(true, data)
                         }}
                         title="Viewing done"
                       />
@@ -400,8 +401,8 @@ class MatchTile extends React.Component {
                 />
               </View>
             ) : (
-              <View />
-            )}
+                <View />
+              )}
             <View style={{ flexDirection: 'row-reverse' }}>
               <FontAwesome
                 onPress={() => {

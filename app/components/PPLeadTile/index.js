@@ -194,10 +194,10 @@ class PPLeadTile extends React.Component {
             </View>
 
             {/* ****** Compare URL */}
-            {data.origin !== 'arms' && data.propertyLink ? (
+            {data.origin !== 'arms' && data.wanted_id ? (
               <View style={[AppStyles.mbFive, { flex: 1, alignItems: 'baseline' }]}>
                 <Text style={[AppStyles.darkColor]} numberOfLines={1}>
-                  ShortListed roperty URL:{' '}
+                  ShortListed Property:{' '}
                   <Text
                     onPress={() => redirectToCompare(data)}
                     style={[

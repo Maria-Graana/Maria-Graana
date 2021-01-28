@@ -23,6 +23,7 @@ import SortModal from '../../components/SortModal'
 import { setlead } from '../../actions/lead'
 import Search from '../../components/Search'
 import { storeItem, getItem } from '../../actions/user'
+import AndroidNotifications from '../../AndroidNotifications'
 import Ability from '../../hoc/Ability'
 import _ from 'underscore'
 import config from '../../config'
@@ -399,12 +400,16 @@ class RentLeads extends React.Component {
       searchText,
       showSearchBar,
     } = this.state
-    const { user } = this.props
+    const { user, navigation } = this.props
     let leadStatus = StaticData.buyRentFilter
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
+        {user.organization && user.organization.isPP && (
+          <AndroidNotifications navigation={navigation} />
+        )}
+
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
           {showSearchBar ? (

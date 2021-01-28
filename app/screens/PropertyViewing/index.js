@@ -453,7 +453,6 @@ class PropertyViewing extends React.Component {
           checkList: stringifiedObj,
           customer_feedback: userFeedback
         }
-        console.log('doneViewing: ', `/api/diary/update?id=${diary.id}`, body)
         axios
           .patch(`/api/diary/update?id=${diary.id}`, body)
           .then((res) => {

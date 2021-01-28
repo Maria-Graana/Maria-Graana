@@ -653,7 +653,6 @@ export default StaticData = {
     { value: 'Remittance', name: 'Remittance' },
     { value: 'bank-Transfer', name: 'Bank-Transfer' },
     { value: 'e-Gateway', name: 'E-Gateway' },
-    { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
   ],
   investFullPaymentType: [
     { value: 'cash', name: 'Cash' },
@@ -665,7 +664,7 @@ export default StaticData = {
     { value: 'Buy Back Adjustment', name: 'Buy Back Adjustment' },
     { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
     { value: 'Rent Adjustment', name: 'Rent Adjustment' },
-    { value: 'Inter-Mall adjustment', name: 'Inter-Mall adjustment' },
+    { value: 'Inter-Mall Adjustment', name: 'Inter-Mall Adjustment' },
   ],
   unitType: [
     { value: 'fullUnit', name: 'Full Unit' },

@@ -632,7 +632,7 @@ class PropertyViewing extends React.Component {
           openPopup={callModal}
         /> */}
 
-        <CheckListModal data={user.subRole === 'sales_agent' ? StaticData.realEstateAgentsCheckList : StaticData.areaManagerCheckList}
+        <CheckListModal  data={StaticData.realEstateAgentsCheckList}
           selectedCheckList={selectedCheckList}
           isVisible={isCheckListModalVisible}
           togglePopup={(val) => this.toggleCheckListModal(val)}

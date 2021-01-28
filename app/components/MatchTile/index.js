@@ -180,11 +180,11 @@ class MatchTile extends React.Component {
                 containerCustomStyle={{ position: 'relative' }}
               />
             ) : (
-                <Image
-                  source={require('../../../assets/images/no-image-found.png')}
-                  style={styles.noImage}
-                />
-              )}
+              <Image
+                source={require('../../../assets/images/no-image-found.png')}
+                style={styles.noImage}
+              />
+            )}
           </View>
           <View style={styles.imageCountViewStyle}>
             <Feather name={'camera'} color={'#fff'} size={16} />
@@ -326,68 +326,40 @@ class MatchTile extends React.Component {
                             />
                           </View>
                         ) : (
-                            <View>
-                              <Menu.Item
-                                onPress={() => {
-                                  this.props.goToPropertyComments(data)
-                                }}
-                                title="Comments"
-                              />
-                              <Menu.Item
-                                onPress={() => {
-                                  this.props.deleteProperty(data)
-                                }}
-                                title="Remove from the list"
-                              />
-                            </View>
-                          )}
+                          <View>
+                            <Menu.Item
+                              onPress={() => {
+                                this.props.goToPropertyComments(data)
+                              }}
+                              title="Comments"
+                            />
+                            <Menu.Item
+                              onPress={() => {
+                                this.props.deleteProperty(data)
+                              }}
+                              title="Remove from the list"
+                            />
+                          </View>
+                        )}
                       </View>
                     ) : (
-                        <View>
-                          <Menu.Item
-                            onPress={() => {
-                              bookAnotherViewing(data)
-                            }}
-                            title="Book Another Viewing"
-                          />
-                          <Menu.Item
-                            onPress={() => {
-                              this.props.goToPropertyComments(data)
-                            }}
-                            title="Comments"
-                          />
-                        </View>
-                      )}
+                      <View>
+                        <Menu.Item
+                          onPress={() => {
+                            bookAnotherViewing(data)
+                          }}
+                          title="Book Another Viewing"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.goToPropertyComments(data)
+                          }}
+                          title="Comments"
+                        />
+                      </View>
+                    )}
                   </View>
                 </Menu>
-                {showDone ? (
-                  <Menu
-                    visible={data.checkBox}
-                    onDismiss={() => this.props.toggleMenu(false, data.id)}
-                    anchor={
-                      <Entypo
-                        onPress={() => this.props.toggleMenu(true, data.id)}
-                        name="dots-three-vertical"
-                        size={20}
-                      />
-                    }
-                  >
-                    <View>
-                      <Menu.Item
-                        onPress={() => {
-                          this.props.goToPropertyComments(data)
-                        }}
-                        title="Comments"
-                      />
-                      <Menu.Item
-                        onPress={() => {
-                          toggleCheckListModal(true, data)
-                        }}
-                        title="Viewing done"
-                      />
-                    </View>
-                  </Menu>
-                ) : null}
               </View>
             ) : null}
             {showCheckBoxes ? (
@@ -401,8 +373,8 @@ class MatchTile extends React.Component {
                 />
               </View>
             ) : (
-                <View />
-              )}
+              <View />
+            )}
             <View style={{ flexDirection: 'row-reverse' }}>
               <FontAwesome
                 onPress={() => {

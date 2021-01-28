@@ -663,7 +663,13 @@ class PropertyRCMPayment extends React.Component {
       }
       if (editable === false) {
         // for commission addition
-        let body = { ...rcmPayment, rcmLeadId: lead.id, armsUserId: user.id, addedBy: 'seller' }
+        let body = {
+          ...rcmPayment,
+          rcmLeadId: lead.id,
+          armsUserId: user.id,
+          addedBy: 'seller',
+          paymentCategory: 'commission',
+        }
         delete body.visible
         axios
           .post(`/api/leads/project/payments`, body)
@@ -779,11 +785,7 @@ class PropertyRCMPayment extends React.Component {
         })
       else helper.warningToast(`You cannot view other agent's property details!`)
     } else {
-      let url = `https://dev.graana.rocks/property/${property.graana_id}`
-      if (config.channel === 'staging')
-        url = `https://staging.graana.rocks/property/${property.graana_id}`
-      if (config.channel === 'production')
-        url = `https://www.graana.com/property/${property.graana_id}`
+      let url = `${config.graanaUrl}/property/${property.graana_id}`
       Linking.canOpenURL(url)
         .then((supported) => {
           if (!supported) helper.errorToast(`No application available open this Url`)

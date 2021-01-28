@@ -103,13 +103,12 @@ class AgentTile extends React.Component {
     let ownDiary = this.getOwnDiary(data) || null
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
-    let showDone = this.checkDiaryStatus(data)
+    // let showDone = this.checkDiaryStatus(data)
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false
       }
     }
-
     return (
       <TouchableOpacity
         style={{ flexDirection: 'row' }}
@@ -295,34 +294,6 @@ class AgentTile extends React.Component {
                       )}
                     </View>
                   </Menu>
-                  {showDone ? (
-                    <Menu
-                      visible={data.checkBox}
-                      onDismiss={() => this.props.toggleMenu(false, data.id)}
-                      anchor={
-                        <Entypo
-                          onPress={() => this.props.toggleMenu(true, data.id)}
-                          name="dots-three-vertical"
-                          size={20}
-                        />
-                      }
-                    >
-                      <View>
-                        <Menu.Item
-                          onPress={() => {
-                            this.props.goToPropertyComments(data)
-                          }}
-                          title="Comments"
-                        />
-                        <Menu.Item
-                          onPress={() => {
-                            this.props.doneViewing(data)
-                          }}
-                          title="Viewing done"
-                        />
-                      </View>
-                    </Menu>
-                  ) : null}
                 </View>
               ) : null}
               {showCheckBoxes ? (

@@ -1,42 +1,69 @@
+/** @format */
+
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { formatPrice } from '../../PriceFormate';
-import StaticData from '../../StaticData';
-import moment from 'moment';
+import { formatPrice } from '../../PriceFormate'
+import StaticData from '../../StaticData'
+import moment from 'moment'
 
 class CommissionTile extends Component {
-
   currencyConvert = (x) => {
-    x = x.toString();
-    var lastThree = x.substring(x.length - 3);
-    var otherNumbers = x.substring(0, x.length - 3);
-    if (otherNumbers != '')
-      lastThree = ',' + lastThree;
-    var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-    return res;
+    x = x.toString()
+    var lastThree = x.substring(x.length - 3)
+    var otherNumbers = x.substring(0, x.length - 3)
+    if (otherNumbers != '') lastThree = ',' + lastThree
+    var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree
+    return res
   }
-
   render() {
-    const { data, editTile, title, commissionEdit, onPaymentLongPress } = this.props;
-    var showStatus = data && data.status != '' ? StaticData.statusOptions.find((item) => { return item.value === data.status && item }) : { label: '', value: '' }
-    var statusColor = showStatus && showStatus.value === StaticData.leadClearedStatus ? styles.statusGreen : showStatus.value === 'notCleared' || showStatus.value === 'rejected' ? styles.statusRed : styles.statusYellow
-    return (
-      data ?
-      <TouchableOpacity onLongPress ={data.status === 'pendingSales' || data.status === 'notCleared' || data.status === 'pendingAccount' ?onPaymentLongPress : null} disabled={commissionEdit} onPress={() => { data.status != StaticData.leadClearedStatus ? editTile(data) : null }}>
-        <View style={[styles.tileTopWrap, {backgroundColor: commissionEdit ? '#ddd' : '#fff'}]}>
+    const { data, editTile, title, commissionEdit, onPaymentLongPress } = this.props
+    var showStatus =
+      data && data.status != ''
+        ? StaticData.statusOptions.find((item) => {
+            return item.value === data.status && item
+          })
+        : { label: '', value: '' }
+    var statusColor =
+      showStatus && showStatus.value === StaticData.leadClearedStatus
+        ? styles.statusGreen
+        : showStatus.value === 'notCleared' || showStatus.value === 'rejected'
+        ? styles.statusRed
+        : styles.statusYellow
+    return data ? (
+      <TouchableOpacity
+        onLongPress={
+          data.status === 'pendingSales' ||
+          data.status === 'notCleared' ||
+          data.status === 'pendingAccount'
+            ? onPaymentLongPress
+            : null
+        }
+        disabled={commissionEdit}
+        onPress={() => {
+          data.status != StaticData.leadClearedStatus ? editTile(data) : null
+        }}
+      >
+        <View style={[styles.tileTopWrap, { backgroundColor: commissionEdit ? '#ddd' : '#fff' }]}>
           <View style={styles.upperLayer}>
             <Text style={styles.paymnetHeading}>{title}</Text>
             <Text style={[styles.tileStatus, statusColor]}>{showStatus.label}</Text>
           </View>
           <View style={styles.bottomLayer}>
-            {data.installmentAmount ? <Text style={styles.formatPrice}>{this.currencyConvert(data.installmentAmount)}</Text> : null}
-            {data.installmentAmount ? <Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text> : null}
-            {data.createdAt ? <Text style={styles.priceDate}>{moment(data.createdAt).format('hh:mm A, MMM DD')}</Text> : null}
+            {data.installmentAmount ? (
+              <Text style={styles.formatPrice}>{this.currencyConvert(data.installmentAmount)}</Text>
+            ) : null}
+            {data.installmentAmount ? (
+              <Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
+            ) : null}
+            {data.createdAt ? (
+              <Text style={styles.priceDate}>
+                {moment(data.createdAt).format('hh:mm A, MMM DD')}
+              </Text>
+            ) : null}
           </View>
         </View>
       </TouchableOpacity>
-      : null
-    )
+    ) : null
   }
 }
 
@@ -50,7 +77,7 @@ const styles = StyleSheet.create({
     padding: 5,
     marginBottom: 5,
     marginTop: 10,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   upperLayer: {
     position: 'relative',
@@ -61,7 +88,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: 'bold',
     letterSpacing: 2,
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
   },
   tileStatus: {
     position: 'absolute',
@@ -75,7 +102,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     textTransform: 'uppercase',
     letterSpacing: 1,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   statusRed: {
     borderColor: '#b38f8d',
@@ -116,4 +143,4 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     paddingTop: 4,
   },
-});
+})

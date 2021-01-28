@@ -41,6 +41,10 @@ class RCMAttachment extends Component {
     })
   }
 
+  componentDidMount() {
+    console.log('rcmAttachmentProps', this.props.rcmPayment)
+  }
+
   setValues = (value) => {
     this.props.dispatch(setRCMPayment(value))
   }
@@ -162,6 +166,7 @@ class RCMAttachment extends Component {
         ...rcmPayment,
       }
       this.setState({ isVisible: false }, () => {
+        console.log('payload', payload)
         this.setValues(payload)
       })
     }

@@ -26,7 +26,7 @@ import _ from 'underscore'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import AppStyles from '../../AppStyles'
-import AddCommissionModal from '../../components/AddCommissionModal'
+import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import HistoryModal from '../../components/HistoryModal/index'
@@ -1314,7 +1314,7 @@ class LeadRCMPayment extends React.Component {
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
         />
-        <AddCommissionModal
+        <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}
           handleCommissionChange={this.handleCommissionChange}
           modalValidation={modalValidation}

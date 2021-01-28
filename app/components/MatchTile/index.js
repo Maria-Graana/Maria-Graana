@@ -227,7 +227,7 @@ class MatchTile extends React.Component {
             </View>
           </View>
           <View style={styles.phoneIcon}>
-            {screen !== 'match' && screen !== 'viewing' ? (
+            {screen !== 'match' && screen !== 'viewing' && screen !== 'propsure' ? (
               <Menu
                 visible={data.checkBox}
                 onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -246,6 +246,45 @@ class MatchTile extends React.Component {
                     }}
                     title="Comments"
                   />
+                </View>
+              </Menu>
+            ) : null}
+            {screen === 'propsure' ? (
+              <Menu
+                visible={data.checkBox}
+                onDismiss={() => this.props.toggleMenu(false, data.id)}
+                anchor={
+                  <Entypo
+                    onPress={() => this.props.toggleMenu(true, data.id)}
+                    name="dots-three-vertical"
+                    size={20}
+                  />
+                }
+              >
+                <View>
+                  {!helper.checkPropsureDocs(data.propsures) ? (
+                    <Menu.Item
+                      onPress={() => {
+                        this.props.goToPropertyComments(data)
+                      }}
+                      title="Comments"
+                    />
+                  ) : (
+                    <View>
+                      <Menu.Item
+                        onPress={() => {
+                          this.props.goToPropertyComments(data)
+                        }}
+                        title="Comments"
+                      />
+                      <Menu.Item
+                        onPress={() => {
+                          this.props.cancelPropsureRequest(data)
+                        }}
+                        title="Cancel Request"
+                      />
+                    </View>
+                  )}
                 </View>
               </Menu>
             ) : null}

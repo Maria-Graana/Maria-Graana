@@ -608,13 +608,62 @@ const helper = {
     else str = str.toString()
     return str.replace(/<[^>]*>/g, '')
   },
-  checkPP(user) {
+  AddPropsureReportsFee(pendingPropsures) {
+    let total = 0
+    if (pendingPropsures && pendingPropsures.length) {
+      pendingPropsures.map((item) => {
+        if (item.propsureReport && item.propsureReport.fee) {
+          total = Number(total) + Number(item.propsureReport.fee)
+        }
+      })
+      return total
+    } else {
+      return total
+    }
+  },
+  propsurePendingStatuses(property) {
+    if (property) {
+      let pendingPropsures =
+        property.propsures && property.propsures.length
+          ? _.filter(property.propsures, (item) => item.status === 'pending')
+          : null
+      let totalFee = helper.AddPropsureReportsFee(property.propsures) === 0
+      if (totalFee === 0 && pendingPropsures && pendingPropsures.length)
+        return 'Pending Verification'
+      if (pendingPropsures && pendingPropsures.length) {
+        if (
+          !property.cmInstallment ||
+          (property.cmInstallment && property.cmInstallment.status !== 'cleared')
+        )
+          return 'Pending Verification and Payment'
+        else return 'Pending Verification'
+      }
+      if (property.cmInstallment) {
+        if (property.cmInstallment.status !== 'cleared') return 'Pending Payment'
+        else return 'VERIFIED'
+      } else {
+        if (totalFee === 0) return 'VERIFIED'
+        else return 'Pending Payment'
+      }
+    }
+  },
+  checkPropsureDocs(propsures) {
+    let check = false
+    if (propsures && propsures.length) {
+      propsures.map((item) => {
+        if (item.propsureDocs && item.propsureDocs.length) check = true
+      })
+      return check
+    } else return check
+    },
+    checkPP(user) {
     if (user) {
       const { organization } = user
       if (organization) return organization.isPP
       if (user.subRole === 'group_management') return false
     } else return false
-  },
+    }
+  
 }
 
 module.exports = helper

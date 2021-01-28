@@ -141,6 +141,36 @@ class PropAgentTile extends React.Component {
           <View style={[styles.pad5, { marginRight: 5 }]}>
             <View style={{ flexDirection: 'row', height: 20 }}>
               <View style={{ flex: 1 }}></View>
+              {screen === 'propsure' && helper.checkPropsureDocs(data.propsures) ? (
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={20}
+                    />
+                  }
+                >
+                  <View>
+                    <View>
+                      <Menu.Item
+                        onPress={() => {
+                          this.props.goToPropertyComments(data)
+                        }}
+                        title="Comments"
+                      />
+                      <Menu.Item
+                        onPress={() => {
+                          this.props.cancelPropsureRequest(data)
+                        }}
+                        title="Cancel Request"
+                      />
+                    </View>
+                  </View>
+                </Menu>
+              ) : null}
               {showDone ? (
                 <Menu
                   visible={data.checkBox}

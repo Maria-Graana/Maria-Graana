@@ -60,7 +60,7 @@ const PropsureReportsPopup = (props) => {
         <View style={[AppStyles.mainInputWrap, styles.buttonExtraStyle]}>
           <View style={styles.totalView}>
             <Text style={[AppStyles.btnText, { color: AppStyles.colors.textColor }]}>
-              Total Amount
+              Total Services Cost
             </Text>
             <Text style={[AppStyles.btnText, { color: AppStyles.colors.primaryColor }]}>
               <Text style={styles.pkr}>PKR </Text>

@@ -369,16 +369,15 @@ class LeadPropsure extends React.Component {
         ? _.filter(item.propsures, (item) => item.status === 'pending')
         : null
     let propsures = item.propsures.map((item) => ({ ...item, isLoading: false }))
-    if (filteredPropsuresReport && filteredPropsuresReport.length) {
+    let status = helper.propsurePendingStatuses(item)
+    if (status !== 'VERIFIED') {
       return (
         <TouchableOpacity
           style={[styles.viewButtonStyle, { backgroundColor: '#FCD12A' }]}
           activeOpacity={0.7}
           onPress={() => this.showDocumentModal(propsures, item)}
         >
-          <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>
-            PENDING VERIFICATION
-          </Text>
+          <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>{status}</Text>
         </TouchableOpacity>
       )
     } else {
@@ -388,7 +387,7 @@ class LeadPropsure extends React.Component {
           activeOpacity={0.7}
           onPress={() => this.showDocumentModal(propsures, item)}
         >
-          <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>VERIFIED</Text>
+          <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>{status}</Text>
         </TouchableOpacity>
       )
     }
@@ -851,6 +850,32 @@ class LeadPropsure extends React.Component {
       })
   }
 
+  cancelPropsureRequest = async (data) => {
+    const { lead } = this.props
+    if (data && data.propsures && data.propsures.length) {
+      let totalFee = helper.AddPropsureReportsFee(data.propsures)
+      let reportIds = _.pluck(data.propsures, 'id')
+      let url = `/api/leads/deletePropsure?`
+      let params = {
+        id: reportIds,
+        leadId: lead.id,
+        outStandingPayment: totalFee,
+      }
+      const response = await axios.delete(url)
+      if (response.data) {
+        console.log('response: ', response.data)
+        this.clearReduxAndStateValues()
+        this.fetchLead(lead)
+        this.fetchProperties(lead)
+        helper.successToast(response.data)
+      } else {
+        helper.errorToast('ERROR DELETING PROPSURE PAYMENT!')
+      }
+    } else {
+      helper.warningToast('NO PROPSURE REQUEST AVAILABLE!')
+    }
+  }
+
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
 
   render() {
@@ -960,6 +985,7 @@ class LeadPropsure extends React.Component {
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
                       screen={'propsure'}
+                      cancelPropsureRequest={this.cancelPropsureRequest}
                     />
                   ) : (
                     <AgentTile
@@ -974,6 +1000,7 @@ class LeadPropsure extends React.Component {
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
                       screen={'propsure'}
+                      cancelPropsureRequest={this.cancelPropsureRequest}
                     />
                   )}
                   <View>

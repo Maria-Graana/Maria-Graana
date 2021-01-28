@@ -611,6 +611,41 @@ const helper = {
       return total
     }
   },
+  propsurePendingStatuses(property) {
+    if (property) {
+      let pendingPropsures =
+        property.propsures && property.propsures.length
+          ? _.filter(property.propsures, (item) => item.status === 'pending')
+          : null
+      let totalFee = helper.AddPropsureReportsFee(property.propsures) === 0
+      if (totalFee === 0 && pendingPropsures && pendingPropsures.length)
+        return 'Pending Verification'
+      if (pendingPropsures && pendingPropsures.length) {
+        if (
+          !property.cmInstallment ||
+          (property.cmInstallment && property.cmInstallment.status !== 'cleared')
+        )
+          return 'Pending Verification and Payment'
+        else return 'Pending Verification'
+      }
+      if (property.cmInstallment) {
+        if (property.cmInstallment.status !== 'cleared') return 'Pending Payment'
+        else return 'VERIFIED'
+      } else {
+        if (totalFee === 0) return 'VERIFIED'
+        else return 'Pending Payment'
+      }
+    }
+  },
+  checkPropsureDocs(propsures) {
+    let check = false
+    if (propsures && propsures.length) {
+      propsures.map((item) => {
+        if (item.propsureDocs && item.propsureDocs.length) check = true
+      })
+      return check
+    } else return check
+  },
 }
 
 module.exports = helper

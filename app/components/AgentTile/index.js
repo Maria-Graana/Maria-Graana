@@ -133,7 +133,7 @@ class AgentTile extends React.Component {
                 {' '}
                 PKR{' '}
                 <Text style={styles.priceText}>
-                {data && data.price ===0 ? '0' : formatPrice(data && data.price && data.price)}
+                  {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
                 </Text>{' '}
               </Text>
               <Text numberOfLines={1} style={styles.marlaText}>
@@ -161,7 +161,7 @@ class AgentTile extends React.Component {
           <View style={[styles.pad5, { marginRight: 5 }]}>
             <View style={{ flexDirection: 'row', height: 20 }}>
               <View style={{ flex: 1 }}></View>
-              {screen !== 'match' && screen !== 'viewing' ? (
+              {screen !== 'match' && screen !== 'viewing' && screen !== 'propsure' ? (
                 <Menu
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -180,6 +180,45 @@ class AgentTile extends React.Component {
                       }}
                       title="Comments"
                     />
+                  </View>
+                </Menu>
+              ) : null}
+              {screen === 'propsure' ? (
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={20}
+                    />
+                  }
+                >
+                  <View>
+                    {!helper.checkPropsureDocs(data.propsures) ? (
+                      <Menu.Item
+                        onPress={() => {
+                          this.props.goToPropertyComments(data)
+                        }}
+                        title="Comments"
+                      />
+                    ) : (
+                      <View>
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.goToPropertyComments(data)
+                          }}
+                          title="Comments"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.cancelPropsureRequest(data)
+                          }}
+                          title="Cancel Request"
+                        />
+                      </View>
+                    )}
                   </View>
                 </Menu>
               ) : null}

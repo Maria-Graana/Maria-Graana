@@ -507,9 +507,7 @@ class LeadMatch extends React.Component {
         this.props.navigation.navigate('PropertyDetail', { property: property, update: true })
       else helper.warningToast(`You cannot view other agent's property details!`)
     } else {
-      let url = `https://dev.graana.rocks/property/${property.id}`
-      if (config.channel === 'staging') url = `https://staging.graana.rocks/property/${property.id}`
-      if (config.channel === 'production') url = `https://www.graana.com/property/${property.id}`
+      let url = `${config.graanaUrl}/property/${property.id}`
       Linking.canOpenURL(url)
         .then((supported) => {
           if (!supported) helper.errorToast(`No application available open this Url`)
@@ -644,7 +642,7 @@ class LeadMatch extends React.Component {
       lead: this.props.lead,
       purposeTab: this.props.lead.purpose,
       isFromLeadWorkflow: true,
-      fromScreen: 'match'
+      fromScreen: 'match',
     })
   }
 

@@ -655,15 +655,23 @@ const helper = {
       })
       return check
     } else return check
-    },
-    checkPP(user) {
+  },
+  checkPP(user) {
     if (user) {
       const { organization } = user
       if (organization) return organization.isPP
       if (user.subRole === 'group_management') return false
     } else return false
-    }
-  
+  },
+  checkMyDiary(property, user) {
+    let check = false
+    if (property && property.diaries && property.diaries.length) {
+      property.diaries.map((item) => {
+        if (item.userId === user.id) check = true
+      })
+      return check
+    } else return check
+  },
 }
 
 module.exports = helper

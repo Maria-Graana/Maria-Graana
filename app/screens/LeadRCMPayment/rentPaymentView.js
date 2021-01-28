@@ -56,7 +56,6 @@ const RentPaymentView = (props) => {
     property.armsuser &&
     property.armsuser.armsUserRole &&
     property.armsuser.armsUserRole.subRole
-  // console.log('property: ', property)
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
     lead.status === StaticData.Constants.lead_closed_won

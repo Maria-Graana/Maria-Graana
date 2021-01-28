@@ -343,13 +343,18 @@ class LeadViewing extends React.Component {
   }
 
   toggleCheckListModal = (toggleState, data) => {
-    this.setState({ isCheckListModalVisible: toggleState, currentProperty: data ? data : null, selectedCheckList: [], userFeedback: null })
+    this.setState({
+      isCheckListModalVisible: toggleState,
+      currentProperty: data ? data : null,
+      selectedCheckList: [],
+      userFeedback: null,
+    })
   }
 
   checkStatus = (property) => {
     const { lead, user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
-    if (property.diaries.length) {
+    if (helper.checkMyDiary(property, user)) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
       let viewingDoneCount =
@@ -360,112 +365,117 @@ class LeadViewing extends React.Component {
       let greaterOneViewing = viewingDoneCount && viewingDoneCount.length > 1
       if (diaries && diaries.length > 0) {
         return (
-            <View>
-              {diary && diary.status === 'pending' &&
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: 'white',
-                    height: 30,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                  onPress={() => {
-                    if (leadAssignedSharedStatus) {
-                      this.openModal()
-                      this.updateProperty(property)
-                    }
-                  }}
-                >
-                  <Text style={{ fontFamily: AppStyles.fonts.lightFont }}>
-                    Viewing at{' '}
-                    <Text
-                      style={{
-                        color: AppStyles.colors.primaryColor,
-                        fontFamily: AppStyles.fonts.defaultFont,
-                      }}
-                    >
-                      {moment(diary.start).format('LLL')}
-                    </Text>
-                  </Text>
-                </TouchableOpacity>
-              }
-              {
-                viewingDoneCount && viewingDoneCount.length > 0 &&
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: AppStyles.colors.primaryColor,
-                    height: 30,
-                    borderBottomEndRadius: 10,
-                    borderBottomLeftRadius: 10,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                  }}
-                  onPress={()=>this.simplifyViewingData(viewingDoneCount)}
-                >
-                  <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
-                    VIEWING{greaterOneViewing && 'S'} DONE
-                </Text>
-                  {
-                    greaterOneViewing &&
-                    <Text style={styles.countStyle}>{`${viewingDoneCount.length}`}</Text>
+          <View>
+            {diary && diary.status === 'pending' && (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: 'white',
+                  height: 30,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={() => {
+                  if (leadAssignedSharedStatus) {
+                    this.openModal()
+                    this.updateProperty(property)
                   }
-                </TouchableOpacity>
-              }
-              {/* } */}
-            </View>
-          )
-        }
-      } else {
-        return (
-          <TouchableOpacity
+                }}
+              >
+                <Text style={{ fontFamily: AppStyles.fonts.lightFont }}>
+                  Viewing at{' '}
+                  <Text
+                    style={{
+                      color: AppStyles.colors.primaryColor,
+                      fontFamily: AppStyles.fonts.defaultFont,
+                    }}
+                  >
+                    {moment(diary.start).format('LLL')}
+                  </Text>
+                </Text>
+              </TouchableOpacity>
+            )}
+            {viewingDoneCount && viewingDoneCount.length > 0 && (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: AppStyles.colors.primaryColor,
+                  height: 30,
+                  borderBottomEndRadius: 10,
+                  borderBottomLeftRadius: 10,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}
+                onPress={() => this.simplifyViewingData(viewingDoneCount)}
+              >
+                <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
+                  VIEWING{greaterOneViewing && 'S'} DONE
+                </Text>
+                {greaterOneViewing && (
+                  <Text style={styles.countStyle}>{`${viewingDoneCount.length}`}</Text>
+                )}
+              </TouchableOpacity>
+            )}
+            {/* } */}
+          </View>
+        )
+      }
+    } else {
+      return (
+        <TouchableOpacity
+          style={{
+            backgroundColor: 'white',
+            height: 30,
+            borderBottomEndRadius: 10,
+            borderBottomLeftRadius: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onPress={() => {
+            if (leadAssignedSharedStatus) {
+              this.openModal()
+              this.setProperty(property)
+            }
+          }}
+        >
+          <Text
             style={{
-              backgroundColor: 'white',
-              height: 30,
-              borderBottomEndRadius: 10,
-              borderBottomLeftRadius: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onPress={() => {
-              if (leadAssignedSharedStatus) {
-                this.openModal()
-                this.setProperty(property)
-              }
+              color: AppStyles.colors.primaryColor,
+              fontFamily: AppStyles.fonts.defaultFont,
             }}
           >
-            <Text
-              style={{
-                color: AppStyles.colors.primaryColor,
-                fontFamily: AppStyles.fonts.defaultFont,
-              }}
-            >
-              BOOK VIEWING
-            </Text>
-          </TouchableOpacity>
-        )
+            BOOK VIEWING
+          </Text>
+        </TouchableOpacity>
+      )
     }
   }
 
   simplifyViewingData = (data) => {
     let simpleData = [...data]
     simpleData = simpleData.map((item, index) => {
-      return { ...item, checkList: _.keys(JSON.parse(item.checkList)), isExpanded: false, title: data.length > 1 ? `Details for Viewing 0${index + 1} ` : `Details for Viewing` }
+      return {
+        ...item,
+        checkList: _.keys(JSON.parse(item.checkList)),
+        isExpanded: false,
+        title: data.length > 1 ? `Details for Viewing 0${index + 1} ` : `Details for Viewing`,
+      }
     })
     this.setState({ selectedViewingData: simpleData }, () => {
-      this.toggleViewCheckList(true);
+      this.toggleViewCheckList(true)
     })
   }
 
-  toggleExpandable = (status , id) => {
-    const { selectedViewingData} = this.state;
-    let copyViewingData= [...selectedViewingData];
-    copyViewingData= copyViewingData.map((item) => { return item.id === id  ? {...item, isExpanded: status} :  {...item, isExpanded: false}  });
-    this.setState({selectedViewingData: copyViewingData});
+  toggleExpandable = (status, id) => {
+    const { selectedViewingData } = this.state
+    let copyViewingData = [...selectedViewingData]
+    copyViewingData = copyViewingData.map((item) => {
+      return item.id === id ? { ...item, isExpanded: status } : { ...item, isExpanded: false }
+    })
+    this.setState({ selectedViewingData: copyViewingData })
   }
 
   toggleViewCheckList = (value) => {
-    this.setState({ viewCheckListModal: value });
+    this.setState({ viewCheckListModal: value })
   }
 
   bookAnotherViewing = (property) => {
@@ -479,20 +489,25 @@ class LeadViewing extends React.Component {
 
   doneViewing = (property) => {
     const { user } = this.props
-    const { selectedCheckList, userFeedback } = this.state;
+    const { selectedCheckList, userFeedback } = this.state
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
-      if (diary.status === 'pending' && selectedCheckList.length > 0 && userFeedback !== '' && userFeedback !== null) {
-        let checkList = {};
+      if (
+        diary.status === 'pending' &&
+        selectedCheckList.length > 0 &&
+        userFeedback !== '' &&
+        userFeedback !== null
+      ) {
+        let checkList = {}
         selectedCheckList.map((item, index) => {
-          checkList[item] = true;
+          checkList[item] = true
         })
-        let stringifiedObj = JSON.stringify(checkList);
+        let stringifiedObj = JSON.stringify(checkList)
         let body = {
           status: 'completed',
           checkList: stringifiedObj,
-          customer_feedback: userFeedback
+          customer_feedback: userFeedback,
         }
         console.log('doneViewing: ', `/api/diary/update?id=${diary.id}`, body)
         axios
@@ -505,8 +520,7 @@ class LeadViewing extends React.Component {
           .catch((error) => {
             console.log(error)
           })
-      }
-      else {
+      } else {
         alert('Please fill the checklist and user feedback to continue!')
       }
     }
@@ -614,11 +628,7 @@ class LeadViewing extends React.Component {
         })
       else helper.warningToast(`You cannot view other agent's property details!`)
     } else {
-      let url = `https://dev.graana.rocks/property/${property.graana_id}`
-      if (config.channel === 'staging')
-        url = `https://staging.graana.rocks/property/${property.graana_id}`
-      if (config.channel === 'production')
-        url = `https://www.graana.com/property/${property.graana_id}`
+      let url = `${config.graanaUrl}/property/${property.graana_id}`
       Linking.canOpenURL(url)
         .then((supported) => {
           if (!supported) helper.errorToast(`No application available open this Url`)
@@ -630,13 +640,13 @@ class LeadViewing extends React.Component {
 
   handleCheckListSelection = (item) => {
     if (this.state.selectedCheckList.includes(item)) {
-      let temp = this.state.selectedCheckList;
-      delete temp[temp.indexOf(item)];
+      let temp = this.state.selectedCheckList
+      delete temp[temp.indexOf(item)]
       this.setState({ selectedCheckList: temp })
     } else {
-      let temp = this.state.selectedCheckList;
-      temp.push(item);
-      this.setState({ selectedCheckList: temp });
+      let temp = this.state.selectedCheckList
+      temp.push(item)
+      this.setState({ selectedCheckList: temp })
     }
   }
 
@@ -684,7 +694,12 @@ class LeadViewing extends React.Component {
           closePopup={this.goToHistory}
           openPopup={callModal}
         />
-        <CheckListModal data={user.subRole === 'sales_agent'  ? StaticData.realEstateAgentsCheckList : StaticData.areaManagerCheckList}
+        <CheckListModal
+          data={
+            user.subRole === 'sales_agent'
+              ? StaticData.realEstateAgentsCheckList
+              : StaticData.areaManagerCheckList
+          }
           selectedCheckList={selectedCheckList}
           isVisible={isCheckListModalVisible}
           togglePopup={(val) => this.toggleCheckListModal(val)}
@@ -695,7 +710,8 @@ class LeadViewing extends React.Component {
           loading={loading}
         />
 
-        <ViewCheckListModal viewCheckList={viewCheckListModal}
+        <ViewCheckListModal
+          viewCheckList={viewCheckListModal}
           toggleViewCheckList={(value) => this.toggleViewCheckList(value)}
           selectedViewingData={selectedViewingData}
           toggleExpandable={(status, id) => this.toggleExpandable(status, id)}
@@ -728,7 +744,9 @@ class LeadViewing extends React.Component {
                         bookAnotherViewing={this.bookAnotherViewing}
                         deleteProperty={this.deleteProperty}
                         cancelViewing={this.cancelViewing}
-                        toggleCheckListModal={(toggleState, data) => this.toggleCheckListModal(toggleState, data)}
+                        toggleCheckListModal={(toggleState, data) =>
+                          this.toggleCheckListModal(toggleState, data)
+                        }
                         isMenuVisible={showMenuItem && isMenuVisible}
                         data={_.clone(item.item)}
                         user={user}
@@ -742,24 +760,26 @@ class LeadViewing extends React.Component {
                         screen={'viewing'}
                       />
                     ) : (
-                        <AgentTile
-                          bookAnotherViewing={this.bookAnotherViewing}
-                          deleteProperty={this.deleteProperty}
-                          cancelViewing={this.cancelViewing}
-                          toggleCheckListModal={(toggleState, data) => this.toggleCheckListModal(toggleState, data)}
-                          isMenuVisible={showMenuItem && isMenuVisible}
-                          data={_.clone(item.item)}
-                          user={user}
-                          displayChecks={this.displayChecks}
-                          showCheckBoxes={false}
-                          addProperty={this.addProperty}
-                          viewingMenu={true}
-                          goToPropertyComments={this.goToPropertyComments}
-                          menuShow={menuShow}
-                          toggleMenu={this.toggleMenu}
-                          screen={'viewing'}
-                        />
-                      )}
+                      <AgentTile
+                        bookAnotherViewing={this.bookAnotherViewing}
+                        deleteProperty={this.deleteProperty}
+                        cancelViewing={this.cancelViewing}
+                        toggleCheckListModal={(toggleState, data) =>
+                          this.toggleCheckListModal(toggleState, data)
+                        }
+                        isMenuVisible={showMenuItem && isMenuVisible}
+                        data={_.clone(item.item)}
+                        user={user}
+                        displayChecks={this.displayChecks}
+                        showCheckBoxes={false}
+                        addProperty={this.addProperty}
+                        viewingMenu={true}
+                        goToPropertyComments={this.goToPropertyComments}
+                        menuShow={menuShow}
+                        toggleMenu={this.toggleMenu}
+                        screen={'viewing'}
+                      />
+                    )}
                     <View>{this.checkStatus(item.item)}</View>
                   </View>
                 )}

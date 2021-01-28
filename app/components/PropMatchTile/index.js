@@ -115,7 +115,7 @@ class PropMatchTile extends React.Component {
   }
 
   render() {
-    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen } = this.props
+    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen, toggleCheckListModal, } = this.props
     let imagesList = this.checkImages()
     let show = isMenuVisible
     let phoneNumber = null
@@ -226,7 +226,7 @@ class PropMatchTile extends React.Component {
                   />
                   <Menu.Item
                     onPress={() => {
-                      this.props.doneViewing(data)
+                      toggleCheckListModal(true, data)
                     }}
                     title="Viewing done"
                   />

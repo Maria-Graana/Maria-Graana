@@ -761,7 +761,9 @@ class PropertyPropsure extends React.Component {
         leadId: lead.id,
         outStandingPayment: totalFee,
       }
-      const response = await axios.delete(url)
+      const response = await axios.delete(url, {
+        params: params,
+      })
       if (response.data) {
         console.log('response: ', response.data)
         this.clearReduxAndStateValues()

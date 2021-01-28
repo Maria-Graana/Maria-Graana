@@ -290,7 +290,7 @@ class PropMatchTile extends React.Component {
                           /> */}
                           <Menu.Item
                             onPress={() => {
-                              this.props.doneViewing(data)
+                              toggleCheckListModal(true, data)
                             }}
                             title="Viewing done"
                           />

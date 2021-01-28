@@ -64,6 +64,21 @@ class CommissionTile extends Component {
         </View>
       </TouchableOpacity>
     ) : null
+    // ) : (
+    //   <TouchableOpacity disabled={true}>
+    //     <View style={[styles.tileTopWrap, { backgroundColor: true ? '#ddd' : '#fff' }]}>
+    //       <View style={styles.upperLayer}>
+    //         <Text style={styles.paymnetHeading}></Text>
+    //         <Text style={[styles.tileStatus]}></Text>
+    //       </View>
+    //       <View style={styles.bottomLayer}>
+    //         <Text style={styles.formatPrice}></Text>
+    //         <Text style={styles.totalPrice}></Text>
+    //         <Text style={styles.priceDate}></Text>
+    //       </View>
+    //     </View>
+    //   </TouchableOpacity>
+    // )
   }
 }
 

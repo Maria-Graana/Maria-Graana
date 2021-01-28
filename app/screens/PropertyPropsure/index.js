@@ -351,12 +351,9 @@ class PropertyPropsure extends React.Component {
 
   renderPropsurePendingView = (item) => {
     const { lead, user } = this.props
-    let filteredPropsuresReport =
-      item.propsures && item.propsures.length
-        ? _.filter(item.propsures, (item) => item.status === 'pending')
-        : null
     let propsures = item.propsures.map((item) => ({ ...item, isLoading: false }))
-    if (filteredPropsuresReport && filteredPropsuresReport.length) {
+    let status = helper.propsurePendingStatuses(item)
+    if (status !== 'VERIFIED') {
       return (
         <TouchableOpacity
           // disabled={helper.isSellerOrBuyer(item, lead, user)}
@@ -364,15 +361,13 @@ class PropertyPropsure extends React.Component {
           activeOpacity={0.7}
           onPress={() => this.showDocumentModal(propsures, item)}
         >
-          <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>
-            PENDING VERIFICATION
-          </Text>
+          <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>{status}</Text>
         </TouchableOpacity>
       )
     } else {
       return (
         <View style={[styles.viewButtonStyle, { backgroundColor: AppStyles.colors.primaryColor }]}>
-          <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>VERIFIED</Text>
+          <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>{status}</Text>
         </View>
       )
     }
@@ -754,6 +749,33 @@ class PropertyPropsure extends React.Component {
         helper.errorToast('Attachment Error: ', error)
       })
   }
+
+  cancelPropsureRequest = async (data) => {
+    const { lead } = this.props
+    if (data && data.propsures && data.propsures.length) {
+      let totalFee = helper.AddPropsureReportsFee(data.propsures)
+      let reportIds = _.pluck(data.propsures, 'id')
+      let url = `/api/leads/deletePropsure?`
+      let params = {
+        id: reportIds,
+        leadId: lead.id,
+        outStandingPayment: totalFee,
+      }
+      const response = await axios.delete(url)
+      if (response.data) {
+        console.log('response: ', response.data)
+        this.clearReduxAndStateValues()
+        this.fetchLead(lead)
+        this.fetchProperties(lead)
+        helper.successToast(response.data)
+      } else {
+        helper.errorToast('ERROR DELETING PROPSURE PAYMENT!')
+      }
+    } else {
+      helper.warningToast('NO PROPSURE REQUEST AVAILABLE!')
+    }
+  }
+
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
 
   render() {
@@ -859,6 +881,7 @@ class PropertyPropsure extends React.Component {
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
                       screen={'propsure'}
+                      cancelPropsureRequest={this.cancelPropsureRequest}
                     />
                   ) : (
                     <PropAgentTile
@@ -873,6 +896,7 @@ class PropertyPropsure extends React.Component {
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
                       screen={'propsure'}
+                      cancelPropsureRequest={this.cancelPropsureRequest}
                     />
                   )}
                   <View>

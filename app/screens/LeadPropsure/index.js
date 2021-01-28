@@ -364,10 +364,6 @@ class LeadPropsure extends React.Component {
   }
 
   renderPropsurePendingView = (item) => {
-    let filteredPropsuresReport =
-      item.propsures && item.propsures.length
-        ? _.filter(item.propsures, (item) => item.status === 'pending')
-        : null
     let propsures = item.propsures.map((item) => ({ ...item, isLoading: false }))
     let status = helper.propsurePendingStatuses(item)
     if (status !== 'VERIFIED') {

@@ -456,7 +456,7 @@ class LeadViewing extends React.Component {
       return {
         ...item,
         checkList: _.keys(JSON.parse(item.checkList)),
-        isExpanded: false,
+        isExpanded: data.length > 1 ? false : true,
         title: data.length > 1 ? `Details for Viewing 0${index + 1} ` : `Details for Viewing`,
       }
     })

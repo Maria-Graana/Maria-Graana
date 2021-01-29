@@ -141,7 +141,6 @@ const styles = StyleSheet.create({
         backgroundColor: AppStyles.colors.background,
         paddingVertical: 10,
         fontSize: AppStyles.fontSize.medium,
-        fontFamily: AppStyles.fonts.defaultFont,
         fontFamily: AppStyles.fonts.semiBoldFont,
         paddingHorizontal: 10,
     },

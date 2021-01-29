@@ -2,17 +2,21 @@
 
 import { StyleSheet, Platform } from 'react-native'
 export default styles = StyleSheet.create({
-  countStyle: {
+  countView: {
+    width: 20,
+    height:20,
+    borderRadius: 18,
+    backgroundColor: '#fff',
+    marginLeft: 5,
+    alignItems:'center',
+    justifyContent: 'center',
+
+  },
+  countText: {
     fontSize: 12,
     fontWeight: 'bold',
     color: '#0f73ee',
-    backgroundColor: '#fff',
-    width: Platform.OS === 'ios' ? 20 : 20,
-    height: Platform.OS === 'ios' ? 20 : 20,
-    borderRadius: Platform.OS === 'ios' ? 18 : 50,
     textAlign: 'center',
-    paddingTop: 3,
-    marginLeft: 5,
   },
  
 })

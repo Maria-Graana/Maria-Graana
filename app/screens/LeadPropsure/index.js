@@ -711,6 +711,7 @@ class LeadPropsure extends React.Component {
       modalValidation: false,
       addPaymentLoading: false,
       editable: false,
+      totalReportPrice: 0,
     })
   }
 
@@ -855,8 +856,15 @@ class LeadPropsure extends React.Component {
   cancelPropsureRequest = async (data) => {
     const { lead } = this.props
     if (data && data.propsures && data.propsures.length) {
-      let totalFee = helper.AddPropsureReportsFee(data.propsures, 'buyer')
-      let reportIds = _.pluck(data.propsures, 'id')
+      let pendingPropsures =
+        data.propsures && data.propsures.length
+          ? _.filter(
+              data.propsures,
+              (item) => item.status === 'pending' && item.addedBy === 'buyer'
+            )
+          : null
+      let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'buyer')
+      let reportIds = _.pluck(pendingPropsures, 'id')
       let url = `/api/leads/deletePropsure?`
       let params = {
         id: reportIds,
@@ -911,7 +919,6 @@ class LeadPropsure extends React.Component {
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
-
     return !loading ? (
       <View
         style={[

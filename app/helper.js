@@ -618,7 +618,7 @@ const helper = {
       })
       return total
     } else {
-      return total
+      return 0
     }
   },
   propsurePendingStatuses(property, type) {
@@ -630,19 +630,18 @@ const helper = {
               (item) => item.status === 'pending' && item.addedBy === type
             )
           : null
-      let totalFee = helper.AddPropsureReportsFee(property.propsures, type) === 0
+      let totalFee = helper.AddPropsureReportsFee(property.propsures, type)
+      let singlePayment = helper.propsurePaymentType(property, type)
+      if (totalFee === 0 && pendingPropsures && pendingPropsures.length === 0) return 'VERIFIED'
       if (totalFee === 0 && pendingPropsures && pendingPropsures.length)
         return 'Pending Verification'
       if (pendingPropsures && pendingPropsures.length) {
-        if (
-          !property.cmInstallment ||
-          (property.cmInstallment && property.cmInstallment.status !== 'cleared')
-        )
+        if (!singlePayment || (singlePayment && singlePayment.status !== 'cleared'))
           return 'Pending Verification and Payment'
         else return 'Pending Verification'
       }
-      if (property.cmInstallment) {
-        if (property.cmInstallment.status !== 'cleared') return 'Pending Payment'
+      if (singlePayment) {
+        if (singlePayment.status !== 'cleared') return 'Pending Payment'
         else return 'VERIFIED'
       } else {
         if (totalFee === 0) return 'VERIFIED'

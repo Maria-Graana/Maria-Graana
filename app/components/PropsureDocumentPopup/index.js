@@ -55,11 +55,15 @@ const PropsureDocumentPopup = (props) => {
                     }`}</Text>
                     <Text style={styles.reportPrice}>
                       <Text style={styles.pkr}>PKR</Text>{' '}
-                      {parseInt(
-                        formatPrice(
-                          item.propsureReport && item.propsureReport.fee && item.propsureReport.fee
-                        )
-                      )}
+                      {item.propsureReport && item.propsureReport && item.propsureReport.fee === 0
+                        ? 0
+                        : parseInt(
+                            formatPrice(
+                              item.propsureReport &&
+                                item.propsureReport.fee &&
+                                item.propsureReport.fee
+                            )
+                          )}
                     </Text>
                   </View>
 

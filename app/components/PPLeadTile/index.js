@@ -197,7 +197,7 @@ class PPLeadTile extends React.Component {
             {data.origin !== 'arms' && data.wanted_id ? (
               <View style={[AppStyles.mbFive, { flex: 1, alignItems: 'baseline' }]}>
                 <Text style={[AppStyles.darkColor]} numberOfLines={1}>
-                  ShortListed Property:{' '}
+                  Shortlisted properties:{' '}
                   <Text
                     onPress={() => redirectToCompare(data)}
                     style={[

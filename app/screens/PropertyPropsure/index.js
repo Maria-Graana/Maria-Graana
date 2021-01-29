@@ -613,6 +613,7 @@ class PropertyPropsure extends React.Component {
       modalValidation: false,
       addPaymentLoading: false,
       editable: false,
+      totalReportPrice: 0,
     })
     dispatch(setRCMPayment({ ...newData }))
   }
@@ -755,8 +756,15 @@ class PropertyPropsure extends React.Component {
   cancelPropsureRequest = async (data) => {
     const { lead } = this.props
     if (data && data.propsures && data.propsures.length) {
-      let totalFee = helper.AddPropsureReportsFee(data.propsures, 'seller')
-      let reportIds = _.pluck(data.propsures, 'id')
+      let pendingPropsures =
+        data.propsures && data.propsures.length
+          ? _.filter(
+              data.propsures,
+              (item) => item.status === 'pending' && item.addedBy === 'seller'
+            )
+          : null
+      let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'seller')
+      let reportIds = _.pluck(pendingPropsures, 'id')
       let url = `/api/leads/deletePropsure?`
       let params = {
         id: reportIds,

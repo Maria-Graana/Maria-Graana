@@ -42,7 +42,7 @@ const ViewCheckListModal = ({ viewCheckList, toggleViewCheckList, selectedViewin
                                 </TouchableOpacity>
                                 {
                                     item.isExpanded ?
-                                        <View style={styles.itemMainView}>
+                                        <View>
                                             {
                                                 item.checkList.map((item) => (
                                                     <View key={item} style={styles.itemRow}>
@@ -51,10 +51,8 @@ const ViewCheckListModal = ({ viewCheckList, toggleViewCheckList, selectedViewin
                                                     </View>
                                                 ))
                                             }
-                                            <View style={styles.feedbackBorder}>
-                                                <Text style={styles.customerFeedBackHeading}>Viewing Feedback</Text>
-                                                <Text style={styles.customerFeedBack}>{item.customer_feedback}</Text>
-                                            </View>
+                                              <Text style={styles.customerFeedBackHeading}>Viewing Feedback:</Text>
+                                           <Text style={styles.customerFeedBack}>{item.customer_feedback}</Text>
                                         </View>
                                         :
                                         null
@@ -109,19 +107,15 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 15,
     },
-    itemMainView: {
-        backgroundColor: 'white',
-        marginHorizontal: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 15,
-    },
     itemRow: {
+        paddingVertical: 15,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 10,
         borderTopColor: '#ddd',
+        backgroundColor: 'white',
         borderTopWidth: 0.5,
+        marginHorizontal: 15,
+        paddingHorizontal: 10,
     },
     itemText: {
         fontSize: AppStyles.fontSize.medium,
@@ -131,25 +125,24 @@ const styles = StyleSheet.create({
     },
     customerFeedBack: {
         backgroundColor: 'white',
-        fontSize: 14,
-        fontFamily: AppStyles.fonts.defaultFont,
-        paddingHorizontal: 10,
-        marginTop: 10,
-        paddingBottom: 5,
+        paddingHorizontal: 10, 
+        paddingVertical: 15, 
+        marginHorizontal: 15,
+        borderWidth: 0.5,
+        borderColor: 'transparent',
+        borderRadius: 4,
+        fontSize: 16,
+        fontFamily: AppStyles.fonts.defaultFont
     },
     customerFeedBackHeading: {
         backgroundColor: AppStyles.colors.background,
-        paddingVertical: 10,
-        fontSize: AppStyles.fontSize.medium,
-        fontFamily: AppStyles.fonts.semiBoldFont,
-        paddingHorizontal: 10,
-    },
-    feedbackBorder: {
+        paddingHorizontal: 10, 
+        marginHorizontal: 15,
         borderWidth: 0.5,
+        borderColor: 'transparent',
+        paddingVertical: 15, 
         borderRadius: 4,
-        paddingVertical: 2,
-        marginHorizontal: 5,
-        backgroundColor: 'white',
-        borderColor: 'lightgrey'
+        fontSize: 18,
+        fontFamily: AppStyles.fonts.semiBoldFont
     }
 })

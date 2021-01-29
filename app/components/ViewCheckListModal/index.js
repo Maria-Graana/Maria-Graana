@@ -28,7 +28,7 @@ const ViewCheckListModal = ({ viewCheckList, toggleViewCheckList, selectedViewin
                         <AntDesign style={styles.closeStyle} onPress={() => {
                             toggleViewCheckList(false)
                         }} name="close" size={26} color={AppStyles.colors.textColor} />
-                        <Text style={styles.textHeading}>View Checklist/Feedback</Text>
+                        <Text style={styles.textHeading}>Viewing Feedback</Text>
                     </View>
                     <FlatList
                         keyExtractor={(item) => item.id.toString()}

@@ -495,7 +495,7 @@ class LeadViewing extends React.Component {
       let diary = _.find(diaries, (item) => user.id === item.userId)
       if (
         diary.status === 'pending' &&
-        selectedCheckList.length > 0 &&
+        (selectedCheckList.length === StaticData.areaManagerCheckList.length ) &&
         userFeedback !== '' &&
         userFeedback !== null
       ) {

@@ -32,7 +32,6 @@ const CheckListModal = ({ data, selectedCheckList, isVisible, togglePopup, setSe
                             <AntDesign style={styles.closeStyle} onPress={() => {
                                 togglePopup(false)
                             }} name="close" size={26} color={AppStyles.colors.textColor} />
-                            <Text style={styles.textHeading}>Checklist/Feedback</Text>
                         </View>
                         <AnimatedFlatList
                             data={data}
@@ -59,7 +58,7 @@ const CheckListModal = ({ data, selectedCheckList, isVisible, togglePopup, setSe
                             <Textarea
                                 placeholderTextColor="#bfbbbb"
                                 style={[AppStyles.formControl, Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 }, AppStyles.formFontSettings, { height: 100, paddingTop: 10, }]} rowSpan={5}
-                                placeholder="User Feedback"
+                                placeholder="Viewing Feedback"
                                 onChangeText={(text) => setUserFeedback(text)}
                                 value={userFeedback}
                             />

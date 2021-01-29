@@ -415,7 +415,7 @@ class PropertyViewing extends React.Component {
       return {
         ...item,
         checkList: _.keys(JSON.parse(item.checkList)),
-        isExpanded: false,
+        isExpanded: data.length > 1 ? false : true,
         title: data.length > 1 ? `Details for Viewing 0${index + 1} ` : `Details for Viewing`,
       }
     })
@@ -454,7 +454,7 @@ class PropertyViewing extends React.Component {
       let diary = _.find(diaries, (item) => user.id === item.userId)
       if (
         diary.status === 'pending' &&
-        selectedCheckList.length > 0 &&
+        (selectedCheckList.length === StaticData.realEstateAgentsCheckList.length ) &&
         userFeedback !== '' &&
         userFeedback !== null
       ) {

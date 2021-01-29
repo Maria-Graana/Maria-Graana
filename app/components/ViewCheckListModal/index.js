@@ -28,7 +28,7 @@ const ViewCheckListModal = ({ viewCheckList, toggleViewCheckList, selectedViewin
                         <AntDesign style={styles.closeStyle} onPress={() => {
                             toggleViewCheckList(false)
                         }} name="close" size={26} color={AppStyles.colors.textColor} />
-                        <Text style={styles.textHeading}>View Checklist/Feedback</Text>
+                        <Text style={styles.textHeading}>Viewing Feedback</Text>
                     </View>
                     <FlatList
                         keyExtractor={(item) => item.id.toString()}
@@ -51,6 +51,7 @@ const ViewCheckListModal = ({ viewCheckList, toggleViewCheckList, selectedViewin
                                                     </View>
                                                 ))
                                             }
+                                              <Text style={styles.customerFeedBackHeading}>Viewing Feedback:</Text>
                                            <Text style={styles.customerFeedBack}>{item.customer_feedback}</Text>
                                         </View>
                                         :
@@ -123,15 +124,25 @@ const styles = StyleSheet.create({
         marginHorizontal: 15
     },
     customerFeedBack: {
-        backgroundColor: AppStyles.colors.background,
-        textAlign:'center', 
+        backgroundColor: 'white',
         paddingHorizontal: 10, 
         paddingVertical: 15, 
         marginHorizontal: 15,
         borderWidth: 0.5,
         borderColor: 'transparent',
         borderRadius: 4,
-        fontSize: AppStyles.fontSize.medium,
+        fontSize: 16,
         fontFamily: AppStyles.fonts.defaultFont
+    },
+    customerFeedBackHeading: {
+        backgroundColor: AppStyles.colors.background,
+        paddingHorizontal: 10, 
+        marginHorizontal: 15,
+        borderWidth: 0.5,
+        borderColor: 'transparent',
+        paddingVertical: 15, 
+        borderRadius: 4,
+        fontSize: 18,
+        fontFamily: AppStyles.fonts.semiBoldFont
     }
 })

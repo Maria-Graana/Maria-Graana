@@ -118,7 +118,7 @@ class LeadViewing extends React.Component {
     })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -411,7 +411,9 @@ class LeadViewing extends React.Component {
                   VIEWING{greaterOneViewing && 'S'} DONE
                 </Text>
                 {greaterOneViewing && (
-                  <Text style={styles.countStyle}>{`${viewingDoneCount.length}`}</Text>
+                  <View style={styles.countView}>
+                    <Text style={styles.countText}>{`${viewingDoneCount.length}`}</Text>
+                  </View>
                 )}
               </TouchableOpacity>
             )}
@@ -456,7 +458,7 @@ class LeadViewing extends React.Component {
       return {
         ...item,
         checkList: _.keys(JSON.parse(item.checkList)),
-        isExpanded: false,
+        isExpanded: data.length > 1 ? false : true,
         title: data.length > 1 ? `Details for Viewing 0${index + 1} ` : `Details for Viewing`,
       }
     })
@@ -495,7 +497,7 @@ class LeadViewing extends React.Component {
       let diary = _.find(diaries, (item) => user.id === item.userId)
       if (
         diary.status === 'pending' &&
-        selectedCheckList.length > 0 &&
+        (selectedCheckList.length === StaticData.areaManagerCheckList.length) &&
         userFeedback !== '' &&
         userFeedback !== null
       ) {
@@ -755,40 +757,40 @@ class LeadViewing extends React.Component {
                         screen={'viewing'}
                       />
                     ) : (
-                      <AgentTile
-                        bookAnotherViewing={this.bookAnotherViewing}
-                        deleteProperty={this.deleteProperty}
-                        cancelViewing={this.cancelViewing}
-                        toggleCheckListModal={(toggleState, data) =>
-                          this.toggleCheckListModal(toggleState, data)
-                        }
-                        isMenuVisible={showMenuItem && isMenuVisible}
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        viewingMenu={true}
-                        goToPropertyComments={this.goToPropertyComments}
-                        menuShow={menuShow}
-                        toggleMenu={this.toggleMenu}
-                        screen={'viewing'}
-                      />
-                    )}
+                        <AgentTile
+                          bookAnotherViewing={this.bookAnotherViewing}
+                          deleteProperty={this.deleteProperty}
+                          cancelViewing={this.cancelViewing}
+                          toggleCheckListModal={(toggleState, data) =>
+                            this.toggleCheckListModal(toggleState, data)
+                          }
+                          isMenuVisible={showMenuItem && isMenuVisible}
+                          data={_.clone(item.item)}
+                          user={user}
+                          displayChecks={this.displayChecks}
+                          showCheckBoxes={false}
+                          addProperty={this.addProperty}
+                          viewingMenu={true}
+                          goToPropertyComments={this.goToPropertyComments}
+                          menuShow={menuShow}
+                          toggleMenu={this.toggleMenu}
+                          screen={'viewing'}
+                        />
+                      )}
                     <View>{this.checkStatus(item.item)}</View>
                   </View>
                 )}
                 keyExtractor={(item, index) => item.id.toString()}
               />
             ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
+                <>
+                  <Image
+                    source={require('../../../assets/img/no-result-found.png')}
+                    resizeMode={'center'}
+                    style={{ alignSelf: 'center', width: 300, height: 300 }}
+                  />
+                </>
+              )}
           </View>
         </View>
 
@@ -821,8 +823,8 @@ class LeadViewing extends React.Component {
         />
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

@@ -62,6 +62,7 @@ class PropertyPropsure extends React.Component {
       editable: false,
       deletePaymentVisible: false,
       previousPayment: 0,
+      selectedPayment: {},
     }
   }
 
@@ -530,11 +531,12 @@ class PropertyPropsure extends React.Component {
 
   deletePayment = async (reason) => {
     const { rcmPayment, lead } = this.props
+    const { selectedPayment } = this.state
     this.showHideDeletePayment(false)
     const { propsureOutstandingPayment } = lead
-    const { installmentAmount } = rcmPayment
+    const { installmentAmount } = selectedPayment
     let totalPayment = Number(propsureOutstandingPayment) + Number(installmentAmount)
-    let url = `/api/leads/deletePropsurePayment?id=${rcmPayment.id}&reason=${reason}&leadId=${lead.id}&outstandingPayment=${totalPayment}`
+    let url = `/api/leads/deletePropsurePayment?id=${selectedPayment.id}&reason=${reason}&leadId=${lead.id}&outstandingPayment=${totalPayment}`
     const response = await axios.delete(url)
     if (response.data) {
       this.clearReduxAndStateValues()
@@ -557,6 +559,9 @@ class PropertyPropsure extends React.Component {
       (buttonIndex) => {
         if (buttonIndex === 0) {
           //Delete
+          this.setState({
+            selectedPayment: data,
+          })
           this.showHideDeletePayment(true)
         }
       }
@@ -640,7 +645,7 @@ class PropertyPropsure extends React.Component {
           armsUserId: user.id,
           outstandingPayment:
             Number(propsureOutstandingPayment) - Number(rcmPayment.installmentAmount),
-          addedBy: 'buyer',
+          addedBy: 'seller',
           amount: rcmPayment.installmentAmount,
           shortlistPropertyId: rcmPayment.selectedPropertyId,
         }
@@ -750,7 +755,7 @@ class PropertyPropsure extends React.Component {
   cancelPropsureRequest = async (data) => {
     const { lead } = this.props
     if (data && data.propsures && data.propsures.length) {
-      let totalFee = helper.AddPropsureReportsFee(data.propsures)
+      let totalFee = helper.AddPropsureReportsFee(data.propsures, 'seller')
       let reportIds = _.pluck(data.propsures, 'id')
       let url = `/api/leads/deletePropsure?`
       let params = {
@@ -845,6 +850,7 @@ class PropertyPropsure extends React.Component {
           selectedProperty={selectedProperty}
           editable={this.setCommissionEditData}
           onPaymentLongPress={this.onPaymentLongPress}
+          type={'seller'}
         />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}

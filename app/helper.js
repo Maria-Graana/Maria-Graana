@@ -608,11 +608,11 @@ const helper = {
     else str = str.toString()
     return str.replace(/<[^>]*>/g, '')
   },
-  AddPropsureReportsFee(pendingPropsures) {
+  AddPropsureReportsFee(pendingPropsures, type) {
     let total = 0
     if (pendingPropsures && pendingPropsures.length) {
       pendingPropsures.map((item) => {
-        if (item.propsureReport && item.propsureReport.fee) {
+        if (item.propsureReport && item.propsureReport.fee && item.addedBy === type) {
           total = Number(total) + Number(item.propsureReport.fee)
         }
       })
@@ -630,7 +630,7 @@ const helper = {
               (item) => item.status === 'pending' && item.addedBy === type
             )
           : null
-      let totalFee = helper.AddPropsureReportsFee(property.propsures) === 0
+      let totalFee = helper.AddPropsureReportsFee(property.propsures, type) === 0
       if (totalFee === 0 && pendingPropsures && pendingPropsures.length)
         return 'Pending Verification'
       if (pendingPropsures && pendingPropsures.length) {
@@ -683,6 +683,15 @@ const helper = {
       })
       return check
     } else return check
+  },
+  propsurePaymentType(property, type) {
+    let singlePayment = null
+    if (property && property.cmInstallments && property.cmInstallments.length) {
+      property.cmInstallments.map((item) => {
+        if (item.addedBy === type) singlePayment = item
+      })
+      return singlePayment
+    } else return singlePayment
   },
 }
 

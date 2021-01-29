@@ -19,7 +19,6 @@ const PropsureReportsPopup = (props) => {
     reports,
     totalReportPrice,
     checkValidation,
-    type,
   } = props
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
@@ -37,27 +36,23 @@ const PropsureReportsPopup = (props) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View>
-              {item.addedBy === type ? (
-                <View>
-                  <View style={styles.reportRow}>
-                    <View style={[styles.listView]}>
-                      <CheckBox
-                        checked={selectedReports.some((report) => item.title === report.title)}
-                        style={{ marginHorizontal: 5, alignSelf: 'center' }}
-                        onPress={() => addRemoveReport(item)}
-                        color={AppStyles.colors.primaryColor}
-                      />
-                      <Text onPress={() => addRemoveReport(item)} style={styles.reportName}>
-                        {item.title}
-                      </Text>
-                    </View>
-                    <Text style={styles.reportPrice}>
-                      <Text style={styles.pkr}>PKR</Text> {item.fee}
-                    </Text>
-                  </View>
-                  <Divider />
+              <View style={styles.reportRow}>
+                <View style={[styles.listView]}>
+                  <CheckBox
+                    checked={selectedReports.some((report) => item.title === report.title)}
+                    style={{ marginHorizontal: 5, alignSelf: 'center' }}
+                    onPress={() => addRemoveReport(item)}
+                    color={AppStyles.colors.primaryColor}
+                  />
+                  <Text onPress={() => addRemoveReport(item)} style={styles.reportName}>
+                    {item.title}
+                  </Text>
                 </View>
-              ) : null}
+                <Text style={styles.reportPrice}>
+                  <Text style={styles.pkr}>PKR</Text> {item.fee}
+                </Text>
+              </View>
+              <Divider />
             </View>
           )}
         />

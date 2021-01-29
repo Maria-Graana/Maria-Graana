@@ -70,6 +70,7 @@ class LeadPropsure extends React.Component {
       editable: false,
       deletePaymentVisible: false,
       previousPayment: 0,
+      selectedPayment: {},
     }
   }
 
@@ -627,11 +628,12 @@ class LeadPropsure extends React.Component {
 
   deletePayment = async (reason) => {
     const { rcmPayment, lead } = this.props
+    const { selectedPayment } = this.state
     this.showHideDeletePayment(false)
     const { propsureOutstandingPayment } = lead
-    const { installmentAmount } = rcmPayment
+    const { installmentAmount } = selectedPayment
     let totalPayment = Number(propsureOutstandingPayment) + Number(installmentAmount)
-    let url = `/api/leads/deletePropsurePayment?id=${rcmPayment.id}&reason=${reason}&leadId=${lead.id}&outstandingPayment=${totalPayment}`
+    let url = `/api/leads/deletePropsurePayment?id=${selectedPayment.id}&reason=${reason}&leadId=${lead.id}&outstandingPayment=${totalPayment}`
     const response = await axios.delete(url)
     if (response.data) {
       this.clearReduxAndStateValues()
@@ -643,7 +645,7 @@ class LeadPropsure extends React.Component {
     }
   }
 
-  onPaymentLongPress = () => {
+  onPaymentLongPress = (data) => {
     const { dispatch } = this.props
     ActionSheet.show(
       {
@@ -654,6 +656,9 @@ class LeadPropsure extends React.Component {
       (buttonIndex) => {
         if (buttonIndex === 0) {
           //Delete
+          this.setState({
+            selectedPayment: data,
+          })
           this.showHideDeletePayment(true)
         }
       }
@@ -850,7 +855,7 @@ class LeadPropsure extends React.Component {
   cancelPropsureRequest = async (data) => {
     const { lead } = this.props
     if (data && data.propsures && data.propsures.length) {
-      let totalFee = helper.AddPropsureReportsFee(data.propsures)
+      let totalFee = helper.AddPropsureReportsFee(data.propsures, 'buyer')
       let reportIds = _.pluck(data.propsures, 'id')
       let url = `/api/leads/deletePropsure?`
       let params = {
@@ -948,6 +953,7 @@ class LeadPropsure extends React.Component {
           selectedProperty={selectedProperty}
           editable={this.setCommissionEditData}
           onPaymentLongPress={this.onPaymentLongPress}
+          type={'buyer'}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
         <AddRCMPaymentModal

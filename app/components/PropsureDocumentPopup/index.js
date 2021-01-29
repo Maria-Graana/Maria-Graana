@@ -26,8 +26,10 @@ const PropsureDocumentPopup = (props) => {
     selectedProperty,
     editable,
     onPaymentLongPress,
+    type,
   } = props
-  let totalReportsFree = helper.AddPropsureReportsFee(pendingPropsures)
+  let totalReportsFree = helper.AddPropsureReportsFee(pendingPropsures, type)
+  let singlePayment = helper.propsurePaymentType(selectedProperty, type)
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView
@@ -44,112 +46,119 @@ const PropsureDocumentPopup = (props) => {
           data={pendingPropsures}
           style={{ marginTop: 35 }}
           renderItem={({ item }) => (
-            <View style={[styles.viewContainer]}>
-              <View style={styles.tileView}>
-                <Text style={{ color: AppStyles.colors.textColor, marginVertical: 5 }}>{`${
-                  item.propsureReport && item.propsureReport.title && item.propsureReport.title
-                }`}</Text>
-                <Text style={styles.reportPrice}>
-                  <Text style={styles.pkr}>PKR</Text>{' '}
-                  {parseInt(
-                    formatPrice(
-                      item.propsureReport && item.propsureReport.fee && item.propsureReport.fee
-                    )
-                  )}
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                disabled={item.isLoading && item.status === 'verified'}
-                onPress={() => {
-                  if (item.status === 'verified') {
-                    downloadFile(item)
-                  }
-                }}
-                activeOpacity={0.7}
-              >
-                <View style={[AppStyles.flexDirectionRow, AppStyles.bgcWhite, styles.tileView]}>
-                  <View
-                    style={[
-                      {
-                        backgroundColor: '#fff',
-                        borderRadius: 4,
-                        borderWidth: 0,
-                        height: 50,
-                        marginHorizontal: 10,
-                        flex: 0.8,
-                        justifyContent: 'center',
-                      },
-                    ]}
-                  >
-                    {item.status === 'verified' ? (
-                      <Text
-                        style={[
-                          {
-                            letterSpacing: 1,
-                            fontFamily: AppStyles.fonts.semiBoldFont,
-                            color: AppStyles.colors.textColor,
-                          },
-                        ]}
-                        numberOfLines={2}
-                      >
-                        {item.propsureDocs && item.propsureDocs.length > 0
-                          ? item.propsureDocs[0].name
-                            ? item.propsureDocs[0].name
-                            : item.propsureDocs[0].fileName
-                          : ``}
-                      </Text>
-                    ) : (
-                      <Text
-                        style={[
-                          {
-                            letterSpacing: 1,
-                            fontFamily: AppStyles.fonts.semiBoldFont,
-                            color: AppStyles.colors.subTextColor,
-                          },
-                        ]}
-                        numberOfLines={2}
-                      >
-                        Pending Propsure
-                      </Text>
-                    )}
+            <View>
+              {item.addedBy === type ? (
+                <View style={[styles.viewContainer]}>
+                  <View style={styles.tileView}>
+                    <Text style={{ color: AppStyles.colors.textColor, marginVertical: 5 }}>{`${
+                      item.propsureReport && item.propsureReport.title && item.propsureReport.title
+                    }`}</Text>
+                    <Text style={styles.reportPrice}>
+                      <Text style={styles.pkr}>PKR</Text>{' '}
+                      {parseInt(
+                        formatPrice(
+                          item.propsureReport && item.propsureReport.fee && item.propsureReport.fee
+                        )
+                      )}
+                    </Text>
                   </View>
-                  {item.status === 'pending' ? (
-                    <TouchableOpacity
-                      disabled={item.isLoading}
-                      onPress={() => {}}
-                      style={{
-                        flex: 0.2,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderColor: AppStyles.colors.subTextColor,
-                        borderLeftWidth: item.status === 'pending' ? 0 : 0.5,
-                      }}
-                    >
-                      {item.isLoading ? (
-                        <ActivityIndicator size={'large'} color={AppStyles.colors.primaryColor} />
-                      ) : null}
-                    </TouchableOpacity>
-                  ) : (
-                    <View
-                      style={{
-                        flex: 0.2,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <AntDesign
-                        name="checkcircleo"
-                        size={32}
-                        color={AppStyles.colors.primaryColor}
-                      />
+
+                  <TouchableOpacity
+                    disabled={item.isLoading && item.status === 'verified'}
+                    onPress={() => {
+                      if (item.status === 'verified') {
+                        downloadFile(item)
+                      }
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <View style={[AppStyles.flexDirectionRow, AppStyles.bgcWhite, styles.tileView]}>
+                      <View
+                        style={[
+                          {
+                            backgroundColor: '#fff',
+                            borderRadius: 4,
+                            borderWidth: 0,
+                            height: 50,
+                            marginHorizontal: 10,
+                            flex: 0.8,
+                            justifyContent: 'center',
+                          },
+                        ]}
+                      >
+                        {item.status === 'verified' ? (
+                          <Text
+                            style={[
+                              {
+                                letterSpacing: 1,
+                                fontFamily: AppStyles.fonts.semiBoldFont,
+                                color: AppStyles.colors.textColor,
+                              },
+                            ]}
+                            numberOfLines={2}
+                          >
+                            {item.propsureDocs && item.propsureDocs.length > 0
+                              ? item.propsureDocs[0].name
+                                ? item.propsureDocs[0].name
+                                : item.propsureDocs[0].fileName
+                              : ``}
+                          </Text>
+                        ) : (
+                          <Text
+                            style={[
+                              {
+                                letterSpacing: 1,
+                                fontFamily: AppStyles.fonts.semiBoldFont,
+                                color: AppStyles.colors.subTextColor,
+                              },
+                            ]}
+                            numberOfLines={2}
+                          >
+                            Pending Propsure
+                          </Text>
+                        )}
+                      </View>
+                      {item.status === 'pending' ? (
+                        <TouchableOpacity
+                          disabled={item.isLoading}
+                          onPress={() => {}}
+                          style={{
+                            flex: 0.2,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            borderColor: AppStyles.colors.subTextColor,
+                            borderLeftWidth: item.status === 'pending' ? 0 : 0.5,
+                          }}
+                        >
+                          {item.isLoading ? (
+                            <ActivityIndicator
+                              size={'large'}
+                              color={AppStyles.colors.primaryColor}
+                            />
+                          ) : null}
+                        </TouchableOpacity>
+                      ) : (
+                        <View
+                          style={{
+                            flex: 0.2,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <AntDesign
+                            name="checkcircleo"
+                            size={32}
+                            color={AppStyles.colors.primaryColor}
+                          />
+                        </View>
+                      )}
                     </View>
-                  )}
-                </View>
-              </TouchableOpacity>
-              {item.showMsg ? (
-                <View style={{ paddingVertical: 5 }}>
-                  <Text>File Downloaded!</Text>
+                  </TouchableOpacity>
+                  {item.showMsg ? (
+                    <View style={{ paddingVertical: 5 }}>
+                      <Text>File Downloaded!</Text>
+                    </View>
+                  ) : null}
                 </View>
               ) : null}
             </View>
@@ -172,11 +181,11 @@ const PropsureDocumentPopup = (props) => {
           </View>
           {totalReportsFree !== 0 && (
             <View style={{ margin: 10 }}>
-              {selectedProperty && selectedProperty.cmInstallment ? (
+              {singlePayment ? (
                 <CommissionTile
-                  data={selectedProperty.cmInstallment}
+                  data={singlePayment}
                   editTile={editable}
-                  onPaymentLongPress={() => onPaymentLongPress()}
+                  onPaymentLongPress={() => onPaymentLongPress(singlePayment)}
                   commissionEdit={false}
                   title={'Propsure Payment'}
                 />

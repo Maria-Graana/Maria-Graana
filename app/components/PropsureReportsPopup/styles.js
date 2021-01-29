@@ -6,6 +6,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen'
+import { center } from '@turf/turf'
 
 export default styles = StyleSheet.create({
   viewContainer: {
@@ -33,13 +34,17 @@ export default styles = StyleSheet.create({
     marginLeft: 15,
     color: AppStyles.colors.textColor,
     fontFamily: AppStyles.fonts.defaultFont,
-    fontSize: AppStyles.fontSize.large,
+    fontSize: AppStyles.fontSize.medium,
+    alignSelf: 'center',
   },
   reportPrice: {
     marginRight: 25,
     fontFamily: AppStyles.fonts.semiBoldFont,
     fontSize: AppStyles.fontSize.large,
     color: AppStyles.colors.primaryColor,
+    paddingLeft: 5,
+    alignSelf: 'center',
+    // flex: 0.4,
   },
   pkr: {
     color: AppStyles.colors.primaryColor,
@@ -49,5 +54,9 @@ export default styles = StyleSheet.create({
   totalView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  listView: {
+    flexDirection: 'row',
+    flex: 0.8,
   },
 })

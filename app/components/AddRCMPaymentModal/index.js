@@ -146,7 +146,7 @@ const AddRCMPaymentModal = ({
                 keyExtractor={(item) => item.id.toString()}
               />
             ) : (
-              <ErrorMessage errorMessage={'No Payment Remarks Exists'} />
+              <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
             )
           ) : null}
 

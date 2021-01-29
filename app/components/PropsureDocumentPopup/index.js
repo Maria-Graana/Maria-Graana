@@ -178,7 +178,7 @@ const PropsureDocumentPopup = (props) => {
                   editTile={editable}
                   onPaymentLongPress={() => onPaymentLongPress()}
                   commissionEdit={false}
-                  title={'Propsure Services Payment'}
+                  title={'Propsure Payment'}
                 />
               ) : (
                 <Button style={[AppStyles.formBtn, { marginVertical: 10 }]} onPress={onPress}>

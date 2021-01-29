@@ -115,7 +115,15 @@ class PropMatchTile extends React.Component {
   }
 
   render() {
-    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen, toggleCheckListModal, } = this.props
+    const {
+      data,
+      isMenuVisible,
+      showCheckBoxes,
+      viewingMenu,
+      menuShow,
+      screen,
+      toggleCheckListModal,
+    } = this.props
     let imagesList = this.checkImages()
     let show = isMenuVisible
     let phoneNumber = null
@@ -205,7 +213,7 @@ class PropMatchTile extends React.Component {
             </View>
           </View>
           <View style={styles.phoneIcon}>
-            {screen === 'propsure' && helper.checkPropsureDocs(data.propsures) ? (
+            {screen === 'propsure' && helper.checkPropsureDocs(data.propsures, 'seller') ? (
               <Menu
                 visible={data.checkBox}
                 onDismiss={() => this.props.toggleMenu(false, data.id)}

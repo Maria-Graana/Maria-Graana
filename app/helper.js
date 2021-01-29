@@ -621,11 +621,14 @@ const helper = {
       return total
     }
   },
-  propsurePendingStatuses(property) {
+  propsurePendingStatuses(property, type) {
     if (property) {
       let pendingPropsures =
         property.propsures && property.propsures.length
-          ? _.filter(property.propsures, (item) => item.status === 'pending')
+          ? _.filter(
+              property.propsures,
+              (item) => item.status === 'pending' && item.addedBy === type
+            )
           : null
       let totalFee = helper.AddPropsureReportsFee(property.propsures) === 0
       if (totalFee === 0 && pendingPropsures && pendingPropsures.length)
@@ -647,14 +650,23 @@ const helper = {
       }
     }
   },
-  checkPropsureDocs(propsures) {
-    let check = false
+  checkPropsureDocs(propsures, type) {
+    let check = true
     if (propsures && propsures.length) {
       propsures.map((item) => {
-        if (item.propsureDocs && item.propsureDocs.length) check = true
+        if (item.propsureDocs && item.propsureDocs.length && item.addedBy === type) check = false
       })
       return check
-    } else return check
+    } else return false
+  },
+  checkPropsureRequests(propsures, type) {
+    let check = true
+    if (propsures && propsures.length) {
+      propsures.map((item) => {
+        if (item && item.addedBy === type) check = false
+      })
+      return check
+    } else return true
   },
   checkPP(user) {
     if (user) {

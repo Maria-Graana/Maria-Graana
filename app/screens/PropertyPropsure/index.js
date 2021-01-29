@@ -190,6 +190,7 @@ class PropertyPropsure extends React.Component {
         org: selectedProperty.arms_id ? 'arms' : 'graana',
         propsureIds: reportIds,
         outstandingPropsure: totalReportPrice,
+        addedBy: 'seller',
       }
       axios
         .post(`/api/leads/propsure/${lead.id}`, body)
@@ -352,7 +353,7 @@ class PropertyPropsure extends React.Component {
   renderPropsurePendingView = (item) => {
     const { lead, user } = this.props
     let propsures = item.propsures.map((item) => ({ ...item, isLoading: false }))
-    let status = helper.propsurePendingStatuses(item)
+    let status = helper.propsurePendingStatuses(item, 'seller')
     if (status !== 'VERIFIED') {
       return (
         <TouchableOpacity
@@ -830,6 +831,7 @@ class PropertyPropsure extends React.Component {
           closeModal={() => this.closeModal()}
           onPress={this.onHandleRequestVerification}
           totalReportPrice={totalReportPrice}
+          type={'seller'}
         />
         <PropsureDocumentPopup
           pendingPropsures={_.clone(pendingPropsures)}
@@ -897,7 +899,7 @@ class PropertyPropsure extends React.Component {
                     />
                   )}
                   <View>
-                    {item.item.propsures.length === 0
+                    {helper.checkPropsureRequests(item.item.propsures, 'seller')
                       ? this.renderPropsureVerificationView(item.item)
                       : this.renderPropsurePendingView(item.item)}
                   </View>

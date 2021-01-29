@@ -196,7 +196,7 @@ class AgentTile extends React.Component {
                   }
                 >
                   <View>
-                    {!helper.checkPropsureDocs(data.propsures) ? (
+                    {!helper.checkPropsureDocs(data.propsures, 'buyer') ? (
                       <Menu.Item
                         onPress={() => {
                           this.props.goToPropertyComments(data)

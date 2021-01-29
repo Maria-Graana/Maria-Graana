@@ -78,7 +78,15 @@ class PropAgentTile extends React.Component {
   }
 
   render() {
-    const { data, isMenuVisible, showCheckBoxes, viewingMenu, menuShow, screen, toggleCheckListModal } = this.props
+    const {
+      data,
+      isMenuVisible,
+      showCheckBoxes,
+      viewingMenu,
+      menuShow,
+      screen,
+      toggleCheckListModal,
+    } = this.props
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
     let showDone = this.checkDiaryStatus(data)
@@ -141,7 +149,7 @@ class PropAgentTile extends React.Component {
           <View style={[styles.pad5, { marginRight: 5 }]}>
             <View style={{ flexDirection: 'row', height: 20 }}>
               <View style={{ flex: 1 }}></View>
-              {screen === 'propsure' && helper.checkPropsureDocs(data.propsures) ? (
+              {screen === 'propsure' && helper.checkPropsureDocs(data.propsures, 'seller') ? (
                 <Menu
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}

@@ -411,6 +411,7 @@ class PropertyViewing extends React.Component {
 
   simplifyViewingData = (data) => {
     let simpleData = [...data]
+    simpleData = _.sortBy(simpleData, 'id');
     simpleData = simpleData.map((item, index) => {
       return {
         ...item,

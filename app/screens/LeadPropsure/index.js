@@ -396,7 +396,7 @@ class LeadPropsure extends React.Component {
 
   closeLead = () => {
     const { lead } = this.props
-    if (lead.commissions && lead.commissions.status === StaticData.leadClearedStatus) {
+    if (helper.checkClearedStatuses(lead)) {
       this.setState({
         reasons: StaticData.leadCloseReasonsWithPayment,
         isCloseLeadVisible: true,
@@ -791,6 +791,8 @@ class LeadPropsure extends React.Component {
         delete body.visible
         delete body.remarks
         delete body.selectedPropertyId
+        console.log('body: ', body)
+        console.log('propsureOutstandingPayment: ', lead.propsureOutstandingPayment)
         axios
           .patch(`/api/leads/project/payment?id=${body.id}`, body)
           .then((response) => {

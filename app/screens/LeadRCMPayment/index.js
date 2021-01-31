@@ -507,18 +507,8 @@ class LeadRCMPayment extends React.Component {
 
   showLeadPaymentModal = () => {
     const { lead } = this.state
-    let commissionsLength = 2
-    if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true)
-      commissionsLength = 1
-    // if (lead.paymentProperty && lead.paymentProperty.origin === null) {
-    //   commissionsLength = 1
-    // }
-    let cleared = 0
     if (lead.commissions.length) {
-      lead.commissions.map((item) => {
-        if (item.status === 'cleared') cleared++
-      })
-      if (cleared >= commissionsLength) {
+      if (helper.checkClearedStatuses(lead)) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
           isVisible: true,
@@ -1036,6 +1026,7 @@ class LeadRCMPayment extends React.Component {
           paymentCategory: 'commission',
         }
         delete body.visible
+        console.log('body: ', body)
         axios
           .post(`/api/leads/project/payments`, body)
           .then((response) => {

@@ -555,7 +555,7 @@ class LeadMatch extends React.Component {
 
   closeLead = () => {
     const { lead } = this.props
-    if (lead.commissions && lead.commissions.status === StaticData.leadClearedStatus) {
+    if (helper.checkClearedStatuses(lead)) {
       this.setState({
         reasons: StaticData.leadCloseReasonsWithPayment,
         isVisible: true,

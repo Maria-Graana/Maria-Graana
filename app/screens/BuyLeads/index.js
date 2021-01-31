@@ -25,6 +25,7 @@ import Search from '../../components/Search'
 import Ability from '../../hoc/Ability'
 import { storeItem, getItem } from '../../actions/user'
 import config from '../../config'
+import ShortlistedProperties from '../../components/ShortlistedProperties'
 
 var BUTTONS = [
   'Assign to team member',
@@ -52,6 +53,10 @@ class BuyLeads extends React.Component {
       showSearchBar: false,
       searchText: '',
       showAssignToButton: false,
+      shortListedProperties: [],
+      openPopup: false,
+      selectedLead: {},
+      popupLoading: false,
     }
   }
 
@@ -381,6 +386,35 @@ class BuyLeads extends React.Component {
     }
   }
 
+  fetchShortlistedProperties = (lead) => {
+    let matches = []
+    this.closePopup()
+    this.setState({ popupLoading: true })
+    axios
+      .get(`/api/leads/${lead.id}/shortlist`)
+      .then((res) => {
+        matches = helper.propertyIdCheck(res.data.rows)
+        this.setState({
+          popupLoading: false,
+          shortListedProperties: matches,
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+        this.setState({
+          popupLoading: false,
+        })
+      })
+  }
+
+  closePopup = () => {
+    const { openPopup, selectedLead } = this.state
+    this.setState({
+      openPopup: !openPopup,
+      selectedLead: openPopup === false ? {} : selectedLead,
+    })
+  }
+
   render() {
     const {
       leadsData,
@@ -393,6 +427,9 @@ class BuyLeads extends React.Component {
       onEndReachedLoader,
       searchText,
       showSearchBar,
+      openPopup,
+      shortListedProperties,
+      popupLoading,
     } = this.state
     const { user } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -402,6 +439,12 @@ class BuyLeads extends React.Component {
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
+          <ShortlistedProperties
+            openPopup={openPopup}
+            closePopup={this.closePopup}
+            data={shortListedProperties}
+            popupLoading={popupLoading}
+          />
           {showSearchBar ? (
             <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
               <Search
@@ -484,6 +527,7 @@ class BuyLeads extends React.Component {
                     changeLeadStatus={this.changeLeadStatus}
                     redirectToCompare={this.redirectToCompare}
                     PPLeadStatusUpdate={this.PPLeadStatusUpdate}
+                    fetchShortlistedProperties={this.fetchShortlistedProperties}
                   />
                 )}
               </View>

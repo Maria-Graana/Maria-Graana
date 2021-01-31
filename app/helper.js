@@ -692,6 +692,33 @@ const helper = {
       return singlePayment
     } else return singlePayment
   },
+  checkClearedStatuses(lead) {
+    let check = false
+    let paymentCheck = true
+    let propsureCheck = true
+    let commissionsLength = 2
+    let cleared = 0
+    if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true) {
+      commissionsLength = 1
+    }
+    const { commissions, propsureOutstandingPayment } = lead
+    if (commissions && commissions.length) {
+      commissions.map((item) => {
+        if (item.status !== 'cleared' && item.paymentCategory === 'commission') paymentCheck = false
+        if (item.status === 'cleared' && item.paymentCategory === 'commission') cleared++
+        if (item.status !== 'cleared' && item.paymentCategory === 'propsure_services')
+          propsureCheck = false
+      })
+      if (
+        paymentCheck &&
+        propsureCheck &&
+        propsureOutstandingPayment === 0 &&
+        cleared === commissionsLength
+      )
+        check = true
+      return check
+    } else return check
+  },
 }
 
 module.exports = helper

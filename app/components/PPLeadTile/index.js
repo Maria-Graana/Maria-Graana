@@ -96,6 +96,7 @@ class PPLeadTile extends React.Component {
       propertyLead,
       redirectToCompare,
       changeLeadStatus,
+      fetchShortlistedProperties,
     } = this.props
     const { organization } = user
     var changeColor =
@@ -132,6 +133,7 @@ class PPLeadTile extends React.Component {
       data.shared_with_armsuser_id == user.id ||
       propertyLead
     if (data.status === 'closed_won' || data.status === 'closed_lost') leadOwner = false
+    // console.log('data: ', data)
     return (
       <TouchableOpacity
         // onLongPress={() => handleLongPress(data)}
@@ -194,12 +196,12 @@ class PPLeadTile extends React.Component {
             </View>
 
             {/* ****** Compare URL */}
-            {data.origin !== 'arms' && data.wanted_id ? (
+            {data.origin === 'pp-wanted' ? (
               <View style={[AppStyles.mbFive, { flex: 1, alignItems: 'baseline' }]}>
                 <Text style={[AppStyles.darkColor]} numberOfLines={1}>
                   Shortlisted properties:{' '}
                   <Text
-                    onPress={() => redirectToCompare(data)}
+                    onPress={() => fetchShortlistedProperties(data)}
                     style={[
                       AppStyles.darkColor,
                       // AppStyles.mrTen,

@@ -25,6 +25,10 @@ import StaticData from '../../StaticData'
 import styles from './style'
 import DeleteModal from '../../components/DeleteModal'
 import { ActionSheet } from 'native-base'
+import * as MediaLibrary from 'expo-media-library'
+import * as FileSystem from 'expo-file-system'
+import * as Permissions from 'expo-permissions'
+import * as IntentLauncher from 'expo-intent-launcher'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -141,6 +145,57 @@ class PropertyPropsure extends React.Component {
   }
 
   displayChecks = () => {}
+
+  downloadFile = async (data) => {
+    const { pendingPropsures } = this.state
+    let pendingPropsuresCopy = []
+    if (data.propsureDocs && data.propsureDocs.length) {
+      let doc = data.propsureDocs[0]
+      const uri = doc.document
+      let fileUri = FileSystem.documentDirectory + doc.fileName
+      FileSystem.downloadAsync(uri, fileUri)
+        .then(({ uri }) => {
+          this.saveFile(uri, doc)
+          pendingPropsuresCopy = pendingPropsures.map((item) => {
+            if (item.id === data.id) {
+              item.showMsg = true
+              return item
+            } else {
+              item.showMsg = false
+              return item
+            }
+          })
+          this.setState({ pendingPropsures: pendingPropsuresCopy })
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
+  }
+
+  saveFile = async (fileUri, doc) => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    if (status === 'granted') {
+      const asset = await MediaLibrary.createAssetAsync(fileUri)
+      MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
+        helper.successToast('File Downloaded!')
+        FileSystem.getContentUriAsync(fileUri).then((cUri) => {
+          let fileType = doc.fileName.split('.').pop()
+          if (fileType.includes('jpg') || fileType.includes('png') || fileType.includes('jpeg')) {
+            this.setState({ showDoc: true, docUrl: doc.document, documentModalVisible: false })
+          } else {
+            if (fileType.includes('pdf')) fileType = 'application/pdf'
+            else fileType = fileType
+            IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+              data: cUri,
+              flags: 1,
+              type: fileType,
+            })
+          }
+        })
+      })
+    }
+  }
 
   ownProperty = (property) => {
     const { user } = this.props

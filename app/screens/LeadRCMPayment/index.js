@@ -1032,8 +1032,10 @@ class LeadRCMPayment extends React.Component {
           paymentCategory: 'commission',
         }
         delete body.visible
+        console.log('body: ', body)
+        console.log(`/api/leads/project/payment`)
         axios
-          .post(`/api/leads/project/payment`, body)
+          .post(`/api/leads/project/payments`, body)
           .then((response) => {
             if (response.data) {
               // check if some attachment exists so upload that as well to server with payment id.
@@ -1059,7 +1061,7 @@ class LeadRCMPayment extends React.Component {
         delete body.visible
         delete body.remarks
         axios
-          .patch(`/api/leads/project/payment?id=${body.id}`, body)
+          .patch(`/api/leads/project/payments?id=${body.id}`, body)
           .then((response) => {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments

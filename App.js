@@ -242,15 +242,15 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <SafeAreaProvider>
-            <Root>
+          <Root>
+            <SafeAreaProvider>
               <PaperProvider>
                 <NavigationContainer ref={navigationRef}>
                   <RootStack />
                 </NavigationContainer>
               </PaperProvider>
-            </Root>
-          </SafeAreaProvider>
+            </SafeAreaProvider>
+          </Root>
         </PersistGate>
       </Provider>
     )

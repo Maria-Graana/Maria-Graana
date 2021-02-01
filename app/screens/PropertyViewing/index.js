@@ -453,8 +453,6 @@ class PropertyViewing extends React.Component {
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
-      console.log(selectedCheckList.length)
-      console.log( StaticData.realEstateAgentsCheckList.length )
       if (
         diary.status === 'pending' &&
         (selectedCheckList.length === StaticData.realEstateAgentsCheckList.length ) &&

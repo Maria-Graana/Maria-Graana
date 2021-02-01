@@ -750,6 +750,7 @@ class LeadPropsure extends React.Component {
         delete body.visible
         delete body.installmentAmount
         delete body.selectedPropertyId
+        delete body.paymentCategory
         axios
           .post(`/api/leads/propsurePayment`, body)
           .then((response) => {
@@ -791,10 +792,9 @@ class LeadPropsure extends React.Component {
         delete body.visible
         delete body.remarks
         delete body.selectedPropertyId
-        console.log('body: ', body)
-        console.log('propsureOutstandingPayment: ', lead.propsureOutstandingPayment)
+        delete body.paymentCategory
         axios
-          .patch(`/api/leads/project/payment?id=${body.id}`, body)
+          .patch(`/api/leads/propsurePayment`, body)
           .then((response) => {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments

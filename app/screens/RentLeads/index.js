@@ -27,6 +27,7 @@ import AndroidNotifications from '../../AndroidNotifications'
 import Ability from '../../hoc/Ability'
 import _ from 'underscore'
 import config from '../../config'
+import ShortlistedProperties from '../../components/ShortlistedProperties'
 
 var BUTTONS = [
   'Assign to team member',
@@ -53,6 +54,10 @@ class RentLeads extends React.Component {
       showSearchBar: false,
       searchText: '',
       showAssignToButton: false,
+      shortListedProperties: [],
+      openPopup: false,
+      selectedLead: {},
+      popupLoading: false,
     }
   }
 
@@ -387,6 +392,35 @@ class RentLeads extends React.Component {
     }
   }
 
+  fetchShortlistedProperties = (lead) => {
+    let matches = []
+    this.closePopup()
+    this.setState({ popupLoading: true })
+    axios
+      .get(`/api/leads/${lead.id}/shortlist`)
+      .then((res) => {
+        matches = helper.propertyIdCheck(res.data.rows)
+        this.setState({
+          popupLoading: false,
+          shortListedProperties: matches,
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+        this.setState({
+          popupLoading: false,
+        })
+      })
+  }
+
+  closePopup = () => {
+    const { openPopup, selectedLead } = this.state
+    this.setState({
+      openPopup: !openPopup,
+      selectedLead: openPopup === false ? {} : selectedLead,
+    })
+  }
+
   render() {
     const {
       leadsData,
@@ -399,6 +433,9 @@ class RentLeads extends React.Component {
       onEndReachedLoader,
       searchText,
       showSearchBar,
+      openPopup,
+      shortListedProperties,
+      popupLoading,
     } = this.state
     const { user, navigation } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -409,7 +446,12 @@ class RentLeads extends React.Component {
         {user.organization && user.organization.isPP && (
           <AndroidNotifications navigation={navigation} />
         )}
-
+        <ShortlistedProperties
+          openPopup={openPopup}
+          closePopup={this.closePopup}
+          data={shortListedProperties}
+          popupLoading={popupLoading}
+        />
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
           {showSearchBar ? (
@@ -494,6 +536,7 @@ class RentLeads extends React.Component {
                     changeLeadStatus={this.changeLeadStatus}
                     redirectToCompare={this.redirectToCompare}
                     PPLeadStatusUpdate={this.PPLeadStatusUpdate}
+                    fetchShortlistedProperties={this.fetchShortlistedProperties}
                   />
                 )}
               </View>

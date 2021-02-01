@@ -368,9 +368,13 @@ class PropertyPropsure extends React.Component {
       )
     } else {
       return (
-        <View style={[styles.viewButtonStyle, { backgroundColor: AppStyles.colors.primaryColor }]}>
+        <TouchableOpacity
+          style={[styles.viewButtonStyle, { backgroundColor: AppStyles.colors.primaryColor }]}
+          activeOpacity={0.7}
+          onPress={() => this.showDocumentModal(propsures, item)}
+        >
           <Text style={[styles.propsureVerificationTextStyle, { color: '#fff' }]}>{status}</Text>
-        </View>
+        </TouchableOpacity>
       )
     }
   }

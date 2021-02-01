@@ -238,7 +238,7 @@ class ShortlistedProperties extends React.Component {
                   <Image source={backArrow} style={[styles.backImg]} />
                 </TouchableOpacity>
                 <View style={styles.header}>
-                  <Text style={styles.headerText}>Shortlisted Properties</Text>
+                  <Text style={styles.headerText}>SHORTLISTED PROPERTIES</Text>
                 </View>
               </View>
               {data.length ? (

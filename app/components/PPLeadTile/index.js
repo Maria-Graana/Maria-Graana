@@ -21,10 +21,15 @@ class PPLeadTile extends React.Component {
 
   call = (data) => {
     const { contacts, purposeTab, updateStatus, user } = this.props
-    let newContact = helper.createContactPayload(data.customer)
-    this.sendCallStatus(data)
+    if (data.customer) {
+      let newContact = helper.createContactPayload(data.customer)
+      this.sendCallStatus(data)
+      helper.callNumber(newContact, contacts)
+    } else {
+      helper.errorToast(`No Phone Number`)
+    }
+
     if (purposeTab !== 'invest') if (data.assigned_to_armsuser_id === user.id) updateStatus(data)
-    helper.callNumber(newContact, contacts)
   }
 
   sendCallStatus = (data) => {
@@ -199,13 +204,12 @@ class PPLeadTile extends React.Component {
             {data.origin === 'pp-wanted' ? (
               <View style={[AppStyles.mbFive, { flex: 1, alignItems: 'baseline' }]}>
                 <Text style={[AppStyles.darkColor]} numberOfLines={1}>
-                  Shortlisted properties:{' '}
+                  Shortlisted Properties:{' '}
                   <Text
                     onPress={() => fetchShortlistedProperties(data)}
                     style={[
-                      AppStyles.darkColor,
                       // AppStyles.mrTen,
-                      { textDecorationLine: 'underline' },
+                      { textDecorationLine: 'underline', color: AppStyles.colors.primaryColor },
                     ]}
                     numberOfLines={1}
                   >
@@ -221,9 +225,8 @@ class PPLeadTile extends React.Component {
                   <Text
                     onPress={() => redirectToCompare(data)}
                     style={[
-                      AppStyles.darkColor,
                       // AppStyles.mrTen,
-                      { textDecorationLine: 'underline' },
+                      { textDecorationLine: 'underline', color: AppStyles.colors.primaryColor },
                     ]}
                     numberOfLines={1}
                   >

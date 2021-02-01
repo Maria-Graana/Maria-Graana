@@ -687,7 +687,8 @@ const helper = {
     let singlePayment = null
     if (property && property.cmInstallments && property.cmInstallments.length) {
       property.cmInstallments.map((item) => {
-        if (item.addedBy === type) singlePayment = item
+        if (item.addedBy === type && item.paymentCategory === 'propsure_services')
+          singlePayment = item
       })
       return singlePayment
     } else return singlePayment

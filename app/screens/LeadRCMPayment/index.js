@@ -571,9 +571,15 @@ class LeadRCMPayment extends React.Component {
     const { user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
     if (leadAssignedSharedStatus) {
-      if (lead.commissions && lead.commissions.length > 0) {
-        helper.errorToast('Payment already added, cannot select another property')
-        return
+      if (lead && lead.commissions && lead.commissions.length > 0) {
+        let count = 0
+        lead.commissions.map((item) => {
+          if (item.paymentCategory === 'commission') count++
+        })
+        if (count) {
+          helper.errorToast('Payment already added, cannot select another property')
+          return
+        }
       }
       Alert.alert(
         'WARNING',
@@ -1026,7 +1032,6 @@ class LeadRCMPayment extends React.Component {
           paymentCategory: 'commission',
         }
         delete body.visible
-        console.log('body: ', body)
         axios
           .post(`/api/leads/project/payments`, body)
           .then((response) => {

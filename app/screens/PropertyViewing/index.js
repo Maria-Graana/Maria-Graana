@@ -453,6 +453,8 @@ class PropertyViewing extends React.Component {
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
+      console.log(selectedCheckList.length)
+      console.log( StaticData.realEstateAgentsCheckList.length )
       if (
         diary.status === 'pending' &&
         (selectedCheckList.length === StaticData.realEstateAgentsCheckList.length ) &&
@@ -588,8 +590,8 @@ class PropertyViewing extends React.Component {
   handleCheckListSelection = (item) => {
     if (this.state.selectedCheckList.includes(item)) {
       let temp = this.state.selectedCheckList
-      delete temp[temp.indexOf(item)]
-      this.setState({ selectedCheckList: temp })
+      temp = _.without(temp, item)
+      this.setState({ selectedCheckList: temp });
     } else {
       let temp = this.state.selectedCheckList
       temp.push(item)

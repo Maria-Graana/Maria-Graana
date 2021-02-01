@@ -42,7 +42,7 @@ class RCMAttachment extends Component {
   }
 
   componentDidMount() {
-    console.log('rcmAttachmentProps', this.props.rcmPayment)
+    // console.log('rcmAttachmentProps', this.props.rcmPayment)
   }
 
   setValues = (value) => {
@@ -108,7 +108,7 @@ class RCMAttachment extends Component {
   deleteAttachmentLocally = (item) => {
     const { rcmPayment } = this.props
     let newPaymentArray = { ...rcmPayment }
-    newPaymentArray = _.without(newPaymentArray.attachments, item)
+    newPaymentArray = _.without(newPaymentArray.paymentAttachments, item)
     this.setValues({ ...rcmPayment, paymentAttachments: newPaymentArray })
   }
 
@@ -161,12 +161,16 @@ class RCMAttachment extends Component {
       objectForAttachment.size = formData.size
       objectForAttachment.uri = formData.uri
       objectForAttachment.title = title
+      if ('paymentAttachments' in rcmPayment) {
+        // console.log()
+      } else {
+        rcmPayment.paymentAttachments = []
+      }
       rcmPayment.paymentAttachments.push(objectForAttachment)
       var payload = {
         ...rcmPayment,
       }
       this.setState({ isVisible: false }, () => {
-        console.log('payload', payload)
         this.setValues(payload)
       })
     }

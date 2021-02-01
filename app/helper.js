@@ -713,7 +713,7 @@ const helper = {
       if (
         paymentCheck &&
         propsureCheck &&
-        propsureOutstandingPayment === 0 &&
+        propsureOutstandingPayment <= 0 &&
         cleared === commissionsLength
       )
         check = true

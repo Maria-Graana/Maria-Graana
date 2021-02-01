@@ -356,7 +356,7 @@ class LeadViewing extends React.Component {
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
     if (helper.checkMyDiary(property, user)) {
       let diaries = property.diaries
-      let diary = _.find(diaries, (item) => user.id === item.userId)
+      let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
       let viewingDoneCount =
         diaries &&
         diaries.filter((item) => {
@@ -495,8 +495,7 @@ class LeadViewing extends React.Component {
     const { selectedCheckList, userFeedback } = this.state
     if (property.diaries.length) {
       let diaries = property.diaries
-      let diary = _.find(diaries, (item) => user.id === item.userId)
-     
+      let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
       if (
         diary.status === 'pending' &&
         selectedCheckList.length === StaticData.areaManagerCheckList.length &&
@@ -513,7 +512,6 @@ class LeadViewing extends React.Component {
           checkList: stringifiedObj,
           customer_feedback: userFeedback,
         }
-        console.log('doneViewing: ', `/api/diary/update?id=${diary.id}`, body)
         axios
           .patch(`/api/diary/update?id=${diary.id}`, body)
           .then((res) => {

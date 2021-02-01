@@ -82,7 +82,19 @@ class AgentTile extends React.Component {
     if (property.diaries && property.diaries.length) {
       let diaries = property.diaries
       for (let i = 0; i < diaries.length; i++) {
-        if (Number(diaries[i].userId) === Number(user.id)) {
+        if (Number(diaries[i].userId) === Number(user.id) && diaries[i].status === 'pending') {
+          return diaries[i]
+        }
+      }
+    }
+  }
+
+  getOwnCompletedDiary = (property) => {
+    const { user } = this.props
+    if (property.diaries && property.diaries.length) {
+      let diaries = property.diaries
+      for (let i = 0; i < diaries.length; i++) {
+        if (Number(diaries[i].userId) === Number(user.id) && diaries[i].status === 'completed') {
           return diaries[i]
         }
       }
@@ -107,6 +119,9 @@ class AgentTile extends React.Component {
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false
+      } else {
+        let completedDiary = this.getOwnCompletedDiary(data)
+        if (completedDiary) viewingMenu = false
       }
     }
     return (

@@ -672,7 +672,7 @@ class PropertyRCMPayment extends React.Component {
         }
         delete body.visible
         axios
-          .post(`/api/leads/project/payment?id=${body.id}`, body)
+          .post(`/api/leads/project/payment`, body)
           .then((response) => {
             if (response.data) {
               // check if some attachment exists so upload that as well to server with payment id.

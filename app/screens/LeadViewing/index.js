@@ -496,6 +496,7 @@ class LeadViewing extends React.Component {
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
+     
       if (
         diary.status === 'pending' &&
         selectedCheckList.length === StaticData.areaManagerCheckList.length &&
@@ -644,7 +645,7 @@ class LeadViewing extends React.Component {
   handleCheckListSelection = (item) => {
     if (this.state.selectedCheckList.includes(item)) {
       let temp = this.state.selectedCheckList
-      delete temp[temp.indexOf(item)]
+      temp = _.without(temp, item)
       this.setState({ selectedCheckList: temp })
     } else {
       let temp = this.state.selectedCheckList

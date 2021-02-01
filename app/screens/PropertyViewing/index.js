@@ -588,8 +588,8 @@ class PropertyViewing extends React.Component {
   handleCheckListSelection = (item) => {
     if (this.state.selectedCheckList.includes(item)) {
       let temp = this.state.selectedCheckList
-      delete temp[temp.indexOf(item)]
-      this.setState({ selectedCheckList: temp })
+      temp = _.without(temp, item)
+      this.setState({ selectedCheckList: temp });
     } else {
       let temp = this.state.selectedCheckList
       temp.push(item)

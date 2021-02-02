@@ -44,6 +44,7 @@ import EditFieldAppProperty from '../screens/EditFieldAppProperty'
 import MapContainer from '../screens/MapContainer'
 import AssignedAreas from '../screens/AssignAreas'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
+import PropsureAttachment from '../screens/PropsureAttachment'
 
 const Stack = createStackNavigator()
 
@@ -194,7 +195,9 @@ function MainStack() {
         options={({ navigation, route }) => ({
           title: 'LEAD DETAILS',
           // headerLeft : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerLeft:  route.params.isFromLeadWorkflow ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation}/> : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft: route.params.isFromLeadWorkflow
+            ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation} />
+            : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}
@@ -229,6 +232,15 @@ function MainStack() {
           // headerTitle: (props) => <HeaderTitle {...props} />,
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="PropsureAttachments"
+        component={PropsureAttachment}
+        options={({ navigation, route }) => ({
+          title: 'ATTACHMENTS',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}
       />

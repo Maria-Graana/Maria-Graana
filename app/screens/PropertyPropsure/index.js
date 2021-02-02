@@ -17,6 +17,7 @@ import PropMatchTile from '../../components/PropMatchTile'
 import PropsureDocumentPopup from '../../components/PropsureDocumentPopup/index'
 import PropsureReportsPopup from '../../components/PropsureReportsPopup/index'
 import PaymentMethods from '../../PaymentMethods'
+import { setPropsurePayment } from '../../actions/propsurePayment'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import config from '../../config'
 import helper from '../../helper'
@@ -79,7 +80,8 @@ class PropertyPropsure extends React.Component {
         this.fetchProperties(lead)
         this.fetchPropsureReportsList()
       } else {
-        const { lead } = this.props
+        const { lead, rcmPayment, dispatch } = this.props
+        dispatch(setRCMPayment({ ...rcmPayment, visible: false }))
         this.fetchLead(lead)
         this.getCallHistory(lead)
         this.fetchProperties(lead)
@@ -274,7 +276,7 @@ class PropertyPropsure extends React.Component {
           visible: false,
           paymentAttachments: [],
         }
-    dispatch(setRCMPayment(installment))
+    dispatch(setPropsurePayment(installment))
     this.setState({
       documentModalVisible: true,
       pendingPropsures: propsureReports,
@@ -294,8 +296,8 @@ class PropertyPropsure extends React.Component {
   }
 
   onAddCommissionPayment = () => {
-    const { dispatch, rcmPayment } = this.props
-    dispatch(setRCMPayment({ ...rcmPayment, visible: true }))
+    const { dispatch, propsurePayment } = this.props
+    dispatch(setPropsurePayment({ ...propsurePayment, visible: true }))
   }
 
   getAttachmentFromStorage = (id) => {
@@ -513,7 +515,7 @@ class PropertyPropsure extends React.Component {
 
   goToAttachments = () => {
     const { lead, navigation } = this.props
-    navigation.navigate('Attachments', { rcmLeadId: lead.id })
+    navigation.navigate('PropsureAttachments', { rcmLeadId: lead.id })
   }
 
   goToComments = () => {
@@ -589,7 +591,7 @@ class PropertyPropsure extends React.Component {
   }
 
   deletePayment = async (reason) => {
-    const { rcmPayment, lead } = this.props
+    const { propsurePayment, lead } = this.props
     const { selectedPayment } = this.state
     this.showHideDeletePayment(false)
     const { propsureOutstandingPayment } = lead
@@ -628,11 +630,15 @@ class PropertyPropsure extends React.Component {
   }
 
   goToPayAttachments = (selectedProperty) => {
-    const { rcmPayment, dispatch, navigation } = this.props
+    const { propsurePayment, dispatch, navigation } = this.props
     dispatch(
-      setRCMPayment({ ...rcmPayment, visible: false, selectedPropertyId: selectedProperty.id })
+      setPropsurePayment({
+        ...propsurePayment,
+        visible: false,
+        selectedPropertyId: selectedProperty.id,
+      })
     )
-    navigation.navigate('RCMAttachment')
+    navigation.navigate('PropsureAttachments')
   }
 
   setCommissionEditData = (data) => {
@@ -642,20 +648,20 @@ class PropertyPropsure extends React.Component {
       documentModalVisible: false,
       previousPayment: data.installmentAmount,
     })
-    dispatch(setRCMPayment({ ...data, visible: true }))
+    dispatch(setPropsurePayment({ ...data, visible: true }))
   }
 
   handleCommissionChange = (value, name) => {
-    const { rcmPayment, dispatch } = this.props
+    const { propsurePayment, dispatch } = this.props
     const { selectedProperty } = this.state
     const newSecondFormData = {
-      ...rcmPayment,
-      visible: rcmPayment.visible,
+      ...propsurePayment,
+      visible: propsurePayment.visible,
       selectedPropertyId: selectedProperty.id,
     }
     newSecondFormData[name] = value
     this.setState({ buyerNotZero: false })
-    dispatch(setRCMPayment(newSecondFormData))
+    dispatch(setPropsurePayment(newSecondFormData))
   }
 
   clearReduxAndStateValues = () => {
@@ -674,7 +680,7 @@ class PropertyPropsure extends React.Component {
       editable: false,
       totalReportPrice: 0,
     })
-    dispatch(setRCMPayment({ ...newData }))
+    dispatch(setPropsurePayment({ ...newData }))
   }
 
   onModalCloseClick = () => {
@@ -682,32 +688,32 @@ class PropertyPropsure extends React.Component {
   }
 
   submitCommissionPropsurePayment = () => {
-    const { rcmPayment, user, lead } = this.props
+    const { propsurePayment, user, lead } = this.props
     const { editable, selectedProperty, previousPayment } = this.state
     const { propsureOutstandingPayment } = lead
     if (
-      rcmPayment.installmentAmount != null &&
-      rcmPayment.installmentAmount != '' &&
-      rcmPayment.type != ''
+      propsurePayment.installmentAmount != null &&
+      propsurePayment.installmentAmount != '' &&
+      propsurePayment.type != ''
     ) {
       this.setState({
         addPaymentLoading: true,
       })
-      if (Number(rcmPayment.installmentAmount) <= 0) {
+      if (Number(propsurePayment.installmentAmount) <= 0) {
         this.setState({ buyerNotZero: true, addPaymentLoading: false })
         return
       }
       if (editable === false) {
         // for commission addition
         let body = {
-          ...rcmPayment,
+          ...propsurePayment,
           rcmLeadId: lead.id,
           armsUserId: user.id,
           outstandingPayment:
-            Number(propsureOutstandingPayment) - Number(rcmPayment.installmentAmount),
+            Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount),
           addedBy: 'seller',
-          amount: rcmPayment.installmentAmount,
-          shortlistPropertyId: rcmPayment.selectedPropertyId,
+          amount: propsurePayment.installmentAmount,
+          shortlistPropertyId: propsurePayment.selectedPropertyId,
         }
         delete body.visible
         delete body.installmentAmount
@@ -718,8 +724,8 @@ class PropertyPropsure extends React.Component {
           .then((response) => {
             if (response.data) {
               // check if some attachment exists so upload that as well to server with payment id.
-              if (rcmPayment.paymentAttachments.length > 0) {
-                rcmPayment.paymentAttachments.map((paymentAttachment) =>
+              if (propsurePayment.paymentAttachments.length > 0) {
+                propsurePayment.paymentAttachments.map((paymentAttachment) =>
                   // payment attachments
                   this.uploadPaymentAttachment(paymentAttachment, response.data.id)
                 )
@@ -739,15 +745,15 @@ class PropertyPropsure extends React.Component {
       } else {
         // commission update mode
         let remaingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
-        remaingFee = remaingFee - Number(rcmPayment.installmentAmount)
+        remaingFee = remaingFee - Number(propsurePayment.installmentAmount)
         let body = {
-          ...rcmPayment,
+          ...propsurePayment,
           rcmLeadId: lead.id,
           armsUserId: user.id,
           outstandingPayment: remaingFee,
           addedBy: 'seller',
-          installmentAmount: rcmPayment.installmentAmount,
-          shortlistPropertyId: rcmPayment.selectedPropertyId,
+          installmentAmount: propsurePayment.installmentAmount,
+          shortlistPropertyId: propsurePayment.selectedPropertyId,
         }
         delete body.visible
         delete body.remarks
@@ -757,15 +763,15 @@ class PropertyPropsure extends React.Component {
           .patch(`/api/leads/project/payment?id=${body.id}`, body)
           .then((response) => {
             // upload only the new attachments that do not have id with them in object.
-            const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
-              ? _.filter(rcmPayment.paymentAttachments, (item) => {
+            const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
+              ? _.filter(propsurePayment.paymentAttachments, (item) => {
                   return !_.has(item, 'id')
                 })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
                 // payment attachments
-                this.uploadPaymentAttachment(paymentAttachment, response.data.id)
+                this.uploadPaymentAttachment(item, body.id)
               })
             } else {
               this.fetchLead(lead)
@@ -1028,6 +1034,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    propsurePayment: store.PropsurePayment.PropsurePayment,
     rcmPayment: store.RCMPayment.RCMPayment,
   }
 }

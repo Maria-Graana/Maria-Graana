@@ -648,8 +648,6 @@ class LeadRCMPayment extends React.Component {
     payload.token = this.convertToInteger(token)
     var leadId = []
     leadId.push(lead.id)
-    console.log('`/api/leads`')
-    console.log('`/api/leads`', payload)
     axios
       .patch(`/api/leads`, payload, { params: { id: leadId } })
       .then((response) => {

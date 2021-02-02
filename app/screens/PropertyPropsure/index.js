@@ -16,7 +16,6 @@ import PropertyBottomNav from '../../components/PropertyBottomNav'
 import PropMatchTile from '../../components/PropMatchTile'
 import PropsureDocumentPopup from '../../components/PropsureDocumentPopup/index'
 import PropsureReportsPopup from '../../components/PropsureReportsPopup/index'
-import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import PaymentMethods from '../../PaymentMethods'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import config from '../../config'
@@ -29,6 +28,7 @@ import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
 import * as Permissions from 'expo-permissions'
 import * as IntentLauncher from 'expo-intent-launcher'
+import AddPropsurePayment from '../../components/AddPRopsurePayment'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -681,7 +681,7 @@ class PropertyPropsure extends React.Component {
     this.clearReduxAndStateValues()
   }
 
-  submitCommissionPayment = () => {
+  submitCommissionPropsurePayment = () => {
     const { rcmPayment, user, lead } = this.props
     const { editable, selectedProperty, previousPayment } = this.state
     const { propsureOutstandingPayment } = lead
@@ -921,12 +921,12 @@ class PropertyPropsure extends React.Component {
           onPaymentLongPress={this.onPaymentLongPress}
           type={'seller'}
         />
-        <AddRCMPaymentModal
+        <AddPropsurePayment
           onModalCloseClick={this.onModalCloseClick}
           handleCommissionChange={this.handleCommissionChange}
           modalValidation={modalValidation}
           goToPayAttachments={() => this.goToPayAttachments(selectedProperty)}
-          submitCommissionPayment={() => this.submitCommissionPayment()}
+          submitCommissionPayment={() => this.submitCommissionPropsurePayment()}
           addPaymentLoading={addPaymentLoading}
           lead={lead}
           paymentNotZero={buyerNotZero}

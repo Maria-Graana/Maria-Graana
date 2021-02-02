@@ -27,10 +27,10 @@ import * as Permissions from 'expo-permissions'
 import * as IntentLauncher from 'expo-intent-launcher'
 import ViewDocs from '../../components/ViewDocs'
 import PaymentMethods from '../../PaymentMethods'
-import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import DeleteModal from '../../components/DeleteModal'
 import { ActionSheet } from 'native-base'
+import AddPropsurePayment from '../../components/AddPRopsurePayment'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -719,7 +719,7 @@ class LeadPropsure extends React.Component {
     this.clearReduxAndStateValues()
   }
 
-  submitCommissionPayment = () => {
+  submitCommissionPropsurePayment = () => {
     const { rcmPayment, user, lead } = this.props
     const { editable, selectedProperty, previousPayment } = this.state
     const { propsureOutstandingPayment } = lead
@@ -965,12 +965,12 @@ class LeadPropsure extends React.Component {
           type={'buyer'}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
-        <AddRCMPaymentModal
+        <AddPropsurePayment
           onModalCloseClick={this.onModalCloseClick}
           handleCommissionChange={this.handleCommissionChange}
           modalValidation={modalValidation}
           goToPayAttachments={() => this.goToPayAttachments(selectedProperty)}
-          submitCommissionPayment={() => this.submitCommissionPayment()}
+          submitCommissionPayment={() => this.submitCommissionPropsurePayment()}
           addPaymentLoading={addPaymentLoading}
           lead={lead}
           paymentNotZero={buyerNotZero}

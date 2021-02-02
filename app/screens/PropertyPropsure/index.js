@@ -754,7 +754,7 @@ class PropertyPropsure extends React.Component {
         delete body.selectedPropertyId
         delete body.paymentCategory
         axios
-          .patch(`/api/leads/propsurePayment`, body)
+          .patch(`/api/leads/project/payment?id=${body.id}`, body)
           .then((response) => {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments

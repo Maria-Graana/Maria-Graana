@@ -19,7 +19,7 @@ const AddPropsurePayment = ({
   onModalCloseClick,
   handleCommissionChange,
   modalValidation,
-  rcmPayment,
+  propsurePayment,
   goToPayAttachments,
   addPaymentLoading,
   lead,
@@ -36,7 +36,7 @@ const AddPropsurePayment = ({
 
   const fetchRemarks = () => {
     if (isCollapsed === false) {
-      const url = `/api/leads/paymentremarks?id=${rcmPayment.id}`
+      const url = `/api/leads/paymentremarks?id=${propsurePayment.id}`
       axios
         .get(url)
         .then((response) => {
@@ -53,7 +53,7 @@ const AddPropsurePayment = ({
     }
   }
   return (
-    <Modal isVisible={rcmPayment.visible}>
+    <Modal isVisible={propsurePayment.visible}>
       <View style={styles.modalMain}>
         <View style={styles.topHeader}>
           <Text style={styles.headingText}>Enter Details</Text>
@@ -75,14 +75,14 @@ const AddPropsurePayment = ({
             fromatName={false}
             placeholder={'Enter Amount'}
             label={'ENTER AMOUNT'}
-            value={rcmPayment.installmentAmount}
-            formatValue={rcmPayment.installmentAmount}
+            value={propsurePayment.installmentAmount}
+            formatValue={propsurePayment.installmentAmount}
             keyboardType={'numeric'}
             onChangeHandle={handleCommissionChange}
           />
           {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {modalValidation === true &&
-          (rcmPayment.installmentAmount == null || rcmPayment.installmentAmount == '') ? (
+          (propsurePayment.installmentAmount == null || propsurePayment.installmentAmount == '') ? (
             <ErrorMessage errorMessage={'Required'} />
           ) : null}
           <View style={[AppStyles.mainInputWrap]}>
@@ -92,9 +92,9 @@ const AddPropsurePayment = ({
                 data={StaticData.fullPaymentType}
                 name={'type'}
                 placeholder="Type"
-                selectedItem={rcmPayment.type}
+                selectedItem={propsurePayment.type}
               />
-              {modalValidation === true && rcmPayment.type == '' && (
+              {modalValidation === true && propsurePayment.type == '' && (
                 <ErrorMessage errorMessage={'Required'} />
               )}
             </View>
@@ -105,12 +105,12 @@ const AddPropsurePayment = ({
             fromatName={false}
             placeholder={'Details'}
             label={'DETAILS'}
-            value={rcmPayment.details != '' ? rcmPayment.details : ''}
+            value={propsurePayment.details != '' ? propsurePayment.details : ''}
             formatValue={''}
             onChangeHandle={handleCommissionChange}
           />
 
-          {rcmPayment.id && (
+          {propsurePayment.id && (
             <TouchableOpacity
               disabled={loading}
               style={styles.addPaymentBtn}
@@ -150,9 +150,9 @@ const AddPropsurePayment = ({
             )
           ) : null}
 
-          {rcmPayment.installmentAmount != null &&
-            rcmPayment.installmentAmount != '' &&
-            rcmPayment.type != '' && (
+          {propsurePayment.installmentAmount != null &&
+            propsurePayment.installmentAmount != '' &&
+            propsurePayment.type != '' && (
               <TouchableOpacity
                 style={styles.addPaymentBtn}
                 onPress={() => {
@@ -208,7 +208,7 @@ const AddPropsurePayment = ({
 
 mapStateToProps = (store) => {
   return {
-    rcmPayment: store.RCMPayment.RCMPayment,
+    propsurePayment: store.PropsurePayment.PropsurePayment,
   }
 }
 

@@ -124,7 +124,6 @@ class PropertyRCMPayment extends React.Component {
       axios
         .get(`/api/leads/byId?id=${lead.id}`)
         .then((response) => {
-          //console.log(response.data)
           dispatch(setlead(response.data))
           this.setState({ progressValue: rcmProgressBar[lead.status], lead: response.data })
           if (response.data.shortlist_id === null) {

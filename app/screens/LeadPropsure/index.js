@@ -234,6 +234,7 @@ class LeadPropsure extends React.Component {
             details: '',
             visible: false,
             paymentAttachments: [],
+            selectedPropertyId: property.id,
           }
       dispatch(setPropsurePayment(installment))
       this.setState({
@@ -667,13 +668,12 @@ class LeadPropsure extends React.Component {
     )
   }
 
-  goToPayAttachments = (selectedProperty) => {
+  goToPayAttachments = () => {
     const { propsurePayment, dispatch, navigation } = this.props
     dispatch(
       setPropsurePayment({
         ...propsurePayment,
         visible: false,
-        selectedPropertyId: selectedProperty.id,
       })
     )
     navigation.navigate('PropsureAttachments')
@@ -691,11 +691,9 @@ class LeadPropsure extends React.Component {
 
   handleCommissionChange = (value, name) => {
     const { propsurePayment, dispatch } = this.props
-    const { selectedProperty } = this.state
     const newSecondFormData = {
       ...propsurePayment,
       visible: propsurePayment.visible,
-      selectedPropertyId: selectedProperty.id,
     }
     newSecondFormData[name] = value
     this.setState({ buyerNotZero: false })
@@ -757,6 +755,7 @@ class LeadPropsure extends React.Component {
         delete body.installmentAmount
         delete body.selectedPropertyId
         delete body.paymentCategory
+        console.log('body: ', body)
         axios
           .post(`/api/leads/propsurePayment`, body)
           .then((response) => {
@@ -799,9 +798,12 @@ class LeadPropsure extends React.Component {
         delete body.remarks
         delete body.selectedPropertyId
         delete body.paymentCategory
+        console.log('body: ', body)
+        console.log(`/api/leads/project/payment?id=${body.id}`)
         axios
           .patch(`/api/leads/project/payment?id=${body.id}`, body)
-          .then((response) => {
+          .then((res) => {
+            console.log('res: ', res.data)
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
               ? _.filter(propsurePayment.paymentAttachments, (item) => {
@@ -811,7 +813,7 @@ class LeadPropsure extends React.Component {
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
                 // payment attachments
-                this.uploadPaymentAttachment(paymentAttachment, body.id)
+                this.uploadPaymentAttachment(item, body.id)
               })
             } else {
               this.fetchLead(lead)
@@ -847,9 +849,11 @@ class LeadPropsure extends React.Component {
     fd.append('title', paymentAttachment.title)
     fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
     // ====================== API call for Attachments base on Payment ID
+    console.log(`/api/leads/paymentAttachment?id=${paymentId}`)
     axios
       .post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
       .then((res) => {
+        console.log(`/api/: `, res.data)
         if (res.data) {
           this.fetchLead(lead)
           this.fetchProperties(lead)

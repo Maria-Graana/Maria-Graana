@@ -759,9 +759,12 @@ class PropertyPropsure extends React.Component {
         delete body.remarks
         delete body.selectedPropertyId
         delete body.paymentCategory
+        console.log('body: ', body)
+        console.log(`/api/leads/project/payment?id=${body.id}`)
         axios
           .patch(`/api/leads/project/payment?id=${body.id}`, body)
-          .then((response) => {
+          .then((res) => {
+            console.log('res: ', res.data)
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
               ? _.filter(propsurePayment.paymentAttachments, (item) => {
@@ -806,9 +809,12 @@ class PropertyPropsure extends React.Component {
     fd.append('title', paymentAttachment.title)
     fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
     // ====================== API call for Attachments base on Payment ID
+    console.log(`/api/leads/paymentAttachment?id=${paymentId}`)
+    console.log(`/api/leads/paymentAttachment: `, fd)
     axios
       .post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
       .then((res) => {
+        console.log('uploadPaymentAttachment: ', res.data)
         if (res.data) {
           this.fetchLead(lead)
           this.fetchProperties(lead)

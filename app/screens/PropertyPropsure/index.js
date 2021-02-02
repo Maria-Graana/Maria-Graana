@@ -275,6 +275,7 @@ class PropertyPropsure extends React.Component {
           details: '',
           visible: false,
           paymentAttachments: [],
+          selectedPropertyId: property.id,
         }
     dispatch(setPropsurePayment(installment))
     this.setState({
@@ -629,13 +630,12 @@ class PropertyPropsure extends React.Component {
     )
   }
 
-  goToPayAttachments = (selectedProperty) => {
+  goToPayAttachments = () => {
     const { propsurePayment, dispatch, navigation } = this.props
     dispatch(
       setPropsurePayment({
         ...propsurePayment,
         visible: false,
-        selectedPropertyId: selectedProperty.id,
       })
     )
     navigation.navigate('PropsureAttachments')
@@ -653,11 +653,9 @@ class PropertyPropsure extends React.Component {
 
   handleCommissionChange = (value, name) => {
     const { propsurePayment, dispatch } = this.props
-    const { selectedProperty } = this.state
     const newSecondFormData = {
       ...propsurePayment,
       visible: propsurePayment.visible,
-      selectedPropertyId: selectedProperty.id,
     }
     newSecondFormData[name] = value
     this.setState({ buyerNotZero: false })

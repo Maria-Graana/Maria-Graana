@@ -30,7 +30,6 @@ const PropsureDocumentPopup = (props) => {
   } = props
   let totalReportsFree = helper.AddPropsureReportsFee(pendingPropsures, type)
   let singlePayment = helper.propsurePaymentType(selectedProperty, type)
-  console.log('singlePayment: ', singlePayment)
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView

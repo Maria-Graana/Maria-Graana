@@ -42,7 +42,7 @@ class PropsureAttachment extends Component {
   }
 
   componentDidMount() {
-    console.log('propsurePayment componentDidMount', this.props.propsurePayment)
+    // console.log('propsurePayment componentDidMount', this.props.propsurePayment)
   }
 
   setValues = (value) => {
@@ -233,7 +233,6 @@ class PropsureAttachment extends Component {
   render() {
     const { isVisible, formData, checkValidation, title, loading, showDoc, docUrl } = this.state
     const { propsurePayment } = this.props
-    console.log('propsurePayment: ', propsurePayment)
     return (
       <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
         <AddAttachmentPopup

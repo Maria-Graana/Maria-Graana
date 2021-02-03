@@ -861,6 +861,7 @@ class LeadPropsure extends React.Component {
 
   cancelPropsureRequest = async (data) => {
     const { lead } = this.props
+    const { propsureOutstandingPayment } = lead
     if (data && data.propsures && data.propsures.length) {
       let pendingPropsures =
         data.propsures && data.propsures.length
@@ -870,6 +871,7 @@ class LeadPropsure extends React.Component {
             )
           : null
       let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'buyer')
+      totalFee = Number(propsureOutstandingPayment) - Number(totalFee)
       let reportIds = _.pluck(pendingPropsures, 'id')
       let url = `/api/leads/deletePropsure?`
       let params = {

@@ -16,7 +16,7 @@ const config = {
     channel: 'staging',
   },
   production: {
-    apiPath: 'https://apiarmsm.agency21.com.pk',
+    apiPath: 'https://apiarmsm.graana.com',
     mapUrl: 'https://www.graana.com/api/map/',
     graanaUrl: 'https://www.graana.com',
     channel: 'production',

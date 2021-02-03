@@ -14,7 +14,6 @@ import { Root } from 'native-base'
 import RootStack from './app/navigation/AppNavigation'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import * as SplashScreen from 'expo-splash-screen'
-import { setCustomTouchableOpacity } from 'react-native-global-props'
 import config from './app/config'
 import axios from 'axios'
 import { AsyncStorage, LogBox } from 'react-native'
@@ -24,6 +23,12 @@ import { NavigationContainer } from '@react-navigation/native'
 import NetInfo from '@react-native-community/netinfo'
 import { navigationRef } from './app/navigation/RootNavigation'
 import { setInternetConnection } from './app/actions/user'
+import {
+  setCustomImage,
+  setCustomText,
+  setCustomTextInput,
+  setCustomTouchableOpacity,
+} from 'react-native-global-props'
 import * as Updates from 'expo-updates'
 
 Notifications.setNotificationHandler({
@@ -87,6 +92,22 @@ export default class App extends React.Component {
       OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
       ...Ionicons.font,
     })
+    const customTextProps = {
+      allowFontScaling: false,
+      // style: {
+      //   fontSize: 18,
+      //   fontFamily: 'OpenSans',
+      //   color: '#333',
+      // },
+    }
+    const customTextInputProps = {
+      allowFontScaling: false,
+      // style: {
+      //   fontSize: 18
+      // }
+    }
+    setCustomText(customTextProps)
+    setCustomTextInput(customTextInputProps)
     LogBox.ignoreLogs(['Animated: `useNativeDriver` was not specified'])
   }
 

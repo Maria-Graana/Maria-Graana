@@ -1028,7 +1028,7 @@ class LeadRCMPayment extends React.Component {
           rcmLeadId: lead.id,
           armsUserId: user.id,
           paymentCategory: 'commission',
-          addedBy: 'buyer',
+          addedBy: rcmPayment.addedBy,
         }
         delete body.visible
         axios

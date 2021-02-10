@@ -93,17 +93,17 @@ class GraanaInventories extends React.Component {
 		const { propertiesList, page, pageSize, statusFilter, searchBy, showSearchBar, searchText, selectedArea } = this.state;
 		let query = ``
 		if (showSearchBar && searchBy === 'id' && searchText !== '') {
-		  // Search By ID
-		 query = `/api/inventory/all?propType=graana&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
-	   }
-	   else if (showSearchBar && searchBy === 'area' && selectedArea) {
-		 // Search By Area
-		 query = `/api/inventory/all?propType=graana&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
-	   }
-	   else {
-		 // Only Status Filter
-		 query = `/api/inventory/all?propType=graana&propStatus=${statusFilter}&pageSize=${pageSize}&page=${page}`
-	   }
+			// Search By ID
+			query = `/api/inventory/all?propType=graana&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+		}
+		else if (showSearchBar && searchBy === 'area' && selectedArea) {
+			// Search By Area
+			query = `/api/inventory/all?propType=graana&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
+		  }
+		else {
+			// Only Status Filter
+			query = `/api/inventory/all?propType=graana&propStatus=${statusFilter}&pageSize=${pageSize}&page=${page}`
+		}
 		axios.get(query).then((response) => {
 			if (response.status == 200) {
 				this.setState({
@@ -254,7 +254,7 @@ class GraanaInventories extends React.Component {
 	}
 
 	clearAndCloseSearch = () => {
-		this.setState({ searchText: '', showSearchBar: false, selectedArea: null, loading: true, selectedUser: null, searchBy: 'id', statusFilter: 'published' }, () => {
+		this.setState({ searchText: '', showSearchBar: false, selectedArea: null, loading: true, searchBy: 'id', statusFilter: 'published' }, () => {
 			this.clearStateValues();
 			this.getPropertyGraanaListing();
 		})
@@ -283,11 +283,11 @@ class GraanaInventories extends React.Component {
 			formData,
 			searchBy,
 			searchText,
-			selectedArea,
 			statusFilter,
 			showSearchBar,
+			selectedArea
 		} = this.state;
-
+		const {user} = this.props;
 		return (
 			!loading ?
 				<View style={[styles.container, { marginBottom: 25 }]}>
@@ -296,7 +296,7 @@ class GraanaInventories extends React.Component {
 							<View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
 								<PickerComponent
 									placeholder={'Search By'}
-									data={StaticData.searchBy}
+									data={helper.checkPP(user) ? StaticData.searchByIdOnly : StaticData.searchBy}
 									customStyle={styles.pickerStyle}
 									customIconStyle={styles.customIconStyle}
 									onValueChange={this.changeSearchBy}
@@ -316,14 +316,17 @@ class GraanaInventories extends React.Component {
 									closeSearchBar={() => this.clearAndCloseSearch()}
 								/>
 									:
-									<View style={styles.searchTextContainerStyle} >
-										<Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
-											color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
-										}]} >
-											{isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
-										</Text>
-										<Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
-									</View>
+									helper.checkPP(user) ?
+										null :
+										<View style={styles.searchTextContainerStyle} >
+											<Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
+												color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
+											}]} >
+												{isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
+											</Text>
+											<Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
+										</View>
+
 
 							}
 
@@ -333,7 +336,7 @@ class GraanaInventories extends React.Component {
 								<View style={styles.pickerMain}>
 									<PickerComponent
 										placeholder={'Property Status'}
-										data={StaticData.graanaStatusFilters}
+										data={helper.checkPP(user) ? StaticData.graanaStatusFiltersPP : StaticData.graanaStatusFilters}
 										customStyle={styles.pickerStyle}
 										customIconStyle={styles.customIconStyle}
 										onValueChange={this.changeStatus}
@@ -359,7 +362,7 @@ class GraanaInventories extends React.Component {
 					{
 						propertiesList && propertiesList.length > 0 ?
 							< FlatList
-							   contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+								contentContainerStyle={{ paddingHorizontal: wp('2%') }}
 								data={propertiesList}
 								renderItem={({ item, index }) => (
 									<PropertyTile

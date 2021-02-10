@@ -86,16 +86,16 @@ class ArmsInventories extends React.Component {
     let query = `/api/inventory/all?propType=arms&pageSize=${pageSize}&page=${page}`
     if (showSearchBar && searchBy === 'id' && searchText !== '') {
       // Search By ID
-     query = `/api/inventory/all?propType=arms&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
-   }
-   else if (showSearchBar && searchBy === 'area' && selectedArea) {
-     // Search By Area
-     query = `/api/inventory/all?propType=arms&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
-   }
-   else {
-     // Only Status Filter
-     query = `/api/inventory/all?propType=arms&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
-   }
+      query = `/api/inventory/all?propType=arms&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+    }
+    else if (showSearchBar && searchBy === 'area' && selectedArea) {
+      // Search By Area
+      query = `/api/inventory/all?propType=arms&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
+    }
+    else {
+      // Only Status Filter
+      query = `/api/inventory/all?propType=arms&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
+    }
     axios
       .get(query)
       .then((response) => {
@@ -229,7 +229,7 @@ class ArmsInventories extends React.Component {
             <View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
               <PickerComponent
                 placeholder={'Search By'}
-                data={StaticData.searchBy}
+                data={helper.checkPP(user) ? StaticData.searchByIdOnly : StaticData.searchBy}
                 customStyle={styles.pickerStyle}
                 customIconStyle={styles.customIconStyle}
                 onValueChange={this.changeSearchBy}
@@ -249,14 +249,17 @@ class ArmsInventories extends React.Component {
                 closeSearchBar={() => this.clearAndCloseSearch()}
               />
                 :
-                <View style={styles.searchTextContainerStyle} >
-                  <Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
-                    color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
-                  }]} >
-                    {isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
-                  </Text>
-                  <Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
-                </View>
+                helper.checkPP(user) ?
+                  null
+                  :
+                  <View style={styles.searchTextContainerStyle} >
+                    <Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
+                      color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
+                    }]} >
+                      {isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
+                    </Text>
+                    <Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
+                  </View>
 
             }
 
@@ -266,7 +269,7 @@ class ArmsInventories extends React.Component {
               <View style={styles.pickerMain}>
                 <PickerComponent
                   placeholder={'Property Status'}
-                  data={[{value: 'all', name: 'All'}]}
+                  data={[{ value: 'all', name: 'All' }]}
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
                   onValueChange={this.changeStatus}
@@ -334,14 +337,14 @@ class ArmsInventories extends React.Component {
             keyExtractor={(item, index) => `${item.id}`}
           />
         ) : (
-          <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
-        )}
+            <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
+          )}
 
         {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

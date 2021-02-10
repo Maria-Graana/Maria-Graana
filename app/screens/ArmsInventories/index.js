@@ -23,6 +23,10 @@ import helper from '../../helper'
 import styles from './style'
 import { ActivityIndicator } from 'react-native-paper'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import PickerComponent from '../../components/Picker'
+import Search from '../../components/Search'
+import { isEmpty } from 'underscore'
+import StaticData from '../../StaticData'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -37,13 +41,31 @@ class ArmsInventories extends React.Component {
       page: 1,
       pageSize: 20,
       onEndReachedLoader: false,
+      showSearchBar: false,
+      searchText: '',
+      statusFilter: 'all',
+      searchBy: 'id',
+      selectedArea: null,
     }
   }
 
   componentDidMount() {
-    const { navigation } = this.props
+    const { navigation } = this.props;
+    let that = this;
     this._unsubscribe = navigation.addListener('focus', () => {
-      this.getPropertyArmsListing()
+      const { route } = that.props
+      if (route.params && route.params.selectedArea) {
+        const { selectedArea } = route.params;
+        if (selectedArea) {
+          this.setState({ selectedArea }, () => {
+            //console.log(this.state.selectedArea);
+            this.getPropertyArmsListing()
+          })
+        }
+      }
+      else {
+        this.getPropertyArmsListing()
+      }
     })
   }
 
@@ -60,10 +82,22 @@ class ArmsInventories extends React.Component {
   }
 
   getPropertyArmsListing = () => {
-    const { propertiesList, page, pageSize } = this.state
-    const url = `/api/inventory/all?propType=arms&pageSize=${pageSize}&page=${page}`
+    const { propertiesList, page, pageSize, statusFilter, searchBy, searchText, showSearchBar, selectedArea } = this.state
+    let query = `/api/inventory/all?propType=arms&pageSize=${pageSize}&page=${page}`
+    if (showSearchBar && searchBy === 'id' && searchText !== '') {
+      // Search By ID
+     query = `/api/inventory/all?propType=arms&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+   }
+   else if (showSearchBar && searchBy === 'area' && selectedArea) {
+     // Search By Area
+     query = `/api/inventory/all?propType=arms&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
+   }
+   else {
+     // Only Status Filter
+     query = `/api/inventory/all?propType=arms&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
+   }
     axios
-      .get(url)
+      .get(query)
       .then((response) => {
         if (response.status == 200) {
           this.setState({
@@ -160,11 +194,101 @@ class ArmsInventories extends React.Component {
     return String(index)
   }
 
+  changeStatus = (status) => {
+    this.clearStateValues()
+    this.setState({ statusFilter: status, propertiesList: [], loading: true }, () => {
+      this.getPropertyArmsListing();
+    })
+  }
+
+  clearAndCloseSearch = () => {
+    this.setState({ searchText: '', showSearchBar: false, selectedArea: null, loading: true, searchBy: 'id', statusFilter: 'all' }, () => {
+      this.clearStateValues();
+      this.getPropertyArmsListing();
+    })
+  }
+
+  changeSearchBy = (searchBy) => {
+    this.setState({ searchBy, selectedArea: null });
+  }
+
+
+  handleSearchByArea = () => {
+    const { navigation } = this.props;
+    const { selectedArea } = this.state;
+    navigation.navigate('AssignedAreas', { screenName: 'ARMS', selectedArea });
+  }
+
   render() {
-    const { propertiesList, loading, totalProperties, onEndReachedLoader } = this.state
+    const { propertiesList, loading, totalProperties, onEndReachedLoader, statusFilter, searchText, showSearchBar, searchBy, selectedArea } = this.state
     const { user, route } = this.props
     return !loading ? (
-      <View style={[AppStyles.container, { marginBottom: 25 }]}>
+      <View style={[styles.container, { marginBottom: 25 }]}>
+        {showSearchBar ? (
+          <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0, flexDirection: 'row', alignItems: 'center' }]}>
+            <View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
+              <PickerComponent
+                placeholder={'Search By'}
+                data={StaticData.searchBy}
+                customStyle={styles.pickerStyle}
+                customIconStyle={styles.customIconStyle}
+                onValueChange={this.changeSearchBy}
+                selectedItem={searchBy}
+              />
+            </View>
+            {
+              searchBy === 'id' ? <Search
+                containerWidth={'80%'}
+                placeholder={"Search by ID"}
+                searchText={searchText}
+                setSearchText={(value) => this.setState({ searchText: value })}
+                showShadow={false}
+                showClearButton={true}
+                returnKeyType={'search'}
+                onSubmitEditing={() => this.setState({ loading: true }, () => { this.getPropertyArmsListing() })}
+                closeSearchBar={() => this.clearAndCloseSearch()}
+              />
+                :
+                <View style={styles.searchTextContainerStyle} >
+                  <Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
+                    color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
+                  }]} >
+                    {isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
+                  </Text>
+                  <Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
+                </View>
+
+            }
+
+          </View>
+        ) : (
+            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+              <View style={styles.pickerMain}>
+                <PickerComponent
+                  placeholder={'Lead Status'}
+                  data={[{value: 'all', name: 'All'}]}
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatus}
+                  selectedItem={statusFilter}
+                />
+              </View>
+              <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons
+                  onPress={() => {
+                    this.setState({ showSearchBar: true }, () => {
+                      this.clearStateValues()
+                    })
+                  }}
+                  name={'ios-search'}
+                  size={26}
+                  color={AppStyles.colors.primaryColor}
+                />
+              </View>
+
+            </View>
+          )}
+
         {Ability.canAdd(user.subRole, route.params.screen) ? (
           <Fab
             active="true"
@@ -181,7 +305,7 @@ class ArmsInventories extends React.Component {
 
         {propertiesList && propertiesList.length > 0 ? (
           <FlatList
-            //contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+            contentContainerStyle={{ paddingHorizontal: wp('2%') }}
             data={propertiesList}
             renderItem={({ item }) => (
               <PropertyTile

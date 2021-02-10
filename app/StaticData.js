@@ -733,5 +733,11 @@ export default StaticData = {
   searchBy: [
     { value: 'id', name: 'Id' },
     { value: 'area', name: 'Area' },
-  ]
+  ],
+  graanaStatusFilters:[
+    { value: 'published', name: 'All' },
+    { value: 'pendingVerification', name: 'Pending Re-Verification' },
+    { value: 'outdated', name: 'Outdated' },
+    { value: 'geotagged', name: 'Geo Tagged' },
+  ],
 }

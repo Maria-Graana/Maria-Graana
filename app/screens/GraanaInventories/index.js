@@ -4,8 +4,8 @@ import * as RootNavigation from '../../navigation/RootNavigation'
 
 import { Alert, FlatList, Image, Text, View } from 'react-native'
 import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
+	heightPercentageToDP as hp,
+	widthPercentageToDP as wp,
 } from 'react-native-responsive-screen'
 
 import Ability from '../../hoc/Ability'
@@ -20,11 +20,13 @@ import React from 'react'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import helper from '../../helper'
-// import styles from './style'
-import { ActivityIndicator } from 'react-native-paper';
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent';
-import { cos } from 'react-native-reanimated';
 import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
+import StaticData from '../../StaticData'
+import { isEmpty } from 'underscore'
+import styles from './style';
+import PickerComponent from '../../components/Picker'
+import Search from '../../components/Search'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -42,6 +44,11 @@ class GraanaInventories extends React.Component {
 			graanaModalActive: false,
 			singlePropertyData: {},
 			forStatusPrice: false,
+			showSearchBar: false,
+			searchText: '',
+			statusFilter: 'published',
+			searchBy: 'id',
+			selectedArea: null,
 			formData: {
 				amount: '',
 			}
@@ -52,9 +59,21 @@ class GraanaInventories extends React.Component {
 
 	componentDidMount() {
 		const { navigation } = this.props;
+		let that = this;
 		this._unsubscribe = navigation.addListener('focus', () => {
-			this.getPropertyGraanaListing();
-		});
+			const { route } = that.props
+			if (route.params && route.params.selectedArea) {
+				const { selectedArea } = route.params;
+				if (selectedArea) {
+					this.setState({ selectedArea }, () => {
+						this.getPropertyGraanaListing()
+					})
+				}
+			}
+			else {
+				this.getPropertyGraanaListing()
+			}
+		})
 	}
 
 
@@ -71,9 +90,21 @@ class GraanaInventories extends React.Component {
 	}
 
 	getPropertyGraanaListing = () => {
-		const { propertiesList, page, pageSize } = this.state;
-		const url = `/api/inventory/all?propType=graana&pageSize=${pageSize}&page=${page}`
-		axios.get(url).then((response) => {
+		const { propertiesList, page, pageSize, statusFilter, searchBy, showSearchBar, searchText, selectedArea } = this.state;
+		let query = ``
+		if (showSearchBar && searchBy === 'id' && searchText !== '') {
+		  // Search By ID
+		 query = `/api/inventory/all?propType=graana&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+	   }
+	   else if (showSearchBar && searchBy === 'area' && selectedArea) {
+		 // Search By Area
+		 query = `/api/inventory/all?propType=graana&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
+	   }
+	   else {
+		 // Only Status Filter
+		 query = `/api/inventory/all?propType=graana&propStatus=${statusFilter}&pageSize=${pageSize}&page=${page}`
+	   }
+		axios.get(query).then((response) => {
 			if (response.status == 200) {
 				this.setState({
 					propertiesList: page === 1 ? response.data.rows : [...propertiesList, ...response.data.rows],
@@ -113,7 +144,7 @@ class GraanaInventories extends React.Component {
 
 	onHandlePress = (data) => {
 		const { navigation } = this.props;
-		navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: true ,screenName: 'GraanaInventories' })
+		navigation.navigate('PropertyDetail', { property: data, update: true, editButtonHide: true, screenName: 'GraanaInventories' })
 	}
 
 	onHandleLongPress = (val) => {
@@ -215,6 +246,31 @@ class GraanaInventories extends React.Component {
 			})
 	}
 
+	changeStatus = (status) => {
+		this.clearStateValues()
+		this.setState({ statusFilter: status, propertiesList: [], loading: true }, () => {
+			this.getPropertyGraanaListing();
+		})
+	}
+
+	clearAndCloseSearch = () => {
+		this.setState({ searchText: '', showSearchBar: false, selectedArea: null, loading: true, selectedUser: null, searchBy: 'id', statusFilter: 'published' }, () => {
+			this.clearStateValues();
+			this.getPropertyGraanaListing();
+		})
+	}
+
+	changeSearchBy = (searchBy) => {
+		this.setState({ searchBy, selectedArea: null });
+	}
+
+
+	handleSearchByArea = () => {
+		const { navigation } = this.props;
+		const { selectedArea } = this.state;
+		navigation.navigate('AssignedAreas', { screenName: 'Graana.com', selectedArea });
+	}
+
 	render() {
 		const {
 			propertiesList,
@@ -225,15 +281,85 @@ class GraanaInventories extends React.Component {
 			singlePropertyData,
 			forStatusPrice,
 			formData,
+			searchBy,
+			searchText,
+			selectedArea,
+			statusFilter,
+			showSearchBar,
 		} = this.state;
-		
+
 		return (
 			!loading ?
-				<View style={[AppStyles.container, { marginBottom: 25 }]}>
+				<View style={[styles.container, { marginBottom: 25 }]}>
+					{showSearchBar ? (
+						<View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0, flexDirection: 'row', alignItems: 'center' }]}>
+							<View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
+								<PickerComponent
+									placeholder={'Search By'}
+									data={StaticData.searchBy}
+									customStyle={styles.pickerStyle}
+									customIconStyle={styles.customIconStyle}
+									onValueChange={this.changeSearchBy}
+									selectedItem={searchBy}
+								/>
+							</View>
+							{
+								searchBy === 'id' ? <Search
+									containerWidth={'80%'}
+									placeholder={"Search by ID"}
+									searchText={searchText}
+									setSearchText={(value) => this.setState({ searchText: value })}
+									showShadow={false}
+									showClearButton={true}
+									returnKeyType={'search'}
+									onSubmitEditing={() => this.setState({ loading: true }, () => { this.getPropertyGraanaListing() })}
+									closeSearchBar={() => this.clearAndCloseSearch()}
+								/>
+									:
+									<View style={styles.searchTextContainerStyle} >
+										<Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
+											color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
+										}]} >
+											{isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
+										</Text>
+										<Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
+									</View>
+
+							}
+
+						</View>
+					) : (
+							<View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+								<View style={styles.pickerMain}>
+									<PickerComponent
+										placeholder={'Property Status'}
+										data={StaticData.graanaStatusFilters}
+										customStyle={styles.pickerStyle}
+										customIconStyle={styles.customIconStyle}
+										onValueChange={this.changeStatus}
+										selectedItem={statusFilter}
+									/>
+								</View>
+								<View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+									<Ionicons
+										onPress={() => {
+											this.setState({ showSearchBar: true }, () => {
+												this.clearStateValues()
+											})
+										}}
+										name={'ios-search'}
+										size={26}
+										color={AppStyles.colors.primaryColor}
+									/>
+								</View>
+
+							</View>
+						)}
 					{/* ***** Main Tile Wrap */}
 					{
 						propertiesList && propertiesList.length > 0 ?
 							< FlatList
+							   contentContainerStyle={{ paddingHorizontal: wp('2%') }}
 								data={propertiesList}
 								renderItem={({ item, index }) => (
 									<PropertyTile
@@ -257,7 +383,7 @@ class GraanaInventories extends React.Component {
 									}
 								}}
 								onEndReachedThreshold={0.5}
-								keyExtractor={(item, index) =>  `${item.id}`}
+								keyExtractor={(item, index) => `${item.id}`}
 							/>
 							:
 							<NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
@@ -287,10 +413,10 @@ class GraanaInventories extends React.Component {
 }
 
 mapStateToProps = (store) => {
-  return {
-    user: store.user.user,
-    contacts: store.contacts.contacts,
-  }
+	return {
+		user: store.user.user,
+		contacts: store.contacts.contacts,
+	}
 }
 
 export default connect(mapStateToProps)(GraanaInventories)

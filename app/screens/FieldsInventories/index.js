@@ -313,7 +313,7 @@ class FieldsInventories extends React.Component {
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
               <View style={styles.pickerMain}>
                 <PickerComponent
-                  placeholder={'Lead Status'}
+                  placeholder={'Property Status'}
                   data={StaticData.fieldAppStatusFilters}
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}

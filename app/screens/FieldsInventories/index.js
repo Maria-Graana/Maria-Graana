@@ -249,7 +249,7 @@ class FieldsInventories extends React.Component {
   }
 
   clearAndCloseSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false, selectedArea: null, loading: true, searchBy: 'id' }, () => {
+    this.setState({ searchText: '', showSearchBar: false, selectedArea: null, loading: true, searchBy: 'id', statusFilter: 'onhold' }, () => {
       this.clearStateValues();
       this.getFieldsListing();
     })

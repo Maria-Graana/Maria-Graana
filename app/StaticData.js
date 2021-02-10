@@ -725,4 +725,13 @@ export default StaticData = {
     'Ensure Key from owner',
     'Sell core features of property as required by client',
   ],
+  fieldAppStatusFilters:[
+    { value: 'onhold', name: 'Pending' },
+    { value: 'pending', name: 'Approved' },
+    { value: 'rejected', name: 'Rejected' },
+  ],
+  searchBy: [
+    { value: 'id', name: 'Id' },
+    { value: 'area', name: 'Area' },
+  ]
 }

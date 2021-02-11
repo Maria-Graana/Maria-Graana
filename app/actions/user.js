@@ -11,7 +11,7 @@ export const storeItem = async (key, item) => {
   try {
     let jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item))
     return jsonOfItem
-  } catch (error) {}
+  } catch (error) { }
 }
 
 export const getItem = async (key) => {
@@ -28,7 +28,7 @@ export const removeItem = async (key) => {
   try {
     var jsonOfItem = await AsyncStorage.removeItem(key)
     return jsonOfItem
-  } catch (error) {}
+  } catch (error) { }
 }
 
 setAuthorizationToken = (token) => {
@@ -103,16 +103,20 @@ export function setuser(data) {
         return response
       })
       .catch((error) => {
-        console.log(error)
-        console.log('crashing', error.response.data)
         dispatch({
           type: types.USER_LOADED,
         })
+        console.log(error)
+        console.log('crashing', error.response.data)
         dispatch({
           type: types.SET_USER_ERROR,
           payload: error.response ? error.response.data : error.message,
         })
         return error
+      }).finally(() => {
+        dispatch({
+          type: types.USER_LOADED,
+        })
       })
   }
 }

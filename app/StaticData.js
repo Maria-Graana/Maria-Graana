@@ -725,4 +725,27 @@ export default StaticData = {
     'Ensure Key from owner',
     'Sell core features of property as required by client',
   ],
+  fieldAppStatusFilters:[
+    { value: 'onhold', name: 'Pending' },
+    { value: 'pending', name: 'Approved' },
+    { value: 'rejected', name: 'Rejected' },
+  ],
+  searchBy: [
+    { value: 'id', name: 'Id' },
+    { value: 'area', name: 'Area' },
+  ],
+  searchByIdOnly: [
+    { value: 'id', name: 'Id' },
+  ],
+  
+  graanaStatusFilters:[
+    { value: 'published', name: 'All' },
+    { value: 'pendingVerification', name: 'Pending Re-Verification' },
+    { value: 'outdated', name: 'Outdated' },
+    { value: 'geotagged', name: 'Geo Tagged' },
+  ],
+  graanaStatusFiltersPP:[
+    { value: 'published', name: 'All' },
+    { value: 'outdated', name: 'Outdated' },
+  ],
 }

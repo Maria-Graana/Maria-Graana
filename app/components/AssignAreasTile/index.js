@@ -1,10 +1,8 @@
 /** @format */
 
-import { Text, View } from 'react-native'
+import { Text, View, TouchableOpacity } from 'react-native'
 import React from 'react'
 import styles from './style'
-import Item from '../../../native-base-theme/components/Item'
-import Avatar from '../../components/Avatar'
 
 class AssignAreas extends React.Component {
   constructor(props) {
@@ -12,9 +10,9 @@ class AssignAreas extends React.Component {
   }
 
   render() {
-    const { data, index } = this.props
+    const { data, index, onPress = null } = this.props
     return (
-      <View style={styles.mainTile}>
+      <TouchableOpacity onPress={() => onPress(data)} style={styles.mainTile}>
         <View style={styles.leftWrap}>
           <View style={styles.mainView}>
             <Text style={styles.textStyle}>{index + 1}</Text>
@@ -24,7 +22,7 @@ class AssignAreas extends React.Component {
           {<Text style={styles.cityName}>{data.name}</Text>}
           <Text style={styles.areaName}>{data.city && data.city.name}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
 }

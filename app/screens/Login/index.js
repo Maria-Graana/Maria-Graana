@@ -85,7 +85,6 @@ class Login extends Component {
     if (showError) {
       this.setState({ showError: false })
     }
-    console.log(value, name)
     if (name === 'email' && !this.validateEmail(value)) {
       this.setState({
         validEmail: true,

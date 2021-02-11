@@ -7,6 +7,9 @@ import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
 import config from '../config'
 
+const CancelToken = axios.CancelToken
+const source = CancelToken.source()
+
 export const storeItem = async (key, item) => {
   try {
     let jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item))
@@ -81,14 +84,23 @@ export function setuser(data) {
     dispatch({
       type: types.USER_LOADING,
     })
+    let source = CancelToken.source()
+    setTimeout(() => {
+      dispatch({
+        type: types.USER_LOADED,
+      })
+      source.cancel()
+    }, 10000)
+    console.log('setuser')
+    console.log('axios.defaults.baseURL : ', axios.defaults.baseURL)
     return axios
-      .post(`${config.apiPath}/api/user/login`, data)
+      .post(`/api/user/login`, data, { cancelToken: source.token })
       .then((response) => {
         console.log('<<<<<<<<<< User >>>>>>>>>>>>>>')
         console.log(response.data)
         storeItem('token', response.data.token)
         setAuthorizationToken(response.data.token)
-        setBaseUrl()
+        // setBaseUrl()
         dispatch(checkToken())
         dispatch({
           type: types.SET_USER,
@@ -114,13 +126,18 @@ export function setuser(data) {
         })
         return error
       })
+      .finally(() => {
+        dispatch({
+          type: types.USER_LOADED,
+        })
+      })
   }
 }
 
 export function logoutUser() {
   return (dispatch, getsState) => {
     deleteAuthorizationToken()
-    removeBaseUrl()
+    // removeBaseUrl()
     removeItem('token')
     dispatch({
       type: types.LOGOUT_USER,
@@ -135,11 +152,22 @@ export function checkToken() {
   return (dispatch, getsState) => {
     getItem('token').then((token) => {
       if (token) {
+        let source = CancelToken.source()
+        setTimeout(() => {
+          dispatch({
+            type: types.USER_LOADED,
+          })
+          source.cancel()
+        }, 10000)
         axios
-          .get(`${config.apiPath}/api/user/me`, { headers: { Authorization: `Bearer ${token}` } })
+          .get(
+            `/api/user/me`,
+            { headers: { Authorization: `Bearer ${token}` } },
+            { cancelToken: source.token }
+          )
           .then((response) => {
             setAuthorizationToken(token)
-            setBaseUrl()
+            // setBaseUrl()
             dispatch({
               type: types.SET_USER,
               payload: { ...response.data },

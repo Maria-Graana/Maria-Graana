@@ -59,6 +59,7 @@ export default class App extends React.Component {
 
     setCustomTouchableOpacity({ activeOpacity: 0.8 })
     SplashScreen.preventAutoHideAsync()
+    setBaseUrl()
     axios.defaults.baseURL = config.apiPath
     const retrievedItem = AsyncStorage.getItem('token').then((token) => {
       if (token) {
@@ -109,6 +110,12 @@ export default class App extends React.Component {
     setCustomText(customTextProps)
     setCustomTextInput(customTextInputProps)
     LogBox.ignoreLogs(['Animated: `useNativeDriver` was not specified'])
+  }
+
+  setBaseUrl = () => {
+    console.log('<<<<<<<<<<<< BASE API >>>>>>>>>>>>')
+    console.log(config.apiPath)
+    axios.defaults.baseURL = config.apiPath
   }
 
   _handleNotification = (response) => {

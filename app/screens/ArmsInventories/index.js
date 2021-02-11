@@ -81,12 +81,21 @@ class ArmsInventories extends React.Component {
     })
   }
 
+  
+
   getPropertyArmsListing = () => {
     const { propertiesList, page, pageSize, statusFilter, searchBy, searchText, showSearchBar, selectedArea } = this.state
-    let query = `/api/inventory/all?propType=arms&pageSize=${pageSize}&page=${page}`
+    let query = ``
     if (showSearchBar && searchBy === 'id' && searchText !== '') {
-      // Search By ID
-      query = `/api/inventory/all?propType=arms&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      if (helper.isANumber(searchText)) {
+        // Search By ID
+        query = `/api/inventory/all?propType=arms&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      }
+      else {
+        alert('Please Enter valid Property ID!')
+        this.setState({loading: false});
+        return;
+      }
     }
     else if (showSearchBar && searchBy === 'area' && selectedArea) {
       // Search By Area

@@ -93,13 +93,21 @@ class GraanaInventories extends React.Component {
 		const { propertiesList, page, pageSize, statusFilter, searchBy, showSearchBar, searchText, selectedArea } = this.state;
 		let query = ``
 		if (showSearchBar && searchBy === 'id' && searchText !== '') {
-			// Search By ID
-			query = `/api/inventory/all?propType=graana&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+			if (helper.isANumber(searchText)) {
+				// Search By ID
+				query = `/api/inventory/all?propType=graana&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+			}
+			else {
+				alert('Please Enter valid Property ID!')
+				this.setState({loading: false});
+		      	return;
+
+			}
 		}
 		else if (showSearchBar && searchBy === 'area' && selectedArea) {
 			// Search By Area
 			query = `/api/inventory/all?propType=graana&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
-		  }
+		}
 		else {
 			// Only Status Filter
 			query = `/api/inventory/all?propType=graana&propStatus=${statusFilter}&pageSize=${pageSize}&page=${page}`
@@ -287,7 +295,7 @@ class GraanaInventories extends React.Component {
 			showSearchBar,
 			selectedArea
 		} = this.state;
-		const {user} = this.props;
+		const { user } = this.props;
 		return (
 			!loading ?
 				<View style={[styles.container, { marginBottom: 25 }]}>

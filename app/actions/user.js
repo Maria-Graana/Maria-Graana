@@ -91,8 +91,6 @@ export function setuser(data) {
       })
       source.cancel()
     }, 10000)
-    console.log('setuser')
-    console.log('axios.defaults.baseURL : ', axios.defaults.baseURL)
     return axios
       .post(`/api/user/login`, data, { cancelToken: source.token })
       .then((response) => {
@@ -115,8 +113,6 @@ export function setuser(data) {
         return response
       })
       .catch((error) => {
-        console.log(error)
-        console.log('crashing', error.response.data)
         dispatch({
           type: types.USER_LOADED,
         })
@@ -183,11 +179,11 @@ export function checkToken() {
           })
           .catch((error) => {
             SplashScreen.hideAsync()
-            console.log(error.message)
             dispatch({
               type: types.SET_TOKEN_ERROR,
               payload: error.response ? error.response.data : error.message,
             })
+            console.log(error.message)
           })
       } else {
         console.log('SET_TOKEN_ERROR')

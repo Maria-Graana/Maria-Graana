@@ -18,6 +18,7 @@ import TouchableButton from '../../components/TouchableButton/index'
 import { connect } from 'react-redux'
 import { setuser } from '../../actions/user'
 import styles from './style'
+import types from '../../types'
 import config from '../../config'
 import helper from '../../helper'
 
@@ -44,7 +45,7 @@ class Login extends Component {
 
   submitForm = () => {
     const { formData, validEmail } = this.state
-    const { isInternetConnected } = this.props
+    const { isInternetConnected, dispatch } = this.props
     if (validEmail) return
     if (!isInternetConnected) {
       this.showToast()
@@ -71,7 +72,7 @@ class Login extends Component {
             }
           })
           .catch((error) => {
-            dispatch({
+            this.props.dispatch({
               type: types.USER_LOADED,
             })
           })

@@ -13,6 +13,8 @@ const Search = ({ placeholder,
     closeSearchBar,
     onSubmitEditing,
     autoFocus = false,
+    onFocus= null,
+    editable= true
 }) => {
     return (
         <View style={[styles.searchMainContainerStyle, { width: containerWidth }, showShadow ? styles.shadow : null]}>
@@ -25,6 +27,8 @@ const Search = ({ placeholder,
                     autoFocus={autoFocus}
                     onChangeText={(value) => setSearchText(value)}
                     returnKeyType={returnKeyType}
+                    onFocus={onFocus}
+                    editable={editable}
                     onSubmitEditing={() => onSubmitEditing ? onSubmitEditing() : Keyboard.dismiss()}
                 />
                 {

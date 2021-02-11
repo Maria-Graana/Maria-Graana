@@ -1,17 +1,9 @@
 /** @format */
 
 import * as RootNavigation from '../../navigation/RootNavigation'
-
-import { Alert, FlatList, Image, Text, View } from 'react-native'
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen'
-
-import Ability from '../../hoc/Ability'
+import { Alert, FlatList, Image, Text, View, TouchableOpacity } from 'react-native'
 import { ActionSheet } from 'native-base'
 import AppStyles from '../../AppStyles'
-import { Fab } from 'native-base'
 import { Ionicons } from '@expo/vector-icons'
 import Loader from '../../components/loader'
 import NoResultsComponent from '../../components/NoResultsComponent'
@@ -20,11 +12,16 @@ import React from 'react'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import helper from '../../helper'
-// import styles from './style'
-import { ActivityIndicator } from 'react-native-paper'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
-import { Fields } from 'expo-contacts'
 import RejectPropertyModal from '../../components/RejectPropertyModal'
+import Search from '../../components/Search'
+import StaticData from '../../StaticData'
+import styles from './style';
+import PickerComponent from '../../components/Picker/index'
+import { widthPercentageToDP } from 'react-native-responsive-screen'
+import TouchableInput from '../../components/TouchableInput'
+import { isEmpty } from 'underscore'
+
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -42,13 +39,31 @@ class FieldsInventories extends React.Component {
       selectedProperty: null,
       showMenu: false,
       rejectPropertyVisible: false,
+      showSearchBar: false,
+      searchText: '',
+      statusFilter: 'onhold',
+      searchBy: 'id',
+      selectedArea: null,
     }
   }
 
   componentDidMount() {
-    const { navigation } = this.props
+    const { navigation } = this.props;
+    let that = this;
     this._unsubscribe = navigation.addListener('focus', () => {
-      this.getFieldsListing()
+      const { route } = that.props
+      if (route.params && route.params.selectedArea) {
+        const { selectedArea } = route.params;
+        if (selectedArea) {
+          this.setState({ selectedArea }, () => {
+            //console.log(this.state.selectedArea);
+            this.getFieldsListing()
+          })
+        }
+      }
+      else {
+        this.getFieldsListing()
+      }
     })
   }
 
@@ -65,10 +80,22 @@ class FieldsInventories extends React.Component {
   }
 
   getFieldsListing = () => {
-    const { propertiesList, page, pageSize } = this.state
-    const url = `/api/inventory/all?propType=fields&pageSize=${pageSize}&page=${page}`
+    const { propertiesList, page, pageSize, showSearchBar, searchText, statusFilter, searchBy, selectedArea } = this.state
+    let query = ``
+    if (showSearchBar && searchBy === 'id' && searchText !== '') {
+       // Search By ID
+      query = `/api/inventory/all?propType=fields&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+    }
+    else if (showSearchBar && searchBy === 'area' && selectedArea) {
+      // Search By Area
+      query = `/api/inventory/all?propType=fields&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
+    }
+    else {
+      // Only Status Filter
+      query = `/api/inventory/all?propType=fields&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
+    }
     axios
-      .get(url)
+      .get(query)
       .then((response) => {
         if (response.status == 200) {
           this.setState({
@@ -214,12 +241,101 @@ class FieldsInventories extends React.Component {
     this.setState({ rejectPropertyVisible: val, showMenu: false })
   }
 
+  changeStatus = (status) => {
+    this.clearStateValues()
+    this.setState({ statusFilter: status, propertiesList: [], loading: true }, () => {
+      this.getFieldsListing();
+    })
+  }
+
+  clearAndCloseSearch = () => {
+    this.setState({ searchText: '', showSearchBar: false, selectedArea: null, loading: true, searchBy: 'id', statusFilter: 'onhold' }, () => {
+      this.clearStateValues();
+      this.getFieldsListing();
+    })
+  }
+
+  changeSearchBy = (searchBy) => {
+    this.setState({ searchBy, selectedArea: null });
+  }
+
+
+  handleSearchByArea = () => {
+    const { navigation } = this.props;
+    const { selectedArea } = this.state;
+    navigation.navigate('AssignedAreas', { screenName: 'Field App', selectedArea });
+  }
+
 
   render() {
-    const { propertiesList, loading, totalProperties, onEndReachedLoader, selectedProperty, showMenu, rejectPropertyVisible } = this.state
+    const { propertiesList, loading, totalProperties, onEndReachedLoader, selectedProperty, showMenu, rejectPropertyVisible, statusFilter, searchText, showSearchBar, searchBy, selectedArea } = this.state
     const { user, route } = this.props
     return !loading ? (
-      <View style={[AppStyles.container, { marginBottom: 25 }]}>
+      <View style={[styles.container, { marginBottom: 25 }]}>
+        {showSearchBar ? (
+          <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0, flexDirection: 'row', alignItems: 'center' }]}>
+            <View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
+              <PickerComponent
+                placeholder={'Search By'}
+                data={StaticData.searchBy}
+                customStyle={styles.pickerStyle}
+                customIconStyle={styles.customIconStyle}
+                onValueChange={this.changeSearchBy}
+                selectedItem={searchBy}
+              />
+            </View>
+            {
+              searchBy === 'id' ? <Search
+                containerWidth={'80%'}
+                placeholder={"Search by ID"}
+                searchText={searchText}
+                setSearchText={(value) => this.setState({ searchText: value })}
+                showShadow={false}
+                showClearButton={true}
+                returnKeyType={'search'}
+                onSubmitEditing={() => this.setState({ loading: true }, () => { this.getFieldsListing() })}
+                closeSearchBar={() => this.clearAndCloseSearch()}
+              />
+                :
+                <View style={styles.searchTextContainerStyle} >
+                  <Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
+                    color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
+                  }]} >
+                    {isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
+                  </Text>
+                  <Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
+                </View>
+
+            }
+
+          </View>
+        ) : (
+            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+              <View style={styles.pickerMain}>
+                <PickerComponent
+                  placeholder={'Property Status'}
+                  data={StaticData.fieldAppStatusFilters}
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatus}
+                  selectedItem={statusFilter}
+                />
+              </View>
+              <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons
+                  onPress={() => {
+                    this.setState({ showSearchBar: true }, () => {
+                      this.clearStateValues()
+                    })
+                  }}
+                  name={'ios-search'}
+                  size={26}
+                  color={AppStyles.colors.primaryColor}
+                />
+              </View>
+
+            </View>
+          )}
 
         <RejectPropertyModal isVisible={rejectPropertyVisible}
           rejectProperty={(reason) => this.rejectProperty(reason)}
@@ -229,7 +345,7 @@ class FieldsInventories extends React.Component {
 
         {propertiesList && propertiesList.length > 0 ? (
           <FlatList
-            //contentContainerStyle={{ paddingHorizontal: wp('2%') }}
+            contentContainerStyle={{ paddingHorizontal: widthPercentageToDP('2%') }}
             data={propertiesList}
             renderItem={({ item }) => (
               <PropertyTile

@@ -364,6 +364,7 @@ class EditFieldAppProperty extends Component {
                 checkValidation: true
             })
         } else {
+           
             // ********* Call Add Inventory API here :)
             this.setState({ loading: true }, () => {
                 this.createOrEditProperty(formData);
@@ -429,6 +430,12 @@ class EditFieldAppProperty extends Component {
         delete formData.downpayment;
         // grade not being saved in case of field properties
         delete formData.grade;
+
+        if(formData.imageIds.length < 3){
+            alert('Minimum three images are required to update property!')
+            this.setState({loading: false})
+            return;
+        }
 
         if (route.params.update) {
             this.updateMapLocation(property, formData).then((data => {

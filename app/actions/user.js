@@ -137,7 +137,7 @@ export function setuser(data) {
         if (config.channel === 'production') {
           Sentry.captureException(
             `Login API Catch Response ERROR! ${JSON.stringify(data.email)}: ${JSON.stringify(
-              error
+              error.response.data
             )}`
           )
         }

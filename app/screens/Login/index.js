@@ -21,6 +21,7 @@ import styles from './style'
 import types from '../../types'
 import config from '../../config'
 import helper from '../../helper'
+import * as Sentry from 'sentry-expo'
 
 class Login extends Component {
   constructor(props) {
@@ -64,9 +65,17 @@ class Login extends Component {
           email: formData.email.toLocaleLowerCase(),
           password: formData.password,
         }
+        if (config.channel === 'production') {
+          Sentry.captureException(`Before Calling Login Action! ${JSON.stringify(creds.email)}`)
+        }
         this.props
           .dispatch(setuser(creds))
           .then((response) => {
+            if (config.channel === 'production') {
+              Sentry.captureException(
+                `After Calling Login Action Success! ${JSON.stringify(creds.email)}`
+              )
+            }
             if (!response.data) {
               this.setState({ showError: true, validEmail: false })
             }
@@ -75,6 +84,13 @@ class Login extends Component {
             this.props.dispatch({
               type: types.USER_LOADED,
             })
+            if (config.channel === 'production') {
+              Sentry.captureException(
+                `After Calling Login Action Error! ${JSON.stringify(
+                  creds.email
+                )} : ${JSON.stringify(error)}`
+              )
+            }
           })
       }
     }

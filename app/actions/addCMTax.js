@@ -2,10 +2,10 @@
 
 import * as types from '../types'
 
-export function setCMPayment(payment) {
+export function setCMTax(payment) {
   return (dispatch, getsState) => {
     dispatch({
-      type: types.SET_CM_PAYMENT,
+      type: types.SET_CM_TAX,
       payload: payment,
     })
     return payment

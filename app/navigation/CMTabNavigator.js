@@ -6,6 +6,7 @@ import { Dimensions } from 'react-native'
 import AppStyles from '../AppStyles'
 import Meetings from '../screens/Meetings/index'
 import Payments from '../screens/Payments/index'
+import CMPayment from '../screens/CMPayment'
 const { width } = Dimensions.get('window')
 
 const Tab = createMaterialTopTabNavigator()
@@ -27,7 +28,8 @@ export default function CMLeadTabs() {
       }}
     >
       <Tab.Screen name="Meetings" options={{ title: 'Calls / Meetings' }} component={Meetings} />
-      <Tab.Screen name="Payments" component={Payments} />
+      <Tab.Screen name="Payments" component={CMPayment} />
+      {/* <Tab.Screen name="Payments" component={Payments} /> */}
     </Tab.Navigator>
   )
 }

@@ -16,15 +16,12 @@ const payment = {
   title: '',
   taxIncluded: false,
   paymentCategory: '',
-  paymentType: '',
   whichModalVisible: '',
-  firstForm: false,
-  secondForm: false,
 }
 
-const CMPayment = (state = payment, action) => {
+const CMTax = (state = payment, action) => {
   switch (action.type) {
-    case types.SET_CM_PAYMENT:
+    case types.SET_CM_TAX:
       return action.payload
     default:
       return state
@@ -32,5 +29,5 @@ const CMPayment = (state = payment, action) => {
 }
 
 export default combineReducers({
-  CMPayment,
+  CMTax,
 })

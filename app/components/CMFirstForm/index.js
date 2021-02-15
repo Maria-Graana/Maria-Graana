@@ -1,0 +1,278 @@
+/** @format */
+
+import React, { Component } from 'react'
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, TextInput } from 'react-native'
+import styles from './style'
+import PickerComponent from '../../components/Picker/index'
+import AppStyles from '../../AppStyles'
+import { connect } from 'react-redux'
+import moment from 'moment'
+import SimpleInputText from '../../components/SimpleInputField'
+import { formatPrice } from '../../PriceFormate'
+import ErrorMessage from '../../components/ErrorMessage'
+import PaymentTile from '../../components/PaymentTile'
+import PaymentMethods from '../../PaymentMethods'
+import StaticData from '../../StaticData'
+
+class CMFirstForm extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+  checkUnitPearl = () => {
+    const { unitPearlDetailsData } = this.props
+    if (unitPearlDetailsData && 'pearlArea' in unitPearlDetailsData) {
+      return unitPearlDetailsData.pearlArea < 50 ? StaticData.onlyUnitType : StaticData.unitType
+    }
+  }
+
+  render() {
+    const {
+      formData,
+      handleFirstForm,
+      pickerFloors,
+      pickerProjects,
+      pickerUnits,
+      firstFormData,
+      checkLeadClosedOrNot,
+      unitPearlDetailsData,
+      openUnitDetailsModal,
+      pearlUnit,
+      oneUnitData,
+      paymentPlan,
+      submitFirstForm,
+      finalPrice,
+      firstFormValidate,
+      cnicValidate,
+      leftPearlSqft,
+      pearlModal,
+      pearlUnitPrice,
+    } = this.props
+    let unitTypeData = this.checkUnitPearl()
+    return (
+      <View style={styles.mainFormWrap}>
+        <View style={{ paddingVertical: 10 }}>
+          <PickerComponent
+            onValueChange={handleFirstForm}
+            data={pickerProjects}
+            name={'project'}
+            placeholder="Project"
+            selectedItem={firstFormData.project}
+            // enabled={checkLeadClosedOrNot}
+          />
+          {firstFormValidate === true && !firstFormData.project && firstFormData.project === '' && (
+            <ErrorMessage errorMessage={'Required'} />
+          )}
+        </View>
+        <View style={{ paddingVertical: 10 }}>
+          <PickerComponent
+            onValueChange={handleFirstForm}
+            data={pickerFloors}
+            name={'floor'}
+            placeholder="Floor"
+            selectedItem={firstFormData.floor}
+            // enabled={checkLeadClosedOrNot}
+          />
+          {firstFormValidate === true && !firstFormData.floor && firstFormData.floor === '' && (
+            <ErrorMessage errorMessage={'Required'} />
+          )}
+        </View>
+        <View style={{ paddingVertical: 10 }}>
+          <PickerComponent
+            onValueChange={handleFirstForm}
+            data={unitTypeData}
+            name={'unitType'}
+            placeholder="Unit Type"
+            selectedItem={firstFormData.unitType}
+            // enabled={checkLeadClosedOrNot}
+          />
+          {firstFormValidate === true && !firstFormData.floor && firstFormData.floor === '' && (
+            <ErrorMessage errorMessage={'Required'} />
+          )}
+        </View>
+        {pearlUnit ? (
+          <View style={{ paddingVertical: 10, flexDirection: 'row' }}>
+            <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
+              <SimpleInputText
+                name={'pearl'}
+                fromatName={false}
+                placeholder={`${unitPearlDetailsData.pearlArea} sqft available`}
+                label={'PEARL'}
+                value={firstFormData.pearl}
+                formatValue={''}
+                onChangeHandle={handleFirstForm}
+                editable={true}
+                keyboardType={'numeric'}
+                noMargin={true}
+              />
+              {firstFormValidate === true && !firstFormData.pearl && firstFormData.pearl === '' && (
+                <ErrorMessage errorMessage={'Required'} />
+              )}
+              {firstFormData.pearl > unitPearlDetailsData.pearlArea ? (
+                <ErrorMessage
+                  errorMessage={`Cannot be greater than ${unitPearlDetailsData.pearlArea} sqft `}
+                />
+              ) : null}
+              {firstFormData.pearl < 50 ? (
+                <ErrorMessage errorMessage={'Must be greater than or equal to 50 sqft'} />
+              ) : null}
+              {leftPearlSqft < 50 && leftPearlSqft > 0 ? (
+                <ErrorMessage
+                  errorMessage={`Remaining area (${leftPearlSqft} sqft) must be 0 or greater than or equal to 50 sqft`}
+                />
+              ) : null}
+            </View>
+            <View style={styles.mainDetailViewBtn}>
+              <TouchableOpacity
+                style={[styles.unitDetailBtn]}
+                onPress={() => {
+                  firstFormData.pearl != null &&
+                    firstFormData.pearl != '' &&
+                    firstFormData.pearl >= 50 &&
+                    openUnitDetailsModal()
+                }}
+              >
+                <Text style={styles.detailBtnText}>Details</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
+        {!pearlUnit ? (
+          <View style={{ paddingVertical: 10, flexDirection: 'row' }}>
+            <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
+              <PickerComponent
+                onValueChange={handleFirstForm}
+                data={pickerUnits}
+                name={'unit'}
+                placeholder="Unit"
+                selectedItem={firstFormData.unit}
+                // enabled={checkLeadClosedOrNot}
+                customStyle={styles.equalHeight}
+              />
+              {firstFormValidate === true && !firstFormData.unit && firstFormData.unit === '' && (
+                <ErrorMessage errorMessage={'Required'} />
+              )}
+            </View>
+            <View style={styles.mainDetailViewBtn}>
+              <TouchableOpacity
+                style={[styles.unitDetailBtn]}
+                onPress={() => {
+                  firstFormData.unit != null && firstFormData.unit != '' && openUnitDetailsModal()
+                }}
+              >
+                <Text style={styles.detailBtnText}>Details</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
+
+        {/* **************************************** */}
+        <SimpleInputText
+          name={'unitPrice'}
+          fromatName={'unitPrice'}
+          placeholder={'Unit Price'}
+          label={'UNIT PRICE'}
+          value={pearlModal ? pearlUnitPrice : PaymentMethods.findUnitPrice(oneUnitData)}
+          formatValue={''}
+          editable={false}
+          keyboardType={'numeric'}
+        />
+
+        <View style={{ paddingVertical: 10 }}>
+          <PickerComponent
+            onValueChange={handleFirstForm}
+            data={paymentPlan}
+            name={'paymentPlan'}
+            placeholder="Payment Plan"
+            selectedItem={firstFormData.paymentPlan}
+            // enabled={checkLeadClosedOrNot}
+          />
+          {firstFormValidate === true &&
+            !firstFormData.paymentPlan &&
+            firstFormData.paymentPlan === 'no' && <ErrorMessage errorMessage={'Required'} />}
+        </View>
+
+        {/* **************************************** */}
+        <SimpleInputText
+          name={'approvedDiscount'}
+          placeholder={'Approved Discount'}
+          label={'APPROVED DISCOUNT%'}
+          value={firstFormData.approvedDiscount}
+          keyboardType={'numeric'}
+          onChangeHandle={handleFirstForm}
+          formatValue={''}
+          // editable={checkForPaymentPlan}
+          fromatName={false}
+        />
+        <SimpleInputText
+          name={'approvedDiscountPrice'}
+          fromatName={''}
+          placeholder={'APPROVED DISCOUNT PRICE'}
+          label={'APPROVED DISCOUNT PRICE'}
+          value={firstFormData.approvedDiscountPrice}
+          onChangeHandle={handleFirstForm}
+          formatValue={''}
+          keyboardType={'numeric'}
+        />
+        <View style={{ paddingVertical: 10 }}>
+          <TouchableOpacity
+            style={styles.bookNowBtn}
+            onPress={() => {
+              checkForUnitIdavail === true && tokenModalToggle(true)
+            }}
+          >
+            <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* **************************************** */}
+        <SimpleInputText
+          name={'cnic'}
+          placeholder={'Client CNIC'}
+          label={'CLIENT CNIC'}
+          value={''}
+          keyboardType={'numeric'}
+          onChangeHandle={handleFirstForm}
+          formatValue={''}
+          // editable={cnicEditable}
+          fromatName={false}
+        />
+        {(firstFormValidate === true && firstFormData.cnic === null) ||
+        firstFormData.cnic === '' ? (
+          <ErrorMessage errorMessage={'Required'} />
+        ) : cnicValidate ? (
+          <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+        ) : null}
+        {/* **************************************** */}
+        <View style={{ paddingVertical: 10 }}>
+          <View style={styles.backgroundBlue}>
+            <Text style={styles.finalPrice}>FINAL PRICE</Text>
+
+            <Text style={styles.priceValue}>{firstFormData.finalPrice}</Text>
+            <Text style={styles.sidePriceFormat}>0</Text>
+          </View>
+        </View>
+        <View style={{ paddingVertical: 10 }}>
+          <TouchableOpacity
+            style={styles.bookNowBtn}
+            onPress={() => {
+              // checkLeadClosedOrNot === true && firstScreenConfirmModal(true)
+              submitFirstForm()
+            }}
+          >
+            <Text style={styles.bookNowBtnText}>BOOK NOW</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+}
+
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
+    lead: store.lead.lead,
+  }
+}
+
+export default connect(mapStateToProps)(CMFirstForm)

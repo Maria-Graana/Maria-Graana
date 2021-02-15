@@ -749,6 +749,8 @@ class PropertyRCMPayment extends React.Component {
         } else {
           //console.log('something went wrong in api');
         }
+      }).finally(()=>{
+        this.setState({loading:false});
       })
     })
   }

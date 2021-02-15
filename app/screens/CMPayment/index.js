@@ -30,7 +30,11 @@ import { setCMTax } from '../../actions/addCMTax'
 import { setlead } from '../../actions/lead'
 import axios from 'axios'
 import PaymentMethods from '../../PaymentMethods'
+import { ActionSheet } from 'native-base'
 
+
+var BUTTONS = ['Delete', 'Cancel']
+var CANCEL_INDEX = 1
 class CMPayment extends Component {
   data = [
     {

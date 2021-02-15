@@ -778,24 +778,16 @@ class PropertyRCMPayment extends React.Component {
     const { lead } = this.props
     const { allProperties } = this.state
     const selectedProperty = allProperties[0]
-    this.setState({ loading: true }, () => {
       axios.post(`/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null}`).then((response) => {
         if (response.data) {
+          this.fetchLead();
           helper.successToast(response.data);
-          this.setState({
-            loading: false,
-          })
         }
       }).catch((error) => {
         helper.errorToast('Something went wrong while sending email');
         console.log('something went wrong in /api/leads/sendLegalEmail', error);
-      }).finally(() => {
-        this.setState({
-          loading: false,
-        })
       })
-    })
-  }
+    }
 
   redirectProperty = (property) => {
     if (property.origin === 'arms' || property.origin === 'arms_lead') {

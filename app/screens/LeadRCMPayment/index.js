@@ -1094,26 +1094,17 @@ class LeadRCMPayment extends React.Component {
     const { lead } = this.props
     const { allProperties } = this.state
     const selectedProperty = allProperties[0]
-    this.setState({ loading: true }, () => {
       axios.post(`/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null}`).then((response) => {
         if (response.data) {
+          this.fetchLead();
           helper.successToast(response.data);
-          this.setState({
-            loading: false,
-          })
         }
       }).catch((error) => {
         helper.errorToast('Something went wrong while sending email');
         console.log('something went wrong in /api/leads/sendLegalEmail', error);
-      }).finally(() => {
-        this.setState({
-          loading: false,
-        })
       })
-    })
-  }
-
-
+    }
+  
   fetchLead = () => {
     const { dispatch, lead } = this.props
     const { rcmProgressBar } = StaticData
@@ -1129,6 +1120,8 @@ class LeadRCMPayment extends React.Component {
         } else {
           //console.log('something went wrong in api');
         }
+      }).finally(()=>{
+        this.setState({loading:false})
       })
     })
   }

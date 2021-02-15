@@ -1095,7 +1095,7 @@ class LeadRCMPayment extends React.Component {
     const { allProperties } = this.state
     const selectedProperty = allProperties[0]
     this.setState({ loading: true }, () => {
-      axios.post(`/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty.id}`).then((response) => {
+      axios.post(`/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null}`).then((response) => {
         if (response.data) {
           helper.successToast(response.data);
           this.setState({

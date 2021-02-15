@@ -31,38 +31,38 @@ import { setlead } from '../../actions/lead'
 import axios from 'axios'
 import PaymentMethods from '../../PaymentMethods'
 import { ActionSheet } from 'native-base'
-
+import PaymentHelper from './PaymentHelper'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
 class CMPayment extends Component {
   data = [
     {
-    addedBy:null,
-    armsUserId: 548,
-    chequeDepositDat: null,
-    cmLeadId: 214078,
-    createdAt: "2021-02-15T10:34:24.890Z",
-    deletedAt: null,
-    details: null,
-    id: 2288,
-    installmentAmount: 353,
-    outStandingTax: null,
-    paymentAttachments: [],
-    paymentCategory: "token",
-    paymentClearenceDate: null,
-    paymentId: null,
-    paymentTime: "2021-02-15T10:34:24.000Z",
-    rcmLeadId: null,
-    reason: null,
-    remarks: null,
-    shortlistPropertyId: null,
-    status: "pendingAccount",
-    taxAmount: null,
-    taxIncluded: false,
-    type: "pay-Order",
-    updatedAt: "2021-02-15T10:34:24.890Z",
-    }
+      addedBy: null,
+      armsUserId: 548,
+      chequeDepositDat: null,
+      cmLeadId: 214078,
+      createdAt: '2021-02-15T10:34:24.890Z',
+      deletedAt: null,
+      details: null,
+      id: 2288,
+      installmentAmount: 353,
+      outStandingTax: null,
+      paymentAttachments: [],
+      paymentCategory: 'token',
+      paymentClearenceDate: null,
+      paymentId: null,
+      paymentTime: '2021-02-15T10:34:24.000Z',
+      rcmLeadId: null,
+      reason: null,
+      remarks: null,
+      shortlistPropertyId: null,
+      status: 'pendingAccount',
+      taxAmount: null,
+      taxIncluded: false,
+      type: 'pay-Order',
+      updatedAt: '2021-02-15T10:34:24.890Z',
+    },
   ]
   constructor(props) {
     super(props)
@@ -86,7 +86,7 @@ class CMPayment extends Component {
         project: '',
         floor: '',
         unitType: '',
-        pearl: '',
+        pearl: 0,
         unit: '',
         unitPrice: 0,
         cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
@@ -121,6 +121,7 @@ class CMPayment extends Component {
       firstFormValidate: false,
       pearlUnitPrice: 0,
       leftPearlSqft: 0,
+      checkFirstFormPayment: false,
     }
   }
 
@@ -273,9 +274,9 @@ class CMPayment extends Component {
   // **************** Bottom Nav Functions End *******************
 
   // **************** Add Payment Modal Functions Start *******************
-  addPaymentModalToggle = (visible, paymentCategory) => {
+  addPaymentModalToggle = (visible, paymentType) => {
     const { CMPayment, dispatch } = this.props
-    dispatch(setCMPayment({ ...CMPayment, visible: visible, paymentCategory: paymentCategory }))
+    dispatch(setCMPayment({ ...CMPayment, visible: visible, paymentType: paymentType }))
   }
 
   showHideDeletePayment = (val) => {
@@ -412,6 +413,10 @@ class CMPayment extends Component {
         delete body.installmentAmount
         delete body.paymentCategory
         console.log('body: ', body)
+        if (CMPayment.paymentType === 'token') {
+          this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
+          return
+        }
         // axios
         //   .post(`/api/leads/propsurePayment`, body)
         //   .then((response) => {
@@ -446,6 +451,10 @@ class CMPayment extends Component {
         delete body.visible
         delete body.remarks
         delete body.paymentCategory
+        if (CMPayment.paymentType === 'token') {
+          this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
+          return
+        }
         // axios
         //   .patch(`/api/leads/project/payment?id=${body.id}`, body)
         //   .then((res) => {
@@ -579,6 +588,7 @@ class CMPayment extends Component {
       pearlUnit,
       allProjects,
       finalPrice,
+      pearlUnitPrice,
     } = this.state
     const { lead } = this.props
     let newData = firstFormData
@@ -586,41 +596,49 @@ class CMPayment extends Component {
     let oneUnit = oneUnitData
     let copyPearlUnit = pearlUnit
     let copyFinalPrice = finalPrice
+    let copyPearlUnitPrice = pearlUnitPrice
     if (name === 'project') {
       if (lead.projectId !== value) {
         this.changeProject(value)
       }
       this.getFloors(value)
+      newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
+      copyPearlUnit = false
+      oneUnit = {}
+      oneFloor = {}
+      copyPearlUnitPrice = 0
     }
     if (name === 'floor') {
-      if (allFloors && allFloors.length) {
-        oneFloor = allFloors.find((item) => {
-          return item.id == value && item
-        })
-      }
+      oneFloor = PaymentHelper.findFloor(allFloors, value)
+      newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
+      copyPearlUnit = false
+      copyPearlUnitPrice = 0
     }
     if (name === 'unitType' && value === 'fullUnit') {
       this.getUnits(newData.project, newData.floor)
       copyPearlUnit = false
+      copyPearlUnitPrice = 0
     }
-    if (name === 'unitType' && value === 'pearl') copyPearlUnit = true
+    if (name === 'unitType' && value === 'pearl') {
+      copyPearlUnit = true
+      newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
+    }
     if (name === 'unit') {
       oneUnit = this.fetchOneUnit(value)
       newData['approvedDiscount'] = this.handleEmptyValue(oneUnit.discount)
       newData['approvedDiscountPrice'] = PaymentMethods.findDiscountAmount(oneUnit)
     }
     if (name === 'approvedDiscount') {
+      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['approvedDiscountPrice'] = PaymentMethods.findApprovedDiscountAmount(oneUnit, value)
     }
     if (name === 'approvedDiscountPrice') {
+      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['approvedDiscount'] = PaymentMethods.findApprovedDiscountPercentage(oneUnit, value)
     }
     if (name === 'paymentPlan' && value === 'Sold on Investment Plan') {
-      let fullPaymentDiscount = lead.paidProject != null && lead.paidProject.full_payment_discount
-      let fullPaymentDiscountPrice = PaymentMethods.findApprovedDiscountAmount(
-        oneUnit,
-        fullPaymentDiscount
-      )
+      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+      let fullPaymentDiscountPrice = PaymentHelper.findPaymentPlanDiscount(lead, oneUnit)
       newData['fullPaymentDiscountPrice'] = fullPaymentDiscountPrice
     }
     if (name === 'paymentPlan' && value !== 'Sold on Investment Plan') {
@@ -628,6 +646,7 @@ class CMPayment extends Component {
     }
     newData[name] = value
     if (oneUnit) {
+      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['finalPrice'] = PaymentMethods.findFinalPrice(
         oneUnit,
         newData['approvedDiscountPrice'],
@@ -638,25 +657,27 @@ class CMPayment extends Component {
       value = helper.normalizeCnic(value)
       this.validateCnic(value)
     }
-    if (name === 'pearl') {
-      let totalSqft = oneFloor.pearlArea
-      let minusSqft = value
-      let copyLeftSqft = totalSqft - minusSqft
-      if (copyLeftSqft < 50) {
-        this.setState({ leftPearlSqft: copyLeftSqft })
-      }
-      let totalPrice = value * oneFloor.pricePerSqFt
-      this.setState({
-        pearlUnitPrice: totalPrice,
-        unitPearlDetailsData: oneFloor,
-      })
-    }
-    // console.log('oneUnit: ', oneUnit)
+    if (name === 'pearl') this.pearlCalculations(oneFloor, value)
+    console.log('newData: ', newData)
     this.setState({
       firstFormData: { ...newData },
       unitPearlDetailsData: { ...oneFloor },
       oneUnitData: copyPearlUnit ? { ...oneFloor } : { ...oneUnit },
       pearlUnit: copyPearlUnit,
+    })
+  }
+
+  pearlCalculations = (oneFloor, value) => {
+    let totalSqft = oneFloor.pearlArea
+    let minusSqft = value
+    let copyLeftSqft = totalSqft - minusSqft
+    if (copyLeftSqft < 50) {
+      this.setState({ leftPearlSqft: copyLeftSqft })
+    }
+    let totalPrice = value * oneFloor.pricePerSqFt
+    this.setState({
+      pearlUnitPrice: totalPrice,
+      unitPearlDetailsData: oneFloor,
     })
   }
 
@@ -753,7 +774,13 @@ class CMPayment extends Component {
   }
 
   firstFormConfirmModal = () => {
-    const { firstForm, cnicValidate, leftPearlSqft, unitPearlDetailsData } = this.state
+    const {
+      firstForm,
+      cnicValidate,
+      leftPearlSqft,
+      unitPearlDetailsData,
+      checkFirstFormPayment,
+    } = this.state
     if (firstForm.pearl != null) {
       if (
         firstForm.pearl <= unitPearlDetailsData.pearlArea &&
@@ -762,8 +789,7 @@ class CMPayment extends Component {
         firstForm.cnic != '' &&
         cnicValidate === false &&
         firstForm.paymentPlan != 'no' &&
-        firstForm.token != null &&
-        firstForm.token != ''
+        !checkFirstFormPayment
       ) {
         if (leftPearlSqft < 50 && leftPearlSqft > 0) {
           this.setState({
@@ -785,8 +811,7 @@ class CMPayment extends Component {
         firstForm.floor != null &&
         firstForm.unit != null &&
         firstForm.paymentPlan != 'no' &&
-        firstForm.token != null &&
-        firstForm.token != '' &&
+        !checkFirstFormPayment &&
         firstForm.type != '' &&
         firstForm.cnic != null &&
         firstForm.cnic != '' &&
@@ -847,9 +872,10 @@ class CMPayment extends Component {
       cnicValidate,
       firstFormValidate,
       pearlUnitPrice,
+      checkFirstFormPayment,
     } = this.state
     const { lead } = this.props
-   
+
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={{ flex: 1 }}>
@@ -897,7 +923,7 @@ class CMPayment extends Component {
           <KeyboardAvoidingView>
             <ScrollView>
               <View style={{ flex: 1, marginBottom: 60 }}>
-                {/* <CMFirstForm
+                <CMFirstForm
                   pickerFloors={pickerFloors}
                   pickerProjects={pickerProjects}
                   pickerUnits={pickerUnits}
@@ -915,14 +941,18 @@ class CMPayment extends Component {
                   firstFormValidate={firstFormValidate}
                   pearlModal={pearlUnit}
                   pearlUnitPrice={pearlUnitPrice}
+                  addPaymentModalToggle={this.addPaymentModalToggle}
+                  checkFirstFormPayment={checkFirstFormPayment}
+                  currencyConvert={PaymentHelper.currencyConvert}
+                />
+                {/* <CMSecondForm
+                  data={this.data}
+                  addPaymentModalToggle={this.addPaymentModalToggle}
+                  currencyConvert={this.currencyConvert}
+                  editTile={this.editTile}
+                  onPaymentLongPress={this.onPaymentLongPress}
+                  toggleBookingDetailsModal={this.toggleBookingDetailsModal}
                 /> */}
-                <CMSecondForm
-                 data={this.data}
-                 addPaymentModalToggle={this.addPaymentModalToggle} 
-                 currencyConvert={this.currencyConvert}
-                 editTile={this.editTile}
-                onPaymentLongPress={this.onPaymentLongPress}
-                toggleBookingDetailsModal={this.toggleBookingDetailsModal}/>
               </View>
             </ScrollView>
           </KeyboardAvoidingView>

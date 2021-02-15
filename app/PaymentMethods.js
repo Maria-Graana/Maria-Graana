@@ -20,6 +20,8 @@ const PaymentMethods = {
       let { pricePerSqFt, category_charges } = unit
       pricePerSqFt = PaymentMethods.handleEmptyValue(pricePerSqFt)
       category_charges = PaymentMethods.handleEmptyValue(category_charges)
+      console.log('findRatePerSqft pricePerSqFt: ', pricePerSqFt)
+      console.log('findUnitPrice category_charges: ', category_charges)
       return pricePerSqFt * (1 + category_charges / 100)
     }
   },
@@ -27,6 +29,7 @@ const PaymentMethods = {
     if (unit) {
       let { area } = unit
       area = PaymentMethods.handleEmptyValue(area)
+      console.log('findUnitPrice: ', area)
       return area * PaymentMethods.findRatePerSqft(unit)
     }
   },

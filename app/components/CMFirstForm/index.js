@@ -26,6 +26,32 @@ class CMFirstForm extends Component {
     }
   }
 
+  checkForUnitDetail = () => {
+    const { firstFormData, checkLeadClosedOrNot } = this.props
+    const checkForUnitIdavail =
+      (firstFormData.unit != '' &&
+        firstFormData.unit != null &&
+        firstFormData.unit != 'no' &&
+        checkLeadClosedOrNot === true) ||
+      (firstFormData.pearl != null && firstFormData.pearl != '')
+        ? true
+        : false
+    return checkForUnitIdavail
+  }
+
+  setPaymentTile = () => {
+    const { CMPayment } = this.props
+    return {
+      installmentAmount: CMPayment.installmentAmount,
+      id: null,
+      status: '',
+      details: CMPayment.details,
+      type: CMPayment.type,
+      createdAt: new Date(),
+      paymentCategory: CMPayment.paymentCategory,
+    }
+  }
+
   render() {
     const {
       formData,
@@ -47,8 +73,17 @@ class CMFirstForm extends Component {
       leftPearlSqft,
       pearlModal,
       pearlUnitPrice,
+      addPaymentModalToggle,
+      CMPayment,
+      checkFirstFormPayment,
+      currencyConvert,
     } = this.props
     let unitTypeData = this.checkUnitPearl()
+    const checkUnitDetail = this.checkForUnitDetail()
+    const dataForPaymentTile = this.setPaymentTile()
+    console.log('pearlModal: ', pearlModal)
+    console.log('pearlUnitPrice: ', pearlUnitPrice)
+    // console.log('PaymentMethods.findUnitPrice: ', PaymentMethods.findUnitPrice(oneUnitData))
     return (
       <View style={styles.mainFormWrap}>
         <View style={{ paddingVertical: 10 }}>
@@ -214,15 +249,32 @@ class CMFirstForm extends Component {
           formatValue={''}
           keyboardType={'numeric'}
         />
+        {checkFirstFormPayment && (
+          <View>
+            <PaymentTile
+              currencyConvert={currencyConvert}
+              count={''}
+              data={dataForPaymentTile}
+              editTileForscreenOne={editTileForscreenOne}
+              tileForToken={true}
+            />
+            {firstFormValidate === true && !checkFirstFormPayment ? (
+              <ErrorMessage errorMessage={'Token Required'} />
+            ) : null}
+          </View>
+        )}
         <View style={{ paddingVertical: 10 }}>
           <TouchableOpacity
             style={styles.bookNowBtn}
             onPress={() => {
-              checkForUnitIdavail === true && tokenModalToggle(true)
+              checkUnitDetail === true && addPaymentModalToggle(true, 'token')
             }}
           >
             <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
           </TouchableOpacity>
+          {firstFormValidate === true && !checkFirstFormPayment ? (
+            <ErrorMessage errorMessage={'Token Required'} />
+          ) : null}
         </View>
 
         {/* **************************************** */}
@@ -230,7 +282,7 @@ class CMFirstForm extends Component {
           name={'cnic'}
           placeholder={'Client CNIC'}
           label={'CLIENT CNIC'}
-          value={''}
+          value={firstFormData.cnic}
           keyboardType={'numeric'}
           onChangeHandle={handleFirstForm}
           formatValue={''}
@@ -272,6 +324,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    CMPayment: store.CMPayment.CMPayment,
   }
 }
 

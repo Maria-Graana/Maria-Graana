@@ -1092,8 +1092,10 @@ class LeadRCMPayment extends React.Component {
 
   requestLegalServices = () => {
     const { lead } = this.props
+    const { allProperties } = this.state
+    const selectedProperty = allProperties[0]
     this.setState({ loading: true }, () => {
-      axios.post(`/api/leads/sendLegalEmail?id=${lead.id}`).then((response) => {
+      axios.post(`/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty.id}`).then((response) => {
         if (response.data) {
           helper.successToast(response.data);
           this.setState({

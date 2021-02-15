@@ -459,7 +459,7 @@ class PropertyOffer extends React.Component {
 
   showDialogOfferConfirmation(currentProperty, leadData) {
     const { lead } = this.props;
-    Alert.alert('Accept Offer', 'Are you sure you want to continue?', [
+    Alert.alert('Agreed Amount', 'Are you sure you want to continue?', [
       { text: 'No', style: 'cancel', onPress: () => this.setState({ disableButton: false, btnLoading: false }) },
       {
         text: 'Yes', onPress: () => {

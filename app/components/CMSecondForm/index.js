@@ -22,57 +22,91 @@ class CMSecondForm extends React.Component {
     super(props)
   }
   render() {
-    const { addPaymentModalToggle, toggleBookingDetailsModal } = this.props
+    const { addPaymentModalToggle, toggleBookingDetailsModal, paymentPreviewLoading= false, data } = this.props
     return (
-      <View style={styles.mainFormWrap}>
-        <CMBTN
-          onClick={toggleBookingDetailsModal(true)}
-          btnImage={CheckWhite}
-          btnText={'BOOKING DETAILS'}
-        />
-        <View style={{ padding: 5 }} />
-        <Text style={styles.paymentsHeading}>PAYMENTS</Text>
-        <View style={{ padding: 10 }} />
-        <View style={{ backgroundColor: '#fff' }}>
-          <CMBTN
-            onClick={() => addPaymentModalToggle(true, 'payment')}
-            btnImage={RoundPlus}
-            btnText={'ADD PAYMENT'}
-          />
-          <CMBTN
-            onClick={() => addPaymentModalToggle(true, 'tax')}
-            btnImage={RoundPlus}
-            btnText={'ADD TAX'}
-          />
-        </View>
+      <SafeAreaView style={styles.removePad}>
 
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ width: '49%', marginRight: 7 }}>
-            <SimpleInputText
-              name={'remainingPayment'}
-              fromatName={'remainingPayment'}
-              placeholder={'Remaining Payment'}
-              label={'REMAINING PAYMENT'}
-              value={0}
-              formatValue={0}
-              editable={false}
-              keyboardType={'numeric'}
+
+        <View style={styles.mainFormWrap}>
+          <CMBTN
+            extraStyle={{marginHorizontal:10}}
+            onClick={toggleBookingDetailsModal(true)}
+            btnImage={CheckWhite}
+            btnText={'BOOKING DETAILS'}
+          />
+          <View style={{ padding: 5 }} />
+          <Text style={styles.paymentsHeading}>PAYMENTS</Text>
+          <View style={styles.mainPaymentWrap}>
+            <View style={styles.paymentTileMain}>
+              <View style={[styles.scrollHeight]}>
+                <ScrollView>
+                  {paymentPreviewLoading === true ? (
+                    <Text style={{ padding: 10 }}>Loading...</Text>
+                  ) : data && data.payment && data.payment.length > 0 ? (
+                    data.payment.map((item, index) => {
+                      return (
+                        <PaymentTile
+                          onPaymentLongPress={() => onPaymentLongPress(item)}
+                          tileForToken={false}
+                          currencyConvert={currencyConvert}
+                          key={index}
+                          count={index}
+                          data={item}
+                          editTile={editTile}
+                          checkLeadClosedOrNot={checkLeadClosedOrNot}
+                        />
+                      )
+                    })
+                  ) : (
+                        <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>
+                      )}
+                </ScrollView>
+              </View>
+            </View>
+          </View>
+
+          <View style={{ backgroundColor: '#fff', marginHorizontal:10 }}>
+            <CMBTN
+              onClick={() => addPaymentModalToggle(true, 'payment')}
+              btnImage={RoundPlus}
+              btnText={'ADD PAYMENT'}
+            />
+            <CMBTN
+              onClick={() => addPaymentModalToggle(true, 'tax')}
+              btnImage={RoundPlus}
+              btnText={'ADD TAX'}
             />
           </View>
-          <View style={{ width: '49%' }}>
-            <SimpleInputText
-              name={'outstandingTax'}
-              fromatName={'outstandingTax'}
-              placeholder={'Outstanding Tax'}
-              label={'OUTSTANDING TAX'}
-              value={0}
-              formatValue={0}
-              editable={false}
-              keyboardType={'numeric'}
-            />
+
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ width: '49%', marginRight: 7 }}>
+              <SimpleInputText
+                name={'remainingPayment'}
+                fromatName={'remainingPayment'}
+                placeholder={'Remaining Payment'}
+                label={'REMAINING PAYMENT'}
+                value={0}
+                formatValue={0}
+                editable={false}
+                keyboardType={'numeric'}
+              />
+            </View>
+            <View style={{ width: '49%' }}>
+              <SimpleInputText
+                name={'outstandingTax'}
+                fromatName={'outstandingTax'}
+                placeholder={'Outstanding Tax'}
+                label={'OUTSTANDING TAX'}
+                value={0}
+                formatValue={0}
+                editable={false}
+                keyboardType={'numeric'}
+              />
+            </View>
           </View>
         </View>
-      </View>
+      </SafeAreaView>
+
     )
   }
 }

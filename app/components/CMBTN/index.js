@@ -9,9 +9,9 @@ export default class CMBTN extends React.Component {
   }
 
   render() {
-    const { onClick, btnImage, btnText } = this.props
+    const { extraStyle ,onClick, btnImage, btnText } = this.props
     return (
-      <TouchableOpacity style={[styles.addPaymentBtn, styles.noMargTop]} onPress={onClick}>
+      <TouchableOpacity style={[styles.addPaymentBtn, styles.noMargTop, extraStyle]} onPress={onClick}>
         <Image style={styles.addPaymentBtnImg} source={btnImage} />
         <Text style={styles.addPaymentBtnText}>{btnText}</Text>
       </TouchableOpacity>

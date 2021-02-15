@@ -850,8 +850,8 @@ class CMPayment extends Component {
           />
           <KeyboardAvoidingView>
             <ScrollView>
-              <View style={{ flex: 1, padding: 10, marginBottom: 60 }}>
-                <CMFirstForm
+              <View style={{ flex: 1, marginBottom: 60 }}>
+                {/* <CMFirstForm
                   pickerFloors={pickerFloors}
                   pickerProjects={pickerProjects}
                   pickerUnits={pickerUnits}
@@ -869,8 +869,9 @@ class CMPayment extends Component {
                   firstFormValidate={firstFormValidate}
                   pearlModal={pearlUnit}
                   pearlUnitPrice={pearlUnitPrice}
-                />
-                {/* <CMSecondForm addPaymentModalToggle={this.addPaymentModalToggle} toggleBookingDetailsModal={this.toggleBookingDetailsModal}/> */}
+                /> */}
+                <CMSecondForm addPaymentModalToggle={this.addPaymentModalToggle} 
+                toggleBookingDetailsModal={this.toggleBookingDetailsModal}/>
               </View>
             </ScrollView>
           </KeyboardAvoidingView>

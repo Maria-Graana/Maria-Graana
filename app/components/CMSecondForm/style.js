@@ -53,4 +53,17 @@ export default styles = StyleSheet.create({
     fontSize: 17,
     paddingLeft: 10,
   },
+  mainPaymentWrap: {
+    backgroundColor: '#fff',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  scrollHeight: {
+    height: 280,
+  },
+  removePad: {
+    padding: 0,
+  }
 })

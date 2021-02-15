@@ -22,7 +22,7 @@ class CMSecondForm extends React.Component {
     super(props)
   }
   render() {
-    const { addPaymentModalToggle, toggleBookingDetailsModal, paymentPreviewLoading= false, data } = this.props
+    const { addPaymentModalToggle, toggleBookingDetailsModal, onPaymentLongPress, currencyConvert, editTile, checkLeadClosedOrNot = true, paymentPreviewLoading= false, data}= this.props
     return (
       <SafeAreaView style={styles.removePad}>
 
@@ -42,8 +42,8 @@ class CMSecondForm extends React.Component {
                 <ScrollView>
                   {paymentPreviewLoading === true ? (
                     <Text style={{ padding: 10 }}>Loading...</Text>
-                  ) : data && data.payment && data.payment.length > 0 ? (
-                    data.payment.map((item, index) => {
+                  ) : data  && data.length > 0 ? (
+                    data.map((item, index) => {
                       return (
                         <PaymentTile
                           onPaymentLongPress={() => onPaymentLongPress(item)}

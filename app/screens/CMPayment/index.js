@@ -32,6 +32,34 @@ import axios from 'axios'
 import PaymentMethods from '../../PaymentMethods'
 
 class CMPayment extends Component {
+  data = [
+    {
+    addedBy:null,
+    armsUserId: 548,
+    chequeDepositDat: null,
+    cmLeadId: 214078,
+    createdAt: "2021-02-15T10:34:24.890Z",
+    deletedAt: null,
+    details: null,
+    id: 2288,
+    installmentAmount: 353,
+    outStandingTax: null,
+    paymentAttachments: [],
+    paymentCategory: "token",
+    paymentClearenceDate: null,
+    paymentId: null,
+    paymentTime: "2021-02-15T10:34:24.000Z",
+    rcmLeadId: null,
+    reason: null,
+    remarks: null,
+    shortlistPropertyId: null,
+    status: "pendingAccount",
+    taxAmount: null,
+    taxIncluded: false,
+    type: "pay-Order",
+    updatedAt: "2021-02-15T10:34:24.890Z",
+    }
+  ]
   constructor(props) {
     super(props)
     const { lead } = this.props
@@ -771,6 +799,19 @@ class CMPayment extends Component {
     }
   }
 
+  currencyConvert = (x) => {
+    x = x.toString()
+    var lastThree = x.substring(x.length - 3)
+    var otherNumbers = x.substring(0, x.length - 3)
+    if (otherNumbers != '') lastThree = ',' + lastThree
+    var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree
+    return res
+  }
+
+  editTile = () => {
+    console.log('EDIT')
+  }
+
   submitFirstForm = () => {
     console.log('submitFirstForm')
   }
@@ -804,6 +845,7 @@ class CMPayment extends Component {
       pearlUnitPrice,
     } = this.state
     const { lead } = this.props
+   
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={{ flex: 1 }}>
@@ -870,7 +912,12 @@ class CMPayment extends Component {
                   pearlModal={pearlUnit}
                   pearlUnitPrice={pearlUnitPrice}
                 /> */}
-                <CMSecondForm addPaymentModalToggle={this.addPaymentModalToggle} 
+                <CMSecondForm
+                 data={this.data}
+                 addPaymentModalToggle={this.addPaymentModalToggle} 
+                 currencyConvert={this.currencyConvert}
+                 editTile={this.editTile}
+                onPaymentLongPress={this.onPaymentLongPress}
                 toggleBookingDetailsModal={this.toggleBookingDetailsModal}/>
               </View>
             </ScrollView>

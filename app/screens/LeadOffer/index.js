@@ -560,7 +560,7 @@ class LeadOffer extends React.Component {
 
   showConfirmationDialog(offerId) {
     Alert.alert('Accept Offer', 'Are you sure you want to accept the offer?', [
-      { text: 'No', style: 'cancel' },
+      { text: 'No', style: 'cancel', onPress: () => this.setState({ disableButton: false, btnLoading: false })},
       { text: 'Yes', onPress: () => this.acceptOffer(offerId) },
     ],
       { cancelable: false })

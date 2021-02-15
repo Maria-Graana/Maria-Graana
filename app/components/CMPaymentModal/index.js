@@ -69,7 +69,7 @@ const CMPaymentModal = ({
             <Image source={times} style={styles.timesImg} />
           </TouchableOpacity>
         </View>
-        <View style={{ padding: 10 }}>
+        <View style={{  flexDirection:'row', padding:10 }}>
           <Switch
             value={CMPayment.taxIncluded}
             trackColor={{ true: AppStyles.colors.primaryColor, false: 'grey' }}
@@ -78,12 +78,13 @@ const CMPaymentModal = ({
             }}
             thumbColor={'#fff'}
           />
-        </View>
-        <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold' }}>
+          <Text style={{ marginLeft: 5, fontSize: 16, fontWeight: 'bold' }}>
           {CMPayment.taxIncluded === false || CMPayment.taxIncluded === null
             ? 'Tax Not Included'
             : 'Tax Included'}
         </Text>
+        </View>
+        
         <View style={styles.moreViewContainer}>
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap]}>

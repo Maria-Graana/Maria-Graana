@@ -34,6 +34,7 @@ class BuyPaymentView extends React.Component {
       user,
       currentProperty,
       onPaymentLongPress,
+      requestLegalServices,
     } = this.props
     let property = currentProperty[0]
     const isLeadClosed =
@@ -71,6 +72,18 @@ class BuyPaymentView extends React.Component {
 
     return (
       <View>
+        {
+          !lead.legalMailSent ? <TouchableOpacity
+            style={[
+              styles.addPaymentBtn,
+              { marginTop: 10 }
+            ]}
+            onPress={() => requestLegalServices()}
+          >
+            <Text style={styles.addPaymentBtnText}>REQUEST LEGAL SERVICES</Text>
+          </TouchableOpacity>
+            : null
+        }
         <InputField
           label={'AGREED AMOUNT'}
           placeholder={'Enter Agreed Amount'}

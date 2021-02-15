@@ -774,6 +774,27 @@ class PropertyRCMPayment extends React.Component {
     this.redirectProperty(data)
   }
 
+  requestLegalServices = () => {
+    const { lead } = this.props
+    this.setState({ loading: true }, () => {
+      axios.post(`/api/leads/sendLegalEmail?id=${lead.id}`).then((response) => {
+        if (response.data) {
+          helper.successToast(response.data);
+          this.setState({
+            loading: false,
+          })
+        }
+      }).catch((error) => {
+        helper.errorToast('Something went wrong while sending email');
+        console.log('something went wrong in /api/leads/sendLegalEmail', error);
+      }).finally(() => {
+        this.setState({
+          loading: false,
+        })
+      })
+    })
+  }
+
   redirectProperty = (property) => {
     if (property.origin === 'arms' || property.origin === 'arms_lead') {
       if (this.ownProperty(property))
@@ -982,6 +1003,7 @@ class PropertyRCMPayment extends React.Component {
                         tokenNotZero={tokenNotZero}
                         agreedNotZero={agreedNotZero}
                         rentNotZero={rentNotZero}
+                        requestLegalServices={this.requestLegalServices}
                       />
                     ) : (
                       <RentPaymentView
@@ -1009,6 +1031,7 @@ class PropertyRCMPayment extends React.Component {
                         tokenNotZero={tokenNotZero}
                         agreedNotZero={agreedNotZero}
                         rentNotZero={rentNotZero}
+                        requestLegalServices={this.requestLegalServices}
                       />
                     )
                   ) : null}

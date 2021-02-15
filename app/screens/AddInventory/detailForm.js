@@ -297,7 +297,7 @@ class DetailForm extends Component {
       showAdditionalInformation,
       loading,
       handlePointOfContact,
-      handleShowAddress,
+      handleMarkProperty,
       handleWaterMark,
       showCustomTitle,
       showCustomTitleField,
@@ -377,78 +377,80 @@ class DetailForm extends Component {
         </View>
         {/* **************************************** */}
         <TouchableOpacity
-          disabled={formData.address === '' || formData.address === null}
-          onPress={() => handleShowAddress(!formData.show_address)}
+          onPress={() => handleMarkProperty(!formData.locate_manually)}
           style={styles.checkBoxRow}
         >
           <CheckBox
             color={AppStyles.colors.primaryColor}
-            checked={formData.show_address ? true : false}
+            checked={formData.locate_manually ? true : false}
             style={styles.checkBox}
-            onPress={() => handleShowAddress(!formData.show_address)}
+            onPress={() => handleMarkProperty(!formData.locate_manually)}
           />
-          <Text style={{ marginHorizontal: 15 }}>Show Address on Listing</Text>
+          <Text style={{ marginHorizontal: 15 }}>Mark property manually</Text>
         </TouchableOpacity>
         {/* **************************************** */}
 
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableButton
-            containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
-            containerBackgroundColor={'white'}
-            textColor={AppStyles.colors.primaryColor}
-            label={formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
-            iconName="ios-checkmark-circle-outline"
-            showIcon={formData.propsure_id ? true : false}
-            onPress={() => {
-              this.props.navigation.navigate('MapContainer', {
-                mapValues: { lat: formData.lat, lng: formData.lng, propsure_id: formData.propsure_id },
-                screenName: 'AddInventory',
-              })
-            }}
-          />
-        </View>
+        {
+          formData.locate_manually ? <View style={AppStyles.latLngMain}>
+            <View
+              style={[
+                AppStyles.mainInputWrap,
+                AppStyles.noMargin,
+                AppStyles.borderrightLat,
+                { width: '50%' }
+              ]}
+            >
+              <View style={[AppStyles.inputWrap]}>
+                <TextInput
+                  placeholderTextColor={'#a8a8aa'}
+                  onChangeText={(text) => {
+                    handleForm(text, 'lat')
+                  }}
+                  value={latitude === null ? '' : String(latitude)}
+                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                  keyboardType="numeric"
+                  placeholder={'Latitude'}
+                />
+              </View>
+            </View>
 
-        <View style={AppStyles.latLngMain}>
-          <View
-            style={[
-              AppStyles.mainInputWrap,
-              AppStyles.noMargin,
-              AppStyles.borderrightLat,
-              { width: '50%' }
-            ]}
-          >
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput
-                placeholderTextColor={'#a8a8aa'}
-                onChangeText={(text) => {
-                  handleForm(text, 'lat')
+            {/* **************************************** */}
+            <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
+              <View style={[AppStyles.inputWrap]}>
+                <TextInput
+                  placeholderTextColor={'#a8a8aa'}
+                  onChangeText={(text) => {
+                    handleForm(text, 'lng')
+                  }}
+                  value={longitude === null ? '' : String(longitude)}
+                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                  keyboardType="numeric"
+                  placeholder={'Longitude'}
+                />
+              </View>
+            </View>
+            <TouchableOpacity style={AppStyles.locationBtn} onPress={() => getCurrentLocation()}>
+              <Image source={LocationImg} style={AppStyles.locationIcon} />
+            </TouchableOpacity>
+          </View>
+            :
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableButton
+                containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
+                containerBackgroundColor={'white'}
+                textColor={AppStyles.colors.primaryColor}
+                label={formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
+                iconName="ios-checkmark-circle-outline"
+                showIcon={formData.propsure_id ? true : false}
+                onPress={() => {
+                  this.props.navigation.navigate('MapContainer', {
+                    mapValues: { lat: formData.lat, lng: formData.lng, propsure_id: formData.propsure_id },
+                    screenName: 'AddInventory',
+                  })
                 }}
-                value={latitude === null ? '' : String(latitude)}
-                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                keyboardType="numeric"
-                placeholder={'Latitude'}
-                editable={false}
               />
             </View>
-          </View>
-
-          {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
-            <View style={[AppStyles.inputWrap]}>
-              <TextInput
-                placeholderTextColor={'#a8a8aa'}
-                onChangeText={(text) => {
-                  handleForm(text, 'lng')
-                }}
-                value={longitude === null ? '' : String(longitude)}
-                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                keyboardType="numeric"
-                placeholder={'Longitude'}
-                editable={false}
-              />
-            </View>
-          </View>
-        </View>
+        }
 
         {/* **************************************** */}
         <View style={AppStyles.multiFormInput}>

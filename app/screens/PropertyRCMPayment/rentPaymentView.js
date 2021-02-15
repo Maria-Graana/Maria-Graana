@@ -34,6 +34,7 @@ const RentPaymentView = (props) => {
     currentProperty,
     user,
     onPaymentLongPress,
+    requestLegalServices,
   } = props
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
@@ -71,6 +72,18 @@ const RentPaymentView = (props) => {
 
   return (
     <View>
+        {
+          !lead.legalMailSent ? <TouchableOpacity
+            style={[
+              styles.addPaymentBtn,
+              { marginTop: 10 }
+            ]}
+            onPress={() => requestLegalServices()}
+          >
+            <Text style={styles.addPaymentBtnText}>REQUEST LEGAL SERVICES</Text>
+          </TouchableOpacity>
+            : null
+        }
       <InputField
         label={'MONTHLY RENT'}
         placeholder={'Enter Monthly Rent'}

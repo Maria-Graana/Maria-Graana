@@ -743,7 +743,7 @@ export default StaticData = {
   
   graanaStatusFilters:[
     { value: 'published', name: 'All' },
-    { value: 'pendingVerification', name: 'Pending Re-Verification' },
+    { value: 'pendingVerification', name: 'Pending Re-verification' },
     { value: 'outdated', name: 'Outdated' },
     { value: 'geotagged', name: 'Geo Tagged' },
   ],

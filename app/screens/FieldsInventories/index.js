@@ -82,9 +82,17 @@ class FieldsInventories extends React.Component {
   getFieldsListing = () => {
     const { propertiesList, page, pageSize, showSearchBar, searchText, statusFilter, searchBy, selectedArea } = this.state
     let query = ``
+
     if (showSearchBar && searchBy === 'id' && searchText !== '') {
-       // Search By ID
-      query = `/api/inventory/all?propType=fields&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      if (helper.isANumber(searchText)) {
+        // Search By ID
+        query = `/api/inventory/all?propType=fields&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      }
+      else {
+        alert('Please Enter valid Property ID!')
+        this.setState({loading: false});
+        return;
+      }
     }
     else if (showSearchBar && searchBy === 'area' && selectedArea) {
       // Search By Area

@@ -720,6 +720,9 @@ const helper = {
       return check
     } else return check
   },
+  isANumber(str){
+    return !/\D/.test(str);
+  }
 }
 
 module.exports = helper

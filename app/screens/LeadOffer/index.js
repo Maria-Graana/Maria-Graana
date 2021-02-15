@@ -458,7 +458,7 @@ class LeadOffer extends React.Component {
 
   showDialogOfferConfirmation(currentProperty, leadData) {
     const { lead } = this.props;
-    Alert.alert('Accept Offer', 'Are you sure you want to place the offer?', [
+    Alert.alert('Accept Offer', 'Are you sure you want to continue?', [
       { text: 'No', style: 'cancel', onPress: () => this.setState({ disableButton: false, btnLoading: false }) },
       {
         text: 'Yes', onPress: () => {
@@ -559,7 +559,7 @@ class LeadOffer extends React.Component {
   }
 
   showConfirmationDialog(offerId) {
-    Alert.alert('Accept Offer', 'Are you sure you want to accept the offer?', [
+    Alert.alert('Accept Offer', 'Are you sure you want to accept this offer?', [
       { text: 'No', style: 'cancel', onPress: () => this.setState({ disableButton: false, btnLoading: false })},
       { text: 'Yes', onPress: () => this.acceptOffer(offerId) },
     ],

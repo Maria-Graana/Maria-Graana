@@ -140,12 +140,20 @@ class CMPayment extends Component {
     //   .catch((err) => console.log(err))
     const { firstForm, secondForm } = this.state
     const { lead } = this.props
+    const { payment, unit } = lead
     if (firstForm) {
     }
     if (secondForm) {
+      let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(
+        payment,
+        unit.finalPrice
+      )
+      let outStandingTax = PaymentMethods.findRemainingTax(payment, remainingTax)
       this.setState({
         pearlUnit:
           lead && lead.unit && lead.unit.type && lead.unit.type === 'regular' ? false : true,
+        remainingPayment: remainingPayment,
+        outStandingTax: outStandingTax,
       })
     }
     this.fetchLead()
@@ -298,18 +306,18 @@ class CMPayment extends Component {
 
   deletePayment = async (reason) => {
     const { CMPayment, lead } = this.props
-    const { selectedPayment } = this.state
+    const { selectedPayment, outStandingTax } = this.state
     this.showHideDeletePayment(false)
     const { installmentAmount } = selectedPayment
     let url = `/api/leads/payment?id=${selectedPayment.id}&reason=${reason}`
-    const response = await axios.delete(url)
-    if (response.data) {
-      this.clearReduxAndStateValues()
-      this.fetchLead(lead)
-      helper.successToast(response.data)
-    } else {
-      helper.errorToast('ERROR DELETING PAYMENT!')
-    }
+    // const response = await axios.delete(url)
+    // if (response.data) {
+    //   this.clearReduxAndStateValues()
+    //   this.fetchLead(lead)
+    //   helper.successToast(response.data)
+    // } else {
+    //   helper.errorToast('ERROR DELETING PAYMENT!')
+    // }
   }
 
   onPaymentLongPress = (data) => {
@@ -720,7 +728,7 @@ class CMPayment extends Component {
     }
   }
 
-  firstFormValidateModal = () => {
+  firstFormValidateModal = (status) => {
     const {
       firstFormData,
       cnicValidate,
@@ -830,7 +838,7 @@ class CMPayment extends Component {
 
   firstFormApiCall = (unitId) => {
     const { lead, CMPayment } = this.props
-    const { firstFormData, remainingPayment } = this.state
+    const { firstFormData } = this.state
     let body = PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment)
     console.log('firstFormData: ', firstFormData)
     console.log('CMPayment: ', CMPayment)
@@ -923,6 +931,8 @@ class CMPayment extends Component {
       firstForm,
       secondForm,
       cnicEditable,
+      remainingPayment,
+      outStandingTax,
     } = this.state
     const { lead } = this.props
     return (
@@ -1011,6 +1021,8 @@ class CMPayment extends Component {
                     onPaymentLongPress={this.onPaymentLongPress}
                     toggleBookingDetailsModal={this.toggleBookingModal}
                     checkLeadClosedOrNot={checkLeadClosedOrNot}
+                    remainingPayment={remainingPayment}
+                    outStandingTax={outStandingTax}
                   />
                 )}
               </View>

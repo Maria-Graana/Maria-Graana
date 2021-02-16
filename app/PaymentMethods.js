@@ -1,5 +1,4 @@
 /** @format */
-
 const PaymentMethods = {
   addPropsureReportPrices(reports) {
     let total = 0
@@ -70,21 +69,42 @@ const PaymentMethods = {
       return PaymentMethods.findUnitPrice(unit) - totalDiscountPrice
     }
   },
+  findTaxIncluded(payment, taxAmount) {
+    payment = PaymentMethods.handleEmptyValue(payment)
+    taxAmount = PaymentMethods.handleEmptyValue(taxAmount)
+    return Math.ceil((taxAmount / (100 + taxAmount)) * payment)
+  },
+  findTaxNotIncluded(payment, taxAmount) {
+    payment = PaymentMethods.handleEmptyValue(payment)
+    taxAmount = PaymentMethods.handleEmptyValue(taxAmount)
+    return Math.ceil(payment * (taxAmount / 100))
+  },
   findRemaningPayment(payment, finalPrice) {
     finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
     let totalPayments = 0
+    let remainingTax = 0
     if (payment && payment.length) {
       payment.map((item) => {
         if (item.paymentCategory !== 'tax' && item.status !== 'notCleared') {
+          let { taxAmount, installmentAmount } = item
+          taxAmount = PaymentMethods.handleEmptyValue(taxAmount)
+          installmentAmount = PaymentMethods.handleEmptyValue(installmentAmount)
+          let itemPayment = 0
+          let itemTax = 0
+          if (item.taxIncluded) {
+            itemPayment =
+              installmentAmount - PaymentMethods.findTaxIncluded(installmentAmount, taxAmount)
+          } else {
+            itemTax = PaymentMethods.findTaxNotIncluded(installmentAmount, taxAmount)
+            itemPayment = installmentAmount
+          }
           totalPayments = totalPayments + item.installmentAmount
+          remainingTax = remainingTax + itemTax
         }
       })
-      console.log('totalPayments: ', totalPayments)
-      console.log('finalPrice: ', finalPrice)
-      console.log('total: ', finalPrice - totalPayments)
       finalPrice = finalPrice - totalPayments
     }
-    return finalPrice
+    return { remainingPayment: finalPrice, remainingTax: remainingTax }
   },
   findRemainingTax(payment, outStandingTax) {
     outStandingTax = PaymentMethods.handleEmptyValue(outStandingTax)

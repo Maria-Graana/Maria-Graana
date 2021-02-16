@@ -33,10 +33,11 @@ class CMSecondForm extends React.Component {
       paymentPreviewLoading = false,
       data,
       lead,
+      remainingPayment,
+      outStandingTax,
     } = this.props
     const { payment, unit } = lead
-    let remainingPayment = PaymentMethods.findRemaningPayment(payment, unit.finalPrice)
-    let remainingTax = PaymentMethods.findRemainingTax(payment, lead.outstandingTax)
+
     return (
       <SafeAreaView style={styles.removePad}>
         <View style={styles.mainFormWrap}>
@@ -111,8 +112,8 @@ class CMSecondForm extends React.Component {
                 fromatName={'outstandingTax'}
                 placeholder={'Outstanding Tax'}
                 label={'OUTSTANDING TAX'}
-                value={remainingTax}
-                formatValue={remainingTax}
+                value={outStandingTax}
+                formatValue={outStandingTax}
                 editable={false}
                 keyboardType={'numeric'}
               />

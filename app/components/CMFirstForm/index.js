@@ -77,12 +77,14 @@ class CMFirstForm extends Component {
       CMPayment,
       checkFirstFormPayment,
       currencyConvert,
+      editTokenPayment,
     } = this.props
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
-    console.log('pearlModal: ', pearlModal)
-    console.log('pearlUnitPrice: ', pearlUnitPrice)
+    // console.log('pearlModal: ', pearlModal)
+    // console.log('pearlUnitPrice: ', pearlUnitPrice)
+    // console.log('CMPayment: ', CMPayment)
     // console.log('PaymentMethods.findUnitPrice: ', PaymentMethods.findUnitPrice(oneUnitData))
     return (
       <View style={styles.mainFormWrap}>
@@ -255,27 +257,29 @@ class CMFirstForm extends Component {
               currencyConvert={currencyConvert}
               count={''}
               data={dataForPaymentTile}
-              editTileForscreenOne={editTileForscreenOne}
+              editTileForscreenOne={editTokenPayment}
               tileForToken={true}
             />
+            {/* {firstFormValidate === true && checkFirstFormPayment ? (
+              <ErrorMessage errorMessage={'Token Required'} />
+            ) : null} */}
+          </View>
+        )}
+        {!checkFirstFormPayment && (
+          <View style={{ paddingVertical: 10 }}>
+            <TouchableOpacity
+              style={styles.bookNowBtn}
+              onPress={() => {
+                checkUnitDetail === true && addPaymentModalToggle(true, 'token')
+              }}
+            >
+              <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
+            </TouchableOpacity>
             {firstFormValidate === true && !checkFirstFormPayment ? (
               <ErrorMessage errorMessage={'Token Required'} />
             ) : null}
           </View>
         )}
-        <View style={{ paddingVertical: 10 }}>
-          <TouchableOpacity
-            style={styles.bookNowBtn}
-            onPress={() => {
-              checkUnitDetail === true && addPaymentModalToggle(true, 'token')
-            }}
-          >
-            <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
-          </TouchableOpacity>
-          {firstFormValidate === true && !checkFirstFormPayment ? (
-            <ErrorMessage errorMessage={'Token Required'} />
-          ) : null}
-        </View>
 
         {/* **************************************** */}
         <SimpleInputText
@@ -308,8 +312,7 @@ class CMFirstForm extends Component {
           <TouchableOpacity
             style={styles.bookNowBtn}
             onPress={() => {
-              // checkLeadClosedOrNot === true && firstScreenConfirmModal(true)
-              submitFirstForm()
+              checkLeadClosedOrNot === true && submitFirstForm(true)
             }}
           >
             <Text style={styles.bookNowBtnText}>BOOK NOW</Text>

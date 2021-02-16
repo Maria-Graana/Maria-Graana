@@ -26,7 +26,6 @@ class BookingDetailsModal extends React.Component {
       toggleBookingDetailsModal,
     } = this.props
     if (!data.unit) active = false
-
     return (
       <Modal isVisible={active}>
         {pearlModal === false && data && data.unit != null && (
@@ -34,7 +33,7 @@ class BookingDetailsModal extends React.Component {
             <TouchableOpacity
               style={styles.timesBtn}
               onPress={() => {
-                toggleBookingDetailsModal(false)
+                this.props.toggleBookingDetailsModal(false)
               }}
             >
               <Image source={times} style={styles.timesImg} />
@@ -137,12 +136,9 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Category Charges</Text>
                     <Text style={styles.largeText}>
-                      {
-                        data.unit.category_charges != null ?
-                          this.handleEmptyValue(data.unit.category_charges + '%')
-                          :
-                          '0%'
-                      }
+                      {data.unit.category_charges != null
+                        ? this.handleEmptyValue(data.unit.category_charges + '%')
+                        : '0%'}
                     </Text>
                   </View>
                 </View>
@@ -169,16 +165,16 @@ class BookingDetailsModal extends React.Component {
               )}
               {/* ===================== */}
               {data.installmentDue === 'Sold on Installments Plan' ||
-                data.installmentDue === 'Sold on Monthly Installments Plan' ? (
-                  <View style={styles.MainTileView}>
-                    <View>
-                      <Text style={styles.smallText}>Down Payment</Text>
-                      <Text style={styles.largeText}>
-                        {this.handleEmptyValue(data.unit && data.unit.down_payment)}
-                      </Text>
-                    </View>
+              data.installmentDue === 'Sold on Monthly Installments Plan' ? (
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Down Payment</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValue(data.unit && data.unit.down_payment)}
+                    </Text>
                   </View>
-                ) : null}
+                </View>
+              ) : null}
               {/* ===================== */}
               {data.installmentDue === 'Sold on Monthly Installments Plan' ? (
                 <View style={styles.MainTileView}>
@@ -190,17 +186,17 @@ class BookingDetailsModal extends React.Component {
                   </View>
                 </View>
               ) : (
-                  data.installmentDue === 'Sold on Installments Plan' && (
-                    <View style={styles.MainTileView}>
-                      <View>
-                        <Text style={styles.smallText}>Quarterly Installment</Text>
-                        <Text style={styles.largeText}>
-                          {this.handleEmptyValue(data.unit && data.unit.quarterly_installments)}
-                        </Text>
-                      </View>
+                data.installmentDue === 'Sold on Installments Plan' && (
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Quarterly Installment</Text>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValue(data.unit && data.unit.quarterly_installments)}
+                      </Text>
                     </View>
-                  )
-                )}
+                  </View>
+                )
+              )}
               {/* ===================== */}
               {data.installmentDue === 'Sold on Installments Plan' && (
                 <View style={styles.MainTileView}>
@@ -209,8 +205,8 @@ class BookingDetailsModal extends React.Component {
                     <Text style={styles.largeText}>
                       {this.handleEmptyValue(
                         data.paidProject &&
-                        data.paidProject.possession_charges +
-                        `${data.paidProject.possession_charges > 0 ? '%' : ''}`
+                          data.paidProject.possession_charges +
+                            `${data.paidProject.possession_charges > 0 ? '%' : ''}`
                       )}
                     </Text>
                   </View>

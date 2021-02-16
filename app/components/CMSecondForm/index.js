@@ -16,21 +16,35 @@ import { ScrollView } from 'react-native-gesture-handler'
 import CMBTN from '../../components/CMBTN'
 import CheckWhite from '../../../assets/img/checkWhite.png'
 import RoundPlus from '../../../assets/img/roundPlus.png'
+import PaymentMethods from '../../PaymentMethods'
 
 class CMSecondForm extends React.Component {
   constructor(props) {
     super(props)
   }
   render() {
-    const { addPaymentModalToggle, toggleBookingDetailsModal, onPaymentLongPress, currencyConvert, editTile, checkLeadClosedOrNot = true, paymentPreviewLoading= false, data}= this.props
+    const {
+      addPaymentModalToggle,
+      toggleBookingDetailsModal,
+      onPaymentLongPress,
+      currencyConvert,
+      editTile,
+      checkLeadClosedOrNot,
+      paymentPreviewLoading = false,
+      data,
+      lead,
+    } = this.props
+    const { payment, unit } = lead
+    let remainingPayment = PaymentMethods.findRemaningPayment(payment, unit.finalPrice)
+    let remainingTax = PaymentMethods.findRemainingTax(payment, lead.outstandingTax)
     return (
       <SafeAreaView style={styles.removePad}>
-
-
         <View style={styles.mainFormWrap}>
           <CMBTN
-            extraStyle={{marginHorizontal:10}}
-            onClick={toggleBookingDetailsModal(true)}
+            extraStyle={{ marginHorizontal: 10 }}
+            onClick={() => {
+              this.props.toggleBookingDetailsModal(true)
+            }}
             btnImage={CheckWhite}
             btnText={'BOOKING DETAILS'}
           />
@@ -42,8 +56,8 @@ class CMSecondForm extends React.Component {
                 <ScrollView>
                   {paymentPreviewLoading === true ? (
                     <Text style={{ padding: 10 }}>Loading...</Text>
-                  ) : data  && data.length > 0 ? (
-                    data.map((item, index) => {
+                  ) : payment && payment.length > 0 ? (
+                    payment.map((item, index) => {
                       return (
                         <PaymentTile
                           onPaymentLongPress={() => onPaymentLongPress(item)}
@@ -58,14 +72,14 @@ class CMSecondForm extends React.Component {
                       )
                     })
                   ) : (
-                        <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>
-                      )}
+                    <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>
+                  )}
                 </ScrollView>
               </View>
             </View>
           </View>
 
-          <View style={{ backgroundColor: '#fff', marginHorizontal:10 }}>
+          <View style={{ backgroundColor: '#fff', marginHorizontal: 10 }}>
             <CMBTN
               onClick={() => addPaymentModalToggle(true, 'payment')}
               btnImage={RoundPlus}
@@ -85,8 +99,8 @@ class CMSecondForm extends React.Component {
                 fromatName={'remainingPayment'}
                 placeholder={'Remaining Payment'}
                 label={'REMAINING PAYMENT'}
-                value={0}
-                formatValue={0}
+                value={remainingPayment}
+                formatValue={remainingPayment}
                 editable={false}
                 keyboardType={'numeric'}
               />
@@ -97,8 +111,8 @@ class CMSecondForm extends React.Component {
                 fromatName={'outstandingTax'}
                 placeholder={'Outstanding Tax'}
                 label={'OUTSTANDING TAX'}
-                value={0}
-                formatValue={0}
+                value={remainingTax}
+                formatValue={remainingTax}
                 editable={false}
                 keyboardType={'numeric'}
               />
@@ -106,7 +120,6 @@ class CMSecondForm extends React.Component {
           </View>
         </View>
       </SafeAreaView>
-
     )
   }
 }

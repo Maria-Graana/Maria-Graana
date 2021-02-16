@@ -69,38 +69,49 @@ const CMPaymentModal = ({
             <Image source={times} style={styles.timesImg} />
           </TouchableOpacity>
         </View>
-        <View style={{  flexDirection:'row', alignItems:'center', marginTop: 10, marginHorizontal: 10}}>
-          <Switch
-            value={CMPayment.taxIncluded}
-            trackColor={{ true: AppStyles.colors.primaryColor, false: 'grey' }}
-            onValueChange={() => {
-              handleCommissionChange(!CMPayment.taxIncluded, 'taxIncluded')
+        {CMPayment.paymentType !== 'tax' && (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 10,
+              marginHorizontal: 10,
             }}
-            thumbColor={'#fff'}
-          />
-          <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>
-          {CMPayment.taxIncluded === false || CMPayment.taxIncluded === null
-            ? 'Tax Not Included'
-            : 'Tax Included'}
-        </Text>
-        </View>
-        
+          >
+            <Switch
+              value={CMPayment.taxIncluded}
+              trackColor={{ true: AppStyles.colors.primaryColor, false: 'grey' }}
+              onValueChange={() => {
+                handleCommissionChange(!CMPayment.taxIncluded, 'taxIncluded')
+              }}
+              thumbColor={'#fff'}
+            />
+            <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>
+              {CMPayment.taxIncluded === false || CMPayment.taxIncluded === null
+                ? 'Tax Not Included'
+                : 'Tax Included'}
+            </Text>
+          </View>
+        )}
+
         <View style={styles.moreViewContainer}>
           {/* **************************************** */}
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <PickerComponent
-                onValueChange={handleCommissionChange}
-                data={StaticData.paymentTypeForToken}
-                name={'paymentCategory'}
-                placeholder="Payment Type"
-                selectedItem={CMPayment.paymentCategory}
-              />
-              {/* {modalValidation === true && CMPayment.type == '' && (
+          {CMPayment.paymentType === 'token' && (
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent
+                  onValueChange={handleCommissionChange}
+                  data={StaticData.paymentTypeForToken}
+                  name={'paymentCategory'}
+                  placeholder="Payment Type"
+                  selectedItem={CMPayment.paymentCategory}
+                />
+                {/* {modalValidation === true && CMPayment.type == '' && (
                 <ErrorMessage errorMessage={'Required'} />
               )} */}
+              </View>
             </View>
-          </View>
+          )}
           <SimpleInputText
             name={'installmentAmount'}
             fromatName={false}

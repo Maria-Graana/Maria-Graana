@@ -20,8 +20,6 @@ const PaymentMethods = {
       let { pricePerSqFt, category_charges } = unit
       pricePerSqFt = PaymentMethods.handleEmptyValue(pricePerSqFt)
       category_charges = PaymentMethods.handleEmptyValue(category_charges)
-      console.log('findRatePerSqft pricePerSqFt: ', pricePerSqFt)
-      console.log('findUnitPrice category_charges: ', category_charges)
       return pricePerSqFt * (1 + category_charges / 100)
     }
   },
@@ -29,7 +27,6 @@ const PaymentMethods = {
     if (unit) {
       let { area } = unit
       area = PaymentMethods.handleEmptyValue(area)
-      console.log('findUnitPrice: ', area)
       return area * PaymentMethods.findRatePerSqft(unit)
     }
   },
@@ -72,6 +69,35 @@ const PaymentMethods = {
       let totalDiscountPrice = approvedDiscountPrice + fullPaymentDiscountPrice
       return PaymentMethods.findUnitPrice(unit) - totalDiscountPrice
     }
+  },
+  findRemaningPayment(payment, finalPrice) {
+    finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
+    let totalPayments = 0
+    if (payment && payment.length) {
+      payment.map((item) => {
+        if (item.paymentCategory !== 'tax' && item.status !== 'notCleared') {
+          totalPayments = totalPayments + item.installmentAmount
+        }
+      })
+      console.log('totalPayments: ', totalPayments)
+      console.log('finalPrice: ', finalPrice)
+      console.log('total: ', finalPrice - totalPayments)
+      finalPrice = finalPrice - totalPayments
+    }
+    return finalPrice
+  },
+  findRemainingTax(payment, outStandingTax) {
+    outStandingTax = PaymentMethods.handleEmptyValue(outStandingTax)
+    let totalPayments = 0
+    if (payment && payment.length) {
+      payment.map((item) => {
+        if (item.paymentCategory === 'tax' && item.status !== 'notCleared') {
+          totalPayments = totalPayments + item.installmentAmount
+        }
+      })
+      outStandingTax = outStandingTax - totalPayments
+    }
+    return outStandingTax
   },
 }
 module.exports = PaymentMethods

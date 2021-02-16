@@ -39,6 +39,7 @@ class PaymentTile extends React.Component {
         : showStatus.value === 'notCleared' || showStatus.value === 'pendingSales'
         ? styles.statusRed
         : styles.statusYellow
+
     return (
       <TouchableOpacity
         onLongPress={

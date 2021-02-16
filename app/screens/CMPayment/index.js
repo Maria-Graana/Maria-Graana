@@ -115,6 +115,7 @@ class CMPayment extends Component {
         investment: true,
         quartarly: true,
       },
+      cnicEditable: lead.customer && lead.customer.cnic != null ? false : true,
       firstFormModal: false,
       firstFormConfirmLoading: false,
       finalPrice: 0,
@@ -300,16 +301,15 @@ class CMPayment extends Component {
     const { selectedPayment } = this.state
     this.showHideDeletePayment(false)
     const { installmentAmount } = selectedPayment
-    // let url = `/api/leads/deletePropsurePayment?id=${selectedPayment.id}&reason=${reason}&leadId=${lead.id}&outstandingPayment=${totalPayment}`
-    // const response = await axios.delete(url)
-    // if (response.data) {
-    //   this.clearReduxAndStateValues()
-    //   this.fetchLead(lead)
-    //   this.fetchProperties(lead)
-    //   helper.successToast(response.data)
-    // } else {
-    //   helper.errorToast('ERROR DELETING PAYMENT!')
-    // }
+    let url = `/api/leads/payment?id=${selectedPayment.id}&reason=${reason}`
+    const response = await axios.delete(url)
+    if (response.data) {
+      this.clearReduxAndStateValues()
+      this.fetchLead(lead)
+      helper.successToast(response.data)
+    } else {
+      helper.errorToast('ERROR DELETING PAYMENT!')
+    }
   }
 
   onPaymentLongPress = (data) => {
@@ -395,6 +395,20 @@ class CMPayment extends Component {
 
   onModalCloseClick = () => {
     this.clearReduxAndStateValues()
+  }
+
+  editTile = (payment) => {
+    console.log('EDIT', payment)
+    const { dispatch } = this.props
+    dispatch(
+      setCMPayment({
+        ...payment,
+        visible: true,
+      })
+    )
+    this.setState({
+      editable: true,
+    })
   }
 
   submitCommissionCMPayment = () => {
@@ -557,6 +571,7 @@ class CMPayment extends Component {
           let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
           this.setState({
             paymentPlan: paymentArray,
+            editable: false,
           })
         }
       )
@@ -705,7 +720,7 @@ class CMPayment extends Component {
     }
   }
 
-  firstFormConfirmModal = () => {
+  firstFormValidateModal = () => {
     const {
       firstFormData,
       cnicValidate,
@@ -768,10 +783,6 @@ class CMPayment extends Component {
     if (otherNumbers != '') lastThree = ',' + lastThree
     var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree
     return res
-  }
-
-  editTile = () => {
-    console.log('EDIT')
   }
 
   firstFormConfirmModal = (value) => {
@@ -911,6 +922,7 @@ class CMPayment extends Component {
       openFirstScreenModal,
       firstForm,
       secondForm,
+      cnicEditable,
     } = this.state
     const { lead } = this.props
     return (
@@ -924,7 +936,7 @@ class CMPayment extends Component {
             toggleBookingDetailsModal={this.toggleBookingModal}
             openUnitDetailsModal={this.openUnitDetailsModal}
           />
-          {allFloors != '' && allProjects != '' ? (
+          {allFloors != '' && allFloors.length && allProjects != '' && allProjects.length ? (
             <FirstScreenConfirmModal
               active={openFirstScreenModal}
               data={firstFormData}
@@ -975,7 +987,7 @@ class CMPayment extends Component {
                     openUnitDetailsModal={this.openUnitDetailsModal}
                     oneUnitData={oneUnitData}
                     paymentPlan={paymentPlan}
-                    submitFirstForm={this.firstFormConfirmModal}
+                    submitFirstForm={this.firstFormValidateModal}
                     pearlUnit={pearlUnit}
                     finalPrice={finalPrice}
                     cnicValidate={cnicValidate}
@@ -986,6 +998,7 @@ class CMPayment extends Component {
                     checkFirstFormPayment={checkFirstFormPayment}
                     currencyConvert={PaymentHelper.currencyConvert}
                     editTokenPayment={this.editTokenPayment}
+                    cnicEditable={cnicEditable}
                   />
                 )}
                 {secondForm && (

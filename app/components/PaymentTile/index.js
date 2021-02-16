@@ -54,7 +54,7 @@ class PaymentTile extends React.Component {
             ? tileForToken === true
               ? editTileForscreenOne()
               : checkLeadClosedOrNot === true
-              ? editTile(data.id)
+              ? editTile(data)
               : null
             : null
         }}

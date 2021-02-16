@@ -78,6 +78,7 @@ class CMFirstForm extends Component {
       checkFirstFormPayment,
       currencyConvert,
       editTokenPayment,
+      cnicEditable,
     } = this.props
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
@@ -282,17 +283,19 @@ class CMFirstForm extends Component {
         )}
 
         {/* **************************************** */}
-        <SimpleInputText
-          name={'cnic'}
-          placeholder={'Client CNIC'}
-          label={'CLIENT CNIC'}
-          value={firstFormData.cnic}
-          keyboardType={'numeric'}
-          onChangeHandle={handleFirstForm}
-          formatValue={''}
-          // editable={cnicEditable}
-          fromatName={false}
-        />
+        {cnicEditable != false && (
+          <SimpleInputText
+            name={'cnic'}
+            placeholder={'Client CNIC'}
+            label={'CLIENT CNIC'}
+            value={firstFormData.cnic}
+            keyboardType={'numeric'}
+            onChangeHandle={handleFirstForm}
+            formatValue={''}
+            editable={cnicEditable}
+            fromatName={false}
+          />
+        )}
         {(firstFormValidate === true && firstFormData.cnic === null) ||
         firstFormData.cnic === '' ? (
           <ErrorMessage errorMessage={'Required'} />

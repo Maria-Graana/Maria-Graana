@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { formatPrice } from '../../PriceFormate'
 import moment from 'moment'
 import StaticData from '../../StaticData'
+import PaymentMethods from '../../PaymentMethods'
 
 class PaymentTile extends React.Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class PaymentTile extends React.Component {
       checkLeadClosedOrNot,
       onPaymentLongPress,
     } = this.props
+    let price = data.installmentAmount
     var showStatus =
       data.status != ''
         ? StaticData.statusOptions.find((item) => {
@@ -39,6 +41,11 @@ class PaymentTile extends React.Component {
         : showStatus.value === 'notCleared' || showStatus.value === 'pendingSales'
         ? styles.statusRed
         : styles.statusYellow
+    if (data.taxIncluded) {
+      price = PaymentMethods.findTaxIncluded(data.installmentAmount, data.taxAmount)
+      price = data.installmentAmount - price
+    }
+
     return (
       <TouchableOpacity
         onLongPress={
@@ -49,11 +56,13 @@ class PaymentTile extends React.Component {
             : null
         }
         onPress={() => {
-          data.status != 'cleared'
+          data.status !== 'cleared' &&
+          data.status !== 'pendingAccountHq' &&
+          data.status !== 'bankPending'
             ? tileForToken === true
               ? editTileForscreenOne()
               : checkLeadClosedOrNot === true
-              ? editTile(data.id)
+              ? editTile(data)
               : null
             : null
         }}
@@ -69,10 +78,8 @@ class PaymentTile extends React.Component {
             )}
           </View>
           <View style={styles.bottomLayer}>
-            <Text style={styles.formatPrice}>
-              {currencyConvert(data.installmentAmount != null ? data.installmentAmount : '')}
-            </Text>
-            <Text style={styles.totalPrice}>{formatPrice(data.installmentAmount)}</Text>
+            <Text style={styles.formatPrice}>{currencyConvert(price != null ? price : '')}</Text>
+            <Text style={styles.totalPrice}>{formatPrice(price)}</Text>
             <Text style={styles.priceDate}>
               {moment(data.createdAt).format('DD MMM YY - h:mm a')}
             </Text>

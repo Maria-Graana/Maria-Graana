@@ -1,11 +1,13 @@
-import * as types from '../types';
+/** @format */
 
-export function setCMPaymennt(payment) {
-	return (dispatch, getsState) => {
-		dispatch({
-			type: types.SET_CM_PAYMENT,
-			payload: payment
-		})
-		return payment
-	}
+import * as types from '../types'
+
+export function setCMPayment(payment) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_CM_PAYMENT,
+      payload: payment,
+    })
+    return payment
+  }
 }

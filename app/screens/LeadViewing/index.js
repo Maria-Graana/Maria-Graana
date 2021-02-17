@@ -163,6 +163,9 @@ class LeadViewing extends React.Component {
     if (selectedReason !== '') {
       var leadId = []
       leadId.push(lead.id)
+      console.log(`/api/leads`)
+      console.log(payload)
+      console.log(lead.id)
       axios
         .patch(`/api/leads`, payload, { params: { id: leadId } })
         .then((response) => {

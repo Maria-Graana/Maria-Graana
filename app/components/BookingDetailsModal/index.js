@@ -145,16 +145,19 @@ class BookingDetailsModal extends React.Component {
                 </View>
               )}
               {/* ===================== */}
-              {data.unit.rentPerSqFt !== null && data.installmentDue === 'Sold on Rental Plan' && (
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Rent/Sqft</Text>
-                    <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.unit.rentPerSqFt)}
-                    </Text>
+              {data &&
+                data.unit &&
+                data.unit.rentPerSqFt !== null &&
+                data.installmentDue === 'Sold on Rental Plan' && (
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Rent/Sqft</Text>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValue(data && data.unit && data.unit.rentPerSqFt)}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              )}
+                )}
               {/* ===================== */}
               {data.rentPerSqFt !== null && data.installmentDue === 'Sold on Rental Plan' && (
                 <View style={styles.MainTileView}>
@@ -286,7 +289,8 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Rent Amount</Text>
                     <Text style={styles.largeText}>
-                      {this.handleEmptyValue(unit.rentPerSqFt) * this.handleEmptyValue(unit.area)}
+                      {this.handleEmptyValue(unit && unit.rentPerSqFt) *
+                        this.handleEmptyValue(unit && unit.area)}
                     </Text>
                   </View>
                 </View>

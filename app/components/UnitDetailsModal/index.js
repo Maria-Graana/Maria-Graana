@@ -110,9 +110,9 @@ class UnitDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Discount</Text>
                     <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.discount) === ''
+                      {this.handleEmptyValue(formData.approvedDiscount) === ''
                         ? '0%'
-                        : this.handleEmptyValue(data.discount)}
+                        : this.handleEmptyValue(formData.approvedDiscount)}
                     </Text>
                   </View>
                 </View>

@@ -127,7 +127,7 @@ class CMPayment extends Component {
       checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead),
       openFirstScreenModal: false,
       firstScreenConfirmLoading: false,
-      firstForm: lead.unit == null ? true : false,
+      firstForm: lead.unit === null || lead.unit.id === null ? true : false,
       secondForm: lead.unit != null && lead.unit.id != null ? true : false,
     }
   }
@@ -140,20 +140,16 @@ class CMPayment extends Component {
     //   .catch((err) => console.log(err))
     const { firstForm, secondForm } = this.state
     const { lead } = this.props
-    const { payment, unit } = lead
+    const { paidProject } = lead
     if (firstForm) {
+      if (paidProject && paidProject.id) {
+        this.getFloors(paidProject.id)
+      }
     }
     if (secondForm) {
-      let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(
-        payment,
-        unit.finalPrice
-      )
-      let outStandingTax = PaymentMethods.findRemainingTax(payment, remainingTax)
       this.setState({
         pearlUnit:
           lead && lead.unit && lead.unit.type && lead.unit.type === 'regular' ? false : true,
-        remainingPayment: remainingPayment,
-        outStandingTax: outStandingTax,
       })
     }
     this.fetchLead()
@@ -166,9 +162,11 @@ class CMPayment extends Component {
   }
 
   // **************** Fetch API's Calls Start *******************
-  fetchLead = () => {
+  fetchLead = async (functionCallingFor) => {
     const { lead } = this.props
+    const { payment, unit } = lead
     const { cmProgressBar } = StaticData
+    const { secondForm } = this.state
     axios
       .get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
@@ -178,11 +176,34 @@ class CMPayment extends Component {
           responseData.paidProject = responseData.project
         }
         this.props.dispatch(setlead(responseData))
+        if (secondForm) {
+          this.calculatePayments(responseData, functionCallingFor)
+        }
         this.setdefaultFields(responseData)
       })
       .catch((error) => {
         console.log('/api/leads/project/byId?id - Error', error)
       })
+  }
+
+  calculatePayments = (lead, functionCallingFor) => {
+    const { payment, unit } = lead
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(
+      payment,
+      unit.finalPrice
+    )
+    let outStandingTax = PaymentMethods.findRemainingTax(payment, remainingTax)
+    this.setState(
+      {
+        remainingPayment: remainingPayment,
+        outStandingTax: outStandingTax,
+      },
+      () => {
+        if (functionCallingFor === 'leadClose') {
+          // this.formSubmit()
+        }
+      }
+    )
   }
 
   getAllProjects = () => {
@@ -814,19 +835,19 @@ class CMPayment extends Component {
     })
     if (firstFormData.unitType === 'pearl') {
       console.log('pearlBody: ', pearlBody)
-      axios
-        .post(`/api/project/shop/create`, pearlBody)
-        .then((res) => {
-          unitId = res.data.id
-          this.firstFormApiCall(res.data.id)
-        })
-        .catch((error) => {
-          console.log('/api/project/shop/create - Error', error)
-          helper.errorToast('Something went wrong!!')
-          this.setState({
-            firstScreenConfirmLoading: false,
-          })
-        })
+      // axios
+      //   .post(`/api/project/shop/create`, pearlBody)
+      //   .then((res) => {
+      //     unitId = res.data.id
+      //     this.firstFormApiCall(res.data.id)
+      //   })
+      //   .catch((error) => {
+      //     console.log('/api/project/shop/create - Error', error)
+      //     helper.errorToast('Something went wrong!!')
+      //     this.setState({
+      //       firstScreenConfirmLoading: false,
+      //     })
+      //   })
     } else {
       let unitId =
         firstFormData.unit === null || firstFormData.unit === '' || firstFormData.unit === 'no'
@@ -1036,7 +1057,7 @@ class CMPayment extends Component {
               goToComments={this.goToComments}
               closedLeadEdit={checkLeadClosedOrNot}
               alreadyClosedLead={this.closedLead}
-              // closeLead={this.fetchLead}
+              closeLead={this.fetchLead}
               closeLeadFor={'leadClose'}
             />
           </View>

@@ -27,6 +27,7 @@ import { setCMPayment } from '../../actions/addCMPayment'
 import DeleteModal from '../../components/DeleteModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import { setCMTax } from '../../actions/addCMTax'
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import { setlead } from '../../actions/lead'
 import axios from 'axios'
 import PaymentMethods from '../../PaymentMethods'
@@ -129,6 +130,10 @@ class CMPayment extends Component {
       firstScreenConfirmLoading: false,
       firstForm: lead.unit === null || lead.unit.id === null ? true : false,
       secondForm: lead.unit != null && lead.unit.id != null ? true : false,
+      reasons: [],
+      lead: false,
+      selectedReason: '',
+      leadCloseToggle: false,
     }
   }
 
@@ -170,7 +175,6 @@ class CMPayment extends Component {
     axios
       .get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
-        // console.log('res.data: ', res.data)
         let responseData = res.data
         if (!responseData.paidProject) {
           responseData.paidProject = responseData.project
@@ -200,10 +204,33 @@ class CMPayment extends Component {
       },
       () => {
         if (functionCallingFor === 'leadClose') {
-          // this.formSubmit()
+          this.checkLeadClosureReasons()
         }
       }
     )
+  }
+
+  checkLeadClosureReasons = () => {
+    const { lead } = this.props
+    const { payment, unit } = lead
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
+      payment,
+      unit.finalPrice
+    )
+    let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
+    if (outStandingTax <= 0 && remainingPayment <= 0) {
+      this.setState({
+        reasons: StaticData.paymentPopupDone,
+        leadCloseToggle: true,
+        checkReasonValidation: '',
+      })
+    } else {
+      this.setState({
+        reasons: StaticData.paymentPopup,
+        leadCloseToggle: true,
+        checkReasonValidation: '',
+      })
+    }
   }
 
   getAllProjects = () => {
@@ -331,14 +358,17 @@ class CMPayment extends Component {
     this.showHideDeletePayment(false)
     const { installmentAmount } = selectedPayment
     let url = `/api/leads/payment?id=${selectedPayment.id}&reason=${reason}`
-    // const response = await axios.delete(url)
-    // if (response.data) {
-    //   this.clearReduxAndStateValues()
-    //   this.fetchLead(lead)
-    //   helper.successToast(response.data)
-    // } else {
-    //   helper.errorToast('ERROR DELETING PAYMENT!')
-    // }
+    const response = await axios.delete(url)
+    if (response.data) {
+      console.log('clearReduxAndStateValues')
+      this.clearReduxAndStateValues()
+      console.log('fetchLead')
+      this.fetchLead()
+      console.log('successToast: ', response.data)
+      helper.successToast(response.data.message)
+    } else {
+      helper.errorToast('ERROR DELETING PAYMENT!')
+    }
   }
 
   onPaymentLongPress = (data) => {
@@ -427,7 +457,6 @@ class CMPayment extends Component {
   }
 
   editTile = (payment) => {
-    console.log('EDIT', payment)
     const { dispatch } = this.props
     dispatch(
       setCMPayment({
@@ -471,7 +500,6 @@ class CMPayment extends Component {
           return
         }
         body.paymentCategory = CMPayment.paymentType
-        console.log('Before API CAll body: ', body)
         axios
           .post(`/api/leads/project/payments`, body)
           .then((response) => {
@@ -688,7 +716,6 @@ class CMPayment extends Component {
       this.validateCnic(value)
     }
     if (name === 'pearl') this.pearlCalculations(oneFloor, value)
-    console.log('newData: ', newData)
     this.setState({
       firstFormData: { ...newData },
       unitPearlDetailsData: { ...oneFloor },
@@ -757,7 +784,6 @@ class CMPayment extends Component {
       unitPearlDetailsData,
       checkFirstFormPayment,
     } = this.state
-    console.log('firstFormData: ', firstFormData)
     if (firstFormData.pearl != null) {
       if (
         firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
@@ -834,20 +860,19 @@ class CMPayment extends Component {
       user,
     })
     if (firstFormData.unitType === 'pearl') {
-      console.log('pearlBody: ', pearlBody)
-      // axios
-      //   .post(`/api/project/shop/create`, pearlBody)
-      //   .then((res) => {
-      //     unitId = res.data.id
-      //     this.firstFormApiCall(res.data.id)
-      //   })
-      //   .catch((error) => {
-      //     console.log('/api/project/shop/create - Error', error)
-      //     helper.errorToast('Something went wrong!!')
-      //     this.setState({
-      //       firstScreenConfirmLoading: false,
-      //     })
-      //   })
+      axios
+        .post(`/api/project/shop/create`, pearlBody)
+        .then((res) => {
+          unitId = res.data.id
+          this.firstFormApiCall(res.data.id)
+        })
+        .catch((error) => {
+          console.log('/api/project/shop/create - Error', error)
+          helper.errorToast('Something went wrong!!')
+          this.setState({
+            firstScreenConfirmLoading: false,
+          })
+        })
     } else {
       let unitId =
         firstFormData.unit === null || firstFormData.unit === '' || firstFormData.unit === 'no'
@@ -861,15 +886,11 @@ class CMPayment extends Component {
     const { lead, CMPayment } = this.props
     const { firstFormData } = this.state
     let body = PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment)
-    console.log('firstFormData: ', firstFormData)
-    console.log('CMPayment: ', CMPayment)
-    console.log('firstFormApiCall: ', body)
     let leadId = []
     leadId.push(lead.id)
     axios
       .patch(`/api/leads/project`, body, { params: { id: leadId } })
       .then((res) => {
-        console.log('firstFormApiCall: ', res.data)
         axios
           .get(`/api/leads/project/byId?id=${lead.id}`)
           .then((res) => {
@@ -910,14 +931,46 @@ class CMPayment extends Component {
   // **************** First Screen Ends *******************
 
   toggleBookingDetailsModal = (value) => {
-    console.log('toggleBookingDetailsModal: ', value)
     this.setState({ bookingModal: value })
   }
 
   toggleBookingModal = (value) => {
     const { bookingModal } = this.state
-    console.log('toggleBookingModal: ', !bookingModal)
     this.setState({ bookingModal: !bookingModal })
+  }
+
+  closeModal = () => {
+    this.setState({ leadCloseToggle: false })
+  }
+
+  handleReasonChange = (value) => {
+    this.setState({ selectedReason: value })
+  }
+
+  onHandleCloseLead = (reason) => {
+    const { lead, navigation } = this.props
+    const { selectedReason } = this.state
+    let body = {
+      reasons: selectedReason,
+    }
+    var leadId = []
+    leadId.push(lead.id)
+    if (selectedReason && selectedReason !== '') {
+      axios
+        .patch(`/api/leads/project`, body, { params: { id: leadId } })
+        .then((res) => {
+          this.setState({ isVisible: false }, () => {
+            helper.successToast(`Lead Closed`)
+            navigation.navigate('Leads')
+          })
+        })
+        .catch((error) => {
+          console.log('/api/leads/project - Error', error)
+          helper.errorToast('Closed lead API failed!!')
+        })
+    } else {
+      ;('Please select a reason for lead closure!')
+    }
   }
 
   render() {
@@ -954,6 +1007,9 @@ class CMPayment extends Component {
       cnicEditable,
       remainingPayment,
       outStandingTax,
+      reasons,
+      selectedReason,
+      leadCloseToggle,
     } = this.state
     const { lead } = this.props
     return (
@@ -980,6 +1036,15 @@ class CMPayment extends Component {
               pearlUnitPrice={pearlUnitPrice}
             />
           ) : null}
+          <LeadRCMPaymentPopup
+            reasons={reasons}
+            selectedReason={selectedReason}
+            isVisible={leadCloseToggle}
+            CMlead={true}
+            closeModal={() => this.closeModal()}
+            changeReason={this.handleReasonChange}
+            onPress={this.onHandleCloseLead}
+          />
           <UnitDetailsModal
             active={unitDetailModal}
             data={oneUnitData}

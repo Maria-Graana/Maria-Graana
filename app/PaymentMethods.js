@@ -119,5 +119,45 @@ const PaymentMethods = {
     }
     return outStandingTax
   },
+  findRemaningPaymentWithClearedStatus(payment, finalPrice) {
+    finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
+    let totalPayments = 0
+    let remainingTax = 0
+    if (payment && payment.length) {
+      payment.map((item) => {
+        if (item.paymentCategory !== 'tax' && item.status === 'cleared') {
+          let { taxAmount, installmentAmount } = item
+          taxAmount = PaymentMethods.handleEmptyValue(taxAmount)
+          installmentAmount = PaymentMethods.handleEmptyValue(installmentAmount)
+          let itemPayment = 0
+          let itemTax = 0
+          if (item.taxIncluded) {
+            itemPayment =
+              installmentAmount - PaymentMethods.findTaxIncluded(installmentAmount, taxAmount)
+          } else {
+            itemTax = PaymentMethods.findTaxNotIncluded(installmentAmount, taxAmount)
+            itemPayment = installmentAmount
+          }
+          totalPayments = totalPayments + item.installmentAmount
+          remainingTax = remainingTax + itemTax
+        }
+      })
+      finalPrice = finalPrice - totalPayments
+    }
+    return { remainingPayment: finalPrice, remainingTax: remainingTax }
+  },
+  findRemainingTaxWithClearedStatus(payment, outStandingTax) {
+    outStandingTax = PaymentMethods.handleEmptyValue(outStandingTax)
+    let totalPayments = 0
+    if (payment && payment.length) {
+      payment.map((item) => {
+        if (item.paymentCategory === 'tax' && item.status !== 'cleared') {
+          totalPayments = totalPayments + item.installmentAmount
+        }
+      })
+      outStandingTax = outStandingTax - totalPayments
+    }
+    return outStandingTax
+  },
 }
 module.exports = PaymentMethods

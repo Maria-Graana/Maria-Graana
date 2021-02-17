@@ -86,6 +86,9 @@ export default StaticData = {
       { value: 'theatre', name: 'Theatre' },
       { value: 'Gym', name: 'Gym' },
       { value: 'Food Court', name: 'Food Court' },
+      { value: 'hall', name: 'Hall' },
+      { value: 'land', name: 'Land' },
+      { value: 'plaza', name: 'Plaza' },
       { value: 'other', name: 'Other' },
     ],
   },
@@ -724,5 +727,26 @@ export default StaticData = {
     'Reach viewing location - 15 Minutes Prior to Viewing',
     'Ensure Key from owner',
     'Sell core features of property as required by client',
+  ],
+  fieldAppStatusFilters:[
+    { value: 'onhold', name: 'Pending' },
+    { value: 'pending', name: 'Approved' },
+    { value: 'rejected', name: 'Rejected' },
+  ],
+  searchBy: [
+    { value: 'id', name: 'ID' },
+    { value: 'area', name: 'Area' },
+  ],
+  searchByIdOnly: [
+    { value: 'id', name: 'ID' },
+  ],
+  
+  graanaStatusFilters:[
+    { value: 'published', name: 'All' },
+    { value: 'pendingVerification', name: 'Pending Re-verification' },
+    { value: 'geotagged', name: 'Geo Tagged' },
+  ],
+  graanaStatusFiltersPP:[
+    { value: 'published', name: 'All' },
   ],
 }

@@ -76,6 +76,7 @@ class AddInventory extends Component {
                 downpayment: 0,
                 showWaterMark: false,
                 leadId: null,
+                locate_manually: false,
             },
             showAdditional: false,
             showCustomTitle: false,
@@ -108,7 +109,7 @@ class AddInventory extends Component {
             copyObject.type = lead.type;
             copyObject.subtype = lead.subtype;
             copyObject.leadId = lead.id;
-            this.setState({ formData: copyObject, selectedCity: { ...lead.city, value: lead.city.id }, selectedArea: {...area, value: area.id} }, () => {
+            this.setState({ formData: copyObject, selectedCity: { ...lead.city, value: lead.city.id }, selectedArea: { ...area, value: area.id } }, () => {
                 this.selectSubtype(lead.type);
             });
         }
@@ -165,6 +166,7 @@ class AddInventory extends Component {
     setEditValues = () => {
         const { route } = this.props
         const { property } = route.params
+        console.log(property);
         let parsedFeatures = property.features ? JSON.parse(property.features) : {};
         let amentities = _.isEmpty(parsedFeatures) ? [] : (_.keys(parsedFeatures));
         if (amentities.length) {
@@ -194,6 +196,7 @@ class AddInventory extends Component {
                 status: property.status,
                 lat: property.lat,
                 lng: property.lng,
+                locate_manually:property.locate_manually,
                 propsure_id: property.propsure_id,
                 geotagged_date: property.geotagged_date,
                 description: property.description,
@@ -535,17 +538,18 @@ class AddInventory extends Component {
 
 
     _getLocationAsync = async () => {
-        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        const { status } = await Location.requestPermissionsAsync()
         if (status !== 'granted') {
             alert('Permission to access location was denied')
         }
-        else {
-            let location = await Location.getCurrentPositionAsync();
+        const location = await Location.getCurrentPositionAsync();
+        if (location && location.coords && location.coords.latitude && location.coords.longitude) {
             this.handleForm(location.coords.latitude, 'lat');
             this.handleForm(location.coords.longitude, 'lng');
+        } else {
+            alert('Error while getting location!')
         }
-
-    };
+    }
 
     convertLongitude = (val) => {
         if (val === '') {
@@ -638,10 +642,13 @@ class AddInventory extends Component {
         }
     }
 
-    handleShowAddress = (value) => {
+    handleMarkProperty = (value) => {
         const { formData } = this.state;
         const copyObject = { ...formData };
-        copyObject.show_address = value;
+        copyObject.locate_manually = value;
+        copyObject.propsure_id = null;
+        copyObject.lat = '';
+        copyObject.lng = '';
         this.setState({ formData: copyObject });
     }
 
@@ -737,7 +744,7 @@ class AddInventory extends Component {
                                     getCurrentLocation={this._getLocationAsync}
                                     loading={loading}
                                     handlePointOfContact={this.handlePointOfContact}
-                                    handleShowAddress={this.handleShowAddress}
+                                    handleMarkProperty={this.handleMarkProperty}
                                     handleWaterMark={this.handleWaterMark}
                                     showCustomTitleField={this.showCustomTitleField}
                                     showCustomTitle={showCustomTitle}

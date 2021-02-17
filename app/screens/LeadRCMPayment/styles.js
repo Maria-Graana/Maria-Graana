@@ -74,7 +74,6 @@ export default styles = StyleSheet.create({
   },
   addPaymentBtn: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
     borderColor: '#006ff1',
     borderRadius: 4,
     borderWidth: 1,
@@ -115,4 +114,19 @@ checkBox:{
   alignItems:'center',
   marginRight:15,
 },
+legalServicesButton: {
+    flexDirection: 'row',
+    borderRadius: 4,
+    borderWidth: 1,
+    textAlign: 'center',
+    paddingTop: 15,
+    paddingBottom: 15,
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    borderRadius: 4,
+    marginBottom: 0,
+    justifyContent: 'center',
+    alignItems:'center',
+}
 });

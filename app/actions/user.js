@@ -6,12 +6,16 @@ import { AsyncStorage } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
 import config from '../config'
+import * as Sentry from 'sentry-expo'
+
+const CancelToken = axios.CancelToken
+const source = CancelToken.source()
 
 export const storeItem = async (key, item) => {
   try {
     let jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item))
     return jsonOfItem
-  } catch (error) {}
+  } catch (error) { }
 }
 
 export const getItem = async (key) => {
@@ -28,7 +32,7 @@ export const removeItem = async (key) => {
   try {
     var jsonOfItem = await AsyncStorage.removeItem(key)
     return jsonOfItem
-  } catch (error) {}
+  } catch (error) { }
 }
 
 setAuthorizationToken = (token) => {
@@ -81,14 +85,34 @@ export function setuser(data) {
     dispatch({
       type: types.USER_LOADING,
     })
+    let source = CancelToken.source()
+    setTimeout(() => {
+      dispatch({
+        type: types.USER_LOADED,
+      })
+      if (config.channel === 'production') {
+        Sentry.captureException(`Login API Source Cancel! ${JSON.stringify(data.email)}`)
+      }
+      source.cancel()
+    }, 10000)
+    if (config.channel === 'production') {
+      Sentry.captureException(
+        `Login Action Loading And Before API call! ${JSON.stringify(
+          data.email
+        )}! URL:${JSON.stringify(axios.defaults.baseURL)}`
+      )
+    }
     return axios
-      .post(`${config.apiPath}/api/user/login`, data)
+      .post(`/api/user/login`, data, { cancelToken: source.token })
       .then((response) => {
+        if (config.channel === 'production') {
+          Sentry.captureException(`Login API Success Response! ${JSON.stringify(data.email)}`)
+        }
         console.log('<<<<<<<<<< User >>>>>>>>>>>>>>')
         console.log(response.data)
         storeItem('token', response.data.token)
         setAuthorizationToken(response.data.token)
-        setBaseUrl()
+        // setBaseUrl()
         dispatch(checkToken())
         dispatch({
           type: types.SET_USER,
@@ -103,16 +127,35 @@ export function setuser(data) {
         return response
       })
       .catch((error) => {
-        console.log(error)
-        console.log('crashing', error.response.data)
         dispatch({
           type: types.USER_LOADED,
         })
+        console.log(error)
+        console.log('crashing', error.response.data)
         dispatch({
           type: types.SET_USER_ERROR,
           payload: error.response ? error.response.data : error.message,
         })
+        if (config.channel === 'production') {
+          Sentry.captureException(
+            `Login API Catch Response ERROR! ${JSON.stringify(data.email)}: ${JSON.stringify(
+              error.response.data
+            )}`
+          )
+        }
         return error
+      }).finally(() => {
+        dispatch({
+          type: types.USER_LOADED,
+        })
+      })
+      .finally(() => {
+        dispatch({
+          type: types.USER_LOADED,
+        })
+        if (config.channel === 'production') {
+          Sentry.captureException(`Login API Finally Response! ${JSON.stringify(data.email)}`)
+        }
       })
   }
 }
@@ -120,7 +163,7 @@ export function setuser(data) {
 export function logoutUser() {
   return (dispatch, getsState) => {
     deleteAuthorizationToken()
-    removeBaseUrl()
+    // removeBaseUrl()
     removeItem('token')
     dispatch({
       type: types.LOGOUT_USER,
@@ -135,11 +178,22 @@ export function checkToken() {
   return (dispatch, getsState) => {
     getItem('token').then((token) => {
       if (token) {
+        let source = CancelToken.source()
+        setTimeout(() => {
+          dispatch({
+            type: types.USER_LOADED,
+          })
+          source.cancel()
+        }, 10000)
         axios
-          .get(`${config.apiPath}/api/user/me`, { headers: { Authorization: `Bearer ${token}` } })
+          .get(
+            `/api/user/me`,
+            { headers: { Authorization: `Bearer ${token}` } },
+            { cancelToken: source.token }
+          )
           .then((response) => {
             setAuthorizationToken(token)
-            setBaseUrl()
+            // setBaseUrl()
             dispatch({
               type: types.SET_USER,
               payload: { ...response.data },
@@ -155,11 +209,11 @@ export function checkToken() {
           })
           .catch((error) => {
             SplashScreen.hideAsync()
-            console.log(error.message)
             dispatch({
               type: types.SET_TOKEN_ERROR,
               payload: error.response ? error.response.data : error.message,
             })
+            console.log(error.message)
           })
       } else {
         console.log('SET_TOKEN_ERROR')

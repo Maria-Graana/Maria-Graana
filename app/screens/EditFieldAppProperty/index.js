@@ -83,6 +83,7 @@ class EditFieldAppProperty extends Component {
                 rider_id: null,
                 propsure_id: null,
                 geotagged_date: null,
+                locate_manually: false,
             },
             showAdditional: false,
             showCustomTitle: false,
@@ -236,7 +237,7 @@ class EditFieldAppProperty extends Component {
         let ownerNumber = property.owner_phone ? this.setPhoneNumber(ownerCallingCode, property.owner_phone) : null;
         let pocCallingCode = this.setDialCode(callingCode1)
         let pocNumber = property.poc_phone ? this.setPhoneNumber(pocCallingCode, property.poc_phone) : null;
-        //console.log(property)
+        console.log(property)
         this.setState({
             formData: {
                 id: property.id,
@@ -268,6 +269,7 @@ class EditFieldAppProperty extends Component {
                 pocCountryCode: countryCode1,
                 lat: property.lat,
                 lon: property.lon,
+                locate_manually:property.locate_manually,
                 description: property.description,
                 year_built: parsedFeatures.year_built ? parsedFeatures.year_built : null,
                 floors: (parsedFeatures.floors === null || parsedFeatures.floors === undefined) ? null : parsedFeatures.floors,
@@ -364,6 +366,7 @@ class EditFieldAppProperty extends Component {
                 checkValidation: true
             })
         } else {
+           
             // ********* Call Add Inventory API here :)
             this.setState({ loading: true }, () => {
                 this.createOrEditProperty(formData);
@@ -429,6 +432,12 @@ class EditFieldAppProperty extends Component {
         delete formData.downpayment;
         // grade not being saved in case of field properties
         delete formData.grade;
+
+        if(formData.imageIds.length < 3){
+            alert('Minimum three images are required to update property!')
+            this.setState({loading: false})
+            return;
+        }
 
         if (route.params.update) {
             this.updateMapLocation(property, formData).then((data => {
@@ -570,19 +579,19 @@ class EditFieldAppProperty extends Component {
         }
     }
 
-
     _getLocationAsync = async () => {
-        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        const { status } = await Location.requestPermissionsAsync()
         if (status !== 'granted') {
             alert('Permission to access location was denied')
         }
-        else {
-            let location = await Location.getCurrentPositionAsync();
+        const location = await Location.getCurrentPositionAsync();
+        if (location && location.coords && location.coords.latitude && location.coords.longitude) {
             this.handleForm(location.coords.latitude, 'lat');
             this.handleForm(location.coords.longitude, 'lon');
+        } else {
+            alert('Error while getting location!')
         }
-
-    };
+    }
 
     convertLongitude = (val) => {
         if (val === '') {
@@ -675,10 +684,13 @@ class EditFieldAppProperty extends Component {
         }
     }
 
-    handleShowAddress = (value) => {
+    handleMarkProperty = (value) => {
         const { formData } = this.state;
         const copyObject = { ...formData };
-        copyObject.show_address = value;
+        copyObject.locate_manually = value;
+        copyObject.propsure_id = null;
+        copyObject.lat = '';
+        copyObject.lon = '';
         this.setState({ formData: copyObject });
     }
 
@@ -814,7 +826,7 @@ class EditFieldAppProperty extends Component {
                                     handleFeatures={(value) => this.handleFeatures(value)}
                                     loading={loading}
                                     handlePointOfContact={this.handlePointOfContact}
-                                    handleShowAddress={this.handleShowAddress}
+                                    handleMarkProperty={this.handleMarkProperty}
                                     handleWaterMark={this.handleWaterMark}
                                     showCustomTitleField={this.showCustomTitleField}
                                     showCustomTitle={showCustomTitle}

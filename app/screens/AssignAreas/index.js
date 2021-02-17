@@ -40,8 +40,19 @@ class AssignAreas extends React.Component {
 			})
 	}
 
+	onAreaSelected = (item) => {
+		const { navigation, route } = this.props;
+		const { screenName } = route.params;
+		navigation.navigate('InventoryTabs', {
+			screen: screenName,
+			params: { screen: 'InventoryTabs', selectedArea: item },
+		})
+	}
+
 	render() {
 		const { assignedAreas, loading } = this.state
+		const { route } = this.props;
+		const { screenName } = route.params;
 		return (
 			<View style={styles.mainContainer}>
 				<View style={styles.scrollView}>
@@ -55,15 +66,16 @@ class AssignAreas extends React.Component {
 								data={assignedAreas}
 								renderItem={({ item, index }) => (
 									<AssignAreasTile
+										onPress={screenName === 'Field App' || screenName === 'ARMS' || screenName === 'Graana.com'  ? (area) => this.onAreaSelected(area) : null}
 										data={item}
 										index={index}
 										loading={loading}
 									/>
 								)}
 							/>
-							: 
+							:
 
-						<Loader loading={loading}/>
+							<Loader loading={loading} />
 					}
 
 				</View>

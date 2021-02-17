@@ -748,6 +748,9 @@ const helper = {
       }
     }
   },
+  isANumber(str){
+    return !/\D/.test(str);
+  }
 }
 
 module.exports = helper

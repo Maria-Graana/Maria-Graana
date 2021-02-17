@@ -18,7 +18,7 @@ class BuyPaymentView extends React.Component {
   constructor(props) {
     super(props)
   }
-  componentDidMount() {}
+  componentDidMount() { }
   render() {
     const {
       agreedAmount,
@@ -53,6 +53,7 @@ class BuyPaymentView extends React.Component {
       agreedNotZero,
       deleteDoc,
       activityBool,
+      requestLegalServices,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -65,7 +66,7 @@ class BuyPaymentView extends React.Component {
       lead.status === StaticData.Constants.lead_closed_won
     let buyerCommission =
       lead.assigned_to_armsuser_id === user.id &&
-      (Ability.canEdit(subRole, 'Leads') || property.origin !== 'arms')
+        (Ability.canEdit(subRole, 'Leads') || property.origin !== 'arms')
         ? true
         : false
     let sellerCommission =
@@ -88,6 +89,19 @@ class BuyPaymentView extends React.Component {
     )
     return (
       <View>
+        <TouchableOpacity
+            disabled={lead.legalMailSent}
+            style={[
+              styles.legalServicesButton,
+              { marginTop: 10, 
+                backgroundColor: lead.legalMailSent ? '#ddd' : '#fff', 
+                borderColor : lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor  }
+            ]}
+            onPress={() => requestLegalServices()}
+          >
+            <Text style={[styles.addPaymentBtnText]}>{lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}</Text>
+          </TouchableOpacity>
+
         <InputField
           label={'AGREED AMOUNT'}
           placeholder={'Enter Agreed Amount'}
@@ -145,6 +159,7 @@ class BuyPaymentView extends React.Component {
           activityBool={activityBool}
         />
 
+
         {
           // Checkbox
           singleCommission && !buyer && !isLeadClosed ? (
@@ -183,29 +198,29 @@ class BuyPaymentView extends React.Component {
               title={buyer ? 'Buyer Commission Payment' : ''}
             />
           ) : (
-            <View>
-              {buyerCommission ? (
-                <TouchableOpacity
-                  disabled={singleCommission ? commissionNotApplicableBuyer : isLeadClosed}
-                  style={[
-                    styles.addPaymentBtn,
-                    {
-                      backgroundColor:
-                        commissionNotApplicableBuyer || isLeadClosed ? '#ddd' : '#fff',
-                      borderColor: commissionNotApplicableBuyer || isLeadClosed ? '#ddd' : '#fff',
-                    },
-                  ]}
-                  onPress={() => onAddCommissionPayment('buyer')}
-                >
-                  <Image
-                    style={styles.addPaymentBtnImg}
-                    source={require('../../../assets/img/roundPlus.png')}
-                  ></Image>
-                  <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          )
+              <View>
+                {buyerCommission ? (
+                  <TouchableOpacity
+                    disabled={singleCommission ? commissionNotApplicableBuyer : isLeadClosed}
+                    style={[
+                      styles.addPaymentBtn,
+                      {
+                        backgroundColor:
+                          commissionNotApplicableBuyer || isLeadClosed ? '#ddd' : '#fff',
+                        borderColor: commissionNotApplicableBuyer || isLeadClosed ? '#ddd' : '#fff',
+                      },
+                    ]}
+                    onPress={() => onAddCommissionPayment('buyer')}
+                  >
+                    <Image
+                      style={styles.addPaymentBtnImg}
+                      source={require('../../../assets/img/roundPlus.png')}
+                    ></Image>
+                    <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            )
         ) : null}
         {
           // Checkbox
@@ -245,29 +260,29 @@ class BuyPaymentView extends React.Component {
               title={'Seller Commission Payment'}
             />
           ) : (
-            <View>
-              {sellerCommission ? (
-                <TouchableOpacity
-                  disabled={singleCommission ? commissionNotApplicableSeller : isLeadClosed}
-                  style={[
-                    styles.addPaymentBtn,
-                    {
-                      backgroundColor:
-                        commissionNotApplicableSeller || isLeadClosed ? '#ddd' : '#fff',
-                      borderColor: commissionNotApplicableSeller || isLeadClosed ? '#ddd' : '#fff',
-                    },
-                  ]}
-                  onPress={() => onAddCommissionPayment('seller')}
-                >
-                  <Image
-                    style={styles.addPaymentBtnImg}
-                    source={require('../../../assets/img/roundPlus.png')}
-                  ></Image>
-                  <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          )
+              <View>
+                {sellerCommission ? (
+                  <TouchableOpacity
+                    disabled={singleCommission ? commissionNotApplicableSeller : isLeadClosed}
+                    style={[
+                      styles.addPaymentBtn,
+                      {
+                        backgroundColor:
+                          commissionNotApplicableSeller || isLeadClosed ? '#ddd' : '#fff',
+                        borderColor: commissionNotApplicableSeller || isLeadClosed ? '#ddd' : '#fff',
+                      },
+                    ]}
+                    onPress={() => onAddCommissionPayment('seller')}
+                  >
+                    <Image
+                      style={styles.addPaymentBtnImg}
+                      source={require('../../../assets/img/roundPlus.png')}
+                    ></Image>
+                    <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            )
         ) : null}
       </View>
     )

@@ -776,6 +776,16 @@ class PropertyRCMPayment extends React.Component {
     this.redirectProperty(data)
   }
 
+  showLegalRequestConfirmation = () => {
+    Alert.alert('Legal Services', 'Are you sure you want to continue?', [
+      { text: 'No', style: 'cancel' },
+      {
+        text: 'Yes', onPress: () => this.requestLegalServices()
+      },
+    ],
+      { cancelable: false })
+  }
+
   requestLegalServices = () => {
     const { lead } = this.props
     const { allProperties } = this.state
@@ -999,7 +1009,7 @@ class PropertyRCMPayment extends React.Component {
                         tokenNotZero={tokenNotZero}
                         agreedNotZero={agreedNotZero}
                         rentNotZero={rentNotZero}
-                        requestLegalServices={this.requestLegalServices}
+                        requestLegalServices={this.showLegalRequestConfirmation}
                       />
                     ) : (
                       <RentPaymentView
@@ -1027,7 +1037,7 @@ class PropertyRCMPayment extends React.Component {
                         tokenNotZero={tokenNotZero}
                         agreedNotZero={agreedNotZero}
                         rentNotZero={rentNotZero}
-                        requestLegalServices={this.requestLegalServices}
+                        requestLegalServices={this.showLegalRequestConfirmation}
                       />
                     )
                   ) : null}

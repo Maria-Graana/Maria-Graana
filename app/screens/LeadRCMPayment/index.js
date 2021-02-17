@@ -1090,6 +1090,17 @@ class LeadRCMPayment extends React.Component {
     }
   }
 
+  showLegalRequestConfirmation = () => {
+    Alert.alert('Legal Services', 'Are you sure you want to continue?', [
+      { text: 'No', style: 'cancel' },
+      {
+        text: 'Yes', onPress: () => this.requestLegalServices()
+      },
+    ],
+      { cancelable: false })
+  }
+
+
   requestLegalServices = () => {
     const { lead } = this.props
     const { allProperties } = this.state
@@ -1430,7 +1441,7 @@ class LeadRCMPayment extends React.Component {
                         tokenNotZero={tokenNotZero}
                         agreedNotZero={agreedNotZero}
                         activityBool={activityBool}
-                        requestLegalServices={this.requestLegalServices}
+                        requestLegalServices={this.showLegalRequestConfirmation}
                       />
                     ) : (
                         <RentPaymentView
@@ -1472,7 +1483,7 @@ class LeadRCMPayment extends React.Component {
                           agreedNotZero={agreedNotZero}
                           rentNotZero={rentNotZero}
                           activityBool={activityBool}
-                          requestLegalServices={this.requestLegalServices}
+                          requestLegalServices={this.showLegalRequestConfirmation}
                         />
                       )
                   ) : null}

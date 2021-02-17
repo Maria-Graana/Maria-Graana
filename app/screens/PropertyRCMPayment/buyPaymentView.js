@@ -72,18 +72,18 @@ class BuyPaymentView extends React.Component {
 
     return (
       <View>
-        {
-          !lead.legalMailSent ? <TouchableOpacity
+        <TouchableOpacity
+            disabled={lead.legalMailSent}
             style={[
-              styles.addPaymentBtn,
-              { marginTop: 10 }
+              styles.legalServicesButton,
+              { marginTop: 10, 
+                backgroundColor: lead.legalMailSent ? '#ddd' : '#fff', 
+                borderColor : lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor  }
             ]}
             onPress={() => requestLegalServices()}
           >
-            <Text style={styles.addPaymentBtnText}>REQUEST LEGAL SERVICES</Text>
+            <Text style={[styles.addPaymentBtnText]}>{lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}</Text>
           </TouchableOpacity>
-            : null
-        }
         <InputField
           label={'AGREED AMOUNT'}
           placeholder={'Enter Agreed Amount'}

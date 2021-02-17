@@ -453,7 +453,28 @@ class CMPayment extends Component {
   }
 
   onModalCloseClick = () => {
-    this.clearReduxAndStateValues()
+    const { firstForm } = this.state
+    const { CMPayment, dispatch } = this.props
+    if (firstForm) {
+      if (
+        (CMPayment && CMPayment.installmentAmount === '') ||
+        (CMPayment && !CMPayment.installmentAmount)
+      ) {
+        this.clearReduxAndStateValues()
+        this.setState({
+          checkFirstFormPayment: false,
+        })
+      } else {
+        dispatch(
+          setCMPayment({
+            ...CMPayment,
+            visible: false,
+          })
+        )
+      }
+    } else {
+      this.clearReduxAndStateValues()
+    }
   }
 
   editTile = (payment) => {

@@ -583,7 +583,7 @@ class LeadRCMPayment extends React.Component {
       }
       Alert.alert(
         'WARNING',
-        'Selecting a different property will remove all payments, do you want to continue?',
+        'Selecting a different property will remove all payments & legal services request, do you want to continue?',
         [
           { text: 'Yes', onPress: () => this.selectDifferentProperty() },
           { text: 'No', style: 'cancel' },
@@ -1091,7 +1091,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   showLegalRequestConfirmation = () => {
-    Alert.alert('Legal Services', 'Are you sure you want to continue?', [
+    Alert.alert('Legal Services Request', 'Are you sure you want to continue?', [
       { text: 'No', style: 'cancel' },
       {
         text: 'Yes', onPress: () => this.requestLegalServices()

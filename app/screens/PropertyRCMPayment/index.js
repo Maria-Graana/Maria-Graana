@@ -777,7 +777,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   showLegalRequestConfirmation = () => {
-    Alert.alert('Legal Services', 'Are you sure you want to continue?', [
+    Alert.alert('Legal Services Request', 'Are you sure you want to continue?', [
       { text: 'No', style: 'cancel' },
       {
         text: 'Yes', onPress: () => this.requestLegalServices()

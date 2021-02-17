@@ -12,7 +12,6 @@ import InputField from '../../components/InputField'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import ErrorMessage from '../../components/ErrorMessage'
-import TouchableButton from '../../components/TouchableButton'
 import styles from './styles'
 
 class BuyPaymentView extends React.Component {
@@ -90,19 +89,18 @@ class BuyPaymentView extends React.Component {
     )
     return (
       <View>
-        {
-          !lead.legalMailSent ? <TouchableOpacity
+        <TouchableOpacity
+            disabled={lead.legalMailSent}
             style={[
-              styles.addPaymentBtn,
-              { marginTop: 10 }
+              styles.legalServicesButton,
+              { marginTop: 10, 
+                backgroundColor: lead.legalMailSent ? '#ddd' : '#fff', 
+                borderColor : lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor  }
             ]}
             onPress={() => requestLegalServices()}
           >
-            <Text style={styles.addPaymentBtnText}>REQUEST LEGAL SERVICES</Text>
+            <Text style={[styles.addPaymentBtnText]}>{lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}</Text>
           </TouchableOpacity>
-            : null
-        }
-
 
         <InputField
           label={'AGREED AMOUNT'}

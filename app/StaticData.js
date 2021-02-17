@@ -734,21 +734,19 @@ export default StaticData = {
     { value: 'rejected', name: 'Rejected' },
   ],
   searchBy: [
-    { value: 'id', name: 'Id' },
+    { value: 'id', name: 'ID' },
     { value: 'area', name: 'Area' },
   ],
   searchByIdOnly: [
-    { value: 'id', name: 'Id' },
+    { value: 'id', name: 'ID' },
   ],
   
   graanaStatusFilters:[
     { value: 'published', name: 'All' },
     { value: 'pendingVerification', name: 'Pending Re-verification' },
-    { value: 'outdated', name: 'Outdated' },
     { value: 'geotagged', name: 'Geo Tagged' },
   ],
   graanaStatusFiltersPP:[
     { value: 'published', name: 'All' },
-    { value: 'outdated', name: 'Outdated' },
   ],
 }

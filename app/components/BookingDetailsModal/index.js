@@ -113,7 +113,7 @@ class BookingDetailsModal extends React.Component {
               {data.installmentDue === 'Sold on Investment Plan' && (
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Full Payment Option Price</Text>
+                    <Text style={styles.smallText}>Final Price</Text>
                     <Text style={styles.largeText}>
                       {this.handleEmptyValue(data.unit.full_payment_price)}
                     </Text>

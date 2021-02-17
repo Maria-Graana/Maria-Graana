@@ -41,13 +41,6 @@ class PaymentTile extends React.Component {
         : showStatus.value === 'notCleared' || showStatus.value === 'pendingSales'
         ? styles.statusRed
         : styles.statusYellow
-    console.log('PaymentTile taxIncluded')
-    console.log('PaymentTile data.installmentAmount: ', data.installmentAmount)
-    console.log('PaymentTile data.taxAmount: ', data.taxAmount)
-    console.log(
-      'PaymentTile data.installmentAmount: ',
-      PaymentMethods.findTaxIncluded(data.installmentAmount, data.taxAmount)
-    )
     if (data.taxIncluded) {
       price = PaymentMethods.findTaxIncluded(data.installmentAmount, data.taxAmount)
       price = data.installmentAmount - price

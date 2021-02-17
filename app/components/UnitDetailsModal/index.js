@@ -105,6 +105,27 @@ class UnitDetailsModal extends React.Component {
                 </View>
               )}
               {/* ===================== */}
+              {data.rentPerSqFt !== null && (
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Discount</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValue(data.discount) === ''
+                        ? '0%'
+                        : this.handleEmptyValue(data.discount)}
+                    </Text>
+                  </View>
+                </View>
+              )}
+              {data.rentPerSqFt !== null && (
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Discounted Amount</Text>
+                    <Text style={styles.largeText}>{formData.approvedDiscountPrice}</Text>
+                  </View>
+                </View>
+              )}
+              {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
                   <Text style={styles.smallText}>Rate/Sqft</Text>
@@ -118,15 +139,6 @@ class UnitDetailsModal extends React.Component {
                   <Text style={styles.largeText}>{PaymentMethods.findUnitPrice(data)}</Text>
                 </View>
               </View>
-              {/* ===================== */}
-              {data.rentPerSqFt !== null && (
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Discount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.discount)}</Text>
-                  </View>
-                </View>
-              )}
               {data.rentPerSqFt !== null && (
                 <View style={styles.MainTileView}>
                   <View>

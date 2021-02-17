@@ -16,7 +16,7 @@ const PaymentHelper = {
       project: '',
       floor: '',
       unitType: '',
-      pearl: 0,
+      pearl: '',
       unit: '',
       unitPrice: 0,
       cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,

@@ -13,6 +13,7 @@ import ErrorMessage from '../../components/ErrorMessage'
 import PaymentTile from '../../components/PaymentTile'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
+import helper from '../../helper'
 
 class CMFirstForm extends Component {
   constructor(props) {
@@ -83,10 +84,8 @@ class CMFirstForm extends Component {
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
-    // console.log('pearlModal: ', pearlModal)
-    // console.log('pearlUnitPrice: ', pearlUnitPrice)
-    // console.log('CMPayment: ', CMPayment)
-    // console.log('PaymentMethods.findUnitPrice: ', PaymentMethods.findUnitPrice(oneUnitData))
+    // console.log('leftPearlSqft: ', leftPearlSqft)
+    // console.log('firstFormData.pearl: ', firstFormData.pearl)
     return (
       <View style={styles.mainFormWrap}>
         <View style={{ paddingVertical: 10 }}>
@@ -151,7 +150,7 @@ class CMFirstForm extends Component {
                   errorMessage={`Cannot be greater than ${unitPearlDetailsData.pearlArea} sqft `}
                 />
               ) : null}
-              {firstFormData.pearl < 50 ? (
+              {firstFormData.pearl && firstFormData.pearl !== '' && firstFormData.pearl < 50 ? (
                 <ErrorMessage errorMessage={'Must be greater than or equal to 50 sqft'} />
               ) : null}
               {leftPearlSqft < 50 && leftPearlSqft > 0 ? (
@@ -307,8 +306,10 @@ class CMFirstForm extends Component {
           <View style={styles.backgroundBlue}>
             <Text style={styles.finalPrice}>FINAL PRICE</Text>
 
-            <Text style={styles.priceValue}>{firstFormData.finalPrice}</Text>
-            <Text style={styles.sidePriceFormat}>0</Text>
+            <Text style={styles.priceValue}>
+              {helper.currencyConvert(firstFormData.finalPrice)}
+            </Text>
+            <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
           </View>
         </View>
         <View style={{ paddingVertical: 10 }}>

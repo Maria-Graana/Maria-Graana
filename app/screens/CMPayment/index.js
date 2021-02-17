@@ -87,7 +87,7 @@ class CMPayment extends Component {
         project: lead.paidProject != null ? lead.paidProject.id : '',
         floor: '',
         unitType: '',
-        pearl: 0,
+        pearl: '',
         unit: lead.unit != null ? lead.unit.id : '',
         unitPrice: 0,
         cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
@@ -728,13 +728,11 @@ class CMPayment extends Component {
     let totalSqft = oneFloor.pearlArea
     let minusSqft = value
     let copyLeftSqft = totalSqft - minusSqft
-    if (copyLeftSqft < 50) {
-      this.setState({ leftPearlSqft: copyLeftSqft })
-    }
     let totalPrice = value * oneFloor.pricePerSqFt
     this.setState({
       pearlUnitPrice: totalPrice,
       unitPearlDetailsData: oneFloor,
+      leftPearlSqft: copyLeftSqft,
     })
   }
 
@@ -1010,6 +1008,7 @@ class CMPayment extends Component {
       reasons,
       selectedReason,
       leadCloseToggle,
+      leftPearlSqft,
     } = this.state
     const { lead } = this.props
     return (
@@ -1095,6 +1094,7 @@ class CMPayment extends Component {
                     currencyConvert={PaymentHelper.currencyConvert}
                     editTokenPayment={this.editTokenPayment}
                     cnicEditable={cnicEditable}
+                    leftPearlSqft={leftPearlSqft}
                   />
                 )}
                 {secondForm && (

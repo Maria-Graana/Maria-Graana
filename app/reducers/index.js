@@ -9,7 +9,6 @@ import listings from './listings'
 import areasReducer from './areas'
 import property from './property'
 import CMPayment from './addCMPayment'
-import CMTax from './addCMTax'
 import RCMPayment from './rcmPayment'
 import PropsurePayment from './propsurePayment'
 
@@ -24,5 +23,4 @@ export default combineReducers({
   CMPayment,
   RCMPayment,
   PropsurePayment,
-  CMTax,
 })

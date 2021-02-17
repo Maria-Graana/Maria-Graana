@@ -26,7 +26,6 @@ import CMPaymentModal from '../../components/CMPaymentModal'
 import { setCMPayment } from '../../actions/addCMPayment'
 import DeleteModal from '../../components/DeleteModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
-import { setCMTax } from '../../actions/addCMTax'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import { setlead } from '../../actions/lead'
 import axios from 'axios'
@@ -1158,7 +1157,6 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     CMPayment: store.CMPayment.CMPayment,
-    CMTax: store.CMTax.CMTax,
   }
 }
 

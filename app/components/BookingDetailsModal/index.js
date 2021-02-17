@@ -26,6 +26,7 @@ class BookingDetailsModal extends React.Component {
       toggleBookingDetailsModal,
     } = this.props
     if (!data.unit) active = false
+    const { unit } = data
     return (
       <Modal isVisible={active}>
         {pearlModal === false && data && data.unit != null && (
@@ -237,7 +238,7 @@ class BookingDetailsModal extends React.Component {
             <TouchableOpacity
               style={styles.timesBtn}
               onPress={() => {
-                openUnitDetailsModal(null, false)
+                this.props.toggleBookingDetailsModal(false)
               }}
             >
               <Image source={times} style={styles.timesImg} />
@@ -247,21 +248,25 @@ class BookingDetailsModal extends React.Component {
               <View style={styles.MainTileView}>
                 <View>
                   <Text style={styles.smallText}>Size</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(formData.pearl)}</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(unit && unit.area)}</Text>
                 </View>
               </View>
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
                   <Text style={styles.smallText}>Rate/Sqft</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(data.pricePerSqFt)}</Text>
+                  <Text style={styles.largeText}>
+                    {this.handleEmptyValue(unit && unit.pricePerSqFt)}
+                  </Text>
                 </View>
               </View>
               {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
                   <Text style={styles.smallText}>Unit Price</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(unitPrice)}</Text>
+                  <Text style={styles.largeText}>
+                    {this.handleEmptyValue(unit && unit.unit_price)}
+                  </Text>
                 </View>
               </View>
               {/* ===================== */}
@@ -269,7 +274,9 @@ class BookingDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rent/Sqft</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValue(unit && unit.rentPerSqFt)}
+                    </Text>
                   </View>
                 </View>
               )}
@@ -279,7 +286,7 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Rent Amount</Text>
                     <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.rentPerSqFt * formData.pearl)}
+                      {this.handleEmptyValue(unit.rentPerSqFt) * this.handleEmptyValue(unit.area)}
                     </Text>
                   </View>
                 </View>

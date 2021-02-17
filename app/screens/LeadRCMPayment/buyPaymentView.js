@@ -12,9 +12,7 @@ import InputField from '../../components/InputField'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import ErrorMessage from '../../components/ErrorMessage'
-import TouchableButton from '../../components/TouchableButton'
 import styles from './styles'
-import { color } from 'react-native-reanimated'
 
 class BuyPaymentView extends React.Component {
   constructor(props) {

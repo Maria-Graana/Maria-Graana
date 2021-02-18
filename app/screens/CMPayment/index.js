@@ -108,6 +108,7 @@ class CMPayment extends Component {
       selectedReason: '',
       leadCloseToggle: false,
       progressValue: 0,
+      checkFirstFormToken: false,
     }
   }
 
@@ -336,7 +337,11 @@ class CMPayment extends Component {
   // **************** Add Payment Modal Functions Start *******************
   addPaymentModalToggle = (visible, paymentType) => {
     const { CMPayment, dispatch } = this.props
+    const { secondForm } = this.state
     dispatch(setCMPayment({ ...CMPayment, visible: visible, paymentType: paymentType }))
+    this.setState({
+      checkFirstFormToken: secondForm ? false : true,
+    })
   }
 
   showHideDeletePayment = (val) => {
@@ -437,6 +442,7 @@ class CMPayment extends Component {
       addPaymentLoading: false,
       editable: false,
       totalReportPrice: 0,
+      checkFirstFormToken: false,
     })
   }
 
@@ -876,7 +882,6 @@ class CMPayment extends Component {
       axios
         .post(`/api/project/shop/create`, pearlBody)
         .then((res) => {
-          unitId = res.data.id
           this.firstFormApiCall(res.data.id)
         })
         .catch((error) => {
@@ -1027,6 +1032,7 @@ class CMPayment extends Component {
       leadCloseToggle,
       leftPearlSqft,
       progressValue,
+      checkFirstFormToken,
     } = this.state
     const { lead } = this.props
     return (
@@ -1084,6 +1090,7 @@ class CMPayment extends Component {
             addPaymentLoading={addPaymentLoading}
             lead={lead}
             paymentNotZero={buyerNotZero}
+            checkFirstFormToken={checkFirstFormToken}
           />
           <DeleteModal
             isVisible={deletePaymentVisible}

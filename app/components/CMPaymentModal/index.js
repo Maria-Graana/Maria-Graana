@@ -26,6 +26,7 @@ const CMPaymentModal = ({
   lead,
   submitCommissionPayment,
   paymentNotZero,
+  checkFirstFormToken = false,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -194,7 +195,8 @@ const CMPaymentModal = ({
 
           {CMPayment.installmentAmount != null &&
             CMPayment.installmentAmount != '' &&
-            CMPayment.type != '' && (
+            CMPayment.type != '' &&
+            !checkFirstFormToken && (
               <TouchableOpacity
                 style={styles.addPaymentBtn}
                 onPress={() => {

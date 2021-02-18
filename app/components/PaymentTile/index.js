@@ -29,6 +29,7 @@ class PaymentTile extends React.Component {
       onPaymentLongPress,
     } = this.props
     let price = data.installmentAmount
+    let taxIncludedAmount = 0
     var showStatus =
       data.status != ''
         ? StaticData.statusOptions.find((item) => {
@@ -42,8 +43,8 @@ class PaymentTile extends React.Component {
         ? styles.statusRed
         : styles.statusYellow
     if (data.taxIncluded) {
-      price = PaymentMethods.findTaxIncluded(data.installmentAmount, data.taxAmount)
-      price = data.installmentAmount - price
+      taxIncludedAmount = PaymentMethods.findTaxIncluded(data.installmentAmount, data.taxAmount)
+      price = data.installmentAmount - taxIncludedAmount
     }
 
     return (
@@ -77,13 +78,40 @@ class PaymentTile extends React.Component {
               <Text style={[styles.tileStatus, statusColor]}>{showStatus.label}</Text>
             )}
           </View>
-          <View style={styles.bottomLayer}>
-            <Text style={styles.formatPrice}>{currencyConvert(price != null ? price : '')}</Text>
-            <Text style={styles.totalPrice}>{formatPrice(price)}</Text>
-            <Text style={styles.priceDate}>
-              {moment(data.createdAt).format('DD MMM YY - h:mm a')}
-            </Text>
-          </View>
+          {!data.taxIncluded && (
+            <View style={styles.bottomLayer}>
+              <Text style={styles.formatPrice}>{currencyConvert(price != null ? price : '')}</Text>
+              <Text style={styles.totalPrice}>{formatPrice(price)}</Text>
+              <Text style={styles.priceDate}>
+                {moment(data.createdAt).format('DD MMM YY - h:mm a')}
+              </Text>
+            </View>
+          )}
+          {data.taxIncluded && (
+            <View>
+              <View style={styles.bottomLayer}>
+                <Text style={styles.formatPrice}>
+                  {currencyConvert(price != null ? price : '')}
+                </Text>
+                <Text style={styles.totalPrice}>{formatPrice(price)}</Text>
+              </View>
+              <View style={{ paddingVertical: 5 }}>
+                <Text style={styles.paymnetHeading}>
+                  Tax
+                  <Text style={{ textTransform: 'capitalize' }}> ({data.type && data.type})</Text>
+                </Text>
+              </View>
+              <View style={styles.bottomLayer}>
+                <Text style={styles.formatPrice}>
+                  {currencyConvert(taxIncludedAmount != null ? taxIncludedAmount : '')}
+                </Text>
+                <Text style={styles.totalPrice}>{formatPrice(taxIncludedAmount)}</Text>
+                <Text style={styles.priceDate}>
+                  {moment(data.createdAt).format('DD MMM YY - h:mm a')}
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
       </TouchableOpacity>
     )

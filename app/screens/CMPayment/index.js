@@ -936,6 +936,7 @@ class CMPayment extends Component {
               },
               () => {
                 helper.successToast('Unit Has Been Booked')
+                this.clearReduxAndStateValues()
                 this.fetchLead()
               }
             )

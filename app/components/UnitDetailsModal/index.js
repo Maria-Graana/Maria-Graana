@@ -109,6 +109,20 @@ class UnitDetailsModal extends React.Component {
                 </View>
               )}
               {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Rate/Sqft</Text>
+                  <Text style={styles.largeText}>{PaymentMethods.findRatePerSqft(data)}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Unit Price</Text>
+                  <Text style={styles.largeText}>{PaymentMethods.findUnitPrice(data)}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
               {data.rentPerSqFt !== null && (
                 <View style={styles.MainTileView}>
                   <View>
@@ -130,20 +144,6 @@ class UnitDetailsModal extends React.Component {
                   </View>
                 </View>
               )}
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Rate/Sqft</Text>
-                  <Text style={styles.largeText}>{PaymentMethods.findRatePerSqft(data)}</Text>
-                </View>
-              </View>
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Unit Price</Text>
-                  <Text style={styles.largeText}>{PaymentMethods.findUnitPrice(data)}</Text>
-                </View>
-              </View>
               {data.rentPerSqFt !== null && (
                 <View style={styles.MainTileView}>
                   <View>

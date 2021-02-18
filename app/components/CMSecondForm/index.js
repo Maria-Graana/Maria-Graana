@@ -48,6 +48,7 @@ class CMSecondForm extends React.Component {
             }}
             btnImage={CheckWhite}
             btnText={'BOOKING DETAILS'}
+            checkLeadClosedOrNot={checkLeadClosedOrNot}
           />
           <View style={{ padding: 5 }} />
           <Text style={styles.paymentsHeading}>PAYMENTS</Text>
@@ -85,11 +86,13 @@ class CMSecondForm extends React.Component {
               onClick={() => addPaymentModalToggle(true, 'payment')}
               btnImage={RoundPlus}
               btnText={'ADD PAYMENT'}
+              checkLeadClosedOrNot={checkLeadClosedOrNot}
             />
             <CMBTN
               onClick={() => addPaymentModalToggle(true, 'tax')}
               btnImage={RoundPlus}
               btnText={'ADD TAX'}
+              checkLeadClosedOrNot={checkLeadClosedOrNot}
             />
           </View>
 

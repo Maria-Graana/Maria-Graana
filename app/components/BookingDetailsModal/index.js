@@ -15,6 +15,10 @@ class BookingDetailsModal extends React.Component {
     return value != null && value != '' ? value : ''
   }
 
+  handleEmptyValueReturnZero = (value) => {
+    return value != null && value != '' ? value : 0
+  }
+
   render() {
     let {
       active,
@@ -87,7 +91,7 @@ class BookingDetailsModal extends React.Component {
                 <View>
                   <Text style={styles.smallText}>Unit Price</Text>
                   <Text style={styles.largeText}>
-                    {this.handleEmptyValue(data.unit.unit_price)}
+                    {this.handleEmptyValueReturnZero(data.unit.unit_price)}
                   </Text>
                 </View>
               </View>
@@ -97,7 +101,7 @@ class BookingDetailsModal extends React.Component {
                   <Text style={styles.smallText}>Discount</Text>
                   <Text style={styles.largeText}>
                     {this.handleEmptyValue(data.unit.discount) +
-                      `${data.unit.discount > 0 ? '%' : ''}`}
+                      `${data.unit.discount > 0 ? '%' : '0%'}`}
                   </Text>
                 </View>
               </View>
@@ -106,7 +110,7 @@ class BookingDetailsModal extends React.Component {
                 <View>
                   <Text style={styles.smallText}>Discount Amount</Text>
                   <Text style={styles.largeText}>
-                    {this.handleEmptyValue(data.unit.discounted_price)}
+                    {this.handleEmptyValueReturnZero(data.unit.discounted_price)}
                   </Text>
                 </View>
               </View>
@@ -116,7 +120,7 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Final Price</Text>
                     <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.unit.full_payment_price)}
+                      {this.handleEmptyValueReturnZero(data.unit.finalPrice)}
                     </Text>
                   </View>
                 </View>
@@ -153,7 +157,9 @@ class BookingDetailsModal extends React.Component {
                     <View>
                       <Text style={styles.smallText}>Rent/Sqft</Text>
                       <Text style={styles.largeText}>
-                        {this.handleEmptyValue(data && data.unit && data.unit.rentPerSqFt)}
+                        {this.handleEmptyValueReturnZero(
+                          data && data.unit && data.unit.rentPerSqFt
+                        )}
                       </Text>
                     </View>
                   </View>
@@ -163,7 +169,9 @@ class BookingDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rent Amount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit.rent)}</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValueReturnZero(data.unit.rent)}
+                    </Text>
                   </View>
                 </View>
               )}
@@ -174,7 +182,7 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Down Payment</Text>
                     <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.unit && data.unit.down_payment)}
+                      {this.handleEmptyValueReturnZero(data.unit && data.unit.down_payment)}
                     </Text>
                   </View>
                 </View>
@@ -185,7 +193,7 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Monthly Installment</Text>
                     <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.unit && data.unit.monthly_installments)}
+                      {this.handleEmptyValueReturnZero(data.unit && data.unit.monthly_installments)}
                     </Text>
                   </View>
                 </View>
@@ -195,7 +203,9 @@ class BookingDetailsModal extends React.Component {
                     <View>
                       <Text style={styles.smallText}>Quarterly Installment</Text>
                       <Text style={styles.largeText}>
-                        {this.handleEmptyValue(data.unit && data.unit.quarterly_installments)}
+                        {this.handleEmptyValueReturnZero(
+                          data.unit && data.unit.quarterly_installments
+                        )}
                       </Text>
                     </View>
                   </View>

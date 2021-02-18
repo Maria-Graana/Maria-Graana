@@ -189,6 +189,5 @@ const PaymentHelper = {
       taxIncluded: CMPayment.taxIncluded,
     }
   },
-  findLeadClosureReasons() {},
 }
 module.exports = PaymentHelper

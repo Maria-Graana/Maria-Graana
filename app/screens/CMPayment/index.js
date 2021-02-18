@@ -224,11 +224,19 @@ class CMPayment extends Component {
         checkReasonValidation: '',
       })
     } else {
-      this.setState({
-        reasons: StaticData.paymentPopup,
-        leadCloseToggle: true,
-        checkReasonValidation: '',
-      })
+      if (PaymentMethods.findPaymentClearedStatus(payment)) {
+        this.setState({
+          reasons: StaticData.paymentPopupAnyPaymentAdded,
+          leadCloseToggle: true,
+          checkReasonValidation: '',
+        })
+      } else {
+        this.setState({
+          reasons: StaticData.paymentPopup,
+          leadCloseToggle: true,
+          checkReasonValidation: '',
+        })
+      }
     }
   }
 
@@ -295,6 +303,7 @@ class CMPayment extends Component {
   // **************** Check Lead Close *******************
   closedLead = () => {
     const { lead, user } = this.props
+    console.log('closedLead: ', this.state.checkLeadClosedOrNot)
     this.state.checkLeadClosedOrNot === true && helper.leadClosedToast()
     lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
   }
@@ -722,7 +731,6 @@ class CMPayment extends Component {
     if (name === 'paymentPlan' && value !== 'Sold on Investment Plan') {
       newData['fullPaymentDiscountPrice'] = 0
     }
-    newData[name] = value
     if (oneUnit) {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['finalPrice'] = PaymentMethods.findFinalPrice(
@@ -736,6 +744,7 @@ class CMPayment extends Component {
       this.validateCnic(value)
     }
     if (name === 'pearl') this.pearlCalculations(oneFloor, value)
+    newData[name] = value
     this.setState({
       firstFormData: { ...newData },
       unitPearlDetailsData: { ...oneFloor },
@@ -927,6 +936,7 @@ class CMPayment extends Component {
               },
               () => {
                 helper.successToast('Unit Has Been Booked')
+                this.fetchLead()
               }
             )
           })

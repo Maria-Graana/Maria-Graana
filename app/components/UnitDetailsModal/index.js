@@ -18,6 +18,10 @@ class UnitDetailsModal extends React.Component {
     return value != null && value != '' ? value : ''
   }
 
+  handleEmptyValueReturnZero = (value) => {
+    return value != null && value != '' ? value : 0
+  }
+
   render() {
     const { active, openUnitDetailsModal, data, pearlModal, formData, pearlUnitPrice } = this.props
     var optionalArray = data && data.optional_fields != null && data.optional_fields
@@ -111,8 +115,9 @@ class UnitDetailsModal extends React.Component {
                     <Text style={styles.smallText}>Discount</Text>
                     <Text style={styles.largeText}>
                       {this.handleEmptyValue(formData.approvedDiscount) === ''
-                        ? '0%'
+                        ? '0'
                         : this.handleEmptyValue(formData.approvedDiscount)}
+                      %
                     </Text>
                   </View>
                 </View>
@@ -120,7 +125,7 @@ class UnitDetailsModal extends React.Component {
               {data.rentPerSqFt !== null && (
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Discounted Amount</Text>
+                    <Text style={styles.smallText}>Discount Amount</Text>
                     <Text style={styles.largeText}>{formData.approvedDiscountPrice}</Text>
                   </View>
                 </View>
@@ -143,7 +148,9 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discounted Price</Text>
-                    <Text style={styles.largeText}>{PaymentMethods.findDiscountPrice(data)}</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValueReturnZero(formData.finalPrice)}
+                    </Text>
                   </View>
                 </View>
               )}
@@ -151,7 +158,9 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rent/Sqft</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValueReturnZero(data.rentPerSqFt)}
+                    </Text>
                   </View>
                 </View>
               )}
@@ -160,7 +169,9 @@ class UnitDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rent Amount</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rent)}</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValueReturnZero(data.rent)}
+                    </Text>
                   </View>
                 </View>
               )}

@@ -151,13 +151,24 @@ const PaymentMethods = {
     let totalPayments = 0
     if (payment && payment.length) {
       payment.map((item) => {
-        if (item.paymentCategory === 'tax' && item.status !== 'cleared') {
+        if (item.paymentCategory === 'tax' && item.status === 'cleared') {
           totalPayments = totalPayments + item.installmentAmount
         }
       })
       outStandingTax = outStandingTax - totalPayments
     }
     return outStandingTax
+  },
+  findPaymentClearedStatus(payment) {
+    let checkCleared = false
+    if (payment && payment.length) {
+      payment.map((item) => {
+        if (item.status === 'cleared') {
+          checkCleared = true
+        }
+      })
+    }
+    return checkCleared
   },
 }
 module.exports = PaymentMethods

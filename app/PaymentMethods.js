@@ -24,7 +24,7 @@ const PaymentMethods = {
   },
   findUnitPrice(unit) {
     if (unit) {
-      let { area } = unit
+      let { area, pricePerSqFt, category_charges } = unit
       area = PaymentMethods.handleEmptyValue(area)
       return area * PaymentMethods.findRatePerSqft(unit)
     }
@@ -61,12 +61,24 @@ const PaymentMethods = {
       return (price / PaymentMethods.findUnitPrice(unit)) * 100
     }
   },
-  findFinalPrice(unit, approvedDiscountPrice, fullPaymentDiscountPrice) {
+  findFinalPrice(unit, approvedDiscountPrice, fullPaymentDiscountPrice, isPearl) {
     if (unit) {
       approvedDiscountPrice = PaymentMethods.handleEmptyValue(approvedDiscountPrice)
       fullPaymentDiscountPrice = PaymentMethods.handleEmptyValue(fullPaymentDiscountPrice)
       let totalDiscountPrice = approvedDiscountPrice + fullPaymentDiscountPrice
-      return PaymentMethods.findUnitPrice(unit) - totalDiscountPrice
+      if (isPearl) {
+        return PaymentMethods.pearlCalculations(unit) - totalDiscountPrice
+      } else {
+        return PaymentMethods.findUnitPrice(unit) - totalDiscountPrice
+      }
+    }
+  },
+  pearlCalculations(unit) {
+    if (unit) {
+      let { area, pricePerSqFt } = unit
+      area = PaymentMethods.handleEmptyValue(area)
+      pricePerSqFt = PaymentMethods.handleEmptyValue(pricePerSqFt)
+      return area * pricePerSqFt
     }
   },
   findTaxIncluded(payment, taxAmount) {

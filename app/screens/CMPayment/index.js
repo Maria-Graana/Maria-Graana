@@ -277,7 +277,6 @@ class CMPayment extends Component {
   // **************** Check Lead Close *******************
   closedLead = () => {
     const { lead, user } = this.props
-    console.log('closedLead: ', this.state.checkLeadClosedOrNot)
     this.state.checkLeadClosedOrNot === true && helper.leadClosedToast()
     lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
   }
@@ -342,11 +341,8 @@ class CMPayment extends Component {
     let url = `/api/leads/payment?id=${selectedPayment.id}&reason=${reason}`
     const response = await axios.delete(url)
     if (response.data) {
-      console.log('clearReduxAndStateValues')
       this.clearReduxAndStateValues()
-      console.log('fetchLead')
       this.fetchLead()
-      console.log('successToast: ', response.data)
       helper.successToast(response.data.message)
     } else {
       helper.errorToast('ERROR DELETING PAYMENT!')
@@ -640,7 +636,7 @@ class CMPayment extends Component {
   }
 
   handleFirstForm = (value, name) => {
-    console.log(value, name)
+    // console.log(value, name)
     const {
       firstFormData,
       allFloors,
@@ -707,20 +703,21 @@ class CMPayment extends Component {
     if (name === 'paymentPlan' && value !== 'Sold on Investment Plan') {
       newData['fullPaymentDiscountPrice'] = 0
     }
-    if (oneUnit) {
-      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      newData['finalPrice'] = PaymentMethods.findFinalPrice(
-        oneUnit,
-        newData['approvedDiscountPrice'],
-        newData['fullPaymentDiscountPrice']
-      )
-    }
     if (name === 'cnic') {
       value = helper.normalizeCnic(value)
       this.validateCnic(value)
     }
     if (name === 'pearl') this.pearlCalculations(oneFloor, value)
     newData[name] = value
+    if (oneUnit) {
+      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+      newData['finalPrice'] = PaymentMethods.findFinalPrice(
+        oneUnit,
+        newData['approvedDiscountPrice'],
+        newData['fullPaymentDiscountPrice'],
+        copyPearlUnit ? true : false
+      )
+    }
     this.setState({
       firstFormData: { ...newData },
       unitPearlDetailsData: { ...oneFloor },

@@ -150,10 +150,9 @@ class CMPayment extends Component {
       .get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
         let responseData = res.data
-        if (!responseData.paidProject) {
-          responseData.paidProject = responseData.project
-        }
+        responseData.paidProject = responseData.project
         this.props.dispatch(setlead(responseData))
+        this.setdefaultFields(responseData)
         if (secondForm) {
           this.calculatePayments(responseData, functionCallingFor)
         }
@@ -623,6 +622,7 @@ class CMPayment extends Component {
     const { checkPaymentPlan } = this.state
     const { cmProgressBar } = StaticData
     var newcheckPaymentPlan = { ...checkPaymentPlan }
+    // console.log('lead: ', lead)
     newcheckPaymentPlan['years'] =
       (lead.paidProject != null && lead.paidProject.installment_plan != null) || ''
         ? lead.paidProject.installment_plan

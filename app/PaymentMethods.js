@@ -150,7 +150,7 @@ const PaymentMethods = {
             itemTax = PaymentMethods.findTaxNotIncluded(installmentAmount, taxAmount)
             itemPayment = installmentAmount
           }
-          totalPayments = totalPayments + item.installmentAmount
+          totalPayments = totalPayments + itemPayment
           remainingTax = remainingTax + itemTax
         }
       })

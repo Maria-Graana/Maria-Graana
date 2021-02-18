@@ -312,7 +312,7 @@ class CMFirstForm extends Component {
             <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
           </View>
         </View>
-        <View style={{ paddingVertical: 10 }}>
+        <View style={{ paddingVertical: 10, paddingBottom: 20 }}>
           <TouchableOpacity
             style={styles.bookNowBtn}
             onPress={() => {

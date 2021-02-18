@@ -18,10 +18,14 @@ class LeadTile extends React.Component {
 
   call = (data) => {
     const { contacts, purposeTab, updateStatus, user } = this.props
-    let newContact = helper.createContactPayload(data.customer)
-    this.sendCallStatus(data)
-    if (purposeTab !== 'invest') if (data.assigned_to_armsuser_id === user.id) updateStatus(data)
-    helper.callNumber(newContact, contacts)
+    if (data.customer) {
+      let newContact = helper.createContactPayload(data.customer)
+      this.sendCallStatus(data)
+      if (purposeTab !== 'invest') if (data.assigned_to_armsuser_id === user.id) updateStatus(data)
+      helper.callNumber(newContact, contacts)
+    } else {
+      helper.errorToast(`No Phone Number`)
+    }
   }
 
   sendCallStatus = (data) => {

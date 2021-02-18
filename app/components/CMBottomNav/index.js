@@ -44,11 +44,15 @@ class CMBottomNav extends React.Component {
 
   call = () => {
     const { contacts, customer } = this.props
-    let newContact = helper.createContactPayload(customer)
-    this.updateStatus()
-    this.sendCallStatus()
-    this.props.getCallHistory()
-    helper.callNumber(newContact, contacts)
+    if (customer) {
+      let newContact = helper.createContactPayload(customer)
+      this.updateStatus()
+      this.sendCallStatus()
+      this.props.getCallHistory()
+      helper.callNumber(newContact, contacts)
+    } else {
+      helper.errorToast('No Phone Number')
+    }
   }
 
   sendCallStatus = () => {

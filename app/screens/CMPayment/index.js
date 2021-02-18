@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import React, { Component } from 'react'
 import AppJson from '../../../app.json'
 import AppStyles from '../../AppStyles'
+import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import styles from './style'
 import config from '../../config'
@@ -36,34 +37,6 @@ import PaymentHelper from './PaymentHelper'
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
 class CMPayment extends Component {
-  data = [
-    {
-      addedBy: null,
-      armsUserId: 548,
-      chequeDepositDat: null,
-      cmLeadId: 214078,
-      createdAt: '2021-02-15T10:34:24.890Z',
-      deletedAt: null,
-      details: null,
-      id: 2288,
-      installmentAmount: 353,
-      outStandingTax: null,
-      paymentAttachments: [],
-      paymentCategory: 'token',
-      paymentClearenceDate: null,
-      paymentId: null,
-      paymentTime: '2021-02-15T10:34:24.000Z',
-      rcmLeadId: null,
-      reason: null,
-      remarks: null,
-      shortlistPropertyId: null,
-      status: 'pendingAccount',
-      taxAmount: null,
-      taxIncluded: false,
-      type: 'pay-Order',
-      updatedAt: '2021-02-15T10:34:24.890Z',
-    },
-  ]
   constructor(props) {
     super(props)
     const { lead, user } = this.props
@@ -133,6 +106,7 @@ class CMPayment extends Component {
       lead: false,
       selectedReason: '',
       leadCloseToggle: false,
+      progressValue: 0,
     }
   }
 
@@ -638,6 +612,7 @@ class CMPayment extends Component {
 
   setdefaultFields = (lead) => {
     const { checkPaymentPlan } = this.state
+    const { cmProgressBar } = StaticData
     var newcheckPaymentPlan = { ...checkPaymentPlan }
     newcheckPaymentPlan['years'] =
       (lead.paidProject != null && lead.paidProject.installment_plan != null) || ''
@@ -656,6 +631,7 @@ class CMPayment extends Component {
         () => {
           let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
           this.setState({
+            progressValue: cmProgressBar[lead.status] || 0,
             paymentPlan: paymentArray,
             editable: false,
           })
@@ -1040,10 +1016,16 @@ class CMPayment extends Component {
       selectedReason,
       leadCloseToggle,
       leftPearlSqft,
+      progressValue,
     } = this.state
     const { lead } = this.props
     return (
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={{ flex: 1 }}>
+        <ProgressBar
+          style={{ backgroundColor: '#ffffff' }}
+          progress={progressValue}
+          color={'#0277FD'}
+        />
         <View style={{ flex: 1 }}>
           <BookingDetailsModal
             active={bookingModal}
@@ -1158,7 +1140,7 @@ class CMPayment extends Component {
             />
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     )
   }
 }

@@ -391,7 +391,8 @@ export default StaticData = {
     propsure: 0.8,
     token: 1,
     payment: 1,
-    closed: 1,
+    closed_won: 1,
+    closed_lost: 1,
   },
   cmProgressBar: {
     open: 0,
@@ -410,7 +411,8 @@ export default StaticData = {
     meeting_deal_signed: 0.5,
     token: 1,
     payment: 1,
-    closed: 1,
+    closed_won: 1,
+    closed_lost: 1,
   },
   sortData: [
     { name: 'Newest First', value: '&order=Desc&field=createdAt' },
@@ -728,7 +730,7 @@ export default StaticData = {
     'Ensure Key from owner',
     'Sell core features of property as required by client',
   ],
-  fieldAppStatusFilters:[
+  fieldAppStatusFilters: [
     { value: 'onhold', name: 'Pending' },
     { value: 'pending', name: 'Approved' },
     { value: 'rejected', name: 'Rejected' },
@@ -737,16 +739,12 @@ export default StaticData = {
     { value: 'id', name: 'ID' },
     { value: 'area', name: 'Area' },
   ],
-  searchByIdOnly: [
-    { value: 'id', name: 'ID' },
-  ],
-  
-  graanaStatusFilters:[
+  searchByIdOnly: [{ value: 'id', name: 'ID' }],
+
+  graanaStatusFilters: [
     { value: 'published', name: 'All' },
     { value: 'pendingVerification', name: 'Pending Re-verification' },
     { value: 'geotagged', name: 'Geo Tagged' },
   ],
-  graanaStatusFiltersPP:[
-    { value: 'published', name: 'All' },
-  ],
+  graanaStatusFiltersPP: [{ value: 'published', name: 'All' }],
 }

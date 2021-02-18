@@ -1,26 +1,29 @@
-import React, { Component } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, Linking, Image } from 'react-native';
-import { Fab } from 'native-base';
-import { Ionicons } from '@expo/vector-icons';
+/** @format */
+
+import React, { Component } from 'react'
+import { View, ScrollView, TouchableOpacity, Text, Linking, Image } from 'react-native'
+import { Fab } from 'native-base'
+import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 import styles from './style'
 import MeetingTile from '../../components/MeetingTile'
 import MeetingModal from '../../components/MeetingModal'
 import MeetingStatusModal from '../../components/MeetingStatusModal'
 import moment from 'moment'
-import helper from '../../helper';
-import AppStyles from '../../AppStyles';
-import { ProgressBar, Colors } from 'react-native-paper';
-import { FAB } from 'react-native-paper';
-import { setlead, setLeadRes } from '../../actions/lead';
+import helper from '../../helper'
+import AppStyles from '../../AppStyles'
+import { ProgressBar, Colors } from 'react-native-paper'
+import { FAB } from 'react-native-paper'
+import { setlead, setLeadRes } from '../../actions/lead'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import StaticData from '../../StaticData';
+import StaticData from '../../StaticData'
 import CMBottomNav from '../../components/CMBottomNav'
 import { Platform } from 'react-native'
-import { setContacts } from '../../actions/contacts';
-import TimerNotification from '../../LocalNotifications';
-import { cos } from 'react-native-reanimated';
+import { setContacts } from '../../actions/contacts'
+import TimerNotification from '../../LocalNotifications'
+import PaymentMethods from '../../PaymentMethods'
+import { cos } from 'react-native-reanimated'
 
 class Meetings extends Component {
   constructor(props) {
@@ -36,7 +39,9 @@ class Meetings extends Component {
         leadId: this.props.lead.id,
         start: '',
         end: '',
-        subject: this.props.lead.customer ? `Meeting with ${this.props.lead.customer.customerName}` : null
+        subject: this.props.lead.customer
+          ? `Meeting with ${this.props.lead.customer.customerName}`
+          : null,
       },
       meetings: [],
       checkValidation: false,
@@ -76,14 +81,15 @@ class Meetings extends Component {
     this.getMeetingLead()
     this.props.dispatch(setContacts())
     this._unsubscribe = navigation.addListener('focus', () => {
-      this.fetchLead();
+      this.fetchLead()
     })
   }
 
   fetchLead = (newLeadDataStatus) => {
     const { lead } = this.props
     const { cmProgressBar } = StaticData
-    axios.get(`/api/leads/project/byId?id=${lead.id}`)
+    axios
+      .get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setLeadRes(res.data))
         this.setState({
@@ -97,7 +103,7 @@ class Meetings extends Component {
       })
   }
 
-  //  ************ Function for open modal ************ 
+  //  ************ Function for open modal ************
   openModal = () => {
     this.setState({
       active: !this.state.active,
@@ -107,33 +113,32 @@ class Meetings extends Component {
     })
   }
 
-  //  ************ Form Handle Function  ************ 
+  //  ************ Form Handle Function  ************
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
     formData['leadId'] = this.props.lead.id
-    this.setState({ formData });
+    this.setState({ formData })
   }
 
   getMeetingLead = () => {
     const { formData } = this.state
     const { lead } = this.props
-    axios.get(`/api/diary/all?leadId=${lead.id}`)
-      .then((res) => {
-        this.setState({ meetings: res.data })
-      })
+    axios.get(`/api/diary/all?leadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
+    })
   }
 
-  //  ************ Form submit Function  ************ 
+  //  ************ Form submit Function  ************
   formSubmit = (id) => {
     const { formData, editMeeting, meetingId } = this.state
     if (!formData.time || !formData.date) {
       this.setState({ checkValidation: true })
     } else {
-      this.setState({ loading: true });
-      let formattedDate = helper.formatDate(formData.date);
-      const start = helper.formatDateAndTime(formattedDate, formData.time);
-      const end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ');
+      this.setState({ loading: true })
+      let formattedDate = helper.formatDate(formData.date)
+      const start = helper.formatDateAndTime(formattedDate, formData.time)
+      const end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
       if (editMeeting === true) {
         // Update meeting
         let body = {
@@ -144,7 +149,8 @@ class Meetings extends Component {
           end: end,
         }
 
-        axios.patch(`/api/diary/update?id=${meetingId}`, body)
+        axios
+          .patch(`/api/diary/update?id=${meetingId}`, body)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
             let start = new Date(res.data.start)
@@ -152,10 +158,10 @@ class Meetings extends Component {
             let data = {
               id: res.data.id,
               title: res.data.subject,
-              body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
             }
             helper.deleteAndUpdateNotification(data, start, res.data.id)
-            this.getMeetingLead();
+            this.getMeetingLead()
             formData['time'] = ''
             formData['date'] = ''
             this.setState({
@@ -163,20 +169,23 @@ class Meetings extends Component {
               formData,
               editMeeting: false,
             })
-          }).catch(() => {
+          })
+          .catch(() => {
             helper.errorToast(`Some thing went wrong!!!`)
-          }).finally(() => {
+          })
+          .finally(() => {
             this.setState({ loading: false })
           })
       } else {
-        formData.addedBy = 'self';
-        formData.taskCategory = 'leadTask';
-        formData.date = start;
-        formData.time = start;
-        formData.start = start;
-        formData.end = end;
+        formData.addedBy = 'self'
+        formData.taskCategory = 'leadTask'
+        formData.date = start
+        formData.time = start
+        formData.start = start
+        formData.end = end
         // Add meeting
-        axios.post(`api/leads/project/meeting`, formData)
+        axios
+          .post(`api/leads/project/meeting`, formData)
           .then((res) => {
             formData['time'] = ''
             formData['date'] = ''
@@ -186,21 +195,22 @@ class Meetings extends Component {
             let data = {
               id: res.data.id,
               title: res.data.subject,
-              body: moment(start).format("hh:mm") + ' - ' + moment(end).format("hh:mm")
+              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
             }
             TimerNotification(data, start)
-            this.getMeetingLead();
+            this.getMeetingLead()
             this.setState({
               active: false,
               formData,
             })
-          }).catch(() => {
+          })
+          .catch(() => {
             helper.errorToast(`Some thing went wrong!!!`)
-          }).finally(() => {
+          })
+          .finally(() => {
             this.setState({ loading: false })
           })
       }
-
     }
   }
 
@@ -210,9 +220,9 @@ class Meetings extends Component {
       this.setState({ checkValidation: true })
     } else {
       this.setState({ loading: true })
-      let formattedDate = helper.formatDate(diaryTask.date);
-      const start = helper.formatDateAndTime(formattedDate, diaryTask.start);
-      const end = moment(start).add(0.33, 'hours').format('YYYY-MM-DDTHH:mm:ssZ');
+      let formattedDate = helper.formatDate(diaryTask.date)
+      const start = helper.formatDateAndTime(formattedDate, diaryTask.start)
+      const end = moment(start).add(0.33, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
       let body = {
         subject: 'Follow up with client',
         date: start,
@@ -222,18 +232,21 @@ class Meetings extends Component {
         taskType: diaryTask.taskType,
         time: start,
       }
-      axios.post(`api/leads/project/meeting`, body)
+      axios
+        .post(`api/leads/project/meeting`, body)
         .then((res) => {
           helper.successToast(`Follow up task added to the Diary`)
-          this.getMeetingLead();
+          this.getMeetingLead()
           this.setState({
             active: false,
             editMeeting: false,
           })
-        }).catch((error) => {
+        })
+        .catch((error) => {
           console.log(error)
           helper.errorToast(`Some thing went wrong!!!`)
-        }).finally(() => {
+        })
+        .finally(() => {
           this.setState({ loading: false })
         })
     }
@@ -243,7 +256,7 @@ class Meetings extends Component {
     this.setState({
       doneStatus: !this.state.doneStatus,
       doneStatusId: data,
-      modalStatus: 'dropdown'
+      modalStatus: 'dropdown',
     })
   }
 
@@ -258,47 +271,47 @@ class Meetings extends Component {
     const { formData } = this.state
     let body = {
       response: status,
-      leadId: formData.leadId
+      leadId: formData.leadId,
     }
 
     if (status === 'cancel_meeting') {
-      axios.delete(`/api/diary/delete?id=${this.state.doneStatusId.id}&cmLeadId=${formData.leadId}`)
+      axios
+        .delete(`/api/diary/delete?id=${this.state.doneStatusId.id}&cmLeadId=${formData.leadId}`)
         .then((res) => {
-          this.getMeetingLead();
+          this.getMeetingLead()
           this.setState({
             doneStatus: !this.state.doneStatus,
           })
         })
     } else {
-      axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body)
-        .then((res) => {
-          this.getMeetingLead();
-          this.setState({
+      axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body).then((res) => {
+        this.getMeetingLead()
+        this.setState(
+          {
             doneStatus: !this.state.doneStatus,
-          }, () => {
-
+          },
+          () => {
             if (status === 'follow_up') {
               setTimeout(() => {
                 this.addDiary()
               }, 500)
-
             }
-          })
-        })
+          }
+        )
+      })
     }
-
   }
 
   addDiary = () => {
     const { diaryTask } = this.state
     const startTime = moment()
     const endTime = moment()
-    const add20Minutes = startTime.add(20, 'minutes');
+    const add20Minutes = startTime.add(20, 'minutes')
     const newformData = { ...diaryTask }
     newformData['taskType'] = 'follow up'
-    newformData['start'] = add20Minutes;
+    newformData['start'] = add20Minutes
     newformData['end'] = endTime
-    newformData['date'] = add20Minutes;
+    newformData['date'] = add20Minutes
     this.setState({
       active: !this.state.active,
       diaryForm: true,
@@ -314,7 +327,7 @@ class Meetings extends Component {
   }
 
   sendCallStatus = () => {
-    const start = moment().format();
+    const start = moment().format()
     let body = {
       start: start,
       end: start,
@@ -327,25 +340,25 @@ class Meetings extends Component {
       leadId: this.props.lead.id,
       taskCategory: 'leadTask',
     }
-    axios.post(`api/leads/project/meeting`, body)
-      .then((res) => {
-        this.getMeetingLead();
-      })
+    axios.post(`api/leads/project/meeting`, body).then((res) => {
+      this.getMeetingLead()
+    })
   }
 
   callNumber = (url) => {
     if (url != 'tel:null') {
       Linking.canOpenURL(url)
-        .then(supported => {
+        .then((supported) => {
           if (!supported) {
             // this.sendCallStatus()
-            console.log("Can't handle url: " + url);
+            console.log("Can't handle url: " + url)
           } else {
             this.sendCallStatus()
             this.call()
             return Linking.openURL(url)
           }
-        }).catch(err => console.error('An error occurred', err));
+        })
+        .catch((err) => console.error('An error occurred', err))
     } else {
       helper.errorToast(`No Phone Number`)
     }
@@ -355,12 +368,21 @@ class Meetings extends Component {
     const { lead, contacts } = this.props
     let newContact = helper.createContactPayload(lead.customer)
     let result = helper.contacts(newContact.phone, contacts)
-    if (newContact.name && newContact.name !== '' && newContact.name !== ' ' && newContact.phone && newContact.phone !== '') if (!result) helper.addContact(newContact)
+    if (
+      newContact.name &&
+      newContact.name !== '' &&
+      newContact.name !== ' ' &&
+      newContact.phone &&
+      newContact.phone !== ''
+    )
+      if (!result) helper.addContact(newContact)
   }
 
   editFunction = (id) => {
     const { meetings, active } = this.state
-    let filter = meetings.rows.filter((item) => { return item.id === id && item })
+    let filter = meetings.rows.filter((item) => {
+      return item.id === id && item
+    })
     this.setState({
       active: !active,
       formData: {
@@ -374,37 +396,38 @@ class Meetings extends Component {
   }
 
   goToComments = () => {
-    const { navigation, route } = this.props;
-    navigation.navigate('Comments', { cmLeadId: this.props.lead.id });
+    const { navigation, route } = this.props
+    navigation.navigate('Comments', { cmLeadId: this.props.lead.id })
   }
 
   goToAttachments = () => {
-    const { navigation, route } = this.props;
-    navigation.navigate('Attachments', { cmLeadId: this.props.lead.id });
+    const { navigation, route } = this.props
+    navigation.navigate('Attachments', { cmLeadId: this.props.lead.id })
   }
 
   goToDiaryForm = (taskType) => {
-    const { navigation, route, user } = this.props;
+    const { navigation, route, user } = this.props
     navigation.navigate('AddDiary', {
       update: false,
       agentId: user.id,
       cmLeadId: this.props.lead.id,
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
-      taskType: taskType != '' ? taskType : null
-    });
+      taskType: taskType != '' ? taskType : null,
+    })
   }
 
   navigateTo = () => {
-    this.props.navigation.navigate('LeadDetail', { lead: this.props.lead, 
+    this.props.navigation.navigate('LeadDetail', {
+      lead: this.props.lead,
       purposeTab: 'invest',
       isFromLeadWorkflow: true,
-      fromScreen: 'meetings'
-     })
+      fromScreen: 'meetings',
+    })
   }
 
   handleReasonChange = (value) => {
-    this.setState({ selectedReason: value });
+    this.setState({ selectedReason: value })
   }
 
   closeModal = () => {
@@ -413,33 +436,73 @@ class Meetings extends Component {
 
   onHandleCloseLead = (reason) => {
     const { lead, navigation } = this.props
-    const { selectedReason } = this.state;
+    const { selectedReason } = this.state
     let body = {
-      reasons: selectedReason
+      reasons: selectedReason,
     }
     if (selectedReason && selectedReason !== '') {
       var leadId = []
       leadId.push(lead.id)
-      axios.patch(`/api/leads/project`, body, { params: { id: leadId } })
-        .then(res => {
+      axios
+        .patch(`/api/leads/project`, body, { params: { id: leadId } })
+        .then((res) => {
           this.setState({ isVisible: false }, () => {
             helper.successToast(`Lead Closed`)
-            navigation.navigate('Leads');
-          });
-        }).catch(error => {
-          console.log(error);
+            navigation.navigate('Leads')
+          })
+        })
+        .catch((error) => {
+          console.log(error)
         })
     } else {
       alert('Please select a reason for lead closure!')
     }
-
   }
 
   closedLead = () => {
     const { lead, user } = this.props
     lead.status != StaticData.Constants.lead_closed_won ||
-      lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast()
+      (lead.status != StaticData.Constants.lead_closed_lost && helper.leadClosedToast())
     lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
+  }
+
+  checkLeadClosureReasons = () => {
+    const { lead } = this.props
+    const { payment, unit } = lead
+    if (!unit) {
+      this.setState({
+        reasons: StaticData.paymentPopup,
+        isVisible: true,
+        checkReasonValidation: '',
+      })
+      return
+    }
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
+      payment,
+      unit.finalPrice
+    )
+    let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
+    if (outStandingTax <= 0 && remainingPayment <= 0) {
+      this.setState({
+        reasons: StaticData.paymentPopupDone,
+        isVisible: true,
+        checkReasonValidation: '',
+      })
+    } else {
+      if (PaymentMethods.findPaymentClearedStatus(payment)) {
+        this.setState({
+          reasons: StaticData.paymentPopupAnyPaymentAdded,
+          isVisible: true,
+          checkReasonValidation: '',
+        })
+      } else {
+        this.setState({
+          reasons: StaticData.paymentPopup,
+          isVisible: true,
+          checkReasonValidation: '',
+        })
+      }
+    }
   }
 
   closeLead = () => {
@@ -447,46 +510,74 @@ class Meetings extends Component {
 
     const { secondScreenData, checkForNewLeadData } = this.state
     if (secondScreenData && secondScreenData != '' && checkForNewLeadData === true) {
-
       // Check For Any pending and rejected Status
       var approvedPaymentDone = []
-      secondScreenData && secondScreenData.payment != null &&
+      secondScreenData &&
+        secondScreenData.payment != null &&
         secondScreenData.payment.filter((item, index) => {
-          return item.status === 'pendingAccount' || item.status === 'pendingAccountHq' || item.status === 'pendingSales' || item.status === 'bankPending' || item.status === 'notCleared' ?
-            approvedPaymentDone.push(true) : approvedPaymentDone.push(false)
+          return item.status === 'pendingAccount' ||
+            item.status === 'pendingAccountHq' ||
+            item.status === 'pendingSales' ||
+            item.status === 'bankPending' ||
+            item.status === 'notCleared'
+            ? approvedPaymentDone.push(true)
+            : approvedPaymentDone.push(false)
         })
 
       // If there is any true in the bottom array PAYMENT DONE option will be hide
       var checkForPenddingNrjected = []
       var checkForPenddingNClear = []
-      approvedPaymentDone && approvedPaymentDone.length > 0 &&
-        approvedPaymentDone.filter((item) => { item === true && checkForPenddingNrjected.push(true) })
-      approvedPaymentDone && approvedPaymentDone.length > 0 &&
-        approvedPaymentDone.filter((item) => { item === false && checkForPenddingNClear.push(false) })
+      approvedPaymentDone &&
+        approvedPaymentDone.length > 0 &&
+        approvedPaymentDone.filter((item) => {
+          item === true && checkForPenddingNrjected.push(true)
+        })
+      approvedPaymentDone &&
+        approvedPaymentDone.length > 0 &&
+        approvedPaymentDone.filter((item) => {
+          item === false && checkForPenddingNClear.push(false)
+        })
 
       var remainingPayment = this.props.lead.remainingPayment
-      if (remainingPayment <= 0 && remainingPayment != null && checkForPenddingNrjected.length === 0) {
-        this.setState({ reasons: StaticData.paymentPopupDone, isVisible: true, checkReasonValidation: '', checkForNewLeadData: false })
+      if (
+        remainingPayment <= 0 &&
+        remainingPayment != null &&
+        checkForPenddingNrjected.length === 0
+      ) {
+        this.setState({
+          reasons: StaticData.paymentPopupDone,
+          isVisible: true,
+          checkReasonValidation: '',
+          checkForNewLeadData: false,
+        })
       } else {
         // Check For,If some payment is clear agent would not be able to close lead as close lost
-        if (Number(remainingPayment) >= 0 && secondScreenData.remainingPayment != null || checkForPenddingNClear.length != 0) {
+        if (
+          (Number(remainingPayment) >= 0 && secondScreenData.remainingPayment != null) ||
+          checkForPenddingNClear.length != 0
+        ) {
           if (checkForPenddingNClear.length === 0) {
-            this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+            this.setState({
+              reasons: StaticData.paymentPopup,
+              isVisible: true,
+              checkReasonValidation: '',
+            })
           } else {
-            this.setState({ reasons: StaticData.paymentPopupAnyPaymentAdded, isVisible: true, checkReasonValidation: '' })
+            this.setState({
+              reasons: StaticData.paymentPopupAnyPaymentAdded,
+              isVisible: true,
+              checkReasonValidation: '',
+            })
           }
         } else {
-          this.setState({ reasons: StaticData.paymentPopup, isVisible: true, checkReasonValidation: '' })
+          this.setState({
+            reasons: StaticData.paymentPopup,
+            isVisible: true,
+            checkReasonValidation: '',
+          })
         }
       }
-
-
     }
-
-
-
-
-
   }
 
   render() {
@@ -514,17 +605,28 @@ class Meetings extends Component {
     const { contacts } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
     let leadData = this.props.lead
-    let leadClosedCheck = closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
+    let leadClosedCheck =
+      closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
     return (
       <View style={styles.mainWrapCon}>
-        <ProgressBar style={{ backgroundColor: "ffffff" }} progress={progressValue} color={'#0277FD'} />
+        <ProgressBar
+          style={{ backgroundColor: 'ffffff' }}
+          progress={progressValue}
+          color={'#0277FD'}
+        />
 
         {/* ************Fab For Open Modal************ */}
-        <View style={[styles.meetingConteiner, leadClosedCheck === true ? styles.openLeadHeight : styles.closeLeadHeight]}>
+        <View
+          style={[
+            styles.meetingConteiner,
+            leadClosedCheck === true ? styles.openLeadHeight : styles.closeLeadHeight,
+          ]}
+        >
           <ScrollView>
             <View style={styles.paddBottom}>
-              {
-                meetings && meetings != '' && meetings.rows.map((item, key) => {
+              {meetings &&
+                meetings != '' &&
+                meetings.rows.map((item, key) => {
                   return (
                     <MeetingTile
                       data={item}
@@ -537,28 +639,40 @@ class Meetings extends Component {
                       leadClosedCheck={leadClosedCheck}
                     />
                   )
-                })
-              }
+                })}
             </View>
           </ScrollView>
-
         </View>
-        {
-          leadClosedCheck == true &&
+        {leadClosedCheck == true && (
           <View style={[styles.callMeetingBtn]}>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.openModal() }}>
+              <TouchableOpacity
+                style={[
+                  styles.actionBtn,
+                  platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid,
+                ]}
+                onPress={() => {
+                  this.openModal()
+                }}
+              >
                 <Text style={styles.alignCenter}>Add Meeting</Text>
               </TouchableOpacity>
             </View>
             <View style={[styles.btnsMainWrap]}>
-              <TouchableOpacity style={[styles.actionBtn, platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid]} onPress={() => { this.callNumber(`tel:${leadData.customer && leadData.customer.phone}`) }}>
+              <TouchableOpacity
+                style={[
+                  styles.actionBtn,
+                  platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid,
+                ]}
+                onPress={() => {
+                  this.callNumber(`tel:${leadData.customer && leadData.customer.phone}`)
+                }}
+              >
                 <Text style={styles.alignCenter}>Call</Text>
               </TouchableOpacity>
             </View>
-
           </View>
-        }
+        )}
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}
@@ -567,13 +681,12 @@ class Meetings extends Component {
             goToComments={this.goToComments}
             alreadyClosedLead={this.closedLead}
             closedLeadEdit={leadClosedCheck}
-            closeLead={this.closeLead}
+            closeLead={this.checkLeadClosureReasons}
           />
         </View>
 
         {/* ************Modal Component************ */}
-        {
-          active === true &&
+        {active === true && (
           <MeetingModal
             active={active}
             formData={formData}
@@ -588,7 +701,7 @@ class Meetings extends Component {
             formSubmitDiary={this.formSubmitDiary}
             loading={loading}
           />
-        }
+        )}
 
         <MeetingStatusModal
           doneStatus={doneStatus}
@@ -611,21 +724,17 @@ class Meetings extends Component {
           onPress={this.onHandleCloseLead}
           CMlead={true}
         />
-
-      </View >
+      </View>
     )
   }
 }
-
 
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
-    contacts: store.contacts.contacts
+    contacts: store.contacts.contacts,
   }
 }
 
 export default connect(mapStateToProps)(Meetings)
-
-

@@ -33,6 +33,7 @@ import axios from 'axios'
 import PaymentMethods from '../../PaymentMethods'
 import { ActionSheet } from 'native-base'
 import PaymentHelper from './PaymentHelper'
+import _ from 'underscore'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -144,7 +145,7 @@ class CMPayment extends Component {
     const { lead } = this.props
     const { payment, unit } = lead
     const { cmProgressBar } = StaticData
-    const { secondForm } = this.state
+    const { secondForm, firstForm } = this.state
     axios
       .get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
@@ -156,7 +157,9 @@ class CMPayment extends Component {
         if (secondForm) {
           this.calculatePayments(responseData, functionCallingFor)
         }
-        this.setdefaultFields(responseData)
+        if (functionCallingFor === 'leadClose' && firstForm) {
+          this.checkLeadClosureReasons()
+        }
       })
       .catch((error) => {
         console.log('/api/leads/project/byId?id - Error', error)
@@ -186,6 +189,14 @@ class CMPayment extends Component {
   checkLeadClosureReasons = () => {
     const { lead } = this.props
     const { payment, unit } = lead
+    if (!unit) {
+      this.setState({
+        reasons: StaticData.paymentPopup,
+        leadCloseToggle: true,
+        checkReasonValidation: '',
+      })
+      return
+    }
     let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
       payment,
       unit.finalPrice
@@ -410,7 +421,7 @@ class CMPayment extends Component {
       details: '',
       visible: false,
       fileName: '',
-      attachments: [],
+      paymentAttachments: [],
       uri: '',
       size: null,
       title: '',
@@ -504,11 +515,11 @@ class CMPayment extends Component {
           .then((response) => {
             if (response.data) {
               // check if some attachment exists so upload that as well to server with payment id.
-              if (CMPayment.attachments.length > 0) {
-                CMPayment.attachments.map((paymentAttachment) =>
+              if (CMPayment.paymentAttachments.length > 0) {
+                CMPayment.paymentAttachments.map((paymentAttachment) => {
                   // payment attachments
                   this.uploadPaymentAttachment(paymentAttachment, response.data.id)
-                )
+                })
               } else {
                 this.clearReduxAndStateValues()
                 this.fetchLead(lead)
@@ -537,13 +548,12 @@ class CMPayment extends Component {
           this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
           return
         }
-        body.paymentCategory = CMPayment.paymentType
         axios
           .patch(`/api/leads/project/payment?id=${body.id}`, body)
           .then((res) => {
             // upload only the new attachments that do not have id with them in object.
-            const filterAttachmentsWithoutId = CMPayment.attachments
-              ? _.filter(CMPayment.attachments, (item) => {
+            const filterAttachmentsWithoutId = CMPayment.paymentAttachments
+              ? _.filter(CMPayment.paymentAttachments, (item) => {
                   return !_.has(item, 'id')
                 })
               : []
@@ -560,6 +570,7 @@ class CMPayment extends Component {
           })
           .catch((error) => {
             helper.errorToast('Error Updating Payment', error)
+            console.log('error: ', error)
             this.clearReduxAndStateValues()
           })
       }
@@ -583,12 +594,14 @@ class CMPayment extends Component {
     fd.append('title', paymentAttachment.title)
     fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
     // ====================== API call for Attachments base on Payment ID
+    console.log(`paymentAttachment: `, paymentAttachment)
+    console.log(`/api/leads/paymentAttachment?id=${paymentId}`)
+    console.log(`/api/leads/paymentAttachment?id=${paymentId}: `, fd)
     axios
       .post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
       .then((res) => {
         if (res.data) {
-          this.fetchLead(lead)
-          this.fetchProperties(lead)
+          this.fetchLead()
           this.clearReduxAndStateValues()
         }
       })

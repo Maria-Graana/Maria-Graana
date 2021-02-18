@@ -19,7 +19,7 @@ import helper from '../../helper'
 import AddAttachment from './addAttachment'
 
 class RCMAttachment extends Component {
-  attachments = []
+  paymentAttachments = []
   constructor(props) {
     super(props)
     this.state = {
@@ -108,8 +108,8 @@ class RCMAttachment extends Component {
   deleteAttachmentLocally = (item) => {
     const { CMPayment } = this.props
     let newPaymentArray = { ...CMPayment }
-    newPaymentArray = _.without(newPaymentArray.attachments, item)
-    this.setValues({ ...CMPayment, attachments: newPaymentArray })
+    newPaymentArray = _.without(newPaymentArray.paymentAttachments, item)
+    this.setValues({ ...CMPayment, paymentAttachments: newPaymentArray })
   }
 
   deleteAttachmentFromServer = (item) => {
@@ -161,12 +161,12 @@ class RCMAttachment extends Component {
       objectForAttachment.size = formData.size
       objectForAttachment.uri = formData.uri
       objectForAttachment.title = title
-      if ('attachments' in CMPayment) {
+      if ('paymentAttachments' in CMPayment) {
         // console.log()
       } else {
-        CMPayment.attachments = []
+        CMPayment.paymentAttachments = []
       }
-      CMPayment.attachments.push(objectForAttachment)
+      CMPayment.paymentAttachments.push(objectForAttachment)
       var payload = {
         ...CMPayment,
       }
@@ -252,7 +252,7 @@ class RCMAttachment extends Component {
           }}
           contentContainerStyle={{ flexGrow: 1 }}
           onContentSizeChange={() => this.flatList.scrollToEnd({ animated: true })}
-          data={CMPayment.attachments ? CMPayment.attachments : []}
+          data={CMPayment.paymentAttachments ? CMPayment.paymentAttachments : []}
           renderItem={({ item }) => (
             <AttachmentTile
               data={item}

@@ -4,6 +4,8 @@ import * as React from 'react'
 import styles from './style'
 import { View, Text, FlatList, Image, TouchableOpacity, Linking } from 'react-native'
 import { connect } from 'react-redux'
+import * as Location from 'expo-location';
+import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import MatchTile from '../../components/MatchTile/index'
 import AgentTile from '../../components/AgentTile/index'
@@ -11,9 +13,7 @@ import HistoryModal from '../../components/HistoryModal/index'
 import axios from 'axios'
 import Loader from '../../components/loader'
 import AddViewing from '../../components/AddViewing/index'
-import _ from 'underscore'
 import moment from 'moment'
-import { FAB } from 'react-native-paper'
 import { ProgressBar } from 'react-native-paper'
 import StaticData from '../../StaticData'
 import { setlead } from '../../actions/lead'
@@ -24,6 +24,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import config from '../../config'
 import CheckListModal from '../../components/CheckListModal'
 import ViewCheckListModal from '../../components/ViewCheckListModal'
+import GeoTaggingModal from '../../components/GeotaggingModal'
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -59,14 +60,31 @@ class LeadViewing extends React.Component {
       userFeedback: null,
       viewCheckListModal: false,
       selectedViewingData: null,
+      isGeoTaggingModalVisible: false,
+      locate_manually: false,
+      latitude: null,
+      longitude: null,
+      propsure_id: null,
+      selectedPropertyId: null,
     }
   }
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.fetchLead()
-      this.getCallHistory()
-      this.fetchProperties()
+      const { mapValues = null, fromScreen = null } = this.props.route.params;
+      if (fromScreen === 'mapContainer' && mapValues) {
+          this.setState({isGeoTaggingModalVisible: true , 
+            latitude:mapValues.lat,
+            longitude: mapValues.lng, 
+            propsure_id: mapValues.propsure_id,
+           })
+      }
+      else {
+        this.fetchLead()
+        this.getCallHistory()
+        this.fetchProperties()
+      }
+
     })
   }
 
@@ -118,7 +136,7 @@ class LeadViewing extends React.Component {
     })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -163,9 +181,6 @@ class LeadViewing extends React.Component {
     if (selectedReason !== '') {
       var leadId = []
       leadId.push(lead.id)
-      console.log(`/api/leads`)
-      console.log(payload)
-      console.log(lead.id)
       axios
         .patch(`/api/leads`, payload, { params: { id: leadId } })
         .then((response) => {
@@ -623,6 +638,143 @@ class LeadViewing extends React.Component {
     this.redirectProperty(data)
   }
 
+  convertLongitudeLattitude = (val) => {
+    if (val === '') {
+        return null
+    }
+    else if (typeof (val) === 'string' && val != '') {
+        return parseFloat(val);
+    }
+    else {
+        return val;
+    }
+
+}
+
+
+  propertyGeoTagging = (data) => {
+     // When user clicks geo tagging option from menu, this function is called
+    this.toggleMenu(false, data.id)
+    this.setState({
+      isGeoTaggingModalVisible: true,
+      locate_manually: data.locate_manually,
+      longitude: data.lng,
+      latitude: data.lat,
+      propsure_id: data.propsure_id,
+      selectedPropertyId: data.id,
+    })
+  }
+
+  hideGeoTaggingModal = () => {
+    // hide the geotagging modal, when cancel button is pressed
+    this.setState({
+      isGeoTaggingModalVisible: false,
+      locate_manually: false,
+      longitude: null,
+      latitude: null,
+      propsure_id: null,
+    })
+  }
+
+  propertyGeoTaggingDone = () => {
+ // Done button pressed from inside of the geotagging modal
+    const {lead} = this.props;
+    const {latitude, longitude, propsure_id, locate_manually, selectedPropertyId} = this.state;
+    if(latitude && longitude) {
+      let url = `/api/inventory/updateshortListedPRoperties?id=${selectedPropertyId}&leadId=${lead.id}`
+      let body = {
+        lat : this.convertLongitudeLattitude(latitude),
+        lng : this.convertLongitudeLattitude(longitude),
+        locate_manually,
+        propsure_id,
+        geotagged_date : propsure_id ? new Date() : null,
+      }
+      axios.patch(url, body).then ((response)=> {
+        if(response.data) {
+          this.hideGeoTaggingModal();
+          this.fetchProperties();
+          this.getCallHistory();
+        }
+        else{
+          
+        }
+       
+      }).catch(error => {
+          console.log(error)
+      })
+    }
+    else {
+      alert('Latitude and Longitude values are required!')
+    }
+   
+   
+  }
+
+  goToMapsForGeotagging = () => {
+    // When user opts for geo tagging by maps
+    const { navigation } = this.props;
+    const { longitude, latitude, propsure_id } = this.state;
+    this.setState({ isGeoTaggingModalVisible: false }, () => {
+      navigation.navigate('MapContainer', {
+        mapValues: {
+          lat: latitude,
+          lng: longitude,
+          propsure_id: propsure_id,
+        },
+        screenName: 'Viewing',
+      })
+    })
+
+  }
+
+  handleMarkProperty = (value) => {
+    // check box for manual marking from maps or from current location
+    this.setState({
+      locate_manually: value,
+      propsure_id: null,
+      latitude: null,
+      longitude: null
+    });
+  }
+
+  handleForm = (value, name) => {
+    formData[name] = value
+    this.setState({ formData })
+    if (formData.type !== '') {
+      this.setFeatures(formData.type);
+      this.selectSubtype(formData.type)
+    }
+    if (formData.size === '') {
+      formData.size = 0;
+      this.setState({ formData })
+    }
+  }
+
+  handleLatLngChange = (value, name) => {
+    // lat lng value change, text input
+    if (name === 'lat') {
+      this.setState({ latitude: value })
+    }
+    else if(name === 'lng') {
+      this.setState({ longitude: value })
+    }
+  }
+
+  _getLocationAsync = async () => {
+    // get current lat/lng location of user when opting for auto mode
+    const { status } = await Location.requestPermissionsAsync()
+    if (status !== 'granted') {
+      alert('Permission to access location was denied')
+    }
+    const location = await Location.getCurrentPositionAsync();
+    if (location && location.coords && location.coords.latitude && location.coords.longitude) {
+      this.handleLatLngChange(location.coords.latitude, 'lat');
+      this.handleLatLngChange(location.coords.longitude, 'lng');
+    } else {
+      alert('Error while getting location!')
+    }
+  }
+
   redirectProperty = (property) => {
     if (property.origin === 'arms' || property.origin === 'arms_lead') {
       if (this.ownProperty(property))
@@ -679,6 +831,12 @@ class LeadViewing extends React.Component {
       userFeedback,
       selectedViewingData,
       viewCheckListModal,
+      isGeoTaggingModalVisible,
+      locate_manually,
+      latitude,
+      longitude,
+      propsure_id,
+
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -692,6 +850,20 @@ class LeadViewing extends React.Component {
             color={'#0277FD'}
           />
         </View>
+        <GeoTaggingModal isGeoTaggingModalVisible={isGeoTaggingModalVisible}
+          hideGeoTaggingModal={this.hideGeoTaggingModal}
+          handleMarkProperty={this.handleMarkProperty}
+          locate_manually={locate_manually}
+          latitude={latitude}
+          longitude={longitude}
+          propsure_id={propsure_id}
+          handleLatLngChange={this.handleLatLngChange}
+          getCurrentLocation={this._getLocationAsync}
+          propertyGeoTaggingDone={this.propertyGeoTaggingDone}
+          goToMapsForGeotagging={this.goToMapsForGeotagging}
+          navigation={navigation}
+
+        />
         <HistoryModal
           getCallHistory={this.getCallHistory}
           navigation={navigation}
@@ -759,42 +931,44 @@ class LeadViewing extends React.Component {
                         menuShow={menuShow}
                         toggleMenu={this.toggleMenu}
                         screen={'viewing'}
+                        propertyGeoTagging={this.propertyGeoTagging}
                       />
                     ) : (
-                      <AgentTile
-                        bookAnotherViewing={this.bookAnotherViewing}
-                        deleteProperty={this.deleteProperty}
-                        cancelViewing={this.cancelViewing}
-                        toggleCheckListModal={(toggleState, data) =>
-                          this.toggleCheckListModal(toggleState, data)
-                        }
-                        isMenuVisible={showMenuItem && isMenuVisible}
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        viewingMenu={true}
-                        goToPropertyComments={this.goToPropertyComments}
-                        menuShow={menuShow}
-                        toggleMenu={this.toggleMenu}
-                        screen={'viewing'}
-                      />
-                    )}
+                        <AgentTile
+                          bookAnotherViewing={this.bookAnotherViewing}
+                          deleteProperty={this.deleteProperty}
+                          cancelViewing={this.cancelViewing}
+                          toggleCheckListModal={(toggleState, data) =>
+                            this.toggleCheckListModal(toggleState, data)
+                          }
+                          isMenuVisible={showMenuItem && isMenuVisible}
+                          data={_.clone(item.item)}
+                          user={user}
+                          displayChecks={this.displayChecks}
+                          showCheckBoxes={false}
+                          addProperty={this.addProperty}
+                          viewingMenu={true}
+                          goToPropertyComments={this.goToPropertyComments}
+                          menuShow={menuShow}
+                          toggleMenu={this.toggleMenu}
+                          screen={'viewing'}
+                          propertyGeoTagging={this.propertyGeoTagging}
+                        />
+                      )}
                     <View>{this.checkStatus(item.item)}</View>
                   </View>
                 )}
                 keyExtractor={(item, index) => item.id.toString()}
               />
             ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
+                <>
+                  <Image
+                    source={require('../../../assets/img/no-result-found.png')}
+                    resizeMode={'center'}
+                    style={{ alignSelf: 'center', width: 300, height: 300 }}
+                  />
+                </>
+              )}
           </View>
         </View>
 
@@ -827,8 +1001,8 @@ class LeadViewing extends React.Component {
         />
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

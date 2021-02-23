@@ -132,7 +132,7 @@ const CMPaymentModal = ({
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent
                 onValueChange={handleCommissionChange}
-                data={StaticData.fullPaymentType}
+                data={StaticData.investFullPaymentType}
                 name={'type'}
                 placeholder="Type"
                 selectedItem={CMPayment.type}

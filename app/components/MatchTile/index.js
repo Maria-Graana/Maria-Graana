@@ -321,17 +321,17 @@ class MatchTile extends React.Component {
                       <View>
                         {ownDiary && ownDiary.status === 'pending' ? (
                           <View>
-                             <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="Geo Tagging"
-                            />
                             <Menu.Item
                               onPress={() => {
                                 this.props.goToPropertyComments(data)
                               }}
                               title="Comments"
+                            />
+                              <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Geo Tagging"
                             />
                             <Menu.Item
                               onPress={() => {
@@ -348,17 +348,17 @@ class MatchTile extends React.Component {
                           </View>
                         ) : (
                           <View>
-                              <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="Geo Tagging"
-                            />
                             <Menu.Item
                               onPress={() => {
                                 this.props.goToPropertyComments(data)
                               }}
                               title="Comments"
+                            />
+                              <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Geo Tagging"
                             />
                             <Menu.Item
                               onPress={() => {
@@ -377,6 +377,12 @@ class MatchTile extends React.Component {
                           }}
                           title="Book Another Viewing"
                         />
+                         <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Geo Tagging"
+                            />
                         <Menu.Item
                           onPress={() => {
                             this.props.goToPropertyComments(data)

@@ -748,9 +748,92 @@ const helper = {
       }
     }
   },
-  isANumber(str){
-    return !/\D/.test(str);
-  }
+  isANumber(str) {
+    return !/\D/.test(str)
+  },
+  selectBuyerTokenMenu(payment) {
+    if (payment) {
+      const { status } = payment
+      switch (status) {
+        case 'at_buyer_agent':
+          return StaticData.buyerTokenStatuses
+        case 'at_buyer_agent_pending_verification':
+          return StaticData.buyerTokenReceived
+        case 'at_property_agent_pending_verification':
+          return StaticData.sellerTokenReceived
+        case 'at_property_agent':
+          return StaticData.sellerTokenStatuses
+        case 'given_to_property_owner':
+          return StaticData.sellerTakeBackToken
+        default:
+          return null
+      }
+    }
+  },
+  selectSingleBuyerTokenMenu(payment) {
+    if (payment) {
+      const { status } = payment
+      switch (status) {
+        case 'at_buyer_agent':
+          return StaticData.singleBuyerTokenStatuses
+        case 'given_to_property_owner':
+          return StaticData.singlePropertyOwner
+        default:
+          return null
+      }
+    }
+  },
+  showSingleBuyerTokenMenu(payment) {
+    if (payment) {
+      const { status } = payment
+      switch (status) {
+        case 'at_buyer_agent':
+          return true
+        case 'given_to_property_owner':
+          return true
+        default:
+          return false
+      }
+    }
+  },
+  showSellerTokenMenu(payment) {
+    if (payment) {
+      const { status } = payment
+      switch (status) {
+        case 'at_buyer_agent':
+          return false
+        case 'at_buyer_agent_pending_verification':
+          return false
+        case 'at_property_agent_pending_verification':
+          return true
+        case 'at_property_agent':
+          return true
+        case 'given_to_property_owner':
+          return true
+        default:
+          return false
+      }
+    }
+  },
+  showBuyerTokenMenu(payment) {
+    if (payment) {
+      const { status } = payment
+      switch (status) {
+        case 'at_buyer_agent':
+          return true
+        case 'at_buyer_agent_pending_verification':
+          return true
+        case 'at_property_agent_pending_verification':
+          return false
+        case 'at_property_agent':
+          return false
+        case 'given_to_property_owner':
+          return false
+        default:
+          return false
+      }
+    }
+  },
 }
 
 module.exports = helper

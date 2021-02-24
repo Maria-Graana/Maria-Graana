@@ -13,6 +13,8 @@ import CommissionTile from '../../components/CommissionTile'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import Ability from '../../hoc/Ability'
+import TokenTile from '../../components/TokenTile'
+import helper from '../../helper'
 
 const RentPaymentView = (props) => {
   const {
@@ -35,6 +37,9 @@ const RentPaymentView = (props) => {
     user,
     onPaymentLongPress,
     requestLegalServices,
+    toggleTokenMenu,
+    tokenMenu,
+    confirmTokenAction,
   } = props
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
@@ -69,21 +74,29 @@ const RentPaymentView = (props) => {
     lead.commissions,
     (commission) => commission.addedBy === 'seller' && commission.paymentCategory === 'commission'
   )
-
+  const tokenPayment = _.find(
+    lead.commissions,
+    (commission) => commission.addedBy === 'buyer' && commission.paymentCategory === 'token'
+  )
+  let showMenu = helper.showSellerTokenMenu(tokenPayment)
   return (
     <View>
-         <TouchableOpacity
-            disabled={lead.legalMailSent}
-            style={[
-              styles.legalServicesButton,
-              { marginTop: 10, 
-                backgroundColor: lead.legalMailSent ? '#ddd' : '#fff', 
-                borderColor : lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor  }
-            ]}
-            onPress={() => requestLegalServices()}
-          >
-            <Text style={[styles.addPaymentBtnText]}>{lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}</Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+        disabled={lead.legalMailSent}
+        style={[
+          styles.legalServicesButton,
+          {
+            marginTop: 10,
+            backgroundColor: lead.legalMailSent ? '#ddd' : '#fff',
+            borderColor: lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor,
+          },
+        ]}
+        onPress={() => requestLegalServices()}
+      >
+        <Text style={[styles.addPaymentBtnText]}>
+          {lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}
+        </Text>
+      </TouchableOpacity>
       <InputField
         label={'MONTHLY RENT'}
         placeholder={'Enter Monthly Rent'}
@@ -141,8 +154,20 @@ const RentPaymentView = (props) => {
           />
         </View>
       </View>
-
-      <InputField
+      {tokenPayment ? (
+        <TokenTile
+          data={tokenPayment}
+          editTile={editTile}
+          onPaymentLongPress={() => onPaymentLongPress(tokenPayment)}
+          commissionEdit={!buyerCommission}
+          title={tokenPayment ? 'Token' : ''}
+          toggleTokenMenu={toggleTokenMenu}
+          tokenMenu={tokenMenu}
+          showMenu={showMenu}
+          confirmTokenAction={confirmTokenAction}
+        />
+      ) : null}
+      {/* <InputField
         label={'TOKEN'}
         placeholder={'Enter Token Amount'}
         name={'token'}
@@ -158,7 +183,7 @@ const RentPaymentView = (props) => {
         editable={false}
         showDate={true}
         dateStatus={{ status: tokenDateStatus, name: 'token' }}
-      />
+      /> */}
       {lead.commissions ? (
         buyer ? (
           <CommissionTile

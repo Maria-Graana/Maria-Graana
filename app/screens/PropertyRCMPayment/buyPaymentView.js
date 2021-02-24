@@ -9,6 +9,8 @@ import CommissionTile from '../../components/CommissionTile'
 import styles from './styles'
 import _ from 'underscore'
 import Ability from '../../hoc/Ability'
+import TokenTile from '../../components/TokenTile'
+import helper from '../../helper'
 
 class BuyPaymentView extends React.Component {
   constructor(props) {
@@ -35,6 +37,9 @@ class BuyPaymentView extends React.Component {
       currentProperty,
       onPaymentLongPress,
       requestLegalServices,
+      toggleTokenMenu,
+      tokenMenu,
+      confirmTokenAction,
     } = this.props
     let property = currentProperty[0]
     const isLeadClosed =
@@ -69,21 +74,29 @@ class BuyPaymentView extends React.Component {
       lead.commissions,
       (commission) => commission.addedBy === 'seller' && commission.paymentCategory === 'commission'
     )
-
+    const tokenPayment = _.find(
+      lead.commissions,
+      (commission) => commission.addedBy === 'buyer' && commission.paymentCategory === 'token'
+    )
+    let showMenu = helper.showSellerTokenMenu(tokenPayment)
     return (
       <View>
         <TouchableOpacity
-            disabled={lead.legalMailSent}
-            style={[
-              styles.legalServicesButton,
-              { marginTop: 10, 
-                backgroundColor: lead.legalMailSent ? '#ddd' : '#fff', 
-                borderColor : lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor  }
-            ]}
-            onPress={() => requestLegalServices()}
-          >
-            <Text style={[styles.addPaymentBtnText]}>{lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}</Text>
-          </TouchableOpacity>
+          disabled={lead.legalMailSent}
+          style={[
+            styles.legalServicesButton,
+            {
+              marginTop: 10,
+              backgroundColor: lead.legalMailSent ? '#ddd' : '#fff',
+              borderColor: lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor,
+            },
+          ]}
+          onPress={() => requestLegalServices()}
+        >
+          <Text style={[styles.addPaymentBtnText]}>
+            {lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}
+          </Text>
+        </TouchableOpacity>
         <InputField
           label={'AGREED AMOUNT'}
           placeholder={'Enter Agreed Amount'}
@@ -99,8 +112,20 @@ class BuyPaymentView extends React.Component {
           editable={false}
           showDate={false}
         />
-
-        <InputField
+        {tokenPayment ? (
+          <TokenTile
+            data={tokenPayment}
+            editTile={editTile}
+            onPaymentLongPress={() => {}}
+            commissionEdit={!buyerCommission}
+            title={tokenPayment ? 'Token' : ''}
+            toggleTokenMenu={toggleTokenMenu}
+            tokenMenu={tokenMenu}
+            showMenu={showMenu}
+            confirmTokenAction={confirmTokenAction}
+          />
+        ) : null}
+        {/* <InputField
           label={'TOKEN'}
           placeholder={'Enter Token Amount'}
           name={'token'}
@@ -116,7 +141,7 @@ class BuyPaymentView extends React.Component {
           editable={false}
           showDate={true}
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
-        />
+        /> */}
         {lead.commissions ? (
           buyer ? (
             <CommissionTile

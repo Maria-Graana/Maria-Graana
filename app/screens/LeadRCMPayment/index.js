@@ -43,6 +43,7 @@ import styles from './styles'
 import DeleteModal from '../../components/DeleteModal'
 
 var BUTTONS = ['Delete', 'Cancel']
+var TOKENBUTTONS = ['Confirm', 'Cancel']
 var CANCEL_INDEX = 1
 
 class LeadRCMPayment extends React.Component {
@@ -106,6 +107,7 @@ class LeadRCMPayment extends React.Component {
       buyerNotZero: false,
       sellerNotZero: false,
       rentNotZero: false,
+      tokenMenu: false,
     }
   }
 
@@ -477,7 +479,7 @@ class LeadRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -747,7 +749,7 @@ class LeadRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
-    this.setState({ formData, rentNotZero: false }, () => { })
+    this.setState({ formData, rentNotZero: false }, () => {})
     if (formData.monthlyRent !== '' && name === 'monthlyRent') {
       this.setState({ showMonthlyRentArrow: true })
     }
@@ -866,7 +868,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -879,7 +881,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -953,13 +955,75 @@ class LeadRCMPayment extends React.Component {
     }
   }
 
-  onAddCommissionPayment = (addedBy) => {
+  onAddCommissionPayment = (addedBy, paymentCategory) => {
     const { dispatch, rcmPayment } = this.props
-    dispatch(setRCMPayment({ ...rcmPayment, visible: true, addedBy }))
+    dispatch(setRCMPayment({ ...rcmPayment, visible: true, addedBy, paymentCategory }))
   }
 
   onModalCloseClick = () => {
     this.clearReduxAndStateValues()
+  }
+
+  confirmTokenAction = (payment, status) => {
+    const { dispatch } = this.props
+    console.log('payment: ', payment)
+    // dispatch(setRCMPayment({ ...payment }))
+    ActionSheet.show(
+      {
+        options: TOKENBUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Select an Option',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          //Confirm
+          this.submitMenu(payment, status)
+        }
+      }
+    )
+  }
+
+  submitMenu = (payment, status) => {
+    const { allProperties } = this.state
+    let property = allProperties[0]
+    let armsUserId = property && property.armsuser && property.armsuser.id && property.armsuser.id
+    let body = { ...payment }
+    let paymentID = body.id
+    delete body.visible
+    delete body.remarks
+    delete body.id
+    body.status = status
+    body.status_updated_by = 'buyer'
+    if (status === 'at_property_agent_pending_verification') body.sellerAgentId = armsUserId
+    let baseUrl = `/api/leads/tokenPayment`
+    console.log('UPDATE body: ', body)
+    console.log('baseURL: ', `${baseUrl}?id=${paymentID}`)
+    axios
+      .patch(`${baseUrl}?id=${paymentID}`, body)
+      .then((response) => {
+        console.log('response: ', response.data)
+        // upload only the new attachments that do not have id with them in object.
+        const filterAttachmentsWithoutId = payment.paymentAttachments
+          ? _.filter(payment.paymentAttachments, (item) => {
+              return !_.has(item, 'id')
+            })
+          : []
+        if (filterAttachmentsWithoutId.length > 0) {
+          filterAttachmentsWithoutId.map((item, index) => {
+            // payment attachments
+            this.uploadAttachment(item, paymentID)
+          })
+        } else {
+          this.fetchLead()
+          this.clearReduxAndStateValues()
+          helper.successToast('Token Payment Updated')
+        }
+      })
+      .catch((error) => {
+        console.log('error: ', error)
+        helper.errorToast('Error Updating Token Payment', error)
+        this.clearReduxAndStateValues()
+      })
   }
 
   handleCommissionChange = (value, name) => {
@@ -993,6 +1057,7 @@ class LeadRCMPayment extends React.Component {
     fd.append('title', paymentAttachment.title)
     fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
     // ====================== API call for Attachments base on Payment ID
+    console.log(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
     axios
       .post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
       .then((res) => {
@@ -1009,6 +1074,7 @@ class LeadRCMPayment extends React.Component {
   submitCommissionPayment = () => {
     const { rcmPayment, user } = this.props
     const { lead, editable } = this.state
+    let baseUrl = `/api/leads/project/payments`
     if (
       rcmPayment.installmentAmount != null &&
       rcmPayment.installmentAmount != '' &&
@@ -1027,12 +1093,18 @@ class LeadRCMPayment extends React.Component {
           ...rcmPayment,
           rcmLeadId: lead.id,
           armsUserId: user.id,
-          paymentCategory: 'commission',
+          // paymentCategory: 'commission',
           addedBy: rcmPayment.addedBy,
         }
         delete body.visible
+        if (body.paymentCategory === 'token') {
+          baseUrl = `/api/leads/tokenPayment`
+          body.status = 'at_buyer_agent'
+        }
+        console.log('body: ', body)
+        console.log('baseUrl: ', baseUrl)
         axios
-          .post(`/api/leads/project/payments`, body)
+          .post(baseUrl, body)
           .then((response) => {
             if (response.data) {
               // check if some attachment exists so upload that as well to server with payment id.
@@ -1055,21 +1127,30 @@ class LeadRCMPayment extends React.Component {
       } else {
         // commission update mode
         let body = { ...rcmPayment }
+        let paymentID = body.id
         delete body.visible
         delete body.remarks
+        delete body.id
+        if (body.paymentCategory === 'token') baseUrl = `/api/leads/tokenPayment`
+        console.log('UPDATE body: ', body)
+        console.log('baseURL: ', `${baseUrl}?id=${paymentID}`)
         axios
-          .patch(`/api/leads/project/payment?id=${body.id}`, body)
+          .patch(`${baseUrl}?id=${paymentID}`, body)
           .then((response) => {
+            console.log('response: ', response.data)
             // upload only the new attachments that do not have id with them in object.
+            console.log('rcmPayment.paymentAttachments: ', rcmPayment.paymentAttachments)
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                return !_.has(item, 'id')
-              })
+                  return !_.has(item, 'id')
+                })
               : []
+            console.log('filterAttachmentsWithoutId: ', filterAttachmentsWithoutId)
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
+                console.log('item: ')
                 // payment attachments
-                this.uploadAttachment(item, body.id)
+                this.uploadAttachment(item, paymentID)
               })
             } else {
               this.fetchLead()
@@ -1091,49 +1172,63 @@ class LeadRCMPayment extends React.Component {
   }
 
   showLegalRequestConfirmation = () => {
-    Alert.alert('Legal Services Request', 'Are you sure you want to continue?', [
-      { text: 'No', style: 'cancel' },
-      {
-        text: 'Yes', onPress: () => this.requestLegalServices()
-      },
-    ],
-      { cancelable: false })
+    Alert.alert(
+      'Legal Services Request',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: () => this.requestLegalServices(),
+        },
+      ],
+      { cancelable: false }
+    )
   }
-
 
   requestLegalServices = () => {
     const { lead } = this.props
     const { allProperties } = this.state
     const selectedProperty = allProperties[0]
-      axios.post(`/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null}`).then((response) => {
+    axios
+      .post(
+        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${
+          selectedProperty ? selectedProperty.id : null
+        }`
+      )
+      .then((response) => {
         if (response.data) {
-          this.fetchLead();
-          helper.successToast(response.data);
+          this.fetchLead()
+          helper.successToast(response.data)
         }
-      }).catch((error) => {
-        helper.errorToast('Something went wrong while sending email');
-        console.log('something went wrong in /api/leads/sendLegalEmail', error);
       })
-    }
-  
+      .catch((error) => {
+        helper.errorToast('Something went wrong while sending email')
+        console.log('something went wrong in /api/leads/sendLegalEmail', error)
+      })
+  }
+
   fetchLead = () => {
     const { dispatch, lead } = this.props
     const { rcmProgressBar } = StaticData
     this.setState({ loading: true }, () => {
-      axios.get(`/api/leads/byId?id=${lead.id}`).then((response) => {
-        if (response.data) {
-          dispatch(setlead(response.data))
-          this.setState({
-            progressValue: rcmProgressBar[response.data.status],
-            loading: false,
-            lead: response.data,
-          })
-        } else {
-          //console.log('something went wrong in api');
-        }
-      }).finally(()=>{
-        this.setState({loading:false})
-      })
+      axios
+        .get(`/api/leads/byId?id=${lead.id}`)
+        .then((response) => {
+          if (response.data) {
+            dispatch(setlead(response.data))
+            this.setState({
+              progressValue: rcmProgressBar[response.data.status],
+              loading: false,
+              lead: response.data,
+            })
+          } else {
+            //console.log('something went wrong in api');
+          }
+        })
+        .finally(() => {
+          this.setState({ loading: false })
+        })
     })
   }
 
@@ -1242,6 +1337,7 @@ class LeadRCMPayment extends React.Component {
 
   onPaymentLongPress = (data) => {
     const { dispatch } = this.props
+    console.log('data: ', data)
     dispatch(setRCMPayment({ ...data }))
     ActionSheet.show(
       {
@@ -1256,6 +1352,13 @@ class LeadRCMPayment extends React.Component {
         }
       }
     )
+  }
+
+  toggleTokenMenu = () => {
+    const { tokenMenu } = this.state
+    this.setState({
+      tokenMenu: !tokenMenu,
+    })
   }
 
   render() {
@@ -1301,6 +1404,7 @@ class LeadRCMPayment extends React.Component {
       buyerNotZero,
       rentNotZero,
       activityBool,
+      tokenMenu,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1385,20 +1489,20 @@ class LeadRCMPayment extends React.Component {
                       screen={'payment'}
                     />
                   ) : (
-                      <AgentTile
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        isMenuVisible={showMenuItem}
-                        viewingMenu={false}
-                        goToPropertyComments={this.goToPropertyComments}
-                        toggleMenu={this.toggleMenu}
-                        menuShow={menuShow}
-                        screen={'payment'}
-                      />
-                    )}
+                    <AgentTile
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      isMenuVisible={showMenuItem}
+                      viewingMenu={false}
+                      goToPropertyComments={this.goToPropertyComments}
+                      toggleMenu={this.toggleMenu}
+                      menuShow={menuShow}
+                      screen={'payment'}
+                    />
+                  )}
                   <View>{this.renderSelectPaymentView(item.item)}</View>
                 </View>
               )}
@@ -1430,7 +1534,7 @@ class LeadRCMPayment extends React.Component {
                         tokenDateStatus={tokenDateStatus}
                         tokenPriceFromat={tokenPriceFromat}
                         agreeAmountFromat={agreeAmountFromat}
-                        onAddCommissionPayment={(addedBy) => this.onAddCommissionPayment(addedBy)}
+                        onAddCommissionPayment={this.onAddCommissionPayment}
                         editTile={this.setCommissionEditData}
                         user={user}
                         commissionNotApplicableBuyer={commissionNotApplicableBuyer}
@@ -1442,64 +1546,70 @@ class LeadRCMPayment extends React.Component {
                         agreedNotZero={agreedNotZero}
                         activityBool={activityBool}
                         requestLegalServices={this.showLegalRequestConfirmation}
+                        toggleTokenMenu={this.toggleTokenMenu}
+                        tokenMenu={tokenMenu}
+                        confirmTokenAction={this.confirmTokenAction}
                       />
                     ) : (
-                        <RentPaymentView
-                          deleteDoc={this.deleteDoc}
-                          uploadDocument={this.uploadDocument}
-                          uploadDocToServer={this.uploadDocToServer}
-                          agreementDoc={agreementDoc}
-                          legalAgreement={legalAgreement}
-                          legalCheckList={legalCheckList}
-                          checkListDoc={checkListDoc}
-                          downloadLegalDocs={this.downloadLegalDocs}
-                          user={user}
-                          currentProperty={allProperties}
-                          lead={lead}
-                          pickerData={pickerData}
-                          handleForm={this.handleForm}
-                          formData={formData}
-                          showMonthlyRentArrow={showMonthlyRentArrow}
-                          handleMonthlyRentPress={this.handleMonthlyRentPress}
-                          token={token}
-                          handleTokenAmountChange={this.handleTokenAmountChange}
-                          showTokenAmountArrow={showTokenAmountArrow}
-                          handleTokenAmountPress={this.handleTokenAmountPress}
-                          showAndHideStyling={this.showAndHideStyling}
-                          showStylingState={showStyling}
-                          tokenDateStatus={tokenDateStatus}
-                          tokenPriceFromat={tokenPriceFromat}
-                          agreeAmountFromat={agreeAmountFromat}
-                          monthlyFormatStatus={monthlyFormatStatus}
-                          onAddCommissionPayment={(addedBy) => this.onAddCommissionPayment(addedBy)}
-                          editTile={this.setCommissionEditData}
-                          user={user}
-                          commissionNotApplicableBuyer={commissionNotApplicableBuyer}
-                          commissionNotApplicableSeller={commissionNotApplicableSeller}
-                          setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
-                          setSellerCommissionApplicable={this.setSellerCommissionApplicable}
-                          onPaymentLongPress={this.onPaymentLongPress}
-                          tokenNotZero={tokenNotZero}
-                          agreedNotZero={agreedNotZero}
-                          rentNotZero={rentNotZero}
-                          activityBool={activityBool}
-                          requestLegalServices={this.showLegalRequestConfirmation}
-                        />
-                      )
+                      <RentPaymentView
+                        deleteDoc={this.deleteDoc}
+                        uploadDocument={this.uploadDocument}
+                        uploadDocToServer={this.uploadDocToServer}
+                        agreementDoc={agreementDoc}
+                        legalAgreement={legalAgreement}
+                        legalCheckList={legalCheckList}
+                        checkListDoc={checkListDoc}
+                        downloadLegalDocs={this.downloadLegalDocs}
+                        user={user}
+                        currentProperty={allProperties}
+                        lead={lead}
+                        pickerData={pickerData}
+                        handleForm={this.handleForm}
+                        formData={formData}
+                        showMonthlyRentArrow={showMonthlyRentArrow}
+                        handleMonthlyRentPress={this.handleMonthlyRentPress}
+                        token={token}
+                        handleTokenAmountChange={this.handleTokenAmountChange}
+                        showTokenAmountArrow={showTokenAmountArrow}
+                        handleTokenAmountPress={this.handleTokenAmountPress}
+                        showAndHideStyling={this.showAndHideStyling}
+                        showStylingState={showStyling}
+                        tokenDateStatus={tokenDateStatus}
+                        tokenPriceFromat={tokenPriceFromat}
+                        agreeAmountFromat={agreeAmountFromat}
+                        monthlyFormatStatus={monthlyFormatStatus}
+                        onAddCommissionPayment={this.onAddCommissionPayment}
+                        editTile={this.setCommissionEditData}
+                        user={user}
+                        commissionNotApplicableBuyer={commissionNotApplicableBuyer}
+                        commissionNotApplicableSeller={commissionNotApplicableSeller}
+                        setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
+                        setSellerCommissionApplicable={this.setSellerCommissionApplicable}
+                        onPaymentLongPress={this.onPaymentLongPress}
+                        tokenNotZero={tokenNotZero}
+                        agreedNotZero={agreedNotZero}
+                        rentNotZero={rentNotZero}
+                        activityBool={activityBool}
+                        requestLegalServices={this.showLegalRequestConfirmation}
+                        toggleTokenMenu={this.toggleTokenMenu}
+                        tokenMenu={tokenMenu}
+                        confirmTokenAction={this.confirmTokenAction}
+                      />
+                    )
                   ) : null}
                 </View>
               }
               keyExtractor={(item, index) => item.id.toString()}
             />
           ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
+            <>
+              <Image
+                source={require('../../../assets/img/no-result-found.png')}
+                resizeMode={'center'}
+                style={{ alignSelf: 'center', width: 300, height: 300 }}
+              />
+            </>
+          )}
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1519,8 +1629,8 @@ class LeadRCMPayment extends React.Component {
         </View>
       </KeyboardAvoidingView>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

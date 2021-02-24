@@ -82,7 +82,6 @@ class GraanaInventories extends React.Component {
 			else if(route.params && this.props.route.params.mapValues &&  this.props.route.params.fromScreen){
 				const { mapValues, fromScreen } = this.props.route.params;
 				if (fromScreen === 'mapContainer' && mapValues) {
-					console.log('helloooo');
 					this.setState({isGeoTaggingModalVisible: true , 
 					  latitude:mapValues.lat,
 					  longitude: mapValues.lng, 
@@ -91,7 +90,6 @@ class GraanaInventories extends React.Component {
 				}
 			}
 			else {
-				console.log('helloooo get listing');
 				this.getPropertyGraanaListing()
 			}
 		})

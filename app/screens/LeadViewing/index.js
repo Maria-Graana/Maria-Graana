@@ -678,7 +678,7 @@ class LeadViewing extends React.Component {
 
   propertyGeoTaggingDone = () => {
  // Done button pressed from inside of the geotagging modal
-    const {lead} = this.props;
+    const {lead, navigation} = this.props;
     const {latitude, longitude, propsure_id, locate_manually, selectedPropertyId} = this.state;
     if(latitude && longitude) {
       let url = `/api/inventory/updateshortListedPRoperties?id=${selectedPropertyId}&leadId=${lead.id}`
@@ -694,11 +694,8 @@ class LeadViewing extends React.Component {
           this.hideGeoTaggingModal();
           this.fetchProperties();
           this.getCallHistory();
+          navigation.setParams({mapValues: null, fromScreen: null})
         }
-        else{
-          
-        }
-       
       }).catch(error => {
           console.log(error)
       })

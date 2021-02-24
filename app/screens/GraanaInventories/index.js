@@ -3,6 +3,7 @@
 import * as RootNavigation from '../../navigation/RootNavigation'
 
 import { Alert, FlatList, Image, Text, View } from 'react-native'
+import * as Location from 'expo-location';
 import {
 	heightPercentageToDP as hp,
 	widthPercentageToDP as wp,
@@ -27,6 +28,7 @@ import { isEmpty } from 'underscore'
 import styles from './style';
 import PickerComponent from '../../components/Picker'
 import Search from '../../components/Search'
+import GeoTaggingModal from '../../components/GeotaggingModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -49,6 +51,13 @@ class GraanaInventories extends React.Component {
 			statusFilter: 'published',
 			searchBy: 'id',
 			selectedArea: null,
+			showGraanaMenu: false,
+			isGeoTaggingModalVisible: false,
+			locate_manually: false,
+			latitude: null,
+			longitude: null,
+			propsure_id: null,
+			selectedProperty: null,
 			formData: {
 				amount: '',
 			}
@@ -68,6 +77,16 @@ class GraanaInventories extends React.Component {
 					this.setState({ selectedArea }, () => {
 						this.getPropertyGraanaListing()
 					})
+				}
+			}
+			else if(route.params && this.props.route.params.mapValues &&  this.props.route.params.fromScreen){
+				const { mapValues, fromScreen } = this.props.route.params;
+				if (fromScreen === 'mapContainer' && mapValues) {
+					this.setState({isGeoTaggingModalVisible: true , 
+					  latitude:mapValues.lat,
+					  longitude: mapValues.lng, 
+					  propsure_id: mapValues.propsure_id,
+					 })
 				}
 			}
 			else {
@@ -99,8 +118,8 @@ class GraanaInventories extends React.Component {
 			}
 			else {
 				alert('Please Enter valid Property ID!')
-				this.setState({loading: false});
-		      	return;
+				this.setState({ loading: false });
+				return;
 
 			}
 		}
@@ -279,6 +298,134 @@ class GraanaInventories extends React.Component {
 		navigation.navigate('AssignedAreas', { screenName: 'Graana.com', selectedArea });
 	}
 
+	convertLongitudeLattitude = (val) => {
+		if (val === '') {
+			return null
+		}
+		else if (typeof (val) === 'string' && val != '') {
+			return parseFloat(val);
+		}
+		else {
+			return val;
+		}
+	
+	}
+	
+	
+	  propertyGeoTagging = (data) => {
+		 // When user clicks geo tagging option from menu, this function is called
+         this.hideGraanaMenu();
+		this.setState({
+		  isGeoTaggingModalVisible: true,
+		  locate_manually: data.locate_manually,
+		  longitude: data.lon,
+		  latitude: data.lat,
+		  propsure_id: data.propsure_id,
+		  selectedProperty: data,
+		})
+	  }
+	
+	  hideGeoTaggingModal = () => {
+		// hide the geotagging modal, when cancel button is pressed
+		this.setState({
+		  isGeoTaggingModalVisible: false,
+		  locate_manually: false,
+		  longitude: null,
+		  latitude: null,
+		  propsure_id: null,
+		})
+	  }
+	
+	  propertyGeoTaggingDone = () => {
+	 // Done button pressed from inside of the geotagging modal
+	    const {navigation} = this.props;
+		const {latitude, longitude, propsure_id, locate_manually, selectedProperty} = this.state;
+		if(latitude && longitude) {
+		  let url = `api/inventory/update/fieldProperties?id=${selectedProperty.id}&isGraana=${true}`
+		  let body = {
+			lat : this.convertLongitudeLattitude(latitude),
+			lon : this.convertLongitudeLattitude(longitude),
+			locate_manually,
+			propsure_id,
+			geotagged_date : propsure_id ? new Date() : null,
+		  }
+		  axios.patch(url, body).then ((response)=> {
+			if(response.status === 200) {
+			  this.hideGeoTaggingModal();
+			  this.getPropertyGraanaListing();
+			  navigation.setParams({mapValues: null, fromScreen: null})
+			}
+		  }).catch(error => {
+			  console.log(error)
+		  })
+		}
+		else {
+		  alert('Latitude and Longitude values are required!')
+		}
+	   
+	  }
+	
+	  goToMapsForGeotagging = () => {
+		// When user opts for geo tagging by maps
+		const { navigation } = this.props;
+		const { longitude, latitude, propsure_id } = this.state;
+		this.setState({ isGeoTaggingModalVisible: false }, () => {
+		  navigation.navigate('MapContainer', {
+			mapValues: {
+			  lat: latitude,
+			  lng: longitude,
+			  propsure_id: propsure_id,
+			},
+			screenName: 'Graana.com',
+		  })
+		})
+	
+	  }
+	
+	  handleMarkProperty = (value) => {
+		// check box for manual marking from maps or from current location
+		this.setState({
+		  locate_manually: value,
+		  propsure_id: null,
+		  latitude: null,
+		  longitude: null
+		});
+	}
+
+	handleLatLngChange = (value, name) => {
+		// lat lng value change, text input
+		if (name === 'lat') {
+		  this.setState({ latitude: value })
+		}
+		else if(name === 'lng') {
+		  this.setState({ longitude: value })
+		}
+	  }
+	
+	  _getLocationAsync = async () => {
+		// get current lat/lng location of user when opting for auto mode
+		const { status } = await Location.requestPermissionsAsync()
+		if (status !== 'granted') {
+		  alert('Permission to access location was denied')
+		}
+		const location = await Location.getCurrentPositionAsync();
+		if (location && location.coords && location.coords.latitude && location.coords.longitude) {
+		  this.handleLatLngChange(location.coords.latitude, 'lat');
+		  this.handleLatLngChange(location.coords.longitude, 'lng');
+		} else {
+		  alert('Error while getting location!')
+		}
+	  }
+
+	  showGraanaMenuOptions = (data) => {
+		this.setState({ selectedProperty: data, showGraanaMenu: true })
+	  }
+	
+	  hideGraanaMenu = () => {
+		this.setState({ showGraanaMenu: false })
+	  }
+	
+
 	render() {
 		const {
 			propertiesList,
@@ -293,81 +440,100 @@ class GraanaInventories extends React.Component {
 			searchText,
 			statusFilter,
 			showSearchBar,
-			selectedArea
+			selectedArea,
+			isGeoTaggingModalVisible,
+			locate_manually,
+			latitude,
+			longitude,
+			propsure_id,
+			showGraanaMenu,
+			selectedProperty,
 		} = this.state;
 		const { user } = this.props;
 		return (
 			!loading ?
 				<View style={[styles.container, { marginBottom: 25 }]}>
-					{showSearchBar ? (
-						<View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0, flexDirection: 'row', alignItems: 'center' }]}>
-							<View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
-								<PickerComponent
-									placeholder={'Search By'}
-									data={helper.checkPP(user) ? StaticData.searchByIdOnly : StaticData.searchBy}
-									customStyle={styles.pickerStyle}
-									customIconStyle={styles.customIconStyle}
-									onValueChange={this.changeSearchBy}
-									selectedItem={searchBy}
-								/>
-							</View>
-							{
-								searchBy === 'id' ? <Search
-									containerWidth={'80%'}
-									placeholder={"Search by ID"}
-									searchText={searchText}
-									setSearchText={(value) => this.setState({ searchText: value })}
-									showShadow={false}
-									showClearButton={true}
-									returnKeyType={'search'}
-									onSubmitEditing={() => this.setState({ loading: true }, () => { this.getPropertyGraanaListing() })}
-									closeSearchBar={() => this.clearAndCloseSearch()}
-								/>
-									:
-									helper.checkPP(user) ?
-										null :
-										<View style={styles.searchTextContainerStyle} >
-											<Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
-												color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
-											}]} >
-												{isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
-											</Text>
-											<Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
-										</View>
-
-
-							}
-
-						</View>
-					) : (
-							<View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-								<View style={styles.pickerMain}>
+					<GeoTaggingModal isGeoTaggingModalVisible={isGeoTaggingModalVisible}
+						hideGeoTaggingModal={this.hideGeoTaggingModal}
+						handleMarkProperty={this.handleMarkProperty}
+						locate_manually={locate_manually}
+						latitude={latitude}
+						longitude={longitude}
+						propsure_id={propsure_id}
+						handleLatLngChange={this.handleLatLngChange}
+						getCurrentLocation={this._getLocationAsync}
+						propertyGeoTaggingDone={this.propertyGeoTaggingDone}
+						goToMapsForGeotagging={this.goToMapsForGeotagging}
+						/>
+						{showSearchBar ? (
+							<View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0, flexDirection: 'row', alignItems: 'center' }]}>
+								<View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
 									<PickerComponent
-										placeholder={'Property Status'}
-										data={helper.checkPP(user) ? StaticData.graanaStatusFiltersPP : StaticData.graanaStatusFilters}
+										placeholder={'Search By'}
+										data={helper.checkPP(user) ? StaticData.searchByIdOnly : StaticData.searchBy}
 										customStyle={styles.pickerStyle}
 										customIconStyle={styles.customIconStyle}
-										onValueChange={this.changeStatus}
-										selectedItem={statusFilter}
+										onValueChange={this.changeSearchBy}
+										selectedItem={searchBy}
 									/>
 								</View>
-								<View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
-									<Ionicons
-										onPress={() => {
-											this.setState({ showSearchBar: true }, () => {
-												this.clearStateValues()
-											})
-										}}
-										name={'ios-search'}
-										size={26}
-										color={AppStyles.colors.primaryColor}
+								{
+									searchBy === 'id' ? <Search
+										containerWidth={'80%'}
+										placeholder={"Search by ID"}
+										searchText={searchText}
+										setSearchText={(value) => this.setState({ searchText: value })}
+										showShadow={false}
+										showClearButton={true}
+										returnKeyType={'search'}
+										onSubmitEditing={() => this.setState({ loading: true }, () => { this.getPropertyGraanaListing() })}
+										closeSearchBar={() => this.clearAndCloseSearch()}
 									/>
-								</View>
+										:
+										helper.checkPP(user) ?
+											null :
+											<View style={styles.searchTextContainerStyle} >
+												<Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
+													color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
+												}]} >
+													{isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
+												</Text>
+												<Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
+											</View>
+
+
+								}
 
 							</View>
-						)}
-					{/* ***** Main Tile Wrap */}
-					{
+						) : (
+								<View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+									<View style={styles.pickerMain}>
+										<PickerComponent
+											placeholder={'Property Status'}
+											data={helper.checkPP(user) ? StaticData.graanaStatusFiltersPP : StaticData.graanaStatusFilters}
+											customStyle={styles.pickerStyle}
+											customIconStyle={styles.customIconStyle}
+											onValueChange={this.changeStatus}
+											selectedItem={statusFilter}
+										/>
+									</View>
+									<View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+										<Ionicons
+											onPress={() => {
+												this.setState({ showSearchBar: true }, () => {
+													this.clearStateValues()
+												})
+											}}
+											name={'ios-search'}
+											size={26}
+											color={AppStyles.colors.primaryColor}
+										/>
+									</View>
+
+								</View>
+							)}
+						{/* ***** Main Tile Wrap */}
+						{
 						propertiesList && propertiesList.length > 0 ?
 							< FlatList
 								contentContainerStyle={{ paddingHorizontal: wp('2%') }}
@@ -379,8 +545,13 @@ class GraanaInventories extends React.Component {
 										onPress={(data) => this.onHandlePress(data)}
 										onLongPress={(id) => this.onHandleLongPress(id)}
 										onCall={this.onHandleOnCall}
+										showGraanaMenu={showGraanaMenu}
+										showGraanaMenuOptions={(data) => this.showGraanaMenuOptions(data)}
+										hideGraanaMenu={() => this.hideGraanaMenu()}
+										propertyGeoTagging={this.propertyGeoTagging}
 										graanaVerifeyModal={this.graanaVerifeyModal}
 										whichProperties={'graanaProperties'}
+										selectedProperty={selectedProperty}
 									/>
 								)}
 								onEndReached={() => {
@@ -398,9 +569,9 @@ class GraanaInventories extends React.Component {
 							/>
 							:
 							<NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
-					}
+						}
 
-					{
+						{
 						<GraanaPropertiesModal
 							active={graanaModalActive}
 							data={singlePropertyData}
@@ -411,11 +582,11 @@ class GraanaInventories extends React.Component {
 							submitStatus={this.graanaStatusSubmit}
 							submitGraanaStatusAmount={this.submitGraanaStatusAmount}
 						/>
-					}
+						}
 
-					{
+						{
 						<OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-					}
+						}
 				</View>
 				:
 				<Loader loading={loading} />
@@ -425,7 +596,7 @@ class GraanaInventories extends React.Component {
 
 mapStateToProps = (store) => {
 	return {
-		user: store.user.user,
+						user: store.user.user,
 		contacts: store.contacts.contacts,
 	}
 }

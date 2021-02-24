@@ -601,7 +601,15 @@ class MapContainer extends Component {
     mapValues.lat = point[0];
     mapValues.lng = point[1];
     mapValues.propsure_id = item.id;
-    this.props.navigation.navigate(screenName, { mapValues, fromScreen: 'mapContainer' });
+    if(screenName === 'Graana.com'){
+      this.props.navigation.navigate('InventoryTabs', {
+        screen: screenName,
+        params: { screen: 'InventoryTabs', fromScreen: 'mapContainer', mapValues },
+      })
+    }
+    else{
+      this.props.navigation.navigate(screenName, { mapValues, fromScreen: 'mapContainer' });
+    }
   }
 
   render() {

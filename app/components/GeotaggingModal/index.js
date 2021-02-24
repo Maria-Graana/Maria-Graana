@@ -5,6 +5,7 @@ import AppStyles from '../../AppStyles';
 import TouchableButton from '../TouchableButton';
 import LocationImg from '../../../assets/img/location.png'
 import { CheckBox } from 'native-base'
+import { apps } from 'firebase';
 
 const GeoTaggingModal = ({
     isGeoTaggingModalVisible,
@@ -33,7 +34,11 @@ const GeoTaggingModal = ({
                             style={styles.checkBox}
                             onPress={() => handleMarkProperty(!locate_manually)}
                         />
-                        <Text style={{ marginHorizontal: 15 }}>Mark property manually</Text>
+                        <Text style={{ marginHorizontal: 15, 
+                            color: AppStyles.colors.textColor,
+                            fontFamily: AppStyles.fonts.semiBoldFont,
+                            fontSize: AppStyles.fontSize.medium
+                             }}>Mark property manually</Text>
                     </TouchableOpacity>
                     {/* **************************************** */}
 
@@ -97,13 +102,13 @@ const GeoTaggingModal = ({
                     <TouchableButton containerStyle={[styles.buttonStyle, { marginRight: 10 }]}
                         label={'CANCEL'}
                         loading={false}
-                        fontSize={16}
+                        fontSize={14}
                         fontFamily={AppStyles.fonts.boldFont}
                         onPress={() => hideGeoTaggingModal()} />
                     <TouchableButton containerStyle={[styles.buttonStyle]}
                         label={'DONE'}
                         loading={false}
-                        fontSize={16}
+                        fontSize={14}
                         fontFamily={AppStyles.fonts.boldFont}
                         onPress={() => propertyGeoTaggingDone() } />
                 </View>
@@ -126,7 +131,9 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 5, height: 5 },
         shadowColor: '#33333312',
         shadowOpacity: 1,
-        padding:10
+        paddingVertical:15,
+        paddingHorizontal: 10,
+        
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -144,7 +151,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         marginBottom: 0,
         justifyContent: 'center',
-        minHeight: 55,
+        minHeight: 40,
     },
     geotagButton: {
         justifyContent: 'center',
@@ -166,7 +173,7 @@ const styles = StyleSheet.create({
     },
     checkBoxRow: {
         flexDirection: 'row', 
-        alignItems:'center',
-         padding: 5,
+         alignItems:'center',
+         paddingVertical: 10,
     },
 })

@@ -111,6 +111,7 @@ class AgentTile extends React.Component {
       screen,
       bookAnotherViewing,
       toggleCheckListModal,
+      propertyGeoTagging,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let agentName = data ? this.displayName(data) : ''
@@ -255,6 +256,12 @@ class AgentTile extends React.Component {
                         <View>
                           {ownDiary && ownDiary.status === 'pending' ? (
                             <View>
+                               <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Geo Tagging"
+                            />
                               <Menu.Item
                                 onPress={() => {
                                   this.props.goToPropertyComments(data)
@@ -276,6 +283,12 @@ class AgentTile extends React.Component {
                             </View>
                           ) : (
                             <View>
+                                <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Geo Tagging"
+                            />
                               <Menu.Item
                                 onPress={() => {
                                   this.props.goToPropertyComments(data)
@@ -293,6 +306,12 @@ class AgentTile extends React.Component {
                         </View>
                       ) : (
                         <View>
+                            <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Geo Tagging"
+                            />
                           <Menu.Item
                             onPress={() => {
                               bookAnotherViewing(data)

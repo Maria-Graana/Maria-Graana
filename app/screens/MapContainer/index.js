@@ -601,7 +601,7 @@ class MapContainer extends Component {
     mapValues.lat = point[0];
     mapValues.lng = point[1];
     mapValues.propsure_id = item.id;
-    this.props.navigation.navigate(screenName, { mapValues });
+    this.props.navigation.navigate(screenName, { mapValues, fromScreen: 'mapContainer' });
   }
 
   render() {

@@ -148,6 +148,7 @@ class MatchTile extends React.Component {
       screen,
       bookAnotherViewing,
       toggleCheckListModal,
+      propertyGeoTagging,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let imagesList = this.checkImages()
@@ -320,6 +321,12 @@ class MatchTile extends React.Component {
                       <View>
                         {ownDiary && ownDiary.status === 'pending' ? (
                           <View>
+                             <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Geo Tagging"
+                            />
                             <Menu.Item
                               onPress={() => {
                                 this.props.goToPropertyComments(data)
@@ -341,6 +348,12 @@ class MatchTile extends React.Component {
                           </View>
                         ) : (
                           <View>
+                              <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Geo Tagging"
+                            />
                             <Menu.Item
                               onPress={() => {
                                 this.props.goToPropertyComments(data)

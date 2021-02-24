@@ -60,6 +60,10 @@ class InventoryTile extends React.Component {
       showMenuOptions,
       hideMenu,
       showHideRejectPropertyModal,
+      showGraanaMenu,
+      showGraanaMenuOptions,
+      hideGraanaMenu,
+      propertyGeoTagging,
     } = this.props
     const imagesList = data.armsuser ? data.armsPropertyImages : data.property_images;
     const imagesCount = data.armsuser && data.armsPropertyImages ? data.armsPropertyImages.length : data.user && data.property_images ? data.property_images.length : null;
@@ -67,7 +71,7 @@ class InventoryTile extends React.Component {
     const checkForGraanaProperties = whichProperties === 'graanaProperties'
     return (
       <TouchableOpacity
-        style={[styles.mainContainer, {backgroundColor: data.status === 'rejected' ?'#ddd' : '#fff'}]}
+        style={[styles.mainContainer, { backgroundColor: data.status === 'rejected' ? '#ddd' : '#fff' }]}
         onPress={() => this.onPress(data)}
         onLongPress={() => checkForArmsProperty === true && this.onLongPress(data.id)}
         activeOpacity={0.7}
@@ -189,23 +193,50 @@ class InventoryTile extends React.Component {
             </View>
           )}
         </View>
-        {checkForGraanaProperties === true &&
-          data.verifiedStatus &&
-          data.verifiedStatus != 'verified' && (
-            <View style={{ width: wp('9%') }}>
-              <TouchableOpacity
-                style={{ alignItems: 'center', paddingBottom: 10 }}
-                onPress={() => {
-                  graanaVerifeyModal(true, data.id)
-                }}
-              >
-                <Image
-                  source={require('../../../assets/img/threedots.png')}
-                  style={{ height: 20, resizeMode: 'contain' }}
-                ></Image>
-              </TouchableOpacity>
+
+        {
+          checkForGraanaProperties === true ?
+            <View style={{
+              margin: 8
+            }}><Menu
+              visible={showGraanaMenu && data.id === selectedProperty.id}
+              onDismiss={() => hideGraanaMenu()}
+              anchor={
+                <Entypo
+                  onPress={() => showGraanaMenuOptions(data)}
+                  name="dots-three-vertical"
+                  size={24}
+                />
+              }
+            >
+                <View>
+                  {
+                    data.verifiedStatus &&
+                      data.verifiedStatus != 'verified' ? <Menu.Item
+                        onPress={() => {
+                          graanaVerifeyModal(true, data.id)
+                        }}
+                        title="Verify Property"
+                      /> : null
+                  }
+
+                  <Menu.Item
+                    onPress={() =>
+                      propertyGeoTagging(data)
+                    }
+                    title="Add Geo Tagging"
+                  />
+
+
+                </View>
+              </Menu>
             </View>
-          )}
+            : null
+        }
+
+
+
+
 
         {(data.customer && data.customer.phone !== '') || screen === 'fields' ? (
           <View style={{ position: 'absolute', bottom: 5, left: wp('88%') }}>

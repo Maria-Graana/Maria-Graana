@@ -71,10 +71,10 @@ class LeadViewing extends React.Component {
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      const { mapValues = null, fromScreen = null } = this.props.route.params;
-      if (fromScreen === 'mapContainer' && mapValues) {
+      if (this.props.route.params && this.props.route.params.fromScreen === 'mapContainer' && this.props.route.params.mapValues) {
+        const {mapValues} = this.props.route.params;
           this.setState({isGeoTaggingModalVisible: true , 
-            latitude:mapValues.lat,
+            latitude: mapValues.lat,
             longitude: mapValues.lng, 
             propsure_id: mapValues.propsure_id,
            })

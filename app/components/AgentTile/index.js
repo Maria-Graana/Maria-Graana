@@ -256,18 +256,19 @@ class AgentTile extends React.Component {
                         <View>
                           {ownDiary && ownDiary.status === 'pending' ? (
                             <View>
-                               <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="Geo Tagging"
-                            />
+                            
                               <Menu.Item
                                 onPress={() => {
                                   this.props.goToPropertyComments(data)
                                 }}
                                 title="Comments"
                               />
+                                 <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Add Geo Tagging"
+                            />
                               <Menu.Item
                                 onPress={() => {
                                   toggleCheckListModal(true, data)
@@ -283,18 +284,19 @@ class AgentTile extends React.Component {
                             </View>
                           ) : (
                             <View>
-                                <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="Geo Tagging"
-                            />
+                              
                               <Menu.Item
                                 onPress={() => {
                                   this.props.goToPropertyComments(data)
                                 }}
                                 title="Comments"
                               />
+                                <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Add Geo Tagging"
+                            />
                               <Menu.Item
                                 onPress={() => {
                                   this.props.deleteProperty(data)
@@ -306,18 +308,18 @@ class AgentTile extends React.Component {
                         </View>
                       ) : (
                         <View>
-                            <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="Geo Tagging"
-                            />
                           <Menu.Item
                             onPress={() => {
                               bookAnotherViewing(data)
                             }}
                             title="Book Another Viewing"
                           />
+                           <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="Add Geo Tagging"
+                            />
                           <Menu.Item
                             onPress={() => {
                               this.props.goToPropertyComments(data)

@@ -734,19 +734,6 @@ class LeadViewing extends React.Component {
     });
   }
 
-  handleForm = (value, name) => {
-    formData[name] = value
-    this.setState({ formData })
-    if (formData.type !== '') {
-      this.setFeatures(formData.type);
-      this.selectSubtype(formData.type)
-    }
-    if (formData.size === '') {
-      formData.size = 0;
-      this.setState({ formData })
-    }
-  }
-
   handleLatLngChange = (value, name) => {
     // lat lng value change, text input
     if (name === 'lat') {

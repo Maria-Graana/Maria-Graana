@@ -52,8 +52,9 @@ const PaymentMethods = {
   findApprovedDiscountAmount(unit, discount) {
     if (unit && discount) {
       discount = PaymentMethods.handleEmptyValue(discount)
+      console.log('findApprovedDiscountAmount: ', discount)
       return (PaymentMethods.findUnitPrice(unit) * discount) / 100
-    }
+    } else return 0
   },
   findApprovedDiscountPercentage(unit, price) {
     if (unit && price) {
@@ -181,6 +182,18 @@ const PaymentMethods = {
       })
     }
     return checkCleared
+  },
+  findPearlUnitPrice(data) {
+    const { floor, unit } = data
+    if (floor && unit) {
+      let { area } = unit
+      let { pricePerSqFt } = floor
+      area = PaymentMethods.handleEmptyValue(area)
+      pricePerSqFt = PaymentMethods.handleEmptyValue(pricePerSqFt)
+      return area * pricePerSqFt
+    } else {
+      return 0
+    }
   },
 }
 module.exports = PaymentMethods

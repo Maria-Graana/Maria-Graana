@@ -845,8 +845,6 @@ class LeadViewing extends React.Component {
           getCurrentLocation={this._getLocationAsync}
           propertyGeoTaggingDone={this.propertyGeoTaggingDone}
           goToMapsForGeotagging={this.goToMapsForGeotagging}
-          navigation={navigation}
-
         />
         <HistoryModal
           getCallHistory={this.getCallHistory}

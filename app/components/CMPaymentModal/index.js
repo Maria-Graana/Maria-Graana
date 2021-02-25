@@ -27,15 +27,14 @@ const CMPaymentModal = ({
   submitCommissionPayment,
   paymentNotZero,
   checkFirstFormToken = false,
+  assignToAccounts,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
   }
-
   const [remarks, setRemarks] = useState([])
   const [loading, setLoading] = useState(false)
   const [isCollapsed, setCollapsed] = useState(false)
-
   const fetchRemarks = () => {
     if (isCollapsed === false) {
       const url = `/api/leads/paymentremarks?id=${CMPayment.id}`
@@ -85,6 +84,7 @@ const CMPaymentModal = ({
               onValueChange={() => {
                 handleCommissionChange(!CMPayment.taxIncluded, 'taxIncluded')
               }}
+              disabled={CMPayment.status === 'pendingAccount'}
               thumbColor={'#fff'}
             />
             <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: 'bold' }}>
@@ -101,6 +101,7 @@ const CMPaymentModal = ({
             <View style={[AppStyles.mainInputWrap]}>
               <View style={[AppStyles.inputWrap]}>
                 <PickerComponent
+                  enabled={CMPayment.status !== 'pendingAccount'}
                   onValueChange={handleCommissionChange}
                   data={StaticData.paymentTypeForToken}
                   name={'paymentCategory'}
@@ -114,6 +115,7 @@ const CMPaymentModal = ({
             </View>
           )}
           <SimpleInputText
+            editable={CMPayment.status !== 'pendingAccount'}
             name={'installmentAmount'}
             fromatName={false}
             placeholder={'Enter Amount'}
@@ -125,12 +127,13 @@ const CMPaymentModal = ({
           />
           {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {modalValidation === true &&
-          (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
-            <ErrorMessage errorMessage={'Required'} />
-          ) : null}
+            (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
+              <ErrorMessage errorMessage={'Required'} />
+            ) : null}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent
+                enabled={CMPayment.status !== 'pendingAccount'}
                 onValueChange={handleCommissionChange}
                 data={StaticData.investFullPaymentType}
                 name={'type'}
@@ -144,6 +147,7 @@ const CMPaymentModal = ({
           </View>
 
           <SimpleInputText
+            editable={CMPayment.status !== 'pendingAccount'}
             name={'details'}
             fromatName={false}
             placeholder={'Details'}
@@ -189,8 +193,8 @@ const CMPaymentModal = ({
                 keyExtractor={(item) => item.id.toString()}
               />
             ) : (
-              <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
-            )
+                <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
+              )
           ) : null}
 
           {CMPayment.installmentAmount != null &&
@@ -198,7 +202,8 @@ const CMPaymentModal = ({
             CMPayment.type != '' &&
             !checkFirstFormToken && (
               <TouchableOpacity
-                style={styles.addPaymentBtn}
+                disabled={CMPayment.status === 'pendingAccount'}
+                style={[styles.addPaymentBtn, {backgroundColor: CMPayment.status === 'pendingAccount' ?  '#bebebe' : '#fff'}]}
                 onPress={() => {
                   goToPayAttachments()
                 }}
@@ -211,39 +216,34 @@ const CMPaymentModal = ({
               </TouchableOpacity>
             )}
 
-          {lead.commissions && lead.commissions.status === 'rejected' ? (
-            <View style={styles.reSubmitBtnMain}>
-              <TouchableButton
-                containerStyle={[styles.bookedBtn, { marginRight: 3 }]}
-                label={'Cancel'}
-                loading={false}
-                fontSize={16}
-                fontFamily={AppStyles.fonts.boldFont}
-                onPress={() => onModalCloseClick()}
-              />
-
-              <TouchableButton
-                containerStyle={[styles.bookedBtn, styles.reSubmitBtns]}
-                containerBackgroundColor={AppStyles.whiteColor.color}
-                label={'RE-SUBMIT'}
-                loaderColor={AppStyles.colors.primaryColor}
-                fontFamily={AppStyles.fonts.boldFont}
-                fontSize={16}
-                loading={addPaymentLoading}
-                textColor={AppStyles.colors.primaryColor}
-                onPress={() => submitCommissionPayment()}
-              />
-            </View>
-          ) : (
-            <TouchableButton
-              containerStyle={[styles.bookedBtn, { width: '100%' }]}
-              label={'OK'}
+          {
+            CMPayment.status ? <TouchableButton
+              disabled={(CMPayment.status !== 'open' && CMPayment.status !== 'pendingSales')}
+              containerBackgroundColor={( CMPayment.status === 'open' ||  CMPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor :  '#bebebe' }
+              containerStyle={[styles.bookedBtn, { width: '100%', 
+              marginVertical: 15,
+            }]}
+              label={'ASSIGN TO ACCOUNTS'}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={18}
               loading={addPaymentLoading}
-              onPress={() => submitCommissionPayment()}
+              onPress={() => assignToAccounts()}
             />
-          )}
+              : null
+          }
+
+
+
+              <TouchableButton
+                containerStyle={[styles.bookedBtn, { width: '100%', marginVertical: 15, }]}
+                label={'OK'}
+                fontFamily={AppStyles.fonts.boldFont}
+                containerBackgroundColor={( CMPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#bebebe' }
+                fontSize={18}
+                loading={addPaymentLoading}
+                onPress={() => submitCommissionPayment()}
+                disabled={CMPayment.status === 'pendingAccount'}
+              />
         </View>
       </View>
     </Modal>

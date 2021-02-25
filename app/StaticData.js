@@ -681,6 +681,7 @@ export default StaticData = {
     { value: 'Payment', name: 'Other Payment' },
   ],
   statusOptions: [
+    { label: 'Open', value: 'open' },
     { label: 'Pending Account', value: 'pendingAccount' },
     { label: 'Pending Account HQ', value: 'pendingAccountHq' },
     { label: 'Pending Sales', value: 'pendingSales' },

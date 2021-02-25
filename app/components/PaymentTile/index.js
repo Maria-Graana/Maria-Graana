@@ -52,7 +52,7 @@ class PaymentTile extends React.Component {
         onLongPress={
           data.status === 'pendingSales' ||
           data.status === 'notCleared' ||
-          data.status === 'pendingAccount'
+          data.status === 'open'
             ? onPaymentLongPress
             : null
         }

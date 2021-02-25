@@ -34,6 +34,7 @@ import PaymentMethods from '../../PaymentMethods'
 import { ActionSheet } from 'native-base'
 import PaymentHelper from './PaymentHelper'
 import _ from 'underscore'
+import { Alert } from 'react-native'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -552,7 +553,7 @@ class CMPayment extends Component {
           installmentAmount: CMPayment.installmentAmount,
         }
         delete body.visible
-        delete body.remarks
+        // delete body.remarks
         if (CMPayment.paymentType === 'token') {
           dispatch(setCMPayment({ ...CMPayment, visible: false }))
           this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
@@ -564,8 +565,8 @@ class CMPayment extends Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = CMPayment.paymentAttachments
               ? _.filter(CMPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -625,6 +626,20 @@ class CMPayment extends Component {
     dispatch(setCMPayment({ ...CMPayment, visible: true }))
   }
 
+  assignToAccounts = () => {
+    Alert.alert('Assign to Accounts', 'Are you sure you want to assign this payment to accounts?', [
+      { text: 'No', style: 'cancel'},
+      {
+        text: 'Yes', onPress: async() => {
+          const { CMPayment, dispatch } = this.props
+          await dispatch(setCMPayment({ ...CMPayment, visible: false, status: 'pendingAccount' }))
+          this.submitCommissionCMPayment();
+        }
+      },
+    ],
+      { cancelable: false })
+  }
+
   // **************** Add Payment Modal Functions End *******************
 
   // **************** First Screen Starts *******************
@@ -642,21 +657,21 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-    ;(newcheckPaymentPlan['rental'] =
-      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-      this.setState(
-        {
-          checkPaymentPlan: newcheckPaymentPlan,
-        },
-        () => {
-          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-          this.setState({
-            progressValue: cmProgressBar[lead.status] || 0,
-            paymentPlan: paymentArray,
-            editable: false,
-          })
-        }
-      )
+      ; (newcheckPaymentPlan['rental'] =
+        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+        this.setState(
+          {
+            checkPaymentPlan: newcheckPaymentPlan,
+          },
+          () => {
+            let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+            this.setState({
+              progressValue: cmProgressBar[lead.status] || 0,
+              paymentPlan: paymentArray,
+              editable: false,
+            })
+          }
+        )
   }
 
   handleFirstForm = (value, name) => {
@@ -994,7 +1009,7 @@ class CMPayment extends Component {
           helper.errorToast('Closed lead API failed!!')
         })
     } else {
-      ;('Please select a reason for lead closure!')
+      ; ('Please select a reason for lead closure!')
     }
   }
 
@@ -1097,6 +1112,7 @@ class CMPayment extends Component {
             lead={lead}
             paymentNotZero={buyerNotZero}
             checkFirstFormToken={checkFirstFormToken}
+            assignToAccounts={() => this.assignToAccounts()}
           />
           <DeleteModal
             isVisible={deletePaymentVisible}

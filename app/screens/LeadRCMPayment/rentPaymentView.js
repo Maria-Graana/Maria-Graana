@@ -13,6 +13,10 @@ import PickerComponent from '../../components/Picker'
 import Ability from '../../hoc/Ability'
 import ErrorMessage from '../../components/ErrorMessage'
 import styles from './styles'
+import RCMBTN from '../../components/RCMBTN'
+import RoundPlus from '../../../assets/img/roundPlus.png'
+import TokenTile from '../../components/TokenTile'
+import helper from '../../helper'
 
 const RentPaymentView = (props) => {
   const {
@@ -50,6 +54,9 @@ const RentPaymentView = (props) => {
     deleteDoc,
     activityBool,
     requestLegalServices,
+    toggleTokenMenu,
+    tokenMenu,
+    confirmTokenAction,
   } = props
   let property = currentProperty[0]
   let subRole =
@@ -62,7 +69,7 @@ const RentPaymentView = (props) => {
     lead.status === StaticData.Constants.lead_closed_won
   let buyerCommission =
     lead.assigned_to_armsuser_id === user.id &&
-      (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
+    (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
       ? true
       : false
   let sellerCommission =
@@ -83,21 +90,29 @@ const RentPaymentView = (props) => {
     lead.commissions,
     (commission) => commission.addedBy === 'seller' && commission.paymentCategory === 'commission'
   )
-
+  const tokenPayment = _.find(
+    lead.commissions,
+    (commission) => commission.addedBy === 'buyer' && commission.paymentCategory === 'token'
+  )
+  let showMenu = helper.showBuyerTokenMenu(tokenPayment)
   return (
     <View>
-     <TouchableOpacity
-            disabled={lead.legalMailSent}
-            style={[
-              styles.legalServicesButton,
-              { marginTop: 10, 
-                backgroundColor: lead.legalMailSent ? '#ddd' : '#fff', 
-                borderColor : lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor  }
-            ]}
-            onPress={() => requestLegalServices()}
-          >
-            <Text style={[styles.addPaymentBtnText]}>{lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}</Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+        disabled={lead.legalMailSent}
+        style={[
+          styles.legalServicesButton,
+          {
+            marginTop: 10,
+            backgroundColor: lead.legalMailSent ? '#ddd' : '#fff',
+            borderColor: lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor,
+          },
+        ]}
+        onPress={() => requestLegalServices()}
+      >
+        <Text style={[styles.addPaymentBtnText]}>
+          {lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}
+        </Text>
+      </TouchableOpacity>
       <InputField
         label={'MONTHLY RENT'}
         placeholder={'Enter Monthly Rent'}
@@ -114,6 +129,29 @@ const RentPaymentView = (props) => {
         showDate={false}
       />
       {rentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+      {!tokenPayment ? (
+        <RCMBTN
+          onClick={() => onAddCommissionPayment('buyer', 'token')}
+          btnImage={RoundPlus}
+          btnText={'ADD TOKEN'}
+          checkLeadClosedOrNot={false}
+        />
+      ) : null}
+
+      {tokenPayment ? (
+        <TokenTile
+          data={tokenPayment}
+          editTile={editTile}
+          onPaymentLongPress={() => {}}
+          commissionEdit={!buyerCommission}
+          title={tokenPayment ? 'Token' : ''}
+          toggleTokenMenu={toggleTokenMenu}
+          tokenMenu={tokenMenu}
+          showMenu={showMenu}
+          confirmTokenAction={confirmTokenAction}
+          singleCommission={singleCommission}
+        />
+      ) : null}
       <DocTile
         title={'Signed Agreement'}
         uploadDocument={uploadDocument}
@@ -230,28 +268,28 @@ const RentPaymentView = (props) => {
             title={buyer ? 'Buyer Commission Payment' : ''}
           />
         ) : (
-            <View>
-              {buyerCommission ? (
-                <TouchableOpacity
-                  disabled={singleCommission ? commissionNotApplicableBuyer : isLeadClosed}
-                  style={[
-                    styles.addPaymentBtn,
-                    {
-                      backgroundColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
-                      borderColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
-                    },
-                  ]}
-                  onPress={() => onAddCommissionPayment('buyer')}
-                >
-                  <Image
-                    style={styles.addPaymentBtnImg}
-                    source={require('../../../assets/img/roundPlus.png')}
-                  ></Image>
-                  <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          )
+          <View>
+            {buyerCommission ? (
+              <TouchableOpacity
+                disabled={singleCommission ? commissionNotApplicableBuyer : isLeadClosed}
+                style={[
+                  styles.addPaymentBtn,
+                  {
+                    backgroundColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
+                    borderColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
+                  },
+                ]}
+                onPress={() => onAddCommissionPayment('buyer', 'commission')}
+              >
+                <Image
+                  style={styles.addPaymentBtnImg}
+                  source={require('../../../assets/img/roundPlus.png')}
+                ></Image>
+                <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        )
       ) : null}
 
       {singleCommission && !seller && !isLeadClosed ? (
@@ -289,28 +327,28 @@ const RentPaymentView = (props) => {
             title={'Seller Commission Payment'}
           />
         ) : (
-            <View>
-              {sellerCommission ? (
-                <TouchableOpacity
-                  disabled={singleCommission ? commissionNotApplicableSeller : isLeadClosed}
-                  style={[
-                    styles.addPaymentBtn,
-                    {
-                      backgroundColor: commissionNotApplicableSeller ? '#ddd' : '#fff',
-                      borderColor: commissionNotApplicableSeller ? '#ddd' : '#fff',
-                    },
-                  ]}
-                  onPress={() => onAddCommissionPayment('seller')}
-                >
-                  <Image
-                    style={styles.addPaymentBtnImg}
-                    source={require('../../../assets/img/roundPlus.png')}
-                  ></Image>
-                  <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          )
+          <View>
+            {sellerCommission ? (
+              <TouchableOpacity
+                disabled={singleCommission ? commissionNotApplicableSeller : isLeadClosed}
+                style={[
+                  styles.addPaymentBtn,
+                  {
+                    backgroundColor: commissionNotApplicableSeller ? '#ddd' : '#fff',
+                    borderColor: commissionNotApplicableSeller ? '#ddd' : '#fff',
+                  },
+                ]}
+                onPress={() => onAddCommissionPayment('seller', 'commission')}
+              >
+                <Image
+                  style={styles.addPaymentBtnImg}
+                  source={require('../../../assets/img/roundPlus.png')}
+                ></Image>
+                <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        )
       ) : null}
     </View>
   )

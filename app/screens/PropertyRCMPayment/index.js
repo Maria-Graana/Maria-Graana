@@ -24,6 +24,7 @@ import RentPaymentView from './rentPaymentView'
 import DeleteModal from '../../components/DeleteModal'
 
 var BUTTONS = ['Delete', 'Cancel']
+var TOKENBUTTONS = ['Confirm', 'Cancel']
 var CANCEL_INDEX = 1
 
 class PropertyRCMPayment extends React.Component {
@@ -76,6 +77,7 @@ class PropertyRCMPayment extends React.Component {
       buyerNotZero: false,
       sellerNotZero: false,
       rentNotZero: false,
+      tokenMenu: false,
     }
   }
 
@@ -592,9 +594,9 @@ class PropertyRCMPayment extends React.Component {
     })
   }
 
-  onAddCommissionPayment = () => {
+  onAddCommissionPayment = (type) => {
     const { dispatch, rcmPayment } = this.props
-    dispatch(setRCMPayment({ ...rcmPayment, visible: true }))
+    dispatch(setRCMPayment({ ...rcmPayment, visible: true, addedBy: type }))
   }
 
   onModalCloseClick = () => {
@@ -666,7 +668,6 @@ class PropertyRCMPayment extends React.Component {
           ...rcmPayment,
           rcmLeadId: lead.id,
           armsUserId: user.id,
-          addedBy: 'seller',
           paymentCategory: 'commission',
         }
         delete body.visible
@@ -738,20 +739,23 @@ class PropertyRCMPayment extends React.Component {
     const { dispatch, lead } = this.props
     const { rcmProgressBar } = StaticData
     this.setState({ loading: true }, () => {
-      axios.get(`/api/leads/byId?id=${lead.id}`).then((response) => {
-        if (response.data) {
-          dispatch(setlead(response.data))
-          this.setState({
-            progressValue: rcmProgressBar[response.data.status],
-            loading: false,
-            lead: response.data,
-          })
-        } else {
-          //console.log('something went wrong in api');
-        }
-      }).finally(()=>{
-        this.setState({loading:false});
-      })
+      axios
+        .get(`/api/leads/byId?id=${lead.id}`)
+        .then((response) => {
+          if (response.data) {
+            dispatch(setlead(response.data))
+            this.setState({
+              progressValue: rcmProgressBar[response.data.status],
+              loading: false,
+              lead: response.data,
+            })
+          } else {
+            //console.log('something went wrong in api');
+          }
+        })
+        .finally(() => {
+          this.setState({ loading: false })
+        })
     })
   }
 
@@ -777,29 +781,41 @@ class PropertyRCMPayment extends React.Component {
   }
 
   showLegalRequestConfirmation = () => {
-    Alert.alert('Legal Services Request', 'Are you sure you want to continue?', [
-      { text: 'No', style: 'cancel' },
-      {
-        text: 'Yes', onPress: () => this.requestLegalServices()
-      },
-    ],
-      { cancelable: false })
+    Alert.alert(
+      'Legal Services Request',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: () => this.requestLegalServices(),
+        },
+      ],
+      { cancelable: false }
+    )
   }
 
   requestLegalServices = () => {
     const { lead } = this.props
     const { allProperties } = this.state
     const selectedProperty = allProperties[0]
-      axios.post(`/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null}`).then((response) => {
+    axios
+      .post(
+        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${
+          selectedProperty ? selectedProperty.id : null
+        }`
+      )
+      .then((response) => {
         if (response.data) {
-          this.fetchLead();
-          helper.successToast(response.data);
+          this.fetchLead()
+          helper.successToast(response.data)
         }
-      }).catch((error) => {
-        helper.errorToast('Something went wrong while sending email');
-        console.log('something went wrong in /api/leads/sendLegalEmail', error);
       })
-    }
+      .catch((error) => {
+        helper.errorToast('Something went wrong while sending email')
+        console.log('something went wrong in /api/leads/sendLegalEmail', error)
+      })
+  }
 
   redirectProperty = (property) => {
     if (property.origin === 'arms' || property.origin === 'arms_lead') {
@@ -857,6 +873,75 @@ class PropertyRCMPayment extends React.Component {
     )
   }
 
+  confirmTokenAction = (payment, status) => {
+    const { dispatch } = this.props
+    console.log('payment: ', payment)
+    // dispatch(setRCMPayment({ ...payment }))
+    ActionSheet.show(
+      {
+        options: TOKENBUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Select an Option',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          //Confirm
+          this.submitMenu(payment, status)
+        }
+      }
+    )
+  }
+
+  submitMenu = (payment, status) => {
+    const { allProperties } = this.state
+    let property = allProperties[0]
+    let armsUserId = property && property.armsuser && property.armsuser.id && property.armsuser.id
+    let body = { ...payment }
+    let paymentID = body.id
+    delete body.visible
+    delete body.remarks
+    delete body.id
+    body.status = status
+    body.status_updated_by = 'seller'
+    let baseUrl = `/api/leads/tokenPayment`
+    console.log('UPDATE body: ', body)
+    console.log('baseURL: ', `${baseUrl}?id=${paymentID}`)
+    axios
+      .patch(`${baseUrl}?id=${paymentID}`, body)
+      .then((response) => {
+        console.log('response: ', response.data)
+        // upload only the new attachments that do not have id with them in object.
+        const filterAttachmentsWithoutId = payment.paymentAttachments
+          ? _.filter(payment.paymentAttachments, (item) => {
+              return !_.has(item, 'id')
+            })
+          : []
+        if (filterAttachmentsWithoutId.length > 0) {
+          filterAttachmentsWithoutId.map((item, index) => {
+            // payment attachments
+            this.uploadAttachment(item, paymentID)
+          })
+        } else {
+          this.fetchLead()
+          this.clearReduxAndStateValues()
+          helper.successToast('Token Payment Updated')
+        }
+      })
+      .catch((error) => {
+        console.log('error: ', error)
+        helper.errorToast('Error Updating Token Payment', error)
+        this.clearReduxAndStateValues()
+      })
+  }
+
+  toggleTokenMenu = () => {
+    console.log('i am here')
+    const { tokenMenu } = this.state
+    this.setState({
+      tokenMenu: !tokenMenu,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -890,6 +975,7 @@ class PropertyRCMPayment extends React.Component {
       agreedNotZero,
       buyerNotZero,
       rentNotZero,
+      tokenMenu,
     } = this.state
     const { navigation, user } = this.props
 
@@ -1010,6 +1096,9 @@ class PropertyRCMPayment extends React.Component {
                         agreedNotZero={agreedNotZero}
                         rentNotZero={rentNotZero}
                         requestLegalServices={this.showLegalRequestConfirmation}
+                        toggleTokenMenu={this.toggleTokenMenu}
+                        tokenMenu={tokenMenu}
+                        confirmTokenAction={this.confirmTokenAction}
                       />
                     ) : (
                       <RentPaymentView
@@ -1038,6 +1127,9 @@ class PropertyRCMPayment extends React.Component {
                         agreedNotZero={agreedNotZero}
                         rentNotZero={rentNotZero}
                         requestLegalServices={this.showLegalRequestConfirmation}
+                        toggleTokenMenu={this.toggleTokenMenu}
+                        tokenMenu={tokenMenu}
+                        confirmTokenAction={this.confirmTokenAction}
                       />
                     )
                   ) : null}

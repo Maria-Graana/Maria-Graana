@@ -688,6 +688,60 @@ export default StaticData = {
     { label: 'Not Cleared', value: 'notCleared' },
     { label: 'Cleared', value: 'cleared' },
   ],
+  tokenStatusOptions: [
+    { label: 'At Buyer Agent', value: 'at_buyer_agent' },
+    {
+      label: `At Property Agent${'\n'}(Pending Verification)`,
+      value: 'at_property_agent_pending_verification',
+    },
+    {
+      label: `At Buyer Agent${'\n'}(Pending Verification)`,
+      value: 'at_buyer_agent_pending_verification',
+    },
+
+    { label: 'Given back to buyer', value: 'given_back_to_buyer' },
+    { label: 'Given to Property Owner', value: 'given_to_property_owner' },
+    { label: 'At Property Agent', value: 'at_property_agent' },
+    { label: 'Pending Account', value: 'pendingAccount' },
+    { label: 'Pending Account HQ', value: 'pendingAccountHq' },
+    { label: 'Pending Sales', value: 'pendingSales' },
+    { label: 'Pending at Bank', value: 'bankPending' },
+    { label: 'Not Cleared', value: 'notCleared' },
+    { label: 'Cleared', value: 'cleared' },
+  ],
+  paymentStatuses: [
+    'pendingAccount',
+    'pendingAccountHq',
+    'pendingSales',
+    'bankPending',
+    'notCleared',
+    'cleared',
+  ],
+  singleBuyerTokenStatuses: [
+    { label: 'Give to Property Owner', value: 'given_to_property_owner' },
+    { label: 'Deposit to Accounts', value: 'pendingAccount' },
+    { label: 'Give back to Buyer', value: 'given_back_to_buyer' },
+  ],
+  singlePropertyOwner: [{ label: 'Take Back from Property Owner', value: 'at_buyer_agent' }],
+  buyerTokenStatuses: [
+    { label: 'Give to property agent', value: 'at_property_agent_pending_verification' },
+    { label: 'Deposit to Accounts', value: 'pendingAccount' },
+    { label: 'Give back to Buyer', value: 'given_back_to_buyer' },
+  ],
+  buyerTokenReceived: [
+    { label: 'Received', value: 'at_buyer_agent' },
+    { label: 'Not Received', value: 'at_property_agent' },
+  ],
+  sellerTokenStatuses: [
+    { label: 'Give To Property Owner', value: 'given_to_property_owner' },
+    { label: 'Deposit to Accounts', value: 'pendingAccount' },
+    { label: 'Given Back to Buyer Agent', value: 'at_buyer_agent_pending_verification' },
+  ],
+  sellerTokenReceived: [
+    { label: 'Received', value: 'at_property_agent' },
+    { label: 'Not Received', value: 'at_buyer_agent' },
+  ],
+  sellerTakeBackToken: [{ label: 'Take back from Property Owner', value: 'at_property_agent' }],
   leadClearedStatus: 'cleared',
   propsureReportTypes: [
     { name: 'Basic Property Survey Report', price: '100' },

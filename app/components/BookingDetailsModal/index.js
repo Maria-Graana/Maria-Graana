@@ -6,6 +6,7 @@ import styles from './style'
 import Modal from 'react-native-modal'
 import times from '../../../assets/img/times.png'
 import PaymentMethods from '../../PaymentMethods'
+import helper from '../../helper'
 
 class BookingDetailsModal extends React.Component {
   constructor(props) {
@@ -81,17 +82,44 @@ class BookingDetailsModal extends React.Component {
                   </View>
                 </View>
                 {/* ===================== */}
+                {data.category_charges !== null && (
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Standard Rate / sqft</Text>
+                      <Text style={styles.largeText}>
+                        {helper.currencyConvert(this.handleEmptyValue(data.unit.pricePerSqFt))}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                {data.category_charges !== null && (
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Category Charges</Text>
+                      <Text style={styles.largeText}>
+                        {data.unit.category_charges != null
+                          ? this.handleEmptyValue(data.unit.category_charges + '%')
+                          : '0%'}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rate/Sqft</Text>
-                    <Text style={styles.largeText}>{PaymentMethods.findRatePerSqft(unit)}</Text>
+                    <Text style={styles.largeText}>
+                      {helper.currencyConvert(PaymentMethods.findRatePerSqft(unit))}
+                    </Text>
                   </View>
                 </View>
                 {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Unit Price</Text>
-                    <Text style={styles.largeText}>{PaymentMethods.findUnitPrice(unit)}</Text>
+                    <Text style={styles.largeText}>
+                      {helper.currencyConvert(PaymentMethods.findUnitPrice(unit))}
+                    </Text>
                   </View>
                 </View>
                 {/* ===================== */}
@@ -109,7 +137,9 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Discount Amount</Text>
                     <Text style={styles.largeText}>
-                      {this.handleEmptyValueReturnZero(data.unit.discounted_price)}
+                      {helper.currencyConvert(
+                        this.handleEmptyValueReturnZero(data.unit.discounted_price)
+                      )}
                     </Text>
                   </View>
                 </View>
@@ -119,30 +149,7 @@ class BookingDetailsModal extends React.Component {
                     <View>
                       <Text style={styles.smallText}>Final Price</Text>
                       <Text style={styles.largeText}>
-                        {this.handleEmptyValueReturnZero(finalPrice)}
-                      </Text>
-                    </View>
-                  </View>
-                )}
-                {/* ===================== */}
-                {data.category_charges !== null && (
-                  <View style={styles.MainTileView}>
-                    <View>
-                      <Text style={styles.smallText}>Standard Rate / sqft</Text>
-                      <Text style={styles.largeText}>
-                        {this.handleEmptyValue(data.unit.pricePerSqFt)}
-                      </Text>
-                    </View>
-                  </View>
-                )}
-                {data.category_charges !== null && (
-                  <View style={styles.MainTileView}>
-                    <View>
-                      <Text style={styles.smallText}>Category Charges</Text>
-                      <Text style={styles.largeText}>
-                        {data.unit.category_charges != null
-                          ? this.handleEmptyValue(data.unit.category_charges + '%')
-                          : '0%'}
+                        {helper.currencyConvert(this.handleEmptyValueReturnZero(finalPrice))}
                       </Text>
                     </View>
                   </View>
@@ -169,7 +176,7 @@ class BookingDetailsModal extends React.Component {
                     <View>
                       <Text style={styles.smallText}>Rent Amount</Text>
                       <Text style={styles.largeText}>
-                        {this.handleEmptyValueReturnZero(data.unit.rent)}
+                        {helper.currencyConvert(this.handleEmptyValueReturnZero(data.unit.rent))}
                       </Text>
                     </View>
                   </View>
@@ -181,7 +188,9 @@ class BookingDetailsModal extends React.Component {
                     <View>
                       <Text style={styles.smallText}>Down Payment</Text>
                       <Text style={styles.largeText}>
-                        {this.handleEmptyValueReturnZero(data.unit && data.unit.down_payment)}
+                        {helper.currencyConvert(
+                          this.handleEmptyValueReturnZero(data.unit && data.unit.down_payment)
+                        )}
                       </Text>
                     </View>
                   </View>
@@ -269,14 +278,18 @@ class BookingDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rate/Sqft</Text>
-                    <Text style={styles.largeText}>{PaymentMethods.findRatePerSqft(unit)}</Text>
+                    <Text style={styles.largeText}>
+                      {helper.currencyConvert(PaymentMethods.findRatePerSqft(unit))}
+                    </Text>
                   </View>
                 </View>
                 {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Unit Price</Text>
-                    <Text style={styles.largeText}>{PaymentMethods.findPearlUnitPrice(data)}</Text>
+                    <Text style={styles.largeText}>
+                      {helper.currencyConvert(PaymentMethods.findPearlUnitPrice(data))}
+                    </Text>
                   </View>
                 </View>
                 {/* ===================== */}
@@ -285,7 +298,7 @@ class BookingDetailsModal extends React.Component {
                     <View>
                       <Text style={styles.smallText}>Rent/Sqft</Text>
                       <Text style={styles.largeText}>
-                        {this.handleEmptyValue(unit && unit.rentPerSqFt)}
+                        {helper.currencyConvert(this.handleEmptyValue(unit && unit.rentPerSqFt))}
                       </Text>
                     </View>
                   </View>
@@ -296,8 +309,10 @@ class BookingDetailsModal extends React.Component {
                     <View>
                       <Text style={styles.smallText}>Rent Amount</Text>
                       <Text style={styles.largeText}>
-                        {this.handleEmptyValue(unit && unit.rentPerSqFt) *
-                          this.handleEmptyValue(unit && unit.area)}
+                        {helper.currencyConvert(
+                          this.handleEmptyValue(unit && unit.rentPerSqFt) *
+                            this.handleEmptyValue(unit && unit.area)
+                        )}
                       </Text>
                     </View>
                   </View>

@@ -224,7 +224,7 @@ class InventoryTile extends React.Component {
                     onPress={() =>
                       propertyGeoTagging(data)
                     }
-                    title="Add Geo Tagging"
+                    title="GeoTag"
                   />
 
 

@@ -700,8 +700,8 @@ export default StaticData = {
       value: 'at_buyer_agent_pending_verification',
     },
 
-    { label: 'Given back to buyer', value: 'given_back_to_buyer' },
-    { label: 'Given to Property Owner', value: 'given_to_property_owner' },
+    { label: 'Give back to buyer', value: 'given_back_to_buyer' },
+    { label: 'Give to Property Owner', value: 'given_to_property_owner' },
     { label: 'At Property Agent', value: 'at_property_agent' },
     { label: 'Pending Account', value: 'pendingAccount' },
     { label: 'Pending Account HQ', value: 'pendingAccountHq' },
@@ -724,6 +724,7 @@ export default StaticData = {
     { label: 'Give back to Buyer', value: 'given_back_to_buyer' },
   ],
   singlePropertyOwner: [{ label: 'Take Back from Property Owner', value: 'at_buyer_agent' }],
+  addToken: [{ label: 'Add New Token', value: 'add_new_token' }],
   buyerTokenStatuses: [
     { label: 'Give to property agent', value: 'at_property_agent_pending_verification' },
     { label: 'Deposit to Accounts', value: 'pendingAccount' },

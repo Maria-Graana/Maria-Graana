@@ -50,7 +50,7 @@ class SimpleInputField extends React.Component {
       value,
       formatValue,
       keyboardType,
-      editable,
+      editable = true,
       fromatName,
       onChangeHandle,
       noMargin,

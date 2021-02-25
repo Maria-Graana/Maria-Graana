@@ -995,9 +995,16 @@ class LeadRCMPayment extends React.Component {
     body.status = status
     body.status_updated_by = 'buyer'
     if (status === 'at_property_agent_pending_verification') body.sellerAgentId = armsUserId
+    if (
+      (body.paymentCategory === 'token' && body.status === 'pendingSales') ||
+      (body.paymentCategory === 'token' && body.status === 'notCleared')
+    ) {
+      body.status = 'pendingAccount'
+    }
+    if (body.paymentCategory === 'token' && body.status === 'given_back_to_buyer') {
+      body.active = false
+    }
     let baseUrl = `/api/leads/tokenPayment`
-    console.log('UPDATE body: ', body)
-    console.log('baseURL: ', `${baseUrl}?id=${paymentID}`)
     axios
       .patch(`${baseUrl}?id=${paymentID}`, body)
       .then((response) => {
@@ -1095,6 +1102,7 @@ class LeadRCMPayment extends React.Component {
           armsUserId: user.id,
           // paymentCategory: 'commission',
           addedBy: rcmPayment.addedBy,
+          active: true,
         }
         delete body.visible
         if (body.paymentCategory === 'token') {

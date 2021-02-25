@@ -76,7 +76,10 @@ class BuyPaymentView extends React.Component {
     )
     const tokenPayment = _.find(
       lead.commissions,
-      (commission) => commission.addedBy === 'buyer' && commission.paymentCategory === 'token'
+      (commission) =>
+        commission.addedBy === 'buyer' &&
+        commission.paymentCategory === 'token' &&
+        commission.active
     )
     let showMenu = helper.showSellerTokenMenu(tokenPayment)
     return (
@@ -117,7 +120,11 @@ class BuyPaymentView extends React.Component {
             data={tokenPayment}
             editTile={editTile}
             onPaymentLongPress={() => {}}
-            commissionEdit={!buyerCommission}
+            commissionEdit={
+              tokenPayment.status === 'pendingSales' || tokenPayment.status === 'notCleared'
+                ? false
+                : true
+            }
             title={tokenPayment ? 'Token' : ''}
             toggleTokenMenu={toggleTokenMenu}
             tokenMenu={tokenMenu}
@@ -157,7 +164,7 @@ class BuyPaymentView extends React.Component {
                 <TouchableOpacity
                   disabled={isLeadClosed}
                   style={styles.addPaymentBtn}
-                  onPress={() => onAddCommissionPayment('buyer')}
+                  onPress={() => onAddCommissionPayment('buyer', 'commission')}
                 >
                   <Image
                     style={styles.addPaymentBtnImg}
@@ -185,7 +192,7 @@ class BuyPaymentView extends React.Component {
                 <TouchableOpacity
                   disabled={isLeadClosed}
                   style={styles.addPaymentBtn}
-                  onPress={() => onAddCommissionPayment('seller')}
+                  onPress={() => onAddCommissionPayment('seller', 'commission')}
                 >
                   <Image
                     style={styles.addPaymentBtnImg}

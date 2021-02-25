@@ -25,6 +25,7 @@ const AddRCMPaymentModal = ({
   lead,
   submitCommissionPayment,
   paymentNotZero,
+  editTextInput = true,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -79,6 +80,7 @@ const AddRCMPaymentModal = ({
             formatValue={rcmPayment.installmentAmount}
             keyboardType={'numeric'}
             onChangeHandle={handleCommissionChange}
+            editable={editTextInput}
           />
           {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {modalValidation === true &&

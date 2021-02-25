@@ -164,7 +164,7 @@ class PPLeadTile extends React.Component {
             <View style={[styles.contentMultiMain]}>
               <Text style={[styles.priceText, AppStyles.mbFive]}>
                 Price Range{' '}
-                {helper.convertPriceToString(
+                {helper.convertPriceToIntegerString(
                   data.minPrice,
                   data.maxPrice,
                   StaticData.Constants.any_value

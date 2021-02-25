@@ -191,7 +191,7 @@ class LeadTile extends React.Component {
                   <View style={[styles.contentMultiMain]}>
                     {!data.projectId && data.min_price && data.price ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
-                        {helper.convertPriceToString(
+                        {helper.convertPriceToIntegerString(
                           data.min_price,
                           data.price,
                           StaticData.Constants.any_value
@@ -203,7 +203,7 @@ class LeadTile extends React.Component {
                   <View style={[styles.contentMultiMain]}>
                     {data.projectId && data.minPrice && data.maxPrice ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
-                        {helper.convertPriceToString(
+                        {helper.convertPriceToIntegerString(
                           data.minPrice,
                           data.maxPrice,
                           StaticData.Constants.any_value

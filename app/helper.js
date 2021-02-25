@@ -5,6 +5,7 @@ import { Toast, Content } from 'native-base'
 import moment from 'moment-timezone'
 import StaticData from './StaticData'
 import { formatPrice } from './PriceFormate'
+import { intFormatPrice } from './components/PriceFormate'
 import AppStyles from './AppStyles'
 import DiaryImg from '../assets/img/diary-icon-l.png'
 import InventoryImg from '../assets/img/properties-icon-l.png'
@@ -537,6 +538,23 @@ const helper = {
       return `PKR: ${formatPrice(start)} to ${formatPrice(end)}`
     } else {
       return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
+    }
+  },
+  convertPriceToIntegerString(start, end, maxValue) {
+    if (!start) start = 0
+    if (!end) end = 0
+    if (start === 0 && end === 0) {
+      return 'PKR: 0'
+    } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
+      return `PKR: Any`
+    } else if (start === 0 && end !== maxValue) {
+      return `PKR: Upto ${intFormatPrice(end)}`
+    } else if (start !== 0 && end === maxValue) {
+      return `PKR: ${intFormatPrice(start)} or more`
+    } else if (start === end) {
+      return `PKR: ${intFormatPrice(start)} to ${intFormatPrice(end)}`
+    } else {
+      return `PKR: ${intFormatPrice(start)} - ${intFormatPrice(end)}`
     }
   },
   convertSizeToString(start, end, maxValue, unit) {

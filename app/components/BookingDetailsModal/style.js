@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+/** @format */
+
+import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
@@ -42,6 +44,6 @@ export default styles = StyleSheet.create({
     fontSize: 20,
   },
   noBorder: {
-    borderBottomWidth: 0
+    borderBottomWidth: 0,
   },
-});
+})

@@ -167,16 +167,21 @@ class CMPayment extends Component {
   }
 
   calculatePayments = (lead, functionCallingFor) => {
-    const { payment, unit } = lead
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(
-      payment,
-      unit.finalPrice
+    const { payment, unit, paidProject } = lead
+    let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
+    let finalPrice = PaymentMethods.findFinalPrice(
+      unit,
+      unit.discounted_price,
+      fullPaymentDiscount,
+      unit.type === 'regular' ? false : true
     )
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(payment, finalPrice)
     let outStandingTax = PaymentMethods.findRemainingTax(payment, remainingTax)
     this.setState(
       {
         remainingPayment: remainingPayment,
         outStandingTax: outStandingTax,
+        finalPrice: finalPrice,
       },
       () => {
         if (functionCallingFor === 'leadClose') {
@@ -1050,6 +1055,7 @@ class CMPayment extends Component {
             pearlModal={pearlUnit}
             toggleBookingDetailsModal={this.toggleBookingModal}
             openUnitDetailsModal={this.openUnitDetailsModal}
+            finalPrice={finalPrice}
           />
           {allFloors != '' && allFloors.length && allProjects != '' && allProjects.length ? (
             <FirstScreenConfirmModal

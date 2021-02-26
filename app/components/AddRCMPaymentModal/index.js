@@ -175,15 +175,15 @@ const AddRCMPaymentModal = ({
 
           {
             rcmPayment.status && rcmPayment.paymentCategory !== 'token' ? <TouchableButton
-              disabled={(rcmPayment.status !== 'open' && rcmPayment.status !== 'pendingSales')}
-              containerBackgroundColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor : '#8baaef'}
+              disabled={(rcmPayment.status !== 'open' && rcmPayment.status !== 'pendingSales' && rcmPayment.status !== 'notCleared')}
+              containerBackgroundColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'}
               containerStyle={[styles.bookedBtn, {
                 width: '100%',
                 marginVertical: 15,
-                borderColor:(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor : '#8baaef'
+                borderColor:(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales'  || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'
               }]}
               label={'ASSIGN TO ACCOUNTS'}
-              textColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales') ? '#fff' : '#f3f5f7' }
+              textColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales'  || rcmPayment.status === 'notCleared') ? '#fff' : '#f3f5f7' }
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={18}
               loading={assignToAccountsLoading}

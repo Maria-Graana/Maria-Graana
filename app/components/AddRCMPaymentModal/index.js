@@ -55,6 +55,7 @@ const AddRCMPaymentModal = ({
       setCollapsed(!isCollapsed)
     }
   }
+  console.log(rcmPayment)
   return (
     <Modal isVisible={rcmPayment.visible}>
       <View style={styles.modalMain}>
@@ -175,7 +176,7 @@ const AddRCMPaymentModal = ({
 
           {
             rcmPayment.status && rcmPayment.paymentCategory !== 'token' ? <TouchableButton
-              disabled={(rcmPayment.status !== 'open' && rcmPayment.status !== 'pendingSales')}
+              disabled={(rcmPayment.status !== 'open' && rcmPayment.status !== 'pendingSales' && rcmPayment.status !== 'notCleared')}
               containerBackgroundColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'}
               containerStyle={[styles.bookedBtn, {
                 width: '100%',

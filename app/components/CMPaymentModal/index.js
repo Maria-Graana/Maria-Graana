@@ -216,7 +216,7 @@ const CMPaymentModal = ({
 
           {
             CMPayment.status ? <TouchableButton
-              disabled={(CMPayment.status !== 'open' && CMPayment.status !== 'pendingSales')}
+              disabled={(CMPayment.status !== 'open' && CMPayment.status !== 'pendingSales' && CMPayment.status !== 'notCleared')}
               containerBackgroundColor={(CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || CMPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'}
               containerStyle={[styles.bookedBtn, {
                 width: '100%',

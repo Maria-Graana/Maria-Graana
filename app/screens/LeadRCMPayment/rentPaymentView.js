@@ -96,6 +96,7 @@ const RentPaymentView = (props) => {
       commission.addedBy === 'buyer' && commission.paymentCategory === 'token' && commission.active
   )
   let showMenu = helper.showBuyerTokenMenu(tokenPayment)
+  if (singleCommission) showMenu = helper.showSingleBuyerTokenMenu(tokenPayment)
   return (
     <View>
       <TouchableOpacity

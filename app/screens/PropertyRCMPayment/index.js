@@ -80,6 +80,7 @@ class PropertyRCMPayment extends React.Component {
       rentNotZero: false,
       tokenMenu: false,
       editTextInput: true,
+      assignToAccountsLoading: false,
     }
   }
 
@@ -110,6 +111,7 @@ class PropertyRCMPayment extends React.Component {
     this.setState({
       modalValidation: false,
       addPaymentLoading: false,
+      assignToAccountsLoading: false,
       editable: false,
     })
     dispatch(setRCMPayment(newData))
@@ -672,7 +674,7 @@ class PropertyRCMPayment extends React.Component {
         addPaymentLoading: true,
       })
       if (Number(rcmPayment.installmentAmount) <= 0) {
-        this.setState({ buyerNotZero: true, addPaymentLoading: false })
+        this.setState({ buyerNotZero: true, addPaymentLoading: false, assignToAccountsLoading: false })
         return
       }
       if (editable === false) {
@@ -683,7 +685,6 @@ class PropertyRCMPayment extends React.Component {
           armsUserId: user.id,
         }
         delete body.visible
-
         axios
           .post(`/api/leads/project/payments`, body)
           .then((response) => {
@@ -718,8 +719,10 @@ class PropertyRCMPayment extends React.Component {
         let paymentID = body.id
         delete body.visible
         delete body.id
-        body.status = 'pendingAccount'
-        if (body.paymentCategory === 'token') baseUrl = `/api/leads/tokenPayment`
+        if (body.paymentCategory === 'token') {
+           body.status = 'pendingAccount'
+          baseUrl = `/api/leads/tokenPayment`
+        }
         axios
           .patch(`${baseUrl}?id=${paymentID}`, body)
           .then((response) => {
@@ -973,7 +976,9 @@ class PropertyRCMPayment extends React.Component {
             await dispatch(
               setRCMPayment({ ...rcmPayment, visible: false, status: 'pendingAccount' })
             )
-            this.submitCommissionPayment()
+            this.setState({ assignToAccountsLoading: true }, () => {
+              this.submitCommissionPayment();
+            })
           },
         },
       ],
@@ -1016,6 +1021,7 @@ class PropertyRCMPayment extends React.Component {
       rentNotZero,
       tokenMenu,
       editTextInput,
+      assignToAccountsLoading,
     } = this.state
     const { navigation, user } = this.props
 
@@ -1052,9 +1058,14 @@ class PropertyRCMPayment extends React.Component {
           onModalCloseClick={this.onModalCloseClick}
           handleCommissionChange={this.handleCommissionChange}
           modalValidation={modalValidation}
-          goToPayAttachments={() => this.goToPayAttachments()}
-          submitCommissionPayment={() => this.submitCommissionPayment()}
+          submitCommissionPayment={() => {
+            this.setState({ addPaymentLoading: true }, () => {
+              this.submitCommissionPayment()
+            })
+          }}
           addPaymentLoading={addPaymentLoading}
+          assignToAccountsLoading={assignToAccountsLoading}
+          goToPayAttachments={() => this.goToPayAttachments()}
           lead={lead}
           paymentNotZero={buyerNotZero}
           editTextInput={editTextInput}

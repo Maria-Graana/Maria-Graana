@@ -207,7 +207,7 @@ class PropAgentTile extends React.Component {
                   </View>
                 </Menu>
               ) : null}
-              {show && screen === 'viewing' ? (
+              {screen === 'viewing' ? (
                 <Menu
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -222,15 +222,19 @@ class PropAgentTile extends React.Component {
                   <View>
                     {viewingMenu && screen && screen === 'viewing' ? (
                       <View>
-                        {data.diaries &&
-                        data.diaries.length &&
-                        data.diaries[0].status === 'pending' ? (
+                        {show ? (
                           <View>
                             <Menu.Item
                               onPress={() => {
                                 this.props.goToPropertyComments(data)
                               }}
                               title="Comments"
+                            />
+                              <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="GeoTag"
                             />
                             <Menu.Item
                               onPress={() => {
@@ -238,32 +242,32 @@ class PropAgentTile extends React.Component {
                               }}
                               title="Viewing done"
                             />
-                            {/* <Menu.Item
-                              onPress={() => {
-                                this.props.cancelViewing(data)
-                              }}
-                              title="Cancel Viewing"
-                            /> */}
                           </View>
                         ) : (
                           <View>
+                              <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="GeoTag"
+                            />
                             <Menu.Item
                               onPress={() => {
                                 this.props.goToPropertyComments(data)
                               }}
                               title="Comments"
                             />
-                            {/* <Menu.Item
-                              onPress={() => {
-                                this.props.deleteProperty(data)
-                              }}
-                              title="Remove from the list"
-                            /> */}
                           </View>
                         )}
                       </View>
                     ) : (
                       <View>
+                          <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="GeoTag"
+                            />
                         <Menu.Item
                           onPress={() => {
                             this.props.goToPropertyComments(data)

@@ -161,7 +161,7 @@ const AddRCMPaymentModal = ({
               <TouchableOpacity
               style={[styles.addPaymentBtn, 
                 {backgroundColor: rcmPayment.status === 'pendingAccount' ?  '#bebebe' : '#fff',
-                borderColor : rcmPayment.status === 'pendingAccount' ?  '#bebebe' : '#fff',
+                borderColor : rcmPayment.status === 'pendingAccount' ?  '#bebebe' : AppStyles.colors.primaryColor,
               }]}
                 disabled={rcmPayment.status === 'pendingAccount'}
                 onPress={() => {
@@ -186,6 +186,7 @@ const AddRCMPaymentModal = ({
                 borderColor:(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor : '#bebebe'
               }]}
               label={'ASSIGN TO ACCOUNTS'}
+              textColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales') ? '#fff' : AppStyles.colors.primaryColor }
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={18}
               loading={addPaymentLoading}
@@ -201,6 +202,7 @@ const AddRCMPaymentModal = ({
             borderColor: (rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#bebebe'
            }]}
             containerBackgroundColor={( rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#bebebe' }
+            textColor={( rcmPayment.status !== 'pendingAccount') ? '#fff' : AppStyles.colors.primaryColor}
             disabled={rcmPayment.status === 'pendingAccount'}
             label={'OK'}
             fontFamily={AppStyles.fonts.boldFont}

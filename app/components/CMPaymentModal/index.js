@@ -227,6 +227,7 @@ const CMPaymentModal = ({
               marginVertical: 15,
               borderColor:(CMPayment.status === 'open' || CMPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor : '#bebebe'
             }]}
+            textColor={(CMPayment.status === 'open' || CMPayment.status === 'pendingSales') ? '#fff' : AppStyles.colors.primaryColor }
               label={'ASSIGN TO ACCOUNTS'}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={18}
@@ -245,6 +246,7 @@ const CMPaymentModal = ({
                }]}
                 label={'OK'}
                 fontFamily={AppStyles.fonts.boldFont}
+                textColor={( CMPayment.status !== 'pendingAccount') ? '#fff' : AppStyles.colors.primaryColor}
                 containerBackgroundColor={( CMPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#bebebe' }
                 fontSize={18}
                 loading={addPaymentLoading}

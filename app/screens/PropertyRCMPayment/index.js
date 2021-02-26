@@ -719,9 +719,10 @@ class PropertyRCMPayment extends React.Component {
         let paymentID = body.id
         delete body.visible
         delete body.id
+        body.status = rcmPayment.status;
         if (body.paymentCategory === 'token') {
-           body.status = 'pendingAccount'
           baseUrl = `/api/leads/tokenPayment`
+          body.status = 'pendingAccount'
         }
         axios
           .patch(`${baseUrl}?id=${paymentID}`, body)

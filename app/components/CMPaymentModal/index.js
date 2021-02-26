@@ -217,14 +217,14 @@ const CMPaymentModal = ({
           {
             CMPayment.status ? <TouchableButton
               disabled={(CMPayment.status !== 'open' && CMPayment.status !== 'pendingSales')}
-              containerBackgroundColor={(CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'}
+              containerBackgroundColor={(CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || CMPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'}
               containerStyle={[styles.bookedBtn, {
                 width: '100%',
                 marginVertical: 15,
-                borderColor:(CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'
+                borderColor:(CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || CMPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'
               }]}
               label={'ASSIGN TO ACCOUNTS'}
-              textColor={(CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? '#fff' : '#f3f5f7' }
+              textColor={(CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || CMPayment.status === 'notCleared' ) ? '#fff' : '#f3f5f7' }
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={18}
               loading={addPaymentLoading}

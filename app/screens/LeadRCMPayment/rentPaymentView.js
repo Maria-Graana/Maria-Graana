@@ -92,7 +92,8 @@ const RentPaymentView = (props) => {
   )
   const tokenPayment = _.find(
     lead.commissions,
-    (commission) => commission.addedBy === 'buyer' && commission.paymentCategory === 'token'
+    (commission) =>
+      commission.addedBy === 'buyer' && commission.paymentCategory === 'token' && commission.active
   )
   let showMenu = helper.showBuyerTokenMenu(tokenPayment)
   return (
@@ -150,6 +151,7 @@ const RentPaymentView = (props) => {
           showMenu={showMenu}
           confirmTokenAction={confirmTokenAction}
           singleCommission={singleCommission}
+          onSubmitNewToken={onAddCommissionPayment}
         />
       ) : null}
       <DocTile

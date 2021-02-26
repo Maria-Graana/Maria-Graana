@@ -30,39 +30,43 @@ class TokenTile extends Component {
         : null
     }
   }
+
   findStatusLabel = () => {
     const { data } = this.props
     let showStatus = { label: '', value: '' }
     if (data && data.status != '') {
-      showStatus = StaticData.tokenStatusOptions.find((item) => {
-        return item.value === data.status && item
+      StaticData.tokenStatusOptions.map((item) => {
+        if (item.value === data.status) {
+          showStatus.label = item.label
+          showStatus.value = item.value
+        }
       })
       if (showStatus) {
         if (StaticData.paymentStatuses.includes(showStatus.value)) {
-          // showStatus.label = 'At Accounts' + '\n' + '(' + showStatus.label + ')'
+          showStatus.label = `At Account${'\n'}(${showStatus.label})`
           return showStatus
         } else {
           return showStatus
         }
       }
     }
-    console.log('findStatusLabel: ', showStatus)
     return showStatus
   }
+
   findStatusColor = (showStatus) => {
     const { showMenu } = this.props
-    let statusColor =
-      (showStatus && showStatus.value === StaticData.leadClearedStatus) || !showMenu
-        ? styles.statusGreen
-        : showStatus.value === 'notCleared' || showStatus.value === 'rejected'
-        ? styles.statusRed
-        : styles.statusYellow
+    let statusColor = styles.statusGreen
+    if (showMenu) statusColor = styles.statusYellow
+    if (showStatus && showStatus.value === 'pendingSales') statusColor = styles.statusYellow
+    if (showStatus && showStatus.value === 'notCleared') statusColor = styles.statusRed
+    if (showStatus && showStatus.value === 'rejected') statusColor = styles.statusRed
+    if (showStatus && showStatus.value === 'given_back_to_buyer') statusColor = styles.statusRed
     return statusColor
   }
 
   render() {
     const {
-      editTile = false,
+      editTile,
       title,
       commissionEdit = false,
       onPaymentLongPress,
@@ -73,26 +77,28 @@ class TokenTile extends Component {
       confirmTokenAction,
       menuData,
       singleCommission = false,
+      onSubmitNewToken,
     } = this.props
-    console.log('data.status: ', data.status)
-    console.log('showMenu: ', showMenu)
     let showStatus = { label: '', value: '' }
     showStatus = this.findStatusLabel()
     var statusColor = this.findStatusColor(showStatus)
     let menuList = helper.selectBuyerTokenMenu(data)
     if (singleCommission) menuList = helper.selectSingleBuyerTokenMenu(data)
-    console.log('before: ')
     // showStatus = this.findAccountsStatus(showStatus)
-
+    console.log('return showStatus.label: ', showStatus.label)
     return data ? (
       <TouchableOpacity
-      onLongPress={() => {
-        data.status === 'at_buyer_agent' ? onPaymentLongPress(data) : null
-      }}
+        onLongPress={() => {
+          data.status === 'at_buyer_agent' ? onPaymentLongPress(data) : null
+        }}
         disabled={commissionEdit}
         style={{ zIndex: 10, flex: 1 }}
         onPress={() => {
-          data.status === 'at_buyer_agent' ? editTile(data) : null
+          data.status === 'at_buyer_agent' ||
+          data.status === 'pendingSales' ||
+          data.status === 'notCleared'
+            ? editTile(data)
+            : null
         }}
       >
         <View style={[styles.tileTopWrap, { backgroundColor: commissionEdit ? '#ddd' : '#fff' }]}>
@@ -119,7 +125,9 @@ class TokenTile extends Component {
                           return (
                             <Menu.Item
                               onPress={() => {
-                                confirmTokenAction(data, item.value)
+                                if (data.status === 'given_back_to_buyer')
+                                  onSubmitNewToken('buyer', 'token')
+                                else confirmTokenAction(data, item.value)
                               }}
                               title={item.label}
                             />

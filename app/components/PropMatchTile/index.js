@@ -123,6 +123,7 @@ class PropMatchTile extends React.Component {
       menuShow,
       screen,
       toggleCheckListModal,
+      propertyGeoTagging
     } = this.props
     let imagesList = this.checkImages()
     let show = isMenuVisible
@@ -290,39 +291,33 @@ class PropMatchTile extends React.Component {
                       data.diaries.length &&
                       data.diaries[0].status === 'pending' ? (
                         <View>
-                          {/* <Menu.Item
-                            onPress={() => {
-                              this.props.goToPropertyComments(data)
-                            }}
-                            title="Comments"
-                          /> */}
+                            <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="GeoTag"
+                            />
                           <Menu.Item
                             onPress={() => {
                               toggleCheckListModal(true, data)
                             }}
                             title="Viewing done"
                           />
-                          {/* <Menu.Item
-                            onPress={() => {
-                              this.props.cancelViewing(data)
-                            }}
-                            title="Cancel Viewing"
-                          /> */}
                         </View>
                       ) : (
                         <View>
+                            <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="GeoTag"
+                            />
                           <Menu.Item
                             onPress={() => {
                               this.props.goToPropertyComments(data)
                             }}
                             title="Comments"
                           />
-                          {/* <Menu.Item
-                            onPress={() => {
-                              this.props.deleteProperty(data)
-                            }}
-                            title="Remove from the list"
-                          /> */}
                         </View>
                       )}
                     </View>

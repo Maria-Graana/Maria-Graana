@@ -78,6 +78,7 @@ class PropertyRCMPayment extends React.Component {
       sellerNotZero: false,
       rentNotZero: false,
       tokenMenu: false,
+      editTextInput: true,
     }
   }
 
@@ -594,9 +595,12 @@ class PropertyRCMPayment extends React.Component {
     })
   }
 
-  onAddCommissionPayment = (type) => {
+  onAddCommissionPayment = (type, paymentCategory) => {
     const { dispatch, rcmPayment } = this.props
-    dispatch(setRCMPayment({ ...rcmPayment, visible: true, addedBy: type }))
+    console.log('paymentCategory: ', paymentCategory)
+
+    console.log('editTextInput: ', this.state.editTextInput)
+    dispatch(setRCMPayment({ ...rcmPayment, visible: true, addedBy: type, paymentCategory }))
   }
 
   onModalCloseClick = () => {
@@ -613,7 +617,14 @@ class PropertyRCMPayment extends React.Component {
 
   setCommissionEditData = (data) => {
     const { dispatch } = this.props
-    this.setState({ editable: true })
+    if (data.paymentCategory === 'token') {
+      this.setState({
+        editTextInput: false,
+        editable: true,
+      })
+    } else {
+      this.setState({ editable: true })
+    }
     dispatch(setRCMPayment({ ...data, visible: true }))
   }
 
@@ -650,6 +661,7 @@ class PropertyRCMPayment extends React.Component {
   submitCommissionPayment = () => {
     const { rcmPayment, dispatch, user } = this.props
     const { lead, editable } = this.state
+    let baseUrl = `/api/leads/project/payments`
     if (
       rcmPayment.installmentAmount != null &&
       rcmPayment.installmentAmount != '' &&
@@ -668,9 +680,9 @@ class PropertyRCMPayment extends React.Component {
           ...rcmPayment,
           rcmLeadId: lead.id,
           armsUserId: user.id,
-          paymentCategory: 'commission',
         }
         delete body.visible
+
         axios
           .post(`/api/leads/project/payments`, body)
           .then((response) => {
@@ -701,9 +713,13 @@ class PropertyRCMPayment extends React.Component {
       } else {
         // commission update mode
         let body = { ...rcmPayment }
+        let paymentID = body.id
         delete body.visible
+        delete body.id
+        body.status = 'pendingAccount'
+        if (body.paymentCategory === 'token') baseUrl = `/api/leads/tokenPayment`
         axios
-          .patch(`/api/leads/project/payment?id=${body.id}`, body)
+          .patch(`${baseUrl}?id=${paymentID}`, body)
           .then((response) => {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
@@ -714,7 +730,7 @@ class PropertyRCMPayment extends React.Component {
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
                 // payment attachments
-                this.uploadAttachment(item, body.id)
+                this.uploadAttachment(item, paymentID)
               })
             } else {
               this.fetchLead()
@@ -976,6 +992,7 @@ class PropertyRCMPayment extends React.Component {
       buyerNotZero,
       rentNotZero,
       tokenMenu,
+      editTextInput,
     } = this.state
     const { navigation, user } = this.props
 
@@ -1017,6 +1034,7 @@ class PropertyRCMPayment extends React.Component {
           addPaymentLoading={addPaymentLoading}
           lead={lead}
           paymentNotZero={buyerNotZero}
+          editTextInput={editTextInput}
         />
         <DeleteModal
           isVisible={deletePaymentVisible}

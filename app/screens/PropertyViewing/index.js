@@ -4,6 +4,7 @@ import axios from 'axios'
 import moment from 'moment'
 import * as React from 'react'
 import { FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
+import * as Location from 'expo-location';
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
@@ -22,6 +23,7 @@ import StaticData from '../../StaticData'
 import styles from './style'
 import CheckListModal from '../../components/CheckListModal'
 import ViewCheckListModal from '../../components/ViewCheckListModal'
+import GeoTaggingModal from '../../components/GeotaggingModal'
 
 class PropertyViewing extends React.Component {
   constructor(props) {
@@ -57,14 +59,30 @@ class PropertyViewing extends React.Component {
       userFeedback: null,
       viewCheckListModal: false,
       selectedViewingData: null,
+      isGeoTaggingModalVisible: false,
+      locate_manually: false,
+      latitude: null,
+      longitude: null,
+      propsure_id: null,
+      selectedPropertyId: null,
     }
   }
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.fetchLead()
-      this.getCallHistory()
-      this.fetchProperties()
+      if (this.props.route.params && this.props.route.params.fromScreen === 'mapContainer' && this.props.route.params.mapValues) {
+        const {mapValues} = this.props.route.params;
+          this.setState({isGeoTaggingModalVisible: true , 
+            latitude: mapValues.lat,
+            longitude: mapValues.lng, 
+            propsure_id: mapValues.propsure_id,
+           })
+      }
+      else {
+        this.fetchLead()
+        this.getCallHistory()
+        this.fetchProperties()
+      }
     })
   }
 
@@ -597,6 +615,127 @@ class PropertyViewing extends React.Component {
     }
   }
 
+  convertLongitudeLattitude = (val) => {
+    if (val === '') {
+        return null
+    }
+    else if (typeof (val) === 'string' && val != '') {
+        return parseFloat(val);
+    }
+    else {
+        return val;
+    }
+
+}
+
+
+  propertyGeoTagging = (data) => {
+     // When user clicks geo tagging option from menu, this function is called
+    this.toggleMenu(false, data.id)
+    this.setState({
+      isGeoTaggingModalVisible: true,
+      locate_manually: data.locate_manually,
+      longitude: data.lng,
+      latitude: data.lat,
+      propsure_id: data.propsure_id,
+      selectedPropertyId: data.id,
+    })
+  }
+
+  hideGeoTaggingModal = () => {
+    // hide the geotagging modal, when cancel button is pressed
+    this.setState({
+      isGeoTaggingModalVisible: false,
+      locate_manually: false,
+      longitude: null,
+      latitude: null,
+      propsure_id: null,
+    })
+  }
+
+  propertyGeoTaggingDone = () => {
+ // Done button pressed from inside of the geotagging modal
+    const {lead, navigation} = this.props;
+    const {latitude, longitude, propsure_id, locate_manually, selectedPropertyId} = this.state;
+    if(latitude && longitude) {
+      let url = `/api/inventory/updateshortListedPRoperties?id=${selectedPropertyId}&leadId=${lead.id}`
+      let body = {
+        lat : this.convertLongitudeLattitude(latitude),
+        lng : this.convertLongitudeLattitude(longitude),
+        locate_manually,
+        propsure_id,
+        geotagged_date : propsure_id ? new Date() : null,
+      }
+      axios.patch(url, body).then ((response)=> {
+        if(response.data) {
+          this.hideGeoTaggingModal();
+          this.fetchProperties();
+          this.getCallHistory();
+          navigation.setParams({mapValues: null, fromScreen: null})
+        }
+      }).catch(error => {
+          console.log(error)
+      })
+    }
+    else {
+      alert('Latitude and Longitude values are required!')
+    }
+   
+   
+  }
+
+  goToMapsForGeotagging = () => {
+    // When user opts for geo tagging by maps
+    const { navigation } = this.props;
+    const { longitude, latitude, propsure_id } = this.state;
+    this.setState({ isGeoTaggingModalVisible: false }, () => {
+      navigation.navigate('MapContainer', {
+        mapValues: {
+          lat: latitude,
+          lng: longitude,
+          propsure_id: propsure_id,
+        },
+        screenName: 'Viewing',
+      })
+    })
+
+  }
+
+  handleMarkProperty = (value) => {
+    // check box for manual marking from maps or from current location
+    this.setState({
+      locate_manually: value,
+      propsure_id: null,
+      latitude: null,
+      longitude: null
+    });
+  }
+
+  handleLatLngChange = (value, name) => {
+    // lat lng value change, text input
+    if (name === 'lat') {
+      this.setState({ latitude: value })
+    }
+    else if(name === 'lng') {
+      this.setState({ longitude: value })
+    }
+  }
+
+  _getLocationAsync = async () => {
+    // get current lat/lng location of user when opting for auto mode
+    const { status } = await Location.requestPermissionsAsync()
+    if (status !== 'granted') {
+      alert('Permission to access location was denied')
+    }
+    const location = await Location.getCurrentPositionAsync();
+    if (location && location.coords && location.coords.latitude && location.coords.longitude) {
+      this.handleLatLngChange(location.coords.latitude, 'lat');
+      this.handleLatLngChange(location.coords.longitude, 'lng');
+    } else {
+      alert('Error while getting location!')
+    }
+  }
+
   render() {
     const {
       menuShow,
@@ -621,6 +760,11 @@ class PropertyViewing extends React.Component {
       userFeedback,
       selectedViewingData,
       viewCheckListModal,
+      isGeoTaggingModalVisible,
+      locate_manually,
+      latitude,
+      longitude,
+      propsure_id,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = true
@@ -634,6 +778,19 @@ class PropertyViewing extends React.Component {
             color={'#0277FD'}
           />
         </View>
+
+        <GeoTaggingModal isGeoTaggingModalVisible={isGeoTaggingModalVisible}
+          hideGeoTaggingModal={this.hideGeoTaggingModal}
+          handleMarkProperty={this.handleMarkProperty}
+          locate_manually={locate_manually}
+          latitude={latitude}
+          longitude={longitude}
+          propsure_id={propsure_id}
+          handleLatLngChange={this.handleLatLngChange}
+          getCurrentLocation={this._getLocationAsync}
+          propertyGeoTaggingDone={this.propertyGeoTaggingDone}
+          goToMapsForGeotagging={this.goToMapsForGeotagging}
+        />
         {/* <HistoryModal
           getCallHistory={this.getCallHistory}
           navigation={navigation}
@@ -700,6 +857,7 @@ class PropertyViewing extends React.Component {
                         toggleMenu={this.toggleMenu}
                         menuShow={menuShow}
                         screen={'viewing'}
+                        propertyGeoTagging={this.propertyGeoTagging}
                       />
                     ) : (
                       <PropAgentTile
@@ -719,6 +877,7 @@ class PropertyViewing extends React.Component {
                         menuShow={menuShow}
                         toggleMenu={this.toggleMenu}
                         screen={'viewing'}
+                        propertyGeoTagging={this.propertyGeoTagging}
                       />
                     )}
                     <View>{this.checkStatus(item.item)}</View>

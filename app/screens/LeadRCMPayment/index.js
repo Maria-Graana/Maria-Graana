@@ -1134,6 +1134,7 @@ class LeadRCMPayment extends React.Component {
           })
       } else {
         // commission update mode
+        baseUrl=`/api/leads/project/payment` // for patch request
         let body = { ...rcmPayment }
         let paymentID = body.id
         delete body.visible
@@ -1369,6 +1370,20 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
+  assignToAccounts = () => {
+    Alert.alert('Assign to Accounts', 'Are you sure you want to assign this payment to accounts?', [
+      { text: 'No', style: 'cancel'},
+      {
+        text: 'Yes', onPress: async() => {
+          const { rcmPayment, dispatch } = this.props
+          await dispatch(setRCMPayment({ ...rcmPayment, visible: false, status: 'pendingAccount' }))
+          this.submitCommissionPayment();
+        }
+      },
+    ],
+      { cancelable: false })
+  }
+
   render() {
     const {
       menuShow,
@@ -1444,6 +1459,7 @@ class LeadRCMPayment extends React.Component {
           isVisible={isVisible}
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
+       
         />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}
@@ -1454,6 +1470,7 @@ class LeadRCMPayment extends React.Component {
           addPaymentLoading={addPaymentLoading}
           lead={lead}
           paymentNotZero={buyerNotZero}
+          assignToAccounts={() => this.assignToAccounts()}
         />
         {showWebView ? (
           <ViewDocs

@@ -685,7 +685,6 @@ class PropertyRCMPayment extends React.Component {
           armsUserId: user.id,
         }
         delete body.visible
-
         axios
           .post(`/api/leads/project/payments`, body)
           .then((response) => {
@@ -720,8 +719,10 @@ class PropertyRCMPayment extends React.Component {
         let paymentID = body.id
         delete body.visible
         delete body.id
-        body.status = 'pendingAccount'
-        if (body.paymentCategory === 'token') baseUrl = `/api/leads/tokenPayment`
+        if (body.paymentCategory === 'token') {
+           body.status = 'pendingAccount'
+          baseUrl = `/api/leads/tokenPayment`
+        }
         axios
           .patch(`${baseUrl}?id=${paymentID}`, body)
           .then((response) => {

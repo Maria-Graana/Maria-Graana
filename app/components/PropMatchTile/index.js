@@ -167,11 +167,11 @@ class PropMatchTile extends React.Component {
                 containerCustomStyle={{ position: 'relative' }}
               />
             ) : (
-              <Image
-                source={require('../../../assets/images/no-image-found.png')}
-                style={styles.noImage}
-              />
-            )}
+                <Image
+                  source={require('../../../assets/images/no-image-found.png')}
+                  style={styles.noImage}
+                />
+              )}
           </View>
           <View style={styles.imageCountViewStyle}>
             <Feather name={'camera'} color={'#fff'} size={16} />
@@ -272,7 +272,7 @@ class PropMatchTile extends React.Component {
                 </View>
               </Menu>
             ) : null}
-            {show && screen === 'viewing' ? (
+            {screen === 'viewing' ? (
               <Menu
                 visible={data.checkBox}
                 onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -287,16 +287,14 @@ class PropMatchTile extends React.Component {
                 <View>
                   {viewingMenu && screen && screen === 'viewing' ? (
                     <View>
-                      {data.diaries &&
-                      data.diaries.length &&
-                      data.diaries[0].status === 'pending' ? (
+                      {show ? (
                         <View>
-                            <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="GeoTag"
-                            />
+                          <Menu.Item
+                            onPress={() => {
+                              propertyGeoTagging(data)
+                            }}
+                            title="GeoTag"
+                          />
                           <Menu.Item
                             onPress={() => {
                               toggleCheckListModal(true, data)
@@ -305,32 +303,38 @@ class PropMatchTile extends React.Component {
                           />
                         </View>
                       ) : (
-                        <View>
+                          <View>
                             <Menu.Item
                               onPress={() => {
                                 propertyGeoTagging(data)
                               }}
                               title="GeoTag"
                             />
-                          <Menu.Item
-                            onPress={() => {
-                              this.props.goToPropertyComments(data)
-                            }}
-                            title="Comments"
-                          />
-                        </View>
-                      )}
+                            <Menu.Item
+                              onPress={() => {
+                                this.props.goToPropertyComments(data)
+                              }}
+                              title="Comments"
+                            />
+                          </View>
+                        )}
                     </View>
                   ) : (
-                    <View>
-                      <Menu.Item
-                        onPress={() => {
-                          this.props.goToPropertyComments(data)
-                        }}
-                        title="Comments"
-                      />
-                    </View>
-                  )}
+                      <View>
+                        <Menu.Item
+                          onPress={() => {
+                            propertyGeoTagging(data)
+                          }}
+                          title="GeoTag"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.goToPropertyComments(data)
+                          }}
+                          title="Comments"
+                        />
+                      </View>
+                    )}
                 </View>
               </Menu>
             ) : null}
@@ -345,8 +349,8 @@ class PropMatchTile extends React.Component {
                 />
               </View>
             ) : (
-              <View />
-            )}
+                <View />
+              )}
             <View style={{ flexDirection: 'row-reverse' }}>
               <FontAwesome
                 onPress={() => {

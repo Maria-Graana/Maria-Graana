@@ -22,6 +22,7 @@ import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import DeleteModal from '../../components/DeleteModal'
+import { Alert } from 'react-native'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -712,6 +713,7 @@ class PropertyRCMPayment extends React.Component {
           })
       } else {
         // commission update mode
+        baseUrl = `/api/leads/project/payment`
         let body = { ...rcmPayment }
         let paymentID = body.id
         delete body.visible
@@ -958,6 +960,20 @@ class PropertyRCMPayment extends React.Component {
     })
   }
 
+  assignToAccounts = () => {
+    Alert.alert('Assign to Accounts', 'Are you sure you want to assign this payment to accounts?', [
+      { text: 'No', style: 'cancel'},
+      {
+        text: 'Yes', onPress: async() => {
+          const { rcmPayment, dispatch } = this.props
+          await dispatch(setRCMPayment({ ...rcmPayment, visible: false, status: 'pendingAccount' }))
+          this.submitCommissionPayment();
+        }
+      },
+    ],
+      { cancelable: false })
+  }
+
   render() {
     const {
       menuShow,
@@ -1035,6 +1051,7 @@ class PropertyRCMPayment extends React.Component {
           lead={lead}
           paymentNotZero={buyerNotZero}
           editTextInput={editTextInput}
+          assignToAccounts={() => this.assignToAccounts()}
         />
         <DeleteModal
           isVisible={deletePaymentVisible}

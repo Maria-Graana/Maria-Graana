@@ -267,7 +267,7 @@ class AgentTile extends React.Component {
                               onPress={() => {
                                 propertyGeoTagging(data)
                               }}
-                              title="Add Geo Tagging"
+                              title="GeoTag"
                             />
                               <Menu.Item
                                 onPress={() => {
@@ -295,7 +295,7 @@ class AgentTile extends React.Component {
                               onPress={() => {
                                 propertyGeoTagging(data)
                               }}
-                              title="Add Geo Tagging"
+                              title="GeoTag"
                             />
                               <Menu.Item
                                 onPress={() => {
@@ -318,7 +318,7 @@ class AgentTile extends React.Component {
                               onPress={() => {
                                 propertyGeoTagging(data)
                               }}
-                              title="Add Geo Tagging"
+                              title="GeoTag"
                             />
                           <Menu.Item
                             onPress={() => {

@@ -76,7 +76,8 @@ const RentPaymentView = (props) => {
   )
   const tokenPayment = _.find(
     lead.commissions,
-    (commission) => commission.addedBy === 'buyer' && commission.paymentCategory === 'token'
+    (commission) =>
+      commission.addedBy === 'buyer' && commission.paymentCategory === 'token' && commission.active
   )
   let showMenu = helper.showSellerTokenMenu(tokenPayment)
   return (
@@ -159,7 +160,11 @@ const RentPaymentView = (props) => {
           data={tokenPayment}
           editTile={editTile}
           onPaymentLongPress={() => onPaymentLongPress(tokenPayment)}
-          commissionEdit={!buyerCommission}
+          commissionEdit={
+            tokenPayment.status === 'pendingSales' || tokenPayment.status === 'notCleared'
+              ? false
+              : true
+          }
           title={tokenPayment ? 'Token' : ''}
           toggleTokenMenu={toggleTokenMenu}
           tokenMenu={tokenMenu}
@@ -199,7 +204,7 @@ const RentPaymentView = (props) => {
               <TouchableOpacity
                 disabled={isLeadClosed}
                 style={styles.addPaymentBtn}
-                onPress={() => onAddCommissionPayment('buyer')}
+                onPress={() => onAddCommissionPayment('buyer', 'commission')}
               >
                 <Image
                   style={styles.addPaymentBtnImg}
@@ -227,7 +232,7 @@ const RentPaymentView = (props) => {
               <TouchableOpacity
                 disabled={isLeadClosed}
                 style={styles.addPaymentBtn}
-                onPress={() => onAddCommissionPayment('seller')}
+                onPress={() => onAddCommissionPayment('seller', 'commission')}
               >
                 <Image
                   style={styles.addPaymentBtnImg}

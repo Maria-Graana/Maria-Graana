@@ -783,6 +783,8 @@ const helper = {
           return StaticData.sellerTokenStatuses
         case 'given_to_property_owner':
           return StaticData.sellerTakeBackToken
+        case 'given_back_to_buyer':
+          return StaticData.addToken
         default:
           return null
       }
@@ -796,6 +798,8 @@ const helper = {
           return StaticData.singleBuyerTokenStatuses
         case 'given_to_property_owner':
           return StaticData.singlePropertyOwner
+        case 'given_back_to_buyer':
+          return StaticData.addToken
         default:
           return null
       }
@@ -808,6 +812,8 @@ const helper = {
         case 'at_buyer_agent':
           return true
         case 'given_to_property_owner':
+          return true
+        case 'given_back_to_buyer':
           return true
         default:
           return false
@@ -847,6 +853,8 @@ const helper = {
           return false
         case 'given_to_property_owner':
           return false
+        case 'given_back_to_buyer':
+          return true
         default:
           return false
       }

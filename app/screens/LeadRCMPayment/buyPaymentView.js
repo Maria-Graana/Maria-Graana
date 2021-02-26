@@ -95,7 +95,10 @@ class BuyPaymentView extends React.Component {
     )
     const tokenPayment = _.find(
       lead.commissions,
-      (commission) => commission.addedBy === 'buyer' && commission.paymentCategory === 'token'
+      (commission) =>
+        commission.addedBy === 'buyer' &&
+        commission.paymentCategory === 'token' &&
+        commission.active
     )
     let showMenu = helper.showBuyerTokenMenu(tokenPayment)
     return (
@@ -172,6 +175,7 @@ class BuyPaymentView extends React.Component {
             showMenu={showMenu}
             confirmTokenAction={confirmTokenAction}
             singleCommission={singleCommission}
+            onSubmitNewToken={onAddCommissionPayment}
           />
         ) : null}
 

@@ -85,7 +85,6 @@ class TokenTile extends Component {
     let menuList = helper.selectBuyerTokenMenu(data)
     if (singleCommission) menuList = helper.selectSingleBuyerTokenMenu(data)
     // showStatus = this.findAccountsStatus(showStatus)
-    console.log('return showStatus.label: ', showStatus.label)
     return data ? (
       <TouchableOpacity
         onLongPress={() => {

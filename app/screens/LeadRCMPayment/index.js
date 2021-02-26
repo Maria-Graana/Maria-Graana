@@ -966,13 +966,12 @@ class LeadRCMPayment extends React.Component {
 
   confirmTokenAction = (payment, status) => {
     const { dispatch } = this.props
-    console.log('payment: ', payment)
     // dispatch(setRCMPayment({ ...payment }))
     ActionSheet.show(
       {
         options: TOKENBUTTONS,
         cancelButtonIndex: CANCEL_INDEX,
-        title: 'Select an Option',
+        title: 'Are you sure you want to continue?',
       },
       (buttonIndex) => {
         if (buttonIndex === 0) {
@@ -1008,7 +1007,6 @@ class LeadRCMPayment extends React.Component {
     axios
       .patch(`${baseUrl}?id=${paymentID}`, body)
       .then((response) => {
-        console.log('response: ', response.data)
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = payment.paymentAttachments
           ? _.filter(payment.paymentAttachments, (item) => {
@@ -1064,7 +1062,6 @@ class LeadRCMPayment extends React.Component {
     fd.append('title', paymentAttachment.title)
     fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
     // ====================== API call for Attachments base on Payment ID
-    console.log(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
     axios
       .post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
       .then((res) => {
@@ -1109,8 +1106,6 @@ class LeadRCMPayment extends React.Component {
           baseUrl = `/api/leads/tokenPayment`
           body.status = 'at_buyer_agent'
         }
-        console.log('body: ', body)
-        console.log('baseUrl: ', baseUrl)
         axios
           .post(baseUrl, body)
           .then((response) => {
@@ -1134,30 +1129,37 @@ class LeadRCMPayment extends React.Component {
           })
       } else {
         // commission update mode
-        baseUrl=`/api/leads/project/payment` // for patch request
+        baseUrl = `/api/leads/project/payment` // for patch request
+        const { allProperties } = this.state
+        let property = allProperties[0]
+        let armsUserId =
+          property && property.armsuser && property.armsuser.id && property.armsuser.id
         let body = { ...rcmPayment }
         let paymentID = body.id
         delete body.visible
         delete body.remarks
         delete body.id
         if (body.paymentCategory === 'token') baseUrl = `/api/leads/tokenPayment`
-        console.log('UPDATE body: ', body)
-        console.log('baseURL: ', `${baseUrl}?id=${paymentID}`)
+        if (
+          (body.paymentCategory === 'token' && body.status === 'pendingSales') ||
+          (body.paymentCategory === 'token' && body.status === 'notCleared')
+        ) {
+          body.status = 'pendingAccount'
+        }
+        if (body.paymentCategory === 'token' && body.status === 'given_back_to_buyer') {
+          body.active = false
+        }
         axios
           .patch(`${baseUrl}?id=${paymentID}`, body)
           .then((response) => {
-            console.log('response: ', response.data)
             // upload only the new attachments that do not have id with them in object.
-            console.log('rcmPayment.paymentAttachments: ', rcmPayment.paymentAttachments)
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
                   return !_.has(item, 'id')
                 })
               : []
-            console.log('filterAttachmentsWithoutId: ', filterAttachmentsWithoutId)
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
-                console.log('item: ')
                 // payment attachments
                 this.uploadAttachment(item, paymentID)
               })
@@ -1346,7 +1348,6 @@ class LeadRCMPayment extends React.Component {
 
   onPaymentLongPress = (data) => {
     const { dispatch } = this.props
-    console.log('data: ', data)
     dispatch(setRCMPayment({ ...data }))
     ActionSheet.show(
       {
@@ -1371,17 +1372,24 @@ class LeadRCMPayment extends React.Component {
   }
 
   assignToAccounts = () => {
-    Alert.alert('Assign to Accounts', 'Are you sure you want to assign this payment to accounts?', [
-      { text: 'No', style: 'cancel'},
-      {
-        text: 'Yes', onPress: async() => {
-          const { rcmPayment, dispatch } = this.props
-          await dispatch(setRCMPayment({ ...rcmPayment, visible: false, status: 'pendingAccount' }))
-          this.submitCommissionPayment();
-        }
-      },
-    ],
-      { cancelable: false })
+    Alert.alert(
+      'Assign to Accounts',
+      'Are you sure you want to assign this payment to accounts?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            const { rcmPayment, dispatch } = this.props
+            await dispatch(
+              setRCMPayment({ ...rcmPayment, visible: false, status: 'pendingAccount' })
+            )
+            this.submitCommissionPayment()
+          },
+        },
+      ],
+      { cancelable: false }
+    )
   }
 
   render() {
@@ -1459,7 +1467,6 @@ class LeadRCMPayment extends React.Component {
           isVisible={isVisible}
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
-       
         />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}

@@ -22,6 +22,7 @@ const AddRCMPaymentModal = ({
   rcmPayment,
   goToPayAttachments,
   addPaymentLoading,
+  assignToAccountsLoading,
   lead,
   submitCommissionPayment,
   paymentNotZero,
@@ -185,7 +186,7 @@ const AddRCMPaymentModal = ({
               textColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales') ? '#fff' : '#f3f5f7' }
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={18}
-              loading={addPaymentLoading}
+              loading={assignToAccountsLoading}
               onPress={() => assignToAccounts()}
             />
               : null

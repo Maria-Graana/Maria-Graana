@@ -899,7 +899,7 @@ class PropertyRCMPayment extends React.Component {
       {
         options: TOKENBUTTONS,
         cancelButtonIndex: CANCEL_INDEX,
-        title: 'Select an Option',
+        title: 'Are you sure you want to continue?',
       },
       (buttonIndex) => {
         if (buttonIndex === 0) {
@@ -961,17 +961,24 @@ class PropertyRCMPayment extends React.Component {
   }
 
   assignToAccounts = () => {
-    Alert.alert('Assign to Accounts', 'Are you sure you want to assign this payment to accounts?', [
-      { text: 'No', style: 'cancel'},
-      {
-        text: 'Yes', onPress: async() => {
-          const { rcmPayment, dispatch } = this.props
-          await dispatch(setRCMPayment({ ...rcmPayment, visible: false, status: 'pendingAccount' }))
-          this.submitCommissionPayment();
-        }
-      },
-    ],
-      { cancelable: false })
+    Alert.alert(
+      'Assign to Accounts',
+      'Are you sure you want to assign this payment to accounts?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            const { rcmPayment, dispatch } = this.props
+            await dispatch(
+              setRCMPayment({ ...rcmPayment, visible: false, status: 'pendingAccount' })
+            )
+            this.submitCommissionPayment()
+          },
+        },
+      ],
+      { cancelable: false }
+    )
   }
 
   render() {

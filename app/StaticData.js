@@ -726,7 +726,7 @@ export default StaticData = {
   singlePropertyOwner: [{ label: 'Take Back from Property Owner', value: 'at_buyer_agent' }],
   addToken: [{ label: 'Add New Token', value: 'add_new_token' }],
   buyerTokenStatuses: [
-    { label: 'Give to property agent', value: 'at_property_agent_pending_verification' },
+    { label: 'Give to Property Agent', value: 'at_property_agent_pending_verification' },
     { label: 'Deposit to Accounts', value: 'pendingAccount' },
     { label: 'Give back to Buyer', value: 'given_back_to_buyer' },
   ],

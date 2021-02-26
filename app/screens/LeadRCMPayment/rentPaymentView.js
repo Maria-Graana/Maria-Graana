@@ -143,7 +143,7 @@ const RentPaymentView = (props) => {
         <TokenTile
           data={tokenPayment}
           editTile={editTile}
-          onPaymentLongPress={() => {}}
+          onPaymentLongPress={() => onPaymentLongPress(tokenPayment)}
           commissionEdit={!buyerCommission}
           title={tokenPayment ? 'Token' : ''}
           toggleTokenMenu={toggleTokenMenu}
@@ -216,7 +216,7 @@ const RentPaymentView = (props) => {
         </View>
       </View>
 
-      <InputField
+      {/* <InputField
         label={'TOKEN'}
         placeholder={'Enter Token Amount'}
         name={'token'}
@@ -232,8 +232,8 @@ const RentPaymentView = (props) => {
         editable={!isLeadClosed}
         showDate={true}
         dateStatus={{ status: tokenDateStatus, name: 'token' }}
-      />
-      {tokenNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+      /> */}
+      {/* {tokenNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null} */}
 
       {singleCommission && !buyer && !isLeadClosed ? (
         <TouchableOpacity

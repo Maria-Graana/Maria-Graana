@@ -1102,9 +1102,13 @@ class LeadRCMPayment extends React.Component {
           active: true,
         }
         delete body.visible
+        let toastMsg = 'Commission Payment Added'
+        let errorMsg = 'Error Adding Commission Payment'
         if (body.paymentCategory === 'token') {
           baseUrl = `/api/leads/tokenPayment`
           body.status = 'at_buyer_agent'
+          toastMsg = 'Token Payment Added'
+          errorMsg = 'Error Adding Token Payment'
         }
         axios
           .post(baseUrl, body)
@@ -1119,7 +1123,7 @@ class LeadRCMPayment extends React.Component {
               } else {
                 this.clearReduxAndStateValues()
                 this.fetchLead()
-                helper.successToast('Commission Payment Added')
+                helper.successToast(toastMsg)
               }
             }
           })
@@ -1129,6 +1133,8 @@ class LeadRCMPayment extends React.Component {
           })
       } else {
         // commission update mode
+        let toastMsg = 'Commission Payment Updated'
+        let errorMsg = 'Error Updating Commission Payment'
         baseUrl = `/api/leads/project/payment` // for patch request
         const { allProperties } = this.state
         let property = allProperties[0]
@@ -1139,7 +1145,11 @@ class LeadRCMPayment extends React.Component {
         delete body.visible
         delete body.remarks
         delete body.id
-        if (body.paymentCategory === 'token') baseUrl = `/api/leads/tokenPayment`
+        if (body.paymentCategory === 'token') {
+          baseUrl = `/api/leads/tokenPayment`
+          toastMsg = 'Token Payment Updated'
+          errorMsg = 'Error Updating Token Payment'
+        }
         if (
           (body.paymentCategory === 'token' && body.status === 'pendingSales') ||
           (body.paymentCategory === 'token' && body.status === 'notCleared')
@@ -1166,11 +1176,12 @@ class LeadRCMPayment extends React.Component {
             } else {
               this.fetchLead()
               this.clearReduxAndStateValues()
-              helper.successToast('Commission Payment Updated')
+              helper.successToast(toastMsg)
             }
           })
           .catch((error) => {
-            helper.errorToast('Error Updating Commission Payment', error)
+            helper.errorToast(errorMsg)
+            console.log('ERROR: ', error)
             this.clearReduxAndStateValues()
           })
       }

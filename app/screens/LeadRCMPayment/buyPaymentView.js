@@ -154,7 +154,7 @@ class BuyPaymentView extends React.Component {
           showDate={true}
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
         /> */}
-        {tokenNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+        {/* {tokenNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null} */}
         {!tokenPayment ? (
           <RCMBTN
             onClick={() => onAddCommissionPayment('buyer', 'token')}

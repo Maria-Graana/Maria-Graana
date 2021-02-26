@@ -55,7 +55,6 @@ const AddRCMPaymentModal = ({
       setCollapsed(!isCollapsed)
     }
   }
-  console.log(rcmPayment)
   return (
     <Modal isVisible={rcmPayment.visible}>
       <View style={styles.modalMain}>

@@ -203,7 +203,10 @@ const CMPaymentModal = ({
             !checkFirstFormToken && (
               <TouchableOpacity
                 disabled={CMPayment.status === 'pendingAccount'}
-                style={[styles.addPaymentBtn, {backgroundColor: CMPayment.status === 'pendingAccount' ?  '#bebebe' : '#fff'}]}
+                style={[styles.addPaymentBtn, 
+                  {backgroundColor: CMPayment.status === 'pendingAccount' ?  '#bebebe' : '#fff',
+                  borderColor : CMPayment.status === 'pendingAccount' ?  '#bebebe' : '#fff',
+                }]}
                 onPress={() => {
                   goToPayAttachments()
                 }}
@@ -222,6 +225,7 @@ const CMPaymentModal = ({
               containerBackgroundColor={( CMPayment.status === 'open' ||  CMPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor :  '#bebebe' }
               containerStyle={[styles.bookedBtn, { width: '100%', 
               marginVertical: 15,
+              borderColor:(CMPayment.status === 'open' || CMPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor : '#bebebe'
             }]}
               label={'ASSIGN TO ACCOUNTS'}
               fontFamily={AppStyles.fonts.boldFont}
@@ -235,7 +239,10 @@ const CMPaymentModal = ({
 
 
               <TouchableButton
-                containerStyle={[styles.bookedBtn, { width: '100%', marginVertical: 15, }]}
+                containerStyle={[styles.bookedBtn, { width: '100%', 
+                marginVertical: 15,
+                borderColor: (CMPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#bebebe'
+               }]}
                 label={'OK'}
                 fontFamily={AppStyles.fonts.boldFont}
                 containerBackgroundColor={( CMPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#bebebe' }

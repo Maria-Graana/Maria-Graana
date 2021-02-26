@@ -25,6 +25,8 @@ const AddRCMPaymentModal = ({
   lead,
   submitCommissionPayment,
   paymentNotZero,
+  editTextInput = true,
+  assignToAccounts,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -79,16 +81,18 @@ const AddRCMPaymentModal = ({
             formatValue={rcmPayment.installmentAmount}
             keyboardType={'numeric'}
             onChangeHandle={handleCommissionChange}
+            editable={editTextInput && rcmPayment.status !== 'pendingAccount'  }
           />
           {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {modalValidation === true &&
-          (rcmPayment.installmentAmount == null || rcmPayment.installmentAmount == '') ? (
-            <ErrorMessage errorMessage={'Required'} />
-          ) : null}
+            (rcmPayment.installmentAmount == null || rcmPayment.installmentAmount == '') ? (
+              <ErrorMessage errorMessage={'Required'} />
+            ) : null}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent
                 onValueChange={handleCommissionChange}
+                enabled={rcmPayment.status !== 'pendingAccount'}
                 data={StaticData.fullPaymentType}
                 name={'type'}
                 placeholder="Type"
@@ -106,6 +110,7 @@ const AddRCMPaymentModal = ({
             placeholder={'Details'}
             label={'DETAILS'}
             value={rcmPayment.details != '' ? rcmPayment.details : ''}
+            editable={rcmPayment.status !== 'pendingAccount'}
             formatValue={''}
             onChangeHandle={handleCommissionChange}
           />
@@ -146,15 +151,19 @@ const AddRCMPaymentModal = ({
                 keyExtractor={(item) => item.id.toString()}
               />
             ) : (
-              <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
-            )
+                <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
+              )
           ) : null}
 
           {rcmPayment.installmentAmount != null &&
             rcmPayment.installmentAmount != '' &&
             rcmPayment.type != '' && (
               <TouchableOpacity
-                style={styles.addPaymentBtn}
+              style={[styles.addPaymentBtn, 
+                {backgroundColor: rcmPayment.status === 'pendingAccount' ?  '#bebebe' : '#fff',
+                borderColor : rcmPayment.status === 'pendingAccount' ?  '#bebebe' : '#fff',
+              }]}
+                disabled={rcmPayment.status === 'pendingAccount'}
                 onPress={() => {
                   goToPayAttachments()
                 }}
@@ -167,39 +176,39 @@ const AddRCMPaymentModal = ({
               </TouchableOpacity>
             )}
 
-          {lead.commissions && lead.commissions.status === 'rejected' ? (
-            <View style={styles.reSubmitBtnMain}>
-              <TouchableButton
-                containerStyle={[styles.bookedBtn, { marginRight: 3 }]}
-                label={'Cancel'}
-                loading={false}
-                fontSize={16}
-                fontFamily={AppStyles.fonts.boldFont}
-                onPress={() => onModalCloseClick()}
-              />
-
-              <TouchableButton
-                containerStyle={[styles.bookedBtn, styles.reSubmitBtns]}
-                containerBackgroundColor={AppStyles.whiteColor.color}
-                label={'RE-SUBMIT'}
-                loaderColor={AppStyles.colors.primaryColor}
-                fontFamily={AppStyles.fonts.boldFont}
-                fontSize={16}
-                loading={addPaymentLoading}
-                textColor={AppStyles.colors.primaryColor}
-                onPress={() => submitCommissionPayment()}
-              />
-            </View>
-          ) : (
-            <TouchableButton
-              containerStyle={[styles.bookedBtn, { width: '100%' }]}
-              label={'OK'}
+          {
+            rcmPayment.status ? <TouchableButton
+              disabled={(rcmPayment.status !== 'open' && rcmPayment.status !== 'pendingSales')}
+              containerBackgroundColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor : '#bebebe'}
+              containerStyle={[styles.bookedBtn, {
+                width: '100%',
+                marginVertical: 15,
+                borderColor:(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor : '#bebebe'
+              }]}
+              label={'ASSIGN TO ACCOUNTS'}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={18}
               loading={addPaymentLoading}
-              onPress={() => submitCommissionPayment()}
+              onPress={() => assignToAccounts()}
             />
-          )}
+              : null
+          }
+
+
+          <TouchableButton
+            containerStyle={[styles.bookedBtn, { width: '100%', 
+            marginVertical: 15,
+            borderColor: (rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#bebebe'
+           }]}
+            containerBackgroundColor={( rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#bebebe' }
+            disabled={rcmPayment.status === 'pendingAccount'}
+            label={'OK'}
+            fontFamily={AppStyles.fonts.boldFont}
+            fontSize={18}
+            loading={addPaymentLoading}
+            onPress={() => submitCommissionPayment()}
+          />
+
         </View>
       </View>
     </Modal>

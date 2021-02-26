@@ -4,7 +4,7 @@ import Constants from 'expo-constants'
 
 const config = {
   development: {
-    apiPath: 'https://api.realtor.agency21.rocks',
+    apiPath: 'http://192.168.19.23:3050',
     mapUrl: 'https://maps.graana.rocks/api/map/',
     graanaUrl: 'https://dev.graana.rocks',
     channel: 'development',

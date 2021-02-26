@@ -173,7 +173,7 @@ const AddRCMPaymentModal = ({
             )}
 
           {
-            rcmPayment.status ? <TouchableButton
+            rcmPayment.status && rcmPayment.paymentCategory !== 'token' ? <TouchableButton
               disabled={(rcmPayment.status !== 'open' && rcmPayment.status !== 'pendingSales')}
               containerBackgroundColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales') ? AppStyles.colors.primaryColor : '#8baaef'}
               containerStyle={[styles.bookedBtn, {

@@ -3,7 +3,7 @@
 import * as Font from 'expo-font'
 import * as Sentry from 'sentry-expo'
 import { persistor, store } from './app/store'
-import { AppLoading } from 'expo'
+import AppLoading from 'expo-app-loading';
 import Constants from 'expo-constants'
 import { Ionicons } from '@expo/vector-icons'
 import { Provider as PaperProvider } from 'react-native-paper'

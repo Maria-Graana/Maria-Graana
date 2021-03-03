@@ -25,8 +25,7 @@ export default styles = StyleSheet.create({
         height: 40,
     },
     customIconStyle: {
-        top: 14,
-        fontSize: 15,
+        fontSize: 24,
     },
     searchTextContainerStyle: {
         flexDirection: 'row',

@@ -47,6 +47,28 @@
         "googleMaps": { "apiKey": "AIzaSyAn23x563AgxL5cANBS6wDNVjXeT7QCdJE" }
         },
       "userInterfaceStyle": "automatic",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.arms.graana.com",
+              "pathPrefix": "/rcmLead"
+            },
+            {
+              "scheme": "https",
+              "host": "*.arms.graana.com",
+              "pathPrefix": "/cmLead"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",

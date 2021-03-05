@@ -803,4 +803,50 @@ export default StaticData = {
     { value: 'geotagged', name: 'Geo Tagged' },
   ],
   graanaStatusFiltersPP: [{ value: 'published', name: 'All' }],
+  legalData: [
+    {
+      fileName: '20210121_171317_0.jpg',
+      size: 2586345,
+      title: 'Hdhdhd',
+      uri:
+        'file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540graanadevteam%252Farms/DocumentPicker/58004b03-9a72-431d-9311-8f5bc6732d21.jpg',
+      status: 'pending',
+    },
+    {
+      fileName: '20210121_171317_0.jpg',
+      size: 2586345,
+      title: 'Hdhdhd',
+      uri:
+        'file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540graanadevteam%252Farms/DocumentPicker/58004b03-9a72-431d-9311-8f5bc6732d21.jpg',
+      status: 'approved',
+    },
+    {
+      fileName: '20210121_171317_0.jpg',
+      size: 2586345,
+      title: 'Hdhdhd',
+      uri:
+        'file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540graanadevteam%252Farms/DocumentPicker/58004b03-9a72-431d-9311-8f5bc6732d21.jpg',
+      status: 'approved',
+    },
+  ],
+  BuyerLegalDocumentsList: [
+    { value: 'service_charge_agreement', name: 'SERVICE CHARGE AGREEMENT' },
+    { value: 'cnic', name: 'CNIC' },
+    { value: 'property_report_propsure', name: 'PROPERTY REPORT - PROPSURE' },
+    { value: 'sales_rent_agreement', name: 'SALES/RENT AGREEMENT' },
+    { value: 'initial_payment_receipt', name: 'INITIAL PAYMENT RECEIPT' },
+  ],
+  SellerLegalDocumentsList: [
+    { value: 'sole_multi_agency_agreement', name: 'SOLE/MULTI AGENCY AGREEMENT' },
+    { value: 'cnic', name: 'CNIC' },
+    { value: 'base_property_report_propsure', name: 'BASIC PROPERTY REPORT - PROPSURE' },
+    { value: 'sales_rent_agreement', name: 'SALES/RENT AGREEMENT' },
+    { value: 'initial_payment_receipt', name: 'INITIAL PAYMENT RECEIPT' },
+  ],
+  legalStatuses: [
+    { value: 'pending', name: 'pending' },
+    { value: 'pending_legal', name: 'pending legal' },
+    { value: 'rejected', name: 'Rejected' },
+    { value: 'approved', name: 'Approved' },
+  ],
 }

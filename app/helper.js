@@ -1,25 +1,24 @@
 /** @format */
 
-import { Linking } from 'react-native'
-import { Toast, Content } from 'native-base'
-import moment from 'moment-timezone'
-import StaticData from './StaticData'
-import { formatPrice } from './PriceFormate'
-import { intFormatPrice } from './components/PriceFormate'
-import AppStyles from './AppStyles'
-import DiaryImg from '../assets/img/diary-icon-l.png'
-import InventoryImg from '../assets/img/properties-icon-l.png'
-import TeamDiaryImg from '../assets/img/teams-diary-icon-l.png'
-import LeadsImg from '../assets/img/lead-icon-l.png'
-import DashboardImg from '../assets/img/dashboard-icon-l.png'
-import TargetsImg from '../assets/img/target-icon-l.png'
-import ClientsImg from '../assets/img/clients-icon-l.png'
 import * as Contacts from 'expo-contacts'
-import * as Sentry from 'sentry-expo'
-import _ from 'underscore'
 import * as Notifications from 'expo-notifications'
-import TimerNotification from './LocalNotifications'
+import moment from 'moment-timezone'
+import { Toast } from 'native-base'
+import { Linking } from 'react-native'
+import _ from 'underscore'
+import ClientsImg from '../assets/img/clients-icon-l.png'
+import DashboardImg from '../assets/img/dashboard-icon-l.png'
+import DiaryImg from '../assets/img/diary-icon-l.png'
+import LeadsImg from '../assets/img/lead-icon-l.png'
+import InventoryImg from '../assets/img/properties-icon-l.png'
+import TargetsImg from '../assets/img/target-icon-l.png'
+import TeamDiaryImg from '../assets/img/teams-diary-icon-l.png'
+import AppStyles from './AppStyles'
+import { intFormatPrice } from './components/PriceFormate'
 import Ability from './hoc/Ability'
+import TimerNotification from './LocalNotifications'
+import { formatPrice } from './PriceFormate'
+import StaticData from './StaticData'
 
 const helper = {
   successToast(message) {
@@ -859,6 +858,18 @@ const helper = {
           return false
       }
     }
+  },
+  setLegalListing(list, data) {
+    for (let i = 0; i < list.length; i++) {
+      for (let y = 0; y < data.length; y++) {
+        if (list[i].value === data[y].category) {
+          let name = list[i].name
+          list[i] = data[y]
+          list[i].name = name
+        }
+      }
+    }
+    return list
   },
 }
 

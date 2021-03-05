@@ -1,37 +1,31 @@
 /** @format */
 
-import moment from 'moment'
+import { CheckBox } from 'native-base'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
-import { CheckBox } from 'native-base'
 import _ from 'underscore'
+import RoundPlus from '../../../assets/img/roundPlus.png'
 import AppStyles from '../../AppStyles'
 import CommissionTile from '../../components/CommissionTile'
 import DocTile from '../../components/DocTile'
+import ErrorMessage from '../../components/ErrorMessage'
 import InputField from '../../components/InputField'
 import PickerComponent from '../../components/Picker'
-import Ability from '../../hoc/Ability'
-import ErrorMessage from '../../components/ErrorMessage'
-import styles from './styles'
 import RCMBTN from '../../components/RCMBTN'
-import RoundPlus from '../../../assets/img/roundPlus.png'
 import TokenTile from '../../components/TokenTile'
 import helper from '../../helper'
+import Ability from '../../hoc/Ability'
+import styles from './styles'
 
 const RentPaymentView = (props) => {
   const {
-    token,
     pickerData,
     handleForm,
     formData,
     handleMonthlyRentPress,
-    handleTokenAmountChange,
-    handleTokenAmountPress,
     lead,
     showAndHideStyling,
     showStylingState,
-    tokenPriceFromat,
-    tokenDateStatus,
     monthlyFormatStatus,
     onAddCommissionPayment,
     editTile,
@@ -49,7 +43,6 @@ const RentPaymentView = (props) => {
     legalCheckList,
     downloadLegalDocs,
     onPaymentLongPress,
-    tokenNotZero,
     rentNotZero,
     deleteDoc,
     activityBool,
@@ -57,6 +50,7 @@ const RentPaymentView = (props) => {
     toggleTokenMenu,
     tokenMenu,
     confirmTokenAction,
+    closeLegalDocument,
   } = props
   let property = currentProperty[0]
   let subRole =
@@ -235,7 +229,7 @@ const RentPaymentView = (props) => {
         dateStatus={{ status: tokenDateStatus, name: 'token' }}
       /> */}
       {/* {tokenNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null} */}
-
+      {}
       {singleCommission && !buyer && !isLeadClosed ? (
         <TouchableOpacity
           disabled={commissionNotApplicableSeller === true}
@@ -260,6 +254,16 @@ const RentPaymentView = (props) => {
           </Text>
         </TouchableOpacity>
       ) : null}
+      {buyerCommission && (
+        <RCMBTN
+          onClick={() => closeLegalDocument('buyer')}
+          btnImage={RoundPlus}
+          btnText={'UPLOAD LEGAL DOCUMENTS'}
+          checkLeadClosedOrNot={false}
+          // isLeadClosed={}
+          hiddenBtn={commissionNotApplicableBuyer}
+        />
+      )}
 
       {lead.commissions ? (
         buyer ? (
@@ -319,7 +323,16 @@ const RentPaymentView = (props) => {
           </Text>
         </TouchableOpacity>
       ) : null}
-
+      {sellerCommission && (
+        <RCMBTN
+          onClick={() => closeLegalDocument('seller')}
+          btnImage={RoundPlus}
+          btnText={'UPLOAD LEGAL DOCUMENTS'}
+          checkLeadClosedOrNot={false}
+          // isLeadClosed={}
+          hiddenBtn={commissionNotApplicableSeller}
+        />
+      )}
       {lead.commissions ? (
         seller ? (
           <CommissionTile

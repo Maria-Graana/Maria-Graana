@@ -1,35 +1,29 @@
 /** @format */
 
 import React from 'react'
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native'
-import AppStyles from '../../AppStyles'
-import styles from './styles'
-import { Ionicons } from '@expo/vector-icons'
-import PickerComponent from '../../components/Picker'
-import moment from 'moment'
-import { formatPrice } from '../../PriceFormate'
-import InputField from '../../components/InputField'
-import CommissionTile from '../../components/CommissionTile'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
 import _ from 'underscore'
-import Ability from '../../hoc/Ability'
+import RoundPlus from '../../../assets/img/roundPlus.png'
+import AppStyles from '../../AppStyles'
+import CommissionTile from '../../components/CommissionTile'
+import InputField from '../../components/InputField'
+import PickerComponent from '../../components/Picker'
+import RCMBTN from '../../components/RCMBTN'
 import TokenTile from '../../components/TokenTile'
 import helper from '../../helper'
+import Ability from '../../hoc/Ability'
+import styles from './styles'
 
 const RentPaymentView = (props) => {
   const {
-    token,
     pickerData,
     handleForm,
     formData,
     handleMonthlyRentPress,
-    handleTokenAmountChange,
-    handleTokenAmountPress,
     lead,
     showAndHideStyling,
     showStylingState,
-    tokenPriceFromat,
-    tokenDateStatus,
     monthlyFormatStatus,
     onAddCommissionPayment,
     editTile,
@@ -40,6 +34,7 @@ const RentPaymentView = (props) => {
     toggleTokenMenu,
     tokenMenu,
     confirmTokenAction,
+    closeLegalDocument,
   } = props
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
@@ -189,6 +184,12 @@ const RentPaymentView = (props) => {
         showDate={true}
         dateStatus={{ status: tokenDateStatus, name: 'token' }}
       /> */}
+      <RCMBTN
+        onClick={closeLegalDocument}
+        btnImage={RoundPlus}
+        btnText={'UPLOAD LEGAL DOCUMENTS'}
+        checkLeadClosedOrNot={false}
+      />
       {lead.commissions ? (
         buyer ? (
           <CommissionTile

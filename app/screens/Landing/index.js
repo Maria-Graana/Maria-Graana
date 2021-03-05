@@ -78,9 +78,9 @@ class Landing extends React.Component {
     }
   }
 
-  _handleRedirectInForeground = async (event) => {
+  _handleRedirectInForeground = (event) => {
     const { navigation } = this.props;
-    const { path } = await Linking.parseInitialURLAsync(event.url)
+    const { path } = Linking.parse(event.url)
     const pathArray = path?.split('/') ?? []
       const leadId = pathArray[pathArray.length - 1];
       const purposeTab = pathArray.includes('cmLead')

@@ -71,10 +71,10 @@ class LegalTile extends React.Component {
   }
 
   MenuTile = () => {
-    const { data, index, submitMenu } = this.props
+    const { data, submitMenu, downloadLegalDocs } = this.props
     const { menuToggle } = this.state
     return (
-      <View style={styles.legalBtnView}>
+      <TouchableOpacity onPress={() => downloadLegalDocs(data)} style={styles.legalBtnView}>
         <AntDesign
           style={styles.checkCircle}
           name="checkcircle"
@@ -132,17 +132,17 @@ class LegalTile extends React.Component {
             </Menu>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
 
   StatusTile = () => {
-    const { data } = this.props
+    const { data, downloadLegalDocs } = this.props
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)
 
     return (
-      <View style={styles.legalBtnView}>
+      <TouchableOpacity onPress={() => downloadLegalDocs(data)} style={styles.legalBtnView}>
         <AntDesign
           style={styles.checkCircle}
           name="checkcircle"
@@ -165,7 +165,7 @@ class LegalTile extends React.Component {
             </Text>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
 

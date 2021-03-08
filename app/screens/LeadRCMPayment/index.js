@@ -109,6 +109,7 @@ class LeadRCMPayment extends React.Component {
       rentNotZero: false,
       tokenMenu: false,
       assignToAccountsLoading: false,
+      legalDocLoader: false,
     }
   }
 
@@ -509,20 +510,23 @@ class LeadRCMPayment extends React.Component {
     this.setState({ isVisible: false })
   }
 
-  showLeadPaymentModal = () => {
+  showLeadPaymentModal = async () => {
     const { lead } = this.state
     if (lead.commissions.length) {
-      if (helper.checkClearedStatuses(lead)) {
+      let { count } = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, count)) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
           isVisible: true,
           checkReasonValidation: '',
+          legalDocLoader: false,
         })
       } else {
         this.setState({
           reasons: StaticData.leadCloseReasons,
           isVisible: true,
           checkReasonValidation: '',
+          legalDocLoader: false,
         })
       }
     } else {
@@ -531,6 +535,17 @@ class LeadRCMPayment extends React.Component {
         isVisible: true,
         checkReasonValidation: '',
       })
+    }
+  }
+
+  getLegalDocumentsCount = async () => {
+    const { lead } = this.props
+    this.setState({ legalDocLoader: true })
+    try {
+      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      return res.data
+    } catch (error) {
+      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
     }
   }
 
@@ -1459,6 +1474,7 @@ class LeadRCMPayment extends React.Component {
       rentNotZero,
       activityBool,
       tokenMenu,
+      legalDocLoader,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1490,6 +1506,7 @@ class LeadRCMPayment extends React.Component {
           isVisible={isVisible}
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
+          legalDocLoader={legalDocLoader}
         />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}

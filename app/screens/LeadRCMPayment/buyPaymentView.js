@@ -196,12 +196,6 @@ class BuyPaymentView extends React.Component {
           deleteDoc={deleteDoc}
           activityBool={activityBool}
         />
-        <RCMBTN
-          onClick={closeLegalDocument}
-          btnImage={RoundPlus}
-          btnText={'UPLOAD LEGAL DOCUMENTS'}
-          checkLeadClosedOrNot={false}
-        />
         {
           // Checkbox
           singleCommission && !buyer && !isLeadClosed ? (
@@ -229,7 +223,16 @@ class BuyPaymentView extends React.Component {
             </TouchableOpacity>
           ) : null
         }
-
+        {buyerCommission && (
+          <RCMBTN
+            onClick={() => closeLegalDocument('buyer')}
+            btnImage={RoundPlus}
+            btnText={'UPLOAD LEGAL DOCUMENTS'}
+            checkLeadClosedOrNot={false}
+            // isLeadClosed={}
+            hiddenBtn={commissionNotApplicableBuyer}
+          />
+        )}
         {lead.commissions ? (
           buyer ? (
             <CommissionTile
@@ -291,7 +294,16 @@ class BuyPaymentView extends React.Component {
             </TouchableOpacity>
           ) : null
         }
-
+        {sellerCommission && (
+          <RCMBTN
+            onClick={() => closeLegalDocument('seller')}
+            btnImage={RoundPlus}
+            btnText={'UPLOAD LEGAL DOCUMENTS'}
+            checkLeadClosedOrNot={false}
+            // isLeadClosed={}
+            hiddenBtn={commissionNotApplicableSeller}
+          />
+        )}
         {lead.commissions ? (
           seller ? (
             <CommissionTile

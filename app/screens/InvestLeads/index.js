@@ -22,6 +22,7 @@ import { setlead } from '../../actions/lead'
 import Search from '../../components/Search'
 import Ability from '../../hoc/Ability'
 import { getItem, storeItem } from '../../actions/user'
+import { getListingsCount } from '../../actions/listings'
 
 var BUTTONS = [
   'Assign to team member',
@@ -53,8 +54,10 @@ class InvestLeads extends React.Component {
   }
 
   componentDidMount() {
+    const {dispatch} = this.props;
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.onFocus()
+      dispatch(getListingsCount())
     })
   }
 

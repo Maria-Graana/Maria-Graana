@@ -25,6 +25,7 @@ import Search from '../../components/Search'
 import Ability from '../../hoc/Ability'
 import { storeItem, getItem } from '../../actions/user'
 import config from '../../config'
+import { getListingsCount } from '../../actions/listings'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
 
 var BUTTONS = [
@@ -61,7 +62,9 @@ class BuyLeads extends React.Component {
   }
 
   componentDidMount() {
+    const {dispatch} = this.props;
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
       this.onFocus()
     })
   }
@@ -601,6 +604,7 @@ class BuyLeads extends React.Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    count: store.listings.count,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

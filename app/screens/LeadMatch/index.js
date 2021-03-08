@@ -85,6 +85,7 @@ class LeadMatch extends React.Component {
       closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
       callModal: false,
       meetings: [],
+      legalDocLoader: false,
     }
   }
 
@@ -553,20 +554,42 @@ class LeadMatch extends React.Component {
     helper.leadClosedToast()
   }
 
-  closeLead = () => {
+  closeLead = async () => {
     const { lead } = this.props
-    if (helper.checkClearedStatuses(lead)) {
-      this.setState({
-        reasons: StaticData.leadCloseReasonsWithPayment,
-        isVisible: true,
-        checkReasonValidation: '',
-      })
+    if (lead.commissions.length) {
+      let { count } = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, count)) {
+        this.setState({
+          reasons: StaticData.leadCloseReasonsWithPayment,
+          isVisible: true,
+          checkReasonValidation: '',
+          legalDocLoader: false,
+        })
+      } else {
+        this.setState({
+          reasons: StaticData.leadCloseReasons,
+          isVisible: true,
+          checkReasonValidation: '',
+          legalDocLoader: false,
+        })
+      }
     } else {
       this.setState({
         reasons: StaticData.leadCloseReasons,
         isVisible: true,
         checkReasonValidation: '',
       })
+    }
+  }
+
+  getLegalDocumentsCount = async () => {
+    const { lead } = this.props
+    this.setState({ legalDocLoader: true })
+    try {
+      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      return res.data
+    } catch (error) {
+      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
     }
   }
 
@@ -722,6 +745,7 @@ class LeadMatch extends React.Component {
       isVisible,
       checkReasonValidation,
       closedLeadEdit,
+      legalDocLoader,
     } = this.state
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
 
@@ -978,6 +1002,7 @@ class LeadMatch extends React.Component {
           isVisible={isVisible}
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
+          legalDocLoader={legalDocLoader}
         />
       </View>
     ) : (

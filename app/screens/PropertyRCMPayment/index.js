@@ -1,16 +1,17 @@
 /** @format */
 
 import axios from 'axios'
+import { ActionSheet } from 'native-base'
 import * as React from 'react'
-import { FlatList, KeyboardAvoidingView, Linking, Platform, Text, View } from 'react-native'
+import { Alert, FlatList, KeyboardAvoidingView, Linking, Platform, Text, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
-import { ActionSheet } from 'native-base'
 import _ from 'underscore'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import AppStyles from '../../AppStyles'
 import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
+import DeleteModal from '../../components/DeleteModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
 import PropAgentTile from '../../components/PropAgentTile'
@@ -21,8 +22,6 @@ import helper from '../../helper'
 import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
-import DeleteModal from '../../components/DeleteModal'
-import { Alert } from 'react-native'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -674,7 +673,11 @@ class PropertyRCMPayment extends React.Component {
         addPaymentLoading: true,
       })
       if (Number(rcmPayment.installmentAmount) <= 0) {
-        this.setState({ buyerNotZero: true, addPaymentLoading: false, assignToAccountsLoading: false })
+        this.setState({
+          buyerNotZero: true,
+          addPaymentLoading: false,
+          assignToAccountsLoading: false,
+        })
         return
       }
       if (editable === false) {
@@ -719,7 +722,7 @@ class PropertyRCMPayment extends React.Component {
         let paymentID = body.id
         delete body.visible
         delete body.id
-        body.status = rcmPayment.status;
+        body.status = rcmPayment.status
         if (body.paymentCategory === 'token') {
           baseUrl = `/api/leads/tokenPayment`
           body.status = 'pendingAccount'
@@ -978,13 +981,19 @@ class PropertyRCMPayment extends React.Component {
               setRCMPayment({ ...rcmPayment, visible: false, status: 'pendingAccount' })
             )
             this.setState({ assignToAccountsLoading: true }, () => {
-              this.submitCommissionPayment();
+              this.submitCommissionPayment()
             })
           },
         },
       ],
       { cancelable: false }
     )
+  }
+
+  closeLegalDocument = () => {
+    this.props.navigation.navigate('LegalAttachments', {
+      addedBy: 'seller',
+    })
   }
 
   render() {
@@ -1153,6 +1162,7 @@ class PropertyRCMPayment extends React.Component {
                         toggleTokenMenu={this.toggleTokenMenu}
                         tokenMenu={tokenMenu}
                         confirmTokenAction={this.confirmTokenAction}
+                        closeLegalDocument={this.closeLegalDocument}
                       />
                     ) : (
                       <RentPaymentView
@@ -1184,6 +1194,7 @@ class PropertyRCMPayment extends React.Component {
                         toggleTokenMenu={this.toggleTokenMenu}
                         tokenMenu={tokenMenu}
                         confirmTokenAction={this.confirmTokenAction}
+                        closeLegalDocument={this.closeLegalDocument}
                       />
                     )
                   ) : null}

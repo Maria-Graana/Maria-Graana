@@ -45,6 +45,7 @@ import MapContainer from '../screens/MapContainer'
 import AssignedAreas from '../screens/AssignAreas'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import PropsureAttachment from '../screens/PropsureAttachment'
+import LegalAttachments from '../screens/LegalAttachments'
 
 const Stack = createStackNavigator()
 
@@ -415,6 +416,15 @@ function MainStack() {
           // headerTitle: (props) => <HeaderTitle {...props} />,
           // headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           // headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="LegalAttachments"
+        component={LegalAttachments}
+        options={({ navigation, route }) => ({
+          title: 'LEGAL DOCUMENT',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}
       />

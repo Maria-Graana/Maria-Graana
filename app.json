@@ -88,7 +88,7 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 6,
+      "versionCode": 7,
       "useNextNotificationsApi": true
     },
     "notification": {

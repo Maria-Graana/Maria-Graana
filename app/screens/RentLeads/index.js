@@ -24,6 +24,7 @@ import { setlead } from '../../actions/lead'
 import Search from '../../components/Search'
 import { storeItem, getItem } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
+import { getListingsCount } from '../../actions/listings'
 import Ability from '../../hoc/Ability'
 import _ from 'underscore'
 import config from '../../config'
@@ -62,7 +63,9 @@ class RentLeads extends React.Component {
   }
 
   componentDidMount() {
+    const {dispatch} = this.props;
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
       this.onFocus()
     })
   }

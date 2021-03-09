@@ -61,6 +61,8 @@ class TokenTile extends Component {
     if (showStatus && showStatus.value === 'notCleared') statusColor = styles.statusRed
     if (showStatus && showStatus.value === 'rejected') statusColor = styles.statusRed
     if (showStatus && showStatus.value === 'given_back_to_buyer') statusColor = styles.statusRed
+    if (showStatus && showStatus.value === 'given_to_property_owner')
+      statusColor = styles.statusGreen
     return statusColor
   }
 

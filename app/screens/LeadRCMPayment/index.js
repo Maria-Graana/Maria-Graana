@@ -7,6 +7,7 @@ import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
 import * as Permissions from 'expo-permissions'
+import { ActionSheet } from 'native-base'
 import * as React from 'react'
 import {
   Alert,
@@ -20,7 +21,6 @@ import {
   View,
 } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
-import { ActionSheet } from 'native-base'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import { setlead } from '../../actions/lead'
@@ -29,6 +29,7 @@ import AppStyles from '../../AppStyles'
 import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
+import DeleteModal from '../../components/DeleteModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
@@ -40,7 +41,6 @@ import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import styles from './styles'
-import DeleteModal from '../../components/DeleteModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -109,6 +109,7 @@ class LeadRCMPayment extends React.Component {
       rentNotZero: false,
       tokenMenu: false,
       assignToAccountsLoading: false,
+      legalDocLoader: false,
     }
   }
 
@@ -509,20 +510,23 @@ class LeadRCMPayment extends React.Component {
     this.setState({ isVisible: false })
   }
 
-  showLeadPaymentModal = () => {
+  showLeadPaymentModal = async () => {
     const { lead } = this.state
     if (lead.commissions.length) {
-      if (helper.checkClearedStatuses(lead)) {
+      let { count } = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, count)) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
           isVisible: true,
           checkReasonValidation: '',
+          legalDocLoader: false,
         })
       } else {
         this.setState({
           reasons: StaticData.leadCloseReasons,
           isVisible: true,
           checkReasonValidation: '',
+          legalDocLoader: false,
         })
       }
     } else {
@@ -531,6 +535,17 @@ class LeadRCMPayment extends React.Component {
         isVisible: true,
         checkReasonValidation: '',
       })
+    }
+  }
+
+  getLegalDocumentsCount = async () => {
+    const { lead } = this.props
+    this.setState({ legalDocLoader: true })
+    try {
+      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      return res.data
+    } catch (error) {
+      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
     }
   }
 
@@ -1408,6 +1423,12 @@ class LeadRCMPayment extends React.Component {
     )
   }
 
+  closeLegalDocument = (addedBy) => {
+    this.props.navigation.navigate('LegalAttachments', {
+      addedBy: addedBy,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1453,6 +1474,7 @@ class LeadRCMPayment extends React.Component {
       rentNotZero,
       activityBool,
       tokenMenu,
+      legalDocLoader,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1484,6 +1506,7 @@ class LeadRCMPayment extends React.Component {
           isVisible={isVisible}
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
+          legalDocLoader={legalDocLoader}
         />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}
@@ -1605,6 +1628,7 @@ class LeadRCMPayment extends React.Component {
                         toggleTokenMenu={this.toggleTokenMenu}
                         tokenMenu={tokenMenu}
                         confirmTokenAction={this.confirmTokenAction}
+                        closeLegalDocument={this.closeLegalDocument}
                       />
                     ) : (
                       <RentPaymentView
@@ -1650,6 +1674,7 @@ class LeadRCMPayment extends React.Component {
                         toggleTokenMenu={this.toggleTokenMenu}
                         tokenMenu={tokenMenu}
                         confirmTokenAction={this.confirmTokenAction}
+                        closeLegalDocument={this.closeLegalDocument}
                       />
                     )
                   ) : null}

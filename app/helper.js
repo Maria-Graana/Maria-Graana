@@ -865,7 +865,7 @@ const helper = {
   setLegalListing(list, data) {
     for (let i = 0; i < list.length; i++) {
       for (let y = 0; y < data.length; y++) {
-        if (list[i].value === data[y].category) {
+        if (list[i].category === data[y].category) {
           let name = list[i].name
           list[i] = data[y]
           list[i].name = name

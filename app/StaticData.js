@@ -200,7 +200,7 @@ export default StaticData = {
     },
     {
       name: 'Client not interested',
-      value: 'client_not_interested'
+      value: 'client_not_interested',
     },
     { value: 'low_budget', name: 'Low Budget' },
     { value: 'different_city', name: 'Different City' },
@@ -251,7 +251,7 @@ export default StaticData = {
     },
     {
       name: 'Client not interested',
-      value: 'client_not_interested'
+      value: 'client_not_interested',
     },
     {
       name: 'Client not satisfied with options',
@@ -838,18 +838,18 @@ export default StaticData = {
     },
   ],
   BuyerLegalDocumentsList: [
-    { value: 'service_charge_agreement', name: 'SERVICE CHARGE AGREEMENT' },
-    { value: 'cnic', name: 'CNIC' },
-    { value: 'property_report_propsure', name: 'PROPERTY REPORT - PROPSURE' },
-    { value: 'sales_rent_agreement', name: 'SALES/RENT AGREEMENT' },
-    { value: 'initial_payment_receipt', name: 'INITIAL PAYMENT RECEIPT' },
+    { category: 'service_charge_agreement', name: 'SERVICE CHARGE AGREEMENT' },
+    { category: 'cnic', name: 'CNIC' },
+    { category: 'property_report_propsure', name: 'PROPERTY REPORT - PROPSURE' },
+    { category: 'sales_rent_agreement', name: 'SALES/RENT AGREEMENT' },
+    { category: 'initial_payment_receipt', name: 'INITIAL PAYMENT RECEIPT' },
   ],
   SellerLegalDocumentsList: [
-    { value: 'sole_multi_agency_agreement', name: 'SOLE/MULTI AGENCY AGREEMENT' },
-    { value: 'cnic', name: 'CNIC' },
-    { value: 'base_property_report_propsure', name: 'BASIC PROPERTY REPORT - PROPSURE' },
-    { value: 'sales_rent_agreement', name: 'SALES/RENT AGREEMENT' },
-    { value: 'initial_payment_receipt', name: 'INITIAL PAYMENT RECEIPT' },
+    { category: 'sole_multi_agency_agreement', name: 'SOLE/MULTI AGENCY AGREEMENT' },
+    { category: 'cnic', name: 'CNIC' },
+    { category: 'base_property_report_propsure', name: 'BASIC PROPERTY REPORT - PROPSURE' },
+    { category: 'sales_rent_agreement', name: 'SALES/RENT AGREEMENT' },
+    { category: 'initial_payment_receipt', name: 'INITIAL PAYMENT RECEIPT' },
   ],
   legalStatuses: [
     { value: 'pending', name: 'pending' },

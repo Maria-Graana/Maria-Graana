@@ -87,7 +87,7 @@ class LegalAttachment extends Component {
             newFormData.fileName = item.name
             newFormData.size = item.size
             newFormData.uri = item.uri
-            newFormData.category = data.value
+            newFormData.category = data.category
             this.setState({
               formData: newFormData,
               loading: true,

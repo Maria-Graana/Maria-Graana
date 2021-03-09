@@ -1,6 +1,5 @@
 /** @format */
 import PaymentMethods from '../../PaymentMethods'
-import StaticData from '../../StaticData'
 
 const PaymentHelper = {
   createPearlObject(floor, area) {

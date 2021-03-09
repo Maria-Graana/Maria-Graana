@@ -125,11 +125,13 @@ class LeadDetail extends React.Component {
   }
 
   navigateTo = () => {
-    const { navigation } = this.props
+    const { navigation, user } = this.props
     const { lead, type } = this.state
     var status = lead.status
     let page = ''
-
+    if (!helper.checkAssignedSharedStatusANDReadOnly(user, lead)) {
+      return
+    }
     if (type === 'Investment') {
       if (
         status === 'token' ||
@@ -237,7 +239,10 @@ class LeadDetail extends React.Component {
 
   goToClientsDetail = () => {
     const { lead } = this.state
-    const { navigation } = this.props
+    const { navigation, user } = this.props
+    if (!helper.checkAssignedSharedStatusANDReadOnly(user, lead)) {
+      return
+    }
     if (lead.customer) {
       navigation.navigate('ClientDetail', { client: lead.customer ? lead.customer : null })
     } else {
@@ -411,29 +416,37 @@ class LeadDetail extends React.Component {
                 </Text>
               )}
             </View>
-            <View style={styles.viewTwo}>
-              {editDes === true ? (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.editDescription(false)
-                  }}
-                  style={styles.editDesBtn}
-                  activeOpacity={0.6}
-                >
-                  <Image source={require('../../../assets/img/times.png')} style={styles.editImg} />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={() => {
-                    this.editDescription(true)
-                  }}
-                  style={styles.editDesBtn}
-                  activeOpacity={0.6}
-                >
-                  <Image source={require('../../../assets/img/edit.png')} style={styles.editImg} />
-                </TouchableOpacity>
-              )}
-            </View>
+            {helper.checkAssignedSharedStatusANDReadOnly(user, lead) ? (
+              <View style={styles.viewTwo}>
+                {editDes === true ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.editDescription(false)
+                    }}
+                    style={styles.editDesBtn}
+                    activeOpacity={0.6}
+                  >
+                    <Image
+                      source={require('../../../assets/img/times.png')}
+                      style={styles.editImg}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.editDescription(true)
+                    }}
+                    style={styles.editDesBtn}
+                    activeOpacity={0.6}
+                  >
+                    <Image
+                      source={require('../../../assets/img/edit.png')}
+                      style={styles.editImg}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            ) : null}
           </View>
           <View style={styles.underLine} />
           <Text style={styles.headingText}>Requirement </Text>

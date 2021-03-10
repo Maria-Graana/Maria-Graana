@@ -131,7 +131,7 @@ class PropertyViewing extends React.Component {
     })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -376,26 +376,11 @@ class PropertyViewing extends React.Component {
         diaries.filter((item) => {
           return item.status === 'completed' && item.userId === user.id
         })
-      if (diary && diary.status === 'completed') {
+      let greaterOneViewing = viewingDone && viewingDone.length > 1
+      if (diaries && diaries.length > 0)  {
         return (
-          <TouchableOpacity
-            style={{
-              backgroundColor: AppStyles.colors.primaryColor,
-              height: 30,
-              borderBottomEndRadius: 10,
-              borderBottomLeftRadius: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onPress={() => this.simplifyViewingData(viewingDone)}
-          >
-            <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
-              VIEWING DONE
-            </Text>
-          </TouchableOpacity>
-        )
-      } else if (diary && diary.status === 'pending') {
-        return (
+          <View>
+          {diary && diary.status === 'pending' && (
           <TouchableOpacity
             style={{
               backgroundColor: 'white',
@@ -424,6 +409,31 @@ class PropertyViewing extends React.Component {
               </Text>
             </Text>
           </TouchableOpacity>
+          )}
+          {viewingDone && viewingDone.length > 0 && (
+            <TouchableOpacity
+              style={{
+                backgroundColor: AppStyles.colors.primaryColor,
+                height: 30,
+                borderBottomEndRadius: 10,
+                borderBottomLeftRadius: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'row',
+              }}
+              onPress={() => this.simplifyViewingData(viewingDone)}
+            >
+              <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
+                VIEWING{greaterOneViewing && 'S'} DONE
+            </Text>
+              {greaterOneViewing && (
+                <View style={styles.countView}>
+                  <Text style={styles.countText}>{`${viewingDone.length}`}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          )}
+          </View>
         )
       }
     } else {
@@ -860,40 +870,40 @@ class PropertyViewing extends React.Component {
                         propertyGeoTagging={this.propertyGeoTagging}
                       />
                     ) : (
-                      <PropAgentTile
-                        deleteProperty={this.deleteProperty}
-                        cancelViewing={this.cancelViewing}
-                        toggleCheckListModal={(toggleState, data) =>
-                          this.toggleCheckListModal(toggleState, data)
-                        }
-                        isMenuVisible={isMenuVisible}
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        viewingMenu={true}
-                        goToPropertyComments={this.goToPropertyComments}
-                        menuShow={menuShow}
-                        toggleMenu={this.toggleMenu}
-                        screen={'viewing'}
-                        propertyGeoTagging={this.propertyGeoTagging}
-                      />
-                    )}
+                        <PropAgentTile
+                          deleteProperty={this.deleteProperty}
+                          cancelViewing={this.cancelViewing}
+                          toggleCheckListModal={(toggleState, data) =>
+                            this.toggleCheckListModal(toggleState, data)
+                          }
+                          isMenuVisible={isMenuVisible}
+                          data={_.clone(item.item)}
+                          user={user}
+                          displayChecks={this.displayChecks}
+                          showCheckBoxes={false}
+                          addProperty={this.addProperty}
+                          viewingMenu={true}
+                          goToPropertyComments={this.goToPropertyComments}
+                          menuShow={menuShow}
+                          toggleMenu={this.toggleMenu}
+                          screen={'viewing'}
+                          propertyGeoTagging={this.propertyGeoTagging}
+                        />
+                      )}
                     <View>{this.checkStatus(item.item)}</View>
                   </View>
                 )}
                 keyExtractor={(item, index) => item.id.toString()}
               />
             ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
+                <>
+                  <Image
+                    source={require('../../../assets/img/no-result-found.png')}
+                    resizeMode={'center'}
+                    style={{ alignSelf: 'center', width: 300, height: 300 }}
+                  />
+                </>
+              )}
           </View>
         </View>
         <View style={AppStyles.mainCMBottomNav}>
@@ -923,8 +933,8 @@ class PropertyViewing extends React.Component {
         />
       </View>
     ) : (
-      <Loader loading={loading} />
-    )
+        <Loader loading={loading} />
+      )
   }
 }
 

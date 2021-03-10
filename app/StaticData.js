@@ -427,6 +427,7 @@ export default StaticData = {
     { name: 'Newest Last', value: '&order=Asc&field=createdAt' },
     { name: 'Recently Modified First', value: '&order=Desc&field=updatedAt' },
     { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
+    { name: 'Status Based', value: '&order=sort&field=status' },
   ],
   barCharData: {
     labels: ['Created', 'Call', 'Meeting', 'Token', 'Payment', 'Won', 'Lost'],

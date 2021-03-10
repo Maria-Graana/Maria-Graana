@@ -6,10 +6,10 @@ import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Menu } from 'react-native-paper'
 import Carousel from 'react-native-snap-carousel'
-import { formatPrice } from '../../PriceFormate'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
+import { formatPrice } from '../../PriceFormate'
 import styles from './style'
 
 class PropMatchTile extends React.Component {
@@ -123,7 +123,7 @@ class PropMatchTile extends React.Component {
       menuShow,
       screen,
       toggleCheckListModal,
-      propertyGeoTagging
+      propertyGeoTagging,
     } = this.props
     let imagesList = this.checkImages()
     let show = isMenuVisible
@@ -138,6 +138,9 @@ class PropMatchTile extends React.Component {
     }
     phoneNumber = this.displayPhoneNumber(data)
     if (showDone) show = false
+    console.log('isMenuVisible: ', isMenuVisible)
+    console.log('showDone: ', showDone)
+    console.log('show: ', show)
     return (
       <TouchableOpacity
         style={{ flexDirection: 'row', marginVertical: 2 }}
@@ -167,11 +170,11 @@ class PropMatchTile extends React.Component {
                 containerCustomStyle={{ position: 'relative' }}
               />
             ) : (
-                <Image
-                  source={require('../../../assets/images/no-image-found.png')}
-                  style={styles.noImage}
-                />
-              )}
+              <Image
+                source={require('../../../assets/images/no-image-found.png')}
+                style={styles.noImage}
+              />
+            )}
           </View>
           <View style={styles.imageCountViewStyle}>
             <Feather name={'camera'} color={'#fff'} size={16} />
@@ -244,7 +247,7 @@ class PropMatchTile extends React.Component {
                 </View>
               </Menu>
             ) : null}
-             {showDone ? (
+            {showDone ? (
               <Menu
                 visible={data.checkBox}
                 onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -272,7 +275,7 @@ class PropMatchTile extends React.Component {
                 </View>
               </Menu>
             ) : null}
-            {screen === 'viewing' ? (
+            {screen === 'viewing' && !showDone ? (
               <Menu
                 visible={data.checkBox}
                 onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -303,38 +306,38 @@ class PropMatchTile extends React.Component {
                           />
                         </View>
                       ) : (
-                          <View>
-                            <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="GeoTag"
-                            />
-                            <Menu.Item
-                              onPress={() => {
-                                this.props.goToPropertyComments(data)
-                              }}
-                              title="Comments"
-                            />
-                          </View>
-                        )}
+                        <View>
+                          <Menu.Item
+                            onPress={() => {
+                              propertyGeoTagging(data)
+                            }}
+                            title="GeoTag"
+                          />
+                          <Menu.Item
+                            onPress={() => {
+                              this.props.goToPropertyComments(data)
+                            }}
+                            title="Comments"
+                          />
+                        </View>
+                      )}
                     </View>
                   ) : (
-                      <View>
-                        <Menu.Item
-                          onPress={() => {
-                            propertyGeoTagging(data)
-                          }}
-                          title="GeoTag"
-                        />
-                        <Menu.Item
-                          onPress={() => {
-                            this.props.goToPropertyComments(data)
-                          }}
-                          title="Comments"
-                        />
-                      </View>
-                    )}
+                    <View>
+                      <Menu.Item
+                        onPress={() => {
+                          propertyGeoTagging(data)
+                        }}
+                        title="GeoTag"
+                      />
+                      <Menu.Item
+                        onPress={() => {
+                          this.props.goToPropertyComments(data)
+                        }}
+                        title="Comments"
+                      />
+                    </View>
+                  )}
                 </View>
               </Menu>
             ) : null}
@@ -349,8 +352,8 @@ class PropMatchTile extends React.Component {
                 />
               </View>
             ) : (
-                <View />
-              )}
+              <View />
+            )}
             <View style={{ flexDirection: 'row-reverse' }}>
               <FontAwesome
                 onPress={() => {

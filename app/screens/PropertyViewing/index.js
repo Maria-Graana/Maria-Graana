@@ -1,29 +1,29 @@
 /** @format */
 
 import axios from 'axios'
+import * as Location from 'expo-location'
 import moment from 'moment'
 import * as React from 'react'
 import { FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
-import * as Location from 'expo-location';
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import { setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import AddViewing from '../../components/AddViewing/index'
+import CheckListModal from '../../components/CheckListModal'
+import GeoTaggingModal from '../../components/GeotaggingModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
 import PropAgentTile from '../../components/PropAgentTile/index'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
 import PropMatchTile from '../../components/PropMatchTile/index'
+import ViewCheckListModal from '../../components/ViewCheckListModal'
 import config from '../../config'
 import helper from '../../helper'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import styles from './style'
-import CheckListModal from '../../components/CheckListModal'
-import ViewCheckListModal from '../../components/ViewCheckListModal'
-import GeoTaggingModal from '../../components/GeotaggingModal'
 
 class PropertyViewing extends React.Component {
   constructor(props) {
@@ -70,15 +70,19 @@ class PropertyViewing extends React.Component {
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      if (this.props.route.params && this.props.route.params.fromScreen === 'mapContainer' && this.props.route.params.mapValues) {
-        const {mapValues} = this.props.route.params;
-          this.setState({isGeoTaggingModalVisible: true , 
-            latitude: mapValues.lat,
-            longitude: mapValues.lng, 
-            propsure_id: mapValues.propsure_id,
-           })
-      }
-      else {
+      if (
+        this.props.route.params &&
+        this.props.route.params.fromScreen === 'mapContainer' &&
+        this.props.route.params.mapValues
+      ) {
+        const { mapValues } = this.props.route.params
+        this.setState({
+          isGeoTaggingModalVisible: true,
+          latitude: mapValues.lat,
+          longitude: mapValues.lng,
+          propsure_id: mapValues.propsure_id,
+        })
+      } else {
         this.fetchLead()
         this.getCallHistory()
         this.fetchProperties()
@@ -429,7 +433,7 @@ class PropertyViewing extends React.Component {
 
   simplifyViewingData = (data) => {
     let simpleData = [...data]
-    simpleData = _.sortBy(simpleData, 'id');
+    simpleData = _.sortBy(simpleData, 'id')
     simpleData = simpleData.map((item, index) => {
       return {
         ...item,
@@ -473,7 +477,7 @@ class PropertyViewing extends React.Component {
       let diary = _.find(diaries, (item) => user.id === item.userId)
       if (
         diary.status === 'pending' &&
-        (selectedCheckList.length === StaticData.realEstateAgentsCheckList.length ) &&
+        selectedCheckList.length === StaticData.realEstateAgentsCheckList.length &&
         userFeedback !== '' &&
         userFeedback !== null
       ) {
@@ -607,7 +611,7 @@ class PropertyViewing extends React.Component {
     if (this.state.selectedCheckList.includes(item)) {
       let temp = this.state.selectedCheckList
       temp = _.without(temp, item)
-      this.setState({ selectedCheckList: temp });
+      this.setState({ selectedCheckList: temp })
     } else {
       let temp = this.state.selectedCheckList
       temp.push(item)
@@ -617,20 +621,16 @@ class PropertyViewing extends React.Component {
 
   convertLongitudeLattitude = (val) => {
     if (val === '') {
-        return null
+      return null
+    } else if (typeof val === 'string' && val != '') {
+      return parseFloat(val)
+    } else {
+      return val
     }
-    else if (typeof (val) === 'string' && val != '') {
-        return parseFloat(val);
-    }
-    else {
-        return val;
-    }
-
-}
-
+  }
 
   propertyGeoTagging = (data) => {
-     // When user clicks geo tagging option from menu, this function is called
+    // When user clicks geo tagging option from menu, this function is called
     this.toggleMenu(false, data.id)
     this.setState({
       isGeoTaggingModalVisible: true,
@@ -654,40 +654,40 @@ class PropertyViewing extends React.Component {
   }
 
   propertyGeoTaggingDone = () => {
- // Done button pressed from inside of the geotagging modal
-    const {lead, navigation} = this.props;
-    const {latitude, longitude, propsure_id, locate_manually, selectedPropertyId} = this.state;
-    if(latitude && longitude) {
+    // Done button pressed from inside of the geotagging modal
+    const { lead, navigation } = this.props
+    const { latitude, longitude, propsure_id, locate_manually, selectedPropertyId } = this.state
+    if (latitude && longitude) {
       let url = `/api/inventory/updateshortListedPRoperties?id=${selectedPropertyId}&leadId=${lead.id}`
       let body = {
-        lat : this.convertLongitudeLattitude(latitude),
-        lng : this.convertLongitudeLattitude(longitude),
+        lat: this.convertLongitudeLattitude(latitude),
+        lng: this.convertLongitudeLattitude(longitude),
         locate_manually,
         propsure_id,
-        geotagged_date : propsure_id ? new Date() : null,
+        geotagged_date: propsure_id ? new Date() : null,
       }
-      axios.patch(url, body).then ((response)=> {
-        if(response.data) {
-          this.hideGeoTaggingModal();
-          this.fetchProperties();
-          this.getCallHistory();
-          navigation.setParams({mapValues: null, fromScreen: null})
-        }
-      }).catch(error => {
+      axios
+        .patch(url, body)
+        .then((response) => {
+          if (response.data) {
+            this.hideGeoTaggingModal()
+            this.fetchProperties()
+            this.getCallHistory()
+            navigation.setParams({ mapValues: null, fromScreen: null })
+          }
+        })
+        .catch((error) => {
           console.log(error)
-      })
-    }
-    else {
+        })
+    } else {
       alert('Latitude and Longitude values are required!')
     }
-   
-   
   }
 
   goToMapsForGeotagging = () => {
     // When user opts for geo tagging by maps
-    const { navigation } = this.props;
-    const { longitude, latitude, propsure_id } = this.state;
+    const { navigation } = this.props
+    const { longitude, latitude, propsure_id } = this.state
     this.setState({ isGeoTaggingModalVisible: false }, () => {
       navigation.navigate('MapContainer', {
         mapValues: {
@@ -698,7 +698,6 @@ class PropertyViewing extends React.Component {
         screenName: 'Viewing',
       })
     })
-
   }
 
   handleMarkProperty = (value) => {
@@ -707,16 +706,15 @@ class PropertyViewing extends React.Component {
       locate_manually: value,
       propsure_id: null,
       latitude: null,
-      longitude: null
-    });
+      longitude: null,
+    })
   }
 
   handleLatLngChange = (value, name) => {
     // lat lng value change, text input
     if (name === 'lat') {
       this.setState({ latitude: value })
-    }
-    else if(name === 'lng') {
+    } else if (name === 'lng') {
       this.setState({ longitude: value })
     }
   }
@@ -727,10 +725,10 @@ class PropertyViewing extends React.Component {
     if (status !== 'granted') {
       alert('Permission to access location was denied')
     }
-    const location = await Location.getCurrentPositionAsync();
+    const location = await Location.getCurrentPositionAsync()
     if (location && location.coords && location.coords.latitude && location.coords.longitude) {
-      this.handleLatLngChange(location.coords.latitude, 'lat');
-      this.handleLatLngChange(location.coords.longitude, 'lng');
+      this.handleLatLngChange(location.coords.latitude, 'lat')
+      this.handleLatLngChange(location.coords.longitude, 'lng')
     } else {
       alert('Error while getting location!')
     }
@@ -779,7 +777,8 @@ class PropertyViewing extends React.Component {
           />
         </View>
 
-        <GeoTaggingModal isGeoTaggingModalVisible={isGeoTaggingModalVisible}
+        <GeoTaggingModal
+          isGeoTaggingModalVisible={isGeoTaggingModalVisible}
           hideGeoTaggingModal={this.hideGeoTaggingModal}
           handleMarkProperty={this.handleMarkProperty}
           locate_manually={locate_manually}
@@ -799,7 +798,8 @@ class PropertyViewing extends React.Component {
           openPopup={callModal}
         /> */}
 
-        <CheckListModal  data={StaticData.realEstateAgentsCheckList}
+        <CheckListModal
+          data={StaticData.realEstateAgentsCheckList}
           selectedCheckList={selectedCheckList}
           isVisible={isCheckListModalVisible}
           togglePopup={(val) => this.toggleCheckListModal(val)}

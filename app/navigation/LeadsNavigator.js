@@ -32,7 +32,7 @@ function LeadsNavigator(props) {
         activeTintColor: AppStyles.colors.primaryColor,
         inactiveTintColor: AppStyles.colors.subTextColor,
         showIcon: true,
-        iconStyle: { margin: -7},
+        iconStyle: { margin: -5},
         // tabStyle: { width: width / 3, paddingLeft: 0, paddingRight: 0 },
         tabStyle: {  paddingLeft: 0, paddingRight: 0, flexDirection: 'row', justifyContent:'center', alignItems:'center' },
         indicatorStyle: {

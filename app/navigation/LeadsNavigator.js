@@ -50,6 +50,7 @@ function LeadsNavigator(props) {
         options={{ tabBarIcon: (props) => <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} /> }}
       />
       <Tab.Screen name="Sell/Rent Out"
+       options={{ tabBarIcon: (props) => <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.sellRent} /> }}
         component={PropertyLead} />
       <Tab.Screen name={`Invest`}
         options={{tabBarIcon: (props) => <TabBarBadge color={props.focused ? 'red': '#ddd'} count={count.projectLeads} /> }}

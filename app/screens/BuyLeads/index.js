@@ -58,6 +58,7 @@ class BuyLeads extends React.Component {
       openPopup: false,
       selectedLead: {},
       popupLoading: false,
+      serverTime: null,
     }
   }
 
@@ -65,6 +66,7 @@ class BuyLeads extends React.Component {
     const {dispatch} = this.props;
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       dispatch(getListingsCount())
+      this.getServerTime();
       this.onFocus()
     })
   }
@@ -86,6 +88,19 @@ class BuyLeads extends React.Component {
         this.fetchLeads()
       })
     }
+  }
+
+  getServerTime = () => {
+    axios.get(`/api/user/serverTime?fullTime=true`).then(res => {
+      if(res){
+        this.setState({serverTime: res.data})
+      }
+      else{
+        console.log('Something went wrong while getting server time');
+      }
+    }).catch(error => {
+      console.log('error getting server time', error);
+    })
   }
 
   getSortOrderFromStorage = async () => {
@@ -433,6 +448,7 @@ class BuyLeads extends React.Component {
       openPopup,
       shortListedProperties,
       popupLoading,
+      serverTime,
     } = this.state
     const { user } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -516,6 +532,7 @@ class BuyLeads extends React.Component {
                     navigateTo={this.navigateTo}
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
+                    serverTime={serverTime}
                   />
                 ) : (
                   <PPLeadTile

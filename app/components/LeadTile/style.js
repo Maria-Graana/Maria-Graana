@@ -8,6 +8,8 @@ export default styles = StyleSheet.create({
     borderRadius: 4,
     flexDirection: 'row',
     marginBottom: 10,
+    borderRadius: 4,
+    borderLeftWidth: 3,
   },
   // leftimgView: {
   //   width: '40%',

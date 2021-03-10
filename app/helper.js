@@ -874,6 +874,37 @@ const helper = {
     }
     return list
   },
+  timeStatusColors(lead, serverTime){
+    var statusColor = AppStyles.colors.primaryColor;
+    var curDate = moment(serverTime).format('DD')
+    var leadDate = moment(lead.assigned_at).format('DD')
+    var time = moment.duration(moment(serverTime).diff(moment(lead.assigned_at))).asMinutes()
+    time = time.toFixed(0)
+    if (curDate === leadDate && lead.status === 'open') {
+      if (time < 30) {
+        statusColor = AppStyles.colors.primaryColor
+      }
+      if (time > 30 && time < 60) {
+        statusColor = '#FDD835'
+      }
+      if (time > 60) {
+        statusColor = 'red'
+      }
+    } else {
+      if (lead.status === 'open') {
+        if (time < 30) {
+          statusColor = AppStyles.colors.primaryColor
+        }
+        if (time > 30 && time < 60) {
+          statusColor = '#FDD835'
+        }
+        if (time > 60) {
+          statusColor = 'red'
+        }
+      }
+    }
+    return statusColor
+  }
 }
 
 module.exports = helper

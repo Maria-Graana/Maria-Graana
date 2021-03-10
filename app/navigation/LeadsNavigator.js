@@ -16,7 +16,7 @@ const Tab = createMaterialTopTabNavigator()
 
 const TabBarBadge = ({ count, color }) => {
   return (
-    <View style={[styles.badgeView, { backgroundColor: color, width : count > 99 ? 30 : 25 }]}>
+    <View style={[styles.badgeView, { backgroundColor: color, width : count > 99 ? 25 : 20 }]}>
       <Text style={styles.badgeText}>{ count > 99 ? `99+` : `${count}`}</Text>
     </View>
   )
@@ -32,9 +32,9 @@ function LeadsNavigator(props) {
         activeTintColor: AppStyles.colors.primaryColor,
         inactiveTintColor: AppStyles.colors.subTextColor,
         showIcon: true,
+        iconStyle: { margin: -7},
         // tabStyle: { width: width / 3, paddingLeft: 0, paddingRight: 0 },
-        tabStyle: { paddingLeft: 0, paddingRight: 0, flexDirection: 'row', justifyContent:'center' },
-        
+        tabStyle: {  paddingLeft: 0, paddingRight: 0, flexDirection: 'row', justifyContent:'center', alignItems:'center' },
         indicatorStyle: {
           borderBottomColor: '#ffffff',
           borderBottomWidth: 2,
@@ -42,17 +42,17 @@ function LeadsNavigator(props) {
       }}
     >
       <Tab.Screen name={'Rent'}
-        options={{ tabBarIcon: (props) => <TabBarBadge color={props.focused ? AppStyles.colors.primaryColor : '#ddd'} count={count.rentLeads} />}}
+        options={{ tabBarIcon: (props) => <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />}}
         component={RentLeads} />
       <Tab.Screen
         name={`Buy`}
         component={BuyLeads}
-        options={{ tabBarIcon: (props) => <TabBarBadge color={props.focused ? AppStyles.colors.primaryColor : '#ddd'} count={count.buyLeads} /> }}
+        options={{ tabBarIcon: (props) => <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} /> }}
       />
       <Tab.Screen name="Sell/Rent Out"
         component={PropertyLead} />
       <Tab.Screen name={`Invest`}
-        options={{tabBarIcon: (props) => <TabBarBadge color={props.focused ? AppStyles.colors.primaryColor : '#ddd'} count={count.projectLeads} /> }}
+        options={{tabBarIcon: (props) => <TabBarBadge color={props.focused ? 'red': '#ddd'} count={count.projectLeads} /> }}
         component={InvestLeads} />
     </Tab.Navigator>
   )
@@ -62,16 +62,15 @@ const styles = StyleSheet.create({
   badgeView: {
     backgroundColor: 'red',
     borderRadius: 16,
-    height: 25,
-    width: 30,
+    height: 20,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 3,
-    paddingVertical:2,
+    marginTop:2,
   },
   badgeText: {
     color:'white',
-    fontFamily: AppStyles.fonts.defaultFont,
+    fontFamily: AppStyles.fonts.boldFont,
+    fontSize: 10,
   }
 })
 

@@ -5,10 +5,10 @@ import { CheckBox } from 'native-base'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Menu } from 'react-native-paper'
-import { formatPrice } from '../../PriceFormate'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
+import { formatPrice } from '../../PriceFormate'
 import styles from './style'
 
 class PropAgentTile extends React.Component {
@@ -207,7 +207,7 @@ class PropAgentTile extends React.Component {
                   </View>
                 </Menu>
               ) : null}
-              {screen === 'viewing' ? (
+              {screen === 'viewing' && !showDone ? (
                 <Menu
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -230,7 +230,7 @@ class PropAgentTile extends React.Component {
                               }}
                               title="Comments"
                             />
-                              <Menu.Item
+                            <Menu.Item
                               onPress={() => {
                                 propertyGeoTagging(data)
                               }}
@@ -245,7 +245,7 @@ class PropAgentTile extends React.Component {
                           </View>
                         ) : (
                           <View>
-                              <Menu.Item
+                            <Menu.Item
                               onPress={() => {
                                 propertyGeoTagging(data)
                               }}
@@ -262,12 +262,12 @@ class PropAgentTile extends React.Component {
                       </View>
                     ) : (
                       <View>
-                          <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="GeoTag"
-                            />
+                        <Menu.Item
+                          onPress={() => {
+                            propertyGeoTagging(data)
+                          }}
+                          title="GeoTag"
+                        />
                         <Menu.Item
                           onPress={() => {
                             this.props.goToPropertyComments(data)

@@ -138,9 +138,6 @@ class PropMatchTile extends React.Component {
     }
     phoneNumber = this.displayPhoneNumber(data)
     if (showDone) show = false
-    console.log('isMenuVisible: ', isMenuVisible)
-    console.log('showDone: ', showDone)
-    console.log('show: ', show)
     return (
       <TouchableOpacity
         style={{ flexDirection: 'row', marginVertical: 2 }}

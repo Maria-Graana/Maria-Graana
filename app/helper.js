@@ -729,12 +729,12 @@ const helper = {
         if (item.status !== 'cleared' && item.paymentCategory === 'propsure_services')
           propsureCheck = false
       })
+      //Number(legalDocCount) === legalCount add this condition when legal docs are mandatory
       if (
         paymentCheck &&
         propsureCheck &&
         propsureOutstandingPayment <= 0 &&
-        cleared === commissionsLength &&
-        Number(legalDocCount) === legalCount
+        cleared === commissionsLength
       )
         check = true
       return check
@@ -874,8 +874,8 @@ const helper = {
     }
     return list
   },
-  timeStatusColors(lead, serverTime){
-    var statusColor = AppStyles.colors.primaryColor;
+  timeStatusColors(lead, serverTime) {
+    var statusColor = AppStyles.colors.primaryColor
     var curDate = moment(serverTime).format('DD')
     var leadDate = moment(lead.assigned_at).format('DD')
     var time = moment.duration(moment(serverTime).diff(moment(lead.assigned_at))).asMinutes()
@@ -904,7 +904,7 @@ const helper = {
       }
     }
     return statusColor
-  }
+  },
 }
 
 module.exports = helper

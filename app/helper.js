@@ -729,12 +729,12 @@ const helper = {
         if (item.status !== 'cleared' && item.paymentCategory === 'propsure_services')
           propsureCheck = false
       })
+      //Number(legalDocCount) === legalCount add this condition when legal docs are mandatory
       if (
         paymentCheck &&
         propsureCheck &&
         propsureOutstandingPayment <= 0 &&
-        cleared === commissionsLength &&
-        Number(legalDocCount) === legalCount
+        cleared === commissionsLength
       )
         check = true
       return check
@@ -897,7 +897,7 @@ const helper = {
       statusColor = 'red';
     }
     return statusColor
-  }
+  },
 }
 
 module.exports = helper

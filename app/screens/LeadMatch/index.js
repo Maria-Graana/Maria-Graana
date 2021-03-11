@@ -652,7 +652,7 @@ class LeadMatch extends React.Component {
 
   goToAttachments = () => {
     const { navigation, lead } = this.props
-    navigation.navigate('Attachments', { rcmLeadId: lead.id })
+    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
   }
 
   goToComments = () => {

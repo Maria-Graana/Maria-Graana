@@ -17,6 +17,7 @@ import AddRCMLead from '../screens/AddRCMLead'
 import AreaPickerScreen from '../screens/AreaPickerScreen'
 import AssignLead from '../screens/AssignLead'
 import Attachments from '../screens/Attachments'
+import LeadAttachments from '../screens/LeadAttachments'
 import AttachmentsForPayments from '../screens/AttachmentsForPayments'
 import ChangePassword from '../screens/ChangePassword'
 import Client from '../screens/Client'
@@ -248,6 +249,15 @@ function MainStack() {
       <Stack.Screen
         name="Attachments"
         component={Attachments}
+        options={({ navigation, route }) => ({
+          title: 'ATTACHMENTS',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="LeadAttachments"
+        component={LeadAttachments}
         options={({ navigation, route }) => ({
           title: 'ATTACHMENTS',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,

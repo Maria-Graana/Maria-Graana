@@ -401,8 +401,8 @@ class Meetings extends Component {
   }
 
   goToAttachments = () => {
-    const { navigation, route } = this.props
-    navigation.navigate('Attachments', { cmLeadId: this.props.lead.id })
+    const { navigation, route, lead } = this.props
+    navigation.navigate('LeadAttachments', { cmLeadId: lead.id, workflow: 'cm' })
   }
 
   goToDiaryForm = (taskType) => {

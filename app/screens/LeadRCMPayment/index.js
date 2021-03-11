@@ -825,7 +825,7 @@ class LeadRCMPayment extends React.Component {
   goToAttachments = () => {
     const { navigation } = this.props
     const { lead } = this.state
-    navigation.navigate('Attachments', { rcmLeadId: lead.id })
+    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
   }
 
   goToComments = () => {

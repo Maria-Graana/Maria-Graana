@@ -16,9 +16,11 @@ const Tab = createMaterialTopTabNavigator()
 
 const TabBarBadge = ({ count, color }) => {
   return (
+    count > 0 ?
     <View style={[styles.badgeView, { backgroundColor: color, width : count > 99 ? 25 : 20 }]}>
       <Text style={styles.badgeText}>{ count > 99 ? `99+` : `${count}`}</Text>
     </View>
+    : null
   )
 }
 

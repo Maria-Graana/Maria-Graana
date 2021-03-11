@@ -41,12 +41,12 @@ class Landing extends React.Component {
 
   componentDidMount() {
     const { navigation, dispatch, contacts } = this.props
-    this._handleDeepLink()     // if app is not in opened state this function is executed for deep linking
+    // this._handleDeepLink()     // if app is not in opened state this function is executed for deep linking
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
     })
-    this._addLinkingListener(); // if app is in foreground, this function is called for deep linking
+    // this._addLinkingListener(); // if app is in foreground, this function is called for deep linking
   }
 
 

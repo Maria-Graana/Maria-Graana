@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native'
-
+import AppStyles from '../../AppStyles'
 export default class RCMBTN extends React.Component {
   constructor(props) {
     super(props)
@@ -46,8 +46,8 @@ export default class RCMBTN extends React.Component {
 const styles = StyleSheet.create({
   addPaymentBtnText: {
     color: '#006ff1',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontFamily: AppStyles.fonts.semiBoldFont,
     letterSpacing: 2,
   },
   addPaymentBtnImg: {
@@ -61,12 +61,6 @@ const styles = StyleSheet.create({
   noMargTop: {
     marginTop: 0,
     marginBottom: 10,
-  },
-  addPaymentBtnText: {
-    color: '#006ff1',
-    fontSize: 18,
-    fontWeight: 'bold',
-    letterSpacing: 2,
   },
   addPaymentBtn: {
     flexDirection: 'row',

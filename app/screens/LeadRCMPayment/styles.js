@@ -1,14 +1,16 @@
-import { StyleSheet, Platform } from 'react-native';
+/** @format */
+
+import { StyleSheet, Platform } from 'react-native'
 import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   viewButtonStyle: {
     backgroundColor: '#fff',
-        height: 30,
-        borderBottomEndRadius: 10,
-        borderBottomLeftRadius: 10,
-        justifyContent: "center",
-        alignItems: "center"
+    height: 30,
+    borderBottomEndRadius: 10,
+    borderBottomLeftRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonTextStyle: {
     fontFamily: AppStyles.fonts.defaultFont,
@@ -18,7 +20,7 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 10,
     marginTop: 10,
-    padding:5,
+    padding: 5,
     backgroundColor: '#fff',
     borderRadius: 4,
     overflow: 'hidden',
@@ -52,7 +54,7 @@ export default styles = StyleSheet.create({
   dateText: {
     width: '20%',
     minHeight: 30,
-    alignSelf:'center',
+    alignSelf: 'center',
     fontSize: 10,
   },
   sideBtnInput: {
@@ -60,10 +62,10 @@ export default styles = StyleSheet.create({
     borderRadius: 4,
   },
   addBtnColorLeft: {
-    backgroundColor: '#0D73EE'
+    backgroundColor: '#0D73EE',
   },
   addBtnColorRight: {
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   addImg: {
     width: 30,
@@ -87,8 +89,8 @@ export default styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 0,
     justifyContent: 'center',
-    alignItems:'center',
-    //marginTop: 10,
+    marginTop: 5,
+    // backgroundColor: '#fff',
   },
   addPaymentBtnImg: {
     resizeMode: 'contain',
@@ -99,22 +101,22 @@ export default styles = StyleSheet.create({
   },
   addPaymentBtnText: {
     color: '#006ff1',
-    fontSize: 15,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontFamily: AppStyles.fonts.semiBoldFont,
     letterSpacing: 2,
   },
   checkBoxRow: {
-    flexDirection: 'row', 
-    alignItems:'center',
-    paddingVertical:10,
-},
-checkBox:{
-  width: 22, 
-  height: 22,
-  alignItems:'center',
-  marginRight:15,
-},
-legalServicesButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  checkBox: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  legalServicesButton: {
     flexDirection: 'row',
     borderRadius: 4,
     borderWidth: 1,
@@ -127,6 +129,6 @@ legalServicesButton: {
     borderRadius: 4,
     marginBottom: 0,
     justifyContent: 'center',
-    alignItems:'center',
-}
-});
+    alignItems: 'center',
+  },
+})

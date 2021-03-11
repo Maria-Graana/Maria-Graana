@@ -50,15 +50,17 @@ class LegalTile extends React.Component {
         }}
         style={styles.legalBtnView}
       >
-        <View style={styles.badgeView}>
-          <Text style={styles.badgeText}>{index}</Text>
+        <View style={styles.uploadInnerView}>
+          <View style={styles.badgeView}>
+            <Text style={styles.badgeText}>{index}</Text>
+          </View>
+          <Text numberOfLines={1} style={styles.tileTitle}>
+            {data.name}
+          </Text>
         </View>
-        <Text numberOfLines={1} style={styles.tileTitle}>
-          {data.name}
-        </Text>
-        {/* <View style={{ justifyContent: 'center' }}>
+        <View style={styles.contentCenter}>
           <Text style={[styles.tileStatus, styles.statusYellow]}>PENDING</Text>
-        </View> */}
+        </View>
       </TouchableOpacity>
     )
   }

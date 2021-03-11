@@ -29,7 +29,7 @@ export default styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginVertical: 10,
     marginHorizontal: 15,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     borderRadius: 5,
     shadowColor: '#000',
     shadowOffset: {
@@ -114,5 +114,9 @@ export default styles = StyleSheet.create({
     borderColor: '#b38f8d',
     backgroundColor: '#ecc8c4',
     color: '#615643',
+  },
+  uploadInnerView: {
+    flexDirection: 'row',
+    flex: 1,
   },
 })

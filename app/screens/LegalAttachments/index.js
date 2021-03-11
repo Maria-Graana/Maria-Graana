@@ -122,6 +122,7 @@ class LegalAttachment extends Component {
         }
       })
       .catch((error) => {
+        console.log('Attachment Error: ', error)
         helper.errorToast('Attachment Error: ', error)
       })
   }

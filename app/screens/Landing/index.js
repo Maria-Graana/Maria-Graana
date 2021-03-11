@@ -41,19 +41,49 @@ class Landing extends React.Component {
 
   componentDidMount() {
     const { navigation, dispatch, contacts } = this.props
-    this._handleDeepLink()     // if app is not in opened state this function is executed for deep linking
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
     })
+    this._handleDeepLink()     // if app is not in opened state this function is executed for deep linking
     this._addLinkingListener(); // if app is in foreground, this function is called for deep linking
   }
 
 
   _handleDeepLink = () => {
     const { navigation } = this.props;
-    Linking.getInitialURL().then(async (url) =>  {
-      const { path } = await Linking.parseInitialURLAsync(url)
+    Linking.getInitialURL().then(async (url) => {
+      if (url) {
+        const { path } = await Linking.parseInitialURLAsync(url)
+        const pathArray = path?.split('/') ?? []
+        const leadId = pathArray[pathArray.length - 1];
+        const purposeTab = pathArray.includes('cmLead')
+          ? 'invest'
+          : pathArray.includes('rcmLead') && pathArray.includes('buy')
+            ? 'sale'
+            : pathArray.includes('rcmLead') && pathArray.includes('rent')
+              ? 'rent'
+              : ''
+        path ? navigation.navigate('LeadDetail', {
+          purposeTab,
+          lead: { id: leadId },
+        })
+          : null
+      }
+    })
+  }
+
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.count !== this.props.count) {
+      this.fetchTiles()
+    }
+  }
+
+  _handleRedirectInForeground = (event) => {
+    const { navigation } = this.props;
+    if (event && event.url) {
+      const { path } = Linking.parse(event.url)
       const pathArray = path?.split('/') ?? []
       const leadId = pathArray[pathArray.length - 1];
       const purposeTab = pathArray.includes('cmLead')
@@ -68,33 +98,7 @@ class Landing extends React.Component {
         lead: { id: leadId },
       })
         : null
-    })
-  }
-
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.count !== this.props.count) {
-      this.fetchTiles()
     }
-  }
-
-  _handleRedirectInForeground = (event) => {
-    const { navigation } = this.props;
-    const { path } = Linking.parse(event.url)
-    const pathArray = path?.split('/') ?? []
-      const leadId = pathArray[pathArray.length - 1];
-      const purposeTab = pathArray.includes('cmLead')
-        ? 'invest'
-        : pathArray.includes('rcmLead') && pathArray.includes('buy')
-          ? 'sale'
-          : pathArray.includes('rcmLead') && pathArray.includes('rent')
-            ? 'rent'
-            : ''
-      path ? navigation.navigate('LeadDetail', {
-        purposeTab,
-        lead: { id: leadId },
-      })
-        : null
   }
 
   _addLinkingListener = () => {

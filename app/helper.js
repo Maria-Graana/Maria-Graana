@@ -897,12 +897,7 @@ const helper = {
       }
     }
     else if(curDate !== leadDate && lead.status === 'open'){
-      if(lead.readAt !== null && time > 60) {
         statusColor = 'red';
-      }
-      else{
-        statusColor = AppStyles.colors.primaryColor;
-      }
     }
     return statusColor
   },

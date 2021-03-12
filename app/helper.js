@@ -886,13 +886,13 @@ const helper = {
       if (time > 30 && time < 60) {
         statusColor = '#FDD835'
       }
-      if (time > 60) {
+      else if (time > 60) {
         statusColor = 'red'
       }
-      if(lead.readAt === null && time < 30) {
+      else if(lead.readAt === null && time < 30) {
         statusColor = AppStyles.colors.primaryColor;
       }
-      if (time < 30) {
+      else if (time < 30){
         statusColor = 'white'
       }
     }

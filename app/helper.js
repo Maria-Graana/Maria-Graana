@@ -883,25 +883,25 @@ const helper = {
     let time = moment.duration(moment(serverDateAndTime).diff(moment(assignedAtDate))).asMinutes()
     time = time.toFixed(0)
     if(curDate === leadDate && lead.status === 'open') {
+      if (time > 30 && time < 60) {
+        statusColor = '#FDD835'
+      }
+      if (time > 60) {
+        statusColor = 'red'
+      }
       if(lead.readAt === null && time < 30) {
         statusColor = AppStyles.colors.primaryColor;
       }
-      else if (time < 30) {
+      if (time < 30) {
         statusColor = 'white'
-      }
-     else if (time > 30 && time < 60) {
-        statusColor = '#FDD835'
-      }
-     else if (time > 60) {
-        statusColor = 'red'
       }
     }
     else if(curDate !== leadDate && lead.status === 'open'){
-      if(lead.readAt === null && time < 30) {
-        statusColor = AppStyles.colors.primaryColor;
+      if(lead.readAt !== null && time > 60) {
+        statusColor = 'red';
       }
       else{
-        statusColor = 'red';
+        statusColor = AppStyles.colors.primaryColor;
       }
     }
     return statusColor

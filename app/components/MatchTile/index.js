@@ -126,18 +126,6 @@ class MatchTile extends React.Component {
     }
   }
 
-  getOtherDiary = (property) => {
-    const { user } = this.props
-    if (property.diaries && property.diaries.length) {
-      let diaries = property.diaries
-      for (let i = 0; i < diaries.length; i++) {
-        if (Number(diaries[i].userId) !== Number(user.id) && diaries[i].status === 'pending') {
-          return diaries[i]
-        }
-      }
-    }
-  }
-
   getOwnCompletedDiary = (property) => {
     const { user } = this.props
     if (property.diaries && property.diaries.length) {
@@ -168,7 +156,6 @@ class MatchTile extends React.Component {
     let phoneNumber = null
     let totalImages = imagesList.length
     let showDone = this.checkDiaryStatus(data)
-    let otherAgentdiary = this.getOtherDiary(data) || null;
 
     if (isMenuVisible) {
       if (ownDiary) {
@@ -385,45 +372,24 @@ class MatchTile extends React.Component {
                     ) : (
 
                         <View>
-                          {
-                            otherAgentdiary ?
-                              <>
-                                <Menu.Item
-                                  onPress={() => {
-                                    propertyGeoTagging(data)
-                                  }}
-                                  title="GeoTag"
-                                />
-                                <Menu.Item
-                                  onPress={() => {
-                                    this.props.goToPropertyComments(data)
-                                  }}
-                                  title="Comments"
-                                />
-                              </> :
-                              <>
-                                <Menu.Item
-                                  onPress={() => {
-                                    bookAnotherViewing(data)
-                                  }}
-                                  title="Book Another Viewing"
-                                />
-                                <Menu.Item
-                                  onPress={() => {
-                                    propertyGeoTagging(data)
-                                  }}
-                                  title="GeoTag"
-                                />
-                                <Menu.Item
-                                  onPress={() => {
-                                    this.props.goToPropertyComments(data)
-                                  }}
-                                  title="Comments"
-                                />
-                              </>
-                          }
-
-
+                          <Menu.Item
+                            onPress={() => {
+                              bookAnotherViewing(data)
+                            }}
+                            title="Book Another Viewing"
+                          />
+                          <Menu.Item
+                            onPress={() => {
+                              propertyGeoTagging(data)
+                            }}
+                            title="GeoTag"
+                          />
+                          <Menu.Item
+                            onPress={() => {
+                              this.props.goToPropertyComments(data)
+                            }}
+                            title="Comments"
+                          />
                         </View>
                       )}
                   </View>

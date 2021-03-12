@@ -389,7 +389,7 @@ class PropertyLead extends React.Component {
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
-          data={StaticData.sortData}
+          data={StaticData.sortDataSellRent}
           doneStatus={activeSortModal}
           sort={sort}
         />

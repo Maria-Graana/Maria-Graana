@@ -195,11 +195,11 @@ class MatchTile extends React.Component {
                 containerCustomStyle={{ position: 'relative' }}
               />
             ) : (
-              <Image
-                source={require('../../../assets/images/no-image-found.png')}
-                style={styles.noImage}
-              />
-            )}
+                <Image
+                  source={require('../../../assets/images/no-image-found.png')}
+                  style={styles.noImage}
+                />
+              )}
           </View>
           <View style={styles.imageCountViewStyle}>
             <Feather name={'camera'} color={'#fff'} size={16} />
@@ -285,21 +285,21 @@ class MatchTile extends React.Component {
                       title="Comments"
                     />
                   ) : (
-                    <View>
-                      <Menu.Item
-                        onPress={() => {
-                          this.props.goToPropertyComments(data)
-                        }}
-                        title="Comments"
-                      />
-                      <Menu.Item
-                        onPress={() => {
-                          this.props.cancelPropsureRequest(data)
-                        }}
-                        title="Cancel Request"
-                      />
-                    </View>
-                  )}
+                      <View>
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.goToPropertyComments(data)
+                          }}
+                          title="Comments"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.cancelPropsureRequest(data)
+                          }}
+                          title="Cancel Request"
+                        />
+                      </View>
+                    )}
                 </View>
               </Menu>
             ) : null}
@@ -327,7 +327,7 @@ class MatchTile extends React.Component {
                               }}
                               title="Comments"
                             />
-                              <Menu.Item
+                            <Menu.Item
                               onPress={() => {
                                 propertyGeoTagging(data)
                               }}
@@ -347,50 +347,51 @@ class MatchTile extends React.Component {
                             />
                           </View>
                         ) : (
-                          <View>
-                            <Menu.Item
-                              onPress={() => {
-                                this.props.goToPropertyComments(data)
-                              }}
-                              title="Comments"
-                            />
+                            <View>
                               <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="GeoTag"
-                            />
-                            <Menu.Item
-                              onPress={() => {
-                                this.props.deleteProperty(data)
-                              }}
-                              title="Remove from the list"
-                            />
-                          </View>
-                        )}
+                                onPress={() => {
+                                  this.props.goToPropertyComments(data)
+                                }}
+                                title="Comments"
+                              />
+                              <Menu.Item
+                                onPress={() => {
+                                  propertyGeoTagging(data)
+                                }}
+                                title="GeoTag"
+                              />
+                              <Menu.Item
+                                onPress={() => {
+                                  this.props.deleteProperty(data)
+                                }}
+                                title="Remove from the list"
+                              />
+                            </View>
+                          )}
                       </View>
                     ) : (
-                      <View>
-                        <Menu.Item
-                          onPress={() => {
-                            bookAnotherViewing(data)
-                          }}
-                          title="Book Another Viewing"
-                        />
-                         <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="GeoTag"
-                            />
-                        <Menu.Item
-                          onPress={() => {
-                            this.props.goToPropertyComments(data)
-                          }}
-                          title="Comments"
-                        />
-                      </View>
-                    )}
+
+                        <View>
+                          <Menu.Item
+                            onPress={() => {
+                              bookAnotherViewing(data)
+                            }}
+                            title="Book Another Viewing"
+                          />
+                          <Menu.Item
+                            onPress={() => {
+                              propertyGeoTagging(data)
+                            }}
+                            title="GeoTag"
+                          />
+                          <Menu.Item
+                            onPress={() => {
+                              this.props.goToPropertyComments(data)
+                            }}
+                            title="Comments"
+                          />
+                        </View>
+                      )}
                   </View>
                 </Menu>
               </View>
@@ -406,8 +407,8 @@ class MatchTile extends React.Component {
                 />
               </View>
             ) : (
-              <View />
-            )}
+                <View />
+              )}
             <View style={{ flexDirection: 'row-reverse' }}>
               <FontAwesome
                 onPress={() => {

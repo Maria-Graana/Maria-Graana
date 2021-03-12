@@ -126,6 +126,18 @@ class MatchTile extends React.Component {
     }
   }
 
+  getOtherDiary = (property) => {
+    const { user } = this.props
+    if (property.diaries && property.diaries.length) {
+      let diaries = property.diaries
+      for (let i = 0; i < diaries.length; i++) {
+        if (Number(diaries[i].userId) !== Number(user.id) && diaries[i].status === 'pending') {
+          return diaries[i]
+        }
+      }
+    }
+  }
+
   getOwnCompletedDiary = (property) => {
     const { user } = this.props
     if (property.diaries && property.diaries.length) {
@@ -156,7 +168,7 @@ class MatchTile extends React.Component {
     let phoneNumber = null
     let totalImages = imagesList.length
     let showDone = this.checkDiaryStatus(data)
-    let otherAgentdiary = _.find(data.diaries, (item) => user.id !== item.userId && item.status === 'pending')
+    let otherAgentdiary = this.getOtherDiary(data) || null;
 
     if (isMenuVisible) {
       if (ownDiary) {

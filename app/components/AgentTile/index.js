@@ -10,7 +10,6 @@ import AppStyles from '../../AppStyles'
 import { formatPrice } from '../../PriceFormate'
 import helper from '../../helper'
 import styles from './style'
-import _, { property } from 'underscore';
 
 class AgentTile extends React.Component {
   _renderItem = (item) => {

@@ -884,7 +884,7 @@ const helper = {
     time = time.toFixed(0)
     if(curDate === leadDate && lead.status === 'open') {
       if (time < 30) {
-        statusColor = AppStyles.colors.primaryColor
+        statusColor = 'white'
       }
       if (time > 30 && time < 60) {
         statusColor = '#FDD835'

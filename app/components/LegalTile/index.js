@@ -92,7 +92,7 @@ class LegalTile extends React.Component {
               <Text style={styles.uploadedText}>
                 UPLOADED{' '}
                 <Text style={styles.dateText}>
-                  @{moment(new Date(data.createdAt)).format('hh:mm A, MMM DD')}
+                  @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
                 </Text>
               </Text>
               {data.status === 'rejected' && (
@@ -187,7 +187,7 @@ class LegalTile extends React.Component {
             <Text style={styles.uploadedText}>
               UPLOADED{' '}
               <Text style={styles.dateText}>
-                @{moment(new Date(data.createdAt)).format('hh:mm A, MMM DD')}
+                @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
               </Text>
             </Text>
             <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>

@@ -875,7 +875,7 @@ const helper = {
     return list
   },
   timeStatusColors(lead, serverDate) {
-    var statusColor = AppStyles.colors.primaryColor;
+    var statusColor = 'white';
     let serverDateAndTime =  moment(serverDate).utc(true)
     let assignedAtDate = moment(lead.assigned_at).utc(true);
     let curDate = moment(serverDateAndTime).format('DD')

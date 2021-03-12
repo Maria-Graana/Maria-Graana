@@ -16,7 +16,7 @@ export default styles = StyleSheet.create({
     borderRadius: 15,
     height: 20,
     width: 20,
-    marginRight: 10,
+    marginRight: 5,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
@@ -114,9 +114,5 @@ export default styles = StyleSheet.create({
     borderColor: '#b38f8d',
     backgroundColor: '#ecc8c4',
     color: '#615643',
-  },
-  uploadInnerView: {
-    flexDirection: 'row',
-    flex: 1,
   },
 })

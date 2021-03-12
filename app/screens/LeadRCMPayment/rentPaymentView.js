@@ -149,7 +149,7 @@ const RentPaymentView = (props) => {
           onSubmitNewToken={onAddCommissionPayment}
         />
       ) : null}
-      <DocTile
+      {/* <DocTile
         title={'Signed Agreement'}
         uploadDocument={uploadDocument}
         category={'agreement'}
@@ -170,7 +170,7 @@ const RentPaymentView = (props) => {
         downloadLegalDocs={downloadLegalDocs}
         deleteDoc={deleteDoc}
         activityBool={activityBool}
-      />
+      /> */}
 
       <View style={[AppStyles.mainInputWrap]}>
         <View style={[AppStyles.inputWrap]}>

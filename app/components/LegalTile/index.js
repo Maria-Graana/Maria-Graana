@@ -50,7 +50,7 @@ class LegalTile extends React.Component {
         }}
         style={styles.legalBtnView}
       >
-        <View style={styles.uploadInnerView}>
+        <View style={{ flexDirection: 'row', flex: 1 }}>
           <View style={styles.badgeView}>
             <Text style={styles.badgeText}>{index}</Text>
           </View>
@@ -58,7 +58,7 @@ class LegalTile extends React.Component {
             {data.name}
           </Text>
         </View>
-        <View style={styles.contentCenter}>
+        <View style={{ justifyContent: 'center' }}>
           <Text style={[styles.tileStatus, styles.statusYellow]}>PENDING</Text>
         </View>
       </TouchableOpacity>
@@ -75,6 +75,9 @@ class LegalTile extends React.Component {
   MenuTile = () => {
     const { data, submitMenu, downloadLegalDocs } = this.props
     const { menuToggle } = this.state
+    let showStatus = this.findStatusLabel()
+    let statusColor = this.findStatusColor(showStatus)
+
     return (
       <TouchableOpacity onPress={() => downloadLegalDocs(data)} style={styles.legalBtnView}>
         <AntDesign
@@ -84,18 +87,23 @@ class LegalTile extends React.Component {
           color={AppStyles.colors.primaryColor}
         />
         <View style={styles.menuTileInner}>
-          <View style={[styles.contentCenter, {}]}>
-            <Text style={styles.uploadedText}>
-              UPLOADED{' '}
-              <Text style={styles.dateText}>
-                @{moment(new Date(data.createdAt)).format('hh:mm A, MMM DD')}
+          <View style={[styles.contentCenter, { flex: 1 }]}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={styles.uploadedText}>
+                UPLOADED{' '}
+                <Text style={styles.dateText}>
+                  @{moment(new Date(data.createdAt)).format('hh:mm A, MMM DD')}
+                </Text>
               </Text>
-            </Text>
+              {data.status === 'rejected' && (
+                <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+              )}
+            </View>
             <Text numberOfLines={1} style={styles.textPadding}>
               {data.name}
             </Text>
           </View>
-          <View style={styles.contentCenter}>
+          <View style={[data.status === 'rejected' ? { paddingTop: 10 } : styles.contentCenter]}>
             <Menu
               visible={menuToggle}
               onDismiss={() => this.toggleMenu()}
@@ -109,28 +117,51 @@ class LegalTile extends React.Component {
                 />
               }
             >
-              <Menu.Item
-                onPress={() => {
-                  submitMenu('edit', data)
-                  this.toggleMenu()
-                }}
-                title="Edit"
-              />
-              <Menu.Item
-                onPress={() => {
-                  submitMenu('remove', data)
-                  this.toggleMenu()
-                }}
-                title="Remove"
-              />
-              <Menu.Item
-                onPress={() => {
-                  submitMenu('assign_to_legal', data)
-                  this.toggleMenu()
-                }}
-                title="Assign to Legal"
-                titleStyle={styles.assignText}
-              />
+              <View>
+                {data.status === 'rejected' ? (
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        submitMenu('edit', data)
+                        this.toggleMenu()
+                      }}
+                      title="Edit"
+                    />
+                    <Menu.Item
+                      onPress={() => {
+                        submitMenu('remove', data)
+                        this.toggleMenu()
+                      }}
+                      title="Remove"
+                    />
+                  </View>
+                ) : (
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        submitMenu('edit', data)
+                        this.toggleMenu()
+                      }}
+                      title="Edit"
+                    />
+                    <Menu.Item
+                      onPress={() => {
+                        submitMenu('remove', data)
+                        this.toggleMenu()
+                      }}
+                      title="Remove"
+                    />
+                    <Menu.Item
+                      onPress={() => {
+                        submitMenu('assign_to_legal', data)
+                        this.toggleMenu()
+                      }}
+                      title="Assign to Legal"
+                      titleStyle={styles.assignText}
+                    />
+                  </View>
+                )}
+              </View>
             </Menu>
           </View>
         </View>
@@ -176,10 +207,15 @@ class LegalTile extends React.Component {
     return (
       <View>
         {!data.fileKey && <View>{this.UploadTile()}</View>}
-        {data.status === 'uploaded' && data.fileKey !== null && <View>{this.MenuTile()}</View>}
-        {data.status && data.status === 'pending_legal' && data.fileKey !== null && (
-          <View>{this.StatusTile()}</View>
-        )}
+        {data.status !== 'pending' &&
+          data.status !== 'pending_legal' &&
+          data.status !== 'approved' &&
+          data.fileKey !== null && <View>{this.MenuTile()}</View>}
+        {data.status &&
+          data.status !== 'uploaded' &&
+          data.status !== 'pending' &&
+          data.status !== 'rejected' &&
+          data.fileKey !== null && <View>{this.StatusTile()}</View>}
       </View>
     )
   }

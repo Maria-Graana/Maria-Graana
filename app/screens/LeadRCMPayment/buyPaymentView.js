@@ -174,7 +174,7 @@ class BuyPaymentView extends React.Component {
           />
         ) : null}
 
-        <DocTile
+        {/* <DocTile
           title={'Signed Agreement'}
           uploadDocument={uploadDocument}
           category={'agreement'}
@@ -195,7 +195,7 @@ class BuyPaymentView extends React.Component {
           downloadLegalDocs={downloadLegalDocs}
           deleteDoc={deleteDoc}
           activityBool={activityBool}
-        />
+        /> */}
         {
           // Checkbox
           singleCommission && !buyer && !isLeadClosed ? (

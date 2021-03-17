@@ -290,19 +290,19 @@ class AddClient extends Component {
       cnic: formData.cnic,
       phone: {
         countryCode: callingCode === '+92' ? 'PK' : countryCode,
-        phone: phone1,
+        phone: phone1 ? phone1.replace(/\s+/g, '') : null,
         dialCode: callingCode,
       },
       address: formData.address,
       secondary_address: formData.secondaryAddress,
       contact1: {
         countryCode: callingCode1 === '+92' ? 'PK' : countryCode1,
-        contact1: phone2,
+        contact1: phone2 ? phone2.replace(/\s+/g, '') : null,
         dialCode: callingCode1,
       },
       contact2: {
         countryCode: callingCode2 === '+92' ? 'PK' : countryCode2,
-        contact2: phone3,
+        contact2: phone3 ? phone3.replace(/\s+/g, '') : null,
         dialCode: callingCode2,
       },
     }

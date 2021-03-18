@@ -1432,20 +1432,13 @@ class LeadRCMPayment extends React.Component {
       selectedReason,
       reasons,
       agreedAmount,
-      showAgreedAmountArrow,
-      showTokenAmountArrow,
       progressValue,
-      token,
       lead,
       pickerData,
       formData,
       closedLeadEdit,
-      showMonthlyRentArrow,
       showStyling,
-      tokenDateStatus,
-      tokenPriceFromat,
       agreeAmountFromat,
-      monthlyFormatStatus,
       meetings,
       callModal,
       modalValidation,
@@ -1453,19 +1446,12 @@ class LeadRCMPayment extends React.Component {
       assignToAccountsLoading,
       commissionNotApplicableBuyer,
       commissionNotApplicableSeller,
-      agreementDoc,
-      checkListDoc,
       webView,
       showWebView,
-      legalAgreement,
-      legalCheckList,
       showDoc,
       deletePaymentVisible,
-      tokenNotZero,
       agreedNotZero,
       buyerNotZero,
-      rentNotZero,
-      activityBool,
       tokenMenu,
       legalDocLoader,
       rentMonthlyToggle,
@@ -1588,41 +1574,23 @@ class LeadRCMPayment extends React.Component {
                   {lead.shortlist_id !== null ? (
                     lead.purpose === 'sale' ? (
                       <BuyPaymentView
-                        deleteDoc={this.deleteDoc}
-                        uploadDocument={this.uploadDocument}
-                        uploadDocToServer={this.uploadDocToServer}
-                        legalAgreement={legalAgreement}
-                        legalCheckList={legalCheckList}
-                        agreementDoc={agreementDoc}
-                        checkListDoc={checkListDoc}
-                        downloadLegalDocs={this.downloadLegalDocs}
-                        currentProperty={allProperties}
                         lead={lead}
                         agreedAmount={agreedAmount}
-                        showAgreedAmountArrow={showAgreedAmountArrow}
-                        handleAgreedAmountPress={this.handleAgreedAmountPress}
                         handleAgreedAmountChange={this.handleAgreedAmountChange}
-                        token={token}
-                        handleTokenAmountChange={this.handleTokenAmountChange}
-                        showTokenAmountArrow={showTokenAmountArrow}
-                        handleTokenAmountPress={this.handleTokenAmountPress}
+                        handleAgreedAmountPress={this.handleAgreedAmountPress}
                         showAndHideStyling={this.showAndHideStyling}
                         showStylingState={showStyling}
-                        tokenDateStatus={tokenDateStatus}
-                        tokenPriceFromat={tokenPriceFromat}
                         agreeAmountFromat={agreeAmountFromat}
                         onAddCommissionPayment={this.onAddCommissionPayment}
                         editTile={this.setCommissionEditData}
                         user={user}
+                        currentProperty={allProperties}
                         commissionNotApplicableBuyer={commissionNotApplicableBuyer}
                         commissionNotApplicableSeller={commissionNotApplicableSeller}
                         setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
                         setSellerCommissionApplicable={this.setSellerCommissionApplicable}
                         onPaymentLongPress={this.onPaymentLongPress}
-                        tokenNotZero={tokenNotZero}
                         agreedNotZero={agreedNotZero}
-                        activityBool={activityBool}
-                        requestLegalServices={this.showLegalRequestConfirmation}
                         toggleTokenMenu={this.toggleTokenMenu}
                         tokenMenu={tokenMenu}
                         confirmTokenAction={this.confirmTokenAction}
@@ -1630,49 +1598,20 @@ class LeadRCMPayment extends React.Component {
                       />
                     ) : (
                       <RentPaymentView
-                        deleteDoc={this.deleteDoc}
-                        uploadDocument={this.uploadDocument}
-                        uploadDocToServer={this.uploadDocToServer}
-                        agreementDoc={agreementDoc}
-                        legalAgreement={legalAgreement}
-                        legalCheckList={legalCheckList}
-                        checkListDoc={checkListDoc}
-                        downloadLegalDocs={this.downloadLegalDocs}
-                        user={user}
-                        currentProperty={allProperties}
-                        lead={lead}
                         pickerData={pickerData}
                         handleForm={this.handleForm}
                         formData={formData}
-                        showMonthlyRentArrow={showMonthlyRentArrow}
-                        handleMonthlyRentPress={this.handleMonthlyRentPress}
-                        token={token}
-                        handleTokenAmountChange={this.handleTokenAmountChange}
-                        showTokenAmountArrow={showTokenAmountArrow}
-                        handleTokenAmountPress={this.handleTokenAmountPress}
-                        showAndHideStyling={this.showAndHideStyling}
-                        showStylingState={showStyling}
-                        tokenDateStatus={tokenDateStatus}
-                        tokenPriceFromat={tokenPriceFromat}
-                        agreeAmountFromat={agreeAmountFromat}
-                        monthlyFormatStatus={monthlyFormatStatus}
+                        lead={lead}
                         onAddCommissionPayment={this.onAddCommissionPayment}
                         editTile={this.setCommissionEditData}
                         user={user}
+                        currentProperty={allProperties}
                         commissionNotApplicableBuyer={commissionNotApplicableBuyer}
                         commissionNotApplicableSeller={commissionNotApplicableSeller}
                         setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
                         setSellerCommissionApplicable={this.setSellerCommissionApplicable}
                         onPaymentLongPress={this.onPaymentLongPress}
-                        tokenNotZero={tokenNotZero}
-                        agreedNotZero={agreedNotZero}
-                        rentNotZero={rentNotZero}
-                        activityBool={activityBool}
-                        requestLegalServices={this.showLegalRequestConfirmation}
                         toggleTokenMenu={this.toggleTokenMenu}
-                        tokenMenu={tokenMenu}
-                        confirmTokenAction={this.confirmTokenAction}
-                        closeLegalDocument={this.closeLegalDocument}
                         toggleMonthlyDetails={this.toggleMonthlyDetails}
                         rentMonthlyToggle={rentMonthlyToggle}
                         updateRentLead={this.updateRentLead}

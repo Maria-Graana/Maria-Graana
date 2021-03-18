@@ -5,6 +5,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native'
 import _ from 'underscore'
 import RoundPlus from '../../../assets/img/roundPlus.png'
 import CommissionTile from '../../components/CommissionTile'
+import BuyerSellerTile from '../../components/BuyerSellerTile'
 import InputField from '../../components/InputField'
 import RCMBTN from '../../components/RCMBTN'
 import TokenTile from '../../components/TokenTile'
@@ -146,6 +147,42 @@ class BuyPaymentView extends React.Component {
           showDate={true}
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
         /> */}
+        <BuyerSellerTile
+          singleCommission={false}
+          isLeadClosed={isLeadClosed}
+          setComissionApplicable={() => {}}
+          commissionNotApplicableBuyerSeller={true}
+          tileType={'buyer'}
+          tileTitle={'Buyer Side'}
+          closeLegalDocument={closeLegalDocument}
+          onPaymentLongPress={onPaymentLongPress}
+          payment={buyer}
+          paymentCommission={buyerCommission}
+          onAddCommissionPayment={onAddCommissionPayment}
+          editTile={editTile}
+          lead={lead}
+          commissionTitle={'Buyer Commission Payment'}
+          RCMBTNTitle={'ADD BUYER COMMISSION PAYMENT'}
+        />
+        {sellerCommission && (
+          <BuyerSellerTile
+            singleCommission={false}
+            isLeadClosed={isLeadClosed}
+            setComissionApplicable={() => {}}
+            commissionNotApplicableBuyerSeller={false}
+            tileType={'seller'}
+            tileTitle={'Seller Side'}
+            closeLegalDocument={closeLegalDocument}
+            onPaymentLongPress={onPaymentLongPress}
+            payment={seller}
+            paymentCommission={sellerCommission}
+            onAddCommissionPayment={onAddCommissionPayment}
+            editTile={editTile}
+            lead={lead}
+            commissionTitle={'Seller Commission Payment'}
+            RCMBTNTitle={'ADD SELLER COMMISSION PAYMENT'}
+          />
+        )}
         <RCMBTN
           onClick={() => closeLegalDocument('buyer')}
           btnImage={RoundPlus}

@@ -145,6 +145,7 @@ export default styles = StyleSheet.create({
     marginTop: 15,
     backgroundColor: '#fff',
     padding: 10,
+    height: 55,
   },
   monthlyText: {
     color: '#006ff1',

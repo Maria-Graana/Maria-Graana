@@ -13,6 +13,16 @@ class BuyerSellerTile extends React.Component {
     super(props)
   }
 
+  checkReadOnlyMode = () => {
+    const { isLeadClosed, singleCommission, commissionNotApplicableBuyerSeller } = this.props
+    console.log('isLeadClosed: ', isLeadClosed)
+    console.log('singleCommission: ', singleCommission)
+    console.log('commissionNotApplicableBuyerSeller: ', commissionNotApplicableBuyerSeller)
+    if (isLeadClosed || singleCommission || commissionNotApplicableBuyerSeller) {
+      return true
+    } else return false
+  }
+
   render() {
     const {
       setComissionApplicable,
@@ -30,6 +40,7 @@ class BuyerSellerTile extends React.Component {
       commissionTitle,
       RCMBTNTitle,
     } = this.props
+    let onReadOnly = this.checkReadOnlyMode()
     return (
       <View style={styles.tileView}>
         <View style={styles.titleView}>
@@ -60,7 +71,7 @@ class BuyerSellerTile extends React.Component {
               data={payment}
               editTile={editTile}
               onPaymentLongPress={() => onPaymentLongPress(payment)}
-              commissionEdit={!paymentCommission}
+              commissionEdit={onReadOnly}
               title={payment ? commissionTitle : ''}
             />
           ) : (
@@ -71,7 +82,7 @@ class BuyerSellerTile extends React.Component {
                   btnImage={RoundPlus}
                   btnText={RCMBTNTitle}
                   checkLeadClosedOrNot={false}
-                  hiddenBtn={singleCommission ? commissionNotApplicableBuyerSeller : isLeadClosed}
+                  hiddenBtn={onReadOnly}
                   addBorder={true}
                 />
               ) : null}

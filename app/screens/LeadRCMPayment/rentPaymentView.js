@@ -152,45 +152,43 @@ const RentPaymentView = (props) => {
         pickerData={pickerData}
         isLeadClosed={isLeadClosed}
         updateRentLead={updateRentLead}
+        leadAgentType={'buyer'}
+        lead={lead}
       />
-      {buyerCommission && (
-        <BuyerSellerTile
-          singleCommission={singleCommission}
-          isLeadClosed={isLeadClosed}
-          setComissionApplicable={setBuyerCommissionApplicable}
-          commissionNotApplicableBuyerSeller={commissionNotApplicableBuyer}
-          tileType={'buyer'}
-          tileTitle={'Buyer Side'}
-          closeLegalDocument={closeLegalDocument}
-          onPaymentLongPress={onPaymentLongPress}
-          payment={buyer}
-          paymentCommission={buyerCommission}
-          onAddCommissionPayment={onAddCommissionPayment}
-          editTile={editTile}
-          lead={lead}
-          commissionTitle={'Buyer Commission Payment'}
-          RCMBTNTitle={'ADD BUYER COMMISSION PAYMENT'}
-        />
-      )}
-      {sellerCommission && (
-        <BuyerSellerTile
-          singleCommission={singleCommission}
-          isLeadClosed={isLeadClosed}
-          setComissionApplicable={setSellerCommissionApplicable}
-          commissionNotApplicableBuyerSeller={commissionNotApplicableSeller}
-          tileType={'seller'}
-          tileTitle={'Seller Side'}
-          closeLegalDocument={closeLegalDocument}
-          onPaymentLongPress={onPaymentLongPress}
-          payment={seller}
-          paymentCommission={sellerCommission}
-          onAddCommissionPayment={onAddCommissionPayment}
-          editTile={editTile}
-          lead={lead}
-          commissionTitle={'Seller Commission Payment'}
-          RCMBTNTitle={'ADD SELLER COMMISSION PAYMENT'}
-        />
-      )}
+      <BuyerSellerTile
+        singleCommission={singleCommission}
+        isLeadClosed={isLeadClosed}
+        setComissionApplicable={setBuyerCommissionApplicable}
+        commissionNotApplicableBuyerSeller={buyerCommission ? commissionNotApplicableBuyer : true}
+        tileType={'buyer'}
+        tileTitle={'Buyer Side'}
+        closeLegalDocument={closeLegalDocument}
+        onPaymentLongPress={onPaymentLongPress}
+        payment={buyer}
+        paymentCommission={buyerCommission}
+        onAddCommissionPayment={onAddCommissionPayment}
+        editTile={editTile}
+        lead={lead}
+        commissionTitle={'Buyer Commission Payment'}
+        RCMBTNTitle={'ADD BUYER COMMISSION PAYMENT'}
+      />
+      <BuyerSellerTile
+        singleCommission={singleCommission}
+        isLeadClosed={isLeadClosed}
+        setComissionApplicable={setSellerCommissionApplicable}
+        commissionNotApplicableBuyerSeller={sellerCommission ? commissionNotApplicableSeller : true}
+        tileType={'seller'}
+        tileTitle={'Seller Side'}
+        closeLegalDocument={closeLegalDocument}
+        onPaymentLongPress={onPaymentLongPress}
+        payment={seller}
+        paymentCommission={sellerCommission ? sellerCommission : true}
+        onAddCommissionPayment={onAddCommissionPayment}
+        editTile={sellerCommission ? editTile : true}
+        lead={lead}
+        commissionTitle={'Seller Commission Payment'}
+        RCMBTNTitle={'ADD SELLER COMMISSION PAYMENT'}
+      />
     </View>
   )
 }

@@ -1,40 +1,49 @@
 /** @format */
 
 import React from 'react'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import RoundPlus from '../../../assets/img/roundPlus.png'
-import AppStyles from '../../AppStyles'
-import CommissionTile from '../../components/CommissionTile'
-import InputField from '../../components/InputField'
-import PickerComponent from '../../components/Picker'
+import BuyerSellerTile from '../../components/BuyerSellerTile'
 import RCMBTN from '../../components/RCMBTN'
+import RCMRentMonthlyModal from '../../components/RCMRentMonthlyModal'
 import TokenTile from '../../components/TokenTile'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
+import { formatPrice } from '../../PriceFormate'
 import styles from './styles'
 
 const RentPaymentView = (props) => {
+  MonthlyTile = () => {
+    return (
+      <View style={styles.monthlyTile}>
+        <View style={{ justifyContent: 'space-between' }}>
+          <Text style={styles.monthlyPayment}>MONTHLY RENT</Text>
+          <Text style={styles.monthlyText}>{formatPrice(formData.monthlyRent)}</Text>
+        </View>
+        <TouchableOpacity onPress={toggleMonthlyDetails} style={styles.monthlyDetailsBtn}>
+          <Text style={styles.monthlyDetailText}>DETAILS</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   const {
     pickerData,
-    handleForm,
     formData,
-    handleMonthlyRentPress,
     lead,
-    showAndHideStyling,
-    showStylingState,
-    monthlyFormatStatus,
     onAddCommissionPayment,
     editTile,
     currentProperty,
     user,
     onPaymentLongPress,
-    requestLegalServices,
     toggleTokenMenu,
     tokenMenu,
     confirmTokenAction,
     closeLegalDocument,
+    toggleMonthlyDetails,
+    rentMonthlyToggle,
   } = props
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
@@ -77,79 +86,28 @@ const RentPaymentView = (props) => {
   let showMenu = helper.showSellerTokenMenu(tokenPayment)
   return (
     <View>
-      <TouchableOpacity
-        disabled={lead.legalMailSent}
-        style={[
-          styles.legalServicesButton,
-          {
-            marginTop: 10,
-            backgroundColor: lead.legalMailSent ? '#ddd' : '#fff',
-            borderColor: lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor,
-          },
-        ]}
-        onPress={() => requestLegalServices()}
-      >
-        <Text style={[styles.addPaymentBtnText]}>
-          {lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}
-        </Text>
-      </TouchableOpacity>
-      <InputField
-        label={'MONTHLY RENT'}
-        placeholder={'Enter Monthly Rent'}
-        name={'monthlyRent'}
-        value={formData.monthlyRent}
-        priceFormatVal={formData.monthlyRent != null ? formData.monthlyRent : ''}
-        keyboardType={'numeric'}
-        onChange={handleForm}
-        paymentDone={handleMonthlyRentPress}
-        showStyling={showAndHideStyling}
-        showStylingState={showStylingState}
-        editPriceFormat={{ status: monthlyFormatStatus, name: 'monthlyRent' }}
-        editable={false}
-        showDate={false}
+      <MonthlyTile />
+      <View style={{ paddingVertical: 5 }} />
+      <RCMRentMonthlyModal
+        isVisible={rentMonthlyToggle}
+        closeModal={toggleMonthlyDetails}
+        formData={formData}
+        handleForm={() => {}}
+        pickerData={pickerData}
+        isLeadClosed={isLeadClosed}
+        updateRentLead={() => {}}
+        leadAgentType={'seller'}
+        lead={lead}
       />
-
-      <View style={[AppStyles.mainInputWrap]}>
-        <View style={[AppStyles.inputWrap]}>
-          <PickerComponent
-            enabled={false}
-            onValueChange={handleForm}
-            name={'contract_months'}
-            data={pickerData}
-            selectedItem={formData.contract_months}
-            enabled={false}
-            placeholder="Contact duration (No of months)"
-          />
-        </View>
-      </View>
-
-      <View style={[AppStyles.mainInputWrap]}>
-        <View style={[AppStyles.inputWrap]}>
-          <PickerComponent
-            enabled={false}
-            onValueChange={handleForm}
-            name={'advance'}
-            data={pickerData}
-            selectedItem={formData.advance}
-            enabled={false}
-            placeholder="Advance (No of months)"
-          />
-        </View>
-      </View>
-
-      <View style={[AppStyles.mainInputWrap]}>
-        <View style={[AppStyles.inputWrap]}>
-          <PickerComponent
-            enabled={false}
-            onValueChange={handleForm}
-            name={'security'}
-            data={pickerData}
-            selectedItem={formData.security}
-            enabled={false}
-            placeholder="Security (No of months)"
-          />
-        </View>
-      </View>
+      {!tokenPayment ? (
+        <RCMBTN
+          onClick={() => onAddCommissionPayment('buyer', 'token')}
+          btnImage={RoundPlus}
+          btnText={'ADD TOKEN'}
+          checkLeadClosedOrNot={false}
+          hiddenBtn={true}
+        />
+      ) : null}
       {tokenPayment ? (
         <TokenTile
           data={tokenPayment}
@@ -167,84 +125,40 @@ const RentPaymentView = (props) => {
           confirmTokenAction={confirmTokenAction}
         />
       ) : null}
-      {/* <InputField
-        label={'TOKEN'}
-        placeholder={'Enter Token Amount'}
-        name={'token'}
-        value={token}
-        priceFormatVal={token != null ? token : ''}
-        keyboardType={'numeric'}
-        onChange={handleTokenAmountChange}
-        paymentDone={handleTokenAmountPress}
-        showStyling={showAndHideStyling}
-        showStylingState={showStylingState}
-        editPriceFormat={{ status: tokenPriceFromat, name: 'token' }}
-        date={lead.tokenPaymentTime && moment(lead.tokenPaymentTime).format('hh:mm A, MMM DD')}
-        editable={false}
-        showDate={true}
-        dateStatus={{ status: tokenDateStatus, name: 'token' }}
-      /> */}
-      <RCMBTN
-        onClick={closeLegalDocument}
-        btnImage={RoundPlus}
-        btnText={'UPLOAD LEGAL DOCUMENTS'}
-        checkLeadClosedOrNot={false}
+      <BuyerSellerTile
+        singleCommission={false}
+        isLeadClosed={isLeadClosed}
+        setComissionApplicable={() => {}}
+        commissionNotApplicableBuyerSeller={true}
+        tileType={'buyer'}
+        tileTitle={'Buyer Side'}
+        closeLegalDocument={closeLegalDocument}
+        onPaymentLongPress={onPaymentLongPress}
+        payment={buyer}
+        paymentCommission={true}
+        onAddCommissionPayment={onAddCommissionPayment}
+        editTile={editTile}
+        lead={lead}
+        commissionTitle={'Buyer Commission Payment'}
+        RCMBTNTitle={'ADD BUYER COMMISSION PAYMENT'}
       />
-      {lead.commissions ? (
-        buyer ? (
-          <CommissionTile
-            data={buyer}
-            editTile={editTile}
-            commissionEdit={!buyerCommission}
-            onPaymentLongPress={() => onPaymentLongPress(buyer)}
-            title={buyer ? 'Buyer Commission Payment' : ''}
-          />
-        ) : (
-          <View>
-            {buyerCommission ? (
-              <TouchableOpacity
-                disabled={isLeadClosed}
-                style={styles.addPaymentBtn}
-                onPress={() => onAddCommissionPayment('buyer', 'commission')}
-              >
-                <Image
-                  style={styles.addPaymentBtnImg}
-                  source={require('../../../assets/img/roundPlus.png')}
-                ></Image>
-                <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-        )
-      ) : null}
-
-      {lead.commissions ? (
-        seller ? (
-          <CommissionTile
-            data={seller}
-            commissionEdit={!sellerCommission}
-            editTile={editTile}
-            onPaymentLongPress={() => onPaymentLongPress(seller)}
-            title={'Seller Commission Payment'}
-          />
-        ) : (
-          <View>
-            {sellerCommission ? (
-              <TouchableOpacity
-                disabled={isLeadClosed}
-                style={styles.addPaymentBtn}
-                onPress={() => onAddCommissionPayment('seller', 'commission')}
-              >
-                <Image
-                  style={styles.addPaymentBtnImg}
-                  source={require('../../../assets/img/roundPlus.png')}
-                ></Image>
-                <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-        )
-      ) : null}
+      <BuyerSellerTile
+        singleCommission={false}
+        isLeadClosed={isLeadClosed}
+        setComissionApplicable={() => {}}
+        commissionNotApplicableBuyerSeller={false}
+        tileType={'seller'}
+        tileTitle={'Seller Side'}
+        closeLegalDocument={closeLegalDocument}
+        onPaymentLongPress={onPaymentLongPress}
+        payment={seller}
+        paymentCommission={sellerCommission}
+        onAddCommissionPayment={onAddCommissionPayment}
+        editTile={editTile}
+        lead={lead}
+        commissionTitle={'Seller Commission Payment'}
+        RCMBTNTitle={'ADD SELLER COMMISSION PAYMENT'}
+      />
     </View>
   )
 }

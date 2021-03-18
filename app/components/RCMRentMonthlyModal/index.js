@@ -9,15 +9,28 @@ import SimpleInputText from '../SimpleInputField'
 import styles from './style'
 
 const RCMRentMonthlyModal = (props) => {
-  const {
-    isVisible,
-    closeModal,
-    handleForm,
-    formData,
-    pickerData,
-    isLeadClosed,
-    updateRentLead,
-  } = props
+  checkReadOnlyMode = () => {
+    const { leadAgentType, isLeadClosed } = props
+    if (leadAgentType === 'seller') return false
+    else {
+      if (isLeadClosed) return false
+      else return true
+    }
+  }
+
+  checkMonthlyRentReadOnlyMode = () => {
+    const { lead, leadAgentType } = props
+    if (leadAgentType === 'seller') return false
+    else {
+      if (lead.monthlyRent) return false
+      else return true
+    }
+  }
+
+  const { isVisible, closeModal, handleForm, formData, pickerData, updateRentLead } = props
+  let readOnlyMode = checkReadOnlyMode()
+  let monthlyRentReadOnly = checkMonthlyRentReadOnlyMode()
+
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView style={{ flex: 0, backgroundColor: 'white' }} />
@@ -46,7 +59,7 @@ const RCMRentMonthlyModal = (props) => {
               formatValue={formData.monthlyRent}
               keyboardType={'numeric'}
               onChangeHandle={handleForm}
-              editable={true}
+              editable={monthlyRentReadOnly}
             />
             <View style={{ paddingVertical: 10 }}>
               <PickerComponent
@@ -54,7 +67,7 @@ const RCMRentMonthlyModal = (props) => {
                 name={'contract_months'}
                 data={pickerData}
                 selectedItem={formData.contract_months}
-                enabled={!isLeadClosed}
+                enabled={readOnlyMode}
                 placeholder="Contract duration (No of months)"
               />
             </View>
@@ -64,7 +77,7 @@ const RCMRentMonthlyModal = (props) => {
                 name={'advance'}
                 data={pickerData}
                 selectedItem={formData.advance}
-                enabled={!isLeadClosed}
+                enabled={readOnlyMode}
                 placeholder="Advance (No of months)"
               />
             </View>
@@ -74,12 +87,18 @@ const RCMRentMonthlyModal = (props) => {
                 name={'security'}
                 data={pickerData}
                 selectedItem={formData.security}
-                enabled={!isLeadClosed}
+                enabled={readOnlyMode}
                 placeholder="Security (No of months)"
               />
             </View>
           </View>
-          <TouchableOpacity onPress={updateRentLead} style={styles.okBtn}>
+          <TouchableOpacity
+            onPress={() => {
+              if (!readOnlyMode) closeModal()
+              else updateRentLead()
+            }}
+            style={styles.okBtn}
+          >
             <Text style={styles.okBtnText}>OK</Text>
           </TouchableOpacity>
         </View>

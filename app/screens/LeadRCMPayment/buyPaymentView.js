@@ -153,25 +153,23 @@ class BuyPaymentView extends React.Component {
           deleteDoc={deleteDoc}
           activityBool={activityBool}
         />  */}
-        {buyerCommission && (
-          <BuyerSellerTile
-            singleCommission={singleCommission}
-            isLeadClosed={isLeadClosed}
-            setComissionApplicable={setBuyerCommissionApplicable}
-            commissionNotApplicableBuyerSeller={commissionNotApplicableBuyer}
-            tileType={'buyer'}
-            tileTitle={'Buyer Side'}
-            closeLegalDocument={closeLegalDocument}
-            onPaymentLongPress={onPaymentLongPress}
-            payment={buyer}
-            paymentCommission={buyerCommission}
-            onAddCommissionPayment={onAddCommissionPayment}
-            editTile={editTile}
-            lead={lead}
-            commissionTitle={'Buyer Commission Payment'}
-            RCMBTNTitle={'ADD BUYER COMMISSION PAYMENT'}
-          />
-        )}
+        <BuyerSellerTile
+          singleCommission={singleCommission}
+          isLeadClosed={isLeadClosed}
+          setComissionApplicable={setBuyerCommissionApplicable}
+          commissionNotApplicableBuyerSeller={buyerCommission ? commissionNotApplicableBuyer : true}
+          tileType={'buyer'}
+          tileTitle={'Buyer Side'}
+          closeLegalDocument={closeLegalDocument}
+          onPaymentLongPress={onPaymentLongPress}
+          payment={buyer}
+          paymentCommission={buyerCommission}
+          onAddCommissionPayment={onAddCommissionPayment}
+          editTile={editTile}
+          lead={lead}
+          commissionTitle={'Buyer Commission Payment'}
+          RCMBTNTitle={'ADD BUYER COMMISSION PAYMENT'}
+        />
         <BuyerSellerTile
           singleCommission={singleCommission}
           isLeadClosed={isLeadClosed}

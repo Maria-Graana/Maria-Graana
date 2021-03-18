@@ -2,16 +2,17 @@
 
 import { CheckBox } from 'native-base'
 import React from 'react'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Text, TouchableOpacity, Switch, View } from 'react-native'
 import _ from 'underscore'
+import { formatPrice } from '../../PriceFormate'
 import RoundPlus from '../../../assets/img/roundPlus.png'
 import AppStyles from '../../AppStyles'
 import CommissionTile from '../../components/CommissionTile'
-import DocTile from '../../components/DocTile'
 import ErrorMessage from '../../components/ErrorMessage'
 import InputField from '../../components/InputField'
 import PickerComponent from '../../components/Picker'
 import RCMBTN from '../../components/RCMBTN'
+import RCMRentMonthlyModal from '../../components/RCMRentMonthlyModal'
 import TokenTile from '../../components/TokenTile'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
@@ -51,7 +52,25 @@ const RentPaymentView = (props) => {
     tokenMenu,
     confirmTokenAction,
     closeLegalDocument,
+    toggleMonthlyDetails,
+    rentMonthlyToggle,
+    updateRentLead,
   } = props
+
+  MonthlyTile = () => {
+    return (
+      <View style={styles.monthlyTile}>
+        <View style={{ justifyContent: 'space-between' }}>
+          <Text style={styles.monthlyPayment}>MONTHLY RENT</Text>
+          <Text style={styles.monthlyText}>{formatPrice(formData.monthlyRent)}</Text>
+        </View>
+        <TouchableOpacity onPress={toggleMonthlyDetails} style={styles.monthlyDetailsBtn}>
+          <Text style={styles.monthlyDetailText}>DETAILS</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   let property = currentProperty[0]
   let subRole =
     property &&
@@ -70,6 +89,10 @@ const RentPaymentView = (props) => {
     property.assigned_to_armsuser_id === user.id || !Ability.canView(subRole, 'Leads')
       ? true
       : false
+  console.log('subRole: ', subRole)
+  console.log('user.id: ', user.id)
+  console.log('property.assigned_to_armsuser_id: ', property.assigned_to_armsuser_id)
+  console.log('property: ', property.id)
   // if (sellerCommission === true) {
   //   if (property.origin === null) {
   //     sellerCommission = false
@@ -109,22 +132,8 @@ const RentPaymentView = (props) => {
           {lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}
         </Text>
       </TouchableOpacity>
-      <InputField
-        label={'MONTHLY RENT'}
-        placeholder={'Enter Monthly Rent'}
-        name={'monthlyRent'}
-        value={formData.monthlyRent}
-        priceFormatVal={formData.monthlyRent != null ? formData.monthlyRent : ''}
-        keyboardType={'numeric'}
-        onChange={handleForm}
-        paymentDone={handleMonthlyRentPress}
-        showStyling={showAndHideStyling}
-        showStylingState={showStylingState}
-        editPriceFormat={{ status: monthlyFormatStatus, name: 'monthlyRent' }}
-        editable={!isLeadClosed}
-        showDate={false}
-      />
-      {rentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+      <MonthlyTile />
+      <View style={{ paddingVertical: 5 }} />
       {!tokenPayment ? (
         <RCMBTN
           onClick={() => onAddCommissionPayment('buyer', 'token')}
@@ -133,7 +142,6 @@ const RentPaymentView = (props) => {
           checkLeadClosedOrNot={false}
         />
       ) : null}
-
       {tokenPayment ? (
         <TokenTile
           data={tokenPayment}
@@ -150,17 +158,6 @@ const RentPaymentView = (props) => {
         />
       ) : null}
       {/* <DocTile
-        title={'Signed Agreement'}
-        uploadDocument={uploadDocument}
-        category={'agreement'}
-        uploadDocToServer={uploadDocToServer}
-        agreementDoc={agreementDoc}
-        legalAgreement={legalAgreement}
-        downloadLegalDocs={downloadLegalDocs}
-        deleteDoc={deleteDoc}
-        activityBool={activityBool}
-      />
-      <DocTile
         title={'Legal Process Checklist'}
         uploadDocument={uploadDocument}
         category={'checklist'}
@@ -171,65 +168,99 @@ const RentPaymentView = (props) => {
         deleteDoc={deleteDoc}
         activityBool={activityBool}
       /> */}
+      <RCMRentMonthlyModal
+        isVisible={rentMonthlyToggle}
+        closeModal={toggleMonthlyDetails}
+        formData={formData}
+        handleForm={handleForm}
+        pickerData={pickerData}
+        isLeadClosed={isLeadClosed}
+        updateRentLead={updateRentLead}
+      />
 
-      <View style={[AppStyles.mainInputWrap]}>
-        <View style={[AppStyles.inputWrap]}>
-          <PickerComponent
-            onValueChange={handleForm}
-            name={'contract_months'}
-            data={pickerData}
-            selectedItem={formData.contract_months}
-            enabled={!isLeadClosed}
-            placeholder="Contract duration (No of months)"
-          />
+      <View
+        style={{
+          minHeight: 100,
+          backgroundColor: '#fff',
+          marginVertical: 10,
+          padding: 10,
+          borderRadius: 5,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingVertical: 10,
+          }}
+        >
+          <Text
+            style={{ alignSelf: 'center', fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16 }}
+          >
+            Buyer Side
+          </Text>
+          {singleCommission && !buyer && !isLeadClosed && (
+            <Switch
+              trackColor={{ false: '#81b0ff', true: AppStyles.colors.primaryColor }}
+              thumbColor={false ? AppStyles.colors.primaryColor : '#fff'}
+              ios_backgroundColor="#81b0ff"
+              onValueChange={() => setBuyerCommissionApplicable(!commissionNotApplicableBuyer)}
+              // value={commissionNotApplicableBuyer ? true : false}
+              value={false}
+              style={{
+                borderColor: AppStyles.colors.primaryColor,
+                borderWidth: 0,
+                justifyContent: 'center',
+                alignSelf: 'center',
+              }}
+            />
+          )}
         </View>
+        <RCMBTN
+          onClick={() => closeLegalDocument('buyer')}
+          btnImage={RoundPlus}
+          btnText={'UPLOAD LEGAL DOCUMENTS'}
+          checkLeadClosedOrNot={false}
+          // isLeadClosed={}
+          hiddenBtn={commissionNotApplicableBuyer}
+          addBorder={true}
+        />
+
+        {lead.commissions ? (
+          buyer ? (
+            <CommissionTile
+              data={buyer}
+              editTile={editTile}
+              onPaymentLongPress={() => onPaymentLongPress(buyer)}
+              commissionEdit={!buyerCommission}
+              title={buyer ? 'Buyer Commission Payment' : ''}
+            />
+          ) : (
+            <View>
+              {buyerCommission ? (
+                <TouchableOpacity
+                  disabled={singleCommission ? commissionNotApplicableBuyer : isLeadClosed}
+                  style={[
+                    styles.addPaymentBtn,
+                    {
+                      backgroundColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
+                      borderColor: commissionNotApplicableBuyer ? '#ddd' : '#fff',
+                    },
+                  ]}
+                  onPress={() => onAddCommissionPayment('buyer', 'commission')}
+                >
+                  <Image
+                    style={styles.addPaymentBtnImg}
+                    source={require('../../../assets/img/roundPlus.png')}
+                  ></Image>
+                  <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          )
+        ) : null}
       </View>
 
-      <View style={[AppStyles.mainInputWrap]}>
-        <View style={[AppStyles.inputWrap]}>
-          <PickerComponent
-            onValueChange={handleForm}
-            name={'advance'}
-            data={pickerData}
-            selectedItem={formData.advance}
-            enabled={!isLeadClosed}
-            placeholder="Advance (No of months)"
-          />
-        </View>
-      </View>
-
-      <View style={[AppStyles.mainInputWrap]}>
-        <View style={[AppStyles.inputWrap]}>
-          <PickerComponent
-            onValueChange={handleForm}
-            name={'security'}
-            data={pickerData}
-            selectedItem={formData.security}
-            enabled={!isLeadClosed}
-            placeholder="Security (No of months)"
-          />
-        </View>
-      </View>
-
-      {/* <InputField
-        label={'TOKEN'}
-        placeholder={'Enter Token Amount'}
-        name={'token'}
-        value={token}
-        priceFormatVal={token != null ? token : ''}
-        keyboardType={'numeric'}
-        onChange={handleTokenAmountChange}
-        paymentDone={handleTokenAmountPress}
-        showStyling={showAndHideStyling}
-        showStylingState={showStylingState}
-        editPriceFormat={{ status: tokenPriceFromat, name: 'token' }}
-        date={lead.tokenPaymentTime && moment(lead.tokenPaymentTime).format('hh:mm A, MMM DD')}
-        editable={!isLeadClosed}
-        showDate={true}
-        dateStatus={{ status: tokenDateStatus, name: 'token' }}
-      /> */}
-      {/* {tokenNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null} */}
-      {}
       {singleCommission && !buyer && !isLeadClosed ? (
         <TouchableOpacity
           disabled={commissionNotApplicableSeller === true}

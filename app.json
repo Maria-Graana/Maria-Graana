@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.20.6",
+    "version": "1.21.7",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "scheme": "arms",
@@ -42,7 +42,7 @@
         "applinks:arms.graana.com"
       ],
       "userInterfaceStyle": "automatic",
-      "buildNumber": "14"
+      "buildNumber": "15"
     },
     "android": {
       "package": "com.agency21.arms",
@@ -88,7 +88,7 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 7,
+      "versionCode": 8,
       "useNextNotificationsApi": true
     },
     "notification": {

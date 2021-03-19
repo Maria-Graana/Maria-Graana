@@ -77,13 +77,13 @@ export default class App extends React.Component {
           resolve(config)
         })
     )
-    if (config.channel === 'production') {
-      Sentry.init({
-        enableInExpoDevelopment: false,
-        dsn: 'https://95bf407ef0f042b1b985d4efe8a8a75f@sentry.graana.rocks/8',
-      })
-      Sentry.setRelease(Constants.manifest.revisionId)
-    }
+    // if (config.channel === 'production') {
+    Sentry.init({
+      enableInExpoDevelopment: true,
+      dsn: 'https://ed71a841530f479cb60896ee2db0788f@sentry.graana.rocks/7',
+    })
+    Sentry.setRelease(Constants.manifest.revisionId)
+    // }
     await Font.loadAsync({
       Roboto: require('native-base/Fonts/Roboto.ttf'),
       Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),

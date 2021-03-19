@@ -8,6 +8,7 @@ export default styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: AppStyles.fonts.semiBoldFont,
     padding: 15,
+    paddingVertical: 5,
   },
   mainView: {
     backgroundColor: '#e7ecf0',

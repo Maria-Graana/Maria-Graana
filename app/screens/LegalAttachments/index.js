@@ -17,6 +17,8 @@ import LoadingNoResult from '../../components/LoadingNoResult'
 import ViewDocs from '../../components/ViewDocs'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
+import RCMBTN from '../../components/RCMBTN'
+import RoundPlus from '../../../assets/img/roundPlus.png'
 import styles from './style'
 class LegalAttachment extends Component {
   attachments = []
@@ -334,7 +336,37 @@ class LegalAttachment extends Component {
         ) : null}
         {!loading ? (
           <View style={[styles.mainView, AppStyles.mb1]}>
-            <Text style={styles.mandatoryText}>Upload the below mandatory documents.</Text>
+            <View style={{ padding: 15 }}>
+              <RCMBTN
+                onClick={() => {}}
+                btnText={'REQUEST TRANSFER SERVICES'}
+                checkLeadClosedOrNot={false}
+                hiddenBtn={false}
+                addBorder={true}
+              />
+              <View
+                style={{
+                  height: 100,
+                  backgroundColor: '#fff',
+                  borderRadius: 5,
+                  borderWidth: 1,
+                  borderColor: AppStyles.colors.subTextColor,
+                  padding: 10,
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text>TRANSFER SERVICES</Text>
+                <RCMBTN
+                  onClick={() => {}}
+                  btnImage={RoundPlus}
+                  btnText={'ADD LEGAL SERVICES PAYMENT'}
+                  checkLeadClosedOrNot={false}
+                  hiddenBtn={false}
+                  addBorder={true}
+                />
+              </View>
+            </View>
+            <Text style={styles.mandatoryText}>Documents</Text>
             <FlatList
               data={legalListing}
               renderItem={({ item, index }) => (

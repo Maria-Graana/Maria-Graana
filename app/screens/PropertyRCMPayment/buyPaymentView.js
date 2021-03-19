@@ -130,7 +130,7 @@ class BuyPaymentView extends React.Component {
           closeLegalDocument={closeLegalDocument}
           onPaymentLongPress={onPaymentLongPress}
           payment={buyer}
-          paymentCommission={buyerCommission}
+          paymentCommission={true}
           onAddCommissionPayment={onAddCommissionPayment}
           editTile={editTile}
           lead={lead}

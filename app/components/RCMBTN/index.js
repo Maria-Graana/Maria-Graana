@@ -45,7 +45,7 @@ export default class RCMBTN extends React.Component {
         }}
         disabled={hiddenBtn}
       >
-        <Image style={styles.addPaymentBtnImg} source={btnImage} />
+        {btnImage && <Image style={styles.addPaymentBtnImg} source={btnImage} />}
         <Text style={styles.addPaymentBtnText}>{btnText}</Text>
       </TouchableOpacity>
     )

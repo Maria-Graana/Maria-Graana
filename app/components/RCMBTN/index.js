@@ -18,17 +18,26 @@ export default class RCMBTN extends React.Component {
       hiddenBtn = false,
       isLeadClosed = false,
       disabledBtn = false,
+      addBorder = false,
     } = this.props
+    let newStyle = {}
+    if (addBorder) {
+      newStyle = {
+        borderColor: AppStyles.colors.primaryColor,
+        borderWidth: 1,
+      }
+    }
     return (
       <TouchableOpacity
         style={[
           styles.addPaymentBtn,
           styles.noMargTop,
-          extraStyle,
+
           {
             backgroundColor: hiddenBtn || isLeadClosed ? '#ddd' : '#fff',
             borderColor: hiddenBtn || isLeadClosed ? '#ddd' : '#fff',
           },
+          newStyle,
         ]}
         onPress={() => {
           // if (checkLeadClosedOrNot) onClick()

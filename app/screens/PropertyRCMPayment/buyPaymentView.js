@@ -1,17 +1,16 @@
 /** @format */
 
 import React from 'react'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { View } from 'react-native'
 import _ from 'underscore'
 import RoundPlus from '../../../assets/img/roundPlus.png'
-import CommissionTile from '../../components/CommissionTile'
+import BuyerSellerTile from '../../components/BuyerSellerTile'
 import InputField from '../../components/InputField'
 import RCMBTN from '../../components/RCMBTN'
 import TokenTile from '../../components/TokenTile'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
-import styles from './styles'
 
 class BuyPaymentView extends React.Component {
   constructor(props) {
@@ -32,7 +31,6 @@ class BuyPaymentView extends React.Component {
       user,
       currentProperty,
       onPaymentLongPress,
-      requestLegalServices,
       toggleTokenMenu,
       tokenMenu,
       confirmTokenAction,
@@ -81,22 +79,6 @@ class BuyPaymentView extends React.Component {
     let showMenu = helper.showSellerTokenMenu(tokenPayment)
     return (
       <View>
-        <TouchableOpacity
-          disabled={lead.legalMailSent}
-          style={[
-            styles.legalServicesButton,
-            {
-              marginTop: 10,
-              backgroundColor: lead.legalMailSent ? '#ddd' : '#fff',
-              borderColor: lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor,
-            },
-          ]}
-          onPress={() => requestLegalServices()}
-        >
-          <Text style={[styles.addPaymentBtnText]}>
-            {lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}
-          </Text>
-        </TouchableOpacity>
         <InputField
           label={'AGREED AMOUNT'}
           placeholder={'Enter Agreed Amount'}
@@ -112,6 +94,15 @@ class BuyPaymentView extends React.Component {
           editable={false}
           showDate={false}
         />
+        {!tokenPayment ? (
+          <RCMBTN
+            onClick={() => onAddCommissionPayment('buyer', 'token')}
+            btnImage={RoundPlus}
+            btnText={'ADD TOKEN'}
+            checkLeadClosedOrNot={false}
+            hiddenBtn={true}
+          />
+        ) : null}
         {tokenPayment ? (
           <TokenTile
             data={tokenPayment}
@@ -129,84 +120,40 @@ class BuyPaymentView extends React.Component {
             confirmTokenAction={confirmTokenAction}
           />
         ) : null}
-        {/* <InputField
-          label={'TOKEN'}
-          placeholder={'Enter Token Amount'}
-          name={'token'}
-          value={token}
-          priceFormatVal={token != null ? token : ''}
-          keyboardType={'numeric'}
-          onChange={handleTokenAmountChange}
-          paymentDone={handleTokenAmountPress}
-          showStyling={showAndHideStyling}
-          showStylingState={showStylingState}
-          editPriceFormat={{ status: tokenPriceFromat, name: 'token' }}
-          date={lead.tokenPaymentTime && moment(lead.tokenPaymentTime).format('hh:mm A, MMM DD')}
-          editable={false}
-          showDate={true}
-          dateStatus={{ status: tokenDateStatus, name: 'token' }}
-        /> */}
-        <RCMBTN
-          onClick={() => closeLegalDocument('buyer')}
-          btnImage={RoundPlus}
-          btnText={'UPLOAD LEGAL DOCUMENTS'}
-          checkLeadClosedOrNot={false}
+        <BuyerSellerTile
+          singleCommission={false}
+          isLeadClosed={isLeadClosed}
+          setComissionApplicable={() => {}}
+          commissionNotApplicableBuyerSeller={true}
+          tileType={'buyer'}
+          tileTitle={'Buyer Side'}
+          closeLegalDocument={closeLegalDocument}
+          onPaymentLongPress={onPaymentLongPress}
+          payment={buyer}
+          paymentCommission={buyerCommission}
+          onAddCommissionPayment={onAddCommissionPayment}
+          editTile={editTile}
+          lead={lead}
+          commissionTitle={'Buyer Commission Payment'}
+          RCMBTNTitle={'ADD BUYER COMMISSION PAYMENT'}
         />
-        {lead.commissions ? (
-          buyer ? (
-            <CommissionTile
-              data={buyer}
-              editTile={editTile}
-              commissionEdit={!buyerCommission}
-              onPaymentLongPress={() => onPaymentLongPress(buyer)}
-              title={buyer ? 'Buyer Commission Payment' : ''}
-            />
-          ) : (
-            <View>
-              {buyerCommission ? (
-                <TouchableOpacity
-                  disabled={isLeadClosed}
-                  style={styles.addPaymentBtn}
-                  onPress={() => onAddCommissionPayment('buyer', 'commission')}
-                >
-                  <Image
-                    style={styles.addPaymentBtnImg}
-                    source={require('../../../assets/img/roundPlus.png')}
-                  ></Image>
-                  <Text style={styles.addPaymentBtnText}>ADD BUYER COMMISSION PAYMENT</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          )
-        ) : null}
-
-        {lead.commissions ? (
-          seller ? (
-            <CommissionTile
-              data={seller}
-              commissionEdit={!sellerCommission}
-              editTile={editTile}
-              onPaymentLongPress={() => onPaymentLongPress(seller)}
-              title={'Seller Commission Payment'}
-            />
-          ) : (
-            <View>
-              {sellerCommission ? (
-                <TouchableOpacity
-                  disabled={isLeadClosed}
-                  style={styles.addPaymentBtn}
-                  onPress={() => onAddCommissionPayment('seller', 'commission')}
-                >
-                  <Image
-                    style={styles.addPaymentBtnImg}
-                    source={require('../../../assets/img/roundPlus.png')}
-                  ></Image>
-                  <Text style={styles.addPaymentBtnText}>ADD SELLER COMMISSION PAYMENT</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
-          )
-        ) : null}
+        <BuyerSellerTile
+          singleCommission={false}
+          isLeadClosed={isLeadClosed}
+          setComissionApplicable={() => {}}
+          commissionNotApplicableBuyerSeller={false}
+          tileType={'seller'}
+          tileTitle={'Seller Side'}
+          closeLegalDocument={closeLegalDocument}
+          onPaymentLongPress={onPaymentLongPress}
+          payment={seller}
+          paymentCommission={sellerCommission}
+          onAddCommissionPayment={onAddCommissionPayment}
+          editTile={editTile}
+          lead={lead}
+          commissionTitle={'Seller Commission Payment'}
+          RCMBTNTitle={'ADD SELLER COMMISSION PAYMENT'}
+        />
       </View>
     )
   }

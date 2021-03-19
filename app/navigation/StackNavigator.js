@@ -17,6 +17,7 @@ import AddRCMLead from '../screens/AddRCMLead'
 import AreaPickerScreen from '../screens/AreaPickerScreen'
 import AssignLead from '../screens/AssignLead'
 import Attachments from '../screens/Attachments'
+import LeadAttachments from '../screens/LeadAttachments'
 import AttachmentsForPayments from '../screens/AttachmentsForPayments'
 import ChangePassword from '../screens/ChangePassword'
 import Client from '../screens/Client'
@@ -45,6 +46,7 @@ import MapContainer from '../screens/MapContainer'
 import AssignedAreas from '../screens/AssignAreas'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import PropsureAttachment from '../screens/PropsureAttachment'
+import LegalAttachments from '../screens/LegalAttachments'
 
 const Stack = createStackNavigator()
 
@@ -254,6 +256,15 @@ function MainStack() {
         })}
       />
       <Stack.Screen
+        name="LeadAttachments"
+        component={LeadAttachments}
+        options={({ navigation, route }) => ({
+          title: 'ATTACHMENTS',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
         name="AttachmentsForPayments"
         component={AttachmentsForPayments}
         options={({ navigation, route }) => ({
@@ -415,6 +426,15 @@ function MainStack() {
           // headerTitle: (props) => <HeaderTitle {...props} />,
           // headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           // headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="LegalAttachments"
+        component={LegalAttachments}
+        options={({ navigation, route }) => ({
+          title: 'LEGAL DOCUMENT',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}
       />

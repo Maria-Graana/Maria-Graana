@@ -200,7 +200,7 @@ export default StaticData = {
     },
     {
       name: 'Client not interested',
-      value: 'client_not_interested'
+      value: 'client_not_interested',
     },
     { value: 'low_budget', name: 'Low Budget' },
     { value: 'different_city', name: 'Different City' },
@@ -251,7 +251,7 @@ export default StaticData = {
     },
     {
       name: 'Client not interested',
-      value: 'client_not_interested'
+      value: 'client_not_interested',
     },
     {
       name: 'Client not satisfied with options',
@@ -423,6 +423,13 @@ export default StaticData = {
     closed_lost: 1,
   },
   sortData: [
+    { name: 'Newest First', value: '&order=Desc&field=createdAt' },
+    { name: 'Newest Last', value: '&order=Asc&field=createdAt' },
+    { name: 'Recently Modified First', value: '&order=Desc&field=updatedAt' },
+    { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
+    { name: 'Status Based', value: '&order=sort&field=status' },
+  ],
+  sortDataSellRent: [
     { name: 'Newest First', value: '&order=Desc&field=createdAt' },
     { name: 'Newest Last', value: '&order=Asc&field=createdAt' },
     { name: 'Recently Modified First', value: '&order=Desc&field=updatedAt' },
@@ -811,4 +818,98 @@ export default StaticData = {
     { value: 'geotagged', name: 'Geo Tagged' },
   ],
   graanaStatusFiltersPP: [{ value: 'published', name: 'All' }],
+  legalData: [
+    {
+      fileName: '20210121_171317_0.jpg',
+      size: 2586345,
+      title: 'Hdhdhd',
+      uri:
+        'file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540graanadevteam%252Farms/DocumentPicker/58004b03-9a72-431d-9311-8f5bc6732d21.jpg',
+      status: 'pending',
+    },
+    {
+      fileName: '20210121_171317_0.jpg',
+      size: 2586345,
+      title: 'Hdhdhd',
+      uri:
+        'file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540graanadevteam%252Farms/DocumentPicker/58004b03-9a72-431d-9311-8f5bc6732d21.jpg',
+      status: 'approved',
+    },
+    {
+      fileName: '20210121_171317_0.jpg',
+      size: 2586345,
+      title: 'Hdhdhd',
+      uri:
+        'file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540graanadevteam%252Farms/DocumentPicker/58004b03-9a72-431d-9311-8f5bc6732d21.jpg',
+      status: 'approved',
+    },
+  ],
+  BuyerLegalDocumentsList: [
+    {
+      category: 'service_charge_agreement',
+      name: 'SERVICE CHARGE AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 1,
+    },
+    { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
+    {
+      category: 'property_report_propsure',
+      name: 'PROPERTY REPORT - PROPSURE',
+      status: 'pending',
+      fileKey: null,
+      id: 3,
+    },
+    {
+      category: 'sales_rent_agreement',
+      name: 'SALES/RENT AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 4,
+    },
+    {
+      category: 'initial_payment_receipt',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 5,
+    },
+  ],
+  SellerLegalDocumentsList: [
+    {
+      category: 'sole_multi_agency_agreement',
+      name: 'SOLE/MULTI AGENCY AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 1,
+    },
+    { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
+    {
+      category: 'base_property_report_propsure',
+      name: 'BASIC PROPERTY REPORT - PROPSURE',
+      status: 'pending',
+      fileKey: null,
+      id: 3,
+    },
+    {
+      category: 'sales_rent_agreement',
+      name: 'SALES/RENT AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 4,
+    },
+    {
+      category: 'initial_payment_receipt',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 5,
+    },
+  ],
+  legalStatuses: [
+    { value: 'pending', name: 'pending' },
+    { value: 'pending_legal', name: 'pending legal' },
+    { value: 'rejected', name: 'Rejected' },
+    { value: 'approved', name: 'Approved' },
+  ],
 }

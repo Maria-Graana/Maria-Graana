@@ -1,16 +1,17 @@
 /** @format */
 
 import React from 'react'
-import { View, TextInput, TouchableOpacity, Image, Text } from 'react-native'
-import moment from 'moment'
-import StaticData from '../../StaticData'
-import InputField from '../../components/InputField'
-import CommissionTile from '../../components/CommissionTile'
-import styles from './styles'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 import _ from 'underscore'
-import Ability from '../../hoc/Ability'
+import RoundPlus from '../../../assets/img/roundPlus.png'
+import CommissionTile from '../../components/CommissionTile'
+import InputField from '../../components/InputField'
+import RCMBTN from '../../components/RCMBTN'
 import TokenTile from '../../components/TokenTile'
 import helper from '../../helper'
+import Ability from '../../hoc/Ability'
+import StaticData from '../../StaticData'
+import styles from './styles'
 
 class BuyPaymentView extends React.Component {
   constructor(props) {
@@ -20,16 +21,11 @@ class BuyPaymentView extends React.Component {
   render() {
     const {
       agreedAmount,
-      token,
       handleAgreedAmountChange,
-      handleTokenAmountChange,
       handleAgreedAmountPress,
-      handleTokenAmountPress,
       lead,
       showAndHideStyling,
       showStylingState,
-      tokenPriceFromat,
-      tokenDateStatus,
       agreeAmountFromat,
       onAddCommissionPayment,
       editTile,
@@ -40,6 +36,7 @@ class BuyPaymentView extends React.Component {
       toggleTokenMenu,
       tokenMenu,
       confirmTokenAction,
+      closeLegalDocument,
     } = this.props
     let property = currentProperty[0]
     const isLeadClosed =
@@ -149,6 +146,12 @@ class BuyPaymentView extends React.Component {
           showDate={true}
           dateStatus={{ status: tokenDateStatus, name: 'token' }}
         /> */}
+        <RCMBTN
+          onClick={() => closeLegalDocument('buyer')}
+          btnImage={RoundPlus}
+          btnText={'UPLOAD LEGAL DOCUMENTS'}
+          checkLeadClosedOrNot={false}
+        />
         {lead.commissions ? (
           buyer ? (
             <CommissionTile

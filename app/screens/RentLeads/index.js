@@ -24,6 +24,7 @@ import { setlead } from '../../actions/lead'
 import Search from '../../components/Search'
 import { storeItem, getItem } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
+import { getListingsCount } from '../../actions/listings'
 import Ability from '../../hoc/Ability'
 import _ from 'underscore'
 import config from '../../config'
@@ -58,17 +59,34 @@ class RentLeads extends React.Component {
       openPopup: false,
       selectedLead: {},
       popupLoading: false,
+      serverTime: null,
     }
   }
 
   componentDidMount() {
+    const {dispatch} = this.props;
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      this.getServerTime();
       this.onFocus()
     })
   }
 
   componentWillUnmount() {
     this.clearStateValues()
+  }
+
+  getServerTime = () => {
+    axios.get(`/api/user/serverTime?fullTime=true`).then(res => {
+      if(res){
+        this.setState({serverTime: res.data})
+      }
+      else{
+        console.log('Something went wrong while getting server time');
+      }
+    }).catch(error => {
+      console.log('error getting server time', error);
+    })
   }
 
   onFocus = async () => {
@@ -436,6 +454,7 @@ class RentLeads extends React.Component {
       openPopup,
       shortListedProperties,
       popupLoading,
+      serverTime
     } = this.state
     const { user, navigation } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -522,6 +541,7 @@ class RentLeads extends React.Component {
                     navigateTo={this.navigateTo}
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
+                    serverTime={serverTime}
                   />
                 ) : (
                   <PPLeadTile

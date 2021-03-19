@@ -25,6 +25,7 @@ import Search from '../../components/Search'
 import Ability from '../../hoc/Ability'
 import { storeItem, getItem } from '../../actions/user'
 import config from '../../config'
+import { getListingsCount } from '../../actions/listings'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
 
 var BUTTONS = [
@@ -57,11 +58,15 @@ class BuyLeads extends React.Component {
       openPopup: false,
       selectedLead: {},
       popupLoading: false,
+      serverTime: null,
     }
   }
 
   componentDidMount() {
+    const {dispatch} = this.props;
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      this.getServerTime();
       this.onFocus()
     })
   }
@@ -83,6 +88,19 @@ class BuyLeads extends React.Component {
         this.fetchLeads()
       })
     }
+  }
+
+  getServerTime = () => {
+    axios.get(`/api/user/serverTime?fullTime=true`).then(res => {
+      if(res){
+        this.setState({serverTime: res.data})
+      }
+      else{
+        console.log('Something went wrong while getting server time');
+      }
+    }).catch(error => {
+      console.log('error getting server time', error);
+    })
   }
 
   getSortOrderFromStorage = async () => {
@@ -430,6 +448,7 @@ class BuyLeads extends React.Component {
       openPopup,
       shortListedProperties,
       popupLoading,
+      serverTime,
     } = this.state
     const { user } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -513,6 +532,7 @@ class BuyLeads extends React.Component {
                     navigateTo={this.navigateTo}
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
+                    serverTime={serverTime}
                   />
                 ) : (
                   <PPLeadTile
@@ -601,6 +621,7 @@ class BuyLeads extends React.Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    count: store.listings.count,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

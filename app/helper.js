@@ -1,25 +1,24 @@
 /** @format */
 
-import { Linking } from 'react-native'
-import { Toast, Content } from 'native-base'
-import moment from 'moment-timezone'
-import StaticData from './StaticData'
-import { formatPrice } from './PriceFormate'
-import { intFormatPrice } from './components/PriceFormate'
-import AppStyles from './AppStyles'
-import DiaryImg from '../assets/img/diary-icon-l.png'
-import InventoryImg from '../assets/img/properties-icon-l.png'
-import TeamDiaryImg from '../assets/img/teams-diary-icon-l.png'
-import LeadsImg from '../assets/img/lead-icon-l.png'
-import DashboardImg from '../assets/img/dashboard-icon-l.png'
-import TargetsImg from '../assets/img/target-icon-l.png'
-import ClientsImg from '../assets/img/clients-icon-l.png'
 import * as Contacts from 'expo-contacts'
-import * as Sentry from 'sentry-expo'
-import _ from 'underscore'
 import * as Notifications from 'expo-notifications'
-import TimerNotification from './LocalNotifications'
+import moment from 'moment-timezone'
+import { Toast } from 'native-base'
+import { Linking } from 'react-native'
+import _ from 'underscore'
+import ClientsImg from '../assets/img/clients-icon-l.png'
+import DashboardImg from '../assets/img/dashboard-icon-l.png'
+import DiaryImg from '../assets/img/diary-icon-l.png'
+import LeadsImg from '../assets/img/lead-icon-l.png'
+import InventoryImg from '../assets/img/properties-icon-l.png'
+import TargetsImg from '../assets/img/target-icon-l.png'
+import TeamDiaryImg from '../assets/img/teams-diary-icon-l.png'
+import AppStyles from './AppStyles'
+import { intFormatPrice } from './components/PriceFormate'
 import Ability from './hoc/Ability'
+import TimerNotification from './LocalNotifications'
+import { formatPrice } from './PriceFormate'
+import StaticData from './StaticData'
 
 const helper = {
   successToast(message) {
@@ -434,7 +433,7 @@ const helper = {
     }
     if (identifier) {
       Notifications.cancelScheduledNotificationAsync(identifier)
-        .then((notification) => {})
+        .then((notification) => { })
         .catch((error) => {
           console.log(error)
         })
@@ -644,9 +643,9 @@ const helper = {
       let pendingPropsures =
         property.propsures && property.propsures.length
           ? _.filter(
-              property.propsures,
-              (item) => item.status === 'pending' && item.addedBy === type
-            )
+            property.propsures,
+            (item) => item.status === 'pending' && item.addedBy === type
+          )
           : null
       let totalFee = helper.AddPropsureReportsFee(property.propsures, type)
       let singlePayment = helper.propsurePaymentType(property, type)
@@ -711,14 +710,16 @@ const helper = {
       return singlePayment
     } else return singlePayment
   },
-  checkClearedStatuses(lead) {
+  checkClearedStatuses(lead, legalDocCount) {
     let check = false
     let paymentCheck = true
     let propsureCheck = true
     let commissionsLength = 2
     let cleared = 0
+    let legalCount = 10
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true) {
       commissionsLength = 1
+      legalCount = 5
     }
     const { commissions, propsureOutstandingPayment } = lead
     if (commissions && commissions.length) {
@@ -728,6 +729,7 @@ const helper = {
         if (item.status !== 'cleared' && item.paymentCategory === 'propsure_services')
           propsureCheck = false
       })
+      //Number(legalDocCount) === legalCount add this condition when legal docs are mandatory
       if (
         paymentCheck &&
         propsureCheck &&
@@ -859,6 +861,45 @@ const helper = {
           return false
       }
     }
+  },
+  setLegalListing(list, data) {
+    for (let i = 0; i < list.length; i++) {
+      for (let y = 0; y < data.length; y++) {
+        if (list[i].category === data[y].category) {
+          let name = list[i].name
+          list[i] = data[y]
+          list[i].name = name
+        }
+      }
+    }
+    return list
+  },
+  timeStatusColors(lead, serverDate) {
+    var statusColor = 'white';
+    let serverDateAndTime =  moment(serverDate).utc(true)
+    let assignedAtDate = moment(lead.assigned_at).utc(true);
+    let curDate = moment(serverDateAndTime).format('DD')
+    let leadDate = moment(assignedAtDate).format('DD')
+    let time = moment.duration(moment(serverDateAndTime).diff(moment(assignedAtDate))).asMinutes()
+    time = time.toFixed(0)
+    if(curDate === leadDate && lead.status === 'open') {
+      if (time > 30 && time < 60) {
+        statusColor = '#FDD835'
+      }
+      else if (time > 60) {
+        statusColor = 'red'
+      }
+      else if(lead.readAt === null && time < 30) {
+        statusColor = AppStyles.colors.primaryColor;
+      }
+      else if (time < 30){
+        statusColor = 'white'
+      }
+    }
+    else if(curDate !== leadDate && lead.status === 'open'){
+        statusColor = 'red';
+    }
+    return statusColor
   },
 }
 

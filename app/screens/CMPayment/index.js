@@ -1,40 +1,27 @@
 /** @format */
 
-import {
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-  ScrollView,
-} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import axios from 'axios'
+import { ActionSheet } from 'native-base'
 import React, { Component } from 'react'
-import AppJson from '../../../app.json'
-import AppStyles from '../../AppStyles'
+import { Alert, KeyboardAvoidingView, ScrollView, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
-import styles from './style'
-import config from '../../config'
-import helper from '../../helper'
-import CMFirstForm from '../../components/CMFirstForm'
-import CMSecondForm from '../../components/CMSecondForm'
+import _ from 'underscore'
+import { setCMPayment } from '../../actions/addCMPayment'
+import { setlead } from '../../actions/lead'
+import AppStyles from '../../AppStyles'
 import BookingDetailsModal from '../../components/BookingDetailsModal'
 import CMBottomNav from '../../components/CMBottomNav'
-import UnitDetailsModal from '../../components/UnitDetailsModal'
+import CMFirstForm from '../../components/CMFirstForm'
 import CMPaymentModal from '../../components/CMPaymentModal'
-import { setCMPayment } from '../../actions/addCMPayment'
+import CMSecondForm from '../../components/CMSecondForm'
 import DeleteModal from '../../components/DeleteModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import { setlead } from '../../actions/lead'
-import axios from 'axios'
+import UnitDetailsModal from '../../components/UnitDetailsModal'
+import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
-import { ActionSheet } from 'native-base'
 import PaymentHelper from './PaymentHelper'
-import _ from 'underscore'
-import { Alert } from 'react-native'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -300,8 +287,8 @@ class CMPayment extends Component {
 
   // **************** Bottom Nav Functions Start *******************
   goToAttachments = () => {
-    const { navigation, route } = this.props
-    navigation.navigate('Attachments', { cmLeadId: this.props.lead.id })
+    const { navigation, route, lead } = this.props
+    navigation.navigate('LeadAttachments', { cmLeadId: lead.id, workflow: 'cm' })
   }
 
   goToPayAttachments = () => {
@@ -565,8 +552,8 @@ class CMPayment extends Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = CMPayment.paymentAttachments
               ? _.filter(CMPayment.paymentAttachments, (item) => {
-                return !_.has(item, 'id')
-              })
+                  return !_.has(item, 'id')
+                })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -605,9 +592,6 @@ class CMPayment extends Component {
     fd.append('title', paymentAttachment.title)
     fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
     // ====================== API call for Attachments base on Payment ID
-    console.log(`paymentAttachment: `, paymentAttachment)
-    console.log(`/api/leads/paymentAttachment?id=${paymentId}`)
-    console.log(`/api/leads/paymentAttachment?id=${paymentId}: `, fd)
     axios
       .post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
       .then((res) => {
@@ -627,17 +611,22 @@ class CMPayment extends Component {
   }
 
   assignToAccounts = () => {
-    Alert.alert('Assign to Accounts', 'Are you sure you want to assign this payment to accounts?', [
-      { text: 'No', style: 'cancel'},
-      {
-        text: 'Yes', onPress: async() => {
-          const { CMPayment, dispatch } = this.props
-          await dispatch(setCMPayment({ ...CMPayment, visible: false, status: 'pendingAccount' }))
-          this.submitCommissionCMPayment();
-        }
-      },
-    ],
-      { cancelable: false })
+    Alert.alert(
+      'Assign to Accounts',
+      'Are you sure you want to assign this payment to accounts?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            const { CMPayment, dispatch } = this.props
+            await dispatch(setCMPayment({ ...CMPayment, visible: false, status: 'pendingAccount' }))
+            this.submitCommissionCMPayment()
+          },
+        },
+      ],
+      { cancelable: false }
+    )
   }
 
   // **************** Add Payment Modal Functions End *******************
@@ -648,7 +637,6 @@ class CMPayment extends Component {
     const { checkPaymentPlan } = this.state
     const { cmProgressBar } = StaticData
     var newcheckPaymentPlan = { ...checkPaymentPlan }
-    // console.log('lead: ', lead)
     newcheckPaymentPlan['years'] =
       (lead.paidProject != null && lead.paidProject.installment_plan != null) || ''
         ? lead.paidProject.installment_plan
@@ -657,25 +645,24 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-      ; (newcheckPaymentPlan['rental'] =
-        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-        this.setState(
-          {
-            checkPaymentPlan: newcheckPaymentPlan,
-          },
-          () => {
-            let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-            this.setState({
-              progressValue: cmProgressBar[lead.status] || 0,
-              paymentPlan: paymentArray,
-              editable: false,
-            })
-          }
-        )
+    ;(newcheckPaymentPlan['rental'] =
+      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+      this.setState(
+        {
+          checkPaymentPlan: newcheckPaymentPlan,
+        },
+        () => {
+          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+          this.setState({
+            progressValue: cmProgressBar[lead.status] || 0,
+            paymentPlan: paymentArray,
+            editable: false,
+          })
+        }
+      )
   }
 
   handleFirstForm = (value, name) => {
-    // console.log(value, name)
     const {
       firstFormData,
       allFloors,
@@ -1009,7 +996,7 @@ class CMPayment extends Component {
           helper.errorToast('Closed lead API failed!!')
         })
     } else {
-      ; ('Please select a reason for lead closure!')
+      ;('Please select a reason for lead closure!')
     }
   }
 

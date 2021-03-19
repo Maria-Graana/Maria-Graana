@@ -72,6 +72,7 @@ class LeadPropsure extends React.Component {
       deletePaymentVisible: false,
       previousPayment: 0,
       selectedPayment: {},
+      legalDocLoader: false,
     }
   }
 
@@ -397,20 +398,42 @@ class LeadPropsure extends React.Component {
     helper.leadClosedToast()
   }
 
-  closeLead = () => {
+  closeLead = async () => {
     const { lead } = this.props
-    if (helper.checkClearedStatuses(lead)) {
-      this.setState({
-        reasons: StaticData.leadCloseReasonsWithPayment,
-        isCloseLeadVisible: true,
-        checkReasonValidation: '',
-      })
+    if (lead.commissions.length) {
+      let { count } = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, count)) {
+        this.setState({
+          reasons: StaticData.leadCloseReasonsWithPayment,
+          isCloseLeadVisible: true,
+          checkReasonValidation: '',
+          legalDocLoader: false,
+        })
+      } else {
+        this.setState({
+          reasons: StaticData.leadCloseReasons,
+          isCloseLeadVisible: true,
+          checkReasonValidation: '',
+          legalDocLoader: false,
+        })
+      }
     } else {
       this.setState({
         reasons: StaticData.leadCloseReasons,
         isCloseLeadVisible: true,
         checkReasonValidation: '',
       })
+    }
+  }
+
+  getLegalDocumentsCount = async () => {
+    const { lead } = this.props
+    this.setState({ legalDocLoader: true })
+    try {
+      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      return res.data
+    } catch (error) {
+      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
     }
   }
 
@@ -458,7 +481,7 @@ class LeadPropsure extends React.Component {
 
   goToAttachments = () => {
     const { lead, navigation } = this.props
-    navigation.navigate('Attachments', { rcmLeadId: lead.id })
+    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
   }
 
   goToComments = () => {
@@ -924,6 +947,7 @@ class LeadPropsure extends React.Component {
       propsureReportTypes,
       selectedProperty,
       deletePaymentVisible,
+      legalDocLoader,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1066,6 +1090,7 @@ class LeadPropsure extends React.Component {
           isVisible={isCloseLeadVisible}
           closeModal={() => this.closeLeadModal()}
           onPress={() => this.onHandleCloseLead()}
+          legalDocLoader={legalDocLoader}
         />
       </View>
     ) : (

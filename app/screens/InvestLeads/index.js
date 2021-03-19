@@ -22,6 +22,7 @@ import { setlead } from '../../actions/lead'
 import Search from '../../components/Search'
 import Ability from '../../hoc/Ability'
 import { getItem, storeItem } from '../../actions/user'
+import { getListingsCount } from '../../actions/listings'
 
 var BUTTONS = [
   'Assign to team member',
@@ -49,11 +50,15 @@ class InvestLeads extends React.Component {
       showSearchBar: false,
       searchText: '',
       showAssignToButton: false,
+      serverTime: null,
     }
   }
 
   componentDidMount() {
+    const {dispatch} = this.props;
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      this.getServerTime();
       this.onFocus()
     })
   }
@@ -75,6 +80,19 @@ class InvestLeads extends React.Component {
         this.fetchLeads()
       })
     }
+  }
+
+  getServerTime = () => {
+    axios.get(`/api/user/serverTime?fullTime=true`).then(res => {
+      if(res){
+        this.setState({serverTime: res.data})
+      }
+      else{
+        console.log('Something went wrong while getting server time');
+      }
+    }).catch(error => {
+      console.log('error getting server time', error);
+    })
   }
 
   getSortOrderFromStorage = async () => {
@@ -299,6 +317,7 @@ class InvestLeads extends React.Component {
       onEndReachedLoader,
       searchText,
       showSearchBar,
+      serverTime,
     } = this.state
     const { user } = this.props
     return (
@@ -369,6 +388,7 @@ class InvestLeads extends React.Component {
                 navigateTo={this.navigateTo}
                 callNumber={this.callNumber}
                 handleLongPress={this.handleLongPress}
+                serverTime={serverTime}
               />
             )}
             onEndReached={() => {

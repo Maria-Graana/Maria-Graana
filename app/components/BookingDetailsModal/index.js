@@ -279,7 +279,7 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Rate/Sqft</Text>
                     <Text style={styles.largeText}>
-                      {helper.currencyConvert(PaymentMethods.findRatePerSqft(unit))}
+                      {unit && helper.currencyConvert(PaymentMethods.findRatePerSqft(unit))}
                     </Text>
                   </View>
                 </View>
@@ -288,7 +288,7 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Unit Price</Text>
                     <Text style={styles.largeText}>
-                      {helper.currencyConvert(PaymentMethods.findPearlUnitPrice(data))}
+                      {data && helper.currencyConvert(PaymentMethods.findPearlUnitPrice(data))}
                     </Text>
                   </View>
                 </View>

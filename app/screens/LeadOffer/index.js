@@ -52,6 +52,7 @@ class LeadOffer extends React.Component {
       sellerNotZero: false,
       agreedNotZero: false,
       offerReadOnly: false,
+      legalDocLoader: false,
     }
   }
 
@@ -98,7 +99,7 @@ class LeadOffer extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -217,20 +218,42 @@ class LeadOffer extends React.Component {
     helper.leadClosedToast()
   }
 
-  closeLead = () => {
+  closeLead = async () => {
     const { lead } = this.props
-    if (helper.checkClearedStatuses(lead)) {
-      this.setState({
-        reasons: StaticData.leadCloseReasonsWithPayment,
-        isCloseLeadVisible: true,
-        checkReasonValidation: '',
-      })
+    if (lead.commissions.length) {
+      let { count } = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, count)) {
+        this.setState({
+          reasons: StaticData.leadCloseReasonsWithPayment,
+          isCloseLeadVisible: true,
+          checkReasonValidation: '',
+          legalDocLoader: false,
+        })
+      } else {
+        this.setState({
+          reasons: StaticData.leadCloseReasons,
+          isCloseLeadVisible: true,
+          checkReasonValidation: '',
+          legalDocLoader: false,
+        })
+      }
     } else {
       this.setState({
         reasons: StaticData.leadCloseReasons,
         isCloseLeadVisible: true,
         checkReasonValidation: '',
       })
+    }
+  }
+
+  getLegalDocumentsCount = async () => {
+    const { lead } = this.props
+    this.setState({ legalDocLoader: true })
+    try {
+      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      return res.data
+    } catch (error) {
+      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
     }
   }
 
@@ -278,7 +301,7 @@ class LeadOffer extends React.Component {
 
   goToAttachments = () => {
     const { lead, navigation } = this.props
-    navigation.navigate('Attachments', { rcmLeadId: lead.id })
+    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
   }
 
   goToComments = () => {
@@ -451,37 +474,43 @@ class LeadOffer extends React.Component {
         return
       }
       this.setState({ disableButton: true, btnLoading: true }, () => {
-        this.showDialogOfferConfirmation(currentProperty, leadData);
+        this.showDialogOfferConfirmation(currentProperty, leadData)
       })
     }
   }
 
   showDialogOfferConfirmation(currentProperty, leadData) {
-    const { lead } = this.props;
-    Alert.alert('Agreed Amount', 'Are you sure you want to continue?', [
-      { text: 'No', style: 'cancel', onPress: () => this.setState({ disableButton: false, btnLoading: false }) },
-      {
-        text: 'Yes', onPress: () => {
-          let body = {
-            offer: leadData.agreed,
-            type: 'agreed',
-          }
-          axios
-            .post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
-            .then((res) => {
-              this.openChatModal()
-            })
-            .catch((error) => {
-              console.log(error)
-            })
-
-        }
-      },
-    ],
-      { cancelable: false })
+    const { lead } = this.props
+    Alert.alert(
+      'Agreed Amount',
+      'Are you sure you want to continue?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+          onPress: () => this.setState({ disableButton: false, btnLoading: false }),
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            let body = {
+              offer: leadData.agreed,
+              type: 'agreed',
+            }
+            axios
+              .post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
+              .then((res) => {
+                this.openChatModal()
+              })
+              .catch((error) => {
+                console.log(error)
+              })
+          },
+        },
+      ],
+      { cancelable: false }
+    )
   }
-
-
 
   acceptOffer = (offerId) => {
     const { lead } = this.props
@@ -490,8 +519,7 @@ class LeadOffer extends React.Component {
       .then((res) => {
         if (res.data.msg) {
           helper.errorToast(res.data.msg)
-        }
-        else {
+        } else {
           this.openChatModal()
         }
       })
@@ -522,8 +550,7 @@ class LeadOffer extends React.Component {
       this.setState({ disableButton: true, btnLoading: false })
       if (offer && offer.length) {
         offerId = offer[offer.length - 1].id
-        this.showConfirmationDialog(offerId);
-
+        this.showConfirmationDialog(offerId)
       } else {
         this.setState({ showWarning: true, disableButton: false })
         helper.warningToast('Please enter an agreed amount')
@@ -559,11 +586,19 @@ class LeadOffer extends React.Component {
   }
 
   showConfirmationDialog(offerId) {
-    Alert.alert('Accept Offer', 'Are you sure you want to accept this offer?', [
-      { text: 'No', style: 'cancel', onPress: () => this.setState({ disableButton: false, btnLoading: false })},
-      { text: 'Yes', onPress: () => this.acceptOffer(offerId) },
-    ],
-      { cancelable: false })
+    Alert.alert(
+      'Accept Offer',
+      'Are you sure you want to accept this offer?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+          onPress: () => this.setState({ disableButton: false, btnLoading: false }),
+        },
+        { text: 'Yes', onPress: () => this.acceptOffer(offerId) },
+      ],
+      { cancelable: false }
+    )
   }
 
   render() {
@@ -592,6 +627,7 @@ class LeadOffer extends React.Component {
       sellerNotZero,
       customerNotZero,
       offerReadOnly,
+      legalDocLoader,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -639,20 +675,20 @@ class LeadOffer extends React.Component {
                           screen={'offer'}
                         />
                       ) : (
-                          <AgentTile
-                            data={_.clone(item.item)}
-                            user={user}
-                            displayChecks={this.displayChecks}
-                            showCheckBoxes={false}
-                            addProperty={this.addProperty}
-                            isMenuVisible={showMenuItem}
-                            viewingMenu={false}
-                            goToPropertyComments={this.goToPropertyComments}
-                            toggleMenu={this.toggleMenu}
-                            menuShow={menuShow}
-                            screen={'offer'}
-                          />
-                        )}
+                        <AgentTile
+                          data={_.clone(item.item)}
+                          user={user}
+                          displayChecks={this.displayChecks}
+                          showCheckBoxes={false}
+                          addProperty={this.addProperty}
+                          isMenuVisible={showMenuItem}
+                          viewingMenu={false}
+                          goToPropertyComments={this.goToPropertyComments}
+                          toggleMenu={this.toggleMenu}
+                          menuShow={menuShow}
+                          screen={'offer'}
+                        />
+                      )}
                       <View>{this.checkStatus(item.item)}</View>
                     </View>
                   )}
@@ -682,14 +718,14 @@ class LeadOffer extends React.Component {
                 />
               </View>
             ) : (
-                <>
-                  <Image
-                    source={require('../../../assets/img/no-result-found.png')}
-                    resizeMode={'center'}
-                    style={{ alignSelf: 'center', width: 300, height: 300 }}
-                  />
-                </>
-              )}
+              <>
+                <Image
+                  source={require('../../../assets/img/no-result-found.png')}
+                  resizeMode={'center'}
+                  style={{ alignSelf: 'center', width: 300, height: 300 }}
+                />
+              </>
+            )}
           </View>
         </View>
         <View style={AppStyles.mainCMBottomNav}>
@@ -717,11 +753,12 @@ class LeadOffer extends React.Component {
           isVisible={isCloseLeadVisible}
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
+          legalDocLoader={legalDocLoader}
         />
       </View>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

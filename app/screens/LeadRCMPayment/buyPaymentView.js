@@ -1,22 +1,21 @@
 /** @format */
 
-import moment from 'moment'
+import { CheckBox } from 'native-base'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
-import { CheckBox } from 'native-base'
 import _ from 'underscore'
+import RoundPlus from '../../../assets/img/roundPlus.png'
 import AppStyles from '../../AppStyles'
 import CommissionTile from '../../components/CommissionTile'
 import DocTile from '../../components/DocTile'
-import InputField from '../../components/InputField'
-import Ability from '../../hoc/Ability'
-import StaticData from '../../StaticData'
 import ErrorMessage from '../../components/ErrorMessage'
-import styles from './styles'
+import InputField from '../../components/InputField'
 import RCMBTN from '../../components/RCMBTN'
-import RoundPlus from '../../../assets/img/roundPlus.png'
 import TokenTile from '../../components/TokenTile'
 import helper from '../../helper'
+import Ability from '../../hoc/Ability'
+import StaticData from '../../StaticData'
+import styles from './styles'
 class BuyPaymentView extends React.Component {
   constructor(props) {
     super(props)
@@ -25,16 +24,11 @@ class BuyPaymentView extends React.Component {
   render() {
     const {
       agreedAmount,
-      token,
       handleAgreedAmountChange,
-      handleTokenAmountChange,
       handleAgreedAmountPress,
-      handleTokenAmountPress,
       lead,
       showAndHideStyling,
       showStylingState,
-      tokenPriceFromat,
-      tokenDateStatus,
       agreeAmountFromat,
       onAddCommissionPayment,
       editTile,
@@ -52,7 +46,6 @@ class BuyPaymentView extends React.Component {
       legalCheckList,
       downloadLegalDocs,
       onPaymentLongPress,
-      tokenNotZero,
       agreedNotZero,
       deleteDoc,
       activityBool,
@@ -60,6 +53,7 @@ class BuyPaymentView extends React.Component {
       toggleTokenMenu,
       tokenMenu,
       confirmTokenAction,
+      closeLegalDocument,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -180,7 +174,7 @@ class BuyPaymentView extends React.Component {
           />
         ) : null}
 
-        <DocTile
+        {/* <DocTile
           title={'Signed Agreement'}
           uploadDocument={uploadDocument}
           category={'agreement'}
@@ -201,8 +195,7 @@ class BuyPaymentView extends React.Component {
           downloadLegalDocs={downloadLegalDocs}
           deleteDoc={deleteDoc}
           activityBool={activityBool}
-        />
-
+        /> */}
         {
           // Checkbox
           singleCommission && !buyer && !isLeadClosed ? (
@@ -230,7 +223,16 @@ class BuyPaymentView extends React.Component {
             </TouchableOpacity>
           ) : null
         }
-
+        {buyerCommission && (
+          <RCMBTN
+            onClick={() => closeLegalDocument('buyer')}
+            btnImage={RoundPlus}
+            btnText={'UPLOAD LEGAL DOCUMENTS'}
+            checkLeadClosedOrNot={false}
+            // isLeadClosed={}
+            hiddenBtn={commissionNotApplicableBuyer}
+          />
+        )}
         {lead.commissions ? (
           buyer ? (
             <CommissionTile
@@ -292,7 +294,16 @@ class BuyPaymentView extends React.Component {
             </TouchableOpacity>
           ) : null
         }
-
+        {sellerCommission && (
+          <RCMBTN
+            onClick={() => closeLegalDocument('seller')}
+            btnImage={RoundPlus}
+            btnText={'UPLOAD LEGAL DOCUMENTS'}
+            checkLeadClosedOrNot={false}
+            // isLeadClosed={}
+            hiddenBtn={commissionNotApplicableSeller}
+          />
+        )}
         {lead.commissions ? (
           seller ? (
             <CommissionTile

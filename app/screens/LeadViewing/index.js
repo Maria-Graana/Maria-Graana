@@ -4,7 +4,7 @@ import * as React from 'react'
 import styles from './style'
 import { View, Text, FlatList, Image, TouchableOpacity, Linking } from 'react-native'
 import { connect } from 'react-redux'
-import * as Location from 'expo-location';
+import * as Location from 'expo-location'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import MatchTile from '../../components/MatchTile/index'
@@ -66,25 +66,29 @@ class LeadViewing extends React.Component {
       longitude: null,
       propsure_id: null,
       selectedPropertyId: null,
+      legalDocLoader: false,
     }
   }
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      if (this.props.route.params && this.props.route.params.fromScreen === 'mapContainer' && this.props.route.params.mapValues) {
-        const {mapValues} = this.props.route.params;
-          this.setState({isGeoTaggingModalVisible: true , 
-            latitude: mapValues.lat,
-            longitude: mapValues.lng, 
-            propsure_id: mapValues.propsure_id,
-           })
-      }
-      else {
+      if (
+        this.props.route.params &&
+        this.props.route.params.fromScreen === 'mapContainer' &&
+        this.props.route.params.mapValues
+      ) {
+        const { mapValues } = this.props.route.params
+        this.setState({
+          isGeoTaggingModalVisible: true,
+          latitude: mapValues.lat,
+          longitude: mapValues.lng,
+          propsure_id: mapValues.propsure_id,
+        })
+      } else {
         this.fetchLead()
         this.getCallHistory()
         this.fetchProperties()
       }
-
     })
   }
 
@@ -136,7 +140,7 @@ class LeadViewing extends React.Component {
     })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -156,20 +160,42 @@ class LeadViewing extends React.Component {
     helper.leadClosedToast()
   }
 
-  closeLead = () => {
+  closeLead = async () => {
     const { lead } = this.props
-    if (helper.checkClearedStatuses(lead)) {
-      this.setState({
-        reasons: StaticData.leadCloseReasonsWithPayment,
-        isCloseLeadVisible: true,
-        checkReasonValidation: '',
-      })
+    if (lead.commissions.length) {
+      let { count } = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, count)) {
+        this.setState({
+          reasons: StaticData.leadCloseReasonsWithPayment,
+          isCloseLeadVisible: true,
+          checkReasonValidation: '',
+          legalDocLoader: false,
+        })
+      } else {
+        this.setState({
+          reasons: StaticData.leadCloseReasons,
+          isCloseLeadVisible: true,
+          checkReasonValidation: '',
+          legalDocLoader: false,
+        })
+      }
     } else {
       this.setState({
         reasons: StaticData.leadCloseReasons,
         isCloseLeadVisible: true,
         checkReasonValidation: '',
       })
+    }
+  }
+
+  getLegalDocumentsCount = async () => {
+    const { lead } = this.props
+    this.setState({ legalDocLoader: true })
+    try {
+      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      return res.data
+    } catch (error) {
+      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
     }
   }
 
@@ -217,7 +243,7 @@ class LeadViewing extends React.Component {
 
   goToAttachments = () => {
     const { lead, navigation } = this.props
-    navigation.navigate('Attachments', { rcmLeadId: lead.id })
+    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
   }
 
   goToComments = () => {
@@ -640,20 +666,16 @@ class LeadViewing extends React.Component {
 
   convertLongitudeLattitude = (val) => {
     if (val === '') {
-        return null
+      return null
+    } else if (typeof val === 'string' && val != '') {
+      return parseFloat(val)
+    } else {
+      return val
     }
-    else if (typeof (val) === 'string' && val != '') {
-        return parseFloat(val);
-    }
-    else {
-        return val;
-    }
-
-}
-
+  }
 
   propertyGeoTagging = (data) => {
-     // When user clicks geo tagging option from menu, this function is called
+    // When user clicks geo tagging option from menu, this function is called
     this.toggleMenu(false, data.id)
     this.setState({
       isGeoTaggingModalVisible: true,
@@ -677,40 +699,40 @@ class LeadViewing extends React.Component {
   }
 
   propertyGeoTaggingDone = () => {
- // Done button pressed from inside of the geotagging modal
-    const {lead, navigation} = this.props;
-    const {latitude, longitude, propsure_id, locate_manually, selectedPropertyId} = this.state;
-    if(latitude && longitude) {
+    // Done button pressed from inside of the geotagging modal
+    const { lead, navigation } = this.props
+    const { latitude, longitude, propsure_id, locate_manually, selectedPropertyId } = this.state
+    if (latitude && longitude) {
       let url = `/api/inventory/updateshortListedPRoperties?id=${selectedPropertyId}&leadId=${lead.id}`
       let body = {
-        lat : this.convertLongitudeLattitude(latitude),
-        lng : this.convertLongitudeLattitude(longitude),
+        lat: this.convertLongitudeLattitude(latitude),
+        lng: this.convertLongitudeLattitude(longitude),
         locate_manually,
         propsure_id,
-        geotagged_date : propsure_id ? new Date() : null,
+        geotagged_date: propsure_id ? new Date() : null,
       }
-      axios.patch(url, body).then ((response)=> {
-        if(response.data) {
-          this.hideGeoTaggingModal();
-          this.fetchProperties();
-          this.getCallHistory();
-          navigation.setParams({mapValues: null, fromScreen: null})
-        }
-      }).catch(error => {
+      axios
+        .patch(url, body)
+        .then((response) => {
+          if (response.data) {
+            this.hideGeoTaggingModal()
+            this.fetchProperties()
+            this.getCallHistory()
+            navigation.setParams({ mapValues: null, fromScreen: null })
+          }
+        })
+        .catch((error) => {
           console.log(error)
-      })
-    }
-    else {
+        })
+    } else {
       alert('Latitude and Longitude values are required!')
     }
-   
-   
   }
 
   goToMapsForGeotagging = () => {
     // When user opts for geo tagging by maps
-    const { navigation } = this.props;
-    const { longitude, latitude, propsure_id } = this.state;
+    const { navigation } = this.props
+    const { longitude, latitude, propsure_id } = this.state
     this.setState({ isGeoTaggingModalVisible: false }, () => {
       navigation.navigate('MapContainer', {
         mapValues: {
@@ -721,7 +743,6 @@ class LeadViewing extends React.Component {
         screenName: 'Viewing',
       })
     })
-
   }
 
   handleMarkProperty = (value) => {
@@ -730,16 +751,15 @@ class LeadViewing extends React.Component {
       locate_manually: value,
       propsure_id: null,
       latitude: null,
-      longitude: null
-    });
+      longitude: null,
+    })
   }
 
   handleLatLngChange = (value, name) => {
     // lat lng value change, text input
     if (name === 'lat') {
       this.setState({ latitude: value })
-    }
-    else if(name === 'lng') {
+    } else if (name === 'lng') {
       this.setState({ longitude: value })
     }
   }
@@ -750,10 +770,10 @@ class LeadViewing extends React.Component {
     if (status !== 'granted') {
       alert('Permission to access location was denied')
     }
-    const location = await Location.getCurrentPositionAsync();
+    const location = await Location.getCurrentPositionAsync()
     if (location && location.coords && location.coords.latitude && location.coords.longitude) {
-      this.handleLatLngChange(location.coords.latitude, 'lat');
-      this.handleLatLngChange(location.coords.longitude, 'lng');
+      this.handleLatLngChange(location.coords.latitude, 'lat')
+      this.handleLatLngChange(location.coords.longitude, 'lng')
     } else {
       alert('Error while getting location!')
     }
@@ -820,7 +840,7 @@ class LeadViewing extends React.Component {
       latitude,
       longitude,
       propsure_id,
-
+      legalDocLoader,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -834,7 +854,8 @@ class LeadViewing extends React.Component {
             color={'#0277FD'}
           />
         </View>
-        <GeoTaggingModal isGeoTaggingModalVisible={isGeoTaggingModalVisible}
+        <GeoTaggingModal
+          isGeoTaggingModalVisible={isGeoTaggingModalVisible}
           hideGeoTaggingModal={this.hideGeoTaggingModal}
           handleMarkProperty={this.handleMarkProperty}
           locate_manually={locate_manually}
@@ -916,41 +937,41 @@ class LeadViewing extends React.Component {
                         propertyGeoTagging={this.propertyGeoTagging}
                       />
                     ) : (
-                        <AgentTile
-                          bookAnotherViewing={this.bookAnotherViewing}
-                          deleteProperty={this.deleteProperty}
-                          cancelViewing={this.cancelViewing}
-                          toggleCheckListModal={(toggleState, data) =>
-                            this.toggleCheckListModal(toggleState, data)
-                          }
-                          isMenuVisible={showMenuItem && isMenuVisible}
-                          data={_.clone(item.item)}
-                          user={user}
-                          displayChecks={this.displayChecks}
-                          showCheckBoxes={false}
-                          addProperty={this.addProperty}
-                          viewingMenu={true}
-                          goToPropertyComments={this.goToPropertyComments}
-                          menuShow={menuShow}
-                          toggleMenu={this.toggleMenu}
-                          screen={'viewing'}
-                          propertyGeoTagging={this.propertyGeoTagging}
-                        />
-                      )}
+                      <AgentTile
+                        bookAnotherViewing={this.bookAnotherViewing}
+                        deleteProperty={this.deleteProperty}
+                        cancelViewing={this.cancelViewing}
+                        toggleCheckListModal={(toggleState, data) =>
+                          this.toggleCheckListModal(toggleState, data)
+                        }
+                        isMenuVisible={showMenuItem && isMenuVisible}
+                        data={_.clone(item.item)}
+                        user={user}
+                        displayChecks={this.displayChecks}
+                        showCheckBoxes={false}
+                        addProperty={this.addProperty}
+                        viewingMenu={true}
+                        goToPropertyComments={this.goToPropertyComments}
+                        menuShow={menuShow}
+                        toggleMenu={this.toggleMenu}
+                        screen={'viewing'}
+                        propertyGeoTagging={this.propertyGeoTagging}
+                      />
+                    )}
                     <View>{this.checkStatus(item.item)}</View>
                   </View>
                 )}
                 keyExtractor={(item, index) => item.id.toString()}
               />
             ) : (
-                <>
-                  <Image
-                    source={require('../../../assets/img/no-result-found.png')}
-                    resizeMode={'center'}
-                    style={{ alignSelf: 'center', width: 300, height: 300 }}
-                  />
-                </>
-              )}
+              <>
+                <Image
+                  source={require('../../../assets/img/no-result-found.png')}
+                  resizeMode={'center'}
+                  style={{ alignSelf: 'center', width: 300, height: 300 }}
+                />
+              </>
+            )}
           </View>
         </View>
 
@@ -980,11 +1001,12 @@ class LeadViewing extends React.Component {
           isVisible={isCloseLeadVisible}
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
+          legalDocLoader={legalDocLoader}
         />
       </View>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

@@ -244,34 +244,6 @@ class PropMatchTile extends React.Component {
                 </View>
               </Menu>
             ) : null}
-            {showDone ? (
-              <Menu
-                visible={data.checkBox}
-                onDismiss={() => this.props.toggleMenu(false, data.id)}
-                anchor={
-                  <Entypo
-                    onPress={() => this.props.toggleMenu(true, data.id)}
-                    name="dots-three-vertical"
-                    size={20}
-                  />
-                }
-              >
-                <View>
-                  <Menu.Item
-                    onPress={() => {
-                      this.props.goToPropertyComments(data)
-                    }}
-                    title="Comments"
-                  />
-                  <Menu.Item
-                    onPress={() => {
-                      toggleCheckListModal(true, data)
-                    }}
-                    title="Viewing done"
-                  />
-                </View>
-              </Menu>
-            ) : null}
             {screen === 'viewing' ? (
               <Menu
                 visible={data.checkBox}
@@ -287,7 +259,7 @@ class PropMatchTile extends React.Component {
                 <View>
                   {viewingMenu && screen && screen === 'viewing' ? (
                     <View>
-                      {show ? (
+                      {showDone ? (
                         <View>
                           <Menu.Item
                             onPress={() => {

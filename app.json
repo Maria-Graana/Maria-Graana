@@ -7,9 +7,10 @@
       "ios",
       "android"
     ],
-    "version": "1.20.0",
+    "version": "1.20.6",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
+    "scheme": "arms",
     "splash": {
       "image": "./assets/img/Splash.png",
       "resizeMode": "cover"
@@ -37,8 +38,11 @@
         "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
+      "associatedDomains": [
+        "applinks:arms.graana.com"
+      ],
       "userInterfaceStyle": "automatic",
-      "buildNumber": "13"
+      "buildNumber": "14"
     },
     "android": {
       "package": "com.agency21.arms",
@@ -47,6 +51,28 @@
         "googleMaps": { "apiKey": "AIzaSyAn23x563AgxL5cANBS6wDNVjXeT7QCdJE" }
         },
       "userInterfaceStyle": "automatic",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "arms.graana.com",
+              "pathPrefix": "/rcmLead"
+            },
+            {
+              "scheme": "https",
+              "host": "arms.graana.com",
+              "pathPrefix": "/cmLead"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",
@@ -62,7 +88,7 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 6,
+      "versionCode": 7,
       "useNextNotificationsApi": true
     },
     "notification": {

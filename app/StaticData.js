@@ -198,6 +198,10 @@ export default StaticData = {
       name: 'Client not satisfied with options',
       value: 'client_not_satisfied',
     },
+    {
+      name: 'Client not interested',
+      value: 'client_not_interested'
+    },
     { value: 'low_budget', name: 'Low Budget' },
     { value: 'different_city', name: 'Different City' },
   ],
@@ -244,6 +248,10 @@ export default StaticData = {
     {
       name: 'Client not responding',
       value: 'client_not_responding',
+    },
+    {
+      name: 'Client not interested',
+      value: 'client_not_interested'
     },
     {
       name: 'Client not satisfied with options',

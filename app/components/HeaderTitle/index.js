@@ -31,7 +31,7 @@ class HeaderTitle extends React.Component {
 
     return (
       <View style={styles.mainView}>
-        <Text style={styles.headerText}>{headerName}</Text>
+        <Text numberOfLines={1} style={styles.headerText}>{headerName}</Text>
         {!lead.projectId && !lead.projectName ? (
           <Text numberOfLines={1} style={[styles.detailText, AppStyles.darkColor]}>
             {leadSize}

@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.21.5",
+    "version": "1.21.7",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "scheme": "arms",
@@ -39,7 +39,7 @@
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
       "userInterfaceStyle": "automatic",
-      "buildNumber": "14"
+      "buildNumber": "15"
     },
     "android": {
       "package": "com.agency21.arms",
@@ -63,7 +63,7 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 7,
+      "versionCode": 8,
       "useNextNotificationsApi": true
     },
     "notification": {

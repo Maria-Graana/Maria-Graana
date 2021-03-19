@@ -15,7 +15,7 @@ const TouchableInput = ({ onPress, placeholder, value, showError, errorMessage, 
           </Text>
           {
             showIconOrImage ?
-              showDropDownIcon ? <Ionicons style={styles.iconStyle} name="ios-arrow-down" size={26} color={AppStyles.colors.subTextColor} />
+              showDropDownIcon ? <Ionicons style={styles.iconStyle} name="chevron-down-outline" size={26} color={AppStyles.colors.subTextColor} />
                 :
                 < Image style={{ width: 26, height: 26, marginRight: 12 }} source={iconSource} />
               : null

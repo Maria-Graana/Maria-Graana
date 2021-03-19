@@ -168,7 +168,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 5,
     marginBottom: 5,
-    marginTop: 10,
     backgroundColor: '#fff',
   },
   upperLayer: {

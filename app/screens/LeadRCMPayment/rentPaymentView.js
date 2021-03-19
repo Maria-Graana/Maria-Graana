@@ -133,6 +133,7 @@ const RentPaymentView = (props) => {
           onSubmitNewToken={onAddCommissionPayment}
         />
       ) : null}
+      {tokenPayment && <View style={{ paddingVertical: 3 }} />}
       {/* <DocTile
         title={'Legal Process Checklist'}
         uploadDocument={uploadDocument}

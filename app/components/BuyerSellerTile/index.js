@@ -15,9 +15,6 @@ class BuyerSellerTile extends React.Component {
 
   checkReadOnlyMode = () => {
     const { isLeadClosed, singleCommission, commissionNotApplicableBuyerSeller } = this.props
-    console.log('isLeadClosed: ', isLeadClosed)
-    console.log('singleCommission: ', singleCommission)
-    console.log('commissionNotApplicableBuyerSeller: ', commissionNotApplicableBuyerSeller)
     if (isLeadClosed || singleCommission || commissionNotApplicableBuyerSeller) {
       return true
     } else return false

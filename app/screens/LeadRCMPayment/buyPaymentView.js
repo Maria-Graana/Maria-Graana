@@ -82,7 +82,6 @@ class BuyPaymentView extends React.Component {
     )
     let showMenu = helper.showBuyerTokenMenu(tokenPayment)
     if (singleCommission) showMenu = helper.showSingleBuyerTokenMenu(tokenPayment)
-    console.log('singleCommission: ', singleCommission)
     return (
       <View>
         {/* <TouchableOpacity

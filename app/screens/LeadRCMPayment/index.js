@@ -37,6 +37,7 @@ import MatchTile from '../../components/MatchTile/index'
 import ViewDocs from '../../components/ViewDocs'
 import config from '../../config'
 import helper from '../../helper'
+import rcmPayment from '../../reducers/rcmPayment'
 import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
@@ -110,6 +111,7 @@ class LeadRCMPayment extends React.Component {
       tokenMenu: false,
       assignToAccountsLoading: false,
       legalDocLoader: false,
+      officeLocations: [],
     }
   }
 
@@ -119,10 +121,12 @@ class LeadRCMPayment extends React.Component {
         const { lead } = this.props.route.params
         this.getCallHistory()
         this.getSelectedProperty(lead)
+        this.fetchOfficeLocations();
       } else {
         const { lead } = this.props
         this.getCallHistory()
         this.getSelectedProperty(lead)
+        this.fetchOfficeLocations();
       }
     })
   }
@@ -234,6 +238,24 @@ class LeadRCMPayment extends React.Component {
       helper.successToast('File Downloaded!')
       this.setDocActivity(doc)
     }
+  }
+
+  fetchOfficeLocations = () => {
+    axios.get(`/api/user/locations`).then(response => {
+      if (response.data) {
+        this.setState({
+          officeLocations: response.data.map(item => {
+             return {
+               name: item.name,
+               value:item.id,
+             }
+          })
+        })
+      }
+    })
+      .catch((error => {
+        console.log(`/api/user/locations`, error)
+      }))
   }
 
   // *******  View Legal Documents Modal  *************
@@ -482,7 +504,7 @@ class LeadRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -766,7 +788,7 @@ class LeadRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
-    this.setState({ formData, rentNotZero: false }, () => {})
+    this.setState({ formData, rentNotZero: false }, () => { })
     if (formData.monthlyRent !== '' && name === 'monthlyRent') {
       this.setState({ showMonthlyRentArrow: true })
     }
@@ -885,7 +907,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -898,7 +920,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -1027,8 +1049,8 @@ class LeadRCMPayment extends React.Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = payment.paymentAttachments
           ? _.filter(payment.paymentAttachments, (item) => {
-              return !_.has(item, 'id')
-            })
+            return !_.has(item, 'id')
+          })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1057,9 +1079,9 @@ class LeadRCMPayment extends React.Component {
   }
 
   setCommissionEditData = (data) => {
-    const { dispatch } = this.props
+    const { dispatch, user } = this.props
     this.setState({ editable: true })
-    dispatch(setRCMPayment({ ...data, visible: true }))
+    dispatch(setRCMPayment({ ...data, visible: true, officeLocationId: data && data.officeLocationId ? data.officeLocationId : user && user.officeLocation ? user.officeLocation.id : null }))
   }
 
   goToPayAttachments = () => {
@@ -1183,8 +1205,8 @@ class LeadRCMPayment extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -1232,8 +1254,7 @@ class LeadRCMPayment extends React.Component {
     const selectedProperty = allProperties[0]
     axios
       .post(
-        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${
-          selectedProperty ? selectedProperty.id : null
+        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null
         }`
       )
       .then((response) => {
@@ -1375,6 +1396,12 @@ class LeadRCMPayment extends React.Component {
     }
   }
 
+  handleOfficeLocation = (value) => {
+    console.log(value);
+    const { rcmPayment, dispatch } = this.props
+    dispatch(setRCMPayment({ ...rcmPayment, officeLocationId: value }))
+  }
+
   onPaymentLongPress = (data) => {
     const { dispatch } = this.props
     dispatch(setRCMPayment({ ...data }))
@@ -1475,6 +1502,8 @@ class LeadRCMPayment extends React.Component {
       activityBool,
       tokenMenu,
       legalDocLoader,
+      officeLocations,
+      selectedOfficeLocation
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1525,6 +1554,8 @@ class LeadRCMPayment extends React.Component {
           assignToAccounts={() => {
             this.assignToAccounts()
           }}
+          officeLocations={officeLocations}
+          handleOfficeLocationChange={this.handleOfficeLocation}
         />
         {showWebView ? (
           <ViewDocs

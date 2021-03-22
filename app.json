@@ -38,6 +38,9 @@
         "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
+      "associatedDomains": [
+        "applinks:arms.graana.com"
+      ],
       "userInterfaceStyle": "automatic",
       "buildNumber": "15"
     },
@@ -63,6 +66,29 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "arms.graana.com",
+              "pathPrefix": "/rcmLead"
+            },
+            {
+              "scheme": "https",
+              "host": "arms.graana.com",
+              "pathPrefix": "/cmLead"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
+
       "versionCode": 8,
       "useNextNotificationsApi": true
     },

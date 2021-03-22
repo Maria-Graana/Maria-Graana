@@ -53,10 +53,9 @@ class Landing extends React.Component {
   _handleDeepLink = () => {
     const { navigation } = this.props;
     Linking.getInitialURL().then(async (url) => {
-      alert(`deep link background => ${url}`)
-      if (url) {
-        const { path } = await Linking.parseInitialURLAsync(url)
-        const pathArray = path?.split('/') ?? []
+      const { path } = await Linking.parseInitialURLAsync(url)
+      const pathArray = path?.split('/') ?? []
+      if (pathArray && pathArray.length) {
         const leadId = pathArray[pathArray.length - 1];
         const purposeTab = pathArray.includes('cmLead')
           ? 'invest'
@@ -65,7 +64,7 @@ class Landing extends React.Component {
             : pathArray.includes('rcmLead') && pathArray.includes('rent')
               ? 'rent'
               : ''
-        path && leadId ? navigation.navigate('LeadDetail', {
+        pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
           purposeTab,
           lead: { id: leadId },
         })
@@ -83,10 +82,9 @@ class Landing extends React.Component {
 
   _handleRedirectInForeground = (event) => {
     const { navigation } = this.props;
-    alert(`deep link foreground => ${event.url}`)
-    if (event && event.url) {
-      const { path } = Linking.parse(event.url)
-      const pathArray = path?.split('/') ?? []
+    const { path } = Linking.parse(event.url)
+    const pathArray = path?.split('/') ?? []
+    if (pathArray && pathArray.length) {
       const leadId = pathArray[pathArray.length - 1];
       const purposeTab = pathArray.includes('cmLead')
         ? 'invest'
@@ -95,7 +93,7 @@ class Landing extends React.Component {
           : pathArray.includes('rcmLead') && pathArray.includes('rent')
             ? 'rent'
             : ''
-      path && leadId ? navigation.navigate('LeadDetail', {
+      pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
         purposeTab,
         lead: { id: leadId },
       })

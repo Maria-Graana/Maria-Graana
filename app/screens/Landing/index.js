@@ -53,6 +53,7 @@ class Landing extends React.Component {
   _handleDeepLink = () => {
     const { navigation } = this.props;
     Linking.getInitialURL().then(async (url) => {
+      alert(`deep link background => ${url}`)
       if (url) {
         const { path } = await Linking.parseInitialURLAsync(url)
         const pathArray = path?.split('/') ?? []
@@ -64,7 +65,7 @@ class Landing extends React.Component {
             : pathArray.includes('rcmLead') && pathArray.includes('rent')
               ? 'rent'
               : ''
-        path ? navigation.navigate('LeadDetail', {
+        path && leadId ? navigation.navigate('LeadDetail', {
           purposeTab,
           lead: { id: leadId },
         })
@@ -82,6 +83,7 @@ class Landing extends React.Component {
 
   _handleRedirectInForeground = (event) => {
     const { navigation } = this.props;
+    alert(`deep link foreground => ${event.url}`)
     if (event && event.url) {
       const { path } = Linking.parse(event.url)
       const pathArray = path?.split('/') ?? []
@@ -93,7 +95,7 @@ class Landing extends React.Component {
           : pathArray.includes('rcmLead') && pathArray.includes('rent')
             ? 'rent'
             : ''
-      path ? navigation.navigate('LeadDetail', {
+      path && leadId ? navigation.navigate('LeadDetail', {
         purposeTab,
         lead: { id: leadId },
       })

@@ -67,14 +67,14 @@ class BuyLeads extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      // const { PPBuyNotification } = this.props
+      const { PPBuyNotification } = this.props
       // Sentry.captureException(`PPBuyNotification BUY: ${JSON.stringify(PPBuyNotification)}`)
-      // if (PPBuyNotification) {
-      //   Sentry.captureException(
-      //     ` INSIDE IF PPBuyNotification BUY: ${JSON.stringify(PPBuyNotification)}`
-      //   )
-      //   dispatch(setPPBuyNotification(null))
-      // }
+      if (PPBuyNotification) {
+        // Sentry.captureException(
+        //   ` INSIDE IF PPBuyNotification BUY: ${JSON.stringify(PPBuyNotification)}`
+        // )
+        dispatch(setPPBuyNotification(false))
+      }
       dispatch(getListingsCount())
       this.getServerTime()
       this.onFocus()

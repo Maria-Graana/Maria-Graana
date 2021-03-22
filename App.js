@@ -46,9 +46,25 @@ export default class App extends React.Component {
     this._notificationSubscription = Notifications.addNotificationResponseReceivedListener(
       this._handleNotification
     )
+    // setTimeout(() => {
+    //   // DUMMY NOTIFICATION
+    //   this._handleNotification({
+    //     actionIdentifier: Notifications.DEFAULT_ACTION_IDENTIFIER,
+    //     notification: {
+    //       request: {
+    //         content: {
+    //           data: {
+    //             type: 'buyLead',
+    //             isPP: true,
+    //           }
+    //         }
+    //       }
+    //     }
+    //   })
+    // }, 50)
     this.state = {
       isReady: false,
-      screenName: 'Buy',
+      // screenName: null,
     }
   }
 
@@ -150,7 +166,7 @@ export default class App extends React.Component {
           })
         }
       }
-      data.isPP = true
+      // data.isPP = true
       if (data.type === 'buyLead') {
         if (!data.isPP) {
           if (data.leadStatus === 'payment') {
@@ -201,13 +217,8 @@ export default class App extends React.Component {
             })
           }
         } else {
-          Sentry.captureException(`DISPATCHING:`)
-          // store.dispatch(
-          //   setPPBuyNotification({
-          //     screen: 'Buy',
-          //   })
-          // )
-          this.setState({ screenName: 'Buy' })
+          store.dispatch(setPPBuyNotification(true))
+          // this.setState({ screenName: 'Buy' })
           // RootNavigation.navigateTo('Leads', {
           //   screen: 'Buy',
           // })
@@ -273,11 +284,11 @@ export default class App extends React.Component {
     }
   }
 
-  navigateScreen = () => {
-    RootNavigation.navigateTo('Leads', {
-      screen: 'Buy',
-    })
-  }
+  // navigateScreen = () => {
+  //   RootNavigation.navigateTo('Leads', {
+  //     screen: 'Buy',
+  //   })
+  // }
 
   render() {
     if (!this.state.isReady) {
@@ -291,9 +302,11 @@ export default class App extends React.Component {
               <PaperProvider>
                 <NavigationContainer
                   ref={navigationRef}
-                  onReady={() => {
-                    if (this.state.screenName) this.navigateScreen()
-                  }}
+                  // onReady={() => {
+                  //   if (this.state.screenName && this.state.screenName === 'Buy') {
+                  //     setTimeout(() => this.navigateScreen(), 500)
+                  //   }
+                  // }}
                 >
                   <RootStack />
                 </NavigationContainer>

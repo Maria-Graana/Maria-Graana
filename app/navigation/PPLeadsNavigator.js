@@ -1,18 +1,18 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React, { useState } from 'react'
+import React from 'react'
 import AppStyles from '../AppStyles'
 import BuyLeads from '../screens/BuyLeads/index'
 import InvestLeads from '../screens/InvestLeads/index'
 import PropertyLead from '../screens/PropertyLead/index'
 import RentLeads from '../screens/RentLeads/index'
-import { useSelector } from 'react-redux'
+import { connect } from 'react-redux'
 // const { width } = Dimensions.get('window')
 
 const Tab = createMaterialTopTabNavigator()
 
-export default function PPLeadsNavigator() {
+function PPLeadsNavigator({ isPPBuyNotification }) {
   // const { Notification } = useSelector((state) => state)
   // const { PPBuyNotification } = Notification
   // let initialScreen = 'Rent'
@@ -37,10 +37,18 @@ export default function PPLeadsNavigator() {
           borderBottomWidth: 2,
         },
       }}
-      // initialRouteName={initialScreen}
+      initialRouteName={isPPBuyNotification ? 'Buy' : 'Rent'}
     >
       <Tab.Screen name="Rent" component={RentLeads} />
       <Tab.Screen name="Buy" component={BuyLeads} />
     </Tab.Navigator>
   )
 }
+
+const mapStateToProps = (store) => {
+  return {
+    isPPBuyNotification: store.Notification.PPBuyNotification,
+  }
+}
+
+export default connect(mapStateToProps)(PPLeadsNavigator)

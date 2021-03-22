@@ -3,7 +3,7 @@
 import { combineReducers } from 'redux'
 import * as types from '../types'
 
-const setPPBuyNotification = (state = { yes: 'yes' }, action) => {
+const isPPBuyNotification = (state = false, action) => {
   switch (action.type) {
     case types.SET_PP_BUY_NOTIFICATION:
       return action.payload
@@ -13,5 +13,5 @@ const setPPBuyNotification = (state = { yes: 'yes' }, action) => {
 }
 
 export default combineReducers({
-  PPBuyNotification: setPPBuyNotification,
+  PPBuyNotification: isPPBuyNotification,
 })

@@ -14,6 +14,7 @@ import TouchableInput from '../TouchableInput'
 import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
+import OfficeLocationSelector from '../OfficeLocationSelector'
 
 const AddRCMPaymentModal = ({
   onModalCloseClick,
@@ -37,10 +38,7 @@ const AddRCMPaymentModal = ({
 
   const [remarks, setRemarks] = useState([])
   const [loading, setLoading] = useState(false)
-  const [editLocation, setEditLocation] = useState(false);
   const [isCollapsed, setCollapsed] = useState(false)
-  const officeLocation = officeLocations.find(item => item.value === rcmPayment.officeLocationId);
-  console.log()
 
   const fetchRemarks = () => {
     if (isCollapsed === false) {
@@ -69,7 +67,6 @@ const AddRCMPaymentModal = ({
             style={styles.timesBtn}
             onPress={() => {
               setCollapsed(false)
-              setEditLocation(false)
               setRemarks([])
               onModalCloseClick()
             }}
@@ -181,32 +178,14 @@ const AddRCMPaymentModal = ({
             )}
 
           {rcmPayment.id ? (
-            editLocation ? <View style={[AppStyles.mainInputWrap]}>
-              <View style={[AppStyles.inputWrap]}>
-                <PickerComponent
-                  onValueChange={handleOfficeLocationChange}
-                  data={officeLocations}
-                  selectedItem={rcmPayment.officeLocationId}
-                  name={'officeLocation'}
-                  placeholder="Office Locations"
-                />
-              </View>
-            </View>
-              :
-              <View style={styles.editLocationMain}>
-                <View style={styles.editLocationLeftContainer}>
-                  <Text style={styles.locationHeading}>Location</Text>
-                  <Text >{officeLocation ? officeLocation.name : ''}</Text>
-                </View>
-                <TouchableOpacity disabled={rcmPayment.status === 'pendingAccount'} onPress={() => setEditLocation(true)} style={styles.editLocationRightContainer}>
-                  <Text style={styles.editText}>Edit</Text>
-                </TouchableOpacity>
-              </View>
+            <OfficeLocationSelector
+              officeLocations={officeLocations}
+              officeLocationId={rcmPayment.officeLocationId}
+              handleOfficeLocationChange={handleOfficeLocationChange}
+              disabled={rcmPayment.status === 'pendingAccount'}
+            />
           ) : null
-
           }
-
-
 
           {
             rcmPayment.status && rcmPayment.paymentCategory !== 'token' ? <TouchableButton
@@ -416,30 +395,4 @@ const styles = StyleSheet.create({
   rotateImg: {
     transform: [{ rotate: '180deg' }],
   },
-  editLocationMain: {
-    flexDirection: 'row',
-    width: '100%'
-  },
-  editLocationLeftContainer: {
-    backgroundColor: 'white',
-    padding: 10,
-    width: '85%'
-  },
-  editLocationRightContainer: {
-    width: '15%',
-    marginHorizontal: 5,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  locationHeading: {
-    fontSize: 14,
-    fontFamily: AppStyles.fonts.boldFont,
-    paddingBottom: 5
-  },
-  editText: {
-    color: AppStyles.colors.primaryColor,
-    fontSize: AppStyles.fontSize.medium,
-    fontFamily: AppStyles.fonts.semiBoldFont
-  }
-
 })

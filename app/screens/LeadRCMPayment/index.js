@@ -388,6 +388,7 @@ class LeadRCMPayment extends React.Component {
       details: '',
       visible: false,
       paymentAttachments: [],
+      officeLocationId: null,
     }
     this.setState({
       modalValidation: false,
@@ -1397,7 +1398,6 @@ class LeadRCMPayment extends React.Component {
   }
 
   handleOfficeLocation = (value) => {
-    console.log(value);
     const { rcmPayment, dispatch } = this.props
     dispatch(setRCMPayment({ ...rcmPayment, officeLocationId: value }))
   }
@@ -1503,7 +1503,6 @@ class LeadRCMPayment extends React.Component {
       tokenMenu,
       legalDocLoader,
       officeLocations,
-      selectedOfficeLocation
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)

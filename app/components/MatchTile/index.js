@@ -149,6 +149,9 @@ class MatchTile extends React.Component {
       bookAnotherViewing,
       toggleCheckListModal,
       propertyGeoTagging,
+      lead,
+      selectForPayment,
+      showConfirmationDialog,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let imagesList = this.checkImages()
@@ -195,11 +198,11 @@ class MatchTile extends React.Component {
                 containerCustomStyle={{ position: 'relative' }}
               />
             ) : (
-                <Image
-                  source={require('../../../assets/images/no-image-found.png')}
-                  style={styles.noImage}
-                />
-              )}
+              <Image
+                source={require('../../../assets/images/no-image-found.png')}
+                style={styles.noImage}
+              />
+            )}
           </View>
           <View style={styles.imageCountViewStyle}>
             <Feather name={'camera'} color={'#fff'} size={16} />
@@ -242,7 +245,10 @@ class MatchTile extends React.Component {
             </View>
           </View>
           <View style={styles.phoneIcon}>
-            {screen !== 'match' && screen !== 'viewing' && screen !== 'propsure' ? (
+            {screen !== 'match' &&
+            screen !== 'viewing' &&
+            screen !== 'propsure' &&
+            screen !== 'payment' ? (
               <Menu
                 visible={data.checkBox}
                 onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -264,6 +270,58 @@ class MatchTile extends React.Component {
                 </View>
               </Menu>
             ) : null}
+            {screen === 'payment' && lead.shortlist_id && (
+              <Menu
+                visible={data.checkBox}
+                onDismiss={() => this.props.toggleMenu(false, data.id)}
+                anchor={
+                  <Entypo
+                    onPress={() => this.props.toggleMenu(true, data.id)}
+                    name="dots-three-vertical"
+                    size={20}
+                  />
+                }
+              >
+                <View>
+                  <Menu.Item
+                    onPress={() => {
+                      this.props.goToPropertyComments(data)
+                    }}
+                    title="Comments"
+                  />
+                  <Menu.Item
+                    onPress={
+                      lead.shortlist_id === null
+                        ? () => selectForPayment(item)
+                        : () => showConfirmationDialog()
+                    }
+                    title="Select a Different Property"
+                  />
+                </View>
+              </Menu>
+            )}
+            {screen === 'payment' && !lead.shortlist_id && (
+              <Menu
+                visible={data.checkBox}
+                onDismiss={() => this.props.toggleMenu(false, data.id)}
+                anchor={
+                  <Entypo
+                    onPress={() => this.props.toggleMenu(true, data.id)}
+                    name="dots-three-vertical"
+                    size={20}
+                  />
+                }
+              >
+                <View>
+                  <Menu.Item
+                    onPress={() => {
+                      this.props.goToPropertyComments(data)
+                    }}
+                    title="Comments"
+                  />
+                </View>
+              </Menu>
+            )}
             {screen === 'propsure' ? (
               <Menu
                 visible={data.checkBox}
@@ -285,21 +343,21 @@ class MatchTile extends React.Component {
                       title="Comments"
                     />
                   ) : (
-                      <View>
-                        <Menu.Item
-                          onPress={() => {
-                            this.props.goToPropertyComments(data)
-                          }}
-                          title="Comments"
-                        />
-                        <Menu.Item
-                          onPress={() => {
-                            this.props.cancelPropsureRequest(data)
-                          }}
-                          title="Cancel Request"
-                        />
-                      </View>
-                    )}
+                    <View>
+                      <Menu.Item
+                        onPress={() => {
+                          this.props.goToPropertyComments(data)
+                        }}
+                        title="Comments"
+                      />
+                      <Menu.Item
+                        onPress={() => {
+                          this.props.cancelPropsureRequest(data)
+                        }}
+                        title="Cancel Request"
+                      />
+                    </View>
+                  )}
                 </View>
               </Menu>
             ) : null}
@@ -347,51 +405,50 @@ class MatchTile extends React.Component {
                             />
                           </View>
                         ) : (
-                            <View>
-                              <Menu.Item
-                                onPress={() => {
-                                  this.props.goToPropertyComments(data)
-                                }}
-                                title="Comments"
-                              />
-                              <Menu.Item
-                                onPress={() => {
-                                  propertyGeoTagging(data)
-                                }}
-                                title="GeoTag"
-                              />
-                              <Menu.Item
-                                onPress={() => {
-                                  this.props.deleteProperty(data)
-                                }}
-                                title="Remove from the list"
-                              />
-                            </View>
-                          )}
+                          <View>
+                            <Menu.Item
+                              onPress={() => {
+                                this.props.goToPropertyComments(data)
+                              }}
+                              title="Comments"
+                            />
+                            <Menu.Item
+                              onPress={() => {
+                                propertyGeoTagging(data)
+                              }}
+                              title="GeoTag"
+                            />
+                            <Menu.Item
+                              onPress={() => {
+                                this.props.deleteProperty(data)
+                              }}
+                              title="Remove from the list"
+                            />
+                          </View>
+                        )}
                       </View>
                     ) : (
-
-                        <View>
-                          <Menu.Item
-                            onPress={() => {
-                              bookAnotherViewing(data)
-                            }}
-                            title="Book Another Viewing"
-                          />
-                          <Menu.Item
-                            onPress={() => {
-                              propertyGeoTagging(data)
-                            }}
-                            title="GeoTag"
-                          />
-                          <Menu.Item
-                            onPress={() => {
-                              this.props.goToPropertyComments(data)
-                            }}
-                            title="Comments"
-                          />
-                        </View>
-                      )}
+                      <View>
+                        <Menu.Item
+                          onPress={() => {
+                            bookAnotherViewing(data)
+                          }}
+                          title="Book Another Viewing"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            propertyGeoTagging(data)
+                          }}
+                          title="GeoTag"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.goToPropertyComments(data)
+                          }}
+                          title="Comments"
+                        />
+                      </View>
+                    )}
                   </View>
                 </Menu>
               </View>
@@ -407,8 +464,8 @@ class MatchTile extends React.Component {
                 />
               </View>
             ) : (
-                <View />
-              )}
+              <View />
+            )}
             <View style={{ flexDirection: 'row-reverse' }}>
               <FontAwesome
                 onPress={() => {
@@ -430,6 +487,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
+    lead: store.lead.lead,
   }
 }
 

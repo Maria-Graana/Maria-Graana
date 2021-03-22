@@ -80,6 +80,7 @@ class PropertyRCMPayment extends React.Component {
       tokenMenu: false,
       editTextInput: true,
       assignToAccountsLoading: false,
+      rentMonthlyToggle: false,
     }
   }
 
@@ -996,6 +997,13 @@ class PropertyRCMPayment extends React.Component {
     })
   }
 
+  toggleMonthlyDetails = () => {
+    const { rentMonthlyToggle } = this.state
+    this.setState({
+      rentMonthlyToggle: !rentMonthlyToggle,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1020,8 +1028,6 @@ class PropertyRCMPayment extends React.Component {
       tokenPriceFromat,
       agreeAmountFromat,
       monthlyFormatStatus,
-      meetings,
-      callModal,
       modalValidation,
       addPaymentLoading,
       deletePaymentVisible,
@@ -1032,8 +1038,9 @@ class PropertyRCMPayment extends React.Component {
       tokenMenu,
       editTextInput,
       assignToAccountsLoading,
+      rentMonthlyToggle,
     } = this.state
-    const { navigation, user } = this.props
+    const { user } = this.props
 
     return !loading ? (
       <KeyboardAvoidingView
@@ -1195,6 +1202,8 @@ class PropertyRCMPayment extends React.Component {
                         tokenMenu={tokenMenu}
                         confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
+                        toggleMonthlyDetails={this.toggleMonthlyDetails}
+                        rentMonthlyToggle={rentMonthlyToggle}
                       />
                     )
                   ) : null}

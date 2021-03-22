@@ -124,10 +124,13 @@ class AgentTile extends React.Component {
       bookAnotherViewing,
       toggleCheckListModal,
       propertyGeoTagging,
+      lead,
       user,
+      selectForPayment,
+      showConfirmationDialog,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
-    let otherAgentdiary = this.getOtherDiary(data) || null;
+    let otherAgentdiary = this.getOtherDiary(data) || null
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
     // let showDone = this.checkDiaryStatus(data)
@@ -191,7 +194,10 @@ class AgentTile extends React.Component {
           <View style={[styles.pad5, { marginRight: 5 }]}>
             <View style={{ flexDirection: 'row', height: 20 }}>
               <View style={{ flex: 1 }}></View>
-              {screen !== 'match' && screen !== 'viewing' && screen !== 'propsure' ? (
+              {screen !== 'match' &&
+              screen !== 'viewing' &&
+              screen !== 'propsure' &&
+              screen !== 'payment' ? (
                 <Menu
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -213,6 +219,58 @@ class AgentTile extends React.Component {
                   </View>
                 </Menu>
               ) : null}
+              {screen === 'payment' && lead.shortlist_id && (
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={20}
+                    />
+                  }
+                >
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        this.props.goToPropertyComments(data)
+                      }}
+                      title="Comments"
+                    />
+                    <Menu.Item
+                      onPress={
+                        lead.shortlist_id === null
+                          ? () => selectForPayment(item)
+                          : () => showConfirmationDialog()
+                      }
+                      title="Select a Different Property"
+                    />
+                  </View>
+                </Menu>
+              )}
+              {screen === 'payment' && !lead.shortlist_id && (
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={20}
+                    />
+                  }
+                >
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        this.props.goToPropertyComments(data)
+                      }}
+                      title="Comments"
+                    />
+                  </View>
+                </Menu>
+              )}
               {screen === 'propsure' ? (
                 <Menu
                   visible={data.checkBox}
@@ -270,19 +328,18 @@ class AgentTile extends React.Component {
                         <View>
                           {ownDiary && ownDiary.status === 'pending' ? (
                             <View>
-                            
                               <Menu.Item
                                 onPress={() => {
                                   this.props.goToPropertyComments(data)
                                 }}
                                 title="Comments"
                               />
-                                 <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="GeoTag"
-                            />
+                              <Menu.Item
+                                onPress={() => {
+                                  propertyGeoTagging(data)
+                                }}
+                                title="GeoTag"
+                              />
                               <Menu.Item
                                 onPress={() => {
                                   toggleCheckListModal(true, data)
@@ -298,19 +355,18 @@ class AgentTile extends React.Component {
                             </View>
                           ) : (
                             <View>
-                              
                               <Menu.Item
                                 onPress={() => {
                                   this.props.goToPropertyComments(data)
                                 }}
                                 title="Comments"
                               />
-                                <Menu.Item
-                              onPress={() => {
-                                propertyGeoTagging(data)
-                              }}
-                              title="GeoTag"
-                            />
+                              <Menu.Item
+                                onPress={() => {
+                                  propertyGeoTagging(data)
+                                }}
+                                title="GeoTag"
+                              />
                               <Menu.Item
                                 onPress={() => {
                                   this.props.deleteProperty(data)
@@ -322,43 +378,43 @@ class AgentTile extends React.Component {
                         </View>
                       ) : (
                         <View>
-                           {
-                            otherAgentdiary ?
-                              <>
-                                <Menu.Item
-                                  onPress={() => {
-                                    propertyGeoTagging(data)
-                                  }}
-                                  title="GeoTag"
-                                />
-                                <Menu.Item
-                                  onPress={() => {
-                                    this.props.goToPropertyComments(data)
-                                  }}
-                                  title="Comments"
-                                />
-                              </> :
-                              <>
-                                <Menu.Item
-                                  onPress={() => {
-                                    bookAnotherViewing(data)
-                                  }}
-                                  title="Book Another Viewing"
-                                />
-                                <Menu.Item
-                                  onPress={() => {
-                                    propertyGeoTagging(data)
-                                  }}
-                                  title="GeoTag"
-                                />
-                                <Menu.Item
-                                  onPress={() => {
-                                    this.props.goToPropertyComments(data)
-                                  }}
-                                  title="Comments"
-                                />
-                              </>
-                          }
+                          {otherAgentdiary ? (
+                            <>
+                              <Menu.Item
+                                onPress={() => {
+                                  propertyGeoTagging(data)
+                                }}
+                                title="GeoTag"
+                              />
+                              <Menu.Item
+                                onPress={() => {
+                                  this.props.goToPropertyComments(data)
+                                }}
+                                title="Comments"
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <Menu.Item
+                                onPress={() => {
+                                  bookAnotherViewing(data)
+                                }}
+                                title="Book Another Viewing"
+                              />
+                              <Menu.Item
+                                onPress={() => {
+                                  propertyGeoTagging(data)
+                                }}
+                                title="GeoTag"
+                              />
+                              <Menu.Item
+                                onPress={() => {
+                                  this.props.goToPropertyComments(data)
+                                }}
+                                title="Comments"
+                              />
+                            </>
+                          )}
                         </View>
                       )}
                     </View>
@@ -408,6 +464,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
+    lead: store.lead.lead,
   }
 }
 

@@ -19,6 +19,7 @@ import helper from '../../helper'
 import StaticData from '../../StaticData'
 import RCMBTN from '../../components/RCMBTN'
 import RoundPlus from '../../../assets/img/roundPlus.png'
+import { setlead } from '../../actions/lead'
 import styles from './style'
 class LegalAttachment extends Component {
   attachments = []
@@ -44,6 +45,22 @@ class LegalAttachment extends Component {
   }
 
   componentWillUnmount() {}
+
+  fetchLead = () => {
+    const { dispatch, lead } = this.props
+    this.setState({ loading: true }, () => {
+      axios
+        .get(`/api/leads/byId?id=${lead.id}`)
+        .then((response) => {
+          if (response.data) {
+            dispatch(setlead(response.data))
+          }
+        })
+        .finally(() => {
+          this.setState({ loading: false })
+        })
+    })
+  }
 
   fetchDocuments = () => {
     const { route, lead } = this.props
@@ -322,8 +339,42 @@ class LegalAttachment extends Component {
     }
   }
 
+  // Request for legal services
+  showLegalRequestConfirmation = () => {
+    Alert.alert(
+      'Legal Services Request',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: () => this.requestLegalServices(),
+        },
+      ],
+      { cancelable: false }
+    )
+  }
+
+  requestLegalServices = () => {
+    const { lead, route } = this.props
+    const { shorlistedProperty } = route.params
+    axios
+      .post(`/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${shorlistedProperty.id}`)
+      .then((response) => {
+        if (response.data) {
+          this.fetchLead()
+          helper.successToast(response.data)
+        }
+      })
+      .catch((error) => {
+        helper.errorToast('Something went wrong while sending email')
+        console.log('something went wrong in /api/leads/sendLegalEmail', error)
+      })
+  }
+
   render() {
     const { legalListing, loading, showDoc, webView, showWebView } = this.state
+    const { lead } = this.props
     return (
       <View style={[AppStyles.mb1]}>
         {showWebView ? (
@@ -337,34 +388,59 @@ class LegalAttachment extends Component {
         {!loading ? (
           <View style={[styles.mainView, AppStyles.mb1]}>
             <View style={{ padding: 15 }}>
-              <RCMBTN
-                onClick={() => {}}
-                btnText={'REQUEST TRANSFER SERVICES'}
-                checkLeadClosedOrNot={false}
-                hiddenBtn={false}
-                addBorder={true}
-              />
-              <View
-                style={{
-                  height: 100,
-                  backgroundColor: '#fff',
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  borderColor: AppStyles.colors.subTextColor,
-                  padding: 10,
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text>TRANSFER SERVICES</Text>
+              {!lead.legalMailSent && (
                 <RCMBTN
-                  onClick={() => {}}
-                  btnImage={RoundPlus}
-                  btnText={'ADD LEGAL SERVICES PAYMENT'}
+                  onClick={() => {
+                    this.showLegalRequestConfirmation()
+                  }}
+                  btnText={'REQUEST TRANSFER SERVICES'}
                   checkLeadClosedOrNot={false}
                   hiddenBtn={false}
                   addBorder={true}
                 />
-              </View>
+              )}
+              {lead.legalMailSent && (
+                <View
+                  style={{
+                    backgroundColor: '#fff',
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: AppStyles.colors.subTextColor,
+                    justifyContent: 'space-between',
+                    paddingVertical: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: AppStyles.colors.primaryColor,
+                      fontFamily: AppStyles.fonts.boldFont,
+                      fontSize: 16,
+                      paddingHorizontal: 15,
+                      paddingBottom: 10,
+                    }}
+                  >
+                    TRANSFER SERVICES
+                  </Text>
+                  <View style={{ paddingHorizontal: 15 }}>
+                    <RCMBTN
+                      onClick={() => {}}
+                      btnImage={RoundPlus}
+                      btnText={'ADD LEGAL SERVICES PAYMENT'}
+                      checkLeadClosedOrNot={false}
+                      hiddenBtn={false}
+                      addBorder={true}
+                    />
+                  </View>
+                  <LegalTile
+                    data={StaticData.checkListData}
+                    index={null}
+                    submitMenu={this.submitMenu}
+                    getAttachmentFromStorage={this.getAttachmentFromStorage}
+                    downloadLegalDocs={this.downloadLegalDocs}
+                    addBorder={true}
+                  />
+                </View>
+              )}
             </View>
             <Text style={styles.mandatoryText}>Documents</Text>
             <FlatList

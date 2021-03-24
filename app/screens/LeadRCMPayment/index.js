@@ -552,6 +552,7 @@ class LeadRCMPayment extends React.Component {
 
   selectForPayment = (item) => {
     const { allProperties, lead } = this.state
+    this.toggleMenu(false, item.id)
     const selectedProperty = allProperties.filter((property) => property.id === item.id)
     let payload = Object.create({})
     payload.shortlist_id = selectedProperty[0].id
@@ -1410,8 +1411,11 @@ class LeadRCMPayment extends React.Component {
   }
 
   closeLegalDocument = (addedBy) => {
+    const { allProperties } = this.state
+    const selectedProperty = allProperties[0]
     this.props.navigation.navigate('LegalAttachments', {
       addedBy: addedBy,
+      shorlistedProperty: selectedProperty,
     })
   }
 

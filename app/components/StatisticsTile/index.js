@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native'
 const StatisticsTile = ({value, title}) => {
     return (
         <View style={styles.mainContainer}>
-            <Text style={styles.value}>{value}</Text>
+            <Text style={styles.value}>{value ? value : 'No Data'}</Text>
             <Text style={styles.title}>{title}</Text>
         </View>
     )

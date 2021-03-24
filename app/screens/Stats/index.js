@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { Component } from 'react'
 import { View, Text, Button, SafeAreaView, StatusBar, ScrollView } from 'react-native'
+import * as Linking from 'expo-linking';
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles';
 import Loader from '../../components/loader';
@@ -19,6 +20,8 @@ class Stats extends Component {
 
     componentDidMount() {
         this.getUserStatistics()
+        this._handleDeepLink()     // if app is not in opened state this function is executed for deep linking
+        this._addLinkingListener(); // if app is in foreground, this function is called for deep linking
     }
 
 
@@ -46,6 +49,54 @@ class Stats extends Component {
         const { navigation } = this.props;
         navigation.navigate('Landing');
     }
+
+    _handleDeepLink = () => {
+        const { navigation } = this.props;
+        Linking.getInitialURL().then(async (url) => {
+          const { path } = await Linking.parseInitialURLAsync(url)
+          const pathArray = path?.split('/') ?? []
+          if (pathArray && pathArray.length) {
+            const leadId = pathArray[pathArray.length - 1];
+            const purposeTab = pathArray.includes('cmLead')
+              ? 'invest'
+              : pathArray.includes('rcmLead') && pathArray.includes('buy')
+                ? 'sale'
+                : pathArray.includes('rcmLead') && pathArray.includes('rent')
+                  ? 'rent'
+                  : ''
+            pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
+              purposeTab,
+              lead: { id: leadId },
+            })
+              : null
+          }
+        })
+      }
+
+      _handleRedirectInForeground = (event) => {
+        const { navigation } = this.props;
+        const { path } = Linking.parse(event.url)
+        const pathArray = path?.split('/') ?? []
+        if (pathArray && pathArray.length) {
+          const leadId = pathArray[pathArray.length - 1];
+          const purposeTab = pathArray.includes('cmLead')
+            ? 'invest'
+            : pathArray.includes('rcmLead') && pathArray.includes('buy')
+              ? 'sale'
+              : pathArray.includes('rcmLead') && pathArray.includes('rent')
+                ? 'rent'
+                : ''
+          pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
+            purposeTab,
+            lead: { id: leadId },
+          })
+            : null
+        }
+      }
+    
+      _addLinkingListener = () => {
+        Linking.addEventListener('url', this._handleRedirectInForeground)
+      }
 
     render() {
         const { loading, userStatistics } = this.state;

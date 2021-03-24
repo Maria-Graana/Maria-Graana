@@ -59,7 +59,7 @@ class Stats extends Component {
                         <StatisticsTile title={'Daily Average Response Time'} value={userStatistics.avgTime} />
                         <StatisticsTile title={'Total Listings in their Area'} value={userStatistics.geoTaggedListing} />
                         <StatisticsTile title={'Total Geotagged listings in their Area'} value={userStatistics.listing} />
-                        <StatisticsTile title={'Lead Conversion Ratio (won/assigned)'} value={ this.showLeadWonAssignedPercentage(userStatistics.won, userStatistics.totalLeads) } />
+                        <StatisticsTile title={`Lead Conversion Ratio (${userStatistics.won}) / (${userStatistics.totalLeads})`} value={ this.showLeadWonAssignedPercentage(userStatistics.won, userStatistics.totalLeads) } />
                     </ScrollView>
                     <View style={styles.continueContainer}>
                         <TouchableButton

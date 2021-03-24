@@ -51,12 +51,9 @@ import Stats from '../screens/Stats'
 
 const Stack = createStackNavigator()
 
-const headerStyle = {
+const headerStatisticsStyle = {
   headerStyle: {
-    borderBottomWidth: 0,
-    elevation: 0,
-    shadowOpacity: 0,
-    backgroundColor: AppStyles.colors.backgroundColor,
+    height: 120,
   },
 }
 const landingHeader = {
@@ -71,11 +68,15 @@ const landingHeader = {
 function MainStack() {
   return (
     <Stack.Navigator>
-       <Stack.Screen
+      <Stack.Screen
         name="Stats"
         component={Stats}
         options={({ navigation, route }) => ({
-          ...landingHeader,
+          ...headerStatisticsStyle,
+          headerTitleStyle: {
+            fontFamily: AppStyles.fonts.boldFont,
+            fontSize: 28,
+          },
           title: 'Statistics',
           headerLeft: (props) => null,
           headerRight: (props) => null,

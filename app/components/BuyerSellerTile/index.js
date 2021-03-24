@@ -15,7 +15,7 @@ class BuyerSellerTile extends React.Component {
 
   checkReadOnlyMode = () => {
     const { isLeadClosed, singleCommission, commissionNotApplicableBuyerSeller } = this.props
-    if (isLeadClosed || singleCommission || commissionNotApplicableBuyerSeller) {
+    if (isLeadClosed || commissionNotApplicableBuyerSeller) {
       return true
     } else return false
   }
@@ -38,6 +38,7 @@ class BuyerSellerTile extends React.Component {
       RCMBTNTitle,
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
+
     return (
       <View style={styles.tileView}>
         <View style={styles.titleView}>
@@ -48,8 +49,7 @@ class BuyerSellerTile extends React.Component {
               thumbColor={false ? AppStyles.colors.primaryColor : '#fff'}
               ios_backgroundColor="#81b0ff"
               onValueChange={() => setComissionApplicable(!commissionNotApplicableBuyerSeller)}
-              value={commissionNotApplicableBuyerSeller ? true : false}
-              // value={false}
+              value={commissionNotApplicableBuyerSeller ? false : true}
               style={styles.switchView}
             />
           )}

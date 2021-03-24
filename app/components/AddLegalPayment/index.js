@@ -15,11 +15,11 @@ import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
 
-const AddRCMPaymentModal = ({
+const AddLegalPaymentModal = ({
   onModalCloseClick,
   handleCommissionChange,
   modalValidation,
-  rcmPayment,
+  legalPayment,
   goToPayAttachments,
   addPaymentLoading,
   assignToAccountsLoading,
@@ -39,7 +39,7 @@ const AddRCMPaymentModal = ({
 
   const fetchRemarks = () => {
     if (isCollapsed === false) {
-      const url = `/api/leads/paymentremarks?id=${rcmPayment.id}`
+      const url = `/api/leads/paymentremarks?id=${legalPayment.id}`
       axios
         .get(url)
         .then((response) => {
@@ -56,7 +56,7 @@ const AddRCMPaymentModal = ({
     }
   }
   return (
-    <Modal isVisible={rcmPayment.visible}>
+    <Modal isVisible={legalPayment.visible}>
       <View style={styles.modalMain}>
         <View style={styles.topHeader}>
           <Text style={styles.headingText}>Enter Details</Text>
@@ -78,28 +78,28 @@ const AddRCMPaymentModal = ({
             fromatName={false}
             placeholder={'Enter Amount'}
             label={'ENTER AMOUNT'}
-            value={rcmPayment.installmentAmount}
-            formatValue={rcmPayment.installmentAmount}
+            value={legalPayment.installmentAmount}
+            formatValue={legalPayment.installmentAmount}
             keyboardType={'numeric'}
             onChangeHandle={handleCommissionChange}
-            editable={editTextInput && rcmPayment.status !== 'pendingAccount'}
+            editable={editTextInput && legalPayment.status !== 'pendingAccount'}
           />
           {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {modalValidation === true &&
-          (rcmPayment.installmentAmount == null || rcmPayment.installmentAmount == '') ? (
+          (legalPayment.installmentAmount == null || legalPayment.installmentAmount == '') ? (
             <ErrorMessage errorMessage={'Required'} />
           ) : null}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent
                 onValueChange={handleCommissionChange}
-                enabled={rcmPayment.status !== 'pendingAccount'}
+                enabled={legalPayment.status !== 'pendingAccount'}
                 data={StaticData.fullPaymentType}
                 name={'type'}
                 placeholder="Type"
-                selectedItem={rcmPayment.type}
+                selectedItem={legalPayment.type}
               />
-              {modalValidation === true && rcmPayment.type == '' && (
+              {modalValidation === true && legalPayment.type == '' && (
                 <ErrorMessage errorMessage={'Required'} />
               )}
             </View>
@@ -110,13 +110,13 @@ const AddRCMPaymentModal = ({
             fromatName={false}
             placeholder={'Details'}
             label={'DETAILS'}
-            value={rcmPayment.details != '' ? rcmPayment.details : ''}
-            editable={rcmPayment.status !== 'pendingAccount'}
+            value={legalPayment.details != '' ? legalPayment.details : ''}
+            editable={legalPayment.status !== 'pendingAccount'}
             formatValue={''}
             onChangeHandle={handleCommissionChange}
           />
 
-          {rcmPayment.id && (
+          {legalPayment.id && (
             <TouchableOpacity
               disabled={loading}
               style={styles.addPaymentBtn}
@@ -156,21 +156,21 @@ const AddRCMPaymentModal = ({
             )
           ) : null}
 
-          {rcmPayment.installmentAmount != null &&
-            rcmPayment.installmentAmount != '' &&
-            rcmPayment.type != '' && (
+          {legalPayment.installmentAmount != null &&
+            legalPayment.installmentAmount != '' &&
+            legalPayment.type != '' && (
               <TouchableOpacity
                 style={[
                   styles.addPaymentBtn,
                   {
-                    backgroundColor: rcmPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                    backgroundColor: legalPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
                     borderColor:
-                      rcmPayment.status === 'pendingAccount'
+                      legalPayment.status === 'pendingAccount'
                         ? '#8baaef'
                         : AppStyles.colors.primaryColor,
                   },
                 ]}
-                disabled={rcmPayment.status === 'pendingAccount'}
+                disabled={legalPayment.status === 'pendingAccount'}
                 onPress={() => {
                   goToPayAttachments()
                 }}
@@ -180,7 +180,7 @@ const AddRCMPaymentModal = ({
                     styles.addPaymentBtnText,
                     {
                       color:
-                        rcmPayment.status === 'pendingAccount'
+                        legalPayment.status === 'pendingAccount'
                           ? '#f3f5f7'
                           : AppStyles.colors.primaryColor,
                     },
@@ -191,17 +191,17 @@ const AddRCMPaymentModal = ({
               </TouchableOpacity>
             )}
 
-          {rcmPayment.status && rcmPayment.paymentCategory !== 'token' ? (
+          {legalPayment.status && legalPayment.paymentCategory !== 'token' ? (
             <TouchableButton
               disabled={
-                rcmPayment.status !== 'open' &&
-                rcmPayment.status !== 'pendingSales' &&
-                rcmPayment.status !== 'notCleared'
+                legalPayment.status !== 'open' &&
+                legalPayment.status !== 'pendingSales' &&
+                legalPayment.status !== 'notCleared'
               }
               containerBackgroundColor={
-                rcmPayment.status === 'open' ||
-                rcmPayment.status === 'pendingSales' ||
-                rcmPayment.status === 'notCleared'
+                legalPayment.status === 'open' ||
+                legalPayment.status === 'pendingSales' ||
+                legalPayment.status === 'notCleared'
                   ? AppStyles.colors.primaryColor
                   : '#8baaef'
               }
@@ -211,18 +211,18 @@ const AddRCMPaymentModal = ({
                   width: '100%',
                   marginVertical: 15,
                   borderColor:
-                    rcmPayment.status === 'open' ||
-                    rcmPayment.status === 'pendingSales' ||
-                    rcmPayment.status === 'notCleared'
+                    legalPayment.status === 'open' ||
+                    legalPayment.status === 'pendingSales' ||
+                    legalPayment.status === 'notCleared'
                       ? AppStyles.colors.primaryColor
                       : '#8baaef',
                 },
               ]}
               label={'ASSIGN TO ACCOUNTS'}
               textColor={
-                rcmPayment.status === 'open' ||
-                rcmPayment.status === 'pendingSales' ||
-                rcmPayment.status === 'notCleared'
+                legalPayment.status === 'open' ||
+                legalPayment.status === 'pendingSales' ||
+                legalPayment.status === 'notCleared'
                   ? '#fff'
                   : '#f3f5f7'
               }
@@ -240,16 +240,16 @@ const AddRCMPaymentModal = ({
                 width: '100%',
                 marginVertical: 15,
                 borderColor:
-                  rcmPayment.status !== 'pendingAccount'
+                  legalPayment.status !== 'pendingAccount'
                     ? AppStyles.colors.primaryColor
                     : '#8baaef',
               },
             ]}
             containerBackgroundColor={
-              rcmPayment.status !== 'pendingAccount' ? AppStyles.colors.primaryColor : '#8baaef'
+              legalPayment.status !== 'pendingAccount' ? AppStyles.colors.primaryColor : '#8baaef'
             }
-            textColor={rcmPayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
-            disabled={rcmPayment.status === 'pendingAccount'}
+            textColor={legalPayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
+            disabled={legalPayment.status === 'pendingAccount'}
             label={'OK'}
             fontFamily={AppStyles.fonts.boldFont}
             fontSize={18}
@@ -264,11 +264,11 @@ const AddRCMPaymentModal = ({
 
 mapStateToProps = (store) => {
   return {
-    rcmPayment: store.RCMPayment.RCMPayment,
+    legalPayment: store.LegalPayment.LegalPayment,
   }
 }
 
-export default connect(mapStateToProps)(AddRCMPaymentModal)
+export default connect(mapStateToProps)(AddLegalPaymentModal)
 
 const styles = StyleSheet.create({
   modalMain: {

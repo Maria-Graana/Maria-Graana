@@ -907,7 +907,7 @@ export default StaticData = {
     },
   ],
   checkListData: {
-    category: 'checklist',
+    category: 'legal_checklist',
     name: 'CHECKLIST',
     status: 'pending',
     fileKey: null,

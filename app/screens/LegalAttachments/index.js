@@ -6,6 +6,7 @@ import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
 import * as Permissions from 'expo-permissions'
+import { ActionSheet } from 'native-base'
 import React, { Component } from 'react'
 import { Alert, FlatList, Text, View } from 'react-native'
 import { connect } from 'react-redux'
@@ -14,13 +15,20 @@ import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import LegalTile from '../../components/LegalTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
+import { setLegalPayment } from '../../actions/legalPayment'
 import ViewDocs from '../../components/ViewDocs'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import RCMBTN from '../../components/RCMBTN'
 import RoundPlus from '../../../assets/img/roundPlus.png'
+import AddLegalPaymentModal from '../../components/AddLegalPayment'
 import { setlead } from '../../actions/lead'
+import CommissionTile from '../../components/CommissionTile'
+import DeleteModal from '../../components/DeleteModal'
 import styles from './style'
+
+var BUTTONS = ['Delete', 'Cancel']
+var CANCEL_INDEX = 1
 class LegalAttachment extends Component {
   attachments = []
   constructor(props) {
@@ -37,14 +45,42 @@ class LegalAttachment extends Component {
       loading: false,
       showWebView: false,
       showDoc: false,
+      buyerNotZero: false,
+      modalValidation: false,
+      addPaymentLoading: false,
+      assignToAccountsLoading: false,
+      checkListDoc: null,
+      legalPayment: null,
+      editable: false,
+      legalServicesFee: null,
     }
   }
 
   componentDidMount() {
+    this.fetchLead()
     this.fetchDocuments()
+    this.fetchLegalPaymentInfo()
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    this.clearReduxAndStateValues()
+  }
+
+  fetchLegalPaymentInfo = () => {
+    const { dispatch, lead } = this.props
+    this.setState({ loading: true }, () => {
+      axios
+        .get(`/api/leads/legalPayment`)
+        .then((res) => {
+          this.setState({
+            legalServicesFee: res.data,
+          })
+        })
+        .finally(() => {
+          this.setState({ loading: false })
+        })
+    })
+  }
 
   fetchLead = () => {
     const { dispatch, lead } = this.props
@@ -54,6 +90,23 @@ class LegalAttachment extends Component {
         .then((response) => {
           if (response.data) {
             dispatch(setlead(response.data))
+            if (response.data.legalMailSent) {
+              const { legalDocuments, commissions } = response.data
+              let newcheckListDoc =
+                legalDocuments &&
+                legalDocuments.length &&
+                _.find(legalDocuments, (item) => {
+                  return item.category === 'legal_checklist'
+                })
+              let newlegalPayment =
+                commissions &&
+                commissions.length &&
+                _.find(commissions, (item) => {
+                  return item.paymentCategory === 'legal_payment'
+                })
+              newcheckListDoc.name = 'CHECKLIST'
+              this.setState({ checkListDoc: newcheckListDoc, legalPayment: newlegalPayment })
+            }
           }
         })
         .finally(() => {
@@ -122,6 +175,7 @@ class LegalAttachment extends Component {
 
   uploadAttachment = (legalAttachment) => {
     const { route, lead } = this.props
+    const { checkListDoc } = this.state
     let attachment = {
       name: legalAttachment.fileName,
       type: 'file/' + legalAttachment.fileName.split('.').pop(),
@@ -130,13 +184,14 @@ class LegalAttachment extends Component {
     let fd = new FormData()
     fd.append('file', attachment)
     // ====================== API call for Attachments base on Payment ID
+    let url = `/api/leads/legalDocuments?leadId=${lead.id}&category=${legalAttachment.category}&addedBy=${route.params.addedBy}`
+    if (legalAttachment.category === 'legal_checklist')
+      url = `/api/leads/checklist?id=${checkListDoc.id}&addedBy=${route.params.addedBy}`
     axios
-      .post(
-        `/api/leads/legalDocuments?leadId=${lead.id}&category=${legalAttachment.category}&addedBy=${route.params.addedBy}`,
-        fd
-      )
+      .post(url, fd)
       .then((res) => {
         if (res.data) {
+          this.fetchLead()
           this.fetchDocuments()
         }
       })
@@ -150,6 +205,7 @@ class LegalAttachment extends Component {
     axios
       .delete(`/api/leads/legalDocument?id=${item.id}`)
       .then((res) => {
+        this.fetchLead()
         this.fetchDocuments()
       })
       .catch((error) => {
@@ -247,6 +303,7 @@ class LegalAttachment extends Component {
         status: 'pending_legal',
       })
       .then((res) => {
+        this.fetchLead()
         this.fetchDocuments()
       })
       .catch((error) => {
@@ -257,7 +314,6 @@ class LegalAttachment extends Component {
   // *******  DownLoad Legal Documents Functions  *************
   downloadLegalDocs = async (doc) => {
     if (doc) {
-      console.log('downloadLegalDocs')
       helper.warningToast('File Downloading...')
       axios
         .get(`/api/leads/legalDocument?id=${doc.id}`, {
@@ -357,9 +413,11 @@ class LegalAttachment extends Component {
 
   requestLegalServices = () => {
     const { lead, route } = this.props
-    const { shorlistedProperty } = route.params
+    const { shorlistedProperty, addedBy } = route.params
     axios
-      .post(`/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${shorlistedProperty.id}`)
+      .post(
+        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${shorlistedProperty.id}&addedBy=${addedBy}`
+      )
       .then((response) => {
         if (response.data) {
           this.fetchLead()
@@ -372,11 +430,287 @@ class LegalAttachment extends Component {
       })
   }
 
-  render() {
-    const { legalListing, loading, showDoc, webView, showWebView } = this.state
+  // *********** Legal Payment WorkFlow ******************
+
+  clearReduxAndStateValues = () => {
+    const { dispatch } = this.props
+    const newData = {
+      installmentAmount: null,
+      type: '',
+      rcmLeadId: null,
+      details: '',
+      visible: false,
+      paymentAttachments: [],
+    }
+    this.setState({
+      modalValidation: false,
+      addPaymentLoading: false,
+      assignToAccountsLoading: false,
+      editable: false,
+    })
+    dispatch(setLegalPayment({ ...newData }))
+  }
+
+  onAddCommissionPayment = (addedBy, paymentCategory) => {
+    const { dispatch, legalPayment } = this.props
+    dispatch(setLegalPayment({ ...legalPayment, visible: true, addedBy, paymentCategory }))
+  }
+
+  onModalCloseClick = () => {
+    this.clearReduxAndStateValues()
+  }
+
+  handleCommissionChange = (value, name) => {
+    const { legalPayment, dispatch } = this.props
+    const newSecondFormData = { ...legalPayment, visible: legalPayment.visible }
+    newSecondFormData[name] = value
+    this.setState({ buyerNotZero: false })
+    dispatch(setLegalPayment(newSecondFormData))
+  }
+
+  setCommissionEditData = (data) => {
+    const { dispatch } = this.props
+    this.setState({ editable: true })
+    dispatch(setLegalPayment({ ...data, visible: true }))
+  }
+
+  goToPayAttachments = () => {
+    const { legalPayment, dispatch, navigation } = this.props
+    dispatch(setLegalPayment({ ...legalPayment, visible: false }))
+    navigation.navigate('LegalPaymentAttachment')
+  }
+
+  uploadLegalPaymentAttachment = (paymentAttachment, paymentId) => {
+    let attachment = {
+      name: paymentAttachment.fileName,
+      type: 'file/' + paymentAttachment.fileName.split('.').pop(),
+      uri: paymentAttachment.uri,
+    }
+    let fd = new FormData()
+    fd.append('file', attachment)
+    fd.append('title', paymentAttachment.title)
+    fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
+    // ====================== API call for Attachments base on Payment ID
+    axios
+      .post(`/api/leads/paymentAttachment?id=${paymentId}`, fd)
+      .then((res) => {
+        if (res.data) {
+          this.fetchLead()
+          this.clearReduxAndStateValues()
+        }
+      })
+      .catch((error) => {
+        helper.errorToast('Attachment Error')
+      })
+  }
+
+  submitLegalPayment = () => {
+    const { legalPayment, user, lead } = this.props
+    const { editable } = this.state
+    let baseUrl = `/api/leads/project/payments`
+    if (
+      legalPayment.installmentAmount != null &&
+      legalPayment.installmentAmount != '' &&
+      legalPayment.type != ''
+    ) {
+      if (Number(legalPayment.installmentAmount) <= 0) {
+        this.setState({
+          buyerNotZero: true,
+          addPaymentLoading: false,
+          assignToAccountsLoading: false,
+        })
+        return
+      }
+      if (editable === false) {
+        // for commission addition
+        let body = {
+          ...legalPayment,
+          rcmLeadId: lead.id,
+          armsUserId: user.id,
+          // paymentCategory: 'commission',
+          addedBy: legalPayment.addedBy,
+          active: true,
+        }
+        delete body.visible
+        let toastMsg = 'Legal Payment Added'
+        let errorMsg = 'Error Adding Legal Payment'
+        axios
+          .post(baseUrl, body)
+          .then((response) => {
+            if (response.data) {
+              // check if some attachment exists so upload that as well to server with payment id.
+              if (legalPayment.paymentAttachments.length > 0) {
+                legalPayment.paymentAttachments.map((paymentAttachment) =>
+                  // payment attachments
+                  this.uploadLegalPaymentAttachment(paymentAttachment, response.data.id)
+                )
+              } else {
+                this.clearReduxAndStateValues()
+                this.fetchLead()
+                helper.successToast(toastMsg)
+              }
+            }
+          })
+          .catch((error) => {
+            this.clearReduxAndStateValues()
+            helper.errorToast(errorMsg)
+          })
+      } else {
+        // commission update mode
+        let toastMsg = 'Legal Payment Updated'
+        let errorMsg = 'Error Updating Legal Payment'
+        baseUrl = `/api/leads/project/payment` // for patch request
+        let body = { ...legalPayment }
+        let paymentID = body.id
+        delete body.visible
+        delete body.remarks
+        delete body.id
+        axios
+          .patch(`${baseUrl}?id=${paymentID}`, body)
+          .then((response) => {
+            // upload only the new attachments that do not have id with them in object.
+            const filterAttachmentsWithoutId = legalPayment.paymentAttachments
+              ? _.filter(legalPayment.paymentAttachments, (item) => {
+                  return !_.has(item, 'id')
+                })
+              : []
+            if (filterAttachmentsWithoutId.length > 0) {
+              filterAttachmentsWithoutId.map((item, index) => {
+                // payment attachments
+                this.uploadLegalPaymentAttachment(item, paymentID)
+              })
+            } else {
+              this.fetchLead()
+              this.clearReduxAndStateValues()
+              helper.successToast(toastMsg)
+            }
+          })
+          .catch((error) => {
+            helper.errorToast(errorMsg)
+            console.log('ERROR: ', error)
+            this.clearReduxAndStateValues()
+          })
+      }
+    } else {
+      // Installment amount or type is missing so validation goes true, show error
+      this.setState({
+        modalValidation: true,
+      })
+    }
+  }
+
+  assignToAccounts = () => {
+    Alert.alert(
+      'Assign to Accounts',
+      'Are you sure you want to assign this payment to accounts?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            const { legalPayment, dispatch } = this.props
+            await dispatch(
+              setLegalPayment({ ...legalPayment, visible: false, status: 'pendingAccount' })
+            )
+            this.setState({ assignToAccountsLoading: true }, () => {
+              this.submitLegalPayment()
+            })
+          },
+        },
+      ],
+      { cancelable: false }
+    )
+  }
+
+  onPaymentLongPress = (data) => {
+    const { dispatch } = this.props
+    dispatch(setLegalPayment({ ...data }))
+    ActionSheet.show(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Select an Option',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          //Delete
+          this.showHideDeletePayment(true)
+        }
+      }
+    )
+  }
+
+  deletePayment = async (reason) => {
+    const { legalPayment } = this.props
+    this.showHideDeletePayment(false)
+    const url = `/api/leads/payment?id=${legalPayment.id}&reason=${reason}`
+    const response = await axios.delete(url)
+    if (response.data) {
+      this.clearReduxAndStateValues()
+      this.fetchLead()
+      helper.successToast(response.data.message)
+    } else {
+      helper.errorToast('ERROR DELETING PAYMENT!')
+    }
+  }
+
+  showHideDeletePayment = (val) => {
+    this.setState({ deletePaymentVisible: val })
+  }
+
+  checkReadOnlyMode = () => {
     const { lead } = this.props
+    const isLeadClosed =
+      lead.status === StaticData.Constants.lead_closed_lost ||
+      lead.status === StaticData.Constants.lead_closed_won
+    if (isLeadClosed) {
+      return true
+    } else return false
+  }
+
+  render() {
+    const {
+      legalListing,
+      loading,
+      showDoc,
+      webView,
+      showWebView,
+      modalValidation,
+      buyerNotZero,
+      addPaymentLoading,
+      assignToAccountsLoading,
+      checkListDoc,
+      legalPayment,
+      deletePaymentVisible,
+      legalServicesFee,
+    } = this.state
+    const { lead, route } = this.props
+    let onReadOnly = this.checkReadOnlyMode()
     return (
       <View style={[AppStyles.mb1]}>
+        <AddLegalPaymentModal
+          onModalCloseClick={this.onModalCloseClick}
+          handleCommissionChange={this.handleCommissionChange}
+          modalValidation={modalValidation}
+          goToPayAttachments={() => this.goToPayAttachments()}
+          submitCommissionPayment={() => {
+            this.setState({ addPaymentLoading: true }, () => {
+              this.submitLegalPayment()
+            })
+          }}
+          addPaymentLoading={addPaymentLoading}
+          assignToAccountsLoading={assignToAccountsLoading}
+          lead={lead}
+          paymentNotZero={buyerNotZero}
+          assignToAccounts={() => {
+            this.assignToAccounts()
+          }}
+        />
+        <DeleteModal
+          isVisible={deletePaymentVisible}
+          deletePayment={(reason) => this.deletePayment(reason)}
+          showHideModal={(val) => this.showHideDeletePayment(val)}
+        />
         {showWebView ? (
           <ViewDocs
             imageView={true}
@@ -410,29 +744,54 @@ class LegalAttachment extends Component {
                     paddingVertical: 10,
                   }}
                 >
-                  <Text
-                    style={{
-                      color: AppStyles.colors.primaryColor,
-                      fontFamily: AppStyles.fonts.boldFont,
-                      fontSize: 16,
-                      paddingHorizontal: 15,
-                      paddingBottom: 10,
-                    }}
-                  >
-                    TRANSFER SERVICES
-                  </Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text
+                      style={{
+                        color: AppStyles.colors.primaryColor,
+                        fontFamily: AppStyles.fonts.boldFont,
+                        fontSize: 16,
+                        paddingHorizontal: 15,
+                        paddingBottom: 10,
+                      }}
+                    >
+                      TRANSFER SERVICES
+                    </Text>
+                    <Text
+                      style={{
+                        color: AppStyles.colors.primaryColor,
+                        fontFamily: AppStyles.fonts.boldFont,
+                        fontSize: 16,
+                        paddingHorizontal: 15,
+                        paddingBottom: 10,
+                      }}
+                    >
+                      {legalServicesFee && legalServicesFee.fee}
+                    </Text>
+                  </View>
                   <View style={{ paddingHorizontal: 15 }}>
-                    <RCMBTN
-                      onClick={() => {}}
-                      btnImage={RoundPlus}
-                      btnText={'ADD LEGAL SERVICES PAYMENT'}
-                      checkLeadClosedOrNot={false}
-                      hiddenBtn={false}
-                      addBorder={true}
-                    />
+                    {!legalPayment ? (
+                      <RCMBTN
+                        onClick={() => {
+                          this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
+                        }}
+                        btnImage={RoundPlus}
+                        btnText={'ADD LEGAL SERVICES PAYMENT'}
+                        checkLeadClosedOrNot={false}
+                        hiddenBtn={false}
+                        addBorder={true}
+                      />
+                    ) : (
+                      <CommissionTile
+                        data={legalPayment}
+                        editTile={this.setCommissionEditData}
+                        onPaymentLongPress={() => this.onPaymentLongPress(legalPayment)}
+                        commissionEdit={onReadOnly}
+                        title={legalPayment ? 'LEGAL PAYMENT' : ''}
+                      />
+                    )}
                   </View>
                   <LegalTile
-                    data={StaticData.checkListData}
+                    data={checkListDoc}
                     index={null}
                     submitMenu={this.submitMenu}
                     getAttachmentFromStorage={this.getAttachmentFromStorage}
@@ -468,8 +827,9 @@ class LegalAttachment extends Component {
 }
 mapStateToProps = (store) => {
   return {
-    rcmPayment: store.RCMPayment.RCMPayment,
+    legalPayment: store.LegalPayment.LegalPayment,
     lead: store.lead.lead,
+    user: store.user.user,
   }
 }
 export default connect(mapStateToProps)(LegalAttachment)

@@ -47,6 +47,7 @@ import AssignedAreas from '../screens/AssignAreas'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import PropsureAttachment from '../screens/PropsureAttachment'
 import LegalAttachments from '../screens/LegalAttachments'
+import LegalPaymentAttachment from '../screens/LegalPaymentAttachment'
 
 const Stack = createStackNavigator()
 
@@ -434,6 +435,15 @@ function MainStack() {
         component={LegalAttachments}
         options={({ navigation, route }) => ({
           title: 'LEGAL DOCUMENT',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="LegalPaymentAttachment"
+        component={LegalPaymentAttachment}
+        options={({ navigation, route }) => ({
+          title: 'ATTACHMENTS',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}

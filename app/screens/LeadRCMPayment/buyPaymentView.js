@@ -59,11 +59,6 @@ class BuyPaymentView extends React.Component {
       property.assigned_to_armsuser_id === user.id || !Ability.canEdit(subRole, 'Leads')
         ? true
         : false
-    // if (sellerCommission === true) {
-    //   if (property.origin === null) {
-    //     sellerCommission = false
-    //   }
-    // }
     let singleCommission = buyerCommission && sellerCommission ? true : false
     const buyer = _.find(
       lead.commissions,
@@ -84,23 +79,6 @@ class BuyPaymentView extends React.Component {
     if (singleCommission) showMenu = helper.showSingleBuyerTokenMenu(tokenPayment)
     return (
       <View>
-        {/* <TouchableOpacity
-          disabled={lead.legalMailSent}
-          style={[
-            styles.legalServicesButton,
-            {
-              marginTop: 10,
-              backgroundColor: lead.legalMailSent ? '#ddd' : '#fff',
-              borderColor: lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor,
-            },
-          ]}
-          onPress={() => requestLegalServices()}
-        >
-          <Text style={[styles.addPaymentBtnText]}>
-            {lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}
-          </Text>
-        </TouchableOpacity> */}
-
         <InputField
           label={'AGREED AMOUNT'}
           placeholder={'Enter Agreed Amount'}
@@ -141,17 +119,6 @@ class BuyPaymentView extends React.Component {
             onSubmitNewToken={onAddCommissionPayment}
           />
         ) : null}
-        {/* <DocTile
-          title={'Legal Process Checklist'}
-          uploadDocument={uploadDocument}
-          category={'checklist'}
-          uploadDocToServer={uploadDocToServer}
-          checkListDoc={checkListDoc}
-          legalCheckList={legalCheckList}
-          downloadLegalDocs={downloadLegalDocs}
-          deleteDoc={deleteDoc}
-          activityBool={activityBool}
-        />  */}
         <BuyerSellerTile
           singleCommission={singleCommission}
           isLeadClosed={isLeadClosed}

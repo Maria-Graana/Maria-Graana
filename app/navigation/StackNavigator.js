@@ -47,6 +47,7 @@ import AssignedAreas from '../screens/AssignAreas'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import PropsureAttachment from '../screens/PropsureAttachment'
 import LegalAttachments from '../screens/LegalAttachments'
+import Stats from '../screens/Stats'
 
 const Stack = createStackNavigator()
 
@@ -70,6 +71,17 @@ const landingHeader = {
 function MainStack() {
   return (
     <Stack.Navigator>
+       <Stack.Screen
+        name="Stats"
+        component={Stats}
+        options={({ navigation, route }) => ({
+          ...landingHeader,
+          title: 'Statistics',
+          headerLeft: (props) => null,
+          headerRight: (props) => null,
+          headerTitleAlign: 'left',
+        })}
+      />
       <Stack.Screen
         name="Landing"
         component={Landing}

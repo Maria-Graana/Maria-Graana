@@ -45,32 +45,7 @@ class Landing extends React.Component {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
     })
-    this._handleDeepLink()     // if app is not in opened state this function is executed for deep linking
     this._addLinkingListener(); // if app is in foreground, this function is called for deep linking
-  }
-
-
-  _handleDeepLink = () => {
-    const { navigation } = this.props;
-    Linking.getInitialURL().then(async (url) => {
-      const { path } = await Linking.parseInitialURLAsync(url)
-      const pathArray = path?.split('/') ?? []
-      if (pathArray && pathArray.length) {
-        const leadId = pathArray[pathArray.length - 1];
-        const purposeTab = pathArray.includes('cmLead')
-          ? 'invest'
-          : pathArray.includes('rcmLead') && pathArray.includes('buy')
-            ? 'sale'
-            : pathArray.includes('rcmLead') && pathArray.includes('rent')
-              ? 'rent'
-              : ''
-        pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
-          purposeTab,
-          lead: { id: leadId },
-        })
-          : null
-      }
-    })
   }
 
 

@@ -14,6 +14,7 @@ import TouchableInput from '../TouchableInput'
 import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
+import OfficeLocationSelector from '../OfficeLocationSelector'
 
 const AddRCMPaymentModal = ({
   onModalCloseClick,
@@ -28,6 +29,8 @@ const AddRCMPaymentModal = ({
   paymentNotZero,
   editTextInput = true,
   assignToAccounts,
+  officeLocations,
+  handleOfficeLocationChange,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -82,13 +85,13 @@ const AddRCMPaymentModal = ({
             formatValue={rcmPayment.installmentAmount}
             keyboardType={'numeric'}
             onChangeHandle={handleCommissionChange}
-            editable={editTextInput && rcmPayment.status !== 'pendingAccount'  }
+            editable={editTextInput && rcmPayment.status !== 'pendingAccount'}
           />
           {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {modalValidation === true &&
             (rcmPayment.installmentAmount == null || rcmPayment.installmentAmount == '') ? (
-              <ErrorMessage errorMessage={'Required'} />
-            ) : null}
+            <ErrorMessage errorMessage={'Required'} />
+          ) : null}
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent
@@ -152,26 +155,37 @@ const AddRCMPaymentModal = ({
                 keyExtractor={(item) => item.id.toString()}
               />
             ) : (
-                <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
-              )
+              <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
+            )
           ) : null}
 
           {rcmPayment.installmentAmount != null &&
             rcmPayment.installmentAmount != '' &&
             rcmPayment.type != '' && (
               <TouchableOpacity
-              style={[styles.addPaymentBtn, 
-                {backgroundColor: rcmPayment.status === 'pendingAccount' ?  '#8baaef' : '#fff',
-                borderColor : rcmPayment.status === 'pendingAccount' ?  '#8baaef' : AppStyles.colors.primaryColor,
-              }]}
+                style={[styles.addPaymentBtn,
+                {
+                  backgroundColor: rcmPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                  borderColor: rcmPayment.status === 'pendingAccount' ? '#8baaef' : AppStyles.colors.primaryColor,
+                }]}
                 disabled={rcmPayment.status === 'pendingAccount'}
                 onPress={() => {
                   goToPayAttachments()
                 }}
               >
-                <Text style={[styles.addPaymentBtnText, {color: rcmPayment.status === 'pendingAccount' ? '#f3f5f7' : AppStyles.colors.primaryColor }]}>ADD ATTACHMENTS</Text>
+                <Text style={[styles.addPaymentBtnText, { color: rcmPayment.status === 'pendingAccount' ? '#f3f5f7' : AppStyles.colors.primaryColor }]}>ADD ATTACHMENTS</Text>
               </TouchableOpacity>
             )}
+
+          {rcmPayment.id ? (
+            <OfficeLocationSelector
+              officeLocations={officeLocations}
+              officeLocationId={rcmPayment.officeLocationId}
+              handleOfficeLocationChange={handleOfficeLocationChange}
+              disabled={rcmPayment.status === 'pendingAccount'}
+            />
+          ) : null
+          }
 
           {
             rcmPayment.status && rcmPayment.paymentCategory !== 'token' ? <TouchableButton
@@ -180,10 +194,10 @@ const AddRCMPaymentModal = ({
               containerStyle={[styles.bookedBtn, {
                 width: '100%',
                 marginVertical: 15,
-                borderColor:(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales'  || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'
+                borderColor: (rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'
               }]}
               label={'ASSIGN TO ACCOUNTS'}
-              textColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales'  || rcmPayment.status === 'notCleared') ? '#fff' : '#f3f5f7' }
+              textColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? '#fff' : '#f3f5f7'}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={18}
               loading={assignToAccountsLoading}
@@ -194,12 +208,13 @@ const AddRCMPaymentModal = ({
 
 
           <TouchableButton
-            containerStyle={[styles.bookedBtn, { width: '100%', 
-            marginVertical: 15,
-            borderColor: (rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef'
-           }]}
-            containerBackgroundColor={( rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef' }
-            textColor={( rcmPayment.status !== 'pendingAccount') ? '#fff' : '#f3f5f7'}
+            containerStyle={[styles.bookedBtn, {
+              width: '100%',
+              marginVertical: 15,
+              borderColor: (rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef'
+            }]}
+            containerBackgroundColor={(rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef'}
+            textColor={(rcmPayment.status !== 'pendingAccount') ? '#fff' : '#f3f5f7'}
             disabled={rcmPayment.status === 'pendingAccount'}
             label={'OK'}
             fontFamily={AppStyles.fonts.boldFont}

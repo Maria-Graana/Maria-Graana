@@ -97,6 +97,8 @@ class CMPayment extends Component {
       leadCloseToggle: false,
       progressValue: 0,
       checkFirstFormToken: false,
+      officeLocations: [],
+      assignToAccountsLoading: false,
     }
   }
 
@@ -120,6 +122,7 @@ class CMPayment extends Component {
           lead && lead.unit && lead.unit.type && lead.unit.type === 'regular' ? false : true,
       })
     }
+    this.fetchOfficeLocations();
     this.fetchLead()
     this.getAllProjects()
     this.setdefaultFields(this.props.lead)
@@ -128,6 +131,25 @@ class CMPayment extends Component {
   componentWillUnmount = () => {
     this.clearReduxAndStateValues()
   }
+
+  fetchOfficeLocations = () => {
+    axios.get(`/api/user/locations`).then(response => {
+      if (response.data) {
+        this.setState({
+          officeLocations: response.data.map(item => {
+            return {
+              name: item.name,
+              value: item.id,
+            }
+          })
+        })
+      }
+    })
+      .catch((error => {
+        console.log(`/api/user/locations`, error)
+      }))
+  }
+
 
   // **************** Fetch API's Calls Start *******************
   fetchLead = async (functionCallingFor) => {
@@ -388,16 +410,6 @@ class CMPayment extends Component {
     navigation.navigate('Attachments')
   }
 
-  setCommissionEditData = (data) => {
-    const { dispatch } = this.props
-    this.setState({
-      editable: true,
-      documentModalVisible: false,
-      previousPayment: data.installmentAmount,
-    })
-    dispatch(setCMPayment({ ...data, visible: true }))
-  }
-
   handleCommissionChange = (value, name) => {
     const { CMPayment, dispatch } = this.props
     const newSecondFormData = {
@@ -428,6 +440,7 @@ class CMPayment extends Component {
       whichModalVisible: '',
       firstForm: false,
       secondForm: false,
+      officeLocationId: null,
     }
     dispatch(setCMPayment({ ...newData }))
     this.setState({
@@ -436,6 +449,7 @@ class CMPayment extends Component {
       editable: false,
       totalReportPrice: 0,
       checkFirstFormToken: false,
+      assignToAccountsLoading: false,
     })
   }
 
@@ -465,13 +479,12 @@ class CMPayment extends Component {
   }
 
   editTile = (payment) => {
-    const { dispatch } = this.props
-    dispatch(
-      setCMPayment({
-        ...payment,
-        visible: true,
-      })
-    )
+    const { dispatch, user } = this.props
+    dispatch(setCMPayment({
+      ...payment,
+      visible: true, 
+      officeLocationId: payment && payment.officeLocationId ? payment.officeLocationId : user && user.officeLocation ? user.officeLocation.id : null
+    }))
     this.setState({
       editable: true,
     })
@@ -489,7 +502,7 @@ class CMPayment extends Component {
         addPaymentLoading: true,
       })
       if (Number(CMPayment.installmentAmount) <= 0) {
-        this.setState({ buyerNotZero: true, addPaymentLoading: false })
+        this.setState({ buyerNotZero: true, addPaymentLoading: false, assignToAccountsLoading: false, })
         return
       }
       if (editable === false) {
@@ -552,8 +565,8 @@ class CMPayment extends Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = CMPayment.paymentAttachments
               ? _.filter(CMPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -621,7 +634,9 @@ class CMPayment extends Component {
           onPress: async () => {
             const { CMPayment, dispatch } = this.props
             await dispatch(setCMPayment({ ...CMPayment, visible: false, status: 'pendingAccount' }))
-            this.submitCommissionCMPayment()
+            this.setState({ assignToAccountsLoading: true }, () => {
+              this.submitCommissionCMPayment()
+            })
           },
         },
       ],
@@ -645,21 +660,21 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-    ;(newcheckPaymentPlan['rental'] =
-      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-      this.setState(
-        {
-          checkPaymentPlan: newcheckPaymentPlan,
-        },
-        () => {
-          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-          this.setState({
-            progressValue: cmProgressBar[lead.status] || 0,
-            paymentPlan: paymentArray,
-            editable: false,
-          })
-        }
-      )
+      ; (newcheckPaymentPlan['rental'] =
+        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+        this.setState(
+          {
+            checkPaymentPlan: newcheckPaymentPlan,
+          },
+          () => {
+            let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+            this.setState({
+              progressValue: cmProgressBar[lead.status] || 0,
+              paymentPlan: paymentArray,
+              editable: false,
+            })
+          }
+        )
   }
 
   handleFirstForm = (value, name) => {
@@ -996,8 +1011,13 @@ class CMPayment extends Component {
           helper.errorToast('Closed lead API failed!!')
         })
     } else {
-      ;('Please select a reason for lead closure!')
+      ; ('Please select a reason for lead closure!')
     }
+  }
+
+  handleOfficeLocation = (value) => {
+    const { CMPayment, dispatch } = this.props
+    dispatch(setCMPayment({ ...CMPayment, officeLocationId: value }))
   }
 
   render() {
@@ -1040,6 +1060,8 @@ class CMPayment extends Component {
       leftPearlSqft,
       progressValue,
       checkFirstFormToken,
+      assignToAccountsLoading,
+      officeLocations,
     } = this.state
     const { lead } = this.props
     return (
@@ -1100,6 +1122,9 @@ class CMPayment extends Component {
             paymentNotZero={buyerNotZero}
             checkFirstFormToken={checkFirstFormToken}
             assignToAccounts={() => this.assignToAccounts()}
+            officeLocations={officeLocations}
+            handleOfficeLocationChange={this.handleOfficeLocation}
+            assignToAccountsLoading={assignToAccountsLoading}
           />
           <DeleteModal
             isVisible={deletePaymentVisible}

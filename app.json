@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.21.9",
+    "version": "1.21.10",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "scheme": "arms",
@@ -38,8 +38,11 @@
         "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
+      "associatedDomains": [
+        "applinks:arms.graana.com"
+      ],
       "userInterfaceStyle": "automatic",
-      "buildNumber": "14"
+      "buildNumber": "17"
     },
     "android": {
       "package": "com.agency21.arms",
@@ -63,7 +66,30 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 7,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "arms.graana.com",
+              "pathPrefix": "/rcmLead"
+            },
+            {
+              "scheme": "https",
+              "host": "arms.graana.com",
+              "pathPrefix": "/cmLead"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
+
+      "versionCode": 9,
       "useNextNotificationsApi": true
     },
     "notification": {

@@ -41,33 +41,35 @@ class Landing extends React.Component {
 
   componentDidMount() {
     const { navigation, dispatch, contacts } = this.props
-    // this._handleDeepLink()     // if app is not in opened state this function is executed for deep linking
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
     })
-    // this._addLinkingListener(); // if app is in foreground, this function is called for deep linking
+    this._handleDeepLink()     // if app is not in opened state this function is executed for deep linking
+    this._addLinkingListener(); // if app is in foreground, this function is called for deep linking
   }
 
 
   _handleDeepLink = () => {
     const { navigation } = this.props;
-    Linking.getInitialURL().then(async (url) =>  {
+    Linking.getInitialURL().then(async (url) => {
       const { path } = await Linking.parseInitialURLAsync(url)
       const pathArray = path?.split('/') ?? []
-      const leadId = pathArray[pathArray.length - 1];
-      const purposeTab = pathArray.includes('cmLead')
-        ? 'invest'
-        : pathArray.includes('rcmLead') && pathArray.includes('buy')
-          ? 'sale'
-          : pathArray.includes('rcmLead') && pathArray.includes('rent')
-            ? 'rent'
-            : ''
-      path ? navigation.navigate('LeadDetail', {
-        purposeTab,
-        lead: { id: leadId },
-      })
-        : null
+      if (pathArray && pathArray.length) {
+        const leadId = pathArray[pathArray.length - 1];
+        const purposeTab = pathArray.includes('cmLead')
+          ? 'invest'
+          : pathArray.includes('rcmLead') && pathArray.includes('buy')
+            ? 'sale'
+            : pathArray.includes('rcmLead') && pathArray.includes('rent')
+              ? 'rent'
+              : ''
+        pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
+          purposeTab,
+          lead: { id: leadId },
+        })
+          : null
+      }
     })
   }
 
@@ -82,6 +84,7 @@ class Landing extends React.Component {
     const { navigation } = this.props;
     const { path } = Linking.parse(event.url)
     const pathArray = path?.split('/') ?? []
+    if (pathArray && pathArray.length) {
       const leadId = pathArray[pathArray.length - 1];
       const purposeTab = pathArray.includes('cmLead')
         ? 'invest'
@@ -90,11 +93,12 @@ class Landing extends React.Component {
           : pathArray.includes('rcmLead') && pathArray.includes('rent')
             ? 'rent'
             : ''
-      path ? navigation.navigate('LeadDetail', {
+      pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
         purposeTab,
         lead: { id: leadId },
       })
         : null
+    }
   }
 
   _addLinkingListener = () => {

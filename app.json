@@ -102,10 +102,10 @@
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
+            "url": "https://sentry.graana.rocks",
             "organization": "graana",
             "project": "arms-app",
-            "authToken": "5d6896d009064e5a9e31c249b59b359a96153dbf77a84b55bb9f0b7a8db5b05b",
-            "url": "https://sentry.graana.rocks"
+            "authToken": "a726176bd7354cfd93bf33a7d1b3f007ed8ad0d2d29247a8a16d4a267839deb4"
           }
         }
       ]

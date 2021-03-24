@@ -1,8 +1,12 @@
 import { StyleSheet } from 'react-native';
 export default styles = StyleSheet.create({
+    additionalScrollView:{
+        marginVertical: 25,
+    },
     continueContainer: {
-        flex: 1,
-        justifyContent: 'flex-end',
+       position: 'absolute',
+       bottom:25,
+       width: '100%',
     },
     continueButton: {
         height: 50,

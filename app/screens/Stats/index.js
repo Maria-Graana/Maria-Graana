@@ -47,7 +47,10 @@ class Stats extends Component {
 
     goToLanding = () => {
         const { navigation } = this.props;
-        navigation.navigate('Landing');
+        navigation.reset({
+            index: 0,
+            routes: [{name: 'Landing'}],
+          });
     }
 
     _handleDeepLink = () => {

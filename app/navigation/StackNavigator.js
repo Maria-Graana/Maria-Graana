@@ -78,8 +78,6 @@ function MainStack() {
             fontSize: 28,
           },
           title: 'Statistics',
-          headerLeft: (props) => null,
-          headerRight: (props) => null,
           headerTitleAlign: 'left',
         })}
       />

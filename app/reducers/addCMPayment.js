@@ -20,6 +20,7 @@ const payment = {
   whichModalVisible: '',
   firstForm: false,
   secondForm: false,
+  officeLocationId: null,
 }
 
 const CMPayment = (state = payment, action) => {

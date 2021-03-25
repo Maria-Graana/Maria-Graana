@@ -65,7 +65,7 @@ class PickerComponent extends React.Component {
       <View style={[styles.pickerMain, { backgroundColor: '#fff' }]}>
         <Ionicons
           style={[styles.arrowIcon, customIconStyle]}
-          name="ios-arrow-down"
+          name="chevron-down-outline"
           size={26}
           color={AppStyles.colors.subTextColor}
         />
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   arrowIcon: {
     position: 'absolute',
     right: 15,
-    top: 12,
+    top: 8,
     zIndex: 2,
   },
 })

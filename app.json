@@ -38,8 +38,11 @@
         "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
+      "associatedDomains": [
+        "applinks:arms.graana.com"
+      ],
       "userInterfaceStyle": "automatic",
-      "buildNumber": "14"
+      "buildNumber": "17"
     },
     "android": {
       "package": "com.agency21.arms",
@@ -63,7 +66,30 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS"
       ],
-      "versionCode": 7,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "arms.graana.com",
+              "pathPrefix": "/rcmLead"
+            },
+            {
+              "scheme": "https",
+              "host": "arms.graana.com",
+              "pathPrefix": "/cmLead"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
+
+      "versionCode": 9,
       "useNextNotificationsApi": true
     },
     "notification": {
@@ -76,10 +102,10 @@
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
+            "url": "https://sentry.graana.rocks",
             "organization": "graana",
             "project": "arms-app",
-            "authToken": "5d6896d009064e5a9e31c249b59b359a96153dbf77a84b55bb9f0b7a8db5b05b",
-            "url": "https://sentry.graana.rocks"
+            "authToken": "a726176bd7354cfd93bf33a7d1b3f007ed8ad0d2d29247a8a16d4a267839deb4"
           }
         }
       ]

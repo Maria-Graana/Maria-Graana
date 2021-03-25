@@ -10,6 +10,7 @@ const rcmPayment = {
 	paymentAttachments: [],
 	addedBy: null,
 	armsUserId: null,
+	officeLocationId: null,
 }
 
 const RCMPayment = (state = rcmPayment, action) => {

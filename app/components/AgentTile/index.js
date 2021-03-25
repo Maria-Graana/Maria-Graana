@@ -241,7 +241,7 @@ class AgentTile extends React.Component {
                     <Menu.Item
                       onPress={
                         lead.shortlist_id === null
-                          ? () => selectForPayment(item)
+                          ? () => selectForPayment(data)
                           : () => showConfirmationDialog()
                       }
                       title="Select a Different Property"

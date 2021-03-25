@@ -69,11 +69,6 @@ const RentPaymentView = (props) => {
     property.assigned_to_armsuser_id === user.id || !Ability.canView(subRole, 'Leads')
       ? true
       : false
-  // if (sellerCommission === true) {
-  //   if (property.origin === null) {
-  //     sellerCommission = false
-  //   }
-  // }
   let singleCommission = buyerCommission && sellerCommission ? true : false
   const buyer = _.find(
     lead.commissions,
@@ -92,22 +87,6 @@ const RentPaymentView = (props) => {
   if (singleCommission) showMenu = helper.showSingleBuyerTokenMenu(tokenPayment)
   return (
     <View>
-      {/* <TouchableOpacity
-        disabled={lead.legalMailSent}
-        style={[
-          styles.legalServicesButton,
-          {
-            marginTop: 10,
-            backgroundColor: lead.legalMailSent ? '#ddd' : '#fff',
-            borderColor: lead.legalMailSent ? '#ddd' : AppStyles.colors.primaryColor,
-          },
-        ]}
-        onPress={() => requestLegalServices()}
-      >
-        <Text style={[styles.addPaymentBtnText]}>
-          {lead.legalMailSent ? 'LEGAL SERVICES REQUESTED' : 'REQUEST LEGAL SERVICES'}
-        </Text>
-      </TouchableOpacity> */}
       <MonthlyTile />
       <View style={{ paddingVertical: 5 }} />
       {!tokenPayment ? (
@@ -134,17 +113,6 @@ const RentPaymentView = (props) => {
         />
       ) : null}
       {tokenPayment && <View style={{ paddingVertical: 3 }} />}
-      {/* <DocTile
-        title={'Legal Process Checklist'}
-        uploadDocument={uploadDocument}
-        category={'checklist'}
-        uploadDocToServer={uploadDocToServer}
-        checkListDoc={checkListDoc}
-        legalCheckList={legalCheckList}
-        downloadLegalDocs={downloadLegalDocs}
-        deleteDoc={deleteDoc}
-        activityBool={activityBool}
-      /> */}
       <RCMRentMonthlyModal
         isVisible={rentMonthlyToggle}
         closeModal={toggleMonthlyDetails}
@@ -171,7 +139,7 @@ const RentPaymentView = (props) => {
         editTile={editTile}
         lead={lead}
         commissionTitle={'Buyer Commission Payment'}
-        RCMBTNTitle={'ADD BUYER COMMISSION PAYMENT'}
+        RCMBTNTitle={'ADD COMMISSION PAYMENT'}
       />
       <BuyerSellerTile
         singleCommission={singleCommission}
@@ -188,7 +156,7 @@ const RentPaymentView = (props) => {
         editTile={sellerCommission ? editTile : true}
         lead={lead}
         commissionTitle={'Seller Commission Payment'}
-        RCMBTNTitle={'ADD SELLER COMMISSION PAYMENT'}
+        RCMBTNTitle={'ADD COMMISSION PAYMENT'}
       />
     </View>
   )

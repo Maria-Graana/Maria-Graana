@@ -10,6 +10,7 @@ import areasReducer from './areas'
 import property from './property'
 import CMPayment from './addCMPayment'
 import RCMPayment from './rcmPayment'
+import LegalPayment from './legalPayment'
 import PropsurePayment from './propsurePayment'
 
 export default combineReducers({
@@ -23,4 +24,5 @@ export default combineReducers({
   CMPayment,
   RCMPayment,
   PropsurePayment,
+  LegalPayment,
 })

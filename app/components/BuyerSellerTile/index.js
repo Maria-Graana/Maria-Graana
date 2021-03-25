@@ -15,7 +15,7 @@ class BuyerSellerTile extends React.Component {
 
   checkReadOnlyMode = () => {
     const { isLeadClosed, singleCommission, commissionNotApplicableBuyerSeller } = this.props
-    if (isLeadClosed || singleCommission || commissionNotApplicableBuyerSeller) {
+    if (isLeadClosed || commissionNotApplicableBuyerSeller) {
       return true
     } else return false
   }
@@ -38,9 +38,10 @@ class BuyerSellerTile extends React.Component {
       RCMBTNTitle,
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
+
     return (
       <View style={styles.tileView}>
-        <View style={styles.titleView}>
+        <View style={[styles.titleView, { paddingVertical: 0, paddingBottom: 10 }]}>
           <Text style={styles.titleText}>{tileTitle}</Text>
           {singleCommission && !payment && !isLeadClosed && (
             <Switch
@@ -48,15 +49,14 @@ class BuyerSellerTile extends React.Component {
               thumbColor={false ? AppStyles.colors.primaryColor : '#fff'}
               ios_backgroundColor="#81b0ff"
               onValueChange={() => setComissionApplicable(!commissionNotApplicableBuyerSeller)}
-              value={commissionNotApplicableBuyerSeller ? true : false}
-              // value={false}
+              value={commissionNotApplicableBuyerSeller ? false : true}
               style={styles.switchView}
             />
           )}
         </View>
         <RCMBTN
           onClick={() => closeLegalDocument(tileType)}
-          btnImage={RoundPlus}
+          btnImage={null}
           btnText={'LEGAL SERVICES'}
           checkLeadClosedOrNot={false}
           hiddenBtn={commissionNotApplicableBuyerSeller}
@@ -72,7 +72,7 @@ class BuyerSellerTile extends React.Component {
               title={payment ? commissionTitle : ''}
             />
           ) : (
-            <View>
+            <View style={{ paddingTop: 10 }}>
               {paymentCommission ? (
                 <RCMBTN
                   onClick={() => onAddCommissionPayment(tileType, 'commission')}

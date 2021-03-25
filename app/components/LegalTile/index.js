@@ -42,18 +42,27 @@ class LegalTile extends React.Component {
   }
 
   UploadTile = () => {
-    const { data, index, getAttachmentFromStorage } = this.props
+    const { data, index, getAttachmentFromStorage, addBorder = false } = this.props
+    let newStyle = {}
+    if (addBorder) {
+      newStyle = {
+        borderColor: AppStyles.colors.primaryColor,
+        borderWidth: 1,
+      }
+    }
     return (
       <TouchableOpacity
         onPress={() => {
           getAttachmentFromStorage(data)
         }}
-        style={styles.legalBtnView}
+        style={[styles.legalBtnView, newStyle]}
       >
         <View style={{ flexDirection: 'row', flex: 1 }}>
-          <View style={styles.badgeView}>
-            <Text style={styles.badgeText}>{index}</Text>
-          </View>
+          {index && (
+            <View style={styles.badgeView}>
+              <Text style={styles.badgeText}>{index}</Text>
+            </View>
+          )}
           <Text numberOfLines={1} style={styles.tileTitle}>
             {data.name}
           </Text>
@@ -73,13 +82,22 @@ class LegalTile extends React.Component {
   }
 
   MenuTile = () => {
-    const { data, submitMenu, downloadLegalDocs } = this.props
+    const { data, submitMenu, downloadLegalDocs, addBorder = false } = this.props
     const { menuToggle } = this.state
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)
-
+    let newStyle = {}
+    if (addBorder) {
+      newStyle = {
+        borderColor: AppStyles.colors.primaryColor,
+        borderWidth: 1,
+      }
+    }
     return (
-      <TouchableOpacity onPress={() => downloadLegalDocs(data)} style={styles.legalBtnView}>
+      <TouchableOpacity
+        onPress={() => downloadLegalDocs(data)}
+        style={[styles.legalBtnView, newStyle]}
+      >
         <AntDesign
           style={styles.checkCircle}
           name="checkcircle"
@@ -170,12 +188,21 @@ class LegalTile extends React.Component {
   }
 
   StatusTile = () => {
-    const { data, downloadLegalDocs } = this.props
+    const { data, downloadLegalDocs, addBorder = false } = this.props
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)
-
+    let newStyle = {}
+    if (addBorder) {
+      newStyle = {
+        borderColor: AppStyles.colors.primaryColor,
+        borderWidth: 1,
+      }
+    }
     return (
-      <TouchableOpacity onPress={() => downloadLegalDocs(data)} style={styles.legalBtnView}>
+      <TouchableOpacity
+        onPress={() => downloadLegalDocs(data)}
+        style={[styles.legalBtnView, newStyle]}
+      >
         <AntDesign
           style={styles.checkCircle}
           name="checkcircle"
@@ -206,12 +233,14 @@ class LegalTile extends React.Component {
     const { data } = this.props
     return (
       <View>
-        {!data.fileKey && <View>{this.UploadTile()}</View>}
-        {data.status !== 'pending' &&
+        {data && data.fileKey === null && <View>{this.UploadTile()}</View>}
+        {data &&
+          data.status !== 'pending' &&
           data.status !== 'pending_legal' &&
           data.status !== 'approved' &&
           data.fileKey !== null && <View>{this.MenuTile()}</View>}
-        {data.status &&
+        {data &&
+          data.status &&
           data.status !== 'uploaded' &&
           data.status !== 'pending' &&
           data.status !== 'rejected' &&

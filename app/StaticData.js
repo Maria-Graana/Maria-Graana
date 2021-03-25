@@ -906,6 +906,13 @@ export default StaticData = {
       id: 5,
     },
   ],
+  checkListData: {
+    category: 'legal_checklist',
+    name: 'CHECKLIST',
+    status: 'pending',
+    fileKey: null,
+    id: 5,
+  },
   legalStatuses: [
     { value: 'pending', name: 'pending' },
     { value: 'pending_legal', name: 'pending legal' },

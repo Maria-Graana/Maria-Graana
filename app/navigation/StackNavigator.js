@@ -48,15 +48,9 @@ import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import PropsureAttachment from '../screens/PropsureAttachment'
 import LegalAttachments from '../screens/LegalAttachments'
 import LegalPaymentAttachment from '../screens/LegalPaymentAttachment'
-import Stats from '../screens/Stats'
 
 const Stack = createStackNavigator()
 
-const headerStatisticsStyle = {
-  headerStyle: {
-    height: 120,
-  },
-}
 const landingHeader = {
   headerStyle: {
     borderBottomWidth: 0,
@@ -69,19 +63,6 @@ const landingHeader = {
 function MainStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Stats"
-        component={Stats}
-        options={({ navigation, route }) => ({
-          ...headerStatisticsStyle,
-          headerTitleStyle: {
-            fontFamily: AppStyles.fonts.boldFont,
-            fontSize: 28,
-          },
-          title: 'Statistics',
-          headerTitleAlign: 'left',
-        })}
-      />
       <Stack.Screen
         name="Landing"
         component={Landing}

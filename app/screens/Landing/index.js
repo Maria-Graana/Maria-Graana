@@ -21,6 +21,9 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen'
 import UpdateApp from '../../UpdateApp'
+import StatisticsTile from '../../components/StatisticsTile';
+import Loader from '../../components/loader';
+import axios from 'axios';
 
 class Landing extends React.Component {
   constructor(props) {
@@ -36,6 +39,8 @@ class Landing extends React.Component {
         'Team Diary',
         'Targets',
       ],
+      loading: true,
+      userStatistics: null,
     }
   }
 
@@ -44,7 +49,9 @@ class Landing extends React.Component {
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
+      this.getUserStatistics();
     })
+    this._handleDeepLink();
     this._addLinkingListener(); // if app is in foreground, this function is called for deep linking
   }
 
@@ -53,6 +60,29 @@ class Landing extends React.Component {
     if (prevProps.count !== this.props.count) {
       this.fetchTiles()
     }
+  }
+
+  _handleDeepLink = () => {
+    const { navigation } = this.props;
+    Linking.getInitialURL().then(async (url) => {
+      const { path } = await Linking.parseInitialURLAsync(url)
+      const pathArray = path?.split('/') ?? []
+      if (pathArray && pathArray.length) {
+        const leadId = pathArray[pathArray.length - 1];
+        const purposeTab = pathArray.includes('cmLead')
+          ? 'invest'
+          : pathArray.includes('rcmLead') && pathArray.includes('buy')
+            ? 'sale'
+            : pathArray.includes('rcmLead') && pathArray.includes('rent')
+              ? 'rent'
+              : ''
+        pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
+          purposeTab,
+          lead: { id: leadId },
+        })
+          : null
+      }
+    })
   }
 
   _handleRedirectInForeground = (event) => {
@@ -73,6 +103,26 @@ class Landing extends React.Component {
         lead: { id: leadId },
       })
         : null
+    }
+  }
+
+  getUserStatistics = () => {
+    axios.get(`/api/user/stats`).then(response => {
+      this.setState({ userStatistics: response.data })
+    }).catch(error => {
+      console.log('error getting statistic at /api/user/stats', error)
+    })
+      .finally(() => {
+        this.setState({ loading: false })
+      })
+  }
+
+  showLeadWonAssignedPercentage = (wonLeads, assignedLeads) => {
+    if (wonLeads && assignedLeads) {
+      return `${((wonLeads / assignedLeads) * 100).toFixed(1)} %`;
+    }
+    else {
+      return null;
     }
   }
 
@@ -131,7 +181,7 @@ class Landing extends React.Component {
   }
 
   render() {
-    const { tiles } = this.state
+    const { tiles, userStatistics, loading } = this.state
     const { user, navigation } = this.props
 
     return (
@@ -163,6 +213,22 @@ class Landing extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
           />
         ) : null}
+        <View style={styles.kpiContainer}>
+          {
+            loading ?
+              <Loader loading={loading} />
+              :
+              <>
+                <Text style={styles.kpiText}>KPI:</Text>
+                <StatisticsTile title={'DART'} value={userStatistics.avgTime} />
+                <StatisticsTile title={'Listings'} value={userStatistics.listing} />
+                <StatisticsTile title={'GeoTagged'} value={userStatistics.geoTaggedListing} />
+                <StatisticsTile title={'LCR'} value={this.showLeadWonAssignedPercentage(userStatistics.won, userStatistics.totalLeads)} />
+              </>
+          }
+
+
+        </View>
         <View style={styles.btnView}>
           {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
             <TouchableOpacity

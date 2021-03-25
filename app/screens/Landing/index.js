@@ -219,7 +219,7 @@ class Landing extends React.Component {
               <Loader loading={loading} />
               :
               <>
-                <Text style={styles.kpiText}>KPI:</Text>
+                <Text style={styles.kpiText}>KPI</Text>
                 <StatisticsTile title={'DART'} value={userStatistics.avgTime} />
                 <StatisticsTile title={'Listings'} value={userStatistics.listing} />
                 <StatisticsTile title={'GeoTagged'} value={userStatistics.geoTaggedListing} />

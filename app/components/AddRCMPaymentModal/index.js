@@ -187,41 +187,47 @@ const AddRCMPaymentModal = ({
           ) : null
           }
 
-          {
-            rcmPayment.status && rcmPayment.paymentCategory !== 'token' ? <TouchableButton
-              disabled={(rcmPayment.status !== 'open' && rcmPayment.status !== 'pendingSales' && rcmPayment.status !== 'notCleared')}
-              containerBackgroundColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'}
+
+          <View style={styles.row}>
+            {
+              rcmPayment.status && rcmPayment.paymentCategory !== 'token' ? <TouchableButton
+                disabled={(rcmPayment.status !== 'open' && rcmPayment.status !== 'pendingSales' && rcmPayment.status !== 'notCleared')}
+                containerBackgroundColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'}
+                containerStyle={[styles.bookedBtn, {
+                  width: '50%',
+                  marginVertical: 15,
+                  marginRight: 10,
+                  borderColor: (rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'
+                }]}
+                label={'ASSIGN TO ACCOUNTS'}
+                textColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? '#fff' : '#f3f5f7'}
+                fontFamily={AppStyles.fonts.boldFont}
+                fontSize={16}
+                loading={assignToAccountsLoading}
+                onPress={() => assignToAccounts()}
+              />
+                : null
+            }
+
+
+            <TouchableButton
               containerStyle={[styles.bookedBtn, {
-                width: '100%',
+                width: rcmPayment.status && rcmPayment.paymentCategory !== 'token' ? '45%' : '100%',
                 marginVertical: 15,
-                borderColor: (rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'
+                borderColor: (rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef'
               }]}
-              label={'ASSIGN TO ACCOUNTS'}
-              textColor={(rcmPayment.status === 'open' || rcmPayment.status === 'pendingSales' || rcmPayment.status === 'notCleared') ? '#fff' : '#f3f5f7'}
+              containerBackgroundColor={(rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef'}
+              textColor={(rcmPayment.status !== 'pendingAccount') ? '#fff' : '#f3f5f7'}
+              disabled={rcmPayment.status === 'pendingAccount'}
+              label={'OK'}
               fontFamily={AppStyles.fonts.boldFont}
-              fontSize={18}
-              loading={assignToAccountsLoading}
-              onPress={() => assignToAccounts()}
+              fontSize={16}
+              loading={addPaymentLoading}
+              onPress={() => submitCommissionPayment()}
             />
-              : null
-          }
+          </View>
 
 
-          <TouchableButton
-            containerStyle={[styles.bookedBtn, {
-              width: '100%',
-              marginVertical: 15,
-              borderColor: (rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef'
-            }]}
-            containerBackgroundColor={(rcmPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef'}
-            textColor={(rcmPayment.status !== 'pendingAccount') ? '#fff' : '#f3f5f7'}
-            disabled={rcmPayment.status === 'pendingAccount'}
-            label={'OK'}
-            fontFamily={AppStyles.fonts.boldFont}
-            fontSize={18}
-            loading={addPaymentLoading}
-            onPress={() => submitCommissionPayment()}
-          />
 
         </View>
       </View>
@@ -276,10 +282,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
     borderRadius: 4,
-    marginBottom: 15,
+    marginVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 15,
   },
   addPaymentBtnImg: {
     resizeMode: 'contain',
@@ -395,4 +400,8 @@ const styles = StyleSheet.create({
   rotateImg: {
     transform: [{ rotate: '180deg' }],
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  }
 })

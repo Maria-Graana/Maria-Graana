@@ -27,16 +27,14 @@ export default styles = StyleSheet.create({
     fontSize: 16,
   },
   okBtn: {
-    borderWidth: 1,
-    borderColor: AppStyles.colors.primaryColor,
+    backgroundColor: AppStyles.colors.primaryColor,
     height: 60,
-    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
   },
   okBtnText: {
-    color: AppStyles.colors.primaryColor,
+    color: '#fff',
     fontFamily: AppStyles.fonts.boldFont,
     fontSize: 18,
   },

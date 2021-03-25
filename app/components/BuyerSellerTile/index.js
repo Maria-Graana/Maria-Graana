@@ -41,7 +41,7 @@ class BuyerSellerTile extends React.Component {
 
     return (
       <View style={styles.tileView}>
-        <View style={styles.titleView}>
+        <View style={[styles.titleView, { paddingVertical: 0, paddingBottom: 10 }]}>
           <Text style={styles.titleText}>{tileTitle}</Text>
           {singleCommission && !payment && !isLeadClosed && (
             <Switch
@@ -56,7 +56,7 @@ class BuyerSellerTile extends React.Component {
         </View>
         <RCMBTN
           onClick={() => closeLegalDocument(tileType)}
-          btnImage={RoundPlus}
+          btnImage={null}
           btnText={'LEGAL SERVICES'}
           checkLeadClosedOrNot={false}
           hiddenBtn={commissionNotApplicableBuyerSeller}
@@ -72,7 +72,7 @@ class BuyerSellerTile extends React.Component {
               title={payment ? commissionTitle : ''}
             />
           ) : (
-            <View>
+            <View style={{ paddingTop: 10 }}>
               {paymentCommission ? (
                 <RCMBTN
                   onClick={() => onAddCommissionPayment(tileType, 'commission')}

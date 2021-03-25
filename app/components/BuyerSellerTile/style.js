@@ -10,6 +10,7 @@ export default styles = StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
+    paddingVertical: 5,
   },
   titleView: {
     flexDirection: 'row',
@@ -17,7 +18,7 @@ export default styles = StyleSheet.create({
     paddingVertical: 10,
   },
   titleText: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
     fontFamily: AppStyles.fonts.semiBoldFont,
     fontSize: 16,
   },

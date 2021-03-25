@@ -135,8 +135,8 @@ class Login extends Component {
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           >
-            <Image style={styles.logo} source={require('../../../assets/img/login.png')} />
-            <View style={{ flex: 0.6, marginHorizontal: 15, marginTop: 25 }}>
+            <Image style={styles.logo} source={require('../../../assets/img/logo1.png')} />
+            <View style={{ flex: 0.6, marginHorizontal: 15, marginTop: 0 }}>
               <Item floatingLabel>
                 <Label
                   style={{

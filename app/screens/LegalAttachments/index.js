@@ -721,7 +721,7 @@ class LegalAttachment extends Component {
         ) : null}
         {!loading ? (
           <View style={[styles.mainView, AppStyles.mb1]}>
-            <View style={{ padding: 15 }}>
+            <View style={[styles.pad15, styles.padV15]}>
               {!lead.legalMailSent && (
                 <RCMBTN
                   onClick={() => {
@@ -734,42 +734,20 @@ class LegalAttachment extends Component {
                 />
               )}
               {lead.legalMailSent && (
-                <View
-                  style={{
-                    backgroundColor: '#fff',
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: AppStyles.colors.subTextColor,
-                    justifyContent: 'space-between',
-                    paddingVertical: 10,
-                  }}
-                >
+                <View style={styles.transferView}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.mandatoryText}>TRANSFER SERVICES</Text>
                     <Text
-                      style={{
-                        color: AppStyles.colors.primaryColor,
-                        fontFamily: AppStyles.fonts.boldFont,
-                        fontSize: 16,
-                        paddingHorizontal: 15,
-                        paddingBottom: 10,
-                      }}
+                      style={[styles.mandatoryText, { fontFamily: AppStyles.fonts.semiBoldFont }]}
                     >
-                      TRANSFER SERVICES
-                    </Text>
-                    <Text
-                      style={{
-                        color: AppStyles.colors.primaryColor,
-                        fontFamily: AppStyles.fonts.boldFont,
-                        fontSize: 16,
-                        paddingHorizontal: 15,
-                        paddingBottom: 10,
-                      }}
-                    >
-                      {legalServicesFee && legalServicesFee.fee}
+                      PKR{' '}
+                      <Text style={styles.mandatoryText}>
+                        {legalServicesFee && legalServicesFee.fee}
+                      </Text>
                     </Text>
                   </View>
-                  <View style={{ paddingHorizontal: 15 }}>
-                    {!legalPayment ? (
+                  <View style={styles.pad15}>
+                    {!legalPayment && legalServicesFee && legalServicesFee.fee === 0 ? (
                       <RCMBTN
                         onClick={() => {
                           this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
@@ -801,7 +779,7 @@ class LegalAttachment extends Component {
                 </View>
               )}
             </View>
-            <Text style={styles.mandatoryText}>Documents</Text>
+            <Text style={styles.mandatoryText}>DOCUMENTS</Text>
             <FlatList
               data={legalListing}
               renderItem={({ item, index }) => (

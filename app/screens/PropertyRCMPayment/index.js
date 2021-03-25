@@ -991,9 +991,12 @@ class PropertyRCMPayment extends React.Component {
     )
   }
 
-  closeLegalDocument = () => {
+  closeLegalDocument = (addedBy) => {
+    const { allProperties } = this.state
+    const selectedProperty = allProperties[0]
     this.props.navigation.navigate('LegalAttachments', {
-      addedBy: 'seller',
+      addedBy: addedBy,
+      shorlistedProperty: selectedProperty,
     })
   }
 

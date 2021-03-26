@@ -165,7 +165,7 @@ class PropertyDetail extends React.Component {
           ? property.lng
           : property.lon
       ownerName = this.checkUserName(property)
-      ownerPhoneNumber = property && property.customer && property.customer.phone.trim()
+      ownerPhoneNumber = property && property.customer && property.customer.phone && property.customer.phone.trim()
       address =
         property && property.customer && property.customer.address && property.customer.address
       pocName = property && property.poc_name ? property.poc_name : ''

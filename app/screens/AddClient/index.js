@@ -83,13 +83,11 @@ class AddClient extends Component {
     let contactBool = false
     let contact1Bool = false
     let contact2Bool = false
-    if (client.customerContacts.length) {
       for (let i = 0; i < client.customerContacts.length; i++) {
-        if (i === 0) phone = client.customerContacts[i].phone.substring(1)
-        if (i === 1) contact1 = client.customerContacts[i].phone.substring(1)
-        if (i === 2) contact2 = client.customerContacts[i].phone.substring(1)
+        if (i === 0) phone = client.customerContacts[i].phone ? client.customerContacts[i].phone.substring(1) : null
+        if (i === 1) contact1 =  client.customerContacts[i].phone ? client.customerContacts[i].phone.substring(1) : null
+        if (i === 2) contact2 =  client.customerContacts[i].phone ? client.customerContacts[i].phone.substring(1) : null
       }
-    }
     let result = _.map(_.where(countries), function (country) {
       return { callingCode: country.callingCode, cca2: country.cca2 }
     })
@@ -166,11 +164,11 @@ class AddClient extends Component {
   setPhoneNumber = (dialCode, phone) => {
     let number = ''
     let withoutPlus = dialCode.replace('+', '')
-    if (phone.startsWith('+')) {
-      if (phone.startsWith(dialCode)) number = phone.replace(dialCode, '')
+    if (phone && phone.startsWith('+')) {
+      if ( phone && phone.startsWith(dialCode)) number = phone.replace(dialCode, '')
       else number = phone
     } else {
-      if (phone.startsWith(withoutPlus)) number = number.replace(withoutPlus, '')
+      if (phone && phone.startsWith(withoutPlus)) number = number.replace(withoutPlus, '')
       else number = phone
     }
     return number

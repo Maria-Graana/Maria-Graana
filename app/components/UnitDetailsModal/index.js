@@ -206,6 +206,29 @@ class UnitDetailsModal extends React.Component {
             </TouchableOpacity>
             <ScrollView>
               {/* ===================== */}
+              {
+                data && data.project &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Project</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.project.name)}</Text>
+                  </View>
+                </View>
+              }
+
+              {/* ===================== */}
+              {
+                data && data.name &&
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Floor</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.name)}</Text>
+                  </View>
+                </View>
+              }
+
+
+              {/* ===================== */}
               <View style={styles.MainTileView}>
                 <View>
                   <Text style={styles.smallText}>Size</Text>
@@ -226,6 +249,40 @@ class UnitDetailsModal extends React.Component {
                   <Text style={styles.largeText}>{pearlUnitPrice}</Text>
                 </View>
               </View>
+
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Discount</Text>
+                  <Text style={styles.largeText}>
+                    {this.handleEmptyValue(formData.approvedDiscount) === ''
+                      ? '0'
+                      : this.handleEmptyValue(formData.approvedDiscount)}
+                      %
+                    </Text>
+                </View>
+              </View>
+
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Discounted Price</Text>
+                  <Text style={styles.largeText}>{formData.approvedDiscountPrice}</Text>
+                </View>
+              </View>
+
+              {/* ===================== */}
+              {data.rentPerSqFt !== null && (
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Final Price</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValueReturnZero(formData.finalPrice)}
+                    </Text>
+                  </View>
+                </View>
+              )}
+
               {/* ===================== */}
               {data.rentPerSqFt !== null && (
                 <View style={styles.MainTileView}>

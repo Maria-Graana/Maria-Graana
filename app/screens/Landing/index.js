@@ -1,6 +1,6 @@
 /** @format */
 
-import { FlatList } from 'react-native'
+import { FlatList, SafeAreaView } from 'react-native'
 import * as Linking from 'expo-linking';
 import Ability from '../../hoc/Ability'
 import AppStyles from '../../AppStyles'
@@ -10,7 +10,6 @@ import LandingTile from '../../components/LandingTile'
 import PushNotification from '../../PushNotifications'
 import AndroidNotifications from '../../AndroidNotifications'
 import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { connect } from 'react-redux'
 import { getListingsCount } from '../../actions/listings'
 import { View, TouchableOpacity, Text, Image } from 'react-native'
@@ -33,7 +32,6 @@ class Landing extends React.Component {
       tileNames: [
         'Dashboard',
         'Leads',
-        'Client',
         'InventoryTabs',
         'Diary',
         'Team Diary',
@@ -149,7 +147,7 @@ class Landing extends React.Component {
           screenName: tile,
         }
         if (label === 'Team Diary') label = "Team's Diary"
-        if (label === 'Client') label = 'Clients'
+        // if (label === 'Client') label = 'Clients'
         let oneTile = {
           id: counter,
           label: label,
@@ -185,76 +183,70 @@ class Landing extends React.Component {
     const { user, navigation } = this.props
 
     return (
-      <SafeAreaView
-        style={[
-          AppStyles.container,
-          {
-            backgroundColor: AppStyles.colors.primaryColor,
-            paddingHorizontal: wp('0%'),
-            paddingLeft: 0,
-          },
-        ]}
-      >
-        <AndroidNotifications navigation={navigation} />
-        {tiles.length ? (
-          <FlatList
-            numColumns={2}
-            data={tiles}
-            renderItem={(item, index) => (
-              <LandingTile
-                navigateFunction={this.navigateFunction}
-                pagePath={item.item.pagePath}
-                screenName={item.item.screenName}
-                badges={item.item.badges}
-                label={item.item.label}
-                imagePath={item.item.buttonImg}
+        <SafeAreaView
+          style={[AppStyles.container, styles.mainContainer]} >
+          <AndroidNotifications navigation={navigation} />
+          {tiles.length ? (
+              <FlatList
+                style={styles.scrollContainer}
+                numColumns={2}
+                data={tiles}
+                renderItem={(item, index) => (
+                  <LandingTile
+                    navigateFunction={this.navigateFunction}
+                    pagePath={item.item.pagePath}
+                    screenName={item.item.screenName}
+                    badges={item.item.badges}
+                    label={item.item.label}
+                    imagePath={item.item.buttonImg}
+                  />
+                )}
+                keyExtractor={(item, index) => item.id.toString()}
               />
-            )}
-            keyExtractor={(item, index) => item.id.toString()}
-          />
-        ) : null}
-        <View style={styles.kpiContainer}>
-          {
-            loading ?
-              <Loader loading={loading} />
-              :
-              <>
-                <Text style={styles.kpiText}>KPI</Text>
-                <StatisticsTile title={'DART'} value={userStatistics.avgTime} />
-                <StatisticsTile title={'Listings'} value={userStatistics.listing} />
-                <StatisticsTile title={'GeoTagged'} value={userStatistics.geoTaggedListing} />
-                <StatisticsTile title={'LCR'} value={this.showLeadWonAssignedPercentage(userStatistics.won, userStatistics.totalLeads)} />
-              </>
-          }
+          ) : null}
+          <View style={styles.kpiContainer}>
+            {
+              loading ?
+                <Loader loading={loading} />
+                :
+                <>
+                  <Text style={styles.kpiText}>KPI</Text>
+                  <StatisticsTile title={'DART'} value={userStatistics.avgTime} />
+                  <StatisticsTile title={'Listings'} value={userStatistics.listing} />
+                  <StatisticsTile title={'GeoTagged'} value={userStatistics.geoTaggedListing} />
+                  <StatisticsTile title={'LCR'} value={this.showLeadWonAssignedPercentage(userStatistics.won, userStatistics.totalLeads)} />
+                </>
+            }
 
 
-        </View>
-        <View style={styles.btnView}>
-          {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.navigate('AddInventory', { update: false })
-              }}
-              style={styles.btnStyle}
-            >
-              <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>Add Property</Text>
-            </TouchableOpacity>
-          ) : null}
-          {Ability.canAdd(user.subRole, 'Client') ? (
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.navigate('AddClient', { update: false })
-              }}
-              style={[styles.btnStyle, { marginLeft: 5 }]}
-            >
-              <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>Add Client</Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
-        <UpdateApp />
+          </View>
+          <View style={styles.btnView}>
+            {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.navigation.navigate('AddInventory', { update: false })
+                }}
+                style={styles.btnStyle}
+              >
+                <Image source={addIcon} style={styles.containerImg} />
+                <Text style={styles.font}>Add Property</Text>
+              </TouchableOpacity>
+            ) : null}
+            {Ability.canAdd(user.subRole, 'Client') ? (
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.navigation.navigate('AddClient', { update: false })
+                }}
+                style={[styles.btnStyle, { marginLeft: 5 }]}
+              >
+                <Image source={addIcon} style={styles.containerImg} />
+                <Text style={styles.font}>Add Client</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+          <UpdateApp />
       </SafeAreaView>
+
     )
   }
 }

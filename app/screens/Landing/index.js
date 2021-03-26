@@ -36,7 +36,7 @@ class Landing extends React.Component {
         'Client',
         'InventoryTabs',
         'Diary',
-        'Team Diary',
+       // 'Team Diary',
         'Targets',
       ],
       loading: true,

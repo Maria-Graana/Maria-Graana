@@ -6,6 +6,14 @@ import {
 } from 'react-native-responsive-screen'
 
 export default styles = StyleSheet.create({
+  mainContainer:{
+    backgroundColor: AppStyles.colors.primaryColor,
+    paddingHorizontal: wp('0%'),
+    paddingLeft: 0,
+  },
+  scrollContainer:{
+    paddingVertical: 15,
+  },
   buttonWrap: {
     marginBottom: 50,
   },
@@ -64,7 +72,7 @@ export default styles = StyleSheet.create({
     width: wp('45%'),
     position: 'absolute',
     minHeight: hp('15%'),
-    bottom: hp('20%'),
+    bottom: hp('15%'),
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
     padding: 10,

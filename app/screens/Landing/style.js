@@ -1,7 +1,19 @@
 import { StyleSheet } from 'react-native';
 import AppStyles from '../../AppStyles'
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen'
 
 export default styles = StyleSheet.create({
+  mainContainer:{
+    backgroundColor: AppStyles.colors.primaryColor,
+    paddingHorizontal: wp('0%'),
+    paddingLeft: 0,
+  },
+  scrollContainer:{
+    paddingVertical: 15,
+  },
   buttonWrap: {
     marginBottom: 50,
   },
@@ -54,5 +66,29 @@ export default styles = StyleSheet.create({
     right: 0,
     flexDirection: "row",
     marginHorizontal: 5
-  }
+  },
+  kpiContainer:{
+    backgroundColor: 'white',
+    width: wp('45%'),
+    position: 'absolute',
+    minHeight: hp('15%'),
+    bottom: hp('15%'),
+    borderTopRightRadius: 16,
+    borderBottomRightRadius: 16,
+    padding: 10,
+    left: 0,
+    shadowColor: "#000",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 9,
+    },
+    shadowOpacity: 0.48,
+    shadowRadius: 11.95,
+    elevation: 18
+  },
+  kpiText:{
+    fontSize: AppStyles.fontSize.medium, 
+    fontFamily: AppStyles.fonts.boldFont
+  },
 });

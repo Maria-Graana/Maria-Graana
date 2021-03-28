@@ -50,7 +50,7 @@ class LegalAttachment extends Component {
       addPaymentLoading: false,
       assignToAccountsLoading: false,
       checkListDoc: null,
-      legalPayment: null,
+      legalPaymentObj: null,
       editable: false,
       legalServicesFee: null,
     }
@@ -83,7 +83,7 @@ class LegalAttachment extends Component {
   }
 
   fetchLead = () => {
-    const { dispatch, lead } = this.props
+    const { dispatch, lead, route } = this.props
     this.setState({ loading: true }, () => {
       axios
         .get(`/api/leads/byId?id=${lead.id}`)
@@ -103,10 +103,13 @@ class LegalAttachment extends Component {
                 commissions &&
                 commissions.length &&
                 _.find(commissions, (item) => {
-                  return item.paymentCategory === 'legal_payment'
+                  return (
+                    item.paymentCategory === 'legal_payment' &&
+                    item.addedBy === route.params.addedBy
+                  )
                 })
               newcheckListDoc.name = 'CHECKLIST'
-              this.setState({ checkListDoc: newcheckListDoc, legalPayment: newlegalPayment })
+              this.setState({ checkListDoc: newcheckListDoc, legalPaymentObj: newlegalPayment })
             }
           }
         })
@@ -535,6 +538,7 @@ class LegalAttachment extends Component {
         delete body.visible
         let toastMsg = 'Legal Payment Added'
         let errorMsg = 'Error Adding Legal Payment'
+        console.log('post: ', body)
         axios
           .post(baseUrl, body)
           .then((response) => {
@@ -566,6 +570,7 @@ class LegalAttachment extends Component {
         delete body.visible
         delete body.remarks
         delete body.id
+        console.log('patch: ', body)
         axios
           .patch(`${baseUrl}?id=${paymentID}`, body)
           .then((response) => {
@@ -687,7 +692,7 @@ class LegalAttachment extends Component {
       addPaymentLoading,
       assignToAccountsLoading,
       checkListDoc,
-      legalPayment,
+      legalPaymentObj,
       deletePaymentVisible,
       legalServicesFee,
     } = this.state
@@ -769,11 +774,11 @@ class LegalAttachment extends Component {
                     ) : null}
                     {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
                       <CommissionTile
-                        data={legalPayment}
+                        data={legalPaymentObj}
                         editTile={this.setCommissionEditData}
-                        onPaymentLongPress={() => this.onPaymentLongPress(legalPayment)}
+                        onPaymentLongPress={() => this.onPaymentLongPress(legalPaymentObj)}
                         commissionEdit={onReadOnly}
-                        title={legalPayment ? 'LEGAL PAYMENT' : ''}
+                        title={legalPaymentObj ? 'LEGAL PAYMENT' : ''}
                       />
                     ) : null}
                   </View>

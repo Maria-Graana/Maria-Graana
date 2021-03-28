@@ -17,7 +17,7 @@ export default class HeaderLeftLeadDetail extends React.Component {
                     <TouchableOpacity onPress={() => {
                         goBack({lead, type, fromScreen, navigation})
                     }}>
-                        <Ionicons name="ios-arrow-round-back" color="#484848" size={40} style={styles.iconWrap} />
+                        <Ionicons name="md-arrow-back"  size={26} style={styles.iconWrap} />
                     </TouchableOpacity>
                 </View>
             </View>

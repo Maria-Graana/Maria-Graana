@@ -149,7 +149,7 @@ class FilterModal extends React.Component {
     const { sizeUnit, type } = StaticData
     let prices = formData.purpose === 'rent' ? StaticData.PricesRent : StaticData.PricesBuy
     return (
-      <Modal visible={openPopup} animationType="slide" onRequestClose={this.closePopup}>
+      <Modal visible={openPopup} animationType="slide" onRequestClose={this.props.filterModal}>
         <SafeAreaView style={[AppStyles.mb1, styles.container]}>
           <ScrollView>
             <View style={styles.topHeader}>

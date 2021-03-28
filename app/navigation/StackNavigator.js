@@ -51,14 +51,6 @@ import LegalPaymentAttachment from '../screens/LegalPaymentAttachment'
 
 const Stack = createStackNavigator()
 
-const headerStyle = {
-  headerStyle: {
-    borderBottomWidth: 0,
-    elevation: 0,
-    shadowOpacity: 0,
-    backgroundColor: AppStyles.colors.backgroundColor,
-  },
-}
 const landingHeader = {
   headerStyle: {
     borderBottomWidth: 0,

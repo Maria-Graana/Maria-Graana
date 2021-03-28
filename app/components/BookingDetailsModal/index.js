@@ -34,6 +34,7 @@ class BookingDetailsModal extends React.Component {
     } = this.props
     if (!data.unit) active = false
     const { unit } = data
+    console.log(data);
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <Modal isVisible={active}>
@@ -183,7 +184,7 @@ class BookingDetailsModal extends React.Component {
                 )}
                 {/* ===================== */}
                 {data.installmentDue === 'Sold on Installments Plan' ||
-                data.installmentDue === 'Sold on Monthly Installments Plan' ? (
+                  data.installmentDue === 'Sold on Monthly Installments Plan' ? (
                   <View style={styles.MainTileView}>
                     <View>
                       <Text style={styles.smallText}>Down Payment</Text>
@@ -229,8 +230,8 @@ class BookingDetailsModal extends React.Component {
                       <Text style={styles.largeText}>
                         {this.handleEmptyValue(
                           data.project &&
-                            data.project.possession_charges +
-                              `${data.project.possession_charges > 0 ? '%' : '0%'}`
+                          data.project.possession_charges +
+                          `${data.project.possession_charges > 0 ? '%' : '0%'}`
                         )}
                       </Text>
                     </View>
@@ -267,6 +268,71 @@ class BookingDetailsModal extends React.Component {
                 <Image source={times} style={styles.timesImg} />
               </TouchableOpacity>
               <ScrollView>
+                <View style={styles.MainTileView}>
+                  {/* ===================== */}
+                  <View>
+                    <Text style={styles.smallText}>Project</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValue(data.project && data.project.name)}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* ===================== */}
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Floor</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValue(data.floor && data.floor.name)}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* ===================== */}
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Pearl Name</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValue(unit && unit.name)}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* ===================== */}
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Discount</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValue(unit.discount) +
+                        `${data.unit.discount > 0 ? '%' : '0%'}`}
+                    </Text>
+                  </View>
+                </View>
+
+
+                {/* ===================== */}
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Discount Amount</Text>
+                    <Text style={styles.largeText}>
+                      {helper.currencyConvert(
+                        this.handleEmptyValueReturnZero(unit.discounted_price)
+                      )}
+                    </Text>
+                  </View>
+                </View>
+
+
+                {/* ===================== */}
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Final Price</Text>
+                    <Text style={styles.largeText}>
+                      {helper.currencyConvert(this.handleEmptyValueReturnZero(unit.finalPrice))}
+                    </Text>
+                  </View>
+                </View>
+
                 {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
@@ -311,12 +377,22 @@ class BookingDetailsModal extends React.Component {
                       <Text style={styles.largeText}>
                         {helper.currencyConvert(
                           this.handleEmptyValue(unit && unit.rentPerSqFt) *
-                            this.handleEmptyValue(unit && unit.area)
+                          this.handleEmptyValue(unit && unit.area)
                         )}
                       </Text>
                     </View>
                   </View>
                 )}
+
+                {/* ===================== */}
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Status</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValue(unit.bookingStatus)}
+                    </Text>
+                  </View>
+                </View>
               </ScrollView>
             </View>
           )}

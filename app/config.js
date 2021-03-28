@@ -12,7 +12,7 @@ const config = {
   staging: {
     apiPath: 'https://api.stage.realtor.agency21.rocks',
     mapUrl: 'https://maps.graana.rocks/api/map/',
-    graanaUrl: 'https://ssr.graana.rocks',
+    graanaUrl: 'https://ssr.staging.graana.rocks',
     channel: 'staging',
   },
   production: {

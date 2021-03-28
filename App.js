@@ -3,7 +3,7 @@
 import * as Font from 'expo-font'
 import * as Sentry from 'sentry-expo'
 import { persistor, store } from './app/store'
-import { AppLoading } from 'expo'
+import AppLoading from 'expo-app-loading';
 import Constants from 'expo-constants'
 import { Ionicons } from '@expo/vector-icons'
 import { Provider as PaperProvider } from 'react-native-paper'
@@ -80,7 +80,7 @@ export default class App extends React.Component {
     if (config.channel === 'production') {
       Sentry.init({
         enableInExpoDevelopment: false,
-        dsn: 'https://95bf407ef0f042b1b985d4efe8a8a75f@sentry.graana.rocks/8',
+        dsn: 'https://ed71a841530f479cb60896ee2db0788f@sentry.graana.rocks/7',
       })
       Sentry.setRelease(Constants.manifest.revisionId)
     }

@@ -80,6 +80,7 @@ class PropertyRCMPayment extends React.Component {
       tokenMenu: false,
       editTextInput: true,
       assignToAccountsLoading: false,
+      officeLocations: [],
       rentMonthlyToggle: false,
     }
   }
@@ -89,10 +90,12 @@ class PropertyRCMPayment extends React.Component {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
         this.getCallHistory(lead)
+        this.fetchOfficeLocations();
         this.getSelectedProperty(lead)
       } else {
         const { lead } = this.props
         this.getCallHistory(lead)
+        this.fetchOfficeLocations();
         this.getSelectedProperty(lead)
       }
     })
@@ -107,6 +110,7 @@ class PropertyRCMPayment extends React.Component {
       details: '',
       visible: false,
       paymentAttachments: [],
+      officeLocationId: null,
     }
     this.setState({
       modalValidation: false,
@@ -120,6 +124,24 @@ class PropertyRCMPayment extends React.Component {
   componentWillUnmount() {
     this.clearReduxAndStateValues()
     this._unsubscribe()
+  }
+
+  fetchOfficeLocations = () => {
+    axios.get(`/api/user/locations`).then(response => {
+      if (response.data) {
+        this.setState({
+          officeLocations: response.data.map(item => {
+             return {
+               name: item.name,
+               value:item.id,
+             }
+          })
+        })
+      }
+    })
+      .catch((error => {
+        console.log(`/api/user/locations`, error)
+      }))
   }
 
   getSelectedProperty = (lead) => {
@@ -619,7 +641,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   setCommissionEditData = (data) => {
-    const { dispatch } = this.props
+    const { dispatch, user } = this.props
     if (data.paymentCategory === 'token') {
       this.setState({
         editTextInput: false,
@@ -628,7 +650,7 @@ class PropertyRCMPayment extends React.Component {
     } else {
       this.setState({ editable: true })
     }
-    dispatch(setRCMPayment({ ...data, visible: true }))
+    dispatch(setRCMPayment({ ...data, visible: true, officeLocationId: data && data.officeLocationId ? data.officeLocationId : user && user.officeLocation ? user.officeLocation.id : null }))
   }
 
   goToPayAttachments = () => {
@@ -1000,6 +1022,11 @@ class PropertyRCMPayment extends React.Component {
     })
   }
 
+  handleOfficeLocation = (value) => {
+    const { rcmPayment, dispatch } = this.props
+    dispatch(setRCMPayment({ ...rcmPayment, officeLocationId: value }))
+  }
+
   toggleMonthlyDetails = () => {
     const { rentMonthlyToggle } = this.state
     this.setState({
@@ -1041,6 +1068,7 @@ class PropertyRCMPayment extends React.Component {
       tokenMenu,
       editTextInput,
       assignToAccountsLoading,
+      officeLocations,
       rentMonthlyToggle,
     } = this.state
     const { user } = this.props
@@ -1089,6 +1117,8 @@ class PropertyRCMPayment extends React.Component {
           lead={lead}
           paymentNotZero={buyerNotZero}
           editTextInput={editTextInput}
+          officeLocations={officeLocations}
+          handleOfficeLocationChange={this.handleOfficeLocation}
           assignToAccounts={() => this.assignToAccounts()}
         />
         <DeleteModal

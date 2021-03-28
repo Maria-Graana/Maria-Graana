@@ -90,7 +90,8 @@ class LegalAttachment extends Component {
         .then((response) => {
           if (response.data) {
             dispatch(setlead(response.data))
-            if (response.data.legalMailSent) {
+            let mailCheck = this.mailSentCheck()
+            if (mailCheck) {
               const { legalDocuments, commissions } = response.data
               let newcheckListDoc =
                 legalDocuments &&
@@ -668,6 +669,12 @@ class LegalAttachment extends Component {
     } else return false
   }
 
+  mailSentCheck = () => {
+    const { lead, route } = this.props
+    if (route.params.addedBy === 'seller') return lead.sellerLegalMail
+    else return lead.legalMailSent
+  }
+
   render() {
     const {
       legalListing,
@@ -686,6 +693,7 @@ class LegalAttachment extends Component {
     } = this.state
     const { lead, route } = this.props
     let onReadOnly = this.checkReadOnlyMode()
+    console.log('lead: ', lead)
     return (
       <View style={[AppStyles.mb1]}>
         <AddLegalPaymentModal
@@ -722,7 +730,7 @@ class LegalAttachment extends Component {
         {!loading ? (
           <View style={[styles.mainView, AppStyles.mb1]}>
             <View style={[styles.pad15, styles.padV15]}>
-              {!lead.legalMailSent && (
+              {!mailCheck ? (
                 <RCMBTN
                   onClick={() => {
                     this.showLegalRequestConfirmation()
@@ -732,8 +740,8 @@ class LegalAttachment extends Component {
                   hiddenBtn={false}
                   addBorder={true}
                 />
-              )}
-              {lead.legalMailSent && (
+              ) : null}
+              {mailCheck ? (
                 <View style={styles.transferView}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={styles.mandatoryText}>TRANSFER SERVICES</Text>
@@ -747,7 +755,7 @@ class LegalAttachment extends Component {
                     </Text>
                   </View>
                   <View style={styles.pad15}>
-                    {!legalPayment && legalServicesFee && legalServicesFee.fee === 0 ? (
+                    {!legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
                       <RCMBTN
                         onClick={() => {
                           this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
@@ -758,7 +766,8 @@ class LegalAttachment extends Component {
                         hiddenBtn={false}
                         addBorder={true}
                       />
-                    ) : (
+                    ) : null}
+                    {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
                       <CommissionTile
                         data={legalPayment}
                         editTile={this.setCommissionEditData}
@@ -766,7 +775,7 @@ class LegalAttachment extends Component {
                         commissionEdit={onReadOnly}
                         title={legalPayment ? 'LEGAL PAYMENT' : ''}
                       />
-                    )}
+                    ) : null}
                   </View>
                   <LegalTile
                     data={checkListDoc}
@@ -777,7 +786,7 @@ class LegalAttachment extends Component {
                     addBorder={true}
                   />
                 </View>
-              )}
+              ) : null}
             </View>
             <Text style={styles.mandatoryText}>DOCUMENTS</Text>
             <FlatList

@@ -122,10 +122,11 @@ class CMPayment extends Component {
           lead && lead.unit && lead.unit.type && lead.unit.type === 'regular' ? false : true,
       })
     }
-    this.fetchOfficeLocations();
+    this.fetchOfficeLocations()
     this.fetchLead()
     this.getAllProjects()
     this.setdefaultFields(this.props.lead)
+    this.validateCnic(lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null)
   }
 
   componentWillUnmount = () => {
@@ -133,23 +134,24 @@ class CMPayment extends Component {
   }
 
   fetchOfficeLocations = () => {
-    axios.get(`/api/user/locations`).then(response => {
-      if (response.data) {
-        this.setState({
-          officeLocations: response.data.map(item => {
-            return {
-              name: item.name,
-              value: item.id,
-            }
+    axios
+      .get(`/api/user/locations`)
+      .then((response) => {
+        if (response.data) {
+          this.setState({
+            officeLocations: response.data.map((item) => {
+              return {
+                name: item.name,
+                value: item.id,
+              }
+            }),
           })
-        })
-      }
-    })
-      .catch((error => {
+        }
+      })
+      .catch((error) => {
         console.log(`/api/user/locations`, error)
-      }))
+      })
   }
-
 
   // **************** Fetch API's Calls Start *******************
   fetchLead = async (functionCallingFor) => {
@@ -480,11 +482,18 @@ class CMPayment extends Component {
 
   editTile = (payment) => {
     const { dispatch, user } = this.props
-    dispatch(setCMPayment({
-      ...payment,
-      visible: true, 
-      officeLocationId: payment && payment.officeLocationId ? payment.officeLocationId : user && user.officeLocation ? user.officeLocation.id : null
-    }))
+    dispatch(
+      setCMPayment({
+        ...payment,
+        visible: true,
+        officeLocationId:
+          payment && payment.officeLocationId
+            ? payment.officeLocationId
+            : user && user.officeLocation
+            ? user.officeLocation.id
+            : null,
+      })
+    )
     this.setState({
       editable: true,
     })
@@ -502,7 +511,11 @@ class CMPayment extends Component {
         addPaymentLoading: true,
       })
       if (Number(CMPayment.installmentAmount) <= 0) {
-        this.setState({ buyerNotZero: true, addPaymentLoading: false, assignToAccountsLoading: false, })
+        this.setState({
+          buyerNotZero: true,
+          addPaymentLoading: false,
+          assignToAccountsLoading: false,
+        })
         return
       }
       if (editable === false) {
@@ -565,8 +578,8 @@ class CMPayment extends Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = CMPayment.paymentAttachments
               ? _.filter(CMPayment.paymentAttachments, (item) => {
-                return !_.has(item, 'id')
-              })
+                  return !_.has(item, 'id')
+                })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -660,21 +673,21 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-      ; (newcheckPaymentPlan['rental'] =
-        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-        this.setState(
-          {
-            checkPaymentPlan: newcheckPaymentPlan,
-          },
-          () => {
-            let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-            this.setState({
-              progressValue: cmProgressBar[lead.status] || 0,
-              paymentPlan: paymentArray,
-              editable: false,
-            })
-          }
-        )
+    ;(newcheckPaymentPlan['rental'] =
+      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+      this.setState(
+        {
+          checkPaymentPlan: newcheckPaymentPlan,
+        },
+        () => {
+          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+          this.setState({
+            progressValue: cmProgressBar[lead.status] || 0,
+            paymentPlan: paymentArray,
+            editable: false,
+          })
+        }
+      )
   }
 
   handleFirstForm = (value, name) => {
@@ -810,8 +823,8 @@ class CMPayment extends Component {
   }
 
   validateCnic = (value) => {
-    if (value.length < 15 || value === '') {
-      this.setState({ cnicValidate: true })
+    if ((value && value.length < 15) || value === '' || !value) {
+      this.setState({ cnicValidate: true, cnicEditable: true })
     } else {
       this.setState({ cnicValidate: false })
     }
@@ -1011,7 +1024,7 @@ class CMPayment extends Component {
           helper.errorToast('Closed lead API failed!!')
         })
     } else {
-      ; ('Please select a reason for lead closure!')
+      ;('Please select a reason for lead closure!')
     }
   }
 

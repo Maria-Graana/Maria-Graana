@@ -97,7 +97,9 @@ class LegalAttachment extends Component {
                 legalDocuments &&
                 legalDocuments.length &&
                 _.find(legalDocuments, (item) => {
-                  return item.category === 'legal_checklist'
+                  return (
+                    item.category === 'legal_checklist' && item.addedBy === route.params.addedBy
+                  )
                 })
               let newlegalPayment =
                 commissions &&

@@ -84,8 +84,7 @@ class CMFirstForm extends Component {
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
-    // console.log('leftPearlSqft: ', leftPearlSqft)
-    // console.log('firstFormData.pearl: ', firstFormData.pearl)
+
     return (
       <View style={styles.mainFormWrap}>
         <View style={{ paddingVertical: 10 }}>
@@ -224,9 +223,9 @@ class CMFirstForm extends Component {
             selectedItem={firstFormData.paymentPlan}
             // enabled={checkLeadClosedOrNot}
           />
-          {firstFormValidate === true &&
-            !firstFormData.paymentPlan &&
-            firstFormData.paymentPlan === 'no' && <ErrorMessage errorMessage={'Required'} />}
+          {firstFormValidate === true && firstFormData.paymentPlan === 'no' && (
+            <ErrorMessage errorMessage={'Required'} />
+          )}
         </View>
 
         {/* **************************************** */}

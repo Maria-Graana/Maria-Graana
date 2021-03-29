@@ -1665,6 +1665,7 @@ class LeadRCMPayment extends React.Component {
                         toggleMonthlyDetails={this.toggleMonthlyDetails}
                         rentMonthlyToggle={rentMonthlyToggle}
                         updateRentLead={this.updateRentLead}
+                        confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
                       />
                     )

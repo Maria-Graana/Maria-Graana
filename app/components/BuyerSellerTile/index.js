@@ -25,6 +25,7 @@ class BuyerSellerTile extends React.Component {
       setComissionApplicable,
       isLeadClosed,
       singleCommission,
+      onPaymentLongPress,
       commissionNotApplicableBuyerSeller,
       tileType,
       tileTitle,

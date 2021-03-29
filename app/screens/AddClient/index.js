@@ -462,17 +462,10 @@ class AddClient extends Component {
   }
 
   getTrimmedPhone = (number) => {
-    // let phone = number
-    // if (phone.startsWith('92')) {
-    //   phone = phone.substring(2)
-    // } else if (phone.startsWith('092')) {
-    //   phone = phone.substring(3)
-    // } else if (phone.startsWith('0092')) {
-    //   phone = phone.substring(4)
-    // } else if (phone.startsWith('03')) {
-    //   phone = phone.substring(1)
-    // }
-    return number
+    if (number.startsWith('03')) {
+      number = number.substring(1)
+    }
+    return number;
   }
 
   validate(text, type) {

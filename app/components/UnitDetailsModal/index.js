@@ -28,7 +28,6 @@ class UnitDetailsModal extends React.Component {
     var optional = []
     optional = data && data != '' && JSON.parse([optionalArray])
     var optionalObjectKey = Object.keys(optional)
-
     return (
       <Modal isVisible={active}>
         {pearlModal === false && data && data != '' && (
@@ -61,6 +60,13 @@ class UnitDetailsModal extends React.Component {
                     </View>
                   )
                 })} */}
+
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Unit Name</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.name)}</Text>
+                </View>
+              </View>
 
               {/* ===================== */}
               {optional && optional[1] && (
@@ -193,120 +199,123 @@ class UnitDetailsModal extends React.Component {
               {/* ===================== */}
             </ScrollView>
           </View>
-        )}
-        {pearlModal === true && data && data != '' && (
-          <View style={[styles.modalMain]}>
-            <TouchableOpacity
-              style={styles.timesBtn}
-              onPress={() => {
-                openUnitDetailsModal(null, false)
-              }}
-            >
-              <Image source={times} style={styles.timesImg} />
-            </TouchableOpacity>
-            <ScrollView>
-              {/* ===================== */}
-              {
-                data && data.project &&
+        )
+        }
+        {
+          pearlModal === true && data && data != '' && (
+            <View style={[styles.modalMain]}>
+              <TouchableOpacity
+                style={styles.timesBtn}
+                onPress={() => {
+                  openUnitDetailsModal(null, false)
+                }}
+              >
+                <Image source={times} style={styles.timesImg} />
+              </TouchableOpacity>
+              <ScrollView>
+                {/* ===================== */}
+                {
+                  data && data.project &&
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Project</Text>
+                      <Text style={styles.largeText}>{this.handleEmptyValue(data.project.name)}</Text>
+                    </View>
+                  </View>
+                }
+
+                {/* ===================== */}
+                {
+                  data && data.name &&
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Floor</Text>
+                      <Text style={styles.largeText}>{this.handleEmptyValue(data.name)}</Text>
+                    </View>
+                  </View>
+                }
+
+
+                {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Project</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.project.name)}</Text>
+                    <Text style={styles.smallText}>Size</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.pearl)}</Text>
                   </View>
                 </View>
-              }
-
-              {/* ===================== */}
-              {
-                data && data.name &&
+                {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Floor</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.name)}</Text>
+                    <Text style={styles.smallText}>Rate/Sqft</Text>
+                    <Text style={styles.largeText}>{PaymentMethods.findRatePerSqft(data)}</Text>
                   </View>
                 </View>
-              }
-
-
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Size</Text>
-                  <Text style={styles.largeText}>{this.handleEmptyValue(formData.pearl)}</Text>
+                {/* ===================== */}
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Unit Price</Text>
+                    <Text style={styles.largeText}>{pearlUnitPrice}</Text>
+                  </View>
                 </View>
-              </View>
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Rate/Sqft</Text>
-                  <Text style={styles.largeText}>{PaymentMethods.findRatePerSqft(data)}</Text>
-                </View>
-              </View>
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Unit Price</Text>
-                  <Text style={styles.largeText}>{pearlUnitPrice}</Text>
-                </View>
-              </View>
 
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Discount</Text>
-                  <Text style={styles.largeText}>
-                    {this.handleEmptyValue(formData.approvedDiscount) === ''
-                      ? '0'
-                      : this.handleEmptyValue(formData.approvedDiscount)}
+                {/* ===================== */}
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Discount</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValue(formData.approvedDiscount) === ''
+                        ? '0'
+                        : this.handleEmptyValue(formData.approvedDiscount)}
                       %
                     </Text>
-                </View>
-              </View>
-
-              {/* ===================== */}
-              <View style={styles.MainTileView}>
-                <View>
-                  <Text style={styles.smallText}>Discount Amount</Text>
-                  <Text style={styles.largeText}>{formData.approvedDiscountPrice}</Text>
-                </View>
-              </View>
-
-              {/* ===================== */}
-              {data.rentPerSqFt !== null && (
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Final Amount</Text>
-                    <Text style={styles.largeText}>
-                      {this.handleEmptyValueReturnZero(formData.finalPrice)}
-                    </Text>
                   </View>
                 </View>
-              )}
 
-              {/* ===================== */}
-              {data.rentPerSqFt !== null && (
+                {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Rent/Sqft</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
+                    <Text style={styles.smallText}>Discount Amount</Text>
+                    <Text style={styles.largeText}>{formData.approvedDiscountPrice}</Text>
                   </View>
                 </View>
-              )}
-              {/* ===================== */}
-              {data.rentPerSqFt !== null && (
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Rent Amount</Text>
-                    <Text style={styles.largeText}>
-                      {PaymentMethods.findRentAmount(data, formData.pearl)}
-                    </Text>
+
+                {/* ===================== */}
+                {data.rentPerSqFt !== null && (
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Final Amount</Text>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValueReturnZero(formData.finalPrice)}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              )}
-            </ScrollView>
-          </View>
-        )}
-      </Modal>
+                )}
+
+                {/* ===================== */}
+                {data.rentPerSqFt !== null && (
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Rent/Sqft</Text>
+                      <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
+                    </View>
+                  </View>
+                )}
+                {/* ===================== */}
+                {data.rentPerSqFt !== null && (
+                  <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Rent Amount</Text>
+                      <Text style={styles.largeText}>
+                        {PaymentMethods.findRentAmount(data, formData.pearl)}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </ScrollView>
+            </View>
+          )
+        }
+      </Modal >
     )
   }
 }

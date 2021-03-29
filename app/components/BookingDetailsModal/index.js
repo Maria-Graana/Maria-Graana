@@ -34,7 +34,6 @@ class BookingDetailsModal extends React.Component {
     } = this.props
     if (!data.unit) active = false
     const { unit } = data
-    console.log(data);
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <Modal isVisible={active}>

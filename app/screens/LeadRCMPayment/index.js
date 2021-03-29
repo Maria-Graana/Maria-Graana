@@ -577,31 +577,23 @@ class LeadRCMPayment extends React.Component {
 
   selectForPayment = (item) => {
     const { allProperties, lead } = this.state
-    let newMatches = allProperties.map((item) => {
-      if (item.id === id) {
-        item.checkBox = val
-        return item
-      } else return item
-    })
-    this.setState({ allProperties: newMatches }, () => {
-      const selectedProperty = allProperties.filter((property) => property.id === item.id)
-      let payload = Object.create({})
-      payload.shortlist_id = selectedProperty[0].id
-      var leadId = []
-      leadId.push(lead.id)
-      axios
-        .patch(`/api/leads`, payload, { params: { id: leadId } })
-        .then((response) => {
-          if (response.data) {
-            this.setState({ lead: response.data }, () => {
-              this.getSelectedProperty(response.data)
-            })
-          }
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    })
+    const selectedProperty = allProperties.filter((property) => property.id === item.id)
+    let payload = Object.create({})
+    payload.shortlist_id = selectedProperty[0].id
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads`, payload, { params: { id: leadId } })
+      .then((response) => {
+        if (response.data) {
+          this.setState({ lead: response.data }, () => {
+            this.getSelectedProperty(response.data)
+          })
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   selectDifferentProperty = () => {
@@ -659,7 +651,9 @@ class LeadRCMPayment extends React.Component {
         style={styles.viewButtonStyle}
         activeOpacity={0.7}
       >
-        <Text style={styles.buttonTextStyle}>SELECT FOR PAYMENT</Text>
+        <Text style={styles.buttonTextStyle}>
+          {lead.shortlist_id === null ? 'SELECT FOR PAYMENT' : 'SELECT A DIFFERENT PROPERTY'}
+        </Text>
       </TouchableOpacity>
     )
   }
@@ -1621,7 +1615,7 @@ class LeadRCMPayment extends React.Component {
                       showConfirmationDialog={this.showConfirmationDialog}
                     />
                   )}
-                  <View>{!lead.shortlist_id && this.renderSelectPaymentView(item.item)}</View>
+                  <View>{this.renderSelectPaymentView(item.item)}</View>
                 </View>
               )}
               ListFooterComponent={
@@ -1667,6 +1661,7 @@ class LeadRCMPayment extends React.Component {
                         setSellerCommissionApplicable={this.setSellerCommissionApplicable}
                         onPaymentLongPress={this.onPaymentLongPress}
                         toggleTokenMenu={this.toggleTokenMenu}
+                        tokenMenu={tokenMenu}
                         toggleMonthlyDetails={this.toggleMonthlyDetails}
                         rentMonthlyToggle={rentMonthlyToggle}
                         updateRentLead={this.updateRentLead}

@@ -289,14 +289,14 @@ class MatchTile extends React.Component {
                     }}
                     title="Comments"
                   />
-                  <Menu.Item
+                  {/* <Menu.Item
                     onPress={
                       lead.shortlist_id === null
                         ? () => selectForPayment(item)
                         : () => showConfirmationDialog()
                     }
                     title="Select a Different Property"
-                  />
+                  /> */}
                 </View>
               </Menu>
             )}

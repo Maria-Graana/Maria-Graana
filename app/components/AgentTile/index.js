@@ -238,14 +238,14 @@ class AgentTile extends React.Component {
                       }}
                       title="Comments"
                     />
-                    <Menu.Item
+                    {/* <Menu.Item
                       onPress={
                         lead.shortlist_id === null
                           ? () => selectForPayment(data)
                           : () => showConfirmationDialog()
                       }
                       title="Select a Different Property"
-                    />
+                    /> */}
                   </View>
                 </Menu>
               )}

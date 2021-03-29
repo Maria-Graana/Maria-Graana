@@ -697,8 +697,8 @@ class LegalAttachment extends Component {
       legalServicesFee,
     } = this.state
     const { lead, route } = this.props
+    let mailCheck = this.mailSentCheck()
     let onReadOnly = this.checkReadOnlyMode()
-    console.log('lead: ', lead)
     return (
       <View style={[AppStyles.mb1]}>
         <AddLegalPaymentModal

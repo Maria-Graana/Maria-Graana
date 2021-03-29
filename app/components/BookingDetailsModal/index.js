@@ -7,10 +7,18 @@ import Modal from 'react-native-modal'
 import times from '../../../assets/img/times.png'
 import PaymentMethods from '../../PaymentMethods'
 import helper from '../../helper'
+import ViewDocs from '../ViewDocs';
+import * as MediaLibrary from 'expo-media-library'
+import * as Permissions from 'expo-permissions'
+import * as FileSystem from 'expo-file-system'
 
 class BookingDetailsModal extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      imageUrl: null,
+      showWebView: false,
+    }
   }
 
   handleEmptyValue = (value) => {
@@ -19,6 +27,35 @@ class BookingDetailsModal extends React.Component {
 
   handleEmptyValueReturnZero = (value) => {
     return value != null && value != '' ? value : 0
+  }
+
+  downloadImage = async (image) => {
+    let fileUri = FileSystem.documentDirectory + image.fileName
+    FileSystem.downloadAsync(image.url, fileUri).then(({ uri }) => {
+      FileSystem.getInfoAsync(fileUri).then((res) => {
+        this.saveFile(res.uri)
+      })
+    })
+      .catch(error => {
+        console.error(error);
+      })
+  }
+
+  saveFile = async (fileUri) => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    if (status === 'granted') {
+      const asset = await MediaLibrary.createAssetAsync(fileUri)
+      MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
+        FileSystem.getContentUriAsync(fileUri).then((cUri) => {
+          {
+            this.setState({
+              showWebView: true,
+              imageUrl: cUri,
+            })
+          }
+        })
+      })
+    }
   }
 
   render() {
@@ -34,9 +71,20 @@ class BookingDetailsModal extends React.Component {
     } = this.props
     if (!data.unit) active = false
     const { unit } = data
+    const { imageUrl, showWebView } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <Modal isVisible={active}>
+        {showWebView ? (
+          <ViewDocs
+            imageView={true}
+            isVisible={showWebView}
+            closeModal={() => {
+              this.setState({ imageUrl: null, showWebView: false })
+            }}
+            url={imageUrl}
+          />
+        ) : null}
           {pearlModal === false && data && data.unit != null && (
             <View style={[styles.modalMain]}>
               <TouchableOpacity
@@ -56,21 +104,33 @@ class BookingDetailsModal extends React.Component {
                     </Text>
                   </View>
                 </View>
+
+  {/* ===================== */}
+                <View style={styles.MainTileView}>
+                <View style={styles.row}>
+                  <View>
+                    <Text style={styles.smallText}>Unit Name</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.name)}</Text>
+                  </View>
+                  {
+                    data.unit.projectInventoryImage &&
+                    <TouchableOpacity
+                      onLongPress={() => this.downloadImage(data.unit.projectInventoryImage)}
+                      onPress={() => {
+                        this.setState({ imageUrl: data.unit.projectInventoryImage.url, showWebView: true })
+                      }}>
+                      <Image source={{ uri: data.unit.projectInventoryImage.url }} style={{ width: 70, height: 70 }} borderRadius={5} />
+                    </TouchableOpacity>
+                  }
+                </View>
+
+              </View>
                 {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Floor</Text>
                     <Text style={styles.largeText}>
                       {this.handleEmptyValue(data.floor && data.floor.name)}
-                    </Text>
-                  </View>
-                </View>
-                {/* ===================== */}
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Unit Name</Text>
-                    <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.unit && data.unit.name)}
                     </Text>
                   </View>
                 </View>

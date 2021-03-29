@@ -72,19 +72,20 @@ class BookingDetailsModal extends React.Component {
     if (!data.unit) active = false
     const { unit } = data
     const { imageUrl, showWebView } = this.state;
+    console.log(unit);
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <Modal isVisible={active}>
-        {showWebView ? (
-          <ViewDocs
-            imageView={true}
-            isVisible={showWebView}
-            closeModal={() => {
-              this.setState({ imageUrl: null, showWebView: false })
-            }}
-            url={imageUrl}
-          />
-        ) : null}
+          {showWebView ? (
+            <ViewDocs
+              imageView={true}
+              isVisible={showWebView}
+              closeModal={() => {
+                this.setState({ imageUrl: null, showWebView: false })
+              }}
+              url={imageUrl}
+            />
+          ) : null}
           {pearlModal === false && data && data.unit != null && (
             <View style={[styles.modalMain]}>
               <TouchableOpacity
@@ -105,26 +106,26 @@ class BookingDetailsModal extends React.Component {
                   </View>
                 </View>
 
-  {/* ===================== */}
+                {/* ===================== */}
                 <View style={styles.MainTileView}>
-                <View style={styles.row}>
-                  <View>
-                    <Text style={styles.smallText}>Unit Name</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.name)}</Text>
+                  <View style={styles.row}>
+                    <View>
+                      <Text style={styles.smallText}>Unit Name</Text>
+                      <Text style={styles.largeText}>{this.handleEmptyValue(data.unit && data.unit.name)}</Text>
+                    </View>
+                    {
+                      data.unit.projectInventoryImage &&
+                      <TouchableOpacity
+                        onLongPress={() => this.downloadImage(data.unit.projectInventoryImage)}
+                        onPress={() => {
+                          this.setState({ imageUrl: data.unit.projectInventoryImage.url, showWebView: true })
+                        }}>
+                        <Image source={{ uri: data.unit.projectInventoryImage.url }} style={{ width: 70, height: 70 }} borderRadius={5} />
+                      </TouchableOpacity>
+                    }
                   </View>
-                  {
-                    data.unit.projectInventoryImage &&
-                    <TouchableOpacity
-                      onLongPress={() => this.downloadImage(data.unit.projectInventoryImage)}
-                      onPress={() => {
-                        this.setState({ imageUrl: data.unit.projectInventoryImage.url, showWebView: true })
-                      }}>
-                      <Image source={{ uri: data.unit.projectInventoryImage.url }} style={{ width: 70, height: 70 }} borderRadius={5} />
-                    </TouchableOpacity>
-                  }
-                </View>
 
-              </View>
+                </View>
                 {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
@@ -358,47 +359,60 @@ class BookingDetailsModal extends React.Component {
                 </View>
 
                 {/* ===================== */}
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Discount</Text>
-                    <Text style={styles.largeText}>
-                      {this.handleEmptyValue(unit.discount) +
-                        `${data.unit.discount > 0 ? '%' : '0%'}`}
-                    </Text>
+                {
+                  data && data.unit && data.unit.discount ? <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Discount</Text>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValue(data.unit.discount) +
+                          `${data.unit.discount > 0 ? '%' : '0%'}`}
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                    : null
+                }
+
 
 
                 {/* ===================== */}
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Discount Amount</Text>
-                    <Text style={styles.largeText}>
-                      {helper.currencyConvert(
-                        this.handleEmptyValueReturnZero(unit.discounted_price)
-                      )}
-                    </Text>
+                {
+                  data && data.unit && unit.discounted_price ? <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Discount Amount</Text>
+                      <Text style={styles.largeText}>
+                        {helper.currencyConvert(
+                          this.handleEmptyValueReturnZero(unit.discounted_price)
+                        )}
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                    : null
+                }
 
 
-                {/* ===================== */}
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Final Price</Text>
-                    <Text style={styles.largeText}>
-                      {helper.currencyConvert(this.handleEmptyValueReturnZero(unit.finalPrice))}
-                    </Text>
-                  </View>
-                </View>
 
                 {/* ===================== */}
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Size</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(unit && unit.area)}</Text>
+                {
+                  data && data.unit && unit.discounted_price ? <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Final Price</Text>
+                      <Text style={styles.largeText}>
+                        {helper.currencyConvert(this.handleEmptyValueReturnZero(unit.finalPrice))}
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                    : null
+                }
+
+                {
+                  data && data.unit && data.unit.area ? <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Size</Text>
+                      <Text style={styles.largeText}>{this.handleEmptyValue(unit && unit.area)}</Text>
+                    </View>
+                  </View> : null
+                }
+
                 {/* ===================== */}
                 <View style={styles.MainTileView}>
                   <View>
@@ -444,14 +458,17 @@ class BookingDetailsModal extends React.Component {
                 )}
 
                 {/* ===================== */}
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Status</Text>
-                    <Text style={styles.largeText}>
-                      {this.handleEmptyValue(unit.bookingStatus)}
-                    </Text>
-                  </View>
-                </View>
+                {
+                  data && data.unit && data.unit.bookingStatus ? <View style={styles.MainTileView}>
+                    <View>
+                      <Text style={styles.smallText}>Status</Text>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValue(unit.bookingStatus)}
+                      </Text>
+                    </View>
+                  </View> : null
+                }
+
               </ScrollView>
             </View>
           )}

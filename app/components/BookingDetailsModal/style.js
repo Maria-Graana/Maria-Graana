@@ -46,4 +46,9 @@ export default styles = StyleSheet.create({
   noBorder: {
     borderBottomWidth: 0,
   },
+  row:{
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center'
+  }
 })

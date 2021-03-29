@@ -72,7 +72,6 @@ class BookingDetailsModal extends React.Component {
     if (!data.unit) active = false
     const { unit } = data
     const { imageUrl, showWebView } = this.state;
-    console.log(unit);
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <Modal isVisible={active}>

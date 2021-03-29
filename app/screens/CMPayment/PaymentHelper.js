@@ -56,7 +56,7 @@ const PaymentHelper = {
   },
   findPaymentPlanDiscount(lead, oneUnit) {
     let fullPaymentDiscount = lead.paidProject != null && lead.paidProject.full_payment_discount
-    if (lead.installmentDue.includes('Full Payment Disc')) {
+    if (lead.installmentDue && lead.installmentDue.includes('Full Payment Disc')) {
       return PaymentMethods.findApprovedDiscountAmount(oneUnit, fullPaymentDiscount)
     } else {
       fullPaymentDiscount = 0

@@ -114,6 +114,7 @@ class LeadRCMPayment extends React.Component {
       officeLocations: [],
       rentMonthlyToggle: false,
       buyerSellerCounts: { buyerCount: 0, count: 0, selerCount: 0 },
+      legalServicesFee: null,
     }
   }
 
@@ -121,15 +122,34 @@ class LeadRCMPayment extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
+        this.getLegalDocumentsCount()
         this.getCallHistory()
         this.getSelectedProperty(lead)
         this.fetchOfficeLocations()
+        this.fetchLegalPaymentInfo()
       } else {
         const { lead } = this.props
+        this.getLegalDocumentsCount()
         this.getCallHistory()
         this.getSelectedProperty(lead)
         this.fetchOfficeLocations()
+        this.fetchLegalPaymentInfo()
       }
+    })
+  }
+
+  fetchLegalPaymentInfo = () => {
+    this.setState({ loading: true }, () => {
+      axios
+        .get(`/api/leads/legalPayment`)
+        .then((res) => {
+          this.setState({
+            legalServicesFee: res.data,
+          })
+        })
+        .finally(() => {
+          this.setState({ loading: false })
+        })
     })
   }
 
@@ -539,10 +559,10 @@ class LeadRCMPayment extends React.Component {
   }
 
   showLeadPaymentModal = async () => {
-    const { lead } = this.state
+    const { lead, legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count)) {
+      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
           isVisible: true,
@@ -573,6 +593,7 @@ class LeadRCMPayment extends React.Component {
       let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
       this.setState({
         buyerSellerCounts: res.data,
+        legalDocLoader: false,
       })
       return res.data
     } catch (error) {
@@ -815,8 +836,6 @@ class LeadRCMPayment extends React.Component {
     payload.shortlist_id = selectedProperty.id
     var leadId = []
     leadId.push(lead.id)
-    console.log('payload: ', payload)
-    console.log('leadId: ', leadId)
     axios
       .patch(`/api/leads`, payload, { params: { id: leadId } })
       .then((response) => {

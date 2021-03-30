@@ -80,6 +80,7 @@ class LeadPropsure extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
+        this.fetchLegalPaymentInfo()
         this.fetchLead(lead)
         this.getCallHistory()
         this.fetchProperties(lead)
@@ -87,6 +88,7 @@ class LeadPropsure extends React.Component {
       } else {
         const { lead, rcmPayment, dispatch } = this.props
         dispatch(setRCMPayment({ ...rcmPayment, visible: false }))
+        this.fetchLegalPaymentInfo()
         this.fetchLead(lead)
         this.getCallHistory()
         this.fetchProperties(lead)
@@ -398,11 +400,27 @@ class LeadPropsure extends React.Component {
     helper.leadClosedToast()
   }
 
+  fetchLegalPaymentInfo = () => {
+    this.setState({ loading: true }, () => {
+      axios
+        .get(`/api/leads/legalPayment`)
+        .then((res) => {
+          this.setState({
+            legalServicesFee: res.data,
+          })
+        })
+        .finally(() => {
+          this.setState({ loading: false })
+        })
+    })
+  }
+
   closeLead = async () => {
     const { lead } = this.props
+    const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count)) {
+      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
           isCloseLeadVisible: true,

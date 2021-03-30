@@ -710,7 +710,7 @@ const helper = {
       return singlePayment
     } else return singlePayment
   },
-  checkClearedStatuses(lead, legalDocCount) {
+  checkClearedStatuses(lead, legalDocCount, legalServicesFee) {
     let check = false
     let paymentCheck = true
     let propsureCheck = true
@@ -726,15 +726,16 @@ const helper = {
       legalCount = 6
     }
     const { commissions, propsureOutstandingPayment } = lead
+    if (legalServicesFee && legalServicesFee.fee <= 0) legalServicesCount = 0
     if (commissions && commissions.length) {
       commissions.map((item) => {
         if (item.status !== 'cleared' && item.paymentCategory === 'commission') paymentCheck = false
         if (item.status === 'cleared' && item.paymentCategory === 'commission') cleared++
-        if (item.status === 'cleared' && item.paymentCategory === 'legal_services')
+        if (item.status === 'cleared' && item.paymentCategory === 'legal_payment')
           legalPaymentCleared++
         if (item.status !== 'cleared' && item.paymentCategory === 'propsure_services')
           propsureCheck = false
-        if (item.status !== 'cleared' && item.paymentCategory === 'legal_services')
+        if (item.status !== 'cleared' && item.paymentCategory === 'legal_payment')
           legalServicesCheck = false
       })
       if (

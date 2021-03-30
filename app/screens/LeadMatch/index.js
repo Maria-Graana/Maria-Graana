@@ -91,6 +91,7 @@ class LeadMatch extends React.Component {
 
   componentDidMount() {
     const { lead } = this.props
+    this.fetchLegalPaymentInfo()
     this.fetchLead()
     this.getCallHistory()
     this.props.dispatch(setlead(lead))
@@ -554,11 +555,27 @@ class LeadMatch extends React.Component {
     helper.leadClosedToast()
   }
 
+  fetchLegalPaymentInfo = () => {
+    this.setState({ loading: true }, () => {
+      axios
+        .get(`/api/leads/legalPayment`)
+        .then((res) => {
+          this.setState({
+            legalServicesFee: res.data,
+          })
+        })
+        .finally(() => {
+          this.setState({ loading: false })
+        })
+    })
+  }
+
   closeLead = async () => {
     const { lead } = this.props
+    const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count)) {
+      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
           isVisible: true,

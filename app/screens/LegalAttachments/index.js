@@ -67,7 +67,6 @@ class LegalAttachment extends Component {
   }
 
   fetchLegalPaymentInfo = () => {
-    const { dispatch, lead } = this.props
     this.setState({ loading: true }, () => {
       axios
         .get(`/api/leads/legalPayment`)

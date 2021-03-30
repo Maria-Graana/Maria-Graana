@@ -136,6 +136,7 @@ class BuyPaymentView extends React.Component {
           lead={lead}
           commissionTitle={'Buyer Commission Payment'}
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
+          buyerSellerCounts={buyerSellerCounts}
         />
         <BuyerSellerTile
           singleCommission={singleCommission}
@@ -155,6 +156,7 @@ class BuyPaymentView extends React.Component {
           lead={lead}
           commissionTitle={'Seller Commission Payment'}
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
+          buyerSellerCounts={buyerSellerCounts}
         />
       </View>
     )

@@ -85,10 +85,26 @@ class LeadViewing extends React.Component {
           propsure_id: mapValues.propsure_id,
         })
       } else {
+        this.fetchLegalPaymentInfo()
         this.fetchLead()
         this.getCallHistory()
         this.fetchProperties()
       }
+    })
+  }
+
+  fetchLegalPaymentInfo = () => {
+    this.setState({ loading: true }, () => {
+      axios
+        .get(`/api/leads/legalPayment`)
+        .then((res) => {
+          this.setState({
+            legalServicesFee: res.data,
+          })
+        })
+        .finally(() => {
+          this.setState({ loading: false })
+        })
     })
   }
 
@@ -162,9 +178,10 @@ class LeadViewing extends React.Component {
 
   closeLead = async () => {
     const { lead } = this.props
+    const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count)) {
+      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
           reasons: StaticData.leadCloseReasonsWithPayment,
           isCloseLeadVisible: true,

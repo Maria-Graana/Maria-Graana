@@ -697,6 +697,7 @@ class CMPayment extends Component {
           },
         },
         () => {
+          const { checkPaymentPlan } = this.state
           let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
           this.setState({
             progressValue: cmProgressBar[lead.status] || 0,

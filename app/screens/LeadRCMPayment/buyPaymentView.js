@@ -40,6 +40,7 @@ class BuyPaymentView extends React.Component {
       tokenMenu,
       confirmTokenAction,
       closeLegalDocument,
+      buyerSellerCounts,
     } = this.props
     let property = currentProperty[0]
     let subRole =

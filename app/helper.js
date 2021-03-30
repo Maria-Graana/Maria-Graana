@@ -750,7 +750,7 @@ const helper = {
       return check
     } else return check
   },
-  checkSwitchChange(lead, addedBy) {
+  checkSwitchChange(lead, addedBy, legalCount) {
     let paymentCheck = false
     let legalServicesCheck = false
     let legalDocCheck = false
@@ -758,17 +758,16 @@ const helper = {
     if (commissions && commissions.length) {
       commissions.map((item) => {
         if (item.paymentCategory === 'commission' && item.addedBy === addedBy) paymentCheck = true
-        if (item.paymentCategory === 'legal_services' && item.addedBy === addedBy)
+        if (item.paymentCategory === 'legal_payment' && item.addedBy === addedBy)
           legalServicesCheck = true
       })
     }
     if (legalDocuments && legalDocuments.length) {
       legalDocuments.map((item) => {
-        if (item.category === 'legal_checklist' && item.addedBy === route.params.addedBy)
-          legalDocCheck = true
+        if (item.category === 'legal_checklist' && item.addedBy === addedBy) legalDocCheck = true
       })
     }
-    if (paymentCheck && legalServicesCheck && legalDocCheck) return false
+    if (paymentCheck || legalServicesCheck || legalDocCheck || legalCount !== 0) return false
     else return true
   },
   currencyConvert(x) {

@@ -29,6 +29,7 @@ import Ability from '../../hoc/Ability'
 import _ from 'underscore'
 import config from '../../config'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
+import * as Sentry from 'sentry-expo'
 
 var BUTTONS = [
   'Assign to team member',
@@ -64,10 +65,20 @@ class RentLeads extends React.Component {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      // const { PPBuyNotification } = this.props
+      // Sentry.captureException(`PPBuyNotification RENT: ${JSON.stringify(PPBuyNotification)}`)
+      // if (PPBuyNotification) {
+      //   Sentry.captureException(
+      //     ` INSIDE IF PPBuyNotification RENT: ${JSON.stringify(PPBuyNotification)}`
+      //   )
+      //   this.props.navigation.navigate('Leads', {
+      //     screen: 'Buy',
+      //   })
+      // }
       dispatch(getListingsCount())
-      this.getServerTime();
+      this.getServerTime()
       this.onFocus()
     })
   }
@@ -77,16 +88,18 @@ class RentLeads extends React.Component {
   }
 
   getServerTime = () => {
-    axios.get(`/api/user/serverTime?fullTime=true`).then(res => {
-      if(res){
-        this.setState({serverTime: res.data})
-      }
-      else{
-        console.log('Something went wrong while getting server time');
-      }
-    }).catch(error => {
-      console.log('error getting server time', error);
-    })
+    axios
+      .get(`/api/user/serverTime?fullTime=true`)
+      .then((res) => {
+        if (res) {
+          this.setState({ serverTime: res.data })
+        } else {
+          console.log('Something went wrong while getting server time')
+        }
+      })
+      .catch((error) => {
+        console.log('error getting server time', error)
+      })
   }
 
   onFocus = async () => {
@@ -454,7 +467,7 @@ class RentLeads extends React.Component {
       openPopup,
       shortListedProperties,
       popupLoading,
-      serverTime
+      serverTime,
     } = this.state
     const { user, navigation } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -630,6 +643,7 @@ class RentLeads extends React.Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    PPBuyNotification: store.Notification.PPBuyNotification,
   }
 }
 export default connect(mapStateToProps)(RentLeads)

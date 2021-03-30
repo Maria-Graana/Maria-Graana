@@ -29,6 +29,7 @@ import {
   setCustomTextInput,
   setCustomTouchableOpacity,
 } from 'react-native-global-props'
+import { setPPBuyNotification } from './app/actions/notification'
 import * as Updates from 'expo-updates'
 
 Notifications.setNotificationHandler({
@@ -47,6 +48,7 @@ export default class App extends React.Component {
     )
     this.state = {
       isReady: false,
+      screenName: 'Buy',
     }
   }
 
@@ -148,6 +150,7 @@ export default class App extends React.Component {
           })
         }
       }
+      data.isPP = true
       if (data.type === 'buyLead') {
         if (!data.isPP) {
           if (data.leadStatus === 'payment') {
@@ -198,9 +201,16 @@ export default class App extends React.Component {
             })
           }
         } else {
-          RootNavigation.navigateTo('Leads', {
-            screen: 'Buy',
-          })
+          Sentry.captureException(`DISPATCHING:`)
+          // store.dispatch(
+          //   setPPBuyNotification({
+          //     screen: 'Buy',
+          //   })
+          // )
+          this.setState({ screenName: 'Buy' })
+          // RootNavigation.navigateTo('Leads', {
+          //   screen: 'Buy',
+          // })
         }
       }
       if (data.type === 'rentLead') {
@@ -263,6 +273,12 @@ export default class App extends React.Component {
     }
   }
 
+  navigateScreen = () => {
+    RootNavigation.navigateTo('Leads', {
+      screen: 'Buy',
+    })
+  }
+
   render() {
     if (!this.state.isReady) {
       return <AppLoading />
@@ -273,7 +289,12 @@ export default class App extends React.Component {
           <Root>
             <SafeAreaProvider>
               <PaperProvider>
-                <NavigationContainer ref={navigationRef}>
+                <NavigationContainer
+                  ref={navigationRef}
+                  onReady={() => {
+                    if (this.state.screenName) this.navigateScreen()
+                  }}
+                >
                   <RootStack />
                 </NavigationContainer>
               </PaperProvider>

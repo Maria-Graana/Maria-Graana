@@ -27,6 +27,8 @@ import { storeItem, getItem } from '../../actions/user'
 import config from '../../config'
 import { getListingsCount } from '../../actions/listings'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
+import { setPPBuyNotification } from '../../actions/notification'
+import * as Sentry from 'sentry-expo'
 
 var BUTTONS = [
   'Assign to team member',
@@ -63,10 +65,18 @@ class BuyLeads extends React.Component {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      // const { PPBuyNotification } = this.props
+      // Sentry.captureException(`PPBuyNotification BUY: ${JSON.stringify(PPBuyNotification)}`)
+      // if (PPBuyNotification) {
+      //   Sentry.captureException(
+      //     ` INSIDE IF PPBuyNotification BUY: ${JSON.stringify(PPBuyNotification)}`
+      //   )
+      //   dispatch(setPPBuyNotification(null))
+      // }
       dispatch(getListingsCount())
-      this.getServerTime();
+      this.getServerTime()
       this.onFocus()
     })
   }
@@ -91,16 +101,18 @@ class BuyLeads extends React.Component {
   }
 
   getServerTime = () => {
-    axios.get(`/api/user/serverTime?fullTime=true`).then(res => {
-      if(res){
-        this.setState({serverTime: res.data})
-      }
-      else{
-        console.log('Something went wrong while getting server time');
-      }
-    }).catch(error => {
-      console.log('error getting server time', error);
-    })
+    axios
+      .get(`/api/user/serverTime?fullTime=true`)
+      .then((res) => {
+        if (res) {
+          this.setState({ serverTime: res.data })
+        } else {
+          console.log('Something went wrong while getting server time')
+        }
+      })
+      .catch((error) => {
+        console.log('error getting server time', error)
+      })
   }
 
   getSortOrderFromStorage = async () => {
@@ -622,6 +634,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     count: store.listings.count,
+    PPBuyNotification: store.Notification.PPBuyNotification,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

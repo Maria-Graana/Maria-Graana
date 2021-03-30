@@ -55,7 +55,6 @@ class CMFirstForm extends Component {
 
   render() {
     const {
-      formData,
       handleFirstForm,
       pickerFloors,
       pickerProjects,
@@ -68,14 +67,12 @@ class CMFirstForm extends Component {
       oneUnitData,
       paymentPlan,
       submitFirstForm,
-      finalPrice,
       firstFormValidate,
       cnicValidate,
       leftPearlSqft,
       pearlModal,
       pearlUnitPrice,
       addPaymentModalToggle,
-      CMPayment,
       checkFirstFormPayment,
       currencyConvert,
       editTokenPayment,
@@ -84,7 +81,6 @@ class CMFirstForm extends Component {
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
-
     return (
       <View style={styles.mainFormWrap}>
         <View style={{ paddingVertical: 10 }}>

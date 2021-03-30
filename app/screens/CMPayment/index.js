@@ -45,7 +45,8 @@ class CMPayment extends Component {
       allUnits: [],
       pickerUnits: [],
       firstFormData: {
-        project: lead.paidProject != null ? lead.paidProject.id : '',
+        project:
+          lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
         floor: '',
         unitType: '',
         pearl: '',
@@ -163,7 +164,7 @@ class CMPayment extends Component {
       .get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
         let responseData = res.data
-        responseData.paidProject = responseData.project
+        if (!responseData.paidProject) responseData.paidProject = responseData.project
         this.props.dispatch(setlead(responseData))
         this.setdefaultFields(responseData)
         if (secondForm) {
@@ -678,6 +679,22 @@ class CMPayment extends Component {
       this.setState(
         {
           checkPaymentPlan: newcheckPaymentPlan,
+          firstFormData: {
+            project:
+              lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
+            floor: '',
+            unitType: '',
+            pearl: '',
+            unit: lead.unit != null ? lead.unit.id : '',
+            unitPrice: 0,
+            cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
+            paymentPlan: 'no',
+            approvedDiscount: 0,
+            approvedDiscountPrice: 0,
+            finalPrice: 0,
+            fullPaymentDiscountPrice: 0,
+            pearlName: 'New Pearl',
+          },
         },
         () => {
           let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)

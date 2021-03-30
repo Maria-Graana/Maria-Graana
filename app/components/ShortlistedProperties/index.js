@@ -223,7 +223,6 @@ class ShortlistedProperties extends React.Component {
       active,
       modalLoading,
     } = this.state
-    let leadAssign = helper.checkAssignedSharedStatus(user, lead)
     return (
       <Modal visible={openPopup} animationType="slide" onRequestClose={this.props.closePopup}>
         <SafeAreaView style={[AppStyles.mb1, styles.container]}>

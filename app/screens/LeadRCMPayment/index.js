@@ -113,6 +113,7 @@ class LeadRCMPayment extends React.Component {
       legalDocLoader: false,
       officeLocations: [],
       rentMonthlyToggle: false,
+      buyerSellerCounts: { buyerCount: 0, count: 0, selerCount: 0 },
     }
   }
 
@@ -416,6 +417,7 @@ class LeadRCMPayment extends React.Component {
         .get(`/api/leads/byId?id=${lead.id}`)
         .then((response) => {
           dispatch(setlead(response.data))
+          this.getLegalDocumentsCount()
           this.setState(
             {
               progressValue: rcmProgressBar[lead.status],
@@ -569,6 +571,9 @@ class LeadRCMPayment extends React.Component {
     this.setState({ legalDocLoader: true })
     try {
       let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      this.setState({
+        buyerSellerCounts: res.data,
+      })
       return res.data
     } catch (error) {
       console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
@@ -1502,6 +1507,7 @@ class LeadRCMPayment extends React.Component {
       legalDocLoader,
       officeLocations,
       rentMonthlyToggle,
+      buyerSellerCounts,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1644,6 +1650,7 @@ class LeadRCMPayment extends React.Component {
                         tokenMenu={tokenMenu}
                         confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
+                        buyerSellerCounts={buyerSellerCounts}
                       />
                     ) : (
                       <RentPaymentView
@@ -1667,6 +1674,7 @@ class LeadRCMPayment extends React.Component {
                         updateRentLead={this.updateRentLead}
                         confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
+                        buyerSellerCounts={buyerSellerCounts}
                       />
                     )
                   ) : null}

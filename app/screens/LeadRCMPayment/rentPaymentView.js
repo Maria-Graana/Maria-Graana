@@ -35,6 +35,7 @@ const RentPaymentView = (props) => {
     toggleMonthlyDetails,
     rentMonthlyToggle,
     updateRentLead,
+    buyerSellerCounts,
   } = props
 
   MonthlyTile = () => {
@@ -140,6 +141,7 @@ const RentPaymentView = (props) => {
         lead={lead}
         commissionTitle={'Buyer Commission Payment'}
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
+        buyerSellerCounts={buyerSellerCounts}
       />
       <BuyerSellerTile
         singleCommission={singleCommission}
@@ -157,6 +159,7 @@ const RentPaymentView = (props) => {
         lead={lead}
         commissionTitle={'Seller Commission Payment'}
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
+        buyerSellerCounts={buyerSellerCounts}
       />
     </View>
   )

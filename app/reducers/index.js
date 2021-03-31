@@ -12,6 +12,7 @@ import CMPayment from './addCMPayment'
 import RCMPayment from './rcmPayment'
 import LegalPayment from './legalPayment'
 import PropsurePayment from './propsurePayment'
+import Notification from './notification'
 
 export default combineReducers({
   lead,
@@ -25,4 +26,5 @@ export default combineReducers({
   RCMPayment,
   PropsurePayment,
   LegalPayment,
+  Notification,
 })

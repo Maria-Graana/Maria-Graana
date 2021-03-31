@@ -3,7 +3,7 @@
 import * as Font from 'expo-font'
 import * as Sentry from 'sentry-expo'
 import { persistor, store } from './app/store'
-import AppLoading from 'expo-app-loading';
+import AppLoading from 'expo-app-loading'
 import Constants from 'expo-constants'
 import { Ionicons } from '@expo/vector-icons'
 import { Provider as PaperProvider } from 'react-native-paper'
@@ -29,6 +29,7 @@ import {
   setCustomTextInput,
   setCustomTouchableOpacity,
 } from 'react-native-global-props'
+import { setPPBuyNotification } from './app/actions/notification'
 import * as Updates from 'expo-updates'
 
 Notifications.setNotificationHandler({
@@ -148,6 +149,7 @@ export default class App extends React.Component {
           })
         }
       }
+      // data.isPP = true
       if (data.type === 'buyLead') {
         if (!data.isPP) {
           if (data.leadStatus === 'payment') {
@@ -198,9 +200,7 @@ export default class App extends React.Component {
             })
           }
         } else {
-          RootNavigation.navigateTo('Leads', {
-            screen: 'Buy',
-          })
+          store.dispatch(setPPBuyNotification(true))
         }
       }
       if (data.type === 'rentLead') {

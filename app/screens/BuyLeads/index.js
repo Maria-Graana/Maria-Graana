@@ -1,32 +1,31 @@
 /** @format */
 
-import React from 'react'
-import styles from './style'
-import { View, Text, TouchableOpacity, Image, ScrollView, Linking, FlatList } from 'react-native'
-import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import PickerComponent from '../../components/Picker/index'
-import { ActionSheet } from 'native-base'
 import { Ionicons } from '@expo/vector-icons'
+import axios from 'axios'
+import { ActionSheet, Fab } from 'native-base'
+import React from 'react'
+import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
+import { FAB } from 'react-native-paper'
+import { connect } from 'react-redux'
 import SortImg from '../../../assets/img/sort.png'
+import { setlead } from '../../actions/lead'
+import { getListingsCount } from '../../actions/listings'
+import { setPPBuyNotification } from '../../actions/notification'
+import { getItem, storeItem } from '../../actions/user'
+import AppStyles from '../../AppStyles'
+import LeadTile from '../../components/LeadTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
-import LeadTile from '../../components/LeadTile'
+import PickerComponent from '../../components/Picker/index'
 import PPLeadTile from '../../components/PPLeadTile'
-import axios from 'axios'
-import helper from '../../helper'
-import StaticData from '../../StaticData'
-import { FAB } from 'react-native-paper'
-import { Fab } from 'native-base'
-import Loader from '../../components/loader'
-import SortModal from '../../components/SortModal'
-import { setlead } from '../../actions/lead'
 import Search from '../../components/Search'
-import Ability from '../../hoc/Ability'
-import { storeItem, getItem } from '../../actions/user'
-import config from '../../config'
-import { getListingsCount } from '../../actions/listings'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
+import SortModal from '../../components/SortModal'
+import config from '../../config'
+import helper from '../../helper'
+import Ability from '../../hoc/Ability'
+import StaticData from '../../StaticData'
+import styles from './style'
 
 var BUTTONS = [
   'Assign to team member',
@@ -63,10 +62,14 @@ class BuyLeads extends React.Component {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      const { PPBuyNotification } = this.props
+      if (PPBuyNotification) {
+        dispatch(setPPBuyNotification(false))
+      }
       dispatch(getListingsCount())
-      this.getServerTime();
+      this.getServerTime()
       this.onFocus()
     })
   }
@@ -91,16 +94,18 @@ class BuyLeads extends React.Component {
   }
 
   getServerTime = () => {
-    axios.get(`/api/user/serverTime?fullTime=true`).then(res => {
-      if(res){
-        this.setState({serverTime: res.data})
-      }
-      else{
-        console.log('Something went wrong while getting server time');
-      }
-    }).catch(error => {
-      console.log('error getting server time', error);
-    })
+    axios
+      .get(`/api/user/serverTime?fullTime=true`)
+      .then((res) => {
+        if (res) {
+          this.setState({ serverTime: res.data })
+        } else {
+          console.log('Something went wrong while getting server time')
+        }
+      })
+      .catch((error) => {
+        console.log('error getting server time', error)
+      })
   }
 
   getSortOrderFromStorage = async () => {
@@ -622,6 +627,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     count: store.listings.count,
+    PPBuyNotification: store.Notification.PPBuyNotification,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

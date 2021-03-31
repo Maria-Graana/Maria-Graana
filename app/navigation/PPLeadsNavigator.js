@@ -2,27 +2,15 @@
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import React from 'react'
+import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
 import BuyLeads from '../screens/BuyLeads/index'
-import InvestLeads from '../screens/InvestLeads/index'
-import PropertyLead from '../screens/PropertyLead/index'
 import RentLeads from '../screens/RentLeads/index'
-import { connect } from 'react-redux'
 // const { width } = Dimensions.get('window')
 
 const Tab = createMaterialTopTabNavigator()
 
 function PPLeadsNavigator({ isPPBuyNotification }) {
-  // const { Notification } = useSelector((state) => state)
-  // const { PPBuyNotification } = Notification
-  // let initialScreen = 'Rent'
-  // if (PPBuyNotification && PPBuyNotification.screen === 'Buy') {
-  //   initialScreen = 'Buy'
-  // }
-
-  // console.log('PPBuyNotification: ', PPBuyNotification)
-  // console.log('initialScreen: ', initialScreen)
-
   return (
     <Tab.Navigator
       tabBarOptions={{

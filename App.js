@@ -3,7 +3,7 @@
 import * as Font from 'expo-font'
 import * as Sentry from 'sentry-expo'
 import { persistor, store } from './app/store'
-import AppLoading from 'expo-app-loading';
+import AppLoading from 'expo-app-loading'
 import Constants from 'expo-constants'
 import { Ionicons } from '@expo/vector-icons'
 import { Provider as PaperProvider } from 'react-native-paper'
@@ -46,25 +46,8 @@ export default class App extends React.Component {
     this._notificationSubscription = Notifications.addNotificationResponseReceivedListener(
       this._handleNotification
     )
-    // setTimeout(() => {
-    //   // DUMMY NOTIFICATION
-    //   this._handleNotification({
-    //     actionIdentifier: Notifications.DEFAULT_ACTION_IDENTIFIER,
-    //     notification: {
-    //       request: {
-    //         content: {
-    //           data: {
-    //             type: 'buyLead',
-    //             isPP: true,
-    //           }
-    //         }
-    //       }
-    //     }
-    //   })
-    // }, 50)
     this.state = {
       isReady: false,
-      // screenName: null,
     }
   }
 
@@ -218,10 +201,6 @@ export default class App extends React.Component {
           }
         } else {
           store.dispatch(setPPBuyNotification(true))
-          // this.setState({ screenName: 'Buy' })
-          // RootNavigation.navigateTo('Leads', {
-          //   screen: 'Buy',
-          // })
         }
       }
       if (data.type === 'rentLead') {
@@ -284,12 +263,6 @@ export default class App extends React.Component {
     }
   }
 
-  // navigateScreen = () => {
-  //   RootNavigation.navigateTo('Leads', {
-  //     screen: 'Buy',
-  //   })
-  // }
-
   render() {
     if (!this.state.isReady) {
       return <AppLoading />
@@ -300,14 +273,7 @@ export default class App extends React.Component {
           <Root>
             <SafeAreaProvider>
               <PaperProvider>
-                <NavigationContainer
-                  ref={navigationRef}
-                  // onReady={() => {
-                  //   if (this.state.screenName && this.state.screenName === 'Buy') {
-                  //     setTimeout(() => this.navigateScreen(), 500)
-                  //   }
-                  // }}
-                >
+                <NavigationContainer ref={navigationRef}>
                   <RootStack />
                 </NavigationContainer>
               </PaperProvider>

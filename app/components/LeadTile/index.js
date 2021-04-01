@@ -123,7 +123,13 @@ class LeadTile extends React.Component {
             navigateTo(data)
         }}
       >
-        <View style={[styles.tileMainWrap,{ borderLeftColor: helper.timeStatusColors(data, serverTime)}, data.readAt === null && styles.selectedInventory]}>
+        <View
+          style={[
+            styles.tileMainWrap,
+            { borderLeftColor: helper.timeStatusColors(data, serverTime) },
+            data.readAt === null && styles.selectedInventory,
+          ]}
+        >
           <View style={[styles.rightContentView]}>
             <View style={styles.topIcons}>
               <View style={styles.extraStatus}>

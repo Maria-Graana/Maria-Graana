@@ -404,6 +404,15 @@ const helper = {
       }
       contact.payload = payload
       return contact
+    } else if (customer && customer.phone) {
+      contact.payload = [
+        {
+          number: customer.phone,
+          label: 'mobile',
+          isPrimary: true,
+        },
+      ]
+      return contact
     } else return contact
   },
   deleteAndUpdateNotification(data, start, id) {
@@ -433,7 +442,7 @@ const helper = {
     }
     if (identifier) {
       Notifications.cancelScheduledNotificationAsync(identifier)
-        .then((notification) => { })
+        .then((notification) => {})
         .catch((error) => {
           console.log(error)
         })
@@ -643,9 +652,9 @@ const helper = {
       let pendingPropsures =
         property.propsures && property.propsures.length
           ? _.filter(
-            property.propsures,
-            (item) => item.status === 'pending' && item.addedBy === type
-          )
+              property.propsures,
+              (item) => item.status === 'pending' && item.addedBy === type
+            )
           : null
       let totalFee = helper.AddPropsureReportsFee(property.propsures, type)
       let singlePayment = helper.propsurePaymentType(property, type)
@@ -875,29 +884,25 @@ const helper = {
     return list
   },
   timeStatusColors(lead, serverDate) {
-    var statusColor = 'white';
-    let serverDateAndTime =  moment(serverDate).utc(true)
-    let assignedAtDate = moment(lead.assigned_at).utc(true);
+    var statusColor = 'white'
+    let serverDateAndTime = moment(serverDate).utc(true)
+    let assignedAtDate = moment(lead.assigned_at).utc(true)
     let curDate = moment(serverDateAndTime).format('DD')
     let leadDate = moment(assignedAtDate).format('DD')
     let time = moment.duration(moment(serverDateAndTime).diff(moment(assignedAtDate))).asMinutes()
     time = time.toFixed(0)
-    if(curDate === leadDate && lead.status === 'open') {
+    if (curDate === leadDate && lead.status === 'open') {
       if (time > 30 && time < 60) {
         statusColor = '#FDD835'
-      }
-      else if (time > 60) {
+      } else if (time > 60) {
         statusColor = 'red'
-      }
-      else if(lead.readAt === null && time < 30) {
-        statusColor = AppStyles.colors.primaryColor;
-      }
-      else if (time < 30){
+      } else if (lead.readAt === null && time < 30) {
+        statusColor = AppStyles.colors.primaryColor
+      } else if (time < 30) {
         statusColor = 'white'
       }
-    }
-    else if(curDate !== leadDate && lead.status === 'open'){
-        statusColor = 'red';
+    } else if (curDate !== leadDate && lead.status === 'open') {
+      statusColor = 'red'
     }
     return statusColor
   },

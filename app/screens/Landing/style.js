@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+/** @format */
+
+import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 import {
   heightPercentageToDP as hp,
@@ -6,12 +8,12 @@ import {
 } from 'react-native-responsive-screen'
 
 export default styles = StyleSheet.create({
-  mainContainer:{
+  mainContainer: {
     backgroundColor: AppStyles.colors.primaryColor,
     paddingHorizontal: wp('0%'),
     paddingLeft: 0,
   },
-  scrollContainer:{
+  scrollContainer: {
     paddingVertical: 15,
   },
   buttonWrap: {
@@ -32,44 +34,44 @@ export default styles = StyleSheet.create({
     margin: 5,
     width: 12,
     height: 12,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   btnStyle: {
     zIndex: 10,
     borderColor: '#ffffff',
     marginHorizontal: 5,
-    flexDirection: "row",
+    flexDirection: 'row',
     borderRadius: 20,
     height: 40,
     justifyContent: 'center',
     backgroundColor: '#ffffff',
-    alignItems: "center",
+    alignItems: 'center',
     padding: 6,
     paddingHorizontal: 15,
-    shadowColor: "#000",
-    shadowColor: "#000",
+    shadowColor: '#000',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 9,
     },
     shadowOpacity: 0.48,
     shadowRadius: 11.95,
-    elevation: 18
+    elevation: 18,
   },
   font: {
     fontFamily: AppStyles.fonts.boldFont,
-    marginRight: 5
+    marginRight: 5,
   },
   btnView: {
     position: 'absolute',
     bottom: 30,
     right: 0,
-    flexDirection: "row",
-    marginHorizontal: 5
+    flexDirection: 'row',
+    marginHorizontal: 5,
   },
-  kpiContainer:{
+  kpiContainer: {
     backgroundColor: 'white',
-    width: wp('45%'),
+    width: wp('30%'),
     position: 'absolute',
     minHeight: hp('15%'),
     bottom: hp('15%'),
@@ -77,18 +79,18 @@ export default styles = StyleSheet.create({
     borderBottomRightRadius: 16,
     padding: 10,
     left: 0,
-    shadowColor: "#000",
-    shadowColor: "#000",
+    shadowColor: '#000',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 9,
     },
     shadowOpacity: 0.48,
     shadowRadius: 11.95,
-    elevation: 18
+    elevation: 18,
   },
-  kpiText:{
-    fontSize: AppStyles.fontSize.medium, 
-    fontFamily: AppStyles.fonts.boldFont
+  kpiText: {
+    fontSize: AppStyles.fontSize.medium,
+    fontFamily: AppStyles.fonts.boldFont,
   },
-});
+})

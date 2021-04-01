@@ -1,7 +1,7 @@
 /** @format */
 
 import { FlatList, SafeAreaView } from 'react-native'
-import * as Linking from 'expo-linking';
+import * as Linking from 'expo-linking'
 import Ability from '../../hoc/Ability'
 import AppStyles from '../../AppStyles'
 import styles from './style'
@@ -20,23 +20,19 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen'
 import UpdateApp from '../../UpdateApp'
-import StatisticsTile from '../../components/StatisticsTile';
-import Loader from '../../components/loader';
-import axios from 'axios';
+import StatisticsTile from '../../components/StatisticsTile'
+import Loader from '../../components/loader'
+import axios from 'axios'
+import HomeBlue from '../../../assets/img/home-blue.png'
+import MapBlue from '../../../assets/img/map-blue.png'
+import TargetNew from '../../../assets/img/target-new.png'
 
 class Landing extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       tiles: [],
-      tileNames: [
-        'Dashboard',
-        'Leads',
-        'InventoryTabs',
-        'Diary',
-        'Team Diary',
-        'Targets',
-      ],
+      tileNames: ['Property Leads', 'Leads', 'Diary', 'Dashboard', 'Team Diary', 'Targets'],
       loading: true,
       userStatistics: null,
     }
@@ -47,12 +43,11 @@ class Landing extends React.Component {
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
-      this.getUserStatistics();
+      this.getUserStatistics()
     })
-    this._handleDeepLink();
-    this._addLinkingListener(); // if app is in foreground, this function is called for deep linking
+    this._handleDeepLink()
+    this._addLinkingListener() // if app is in foreground, this function is called for deep linking
   }
-
 
   componentDidUpdate(prevProps) {
     if (prevProps.count !== this.props.count) {
@@ -61,55 +56,60 @@ class Landing extends React.Component {
   }
 
   _handleDeepLink = () => {
-    const { navigation } = this.props;
+    const { navigation } = this.props
     Linking.getInitialURL().then(async (url) => {
       const { path } = await Linking.parseInitialURLAsync(url)
       const pathArray = path?.split('/') ?? []
       if (pathArray && pathArray.length) {
-        const leadId = pathArray[pathArray.length - 1];
+        const leadId = pathArray[pathArray.length - 1]
         const purposeTab = pathArray.includes('cmLead')
           ? 'invest'
           : pathArray.includes('rcmLead') && pathArray.includes('buy')
-            ? 'sale'
-            : pathArray.includes('rcmLead') && pathArray.includes('rent')
-              ? 'rent'
-              : ''
-        pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
-          purposeTab,
-          lead: { id: leadId },
-        })
+          ? 'sale'
+          : pathArray.includes('rcmLead') && pathArray.includes('rent')
+          ? 'rent'
+          : ''
+        pathArray.includes('cmLead') || pathArray.includes('rcmLead')
+          ? navigation.navigate('LeadDetail', {
+              purposeTab,
+              lead: { id: leadId },
+            })
           : null
       }
     })
   }
 
   _handleRedirectInForeground = (event) => {
-    const { navigation } = this.props;
+    const { navigation } = this.props
     const { path } = Linking.parse(event.url)
     const pathArray = path?.split('/') ?? []
     if (pathArray && pathArray.length) {
-      const leadId = pathArray[pathArray.length - 1];
+      const leadId = pathArray[pathArray.length - 1]
       const purposeTab = pathArray.includes('cmLead')
         ? 'invest'
         : pathArray.includes('rcmLead') && pathArray.includes('buy')
-          ? 'sale'
-          : pathArray.includes('rcmLead') && pathArray.includes('rent')
-            ? 'rent'
-            : ''
-      pathArray.includes('cmLead') || pathArray.includes('rcmLead') ? navigation.navigate('LeadDetail', {
-        purposeTab,
-        lead: { id: leadId },
-      })
+        ? 'sale'
+        : pathArray.includes('rcmLead') && pathArray.includes('rent')
+        ? 'rent'
+        : ''
+      pathArray.includes('cmLead') || pathArray.includes('rcmLead')
+        ? navigation.navigate('LeadDetail', {
+            purposeTab,
+            lead: { id: leadId },
+          })
         : null
     }
   }
 
   getUserStatistics = () => {
-    axios.get(`/api/user/stats`).then(response => {
-      this.setState({ userStatistics: response.data })
-    }).catch(error => {
-      console.log('error getting statistic at /api/user/stats', error)
-    })
+    axios
+      .get(`/api/user/stats`)
+      .then((response) => {
+        this.setState({ userStatistics: response.data })
+      })
+      .catch((error) => {
+        console.log('error getting statistic at /api/user/stats', error)
+      })
       .finally(() => {
         this.setState({ loading: false })
       })
@@ -117,10 +117,9 @@ class Landing extends React.Component {
 
   showLeadWonAssignedPercentage = (wonLeads, assignedLeads) => {
     if (wonLeads && assignedLeads) {
-      return `${((wonLeads / assignedLeads) * 100).toFixed(1)} %`;
-    }
-    else {
-      return null;
+      return `${((wonLeads / assignedLeads) * 100).toFixed(1)} %`
+    } else {
+      return null
     }
   }
 
@@ -147,7 +146,7 @@ class Landing extends React.Component {
           screenName: tile,
         }
         if (label === 'Team Diary') label = "Team's Diary"
-        // if (label === 'Client') label = 'Clients'
+        if (label === 'leads') label = 'Client Leads'
         let oneTile = {
           id: counter,
           label: label,
@@ -169,7 +168,7 @@ class Landing extends React.Component {
   navigateFunction = (name, screenName) => {
     const { navigation } = this.props
     if (screenName === 'InventoryTabs') {
-      navigation.navigate('InventoryTabs', {
+      navigation.navigate('PropertyLeads', {
         screen: 'ARMS',
         params: { screen: screenName },
       })
@@ -183,70 +182,71 @@ class Landing extends React.Component {
     const { user, navigation } = this.props
 
     return (
-        <SafeAreaView
-          style={[AppStyles.container, styles.mainContainer]} >
-          <AndroidNotifications navigation={navigation} />
-          {tiles.length ? (
-              <FlatList
-                style={styles.scrollContainer}
-                numColumns={2}
-                data={tiles}
-                renderItem={(item, index) => (
-                  <LandingTile
-                    navigateFunction={this.navigateFunction}
-                    pagePath={item.item.pagePath}
-                    screenName={item.item.screenName}
-                    badges={item.item.badges}
-                    label={item.item.label}
-                    imagePath={item.item.buttonImg}
-                  />
-                )}
-                keyExtractor={(item, index) => item.id.toString()}
+      <SafeAreaView style={[AppStyles.container, styles.mainContainer]}>
+        <AndroidNotifications navigation={navigation} />
+        {tiles.length ? (
+          <FlatList
+            style={styles.scrollContainer}
+            numColumns={2}
+            data={tiles}
+            renderItem={(item, index) => (
+              <LandingTile
+                navigateFunction={this.navigateFunction}
+                pagePath={item.item.pagePath}
+                screenName={item.item.screenName}
+                badges={item.item.badges}
+                label={item.item.label}
+                imagePath={item.item.buttonImg}
               />
+            )}
+            keyExtractor={(item, index) => item.id.toString()}
+          />
+        ) : null}
+        <View style={styles.kpiContainer}>
+          {loading ? (
+            <Loader loading={loading} />
+          ) : (
+            <>
+              <Text style={styles.kpiText}>KPIs:</Text>
+              <StatisticsTile imagePath={HomeBlue} value={userStatistics.avgTime} />
+              <StatisticsTile imagePath={MapBlue} value={userStatistics.listing} />
+              <StatisticsTile imagePath={TargetNew} value={userStatistics.geoTaggedListing} />
+              <StatisticsTile
+                title={'LCR'}
+                value={this.showLeadWonAssignedPercentage(
+                  userStatistics.won,
+                  userStatistics.totalLeads
+                )}
+              />
+            </>
+          )}
+        </View>
+        <View style={styles.btnView}>
+          {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
+            <TouchableOpacity
+              onPress={() => {
+                this.props.navigation.navigate('AddInventory', { update: false })
+              }}
+              style={styles.btnStyle}
+            >
+              <Image source={addIcon} style={styles.containerImg} />
+              <Text style={styles.font}>Add Property</Text>
+            </TouchableOpacity>
           ) : null}
-          <View style={styles.kpiContainer}>
-            {
-              loading ?
-                <Loader loading={loading} />
-                :
-                <>
-                  <Text style={styles.kpiText}>KPI</Text>
-                  <StatisticsTile title={'DART'} value={userStatistics.avgTime} />
-                  <StatisticsTile title={'Listings'} value={userStatistics.listing} />
-                  <StatisticsTile title={'GeoTagged'} value={userStatistics.geoTaggedListing} />
-                  <StatisticsTile title={'LCR'} value={this.showLeadWonAssignedPercentage(userStatistics.won, userStatistics.totalLeads)} />
-                </>
-            }
-
-
-          </View>
-          <View style={styles.btnView}>
-            {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
-              <TouchableOpacity
-                onPress={() => {
-                  this.props.navigation.navigate('AddInventory', { update: false })
-                }}
-                style={styles.btnStyle}
-              >
-                <Image source={addIcon} style={styles.containerImg} />
-                <Text style={styles.font}>Add Property</Text>
-              </TouchableOpacity>
-            ) : null}
-            {Ability.canAdd(user.subRole, 'Client') ? (
-              <TouchableOpacity
-                onPress={() => {
-                  this.props.navigation.navigate('AddClient', { update: false })
-                }}
-                style={[styles.btnStyle, { marginLeft: 5 }]}
-              >
-                <Image source={addIcon} style={styles.containerImg} />
-                <Text style={styles.font}>Add Client</Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-          <UpdateApp />
+          {Ability.canAdd(user.subRole, 'Client') ? (
+            <TouchableOpacity
+              onPress={() => {
+                this.props.navigation.navigate('AddClient', { update: false })
+              }}
+              style={[styles.btnStyle, { marginLeft: 5 }]}
+            >
+              <Image source={addIcon} style={styles.containerImg} />
+              <Text style={styles.font}>Add Client</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+        <UpdateApp />
       </SafeAreaView>
-
     )
   }
 }

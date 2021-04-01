@@ -57,6 +57,14 @@ class CustomDrawerContent extends React.Component {
             </View>
           </View>
           <View style={styles.underLine} />
+          {Ability.canView(subRole, 'PropertyLeads') && (
+            <DrawerItem
+              screen={'Property Leads'}
+              navigateTo={() => {
+                this.navigateTo('PropertyLeads')
+              }}
+            />
+          )}
           {Ability.canView(subRole, 'Dashboard') && (
             <DrawerItem
               screen={'Dashboard'}

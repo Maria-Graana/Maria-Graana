@@ -364,7 +364,7 @@ class PropertyLead extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        <FAB.Group
+        {/* <FAB.Group
           open={open}
           icon="plus"
           style={{ marginBottom: 16 }}
@@ -385,7 +385,7 @@ class PropertyLead extends React.Component {
             },
           ]}
           onStateChange={({ open }) => this.setState({ open })}
-        />
+        /> */}
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}

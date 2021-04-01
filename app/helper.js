@@ -404,6 +404,15 @@ const helper = {
       }
       contact.payload = payload
       return contact
+    } else if (customer && customer.phone) {
+      contact.payload = [
+        {
+          number: customer.phone,
+          label: 'mobile',
+          isPrimary: true,
+        },
+      ]
+      return contact
     } else return contact
   },
   deleteAndUpdateNotification(data, start, id) {

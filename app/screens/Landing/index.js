@@ -146,7 +146,7 @@ class Landing extends React.Component {
           screenName: tile,
         }
         if (label === 'Team Diary') label = "Team's Diary"
-        if (label === 'leads') label = 'Client Leads'
+        if (tile === 'Leads') label = 'Client Leads'
         let oneTile = {
           id: counter,
           label: label,

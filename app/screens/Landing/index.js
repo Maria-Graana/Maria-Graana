@@ -208,9 +208,9 @@ class Landing extends React.Component {
           ) : (
             <>
               <Text style={styles.kpiText}>KPIs:</Text>
-              <StatisticsTile imagePath={HomeBlue} value={userStatistics.avgTime} />
-              <StatisticsTile imagePath={MapBlue} value={userStatistics.listing} />
-              <StatisticsTile imagePath={TargetNew} value={userStatistics.geoTaggedListing} />
+              <StatisticsTile imagePath={TargetNew} value={userStatistics.avgTime} />
+              <StatisticsTile imagePath={HomeBlue} value={userStatistics.listing} />
+              <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
               <StatisticsTile
                 title={'LCR'}
                 value={this.showLeadWonAssignedPercentage(

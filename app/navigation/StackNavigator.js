@@ -48,6 +48,7 @@ import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import PropsureAttachment from '../screens/PropsureAttachment'
 import LegalAttachments from '../screens/LegalAttachments'
 import LegalPaymentAttachment from '../screens/LegalPaymentAttachment'
+import PropertyLeads from '../screens/PropertyLeads/index'
 
 const Stack = createStackNavigator()
 
@@ -436,6 +437,15 @@ function MainStack() {
         component={LegalPaymentAttachment}
         options={({ navigation, route }) => ({
           title: 'ATTACHMENTS',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="PropertyLeads"
+        component={PropertyLeads}
+        options={({ navigation, route }) => ({
+          title: 'Sell/Rent Out',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}

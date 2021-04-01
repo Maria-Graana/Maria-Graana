@@ -6,13 +6,13 @@ import moment from 'moment-timezone'
 import { Toast } from 'native-base'
 import { Linking } from 'react-native'
 import _ from 'underscore'
-import ClientsImg from '../assets/img/clients-icon-l.png'
-import DashboardImg from '../assets/img/dashboard-icon-l.png'
-import DiaryImg from '../assets/img/diary-icon-l.png'
+import ClientsImg from '../assets/img/client.png'
+import DashboardImg from '../assets/img/Dashboard.png'
+import DiaryImg from '../assets/img/diary.png'
 import LeadsImg from '../assets/img/lead-icon-l.png'
-import InventoryImg from '../assets/img/properties-icon-l.png'
-import TargetsImg from '../assets/img/target-icon-l.png'
-import TeamDiaryImg from '../assets/img/teams-diary-icon-l.png'
+import InventoryImg from '../assets/img/property_leads.png'
+import TargetsImg from '../assets/img/target.png'
+import TeamDiaryImg from '../assets/img/team_diary.png'
 import AppStyles from './AppStyles'
 import { intFormatPrice } from './components/PriceFormate'
 import Ability from './hoc/Ability'
@@ -238,8 +238,8 @@ const helper = {
         case 'TeamDiary':
           return TeamDiaryImg
         case 'Leads':
-          return LeadsImg
-        case 'InventoryTabs':
+          return ClientsImg
+        case 'PropertyLeads':
           return InventoryImg
         case 'Client':
           return ClientsImg

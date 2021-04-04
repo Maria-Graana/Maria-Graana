@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import { Text, TouchableOpacity } from 'react-native'
 import AppStyles from '../AppStyles'
+import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import HeaderRight from '../components/HeaderRight/index'
 import HeaderTitle from '../components/HeaderTitle/index'
@@ -15,9 +16,9 @@ import AddDiary from '../screens/AddDiary'
 import AddInventory from '../screens/AddInventory/index'
 import AddRCMLead from '../screens/AddRCMLead'
 import AreaPickerScreen from '../screens/AreaPickerScreen'
+import AssignedAreas from '../screens/AssignAreas'
 import AssignLead from '../screens/AssignLead'
 import Attachments from '../screens/Attachments'
-import LeadAttachments from '../screens/LeadAttachments'
 import AttachmentsForPayments from '../screens/AttachmentsForPayments'
 import ChangePassword from '../screens/ChangePassword'
 import Client from '../screens/Client'
@@ -27,9 +28,15 @@ import Comments from '../screens/Comments'
 import CreateUser from '../screens/CreateUser'
 import Dashboard from '../screens/Dashboard'
 import Diary from '../screens/Diary/index'
+import EditFieldAppProperty from '../screens/EditFieldAppProperty'
 import Landing from '../screens/Landing/index'
+import LeadAttachments from '../screens/LeadAttachments'
 import LeadDetail from '../screens/LeadDetail'
+import LegalAttachments from '../screens/LegalAttachments'
+import LegalPaymentAttachment from '../screens/LegalPaymentAttachment'
+import MapContainer from '../screens/MapContainer'
 import PropertyDetail from '../screens/PropertyDetail'
+import PropsureAttachment from '../screens/PropsureAttachment'
 import RCMAttachment from '../screens/RCMAttachment'
 import RCMReport from '../screens/RCMReport'
 import SingleSelectionPicker from '../screens/SingleSelectionPicker'
@@ -39,16 +46,8 @@ import TeamTargets from '../screens/TeamTargets'
 import CMLeadTabs from './CMTabNavigator'
 import InventoryTabs from './InventoryTabNavigators'
 import Lead from './LeadsNavigator'
-import RCMLeadTabs from './RCMTabNavigator'
 import PropertyTabs from './PropertyTabNavigator'
-import EditFieldAppProperty from '../screens/EditFieldAppProperty'
-import MapContainer from '../screens/MapContainer'
-import AssignedAreas from '../screens/AssignAreas'
-import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
-import PropsureAttachment from '../screens/PropsureAttachment'
-import LegalAttachments from '../screens/LegalAttachments'
-import LegalPaymentAttachment from '../screens/LegalPaymentAttachment'
-import PropertyLeads from '../screens/PropertyLeads/index'
+import RCMLeadTabs from './RCMTabNavigator'
 
 const Stack = createStackNavigator()
 
@@ -437,15 +436,6 @@ function MainStack() {
         component={LegalPaymentAttachment}
         options={({ navigation, route }) => ({
           title: 'ATTACHMENTS',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerTitleAlign: 'center',
-        })}
-      />
-      <Stack.Screen
-        name="PropertyLeads"
-        component={PropertyLeads}
-        options={({ navigation, route }) => ({
-          title: 'Sell/Rent Out',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}

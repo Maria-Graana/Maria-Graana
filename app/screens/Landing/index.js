@@ -32,7 +32,7 @@ class Landing extends React.Component {
     super(props)
     this.state = {
       tiles: [],
-      tileNames: ['Property Leads', 'Leads', 'Diary', 'Dashboard', 'Team Diary', 'Targets'],
+      tileNames: ['InventoryTabs', 'Leads', 'Diary', 'Dashboard', 'Team Diary', 'Targets'],
       loading: true,
       userStatistics: null,
     }
@@ -141,7 +141,7 @@ class Landing extends React.Component {
       let label = tile
       tile = tile.replace(/ /g, '')
       if (Ability.canView(user.subRole, tile)) {
-        if (label === 'InventoryTabs') label = 'Properties'
+        if (label === 'InventoryTabs') label = 'Property Leads'
         let oneTilee = {
           screenName: tile,
         }
@@ -168,7 +168,7 @@ class Landing extends React.Component {
   navigateFunction = (name, screenName) => {
     const { navigation } = this.props
     if (screenName === 'InventoryTabs') {
-      navigation.navigate('PropertyLeads', {
+      navigation.navigate('InventoryTabs', {
         screen: 'ARMS',
         params: { screen: screenName },
       })

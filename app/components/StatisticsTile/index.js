@@ -13,9 +13,13 @@ const displayValue = (value) => {
 const StatisticsTile = ({ value, title, imagePath }) => {
   return (
     <View style={styles.mainContainer}>
-      {title && <Text style={styles.title}>{title}</Text>}
-      {imagePath && <Image source={imagePath} style={styles.containerImg} />}
-      <Text style={styles.value}>{displayValue(value)}</Text>
+      <View style={styles.flexView}>
+        {title && <Text style={styles.title}>{title}</Text>}
+        {imagePath && <Image source={imagePath} style={styles.containerImg} />}
+      </View>
+      <View style={styles.flexView}>
+        <Text style={styles.value}>{displayValue(value)}</Text>
+      </View>
     </View>
   )
 }
@@ -23,6 +27,9 @@ const StatisticsTile = ({ value, title, imagePath }) => {
 export default StatisticsTile
 
 const styles = StyleSheet.create({
+  flexView: {
+    flex: 0.5,
+  },
   mainContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

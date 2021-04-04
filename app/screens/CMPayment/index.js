@@ -111,10 +111,11 @@ class CMPayment extends Component {
     //   .catch((err) => console.log(err))
     const { firstForm, secondForm } = this.state
     const { lead } = this.props
-    const { paidProject } = lead
+    const { paidProject, project } = lead
     if (firstForm) {
-      if (paidProject && paidProject.id) {
-        this.getFloors(paidProject.id)
+      let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
+      if ((paidProject && paidProject.id) || (project && project.id)) {
+        this.getFloors(projectID)
       }
     }
     if (secondForm) {
@@ -663,8 +664,15 @@ class CMPayment extends Component {
   // **************** First Screen Starts *******************
 
   setdefaultFields = (lead) => {
-    const { checkPaymentPlan } = this.state
+    const { checkPaymentPlan, firstForm } = this.state
     const { cmProgressBar } = StaticData
+    const { paidProject, project } = lead
+    if (firstForm) {
+      let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
+      if ((paidProject && paidProject.id) || (project && project.id)) {
+        this.getFloors(projectID)
+      }
+    }
     var newcheckPaymentPlan = { ...checkPaymentPlan }
     newcheckPaymentPlan['years'] =
       (lead.paidProject != null && lead.paidProject.installment_plan != null) || ''

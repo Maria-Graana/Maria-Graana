@@ -5,17 +5,18 @@ import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   tileView: {
-    minHeight: 100,
+    minHeight: 50,
     backgroundColor: '#fff',
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
     paddingVertical: 5,
+    justifyContent: 'center',
   },
   titleView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+    paddingBottom: 10,
   },
   titleText: {
     // alignSelf: 'center',

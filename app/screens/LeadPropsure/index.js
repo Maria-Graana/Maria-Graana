@@ -73,6 +73,8 @@ class LeadPropsure extends React.Component {
       previousPayment: 0,
       selectedPayment: {},
       legalDocLoader: false,
+      assignToAccountsLoading: false,
+      officeLocations: [],
     }
   }
 
@@ -80,6 +82,7 @@ class LeadPropsure extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
+        this.fetchOfficeLocations()
         this.fetchLegalPaymentInfo()
         this.fetchLead(lead)
         this.getCallHistory()
@@ -88,6 +91,7 @@ class LeadPropsure extends React.Component {
       } else {
         const { lead, rcmPayment, dispatch } = this.props
         dispatch(setRCMPayment({ ...rcmPayment, visible: false }))
+        this.fetchOfficeLocations()
         this.fetchLegalPaymentInfo()
         this.fetchLead(lead)
         this.getCallHistory()
@@ -112,6 +116,26 @@ class LeadPropsure extends React.Component {
       })
       .catch((error) => {
         console.log(`ERROR: api/inventory/listpropsureReports: ${error}`)
+      })
+  }
+
+  fetchOfficeLocations = () => {
+    axios
+      .get(`/api/user/locations`)
+      .then((response) => {
+        if (response.data) {
+          this.setState({
+            officeLocations: response.data.map((item) => {
+              return {
+                name: item.name,
+                value: item.id,
+              }
+            }),
+          })
+        }
+      })
+      .catch((error) => {
+        console.log(`/api/user/locations`, error)
       })
   }
 
@@ -936,6 +960,34 @@ class LeadPropsure extends React.Component {
     }
   }
 
+  assignToAccounts = () => {
+    Alert.alert(
+      'Assign to Accounts',
+      'Are you sure you want to assign this payment to accounts?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            const { propsurePayment, dispatch } = this.props
+            await dispatch(
+              setPropsurePayment({ ...propsurePayment, visible: false, status: 'pendingAccount' })
+            )
+            this.setState({ assignToAccountsLoading: true }, () => {
+              this.submitCommissionPropsurePayment()
+            })
+          },
+        },
+      ],
+      { cancelable: false }
+    )
+  }
+
+  handleOfficeLocation = (value) => {
+    const { rcmPayment, dispatch } = this.props
+    dispatch(setPropsurePayment({ ...propsurePayment, officeLocationId: value }))
+  }
+
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
 
   render() {
@@ -947,7 +999,6 @@ class LeadPropsure extends React.Component {
       matchData,
       isVisible,
       documentModalVisible,
-      checkValidation,
       pendingPropsures,
       selectedReports,
       progressValue,
@@ -966,6 +1017,8 @@ class LeadPropsure extends React.Component {
       selectedProperty,
       deletePaymentVisible,
       legalDocLoader,
+      assignToAccountsLoading,
+      officeLocations,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1018,10 +1071,20 @@ class LeadPropsure extends React.Component {
           handleCommissionChange={this.handleCommissionChange}
           modalValidation={modalValidation}
           goToPayAttachments={() => this.goToPayAttachments(selectedProperty)}
-          submitCommissionPayment={() => this.submitCommissionPropsurePayment()}
+          submitCommissionPayment={() => {
+            this.setState({ addPaymentLoading: true }, () => {
+              this.submitCommissionPropsurePayment()
+            })
+          }}
           addPaymentLoading={addPaymentLoading}
           lead={lead}
           paymentNotZero={buyerNotZero}
+          assignToAccounts={() => {
+            this.assignToAccounts()
+          }}
+          officeLocations={officeLocations}
+          handleOfficeLocationChange={this.handleOfficeLocation}
+          assignToAccountsLoading={assignToAccountsLoading}
         />
         <DeleteModal
           isVisible={deletePaymentVisible}

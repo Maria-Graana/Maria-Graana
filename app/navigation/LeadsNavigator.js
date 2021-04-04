@@ -65,7 +65,7 @@ function LeadsNavigator(props) {
           ),
         }}
       />
-      {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
+      <Tab.Screen name="Sell/Rent Out" component={PropertyLead} />
       <Tab.Screen
         name={`Invest`}
         options={{

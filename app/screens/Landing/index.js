@@ -40,11 +40,11 @@ class Landing extends React.Component {
 
   componentDidMount() {
     const { navigation, dispatch, contacts } = this.props
-    // this._unsubscribe = navigation.addListener('focus', () => {
-    dispatch(getListingsCount())
-    this.props.dispatch(setContacts())
-    this.getUserStatistics()
-    // })
+    this._unsubscribe = navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      this.props.dispatch(setContacts())
+      this.getUserStatistics()
+    })
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
   }
@@ -127,9 +127,9 @@ class Landing extends React.Component {
     Linking.addEventListener('url', this._handleRedirectInForeground)
   }
 
-  // componentWillUnmount() {
-  //   this._unsubscribe()
-  // }
+  componentWillUnmount() {
+    this._unsubscribe()
+  }
 
   fetchTiles = () => {
     const { user, count } = this.props
@@ -213,8 +213,8 @@ class Landing extends React.Component {
           <AntDesign
             style={styles.falseStatsIcon}
             name="rightcircle"
-            color="white"
-            size={26}
+            color="#fff"
+            size={30}
             onPress={this.toggleStats}
           />
         ) : null}
@@ -224,7 +224,7 @@ class Landing extends React.Component {
               style={styles.trueStatsIcon}
               name="leftcircle"
               color="#fff"
-              size={26}
+              size={30}
               onPress={this.toggleStats}
             />
           ) : null}

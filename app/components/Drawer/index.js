@@ -96,7 +96,11 @@ class CustomDrawerContent extends React.Component {
                     } */}
           {Ability.canView(subRole, 'InventoryTabs') && (
             <DrawerIconItem
-              screen={'Property Leads'}
+              screen={
+                user && user.organization && user.organization.isPP
+                  ? 'Properties'
+                  : 'Property Leads'
+              }
               badges={count.inventory}
               navigateTo={() => {
                 this.navigateToProperties()

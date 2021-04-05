@@ -14,6 +14,7 @@ import TouchableInput from '../TouchableInput'
 import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
+import OfficeLocationSelector from '../OfficeLocationSelector'
 
 const AddPropsurePayment = ({
   onModalCloseClick,
@@ -22,9 +23,14 @@ const AddPropsurePayment = ({
   propsurePayment,
   goToPayAttachments,
   addPaymentLoading,
+  assignToAccountsLoading,
   lead,
   submitCommissionPayment,
   paymentNotZero,
+  editTextInput = true,
+  assignToAccounts,
+  officeLocations,
+  handleOfficeLocationChange,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -79,6 +85,7 @@ const AddPropsurePayment = ({
             formatValue={propsurePayment.installmentAmount}
             keyboardType={'numeric'}
             onChangeHandle={handleCommissionChange}
+            editable={editTextInput && propsurePayment.status !== 'pendingAccount'}
           />
           {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {modalValidation === true &&
@@ -89,6 +96,7 @@ const AddPropsurePayment = ({
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent
                 onValueChange={handleCommissionChange}
+                enabled={propsurePayment.status !== 'pendingAccount'}
                 data={StaticData.fullPaymentType}
                 name={'type'}
                 placeholder="Type"
@@ -106,6 +114,7 @@ const AddPropsurePayment = ({
             placeholder={'Details'}
             label={'DETAILS'}
             value={propsurePayment.details != '' ? propsurePayment.details : ''}
+            editable={propsurePayment.status !== 'pendingAccount'}
             formatValue={''}
             onChangeHandle={handleCommissionChange}
           />
@@ -154,52 +163,120 @@ const AddPropsurePayment = ({
             propsurePayment.installmentAmount != '' &&
             propsurePayment.type != '' && (
               <TouchableOpacity
-                style={styles.addPaymentBtn}
+                style={[
+                  styles.addPaymentBtn,
+                  {
+                    backgroundColor:
+                      propsurePayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                    borderColor:
+                      propsurePayment.status === 'pendingAccount'
+                        ? '#8baaef'
+                        : AppStyles.colors.primaryColor,
+                  },
+                ]}
+                disabled={propsurePayment.status === 'pendingAccount'}
                 onPress={() => {
                   goToPayAttachments()
                 }}
               >
-                <Image
-                  style={styles.addPaymentBtnImg}
-                  source={require('../../../assets/img/roundPlus.png')}
-                ></Image>
-                <Text style={styles.addPaymentBtnText}>ADD ATTACHMENTS</Text>
+                <Text
+                  style={[
+                    styles.addPaymentBtnText,
+                    {
+                      color:
+                        propsurePayment.status === 'pendingAccount'
+                          ? '#f3f5f7'
+                          : AppStyles.colors.primaryColor,
+                    },
+                  ]}
+                >
+                  ADD ATTACHMENTS
+                </Text>
               </TouchableOpacity>
             )}
 
-          {lead.commissions && lead.commissions.status === 'rejected' ? (
-            <View style={styles.reSubmitBtnMain}>
-              <TouchableButton
-                containerStyle={[styles.bookedBtn, { marginRight: 3 }]}
-                label={'Cancel'}
-                loading={false}
-                fontSize={16}
-                fontFamily={AppStyles.fonts.boldFont}
-                onPress={() => onModalCloseClick()}
-              />
+          {propsurePayment.id ? (
+            <OfficeLocationSelector
+              officeLocations={officeLocations}
+              officeLocationId={propsurePayment.officeLocationId}
+              handleOfficeLocationChange={handleOfficeLocationChange}
+              disabled={propsurePayment.status === 'pendingAccount'}
+            />
+          ) : null}
 
+          <View style={styles.row}>
+            {propsurePayment.status && propsurePayment.paymentCategory !== 'token' ? (
               <TouchableButton
-                containerStyle={[styles.bookedBtn, styles.reSubmitBtns]}
-                containerBackgroundColor={AppStyles.whiteColor.color}
-                label={'RE-SUBMIT'}
-                loaderColor={AppStyles.colors.primaryColor}
+                disabled={
+                  propsurePayment.status !== 'open' &&
+                  propsurePayment.status !== 'pendingSales' &&
+                  propsurePayment.status !== 'notCleared'
+                }
+                containerBackgroundColor={
+                  propsurePayment.status === 'open' ||
+                  propsurePayment.status === 'pendingSales' ||
+                  propsurePayment.status === 'notCleared'
+                    ? AppStyles.colors.primaryColor
+                    : '#8baaef'
+                }
+                containerStyle={[
+                  styles.bookedBtn,
+                  {
+                    width: '50%',
+                    marginVertical: 15,
+                    marginRight: 10,
+                    borderColor:
+                      propsurePayment.status === 'open' ||
+                      propsurePayment.status === 'pendingSales' ||
+                      propsurePayment.status === 'notCleared'
+                        ? AppStyles.colors.primaryColor
+                        : '#8baaef',
+                  },
+                ]}
+                label={'ASSIGN TO ACCOUNTS'}
+                textColor={
+                  propsurePayment.status === 'open' ||
+                  propsurePayment.status === 'pendingSales' ||
+                  propsurePayment.status === 'notCleared'
+                    ? '#fff'
+                    : '#f3f5f7'
+                }
                 fontFamily={AppStyles.fonts.boldFont}
                 fontSize={16}
-                loading={addPaymentLoading}
-                textColor={AppStyles.colors.primaryColor}
-                onPress={() => submitCommissionPayment()}
+                loading={assignToAccountsLoading}
+                onPress={() => assignToAccounts()}
               />
-            </View>
-          ) : (
+            ) : null}
+
             <TouchableButton
-              containerStyle={[styles.bookedBtn, { width: '100%' }]}
+              containerStyle={[
+                styles.bookedBtn,
+                {
+                  width:
+                    propsurePayment.status && propsurePayment.paymentCategory !== 'token'
+                      ? '45%'
+                      : '100%',
+                  marginVertical: 15,
+                  borderColor:
+                    propsurePayment.status !== 'pendingAccount'
+                      ? AppStyles.colors.primaryColor
+                      : '#8baaef',
+                },
+              ]}
+              containerBackgroundColor={
+                propsurePayment.status !== 'pendingAccount'
+                  ? AppStyles.colors.primaryColor
+                  : '#8baaef'
+              }
+              textColor={propsurePayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
+              disabled={propsurePayment.status === 'pendingAccount'}
               label={'OK'}
               fontFamily={AppStyles.fonts.boldFont}
-              fontSize={18}
+              fontSize={16}
               loading={addPaymentLoading}
               onPress={() => submitCommissionPayment()}
             />
-          )}
+          </View>
         </View>
       </View>
     </Modal>
@@ -253,10 +330,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
     borderRadius: 4,
-    marginBottom: 15,
+    marginVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 15,
   },
   addPaymentBtnImg: {
     resizeMode: 'contain',
@@ -371,5 +447,9 @@ const styles = StyleSheet.create({
   },
   rotateImg: {
     transform: [{ rotate: '180deg' }],
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 })

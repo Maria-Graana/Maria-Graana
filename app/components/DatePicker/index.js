@@ -18,9 +18,8 @@ const DateTimePicker = ({
   showError,
   errorMessage,
   iconSource,
-  disabled, }) => {
+  disabled= false, }) => {
   const [visible, setVisible] = useState(false);
-  
   const handleOnConfirm = (date) => {
     setVisible(false);
     handleForm(date, name);
@@ -30,6 +29,7 @@ const DateTimePicker = ({
       <DateTimePickerModal
         date={date}
         isVisible={visible}
+        
         // minimumDate={mode == 'date' ? new Date() : null}
         headerTextIOS={mode === 'date' ? 'Pick date' : 'Pick Time'}
         mode={mode}
@@ -38,7 +38,7 @@ const DateTimePicker = ({
         
       />
       <TouchableInput
-        disabled={mode == 'time' ? disabled : false}
+        disabled={disabled}
         placeholder={placeholderLabel}
         onPress={() => setVisible(true)}
         value={selectedValue}

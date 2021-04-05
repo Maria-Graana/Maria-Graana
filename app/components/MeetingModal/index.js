@@ -13,6 +13,9 @@ import TouchableButton from '../../components/TouchableButton';
 class MeetingModal extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      selectedOption: 'tomorrow',
+    }
   }
 
   render() {
@@ -30,6 +33,7 @@ class MeetingModal extends React.Component {
       formSubmitDiary,
       loading,
     } = this.props
+    const { selectedOption } = this.state;
     if (diaryForm === true) {
       return (
         <Modal isVisible={active}>
@@ -38,11 +42,49 @@ class MeetingModal extends React.Component {
               <Image source={times} style={styles.timesImg} />
             </TouchableOpacity>
 
+            <View style={styles.row}>
+
+              <TouchableButton label={"Tomorrow"}
+                loading={false}
+                onPress={() => this.setState({ selectedOption: 'tomorrow' })}
+                containerStyle={styles.button}
+                containerBackgroundColor={selectedOption === 'tomorrow' ? AppStyles.colors.primaryColor : '#8baaef'}
+              />
+
+              <TouchableButton label={"Next Week"}
+                loading={false}
+                onPress={() => this.setState({ selectedOption: 'next week' })}
+                containerBackgroundColor={selectedOption === 'next week' ? AppStyles.colors.primaryColor : '#8baaef'}
+                containerStyle={styles.button}
+              />
+
+            </View>
+
+
+            <View style={styles.row}>
+
+              <TouchableButton label={"Next Month"}
+                loading={false}
+                onPress={() => this.setState({ selectedOption: 'next month' })}
+                containerStyle={styles.button}
+                containerBackgroundColor={selectedOption === 'next month' ? AppStyles.colors.primaryColor : '#8baaef'}
+              />
+
+              <TouchableButton label={"Custom"}
+                loading={false}
+                onPress={() => this.setState({ selectedOption: 'custom' })}
+                containerBackgroundColor={selectedOption === 'custom' ? AppStyles.colors.primaryColor : '#8baaef'}
+                containerStyle={styles.button}
+              />
+
+            </View>
+
             <View style={[styles.formMain]}>
               <DateTimePicker
                 placeholderLabel={'Select Date'}
                 name={'date'}
                 mode={'date'}
+                disabled={selectedOption != 'custom'}
                 showError={checkValidation === true && diaryTask.date === ''}
                 errorMessage={'Required'}
                 iconSource={require('../../../assets/img/calendar.png')}
@@ -55,6 +97,7 @@ class MeetingModal extends React.Component {
                 placeholderLabel={'Select Time'}
                 name={'start'}
                 mode={'time'}
+                disabled={selectedOption != 'custom'}
                 showError={checkValidation === true && diaryTask.start === ''}
                 errorMessage={'Required'}
                 iconSource={require('../../../assets/img/clock.png')}

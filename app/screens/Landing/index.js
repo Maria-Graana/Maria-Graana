@@ -1,31 +1,30 @@
 /** @format */
 
-import { FlatList, SafeAreaView } from 'react-native'
+import axios from 'axios'
 import * as Linking from 'expo-linking'
-import Ability from '../../hoc/Ability'
-import AppStyles from '../../AppStyles'
-import styles from './style'
-import helper from '../../helper'
-import LandingTile from '../../components/LandingTile'
-import PushNotification from '../../PushNotifications'
-import AndroidNotifications from '../../AndroidNotifications'
 import React from 'react'
+import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View, Platform } from 'react-native'
+import { AntDesign, FontAwesome5 } from '@expo/vector-icons'
 import { connect } from 'react-redux'
-import { getListingsCount } from '../../actions/listings'
-import { View, TouchableOpacity, Text, Image } from 'react-native'
 import addIcon from '../../../assets/img/add-icon-l.png'
+import HomeBlue from '../../../assets/img/home-blue.png'
+import MapBlue from '../../../assets/img/map-blue.png'
+import TargetNew from '../../../assets/img/target-new.png'
 import { setContacts } from '../../actions/contacts'
+import { getListingsCount } from '../../actions/listings'
+import AndroidNotifications from '../../AndroidNotifications'
+import AppStyles from '../../AppStyles'
+import LandingTile from '../../components/LandingTile'
+import Loader from '../../components/loader'
+import StatisticsTile from '../../components/StatisticsTile'
+import helper from '../../helper'
+import Ability from '../../hoc/Ability'
+import UpdateApp from '../../UpdateApp'
+import styles from './style'
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen'
-import UpdateApp from '../../UpdateApp'
-import StatisticsTile from '../../components/StatisticsTile'
-import Loader from '../../components/loader'
-import axios from 'axios'
-import HomeBlue from '../../../assets/img/home-blue.png'
-import MapBlue from '../../../assets/img/map-blue.png'
-import TargetNew from '../../../assets/img/target-new.png'
 
 class Landing extends React.Component {
   constructor(props) {
@@ -35,16 +34,17 @@ class Landing extends React.Component {
       tileNames: ['InventoryTabs', 'Leads', 'Diary', 'Dashboard', 'Team Diary', 'Targets'],
       loading: true,
       userStatistics: null,
+      toggleStatsTile: true,
     }
   }
 
   componentDidMount() {
     const { navigation, dispatch, contacts } = this.props
-    this._unsubscribe = navigation.addListener('focus', () => {
-      dispatch(getListingsCount())
-      this.props.dispatch(setContacts())
-      this.getUserStatistics()
-    })
+    // this._unsubscribe = navigation.addListener('focus', () => {
+    dispatch(getListingsCount())
+    this.props.dispatch(setContacts())
+    this.getUserStatistics()
+    // })
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
   }
@@ -127,9 +127,9 @@ class Landing extends React.Component {
     Linking.addEventListener('url', this._handleRedirectInForeground)
   }
 
-  componentWillUnmount() {
-    this._unsubscribe()
-  }
+  // componentWillUnmount() {
+  //   this._unsubscribe()
+  // }
 
   fetchTiles = () => {
     const { user, count } = this.props
@@ -177,8 +177,15 @@ class Landing extends React.Component {
     }
   }
 
+  toggleStats = () => {
+    const { toggleStatsTile } = this.state
+    this.setState({
+      toggleStatsTile: !toggleStatsTile,
+    })
+  }
+
   render() {
-    const { tiles, userStatistics, loading } = this.state
+    const { tiles, userStatistics, loading, toggleStatsTile } = this.state
     const { user, navigation } = this.props
 
     return (
@@ -202,24 +209,48 @@ class Landing extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
           />
         ) : null}
-        <View style={styles.kpiContainer}>
-          {loading ? (
-            <Loader loading={loading} />
-          ) : (
-            <>
-              <Text style={styles.kpiText}>KPIs:</Text>
-              <StatisticsTile imagePath={HomeBlue} value={userStatistics.avgTime} />
-              <StatisticsTile imagePath={MapBlue} value={userStatistics.listing} />
-              <StatisticsTile imagePath={TargetNew} value={userStatistics.geoTaggedListing} />
-              <StatisticsTile
-                title={'LCR'}
-                value={this.showLeadWonAssignedPercentage(
-                  userStatistics.won,
-                  userStatistics.totalLeads
-                )}
-              />
-            </>
-          )}
+        {!toggleStatsTile ? (
+          <AntDesign
+            style={styles.falseStatsIcon}
+            name="rightcircle"
+            color="white"
+            size={26}
+            onPress={this.toggleStats}
+          />
+        ) : null}
+        <View style={toggleStatsTile ? styles.kpiContainer : styles.kpiContainerFalse}>
+          {toggleStatsTile ? (
+            <AntDesign
+              style={styles.trueStatsIcon}
+              name="leftcircle"
+              color="#fff"
+              size={26}
+              onPress={this.toggleStats}
+            />
+          ) : null}
+          {toggleStatsTile ? (
+            <View>
+              {loading ? (
+                <View style={styles.loaderView}>
+                  <Loader loading={loading} />
+                </View>
+              ) : (
+                <>
+                  <Text style={styles.kpiText}>KPIs:</Text>
+                  <StatisticsTile imagePath={TargetNew} value={userStatistics.avgTime} />
+                  <StatisticsTile imagePath={HomeBlue} value={userStatistics.listing} />
+                  <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
+                  <StatisticsTile
+                    title={'LCR'}
+                    value={this.showLeadWonAssignedPercentage(
+                      userStatistics.won,
+                      userStatistics.totalLeads
+                    )}
+                  />
+                </>
+              )}
+            </View>
+          ) : null}
         </View>
         <View style={styles.btnView}>
           {Ability.canAdd(user.subRole, 'InventoryTabs') ? (

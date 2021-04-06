@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import styles from './style';
 import times from '../../../assets/img/times.png'
 import StaticData from '../../StaticData'
 import Modal from 'react-native-modal';
+import AppStyles from '../../AppStyles';
 
 class MeetingStatusModal extends React.Component {
   constructor(props) {
@@ -29,11 +30,11 @@ class MeetingStatusModal extends React.Component {
         taskTypeData = StaticData.callStatus
       return (
         <Modal isVisible={doneStatus}>
-          <View style={[styles.dotsWrap]}>
-            <View style={[styles.dropDownMain]}>
-              <TouchableOpacity style={styles.timesBtn} onPress={() => { openStatus('') }}>
+          <SafeAreaView style={[AppStyles.mb1, styles.dropDownMain]}>
+          <TouchableOpacity style={styles.timesBtn} onPress={() => { openStatus('') }}>
                 <Image source={times} style={styles.timesImg} />
               </TouchableOpacity>
+            <ScrollView>
               {
                 taskTypeData.map((item, key) => {
                   return (
@@ -43,8 +44,8 @@ class MeetingStatusModal extends React.Component {
                   )
                 })
               }
-            </View>
-          </View>
+            </ScrollView>
+          </SafeAreaView>
         </Modal>
       )
     }

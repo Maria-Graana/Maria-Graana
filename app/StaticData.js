@@ -302,6 +302,12 @@ export default StaticData = {
   ],
   callStatus: [
     { value: 'no_response', name: 'No Response' },
+    { value: 'no_response_busy', name: 'No Response - Busy' },
+    { value: 'no_response_no_signals', name: 'No Response - No signals' },
+    { value: 'not_interested', name: 'Not Interested' },
+    { value: 'not_interested_low_budget', name: 'Not Interested - Low Budget' },
+    { value: 'not_interested_re_only', name: 'Not Interested - Interested in RE Only' },
+    { value: 'not_interested_out_of_city', name: 'Not Interested - Out of City' },
     { value: 'powered_off', name: 'Powered Off' },
     { value: 'invalid_number', name: 'Invalid Number' },
     { value: 'follow_up', name: 'Follow-up' },
@@ -312,7 +318,8 @@ export default StaticData = {
     { value: 'awaiting_call', name: 'Awaiting Response' },
     { value: 'details_sent', name: 'Details Sent' },
     { value: 'expected_visit', name: 'Expected Visit' },
-    { value: 'not_interested', name: 'Not Interested' },
+    { value: 'number_not_on_whatsapp', name: 'Number not on WhatsApp' },
+
   ],
   meetingStatus: [
     { value: 'visited', name: 'Visited' },

@@ -308,7 +308,7 @@ class Meetings extends Component {
     const endTime = moment()
     const add20Minutes = startTime.add(20, 'minutes')
     const newformData = { ...diaryTask }
-    newformData['taskType'] = 'follow up'
+    newformData['taskType'] = 'follow_up'
     newformData['start'] = add20Minutes
     newformData['end'] = endTime
     newformData['date'] = add20Minutes

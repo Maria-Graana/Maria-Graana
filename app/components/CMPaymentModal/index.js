@@ -31,7 +31,7 @@ const CMPaymentModal = ({
   assignToAccounts,
   officeLocations,
   handleOfficeLocationChange,
-  assignToAccountsLoading
+  assignToAccountsLoading,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -39,8 +39,8 @@ const CMPaymentModal = ({
   const [remarks, setRemarks] = useState([])
   const [loading, setLoading] = useState(false)
   const [isCollapsed, setCollapsed] = useState(false)
-  const [editLocation, setEditLocation] = useState(false);
-  const officeLocation = officeLocations.find(item => item.value === CMPayment.officeLocationId);
+  const [editLocation, setEditLocation] = useState(false)
+  const officeLocation = officeLocations.find((item) => item.value === CMPayment.officeLocationId)
   const fetchRemarks = () => {
     if (isCollapsed === false) {
       const url = `/api/leads/paymentremarks?id=${CMPayment.id}`
@@ -133,7 +133,7 @@ const CMPaymentModal = ({
           />
           {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {modalValidation === true &&
-            (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
+          (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
             <ErrorMessage errorMessage={'Required'} />
           ) : null}
           <View style={[AppStyles.mainInputWrap]}>
@@ -209,16 +209,33 @@ const CMPaymentModal = ({
             !checkFirstFormToken && (
               <TouchableOpacity
                 disabled={CMPayment.status === 'pendingAccount'}
-                style={[styles.addPaymentBtn,
-                {
-                  backgroundColor: CMPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
-                  borderColor: CMPayment.status === 'pendingAccount' ? '#8baaef' : AppStyles.colors.primaryColor
-                }]}
+                style={[
+                  styles.addPaymentBtn,
+                  {
+                    backgroundColor: CMPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                    borderColor:
+                      CMPayment.status === 'pendingAccount'
+                        ? '#8baaef'
+                        : AppStyles.colors.primaryColor,
+                  },
+                ]}
                 onPress={() => {
                   goToPayAttachments()
                 }}
               >
-                <Text style={[styles.addPaymentBtnText, { color: CMPayment.status === 'pendingAccount' ? '#f3f5f7' : AppStyles.colors.primaryColor }]}>ADD ATTACHMENTS</Text>
+                <Text
+                  style={[
+                    styles.addPaymentBtnText,
+                    {
+                      color:
+                        CMPayment.status === 'pendingAccount'
+                          ? '#f3f5f7'
+                          : AppStyles.colors.primaryColor,
+                    },
+                  ]}
+                >
+                  ADD ATTACHMENTS
+                </Text>
               </TouchableOpacity>
             )}
 
@@ -229,41 +246,68 @@ const CMPaymentModal = ({
               handleOfficeLocationChange={handleOfficeLocationChange}
               disabled={CMPayment.status === 'pendingAccount'}
             />
-          ) : null
-          }
+          ) : null}
 
           <View style={styles.row}>
-
-            {
-              CMPayment.status ? <TouchableButton
-                disabled={(CMPayment.status !== 'open' && CMPayment.status !== 'pendingSales' && CMPayment.status !== 'notCleared')}
-                containerBackgroundColor={(CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || CMPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'}
-                containerStyle={[styles.bookedBtn, {
-                  width: '50%',
-                  marginVertical: 15,
-                  marginRight: 10,
-                  borderColor: (CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || CMPayment.status === 'notCleared') ? AppStyles.colors.primaryColor : '#8baaef'
-                }]}
+            {CMPayment.status ? (
+              <TouchableButton
+                disabled={
+                  CMPayment.status !== 'open' &&
+                  CMPayment.status !== 'pendingSales' &&
+                  CMPayment.status !== 'notCleared'
+                }
+                containerBackgroundColor={
+                  CMPayment.status === 'open' ||
+                  CMPayment.status === 'pendingSales' ||
+                  CMPayment.status === 'notCleared'
+                    ? AppStyles.colors.primaryColor
+                    : '#8baaef'
+                }
+                containerStyle={[
+                  styles.bookedBtn,
+                  {
+                    width: '50%',
+                    marginVertical: 15,
+                    marginRight: 10,
+                    borderColor:
+                      CMPayment.status === 'open' ||
+                      CMPayment.status === 'pendingSales' ||
+                      CMPayment.status === 'notCleared'
+                        ? AppStyles.colors.primaryColor
+                        : '#8baaef',
+                  },
+                ]}
                 label={'ASSIGN TO ACCOUNTS'}
-                textColor={(CMPayment.status === 'open' || CMPayment.status === 'pendingSales' || CMPayment.status === 'notCleared') ? '#fff' : '#f3f5f7'}
+                textColor={
+                  CMPayment.status === 'open' ||
+                  CMPayment.status === 'pendingSales' ||
+                  CMPayment.status === 'notCleared'
+                    ? '#fff'
+                    : '#f3f5f7'
+                }
                 fontFamily={AppStyles.fonts.boldFont}
                 fontSize={16}
                 loading={assignToAccountsLoading}
                 onPress={() => assignToAccounts()}
               />
-                : null
-            }
-
-
+            ) : null}
 
             <TouchableButton
-              containerStyle={[styles.bookedBtn, {
-                width:  CMPayment.status ? '45%%' : '100%',
-                marginVertical: 15,
-                borderColor: (CMPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef'
-              }]}
-              containerBackgroundColor={(CMPayment.status !== 'pendingAccount') ? AppStyles.colors.primaryColor : '#8baaef'}
-              textColor={(CMPayment.status !== 'pendingAccount') ? '#fff' : '#f3f5f7'}
+              containerStyle={[
+                styles.bookedBtn,
+                {
+                  width: CMPayment.status ? '45%' : '100%',
+                  marginVertical: 15,
+                  borderColor:
+                    CMPayment.status !== 'pendingAccount'
+                      ? AppStyles.colors.primaryColor
+                      : '#8baaef',
+                },
+              ]}
+              containerBackgroundColor={
+                CMPayment.status !== 'pendingAccount' ? AppStyles.colors.primaryColor : '#8baaef'
+              }
+              textColor={CMPayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
               label={'OK'}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={16}
@@ -271,10 +315,7 @@ const CMPaymentModal = ({
               onPress={() => submitCommissionPayment()}
               disabled={CMPayment.status === 'pendingAccount'}
             />
-
           </View>
-
-
         </View>
       </View>
     </Modal>
@@ -326,7 +367,7 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     fontSize: 18,
     fontWeight: 'bold',
-    marginVertical:10,
+    marginVertical: 10,
     letterSpacing: 2,
     borderRadius: 4,
     justifyContent: 'center',
@@ -448,6 +489,6 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 })

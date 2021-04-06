@@ -42,11 +42,11 @@ class Landing extends React.Component {
 
   componentDidMount() {
     const { navigation, dispatch, contacts } = this.props
-    // this._unsubscribe = navigation.addListener('focus', () => {
-    dispatch(getListingsCount())
-    this.props.dispatch(setContacts())
-    this.getUserStatistics()
-    // })
+    this._unsubscribe = navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      this.props.dispatch(setContacts())
+      this.getUserStatistics()
+    })
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
   }
@@ -130,7 +130,7 @@ class Landing extends React.Component {
   }
 
   componentWillUnmount() {
-    // this._unsubscribe()
+    this._unsubscribe()
   }
 
   fetchTiles = () => {

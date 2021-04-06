@@ -99,7 +99,7 @@ export default styles = StyleSheet.create({
     backgroundColor: 'white',
     minWidth: wp('5%'),
     position: 'absolute',
-    height: hp('18%'),
+    minHeight: hp('18%'),
     bottom: hp('15%'),
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,

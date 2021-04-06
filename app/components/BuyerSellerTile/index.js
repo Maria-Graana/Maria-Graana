@@ -53,10 +53,27 @@ class BuyerSellerTile extends React.Component {
     let disabledSwitch = this.switchToggle()
     return (
       <View style={styles.tileView}>
-        <View style={[styles.titleView, { paddingVertical: 0, paddingBottom: 10 }]}>
-          <Text style={styles.titleText}>{tileTitle}</Text>
+        <View
+          style={[
+            styles.titleView,
+            commissionNotApplicableBuyerSeller ? { paddingBottom: 0 } : null,
+          ]}
+        >
+          <Text
+            style={[
+              styles.titleText,
+              commissionNotApplicableBuyerSeller ? { alignSelf: 'center' } : null,
+            ]}
+          >
+            {tileTitle}
+          </Text>
           {commissionNotApplicableBuyerSeller ? (
-            <Text style={styles.titleText}>
+            <Text
+              style={[
+                styles.titleText,
+                commissionNotApplicableBuyerSeller ? { alignSelf: 'center' } : null,
+              ]}
+            >
               {tileType === 'seller'
                 ? '(Seller Side Not Applicable)'
                 : '(Buyer Side Not Applicable)'}
@@ -77,37 +94,41 @@ class BuyerSellerTile extends React.Component {
             />
           )}
         </View>
-        <RCMBTN
-          onClick={() => closeLegalDocument(tileType)}
-          btnImage={null}
-          btnText={'LEGAL SERVICES'}
-          checkLeadClosedOrNot={false}
-          hiddenBtn={commissionNotApplicableBuyerSeller}
-          addBorder={true}
-        />
-        {lead.commissions ? (
-          payment ? (
-            <CommissionTile
-              data={payment}
-              editTile={editTile}
-              onPaymentLongPress={() => onPaymentLongPress(payment)}
-              commissionEdit={onReadOnly}
-              title={payment ? commissionTitle : ''}
+        {!commissionNotApplicableBuyerSeller ? (
+          <View>
+            <RCMBTN
+              onClick={() => closeLegalDocument(tileType)}
+              btnImage={null}
+              btnText={'LEGAL SERVICES'}
+              checkLeadClosedOrNot={false}
+              hiddenBtn={commissionNotApplicableBuyerSeller}
+              addBorder={true}
             />
-          ) : (
-            <View style={{ paddingTop: 10 }}>
-              {paymentCommission ? (
-                <RCMBTN
-                  onClick={() => onAddCommissionPayment(tileType, 'commission')}
-                  btnImage={RoundPlus}
-                  btnText={RCMBTNTitle}
-                  checkLeadClosedOrNot={false}
-                  hiddenBtn={onReadOnly}
-                  addBorder={true}
+            {lead.commissions ? (
+              payment ? (
+                <CommissionTile
+                  data={payment}
+                  editTile={editTile}
+                  onPaymentLongPress={() => onPaymentLongPress(payment)}
+                  commissionEdit={onReadOnly}
+                  title={payment ? commissionTitle : ''}
                 />
-              ) : null}
-            </View>
-          )
+              ) : (
+                <View style={{ paddingTop: 10 }}>
+                  {paymentCommission ? (
+                    <RCMBTN
+                      onClick={() => onAddCommissionPayment(tileType, 'commission')}
+                      btnImage={RoundPlus}
+                      btnText={RCMBTNTitle}
+                      checkLeadClosedOrNot={false}
+                      hiddenBtn={onReadOnly}
+                      addBorder={true}
+                    />
+                  ) : null}
+                </View>
+              )
+            ) : null}
+          </View>
         ) : null}
       </View>
     )

@@ -7,6 +7,8 @@ import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View, Platform }
 import { AntDesign, FontAwesome5 } from '@expo/vector-icons'
 import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
+import RightArrow from '../../../assets/img/white-.png'
+import LeftArrow from '../../../assets/img/blue-.png'
 import HomeBlue from '../../../assets/img/home-blue.png'
 import MapBlue from '../../../assets/img/map-blue.png'
 import TargetNew from '../../../assets/img/target-new.png'
@@ -34,7 +36,7 @@ class Landing extends React.Component {
       tileNames: ['InventoryTabs', 'Leads', 'Diary', 'Dashboard', 'Team Diary', 'Targets'],
       loading: true,
       userStatistics: null,
-      toggleStatsTile: true,
+      toggleStatsTile: false,
     }
   }
 
@@ -179,6 +181,7 @@ class Landing extends React.Component {
 
   toggleStats = () => {
     const { toggleStatsTile } = this.state
+    console.log('toggleStats: ', toggleStatsTile)
     this.setState({
       toggleStatsTile: !toggleStatsTile,
     })
@@ -210,26 +213,28 @@ class Landing extends React.Component {
           />
         ) : null}
         {!toggleStatsTile ? (
-          <AntDesign
+          <TouchableOpacity
+            onPress={() => {
+              this.toggleStats()
+            }}
             style={styles.falseStatsIcon}
-            name="rightcircle"
-            color="#fff"
-            size={30}
-            onPress={this.toggleStats}
-          />
+          >
+            <Image source={RightArrow} style={styles.statsIcon} />
+          </TouchableOpacity>
         ) : null}
         <View style={toggleStatsTile ? styles.kpiContainer : styles.kpiContainerFalse}>
           {toggleStatsTile ? (
-            <AntDesign
-              style={styles.trueStatsIcon}
-              name="leftcircle"
-              color="#fff"
-              size={30}
-              onPress={this.toggleStats}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                this.toggleStats()
+              }}
+              style={styles.buttonShadowView}
+            >
+              <Image source={LeftArrow} style={styles.statsIcon} />
+            </TouchableOpacity>
           ) : null}
           {toggleStatsTile ? (
-            <View>
+            <View style={{ flex: 1 }}>
               {loading ? (
                 <View style={styles.loaderView}>
                   <Loader loading={loading} />
@@ -261,7 +266,7 @@ class Landing extends React.Component {
               style={styles.btnStyle}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>Add Property</Text>
+              <Text style={styles.font}>Property</Text>
             </TouchableOpacity>
           ) : null}
           {Ability.canAdd(user.subRole, 'Client') ? (
@@ -272,7 +277,7 @@ class Landing extends React.Component {
               style={[styles.btnStyle, { marginLeft: 5 }]}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>Add Client</Text>
+              <Text style={styles.font}>Client</Text>
             </TouchableOpacity>
           ) : null}
         </View>

@@ -1,6 +1,6 @@
 /** @format */
 
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
 import AppStyles from '../../AppStyles'
 import {
   heightPercentageToDP as hp,
@@ -34,6 +34,12 @@ export default styles = StyleSheet.create({
     margin: 5,
     width: 12,
     height: 12,
+    resizeMode: 'contain',
+  },
+  statsIcon: {
+    marginRight: -15,
+    width: 50,
+    height: 50,
     resizeMode: 'contain',
   },
   btnStyle: {
@@ -71,9 +77,9 @@ export default styles = StyleSheet.create({
   },
   kpiContainer: {
     backgroundColor: 'white',
-    width: wp('40%'),
+    minWidth: wp('45%'),
     position: 'absolute',
-    height: hp('18%'),
+    height: Platform.OS === 'android' ? hp('20%') : hp('18%'),
     bottom: hp('15%'),
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
@@ -91,7 +97,7 @@ export default styles = StyleSheet.create({
   },
   kpiContainerFalse: {
     backgroundColor: 'white',
-    width: wp('5%'),
+    minWidth: wp('5%'),
     position: 'absolute',
     height: hp('18%'),
     bottom: hp('15%'),
@@ -114,23 +120,36 @@ export default styles = StyleSheet.create({
     fontFamily: AppStyles.fonts.boldFont,
   },
   trueStatsIcon: {
-    position: 'absolute',
-    right: -18,
-    top: '50%',
     zIndex: 20,
+    marginRight: -30,
+    width: 50,
+    height: 50,
+    elevation: 10,
+    shadowOffset: { width: 5, height: 5 },
+    shadowColor: 'lightgrey',
+    shadowOpacity: 0.2,
   },
   falseStatsIcon: {
     position: 'absolute',
     minHeight: hp('15%'),
-    bottom: hp('11%'),
+    bottom: Platform.OS === 'android' ? hp('13%') : hp('12%'),
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
     padding: 10,
-    left: 0,
+    left: -6,
     zIndex: 10,
   },
   loaderView: {
     justifyContent: 'center',
     alignSelf: 'center',
+  },
+  buttonShadowView: {
+    elevation: 10,
+    shadowOffset: { width: 5, height: 5 },
+    shadowColor: 'lightgrey',
+    shadowOpacity: 0.2,
+    position: 'absolute',
+    right: -5,
+    top: '50%',
   },
 })

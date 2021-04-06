@@ -14,11 +14,17 @@ const StatisticsTile = ({ value, title, imagePath }) => {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.flexView}>
-        {title && <Text style={styles.title}>{title}</Text>}
+        {title && (
+          <Text numberOfLines={1} style={styles.title}>
+            {title}
+          </Text>
+        )}
         {imagePath && <Image source={imagePath} style={styles.containerImg} />}
       </View>
       <View style={styles.flexView}>
-        <Text style={styles.value}>{displayValue(value)}</Text>
+        <Text numberOfLines={1} style={styles.value}>
+          {displayValue(value)}
+        </Text>
       </View>
     </View>
   )
@@ -36,6 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 5,
     paddingHorizontal: 15,
+    flex: 1,
   },
   value: {
     fontSize: AppStyles.fontSize.medium,

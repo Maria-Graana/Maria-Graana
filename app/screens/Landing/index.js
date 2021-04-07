@@ -13,6 +13,7 @@ import RightArrow from '../../../assets/img/white-.png'
 import LeftArrow from '../../../assets/img/white.png'
 import { setContacts } from '../../actions/contacts'
 import { getListingsCount } from '../../actions/listings'
+import { getCurrentUser } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
 import LandingTile from '../../components/LandingTile'
@@ -42,7 +43,7 @@ class Landing extends React.Component {
       this.props.dispatch(setContacts())
       this.getUserStatistics()
     })
-    await dispatch(getCurrentUser()); // always get updated information of user from /api/user/me
+    await dispatch(getCurrentUser()) // always get updated information of user from /api/user/me
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
   }

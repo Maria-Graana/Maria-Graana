@@ -52,13 +52,12 @@ export default styles = StyleSheet.create({
     color: '#333',
   },
   timesBtn: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
+    right: 15,
+    alignSelf:'flex-end'
   },
   timesImg: {
-    width: 15,
-    height: 15,
+    width: 20,
+    height: 20,
     resizeMode: 'contain',
   },
 });

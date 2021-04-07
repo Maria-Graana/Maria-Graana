@@ -163,7 +163,6 @@ class PropertyOffer extends React.Component {
         console.log(error)
       })
   }
-  
 
   placeCustomerOffer = () => {
     const { leadData, currentProperty } = this.state
@@ -282,7 +281,7 @@ class PropertyOffer extends React.Component {
 
   goToAttachments = () => {
     const { lead, navigation } = this.props
-    navigation.navigate('Attachments', { rcmLeadId: lead.id })
+    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'propertyLeads' })
   }
 
   goToComments = () => {
@@ -451,45 +450,54 @@ class PropertyOffer extends React.Component {
         return
       }
       this.setState({ disableButton: true, btnLoading: true }, () => {
-        this.showDialogOfferConfirmation(currentProperty, leadData);
+        this.showDialogOfferConfirmation(currentProperty, leadData)
       })
-   
     }
   }
 
   showDialogOfferConfirmation(currentProperty, leadData) {
-    const { lead } = this.props;
-    Alert.alert('Agreed Amount', 'Are you sure you want to continue?', [
-      { text: 'No', style: 'cancel', onPress: () => this.setState({ disableButton: false, btnLoading: false }) },
-      {
-        text: 'Yes', onPress: () => {
-          let body = {
-            offer: leadData.agreed,
-            type: 'agreed',
-          }
-          axios
-          .post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
-          .then((res) => {
-            this.openChatModal()
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-        }
-      },
-    ],
-      { cancelable: false })
+    const { lead } = this.props
+    Alert.alert(
+      'Agreed Amount',
+      'Are you sure you want to continue?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+          onPress: () => this.setState({ disableButton: false, btnLoading: false }),
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            let body = {
+              offer: leadData.agreed,
+              type: 'agreed',
+            }
+            axios
+              .post(`/api/offer?leadId=${lead.id}&shortlistedPropId=${currentProperty.id}`, body)
+              .then((res) => {
+                this.openChatModal()
+              })
+              .catch((error) => {
+                console.log(error)
+              })
+          },
+        },
+      ],
+      { cancelable: false }
+    )
   }
 
   acceptOffer = (offerId, currentProperty) => {
     const { lead } = this.props
     axios
-      .patch(`/api/offer/agree?leadId=${lead.id}&offerId=${offerId}&shortlistedPropId=${currentProperty.id}`)
+      .patch(
+        `/api/offer/agree?leadId=${lead.id}&offerId=${offerId}&shortlistedPropId=${currentProperty.id}`
+      )
       .then((res) => {
         if (res.data.msg) {
           helper.errorToast(res.data.msg)
-        }
-        else {
+        } else {
           this.openChatModal()
         }
       })
@@ -499,11 +507,19 @@ class PropertyOffer extends React.Component {
   }
 
   showConfirmationDialog(offerId, currentProperty) {
-    Alert.alert('Accept Offer', 'Are you sure you want to accept this offer?', [
-      { text: 'No', style: 'cancel', onPress: () =>   this.setState({ disableButton: true, btnLoading: false }) },
-      { text: 'Yes', onPress: () => this.acceptOffer(offerId, currentProperty) },
-    ],
-      { cancelable: false })
+    Alert.alert(
+      'Accept Offer',
+      'Are you sure you want to accept this offer?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+          onPress: () => this.setState({ disableButton: true, btnLoading: false }),
+        },
+        { text: 'Yes', onPress: () => this.acceptOffer(offerId, currentProperty) },
+      ],
+      { cancelable: false }
+    )
   }
 
   agreedAmount = (value) => {
@@ -528,8 +544,7 @@ class PropertyOffer extends React.Component {
       this.setState({ disableButton: true, btnLoading: false })
       if (offer && offer.length) {
         offerId = offer[offer.length - 1].id
-        this.showConfirmationDialog(offerId, currentProperty);
-
+        this.showConfirmationDialog(offerId, currentProperty)
       } else {
         this.setState({ showWarning: true, disableButton: false })
         helper.warningToast('Please enter an agreed amount')

@@ -90,12 +90,12 @@ class PropertyRCMPayment extends React.Component {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
         this.getCallHistory(lead)
-        this.fetchOfficeLocations();
+        this.fetchOfficeLocations()
         this.getSelectedProperty(lead)
       } else {
         const { lead } = this.props
         this.getCallHistory(lead)
-        this.fetchOfficeLocations();
+        this.fetchOfficeLocations()
         this.getSelectedProperty(lead)
       }
     })
@@ -127,21 +127,23 @@ class PropertyRCMPayment extends React.Component {
   }
 
   fetchOfficeLocations = () => {
-    axios.get(`/api/user/locations`).then(response => {
-      if (response.data) {
-        this.setState({
-          officeLocations: response.data.map(item => {
-             return {
-               name: item.name,
-               value:item.id,
-             }
+    axios
+      .get(`/api/user/locations`)
+      .then((response) => {
+        if (response.data) {
+          this.setState({
+            officeLocations: response.data.map((item) => {
+              return {
+                name: item.name,
+                value: item.id,
+              }
+            }),
           })
-        })
-      }
-    })
-      .catch((error => {
+        }
+      })
+      .catch((error) => {
         console.log(`/api/user/locations`, error)
-      }))
+      })
   }
 
   getSelectedProperty = (lead) => {
@@ -485,7 +487,7 @@ class PropertyRCMPayment extends React.Component {
   goToAttachments = () => {
     const { navigation } = this.props
     const { lead } = this.state
-    navigation.navigate('Attachments', { rcmLeadId: lead.id })
+    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'propertyLeads' })
   }
 
   goToComments = () => {
@@ -650,7 +652,18 @@ class PropertyRCMPayment extends React.Component {
     } else {
       this.setState({ editable: true })
     }
-    dispatch(setRCMPayment({ ...data, visible: true, officeLocationId: data && data.officeLocationId ? data.officeLocationId : user && user.officeLocation ? user.officeLocation.id : null }))
+    dispatch(
+      setRCMPayment({
+        ...data,
+        visible: true,
+        officeLocationId:
+          data && data.officeLocationId
+            ? data.officeLocationId
+            : user && user.officeLocation
+            ? user.officeLocation.id
+            : null,
+      })
+    )
   }
 
   goToPayAttachments = () => {

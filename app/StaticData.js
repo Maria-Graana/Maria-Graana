@@ -167,16 +167,6 @@ export default StaticData = {
     { value: '108', name: '9 Years' },
     { value: '120', name: '10 Years' },
   ],
-  propsurePackages: [
-    {
-      name: 'SILVER PACKAGE',
-      value: 'silver',
-    },
-    {
-      name: 'GOLD PACKAGE',
-      value: 'gold',
-    },
-  ],
   leadCloseReasons: [
     {
       name: 'Client not responding',
@@ -189,6 +179,10 @@ export default StaticData = {
     {
       name: 'No property found',
       value: 'no_property_found',
+    },
+    {
+      name: 'Duplicate Lead',
+      value: 'duplicate_lead',
     },
     {
       name: 'Client got property from some other source',

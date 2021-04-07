@@ -27,6 +27,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen'
+import { getCurrentUser } from '../../actions/user'
 
 class Landing extends React.Component {
   constructor(props) {
@@ -40,13 +41,14 @@ class Landing extends React.Component {
     }
   }
 
-  componentDidMount() {
-    const { navigation, dispatch, contacts } = this.props
+  async componentDidMount() {
+    const { navigation, dispatch, contacts, user } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
       this.getUserStatistics()
     })
+    await dispatch(getCurrentUser()); // always get updated information of user from /api/user/me
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
   }

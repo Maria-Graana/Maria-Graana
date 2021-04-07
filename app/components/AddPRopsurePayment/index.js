@@ -244,7 +244,11 @@ const AddPropsurePayment = ({
                 fontFamily={AppStyles.fonts.boldFont}
                 fontSize={16}
                 loading={assignToAccountsLoading}
-                onPress={() => assignToAccounts()}
+                onPress={() =>
+                  propsurePayment.officeLocationId === null
+                    ? alert('Payment Location cannot be empty!')
+                    : assignToAccounts()
+                }
               />
             ) : null}
 

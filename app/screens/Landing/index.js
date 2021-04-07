@@ -3,15 +3,14 @@
 import axios from 'axios'
 import * as Linking from 'expo-linking'
 import React from 'react'
-import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View, Platform } from 'react-native'
-import { AntDesign, FontAwesome5 } from '@expo/vector-icons'
+import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
+import MapBlue from '../../../assets/img/geotag.png'
+import HomeBlue from '../../../assets/img/home-icon.png'
+import TargetNew from '../../../assets/img/target-icon.png'
 import RightArrow from '../../../assets/img/white-.png'
-import LeftArrow from '../../../assets/img/blue-.png'
-import HomeBlue from '../../../assets/img/home-blue.png'
-import MapBlue from '../../../assets/img/map-blue.png'
-import TargetNew from '../../../assets/img/target-new.png'
+import LeftArrow from '../../../assets/img/white.png'
 import { setContacts } from '../../actions/contacts'
 import { getListingsCount } from '../../actions/listings'
 import AndroidNotifications from '../../AndroidNotifications'
@@ -23,11 +22,6 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen'
-import { getCurrentUser } from '../../actions/user'
 
 class Landing extends React.Component {
   constructor(props) {
@@ -183,7 +177,6 @@ class Landing extends React.Component {
 
   toggleStats = () => {
     const { toggleStatsTile } = this.state
-    console.log('toggleStats: ', toggleStatsTile)
     this.setState({
       toggleStatsTile: !toggleStatsTile,
     })

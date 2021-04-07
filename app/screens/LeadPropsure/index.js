@@ -745,11 +745,17 @@ class LeadPropsure extends React.Component {
   }
 
   setCommissionEditData = (data) => {
-    const { dispatch } = this.props
+    const { dispatch, user } = this.props
     this.setState({
       editable: true,
       documentModalVisible: false,
       previousPayment: data.installmentAmount,
+      officeLocationId:
+        data && data.officeLocationId
+          ? data.officeLocationId
+          : user && user.officeLocation
+          ? user.officeLocation.id
+          : null,
     })
     dispatch(setPropsurePayment({ ...data, visible: true }))
   }
@@ -984,7 +990,7 @@ class LeadPropsure extends React.Component {
   }
 
   handleOfficeLocation = (value) => {
-    const { rcmPayment, dispatch } = this.props
+    const { propsurePayment, dispatch } = this.props
     dispatch(setPropsurePayment({ ...propsurePayment, officeLocationId: value }))
   }
 

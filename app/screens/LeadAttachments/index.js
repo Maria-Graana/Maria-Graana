@@ -54,7 +54,7 @@ class LeadAttachments extends Component {
     const { route } = this.props
     const { workflow } = route.params
     let url = ``
-    if (workflow === 'rcm') {
+    if (workflow === 'rcm' || workflow === 'propertyLeads') {
       const { rcmLeadId } = route.params
       url = `/api/leads/comments?rcmLeadId=${rcmLeadId}&type=attachment`
     }
@@ -191,7 +191,7 @@ class LeadAttachments extends Component {
     const { route } = this.props
     const { workflow } = route.params
     let url = ``
-    if (workflow === 'rcm') {
+    if (workflow === 'rcm' || workflow === 'propertyLeads') {
       const { rcmLeadId } = route.params
       url = `/api/leads/attachment?rcmLeadId=${rcmLeadId}&title=${title}`
     }

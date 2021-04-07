@@ -48,6 +48,11 @@ class BuyPaymentView extends React.Component {
       property.armsuser &&
       property.armsuser.armsUserRole &&
       property.armsuser.armsUserRole.subRole
+    let isPP =
+      property &&
+      property.armsuser &&
+      property.armsuser.organization &&
+      property.armsuser.organization.isPP
     const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
@@ -57,7 +62,7 @@ class BuyPaymentView extends React.Component {
         ? true
         : false
     let sellerCommission =
-      property.assigned_to_armsuser_id === user.id || !Ability.canEdit(subRole, 'Leads')
+      property.assigned_to_armsuser_id === user.id || !Ability.canEdit(subRole, 'Leads') || isPP
         ? true
         : false
     let singleCommission = buyerCommission && sellerCommission ? true : false

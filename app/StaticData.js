@@ -167,16 +167,6 @@ export default StaticData = {
     { value: '108', name: '9 Years' },
     { value: '120', name: '10 Years' },
   ],
-  propsurePackages: [
-    {
-      name: 'SILVER PACKAGE',
-      value: 'silver',
-    },
-    {
-      name: 'GOLD PACKAGE',
-      value: 'gold',
-    },
-  ],
   leadCloseReasons: [
     {
       name: 'Client not responding',
@@ -189,6 +179,10 @@ export default StaticData = {
     {
       name: 'No property found',
       value: 'no_property_found',
+    },
+    {
+      name: 'Duplicate Lead',
+      value: 'duplicate_lead',
     },
     {
       name: 'Client got property from some other source',
@@ -302,6 +296,12 @@ export default StaticData = {
   ],
   callStatus: [
     { value: 'no_response', name: 'No Response' },
+    { value: 'no_response_busy', name: 'No Response - Busy' },
+    { value: 'no_response_no_signals', name: 'No Response - No signals' },
+    { value: 'not_interested', name: 'Not Interested' },
+    { value: 'not_interested_low_budget', name: 'Not Interested - Low Budget' },
+    { value: 'not_interested_re_only', name: 'Not Interested - Interested in RE Only' },
+    { value: 'not_interested_out_of_city', name: 'Not Interested - Out of City' },
     { value: 'powered_off', name: 'Powered Off' },
     { value: 'invalid_number', name: 'Invalid Number' },
     { value: 'follow_up', name: 'Follow-up' },
@@ -312,7 +312,8 @@ export default StaticData = {
     { value: 'awaiting_call', name: 'Awaiting Response' },
     { value: 'details_sent', name: 'Details Sent' },
     { value: 'expected_visit', name: 'Expected Visit' },
-    { value: 'not_interested', name: 'Not Interested' },
+    { value: 'number_not_on_whatsapp', name: 'Number not on WhatsApp' },
+
   ],
   meetingStatus: [
     { value: 'visited', name: 'Visited' },
@@ -332,9 +333,14 @@ export default StaticData = {
     { value: 'open', name: 'Open' },
     { value: 'called', name: 'Called' },
     { value: 'no_response', name: 'No Response' },
+    { value: 'no_response_busy', name: 'No Response - Busy' },
+    { value: 'no_response_no_signals', name: 'No Response - No signals' },
+    { value: 'not_interested', name: 'Not Interested' },
+    { value: 'not_interested_low_budget', name: 'Not Interested - Low Budget' },
+    { value: 'not_interested_re_only', name: 'Not Interested - Interested in RE Only' },
+    { value: 'not_interested_out_of_city', name: 'Not Interested - Out of City' },
     { value: 'powered_off', name: 'Powered Off' },
     { value: 'invalid_number', name: 'Invalid Number' },
-    { value: 'not_interested', name: 'Not Interested' },
     { value: 'DNC', name: 'DNC' },
     { value: 'details_texted', name: 'No Response but Details Sent' },
     { value: 'other_agent', name: 'In contact with some other agent' },
@@ -365,9 +371,14 @@ export default StaticData = {
     { value: 'open', name: 'Open' },
     { value: 'called', name: 'Called' },
     { value: 'no_response', name: 'No Response' },
+    { value: 'no_response_busy', name: 'No Response - Busy' },
+    { value: 'no_response_no_signals', name: 'No Response - No signals' },
+    { value: 'not_interested', name: 'Not Interested' },
+    { value: 'not_interested_low_budget', name: 'Not Interested - Low Budget' },
+    { value: 'not_interested_re_only', name: 'Not Interested - Interested in RE Only' },
+    { value: 'not_interested_out_of_city', name: 'Not Interested - Out of City' },
     { value: 'powered_off', name: 'Powered Off' },
     { value: 'invalid_number', name: 'Invalid Number' },
-    { value: 'not_interested', name: 'Not Interested' },
     { value: 'DNC', name: 'DNC' },
     { value: 'details_texted', name: 'No Response but Details Sent' },
     { value: 'other_agent', name: 'In contact with some other agent' },
@@ -386,6 +397,7 @@ export default StaticData = {
     { value: 'closed_lost', name: 'Closed Lost' },
     { value: 'low_budget', name: 'Low Budget' },
     { value: 'different_city', name: 'Different City' },
+    { value: 'number_not_on_whatsapp', name: 'Number not on WhatsApp' },
   ],
   cmLeadBtnOption: [
     { value: 'attachment', name: 'Attachment' },

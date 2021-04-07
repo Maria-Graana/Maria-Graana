@@ -35,13 +35,14 @@ class Landing extends React.Component {
     }
   }
 
-  componentDidMount() {
-    const { navigation, dispatch, contacts } = this.props
-    // this._unsubscribe = navigation.addListener('focus', () => {
-    dispatch(getListingsCount())
-    this.props.dispatch(setContacts())
-    this.getUserStatistics()
-    // })
+  async componentDidMount() {
+    const { navigation, dispatch, contacts, user } = this.props
+    this._unsubscribe = navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      this.props.dispatch(setContacts())
+      this.getUserStatistics()
+    })
+    await dispatch(getCurrentUser()); // always get updated information of user from /api/user/me
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
   }
@@ -125,7 +126,7 @@ class Landing extends React.Component {
   }
 
   componentWillUnmount() {
-    // this._unsubscribe()
+    this._unsubscribe()
   }
 
   fetchTiles = () => {

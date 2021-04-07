@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, FlatList, Modal } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, FlatList, Modal, SafeAreaView } from 'react-native';
 import styles from './style';
 import times from '../../../assets/img/times.png'
 import StaticData from '../../StaticData'
@@ -29,7 +29,7 @@ class MeetingStatusModal extends React.Component {
         taskTypeData = StaticData.callStatus
       return (
         <Modal visible={doneStatus}>
-          <View style={[AppStyles.mb1, styles.dropDownMain]}>
+          <SafeAreaView style={[AppStyles.mb1, styles.dropDownMain]}>
             <TouchableOpacity style={styles.timesBtn} onPress={() => { openStatus('') }}>
               <Image source={times} style={styles.timesImg} />
             </TouchableOpacity>
@@ -41,7 +41,7 @@ class MeetingStatusModal extends React.Component {
                 </TouchableOpacity>}
               keyExtractor={(item, index) => index.toString()}
             />
-          </View>
+          </SafeAreaView>
         </Modal>
       )
     }

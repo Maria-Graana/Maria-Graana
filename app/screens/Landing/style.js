@@ -67,6 +67,7 @@ export default styles = StyleSheet.create({
   font: {
     fontFamily: AppStyles.fonts.boldFont,
     marginRight: 5,
+    color: AppStyles.colors.primaryColor,
   },
   btnView: {
     position: 'absolute',
@@ -136,7 +137,7 @@ export default styles = StyleSheet.create({
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
     padding: 10,
-    left: -6,
+    left: -12,
     zIndex: 10,
   },
   loaderView: {

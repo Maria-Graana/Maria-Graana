@@ -126,7 +126,7 @@ class BuyPaymentView extends React.Component {
           setComissionApplicable={setBuyerCommissionApplicable}
           commissionNotApplicableBuyerSeller={buyerCommission ? commissionNotApplicableBuyer : true}
           tileType={'buyer'}
-          tileTitle={'Buyer Side'}
+          tileTitle={commissionNotApplicableBuyer ? 'Buyer Side Not Applicable' : 'Buyer Side'}
           closeLegalDocument={closeLegalDocument}
           onPaymentLongPress={onPaymentLongPress}
           payment={buyer}
@@ -146,7 +146,7 @@ class BuyPaymentView extends React.Component {
             sellerCommission ? commissionNotApplicableSeller : true
           }
           tileType={'seller'}
-          tileTitle={'Seller Side'}
+          tileTitle={commissionNotApplicableBuyer ? 'Seller Side Not Applicable' : 'Seller Side'}
           closeLegalDocument={closeLegalDocument}
           onPaymentLongPress={onPaymentLongPress}
           payment={seller}

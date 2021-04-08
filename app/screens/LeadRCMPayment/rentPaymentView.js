@@ -131,7 +131,11 @@ const RentPaymentView = (props) => {
         setComissionApplicable={setBuyerCommissionApplicable}
         commissionNotApplicableBuyerSeller={buyerCommission ? commissionNotApplicableBuyer : true}
         tileType={'buyer'}
-        tileTitle={'Buyer Side'}
+        tileTitle={
+          buyerCommission && commissionNotApplicableBuyer
+            ? 'Buyer Side Not Applicable'
+            : 'Buyer Side'
+        }
         closeLegalDocument={closeLegalDocument}
         onPaymentLongPress={onPaymentLongPress}
         payment={buyer}
@@ -149,7 +153,11 @@ const RentPaymentView = (props) => {
         setComissionApplicable={setSellerCommissionApplicable}
         commissionNotApplicableBuyerSeller={sellerCommission ? commissionNotApplicableSeller : true}
         tileType={'seller'}
-        tileTitle={'Seller Side'}
+        tileTitle={
+          sellerCommission && commissionNotApplicableSeller
+            ? 'Seller Side Not Applicable'
+            : 'Seller Side'
+        }
         closeLegalDocument={closeLegalDocument}
         onPaymentLongPress={onPaymentLongPress}
         payment={seller}

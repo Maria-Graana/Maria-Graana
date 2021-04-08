@@ -55,13 +55,6 @@ class BuyerSellerTile extends React.Component {
       <View style={styles.tileView}>
         <View style={[styles.titleView, { paddingVertical: 0, paddingBottom: 10 }]}>
           <Text style={styles.titleText}>{tileTitle}</Text>
-          {commissionNotApplicableBuyerSeller ? (
-            <Text style={styles.titleText}>
-              {tileType === 'seller'
-                ? '(Seller Side Not Applicable)'
-                : '(Buyer Side Not Applicable)'}
-            </Text>
-          ) : null}
           {singleCommission && !payment && !isLeadClosed && (
             <Switch
               disabled={disabledSwitch}

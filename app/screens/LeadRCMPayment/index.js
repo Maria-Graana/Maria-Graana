@@ -1173,6 +1173,7 @@ class LeadRCMPayment extends React.Component {
         if (body.paymentCategory === 'token') {
           baseUrl = `/api/leads/tokenPayment`
           body.status = 'at_buyer_agent'
+          body.officeLocationId =   user && user.officeLocation ? user.officeLocation.id: null,
           toastMsg = 'Token Payment Added'
           errorMsg = 'Error Adding Token Payment'
         }

@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Modal, FlatList, SafeAreaView } from 'react-native';
 import styles from './style';
 import times from '../../../assets/img/times.png'
 import StaticData from '../../StaticData'
-import Modal from 'react-native-modal';
+import AppStyles from '../../AppStyles';
 
 class HistoryStatusModal extends React.Component {
     constructor(props) {
@@ -18,23 +18,20 @@ class HistoryStatusModal extends React.Component {
         } = this.props
         let callStatus = StaticData.callStatus
         return (
-            <Modal isVisible={visibleStatus}>
-                <View style={[styles.dotsWrap]}>
-                    <View style={[styles.dropDownMain]}>
-                        <TouchableOpacity style={styles.timesBtn} onPress={() => { openStatus('') }}>
-                            <Image source={times} style={styles.timesImg} />
-                        </TouchableOpacity>
-                        {
-                            callStatus.map((item, key) => {
-                                return (
-                                    <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { sendStatus(item.value) }} key={key}>
-                                        <Text style={styles.blueColor}>{item.name}</Text>
-                                    </TouchableOpacity>
-                                )
-                            })
-                        }
-                    </View>
-                </View>
+            <Modal visible={visibleStatus}>
+                <SafeAreaView style={[AppStyles.mb1, styles.dropDownMain]}>
+                    <TouchableOpacity style={styles.timesBtn} onPress={() => { openStatus('') }}>
+                        <Image source={times} style={styles.timesImg} />
+                    </TouchableOpacity>
+                    <FlatList
+                        data={callStatus}
+                        renderItem={({ item }) =>
+                            <TouchableOpacity style={[styles.doneBtnBottom]} onPress={() => { sendStatus(item.value) }}>
+                                <Text style={styles.blueColor}>{item.name}</Text>
+                            </TouchableOpacity>}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
+                </SafeAreaView>
             </Modal>
         )
     }

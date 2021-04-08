@@ -1,19 +1,19 @@
 /** @format */
 
+import axios from 'axios'
+import moment from 'moment'
 import React, { useState } from 'react'
-import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native'
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
 import times from '../../../assets/img/times.png'
-import SimpleInputText from '../SimpleInputField'
-import PickerComponent from '../Picker/index'
+import AppStyles from '../../AppStyles'
 import StaticData from '../../StaticData'
 import ErrorMessage from '../ErrorMessage'
+import OfficeLocationSelector from '../OfficeLocationSelector'
+import PickerComponent from '../Picker/index'
+import SimpleInputText from '../SimpleInputField'
 import TouchableButton from '../TouchableButton'
-import TouchableInput from '../TouchableInput'
-import AppStyles from '../../AppStyles'
-import axios from 'axios'
-import moment from 'moment'
 
 const AddLegalPaymentModal = ({
   onModalCloseClick,
@@ -28,6 +28,8 @@ const AddLegalPaymentModal = ({
   paymentNotZero,
   editTextInput = true,
   assignToAccounts,
+  officeLocations,
+  handleOfficeLocationChange,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -191,71 +193,90 @@ const AddLegalPaymentModal = ({
               </TouchableOpacity>
             )}
 
-          {legalPayment.status && legalPayment.paymentCategory !== 'token' ? (
+          {legalPayment.id ? (
+            <OfficeLocationSelector
+              officeLocations={officeLocations}
+              officeLocationId={legalPayment.officeLocationId}
+              handleOfficeLocationChange={handleOfficeLocationChange}
+              disabled={legalPayment.status === 'pendingAccount'}
+            />
+          ) : null}
+
+          <View style={styles.row}>
+            {legalPayment.status && legalPayment.paymentCategory !== 'token' ? (
+              <TouchableButton
+                disabled={
+                  legalPayment.status !== 'open' &&
+                  legalPayment.status !== 'pendingSales' &&
+                  legalPayment.status !== 'notCleared'
+                }
+                containerBackgroundColor={
+                  legalPayment.status === 'open' ||
+                  legalPayment.status === 'pendingSales' ||
+                  legalPayment.status === 'notCleared'
+                    ? AppStyles.colors.primaryColor
+                    : '#8baaef'
+                }
+                containerStyle={[
+                  styles.bookedBtn,
+                  {
+                    width: '50%',
+                    marginVertical: 15,
+                    marginRight: 10,
+                    borderColor:
+                      legalPayment.status === 'open' ||
+                      legalPayment.status === 'pendingSales' ||
+                      legalPayment.status === 'notCleared'
+                        ? AppStyles.colors.primaryColor
+                        : '#8baaef',
+                  },
+                ]}
+                label={'ASSIGN TO ACCOUNTS'}
+                textColor={
+                  legalPayment.status === 'open' ||
+                  legalPayment.status === 'pendingSales' ||
+                  legalPayment.status === 'notCleared'
+                    ? '#fff'
+                    : '#f3f5f7'
+                }
+                fontFamily={AppStyles.fonts.boldFont}
+                fontSize={16}
+                loading={assignToAccountsLoading}
+                onPress={() =>
+                  legalPayment.officeLocationId === null
+                    ? alert('Payment Location cannot be empty!')
+                    : assignToAccounts()
+                }
+              />
+            ) : null}
+
             <TouchableButton
-              disabled={
-                legalPayment.status !== 'open' &&
-                legalPayment.status !== 'pendingSales' &&
-                legalPayment.status !== 'notCleared'
-              }
-              containerBackgroundColor={
-                legalPayment.status === 'open' ||
-                legalPayment.status === 'pendingSales' ||
-                legalPayment.status === 'notCleared'
-                  ? AppStyles.colors.primaryColor
-                  : '#8baaef'
-              }
               containerStyle={[
                 styles.bookedBtn,
                 {
-                  width: '100%',
+                  width:
+                    legalPayment.status && legalPayment.paymentCategory !== 'token'
+                      ? '45%'
+                      : '100%',
                   marginVertical: 15,
                   borderColor:
-                    legalPayment.status === 'open' ||
-                    legalPayment.status === 'pendingSales' ||
-                    legalPayment.status === 'notCleared'
+                    legalPayment.status !== 'pendingAccount'
                       ? AppStyles.colors.primaryColor
                       : '#8baaef',
                 },
               ]}
-              label={'ASSIGN TO ACCOUNTS'}
-              textColor={
-                legalPayment.status === 'open' ||
-                legalPayment.status === 'pendingSales' ||
-                legalPayment.status === 'notCleared'
-                  ? '#fff'
-                  : '#f3f5f7'
+              containerBackgroundColor={
+                legalPayment.status !== 'pendingAccount' ? AppStyles.colors.primaryColor : '#8baaef'
               }
+              textColor={legalPayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
+              disabled={legalPayment.status === 'pendingAccount'}
+              label={'OK'}
               fontFamily={AppStyles.fonts.boldFont}
-              fontSize={18}
-              loading={assignToAccountsLoading}
-              onPress={() => assignToAccounts()}
+              fontSize={16}
+              loading={addPaymentLoading}
+              onPress={() => submitCommissionPayment()}
             />
-          ) : null}
-
-          <TouchableButton
-            containerStyle={[
-              styles.bookedBtn,
-              {
-                width: '100%',
-                marginVertical: 15,
-                borderColor:
-                  legalPayment.status !== 'pendingAccount'
-                    ? AppStyles.colors.primaryColor
-                    : '#8baaef',
-              },
-            ]}
-            containerBackgroundColor={
-              legalPayment.status !== 'pendingAccount' ? AppStyles.colors.primaryColor : '#8baaef'
-            }
-            textColor={legalPayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
-            disabled={legalPayment.status === 'pendingAccount'}
-            label={'OK'}
-            fontFamily={AppStyles.fonts.boldFont}
-            fontSize={18}
-            loading={addPaymentLoading}
-            onPress={() => submitCommissionPayment()}
-          />
+          </View>
         </View>
       </View>
     </Modal>
@@ -309,10 +330,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
     borderRadius: 4,
-    marginBottom: 15,
+    marginVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 15,
   },
   addPaymentBtnImg: {
     resizeMode: 'contain',
@@ -427,5 +447,9 @@ const styles = StyleSheet.create({
   },
   rotateImg: {
     transform: [{ rotate: '180deg' }],
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 })

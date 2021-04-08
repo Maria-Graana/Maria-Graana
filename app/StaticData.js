@@ -313,7 +313,6 @@ export default StaticData = {
     { value: 'details_sent', name: 'Details Sent' },
     { value: 'expected_visit', name: 'Expected Visit' },
     { value: 'number_not_on_whatsapp', name: 'Number not on WhatsApp' },
-
   ],
   meetingStatus: [
     { value: 'visited', name: 'Visited' },
@@ -866,13 +865,6 @@ export default StaticData = {
     },
     { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
     {
-      category: 'property_report_propsure',
-      name: 'PROPERTY REPORT - PROPSURE',
-      status: 'pending',
-      fileKey: null,
-      id: 3,
-    },
-    {
       category: 'sales_rent_agreement',
       name: 'SALES/RENT AGREEMENT',
       status: 'pending',
@@ -896,13 +888,6 @@ export default StaticData = {
       id: 1,
     },
     { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
-    {
-      category: 'base_property_report_propsure',
-      name: 'BASIC PROPERTY REPORT - PROPSURE',
-      status: 'pending',
-      fileKey: null,
-      id: 3,
-    },
     {
       category: 'sales_rent_agreement',
       name: 'SALES/RENT AGREEMENT',

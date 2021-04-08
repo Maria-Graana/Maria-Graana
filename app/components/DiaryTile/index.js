@@ -4,6 +4,7 @@ import {
     Text,
     FlatList,
     TouchableOpacity,
+    TouchableWithoutFeedback
 } from 'react-native'
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import ListItem from "../ListItem/index";
@@ -19,6 +20,8 @@ class DiaryTile extends React.Component {
         this.state = {
             openPopup: false,
             todayDate: moment(new Date()).format('L'),
+            showTask: false,
+            selectedTime: null,
         }
     }
 
@@ -36,76 +39,82 @@ class DiaryTile extends React.Component {
         this.props.showPopup(val)
     }
 
-
-
     handleLongPress = (val) => {
         this.props.onLongPress(val);
     }
 
+    showAddTask = (showTask, time) => {
+        this.setState({ showTask, selectedTime: time })
+    }
 
     render() {
         const {
             data,
             onLeadLinkPressed,
         } = this.props;
-        const { todayDate } = this.state;
+        const { todayDate, selectedTime, showTask} = this.state;
         return (
             <View style={AppStyles.mb1}>
-                <FlatList
-                    data={data}
-                    renderItem={(item, index) => (
-                        <View>
-                            {
-                                item.item.task && item.item.task.length ?
-                                    <View style={styles.container}>
-                                        {/* <View key={index} styles={{}}> */}
-                                        <View style={styles.timeWrap}>
-                                            <Text style={styles.timeText}>{item.item.time}</Text>
-                                        </View>
-                                        {
-                                            item.item.task.map((val, index) => {
-                                                return (
-                                                    <TouchableOpacity
-                                                        onPress={() => this.showPopup(val)}
-                                                        onLongPress={() => this.handleLongPress(val)}
-                                                        key={index}
-                                                        activeOpacity={0.7}
-                                                        style={[styles.tileWrap, { borderLeftColor: val.statusColor }]}
-                                                    >
-                                                        <View style={styles.innerTile}>
-                                                            <Text style={styles.showTime}>{moment(val.start).format('hh:mm a')} - {moment(val.end).format("hh:mm a")} </Text>
-                                                            <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{helper.setStatusText(val, todayDate)}</Text>
-                                                        </View>
-                                                        <Text style={styles.meetingText}>{val.subject}</Text>
-                                                        <View style={styles.innerTile}>
-                                                            <Text style={styles.meetingText}>{val.taskType.charAt(0).toUpperCase() + val.taskType.slice(1)}</Text>
-                                                            {
-                                                                val.armsLeadId !== null || val.armsProjectLeadId!==null ?
-                                                                    <TouchableOpacity style={styles.lead} onPress={() => onLeadLinkPressed(val)}  >
-                                                                        <Text style={styles.leadText} >
-                                                                            Lead Link
+                <TouchableWithoutFeedback style={AppStyles.mb1} onPress={() => this.showAddTask(false, null)}>
+                    <FlatList
+                        data={data}
+                        renderItem={(item, index) => (
+                            <View>
+                                {
+                                    item.item.task && item.item.task.length ?
+                                        <View style={styles.container}>
+                                            {/* <View key={index} styles={{}}> */}
+                                            <View style={styles.timeWrap}>
+                                                <Text style={styles.timeText}>{item.item.time}</Text>
+                                            </View>
+                                            {
+                                                item.item.task.map((val, index) => {
+                                                    return (
+                                                        <TouchableOpacity
+                                                            onPress={() => this.showPopup(val)}
+                                                            onLongPress={() => this.handleLongPress(val)}
+                                                            key={index}
+                                                            activeOpacity={0.7}
+                                                            style={[styles.tileWrap, { borderLeftColor: val.statusColor }]}
+                                                        >
+                                                            <View style={styles.innerTile}>
+                                                                <Text style={styles.showTime}>{moment(val.start).format('hh:mm a')} - {moment(val.end).format("hh:mm a")} </Text>
+                                                                <Text style={[styles.statusText, { color: val.statusColor, borderColor: val.statusColor }]}>{helper.setStatusText(val, todayDate)}</Text>
+                                                            </View>
+                                                            <Text style={styles.meetingText}>{val.subject}</Text>
+                                                            <View style={styles.innerTile}>
+                                                                <Text style={styles.meetingText}>{val.taskType.charAt(0).toUpperCase() + val.taskType.slice(1)}</Text>
+                                                                {
+                                                                    val.armsLeadId !== null || val.armsProjectLeadId !== null ?
+                                                                        <TouchableOpacity style={styles.lead} onPress={() => onLeadLinkPressed(val)}  >
+                                                                            <Text style={styles.leadText} >
+                                                                                Lead Link
                                                                              </Text>
-                                                                    </TouchableOpacity>
-                                                                    :
-                                                                    null
-                                                            }
-                                                        </View>
+                                                                        </TouchableOpacity>
+                                                                        :
+                                                                        null
+                                                                }
+                                                            </View>
 
 
-                                                    </TouchableOpacity>
-                                                )
-                                            })
-                                        }
-                                    </View>
-                                    :
-                                    <View>
-                                        <ListItem placeName={item.item.time} />
-                                    </View>
-                            }
-                        </View>
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                />
+                                                        </TouchableOpacity>
+                                                    )
+                                                })
+                                            }
+                                        </View>
+                                        :
+                                        <View>
+                                            <ListItem showTask={showTask}
+                                                selectedTime={selectedTime}
+                                                showAddTask={(val1, val2) => this.showAddTask(val1, val2)}
+                                                time={item.item.time} />
+                                        </View>
+                                }
+                            </View>
+                        )}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
+                </TouchableWithoutFeedback>
             </View>
         )
     }

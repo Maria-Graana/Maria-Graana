@@ -40,7 +40,7 @@ const PropsureReportsPopup = (props) => {
                 <View style={[styles.listView]}>
                   <CheckBox
                     checked={selectedReports.some((report) => item.title === report.title)}
-                    style={{ marginHorizontal: 5, alignSelf: 'center' }}
+                    style={{ marginHorizontal: 5, alignSelf: 'center', justifyContent: 'center' }}
                     onPress={() => addRemoveReport(item)}
                     color={AppStyles.colors.primaryColor}
                   />

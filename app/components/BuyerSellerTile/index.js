@@ -53,32 +53,8 @@ class BuyerSellerTile extends React.Component {
     let disabledSwitch = this.switchToggle()
     return (
       <View style={styles.tileView}>
-        <View
-          style={[
-            styles.titleView,
-            commissionNotApplicableBuyerSeller ? { paddingBottom: 0 } : null,
-          ]}
-        >
-          <Text
-            style={[
-              styles.titleText,
-              commissionNotApplicableBuyerSeller ? { alignSelf: 'center' } : null,
-            ]}
-          >
-            {tileTitle}
-          </Text>
-          {commissionNotApplicableBuyerSeller ? (
-            <Text
-              style={[
-                styles.titleText,
-                commissionNotApplicableBuyerSeller ? { alignSelf: 'center' } : null,
-              ]}
-            >
-              {tileType === 'seller'
-                ? '(Seller Side Not Applicable)'
-                : '(Buyer Side Not Applicable)'}
-            </Text>
-          ) : null}
+        <View style={[styles.titleView, { paddingVertical: 0, paddingBottom: 10 }]}>
+          <Text style={styles.titleText}>{tileTitle}</Text>
           {singleCommission && !payment && !isLeadClosed && (
             <Switch
               disabled={disabledSwitch}

@@ -73,6 +73,10 @@ class LeadRCMPayment extends React.Component {
         security: null,
         advance: null,
       },
+      buyerDetailForm: {
+        agreedAmount: null,
+        advance: null,
+      },
       progressValue: 0,
       // for the lead close dialog
       checkReasonValidation: false,
@@ -115,6 +119,8 @@ class LeadRCMPayment extends React.Component {
       rentMonthlyToggle: false,
       buyerSellerCounts: { buyerCount: 0, count: 0, selerCount: 0 },
       legalServicesFee: null,
+      buyerToggleModal: false,
+      advanceNotZero: false,
     }
   }
 
@@ -476,6 +482,10 @@ class LeadRCMPayment extends React.Component {
                     advance: lead.advance ? String(lead.advance) : '',
                     monthlyRent: lead.monthlyRent ? String(lead.monthlyRent) : '',
                   },
+                  buyerDetailForm: {
+                    agreedAmount: lead.payment ? String(lead.payment) : '',
+                    advance: lead.advance ? String(lead.advance) : '',
+                  },
                 },
                 () => {
                   if (lead.token != null) {
@@ -519,6 +529,10 @@ class LeadRCMPayment extends React.Component {
             security: lead.security ? String(lead.security) : '',
             advance: lead.advance ? String(lead.advance) : '',
             monthlyRent: lead.monthlyRent ? String(lead.monthlyRent) : '',
+          },
+          buyerDetailForm: {
+            agreedAmount: lead.payment ? String(lead.payment) : '',
+            advance: lead.advance ? String(lead.advance) : '',
           },
         })
       })
@@ -737,31 +751,36 @@ class LeadRCMPayment extends React.Component {
   }
 
   handleAgreedAmountPress = () => {
-    const { agreedAmount } = this.state
+    const { buyerDetailForm } = this.state
     const { lead } = this.state
     let payload = Object.create({})
-    if (Number(agreedAmount) <= 0) {
+    if (Number(buyerDetailForm.agreedAmount) <= 0) {
       this.setState({ agreedNotZero: true })
       return
     }
-    payload.payment = this.convertToInteger(agreedAmount)
-    var leadId = []
-    leadId.push(lead.id)
-    axios
-      .patch(`/api/leads`, payload, { params: { id: leadId } })
-      .then((response) => {
-        this.props.dispatch(setlead(response.data))
-        this.setState({
-          showAgreedAmountArrow: false,
-          lead: response.data,
-          showStyling: '',
-          agreeAmountFromat: true,
-        })
-        this.formatStatusChange('agreeAmount', true)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    if (Number(buyerDetailForm.advance) <= 0) {
+      this.setState({ advanceNotZero: true })
+      return
+    }
+    console.log('handleAgreedAmountPress: ', buyerDetailForm)
+    // payload.payment = this.convertToInteger(agreedAmount)
+    // var leadId = []
+    // leadId.push(lead.id)
+    // axios
+    //   .patch(`/api/leads`, payload, { params: { id: leadId } })
+    //   .then((response) => {
+    //     this.props.dispatch(setlead(response.data))
+    //     this.setState({
+    //       showAgreedAmountArrow: false,
+    //       lead: response.data,
+    //       showStyling: '',
+    //       agreeAmountFromat: true,
+    //     })
+    //     this.formatStatusChange('agreeAmount', true)
+    //   })
+    //   .catch((error) => {
+    //     console.log(error)
+    //   })
   }
 
   handleMonthlyRentPress = () => {
@@ -817,8 +836,16 @@ class LeadRCMPayment extends React.Component {
 
   handleForm = (value, name) => {
     const { formData } = this.state
-    formData[name] = value
-    this.setState({ formData, rentNotZero: false })
+    let copy = formData
+    copy[name] = value
+    this.setState({ formData: copy, rentNotZero: false })
+  }
+
+  handleBuyerForm = (value, name) => {
+    const { buyerDetailForm } = this.state
+    let copy = buyerDetailForm
+    copy[name] = value
+    this.setState({ buyerDetailForm: copy, agreedNotZero: false, advanceNotZero: false })
   }
 
   updateRentLead = () => {
@@ -1173,8 +1200,8 @@ class LeadRCMPayment extends React.Component {
         if (body.paymentCategory === 'token') {
           baseUrl = `/api/leads/tokenPayment`
           body.status = 'at_buyer_agent'
-          body.officeLocationId =   user && user.officeLocation ? user.officeLocation.id: null,
-          toastMsg = 'Token Payment Added'
+          ;(body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
+            (toastMsg = 'Token Payment Added')
           errorMsg = 'Error Adding Token Payment'
         }
         axios
@@ -1493,6 +1520,13 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
+  toggleBuyerDetails = () => {
+    const { buyerToggleModal } = this.state
+    this.setState({
+      buyerToggleModal: !buyerToggleModal,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1528,6 +1562,9 @@ class LeadRCMPayment extends React.Component {
       officeLocations,
       rentMonthlyToggle,
       buyerSellerCounts,
+      buyerToggleModal,
+      buyerDetailForm,
+      advanceNotZero,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1671,6 +1708,11 @@ class LeadRCMPayment extends React.Component {
                         confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
                         buyerSellerCounts={buyerSellerCounts}
+                        buyerToggleModal={buyerToggleModal}
+                        toggleBuyerDetails={this.toggleBuyerDetails}
+                        formData={buyerDetailForm}
+                        handleForm={this.handleBuyerForm}
+                        advanceNotZero={advanceNotZero}
                       />
                     ) : (
                       <RentPaymentView

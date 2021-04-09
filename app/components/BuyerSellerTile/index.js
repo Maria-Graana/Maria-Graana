@@ -70,7 +70,7 @@ class BuyerSellerTile extends React.Component {
             />
           )}
         </View>
-        {!commissionNotApplicableBuyerSeller ? (
+        {!commissionNotApplicableBuyerSeller || !singleCommission ? (
           <View>
             <RCMBTN
               onClick={() => closeLegalDocument(tileType)}

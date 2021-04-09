@@ -1100,6 +1100,7 @@ class LeadPropsure extends React.Component {
             lead={lead}
             paymentNotZero={buyerNotZero}
             officeLocations={officeLocations}
+            assignToAccounts={this.assignToAccounts}
           />
           <DeleteModal
             isVisible={deletePaymentVisible}

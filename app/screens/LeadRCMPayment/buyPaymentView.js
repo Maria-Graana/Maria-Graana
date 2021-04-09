@@ -105,7 +105,7 @@ class BuyPaymentView extends React.Component {
         <View style={styles.monthlyTile}>
           <View style={{ justifyContent: 'space-between' }}>
             <Text style={styles.monthlyPayment}>AGREED AMOUNT</Text>
-            <Text style={styles.monthlyText}>{formatPrice(agreedAmount)}</Text>
+            <Text style={styles.monthlyText}>{formatPrice(formData.agreedAmount)}</Text>
           </View>
           <TouchableOpacity onPress={toggleBuyerDetails} style={styles.monthlyDetailsBtn}>
             <Text style={styles.monthlyDetailText}>DETAILS</Text>

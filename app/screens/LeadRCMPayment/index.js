@@ -754,33 +754,34 @@ class LeadRCMPayment extends React.Component {
     const { buyerDetailForm } = this.state
     const { lead } = this.state
     let payload = Object.create({})
-    if (Number(buyerDetailForm.agreedAmount) <= 0) {
+    if (buyerDetailForm.agreedAmount && Number(buyerDetailForm.agreedAmount) <= 0) {
       this.setState({ agreedNotZero: true })
       return
     }
-    if (Number(buyerDetailForm.advance) <= 0) {
+    if (buyerDetailForm.advance && Number(buyerDetailForm.advance) <= 0) {
       this.setState({ advanceNotZero: true })
       return
     }
-    console.log('handleAgreedAmountPress: ', buyerDetailForm)
-    // payload.payment = this.convertToInteger(agreedAmount)
-    // var leadId = []
-    // leadId.push(lead.id)
-    // axios
-    //   .patch(`/api/leads`, payload, { params: { id: leadId } })
-    //   .then((response) => {
-    //     this.props.dispatch(setlead(response.data))
-    //     this.setState({
-    //       showAgreedAmountArrow: false,
-    //       lead: response.data,
-    //       showStyling: '',
-    //       agreeAmountFromat: true,
-    //     })
-    //     this.formatStatusChange('agreeAmount', true)
-    //   })
-    //   .catch((error) => {
-    //     console.log(error)
-    //   })
+    payload.payment = this.convertToInteger(buyerDetailForm.agreedAmount)
+    payload.advance = this.convertToInteger(buyerDetailForm.advance)
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads`, payload, { params: { id: leadId } })
+      .then((response) => {
+        this.toggleBuyerDetails()
+        this.fetchLead()
+        this.setState({
+          showAgreedAmountArrow: false,
+          lead: response.data,
+          showStyling: '',
+          agreeAmountFromat: true,
+        })
+        this.formatStatusChange('agreeAmount', true)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   handleMonthlyRentPress = () => {
@@ -1337,6 +1338,18 @@ class LeadRCMPayment extends React.Component {
               progressValue: rcmProgressBar[response.data.status],
               loading: false,
               lead: response.data,
+              formData: {
+                contract_months: response.data.contract_months
+                  ? String(response.data.contract_months)
+                  : '',
+                security: response.data.security ? String(response.data.security) : '',
+                advance: response.data.advance ? String(response.data.advance) : '',
+                monthlyRent: response.data.monthlyRent ? String(response.data.monthlyRent) : '',
+              },
+              buyerDetailForm: {
+                agreedAmount: response.data.payment ? String(response.data.payment) : '',
+                advance: response.data.advance ? String(response.data.advance) : '',
+              },
             })
           } else {
             //console.log('something went wrong in api');

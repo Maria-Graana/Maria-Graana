@@ -1,7 +1,7 @@
 /** @format */
 
 import React from 'react'
-import { View } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import _ from 'underscore'
 import RoundPlus from '../../../assets/img/roundPlus.png'
 import BuyerSellerTile from '../../components/BuyerSellerTile'
@@ -12,20 +12,20 @@ import TokenTile from '../../components/TokenTile'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
+import { formatPrice } from '../../PriceFormate'
+import styles from './styles'
+import RCMBuyerModal from '../../components/RCMBuyerModal'
 class BuyPaymentView extends React.Component {
   constructor(props) {
     super(props)
   }
+
   componentDidMount() {}
   render() {
     const {
       agreedAmount,
-      handleAgreedAmountChange,
       handleAgreedAmountPress,
       lead,
-      showAndHideStyling,
-      showStylingState,
-      agreeAmountFromat,
       onAddCommissionPayment,
       editTile,
       user,
@@ -41,6 +41,11 @@ class BuyPaymentView extends React.Component {
       confirmTokenAction,
       closeLegalDocument,
       buyerSellerCounts,
+      buyerToggleModal,
+      toggleBuyerDetails,
+      formData,
+      handleForm,
+      advanceNotZero,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -85,22 +90,28 @@ class BuyPaymentView extends React.Component {
     if (singleCommission) showMenu = helper.showSingleBuyerTokenMenu(tokenPayment)
     return (
       <View>
-        <InputField
-          label={'AGREED AMOUNT'}
-          placeholder={'Enter Agreed Amount'}
-          name={'agreeAmount'}
-          value={agreedAmount}
-          priceFormatVal={agreedAmount != null ? agreedAmount : ''}
-          keyboardType={'numeric'}
-          onChange={handleAgreedAmountChange}
-          paymentDone={handleAgreedAmountPress}
-          showStyling={showAndHideStyling}
-          showStylingState={showStylingState}
-          editPriceFormat={{ status: agreeAmountFromat, name: 'agreeAmount' }}
-          editable={!isLeadClosed}
-          showDate={false}
+        <RCMBuyerModal
+          isVisible={buyerToggleModal}
+          closeModal={toggleBuyerDetails}
+          formData={formData}
+          handleForm={handleForm}
+          isLeadClosed={isLeadClosed}
+          updateRentLead={handleAgreedAmountPress}
+          leadAgentType={'buyer'}
+          lead={lead}
+          agreedNotZero={agreedNotZero}
+          advanceNotZero={advanceNotZero}
         />
-        {agreedNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+        <View style={styles.monthlyTile}>
+          <View style={{ justifyContent: 'space-between' }}>
+            <Text style={styles.monthlyPayment}>AGREED AMOUNT</Text>
+            <Text style={styles.monthlyText}>{formatPrice(formData.agreedAmount)}</Text>
+          </View>
+          <TouchableOpacity onPress={toggleBuyerDetails} style={styles.monthlyDetailsBtn}>
+            <Text style={styles.monthlyDetailText}>DETAILS</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ paddingVertical: 5 }} />
         {!tokenPayment ? (
           <RCMBTN
             onClick={() => onAddCommissionPayment('buyer', 'token')}

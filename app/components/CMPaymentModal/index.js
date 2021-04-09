@@ -1,7 +1,17 @@
 /** @format */
 
 import React, { useState } from 'react'
-import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView, FlatList, Modal, SafeAreaView } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  FlatList,
+  Modal,
+  SafeAreaView,
+} from 'react-native'
 import { CheckBox, ListItem, Body, Switch } from 'native-base'
 // import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
@@ -115,9 +125,9 @@ const CMPaymentModal = ({
                     placeholder="Payment Type"
                     selectedItem={CMPayment.paymentCategory}
                   />
-                  {/* {modalValidation === true && CMPayment.type == '' && (
-                <ErrorMessage errorMessage={'Required'} />
-              )} */}
+                  {modalValidation === true && CMPayment.paymentCategory == '' && (
+                    <ErrorMessage errorMessage={'Required'} />
+                  )}
                 </View>
               </View>
             )}
@@ -132,9 +142,11 @@ const CMPaymentModal = ({
               keyboardType={'numeric'}
               onChangeHandle={handleCommissionChange}
             />
-            {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+            {paymentNotZero ? (
+              <ErrorMessage errorMessage={'Amount must be greater than 0'} />
+            ) : null}
             {modalValidation === true &&
-              (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
+            (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
               <ErrorMessage errorMessage={'Required'} />
             ) : null}
             <View style={[AppStyles.mainInputWrap]}>
@@ -190,8 +202,8 @@ const CMPaymentModal = ({
                           {item.armsuser.firstName} {item.armsuser.lastName}{' '}
                           <Text style={styles.smallestText}>
                             {' '}
-                          ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
-                        </Text>
+                            ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
+                          </Text>
                         </Text>
                         <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
                       </View>
@@ -236,7 +248,7 @@ const CMPaymentModal = ({
                     ]}
                   >
                     ADD ATTACHMENTS
-                </Text>
+                  </Text>
                 </TouchableOpacity>
               )}
 
@@ -259,8 +271,8 @@ const CMPaymentModal = ({
                   }
                   containerBackgroundColor={
                     CMPayment.status === 'open' ||
-                      CMPayment.status === 'pendingSales' ||
-                      CMPayment.status === 'notCleared'
+                    CMPayment.status === 'pendingSales' ||
+                    CMPayment.status === 'notCleared'
                       ? AppStyles.colors.primaryColor
                       : '#8baaef'
                   }
@@ -272,8 +284,8 @@ const CMPaymentModal = ({
                       marginRight: 10,
                       borderColor:
                         CMPayment.status === 'open' ||
-                          CMPayment.status === 'pendingSales' ||
-                          CMPayment.status === 'notCleared'
+                        CMPayment.status === 'pendingSales' ||
+                        CMPayment.status === 'notCleared'
                           ? AppStyles.colors.primaryColor
                           : '#8baaef',
                     },
@@ -281,15 +293,19 @@ const CMPaymentModal = ({
                   label={'ASSIGN TO ACCOUNTS'}
                   textColor={
                     CMPayment.status === 'open' ||
-                      CMPayment.status === 'pendingSales' ||
-                      CMPayment.status === 'notCleared'
+                    CMPayment.status === 'pendingSales' ||
+                    CMPayment.status === 'notCleared'
                       ? '#fff'
                       : '#f3f5f7'
                   }
                   fontFamily={AppStyles.fonts.boldFont}
                   fontSize={16}
                   loading={assignToAccountsLoading}
-                  onPress={() => CMPayment.officeLocationId === null ? alert('Payment Location cannot be empty!') : assignToAccounts()}
+                  onPress={() =>
+                    CMPayment.officeLocationId === null
+                      ? alert('Payment Location cannot be empty!')
+                      : assignToAccounts()
+                  }
                 />
               ) : null}
 
@@ -320,7 +336,6 @@ const CMPaymentModal = ({
           </View>
         </ScrollView>
       </SafeAreaView>
-
     </Modal>
   )
 }
@@ -336,7 +351,7 @@ export default connect(mapStateToProps)(CMPaymentModal)
 const styles = StyleSheet.create({
   modalMain: {
     backgroundColor: '#e7ecf0',
-   // borderRadius: 7,
+    // borderRadius: 7,
     // overflow: 'hidden',
     // zIndex: 5,
     // position: 'relative',

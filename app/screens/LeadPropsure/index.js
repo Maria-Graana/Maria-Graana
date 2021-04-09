@@ -207,6 +207,7 @@ class LeadPropsure extends React.Component {
           this.setState({
             matchData: matches,
             progressValue: rcmProgressBar[lead.status],
+            assignToAccountsLoading: false,
           })
         })
         .catch((error) => {
@@ -228,6 +229,9 @@ class LeadPropsure extends React.Component {
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
+        this.setState({
+          assignToAccountsLoading: false,
+        })
       })
       .catch((error) => {
         console.log(error)
@@ -428,16 +432,11 @@ class LeadPropsure extends React.Component {
 
   fetchLegalPaymentInfo = () => {
     this.setState({ loading: true }, () => {
-      axios
-        .get(`/api/leads/legalPayment`)
-        .then((res) => {
-          this.setState({
-            legalServicesFee: res.data,
-          })
+      axios.get(`/api/leads/legalPayment`).then((res) => {
+        this.setState({
+          legalServicesFee: res.data,
         })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
+      })
     })
   }
 
@@ -759,7 +758,18 @@ class LeadPropsure extends React.Component {
           ? user.officeLocation.id
           : null,
     })
-    dispatch(setPropsurePayment({ ...data, visible: true }))
+    dispatch(
+      setPropsurePayment({
+        ...data,
+        visible: true,
+        officeLocationId:
+          data && data.officeLocationId
+            ? data.officeLocationId
+            : user && user.officeLocation
+            ? user.officeLocation.id
+            : null,
+      })
+    )
   }
 
   handleCommissionChange = (value, name) => {
@@ -789,6 +799,7 @@ class LeadPropsure extends React.Component {
       addPaymentLoading: false,
       editable: false,
       totalReportPrice: 0,
+      assignToAccountsLoading: false,
     })
   }
 
@@ -809,7 +820,11 @@ class LeadPropsure extends React.Component {
         addPaymentLoading: true,
       })
       if (Number(propsurePayment.installmentAmount) <= 0) {
-        this.setState({ buyerNotZero: true, addPaymentLoading: false })
+        this.setState({
+          buyerNotZero: true,
+          addPaymentLoading: false,
+          assignToAccountsLoading: false,
+        })
         return
       }
       if (editable === false) {
@@ -1084,6 +1099,8 @@ class LeadPropsure extends React.Component {
             addPaymentLoading={addPaymentLoading}
             lead={lead}
             paymentNotZero={buyerNotZero}
+            officeLocations={officeLocations}
+            assignToAccounts={this.assignToAccounts}
           />
           <DeleteModal
             isVisible={deletePaymentVisible}

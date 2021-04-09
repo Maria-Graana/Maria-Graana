@@ -128,16 +128,16 @@ class LeadRCMPayment extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
+        this.getSelectedProperty(lead)
         this.getLegalDocumentsCount()
         this.getCallHistory()
-        this.getSelectedProperty(lead)
         this.fetchOfficeLocations()
         this.fetchLegalPaymentInfo()
       } else {
         const { lead } = this.props
+        this.getSelectedProperty(lead)
         this.getLegalDocumentsCount()
         this.getCallHistory()
-        this.getSelectedProperty(lead)
         this.fetchOfficeLocations()
         this.fetchLegalPaymentInfo()
       }
@@ -146,16 +146,11 @@ class LeadRCMPayment extends React.Component {
 
   fetchLegalPaymentInfo = () => {
     this.setState({ loading: true }, () => {
-      axios
-        .get(`/api/leads/legalPayment`)
-        .then((res) => {
-          this.setState({
-            legalServicesFee: res.data,
-          })
+      axios.get(`/api/leads/legalPayment`).then((res) => {
+        this.setState({
+          legalServicesFee: res.data,
         })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
+      })
     })
   }
 
@@ -1415,10 +1410,11 @@ class LeadRCMPayment extends React.Component {
       axios
         .patch(`/api/leads`, payload, { params: { id: leadId } })
         .then((response) => {
-          this.props.dispatch(setlead(response.data))
+          this.fetchLead()
           this.setState({ lead: response.data })
         })
         .catch((error) => {
+          console.log(`/api/leads`)
           console.log(error)
         })
     })
@@ -1437,10 +1433,11 @@ class LeadRCMPayment extends React.Component {
       axios
         .patch(`/api/leads`, payload, { params: { id: leadId } })
         .then((response) => {
-          this.props.dispatch(setlead(response.data))
+          this.fetchLead()
           this.setState({ lead: response.data })
         })
         .catch((error) => {
+          console.log(`/api/leads`)
           console.log(error)
         })
     })

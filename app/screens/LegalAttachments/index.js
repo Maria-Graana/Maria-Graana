@@ -131,7 +131,11 @@ class LegalAttachment extends Component {
                   )
                 })
               newcheckListDoc.name = 'CHECKLIST'
-              this.setState({ checkListDoc: newcheckListDoc, legalPaymentObj: newlegalPayment })
+              this.setState({
+                checkListDoc: newcheckListDoc,
+                legalPaymentObj: newlegalPayment,
+                assignToAccountsLoading: false,
+              })
             }
           }
         })
@@ -505,7 +509,18 @@ class LegalAttachment extends Component {
           ? user.officeLocation.id
           : null,
     })
-    dispatch(setLegalPayment({ ...data, visible: true }))
+    dispatch(
+      setLegalPayment({
+        ...data,
+        visible: true,
+        officeLocationId:
+          data && data.officeLocationId
+            ? data.officeLocationId
+            : user && user.officeLocation
+            ? user.officeLocation.id
+            : null,
+      })
+    )
   }
 
   goToPayAttachments = () => {

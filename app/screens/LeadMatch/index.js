@@ -557,16 +557,11 @@ class LeadMatch extends React.Component {
 
   fetchLegalPaymentInfo = () => {
     this.setState({ loading: true }, () => {
-      axios
-        .get(`/api/leads/legalPayment`)
-        .then((res) => {
-          this.setState({
-            legalServicesFee: res.data,
-          })
+      axios.get(`/api/leads/legalPayment`).then((res) => {
+        this.setState({
+          legalServicesFee: res.data,
         })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
+      })
     })
   }
 

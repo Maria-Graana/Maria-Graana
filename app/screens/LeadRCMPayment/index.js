@@ -122,16 +122,16 @@ class LeadRCMPayment extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
+        this.getSelectedProperty(lead)
         this.getLegalDocumentsCount()
         this.getCallHistory()
-        this.getSelectedProperty(lead)
         this.fetchOfficeLocations()
         this.fetchLegalPaymentInfo()
       } else {
         const { lead } = this.props
+        this.getSelectedProperty(lead)
         this.getLegalDocumentsCount()
         this.getCallHistory()
-        this.getSelectedProperty(lead)
         this.fetchOfficeLocations()
         this.fetchLegalPaymentInfo()
       }
@@ -140,16 +140,11 @@ class LeadRCMPayment extends React.Component {
 
   fetchLegalPaymentInfo = () => {
     this.setState({ loading: true }, () => {
-      axios
-        .get(`/api/leads/legalPayment`)
-        .then((res) => {
-          this.setState({
-            legalServicesFee: res.data,
-          })
+      axios.get(`/api/leads/legalPayment`).then((res) => {
+        this.setState({
+          legalServicesFee: res.data,
         })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
+      })
     })
   }
 
@@ -1173,8 +1168,8 @@ class LeadRCMPayment extends React.Component {
         if (body.paymentCategory === 'token') {
           baseUrl = `/api/leads/tokenPayment`
           body.status = 'at_buyer_agent'
-          body.officeLocationId =   user && user.officeLocation ? user.officeLocation.id: null,
-          toastMsg = 'Token Payment Added'
+          ;(body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
+            (toastMsg = 'Token Payment Added')
           errorMsg = 'Error Adding Token Payment'
         }
         axios

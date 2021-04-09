@@ -1370,10 +1370,11 @@ class LeadRCMPayment extends React.Component {
       axios
         .patch(`/api/leads`, payload, { params: { id: leadId } })
         .then((response) => {
-          this.props.dispatch(setlead(response.data))
+          this.fetchLead()
           this.setState({ lead: response.data })
         })
         .catch((error) => {
+          console.log(`/api/leads`)
           console.log(error)
         })
     })
@@ -1392,10 +1393,11 @@ class LeadRCMPayment extends React.Component {
       axios
         .patch(`/api/leads`, payload, { params: { id: leadId } })
         .then((response) => {
-          this.props.dispatch(setlead(response.data))
+          this.fetchLead()
           this.setState({ lead: response.data })
         })
         .catch((error) => {
+          console.log(`/api/leads`)
           console.log(error)
         })
     })

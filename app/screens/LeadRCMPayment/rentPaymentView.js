@@ -58,6 +58,11 @@ const RentPaymentView = (props) => {
     property.armsuser &&
     property.armsuser.armsUserRole &&
     property.armsuser.armsUserRole.subRole
+  let isPP =
+    property &&
+    property.armsuser &&
+    property.armsuser.organization &&
+    property.armsuser.organization.isPP
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
     lead.status === StaticData.Constants.lead_closed_won
@@ -67,7 +72,7 @@ const RentPaymentView = (props) => {
       ? true
       : false
   let sellerCommission =
-    property.assigned_to_armsuser_id === user.id || !Ability.canView(subRole, 'Leads')
+    property.assigned_to_armsuser_id === user.id || !Ability.canView(subRole, 'Leads') || isPP
       ? true
       : false
   let singleCommission = buyerCommission && sellerCommission ? true : false

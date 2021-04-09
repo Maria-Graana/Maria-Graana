@@ -404,6 +404,15 @@ const helper = {
       }
       contact.payload = payload
       return contact
+    } else if (customer && customer.phone) {
+      contact.payload = [
+        {
+          number: customer.phone,
+          label: 'mobile',
+          isPrimary: true,
+        },
+      ]
+      return contact
     } else return contact
   },
   deleteAndUpdateNotification(data, start, id) {
@@ -719,11 +728,11 @@ const helper = {
     let legalServicesCount = 2
     let cleared = 0
     let legalPaymentCleared = 0
-    let legalCount = 12
+    let legalCount = 8
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true) {
       commissionsLength = 1
       legalServicesCount = 1
-      legalCount = 6
+      legalCount = 4
     }
     const { commissions, propsureOutstandingPayment } = lead
     if (legalServicesFee && legalServicesFee.fee <= 0) legalServicesCount = 0
@@ -745,7 +754,7 @@ const helper = {
         propsureOutstandingPayment <= 0 &&
         cleared === commissionsLength &&
         legalPaymentCleared === legalServicesCount &&
-        Number(legalDocCount) === legalCount
+        Number(legalDocCount) >= legalCount
       )
         check = true
       return check

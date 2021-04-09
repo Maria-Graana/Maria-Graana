@@ -28,10 +28,11 @@ class HeaderTitle extends React.Component {
     let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
     if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
     let leadSize = this.leadSize(lead.size_unit)
-
     return (
       <View style={styles.mainView}>
-        <Text numberOfLines={1} style={styles.headerText}>{headerName}</Text>
+        <Text numberOfLines={1} style={styles.headerText}>
+          {headerName}
+        </Text>
         {!lead.projectId && !lead.projectName ? (
           <Text numberOfLines={1} style={[styles.detailText, AppStyles.darkColor]}>
             {leadSize}

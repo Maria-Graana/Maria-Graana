@@ -12,6 +12,7 @@ const legalPayment = {
   paymentAttachments: [],
   addedBy: null,
   armsUserId: null,
+  officeLocationId: null,
 }
 
 const LegalPayment = (state = legalPayment, action) => {

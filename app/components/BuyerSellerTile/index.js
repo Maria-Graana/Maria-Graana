@@ -70,37 +70,41 @@ class BuyerSellerTile extends React.Component {
             />
           )}
         </View>
-        <RCMBTN
-          onClick={() => closeLegalDocument(tileType)}
-          btnImage={null}
-          btnText={'LEGAL SERVICES'}
-          checkLeadClosedOrNot={false}
-          hiddenBtn={commissionNotApplicableBuyerSeller}
-          addBorder={true}
-        />
-        {lead.commissions ? (
-          payment ? (
-            <CommissionTile
-              data={payment}
-              editTile={editTile}
-              onPaymentLongPress={() => onPaymentLongPress(payment)}
-              commissionEdit={onReadOnly}
-              title={payment ? commissionTitle : ''}
+        {!commissionNotApplicableBuyerSeller ? (
+          <View>
+            <RCMBTN
+              onClick={() => closeLegalDocument(tileType)}
+              btnImage={null}
+              btnText={'LEGAL SERVICES'}
+              checkLeadClosedOrNot={false}
+              hiddenBtn={commissionNotApplicableBuyerSeller}
+              addBorder={true}
             />
-          ) : (
-            <View style={{ paddingTop: 10 }}>
-              {paymentCommission ? (
-                <RCMBTN
-                  onClick={() => onAddCommissionPayment(tileType, 'commission')}
-                  btnImage={RoundPlus}
-                  btnText={RCMBTNTitle}
-                  checkLeadClosedOrNot={false}
-                  hiddenBtn={onReadOnly}
-                  addBorder={true}
+            {lead.commissions ? (
+              payment ? (
+                <CommissionTile
+                  data={payment}
+                  editTile={editTile}
+                  onPaymentLongPress={() => onPaymentLongPress(payment)}
+                  commissionEdit={onReadOnly}
+                  title={payment ? commissionTitle : ''}
                 />
-              ) : null}
-            </View>
-          )
+              ) : (
+                <View style={{ paddingTop: 10 }}>
+                  {paymentCommission ? (
+                    <RCMBTN
+                      onClick={() => onAddCommissionPayment(tileType, 'commission')}
+                      btnImage={RoundPlus}
+                      btnText={RCMBTNTitle}
+                      checkLeadClosedOrNot={false}
+                      hiddenBtn={onReadOnly}
+                      addBorder={true}
+                    />
+                  ) : null}
+                </View>
+              )
+            ) : null}
+          </View>
         ) : null}
       </View>
     )

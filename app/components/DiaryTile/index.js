@@ -12,6 +12,7 @@ import styles from './style';
 import AppStyles from '../../AppStyles'
 import moment from 'moment';
 import helper from '../../helper'
+import AddTaskModal from '../AddTaskModal';
 
 
 class DiaryTile extends React.Component {
@@ -22,6 +23,8 @@ class DiaryTile extends React.Component {
             todayDate: moment(new Date()).format('L'),
             showTask: false,
             selectedTime: null,
+            description: null,
+            active: false,
         }
     }
 
@@ -35,43 +38,59 @@ class DiaryTile extends React.Component {
         this.props.updateDiary(data)
     }
 
-    showPopup = (val) => {
-        this.props.showPopup(val)
-    }
+    // showPopup = (val) => {
+    //     this.props.showPopup(val)
+    // }
 
     handleLongPress = (val) => {
         this.props.onLongPress(val);
     }
 
-    showAddTask = (showTask, time) => {
-        this.setState({ showTask, selectedTime: time })
+    showAddTask = (showTask, time, description) => {
+        this.setState({ showTask, selectedTime: time, description })
+    }
+
+    handleDescriptionChange = (text) => {
+        this.setState({ description: text })
+    }
+
+    closeModal = () => {
+        this.setState({ active: false })
     }
 
     render() {
         const {
             data,
             onLeadLinkPressed,
+            addTask,
+            editTask
         } = this.props;
-        const { todayDate, selectedTime, showTask} = this.state;
+        const { todayDate, selectedTime, showTask, description, active } = this.state;
         return (
             <View style={AppStyles.mb1}>
-                <TouchableWithoutFeedback style={AppStyles.mb1} onPress={() => this.showAddTask(false, null)}>
+                <TouchableWithoutFeedback style={AppStyles.mb1} onPress={() => this.showAddTask(false, null, null)}>
                     <FlatList
                         data={data}
                         renderItem={(item, index) => (
                             <View>
+                                <AddTaskModal active={active}
+                                    closeModal={() => this.closeModal()}
+                                    handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
+                                    description={description}
+                                    addTask={(description) => { addTask(description, selectedTime); }}
+                                />
                                 {
                                     item.item.task && item.item.task.length ?
                                         <View style={styles.container}>
-                                            {/* <View key={index} styles={{}}> */}
-                                            <View style={styles.timeWrap}>
+                                            <TouchableOpacity onPress={() => this.setState({ active: true, selectedTime: item.item.time })}
+                                                style={styles.timeWrap}>
                                                 <Text style={styles.timeText}>{item.item.time}</Text>
-                                            </View>
+                                            </TouchableOpacity>
                                             {
                                                 item.item.task.map((val, index) => {
                                                     return (
                                                         <TouchableOpacity
-                                                            onPress={() => this.showPopup(val)}
+                                                            onPress={() => editTask(val)}
                                                             onLongPress={() => this.handleLongPress(val)}
                                                             key={index}
                                                             activeOpacity={0.7}
@@ -104,8 +123,15 @@ class DiaryTile extends React.Component {
                                         </View>
                                         :
                                         <View>
-                                            <ListItem showTask={showTask}
+                                            <ListItem
+                                                handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
+                                                description={description}
+                                                showTask={showTask}
                                                 selectedTime={selectedTime}
+                                                addTask={(description) => {
+                                                    addTask(description, selectedTime);
+                                                    this.showAddTask(false, null, null);
+                                                }}
                                                 showAddTask={(val1, val2) => this.showAddTask(val1, val2)}
                                                 time={item.item.time} />
                                         </View>
@@ -115,7 +141,7 @@ class DiaryTile extends React.Component {
                         keyExtractor={(item, index) => index.toString()}
                     />
                 </TouchableWithoutFeedback>
-            </View>
+            </View >
         )
     }
 }

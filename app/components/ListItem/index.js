@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, KeyboardAvoidingView } from "react-native";
 import { Textarea } from 'native-base'
 import AppStyles from '../../AppStyles';
 
@@ -8,33 +8,36 @@ class listItem extends React.Component {
         super(props)
     }
 
+
     render() {
-        const { time, showTask, selectedTime, showAddTask } = this.props;
+        const { time, showTask, selectedTime, showAddTask, addTask, handleDescriptionChange, description } = this.props;
         return (
-            <TouchableOpacity onPress={()=>showAddTask(true, time)} activeOpacity={.7}>
-                <View style={styles.listItem}>
-                    <Text style={styles.textFont}>{time}</Text>
-                </View>
-                {
-                    showTask && time === selectedTime &&
-                    <Textarea
-                        autoFocus
-                        bordered
-                        placeholderTextColor={'#a8a8aa'}
-                        returnKeyType={'done'}
-                        style={[
-                            AppStyles.formControl,
-                            Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                            AppStyles.formFontSettings,
-                            styles.taskBox,
-                        ]}
-                        rowSpan={5}
-                        placeholder="Description"
-                        onChangeText={(text) => console.log(text)}
+            <TouchableOpacity onPress={() => showAddTask(true, time)} activeOpacity={.7}>
+                    <View style={styles.listItem}>
+                        <Text style={styles.textFont}>{time}</Text>
+                    </View>
+                    {
+                        showTask && time === selectedTime &&
+                        <Textarea
+                            autoFocus
+                            bordered
+                            blurOnSubmit={true}
+                            placeholderTextColor={'#a8a8aa'}
+                            onSubmitEditing={() => description === null || description === '' || description === undefined ? alert('Title cannot be empty!') : addTask(description)}
+                            returnKeyType={'done'}
+                            style={[
+                                AppStyles.formControl,
+                                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                                AppStyles.formFontSettings,
+                                styles.taskBox,
+                            ]}
+                            rowSpan={5}
+                            placeholder="Description"
+                            onChangeText={(text) => handleDescriptionChange(text)}
+                        />
+                    }
+                    <View style={styles.underLine}
                     />
-                }
-                <View style={styles.underLine}
-                />
             </TouchableOpacity>
         )
     }
@@ -60,11 +63,11 @@ const styles = StyleSheet.create({
     taskBox: {
         height: 55,
         padding: 10,
-        alignSelf:'center',
+        alignSelf: 'center',
         width: '75%',
         borderColor: AppStyles.colors.primaryColor,
         // borderWidth: 1,
-        marginVertical:-20,
+       marginVertical: 10,
     }
 });
 

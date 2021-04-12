@@ -503,7 +503,16 @@ class CMPayment extends Component {
 
   submitCommissionCMPayment = () => {
     const { CMPayment, user, lead, dispatch } = this.props
-    const { editable, selectedProperty, previousPayment } = this.state
+    const { editable, firstForm } = this.state
+    if (
+      (firstForm && CMPayment.paymentCategory === null) ||
+      (firstForm && CMPayment.paymentCategory === '')
+    ) {
+      this.setState({
+        modalValidation: true,
+      })
+      return
+    }
     if (
       CMPayment.installmentAmount != null &&
       CMPayment.installmentAmount != '' &&

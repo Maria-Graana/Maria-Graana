@@ -32,7 +32,7 @@ class Landing extends React.Component {
       tileNames: ['InventoryTabs', 'Leads', 'Diary', 'Dashboard', 'Team Diary', 'Targets'],
       loading: true,
       userStatistics: null,
-      toggleStatsTile: false,
+      toggleStatsTile: true,
     }
   }
 
@@ -208,27 +208,12 @@ class Landing extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
           />
         ) : null}
-        {!toggleStatsTile ? (
-          <TouchableOpacity
-            onPress={() => {
-              this.toggleStats()
-            }}
-            style={styles.falseStatsIcon}
-          >
-            <Image source={RightArrow} style={styles.statsIcon} />
-          </TouchableOpacity>
-        ) : null}
-        <View style={toggleStatsTile ? styles.kpiContainer : styles.kpiContainerFalse}>
-          {toggleStatsTile ? (
-            <TouchableOpacity
-              onPress={() => {
-                this.toggleStats()
-              }}
-              style={styles.buttonShadowView}
-            >
-              <Image source={LeftArrow} style={styles.statsIcon} />
-            </TouchableOpacity>
-          ) : null}
+        <TouchableOpacity
+          onPress={() => {
+            this.toggleStats()
+          }}
+          style={toggleStatsTile ? styles.kpiContainer : styles.kpiContainerFalse}
+        >
           {toggleStatsTile ? (
             <View style={{ flex: 1 }}>
               {loading ? (
@@ -237,7 +222,7 @@ class Landing extends React.Component {
                 </View>
               ) : (
                 <>
-                  <Text style={styles.kpiText}>KPIs:</Text>
+                  <Text style={styles.kpiText}>KPIs</Text>
                   <StatisticsTile imagePath={TargetNew} value={userStatistics.avgTime} />
                   <StatisticsTile imagePath={HomeBlue} value={userStatistics.listing} />
                   <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
@@ -252,7 +237,7 @@ class Landing extends React.Component {
               )}
             </View>
           ) : null}
-        </View>
+        </TouchableOpacity>
         <View style={styles.btnView}>
           {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
             <TouchableOpacity

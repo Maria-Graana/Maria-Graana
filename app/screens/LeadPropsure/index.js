@@ -30,8 +30,10 @@ import PaymentMethods from '../../PaymentMethods'
 import { setPropsurePayment } from '../../actions/propsurePayment'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import DeleteModal from '../../components/DeleteModal'
-import { ActionSheet } from 'native-base'
+import { ActionSheet, StyleProvider } from 'native-base'
 import AddPropsurePayment from '../../components/AddPRopsurePayment'
+import formTheme from '../../../native-base-theme/variables/formTheme'
+import getTheme from '../../../native-base-theme/components'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -205,6 +207,7 @@ class LeadPropsure extends React.Component {
           this.setState({
             matchData: matches,
             progressValue: rcmProgressBar[lead.status],
+            assignToAccountsLoading: false,
           })
         })
         .catch((error) => {
@@ -226,6 +229,9 @@ class LeadPropsure extends React.Component {
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
+        this.setState({
+          assignToAccountsLoading: false,
+        })
       })
       .catch((error) => {
         console.log(error)
@@ -426,16 +432,11 @@ class LeadPropsure extends React.Component {
 
   fetchLegalPaymentInfo = () => {
     this.setState({ loading: true }, () => {
-      axios
-        .get(`/api/leads/legalPayment`)
-        .then((res) => {
-          this.setState({
-            legalServicesFee: res.data,
-          })
+      axios.get(`/api/leads/legalPayment`).then((res) => {
+        this.setState({
+          legalServicesFee: res.data,
         })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
+      })
     })
   }
 
@@ -757,7 +758,18 @@ class LeadPropsure extends React.Component {
           ? user.officeLocation.id
           : null,
     })
-    dispatch(setPropsurePayment({ ...data, visible: true }))
+    dispatch(
+      setPropsurePayment({
+        ...data,
+        visible: true,
+        officeLocationId:
+          data && data.officeLocationId
+            ? data.officeLocationId
+            : user && user.officeLocation
+            ? user.officeLocation.id
+            : null,
+      })
+    )
   }
 
   handleCommissionChange = (value, name) => {
@@ -787,6 +799,7 @@ class LeadPropsure extends React.Component {
       addPaymentLoading: false,
       editable: false,
       totalReportPrice: 0,
+      assignToAccountsLoading: false,
     })
   }
 
@@ -807,7 +820,11 @@ class LeadPropsure extends React.Component {
         addPaymentLoading: true,
       })
       if (Number(propsurePayment.installmentAmount) <= 0) {
-        this.setState({ buyerNotZero: true, addPaymentLoading: false })
+        this.setState({
+          buyerNotZero: true,
+          addPaymentLoading: false,
+          assignToAccountsLoading: false,
+        })
         return
       }
       if (editable === false) {
@@ -1029,157 +1046,151 @@ class LeadPropsure extends React.Component {
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
     return !loading ? (
-      <View
-        style={[
-          AppStyles.container,
-          { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 },
-        ]}
-      >
-        <ProgressBar
-          style={{ backgroundColor: 'ffffff' }}
-          progress={progressValue}
-          color={'#0277FD'}
-        />
-        <HistoryModal
-          getCallHistory={this.getCallHistory}
-          navigation={navigation}
-          data={meetings}
-          closePopup={this.goToHistory}
-          openPopup={callModal}
-        />
-        <PropsureReportsPopup
-          reports={propsureReportTypes}
-          addRemoveReport={(item) => this.addRemoveReport(item)}
-          selectedReports={selectedReports}
-          isVisible={isVisible}
-          closeModal={() => this.closeModal()}
-          onPress={this.onHandleRequestVerification}
-          totalReportPrice={totalReportPrice}
-          type={'buyer'}
-        />
-        <PropsureDocumentPopup
-          pendingPropsures={_.clone(pendingPropsures)}
-          isVisible={documentModalVisible}
-          uploadReport={(report, propsureId) => this.uploadAttachment(report, propsureId)}
-          closeModal={() => this.closeDocument()}
-          onPress={() => this.closeDocumentModal()}
-          downloadFile={this.downloadFile}
-          getAttachmentFromStorage={this.getAttachmentFromStorage}
-          propsureOutstandingPayment={lead.propsureOutstandingPayment}
-          selectedProperty={selectedProperty}
-          editable={this.setCommissionEditData}
-          onPaymentLongPress={this.onPaymentLongPress}
-          type={'buyer'}
-        />
-        <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
-        <AddPropsurePayment
-          onModalCloseClick={this.onModalCloseClick}
-          handleCommissionChange={this.handleCommissionChange}
-          modalValidation={modalValidation}
-          goToPayAttachments={() => this.goToPayAttachments(selectedProperty)}
-          submitCommissionPayment={() => {
-            this.setState({ addPaymentLoading: true }, () => {
-              this.submitCommissionPropsurePayment()
-            })
-          }}
-          addPaymentLoading={addPaymentLoading}
-          lead={lead}
-          paymentNotZero={buyerNotZero}
-          assignToAccounts={() => {
-            this.assignToAccounts()
-          }}
-          officeLocations={officeLocations}
-          handleOfficeLocationChange={this.handleOfficeLocation}
-          assignToAccountsLoading={assignToAccountsLoading}
-        />
-        <DeleteModal
-          isVisible={deletePaymentVisible}
-          deletePayment={(reason) => this.deletePayment(reason)}
-          showHideModal={(val) => this.showHideDeletePayment(val)}
-        />
-        <View style={{ paddingBottom: 100 }}>
-          {matchData.length ? (
-            <FlatList
-              data={_.clone(matchData)}
-              renderItem={(item, index) => (
-                <View style={{ marginVertical: 3, marginHorizontal: 15 }}>
-                  {this.ownProperty(item.item) ? (
-                    <MatchTile
-                      data={_.clone(item.item)}
-                      user={user}
-                      displayChecks={this.displayChecks}
-                      showCheckBoxes={false}
-                      addProperty={this.addProperty}
-                      isMenuVisible={showMenuItem}
-                      viewingMenu={false}
-                      goToPropertyComments={this.goToPropertyComments}
-                      toggleMenu={this.toggleMenu}
-                      menuShow={menuShow}
-                      screen={'propsure'}
-                      cancelPropsureRequest={this.cancelPropsureRequest}
-                    />
-                  ) : (
-                    <AgentTile
-                      data={_.clone(item.item)}
-                      user={user}
-                      displayChecks={this.displayChecks}
-                      showCheckBoxes={false}
-                      addProperty={this.addProperty}
-                      isMenuVisible={showMenuItem}
-                      viewingMenu={false}
-                      goToPropertyComments={this.goToPropertyComments}
-                      toggleMenu={this.toggleMenu}
-                      menuShow={menuShow}
-                      screen={'propsure'}
-                      cancelPropsureRequest={this.cancelPropsureRequest}
-                    />
-                  )}
-                  <View>
-                    {helper.checkPropsureRequests(item.item.propsures, 'buyer')
-                      ? this.renderPropsureVerificationView(item.item)
-                      : this.renderPropsurePendingView(item.item)}
-                  </View>
-                </View>
-              )}
-              keyExtractor={(item, index) => item.id.toString()}
-            />
-          ) : (
-            <>
-              <Image
-                source={require('../../../assets/img/no-result-found.png')}
-                resizeMode={'center'}
-                style={{ alignSelf: 'center', width: 300, height: 300 }}
-              />
-            </>
-          )}
-        </View>
-        <View style={AppStyles.mainCMBottomNav}>
-          <CMBottomNav
-            goToAttachments={this.goToAttachments}
-            navigateTo={this.navigateToDetails}
-            goToDiaryForm={this.goToDiaryForm}
-            goToComments={this.goToComments}
-            alreadyClosedLead={() => this.closedLead()}
-            closeLead={this.closeLead}
-            closedLeadEdit={closedLeadEdit}
-            callButton={true}
-            customer={lead.customer}
-            lead={lead}
-            goToHistory={this.goToHistory}
+      <StyleProvider style={getTheme(formTheme)}>
+        <View
+          style={[
+            AppStyles.container,
+            { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 },
+          ]}
+        >
+          <ProgressBar
+            style={{ backgroundColor: 'ffffff' }}
+            progress={progressValue}
+            color={'#0277FD'}
+          />
+          <HistoryModal
             getCallHistory={this.getCallHistory}
+            navigation={navigation}
+            data={meetings}
+            closePopup={this.goToHistory}
+            openPopup={callModal}
+          />
+          <PropsureReportsPopup
+            reports={propsureReportTypes}
+            addRemoveReport={(item) => this.addRemoveReport(item)}
+            selectedReports={selectedReports}
+            isVisible={isVisible}
+            closeModal={() => this.closeModal()}
+            onPress={this.onHandleRequestVerification}
+            totalReportPrice={totalReportPrice}
+            type={'buyer'}
+          />
+          <PropsureDocumentPopup
+            pendingPropsures={_.clone(pendingPropsures)}
+            isVisible={documentModalVisible}
+            uploadReport={(report, propsureId) => this.uploadAttachment(report, propsureId)}
+            closeModal={() => this.closeDocument()}
+            onPress={() => this.closeDocumentModal()}
+            downloadFile={this.downloadFile}
+            getAttachmentFromStorage={this.getAttachmentFromStorage}
+            propsureOutstandingPayment={lead.propsureOutstandingPayment}
+            selectedProperty={selectedProperty}
+            editable={this.setCommissionEditData}
+            onPaymentLongPress={this.onPaymentLongPress}
+            type={'buyer'}
+          />
+          <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
+          <AddPropsurePayment
+            onModalCloseClick={this.onModalCloseClick}
+            handleCommissionChange={this.handleCommissionChange}
+            modalValidation={modalValidation}
+            goToPayAttachments={() => this.goToPayAttachments(selectedProperty)}
+            submitCommissionPayment={() => this.submitCommissionPropsurePayment()}
+            addPaymentLoading={addPaymentLoading}
+            lead={lead}
+            paymentNotZero={buyerNotZero}
+            officeLocations={officeLocations}
+            assignToAccounts={this.assignToAccounts}
+          />
+          <DeleteModal
+            isVisible={deletePaymentVisible}
+            deletePayment={(reason) => this.deletePayment(reason)}
+            showHideModal={(val) => this.showHideDeletePayment(val)}
+          />
+          <View style={{ paddingBottom: 100 }}>
+            {matchData.length ? (
+              <FlatList
+                data={_.clone(matchData)}
+                renderItem={(item, index) => (
+                  <View style={{ marginVertical: 3, marginHorizontal: 15 }}>
+                    {this.ownProperty(item.item) ? (
+                      <MatchTile
+                        data={_.clone(item.item)}
+                        user={user}
+                        displayChecks={this.displayChecks}
+                        showCheckBoxes={false}
+                        addProperty={this.addProperty}
+                        isMenuVisible={showMenuItem}
+                        viewingMenu={false}
+                        goToPropertyComments={this.goToPropertyComments}
+                        toggleMenu={this.toggleMenu}
+                        menuShow={menuShow}
+                        screen={'propsure'}
+                        cancelPropsureRequest={this.cancelPropsureRequest}
+                      />
+                    ) : (
+                      <AgentTile
+                        data={_.clone(item.item)}
+                        user={user}
+                        displayChecks={this.displayChecks}
+                        showCheckBoxes={false}
+                        addProperty={this.addProperty}
+                        isMenuVisible={showMenuItem}
+                        viewingMenu={false}
+                        goToPropertyComments={this.goToPropertyComments}
+                        toggleMenu={this.toggleMenu}
+                        menuShow={menuShow}
+                        screen={'propsure'}
+                        cancelPropsureRequest={this.cancelPropsureRequest}
+                      />
+                    )}
+                    <View>
+                      {helper.checkPropsureRequests(item.item.propsures, 'buyer')
+                        ? this.renderPropsureVerificationView(item.item)
+                        : this.renderPropsurePendingView(item.item)}
+                    </View>
+                  </View>
+                )}
+                keyExtractor={(item, index) => item.id.toString()}
+              />
+            ) : (
+              <>
+                <Image
+                  source={require('../../../assets/img/no-result-found.png')}
+                  resizeMode={'center'}
+                  style={{ alignSelf: 'center', width: 300, height: 300 }}
+                />
+              </>
+            )}
+          </View>
+          <View style={AppStyles.mainCMBottomNav}>
+            <CMBottomNav
+              goToAttachments={this.goToAttachments}
+              navigateTo={this.navigateToDetails}
+              goToDiaryForm={this.goToDiaryForm}
+              goToComments={this.goToComments}
+              alreadyClosedLead={() => this.closedLead()}
+              closeLead={this.closeLead}
+              closedLeadEdit={closedLeadEdit}
+              callButton={true}
+              customer={lead.customer}
+              lead={lead}
+              goToHistory={this.goToHistory}
+              getCallHistory={this.getCallHistory}
+            />
+          </View>
+          <LeadRCMPaymentPopup
+            reasons={reasons}
+            selectedReason={selectedReason}
+            changeReason={(value) => this.handleReasonChange(value)}
+            checkValidation={checkReasonValidation}
+            isVisible={isCloseLeadVisible}
+            closeModal={() => this.closeLeadModal()}
+            onPress={() => this.onHandleCloseLead()}
+            legalDocLoader={legalDocLoader}
           />
         </View>
-        <LeadRCMPaymentPopup
-          reasons={reasons}
-          selectedReason={selectedReason}
-          changeReason={(value) => this.handleReasonChange(value)}
-          checkValidation={checkReasonValidation}
-          isVisible={isCloseLeadVisible}
-          closeModal={() => this.closeLeadModal()}
-          onPress={() => this.onHandleCloseLead()}
-          legalDocLoader={legalDocLoader}
-        />
-      </View>
+      </StyleProvider>
     ) : (
       <Loader loading={loading} />
     )

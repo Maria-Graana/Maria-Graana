@@ -12,6 +12,7 @@ const propsurePayment = {
   paymentAttachments: [],
   addedBy: null,
   armsUserId: null,
+  officeLocationId: null,
 }
 
 const PropsurePayment = (state = propsurePayment, action) => {

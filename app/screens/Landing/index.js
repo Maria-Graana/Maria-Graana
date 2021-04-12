@@ -3,15 +3,17 @@
 import axios from 'axios'
 import * as Linking from 'expo-linking'
 import React from 'react'
-import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View, Platform } from 'react-native'
-import { AntDesign, FontAwesome5 } from '@expo/vector-icons'
+import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
-import HomeBlue from '../../../assets/img/home-blue.png'
-import MapBlue from '../../../assets/img/map-blue.png'
-import TargetNew from '../../../assets/img/target-new.png'
+import MapBlue from '../../../assets/img/geotag.png'
+import HomeBlue from '../../../assets/img/home-icon.png'
+import TargetNew from '../../../assets/img/target-icon.png'
+import RightArrow from '../../../assets/img/white-.png'
+import LeftArrow from '../../../assets/img/white.png'
 import { setContacts } from '../../actions/contacts'
 import { getListingsCount } from '../../actions/listings'
+import { getCurrentUser } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
 import LandingTile from '../../components/LandingTile'
@@ -21,10 +23,6 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen'
 
 class Landing extends React.Component {
   constructor(props) {
@@ -38,13 +36,14 @@ class Landing extends React.Component {
     }
   }
 
-  componentDidMount() {
-    const { navigation, dispatch, contacts } = this.props
+  async componentDidMount() {
+    const { navigation, dispatch, contacts, user } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
       this.getUserStatistics()
     })
+    await dispatch(getCurrentUser()) // always get updated information of user from /api/user/me
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
   }
@@ -209,34 +208,21 @@ class Landing extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
           />
         ) : null}
-        {!toggleStatsTile ? (
-          <AntDesign
-            style={styles.falseStatsIcon}
-            name="rightcircle"
-            color="#fff"
-            size={30}
-            onPress={this.toggleStats}
-          />
-        ) : null}
-        <View style={toggleStatsTile ? styles.kpiContainer : styles.kpiContainerFalse}>
+        <TouchableOpacity
+          onPress={() => {
+            this.toggleStats()
+          }}
+          style={toggleStatsTile ? styles.kpiContainer : styles.kpiContainerFalse}
+        >
           {toggleStatsTile ? (
-            <AntDesign
-              style={styles.trueStatsIcon}
-              name="leftcircle"
-              color="#fff"
-              size={30}
-              onPress={this.toggleStats}
-            />
-          ) : null}
-          {toggleStatsTile ? (
-            <View>
+            <View style={{ flex: 1 }}>
               {loading ? (
                 <View style={styles.loaderView}>
                   <Loader loading={loading} />
                 </View>
               ) : (
                 <>
-                  <Text style={styles.kpiText}>KPIs:</Text>
+                  <Text style={styles.kpiText}>KPIs</Text>
                   <StatisticsTile imagePath={TargetNew} value={userStatistics.avgTime} />
                   <StatisticsTile imagePath={HomeBlue} value={userStatistics.listing} />
                   <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
@@ -251,7 +237,7 @@ class Landing extends React.Component {
               )}
             </View>
           ) : null}
-        </View>
+        </TouchableOpacity>
         <View style={styles.btnView}>
           {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
             <TouchableOpacity
@@ -261,7 +247,7 @@ class Landing extends React.Component {
               style={styles.btnStyle}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>Add Property</Text>
+              <Text style={styles.font}>Property</Text>
             </TouchableOpacity>
           ) : null}
           {Ability.canAdd(user.subRole, 'Client') ? (
@@ -272,7 +258,7 @@ class Landing extends React.Component {
               style={[styles.btnStyle, { marginLeft: 5 }]}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>Add Client</Text>
+              <Text style={styles.font}>Client</Text>
             </TouchableOpacity>
           ) : null}
         </View>

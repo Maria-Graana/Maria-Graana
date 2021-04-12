@@ -9,6 +9,7 @@ import helper from '../../helper'
 import ErrorMessage from '../../components/ErrorMessage'
 import DateTimePicker from '../../components/DatePicker';
 import TouchableButton from '../../components/TouchableButton'
+import Ability from '../../hoc/Ability';
 
 class DetailForm extends Component {
 
@@ -61,7 +62,7 @@ class DetailForm extends Component {
     render() {
         const { taskType, date, startTime, endTime, subject, notes } = this.state.formData;
         const { formData, buttonText } = this.state;
-        const { formSubmit, checkValidation, taskValues, loading } = this.props
+        const { formSubmit, checkValidation, taskValues, loading, performTaskActions, user, screenName } = this.props
         return (
             <View>
                 <View style={[AppStyles.mainInputWrap]}>
@@ -130,6 +131,37 @@ class DetailForm extends Component {
                         loading={loading}
                     />
                 </View>
+                {Ability.canEdit(user.subRole, screenName) && formData.status === 'pending' || formData.status === 'inProgress' ?
+                    <View style={{ marginVertical: 10 }}>
+                        <TouchableButton
+                            containerStyle={AppStyles.formBtn}
+                            label={'IN PROGRESS'}
+                            containerBackgroundColor={formData.status == 'inProgress' ? '#8baaef' : AppStyles.colors.primaryColor}
+                            onPress={() => { performTaskActions('inProgress') }}
+                            disabled={formData.status == 'inProgress'}
+
+                        />
+                    </View>
+                    :
+                    null
+                }
+
+                {
+                    Ability.canEdit(user.subRole, screenName) && formData.status !== 'completed' ?
+                        <View style={{ marginVertical: 10 }}>
+                            <TouchableButton
+                                containerStyle={AppStyles.formBtn}
+                                label={'DONE'}
+                                containerBackgroundColor={formData.status == 'completed' ? '#8baaef' : AppStyles.colors.primaryColor}
+                                onPress={() => { performTaskActions('completed') }}
+                                disabled={formData.status == 'completed'}
+
+                            />
+                        </View>
+                        :
+                        null
+                }
+
             </View>
         )
     }

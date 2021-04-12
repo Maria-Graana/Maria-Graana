@@ -1,6 +1,6 @@
 /** @format */
 
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
 import AppStyles from '../../AppStyles'
 import {
   heightPercentageToDP as hp,
@@ -36,6 +36,12 @@ export default styles = StyleSheet.create({
     height: 12,
     resizeMode: 'contain',
   },
+  statsIcon: {
+    marginRight: -15,
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
+  },
   btnStyle: {
     zIndex: 10,
     borderColor: '#ffffff',
@@ -61,6 +67,7 @@ export default styles = StyleSheet.create({
   font: {
     fontFamily: AppStyles.fonts.boldFont,
     marginRight: 5,
+    color: AppStyles.colors.primaryColor,
   },
   btnView: {
     position: 'absolute',
@@ -71,9 +78,9 @@ export default styles = StyleSheet.create({
   },
   kpiContainer: {
     backgroundColor: 'white',
-    width: wp('40%'),
+    minWidth: wp('45%'),
     position: 'absolute',
-    minHeight: hp('18%'),
+    minHeight: hp('20%'),
     bottom: hp('15%'),
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
@@ -91,9 +98,9 @@ export default styles = StyleSheet.create({
   },
   kpiContainerFalse: {
     backgroundColor: 'white',
-    width: wp('5%'),
+    minWidth: wp('5%'),
     position: 'absolute',
-    minHeight: hp('18%'),
+    minHeight: hp('20%'),
     bottom: hp('15%'),
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
@@ -114,23 +121,36 @@ export default styles = StyleSheet.create({
     fontFamily: AppStyles.fonts.boldFont,
   },
   trueStatsIcon: {
-    position: 'absolute',
-    right: -20,
-    top: '50%',
     zIndex: 20,
+    marginRight: -30,
+    width: 50,
+    height: 50,
+    elevation: 10,
+    shadowOffset: { width: 5, height: 5 },
+    shadowColor: 'lightgrey',
+    shadowOpacity: 0.2,
   },
   falseStatsIcon: {
     position: 'absolute',
     minHeight: hp('15%'),
-    bottom: hp('11%'),
+    bottom: Platform.OS === 'android' ? hp('13%') : hp('12%'),
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
     padding: 10,
-    left: 1,
+    left: -12,
     zIndex: 10,
   },
   loaderView: {
     justifyContent: 'center',
     alignSelf: 'center',
+  },
+  buttonShadowView: {
+    elevation: 10,
+    shadowOffset: { width: 5, height: 5 },
+    shadowColor: 'lightgrey',
+    shadowOpacity: 0.2,
+    position: 'absolute',
+    right: -5,
+    top: '50%',
   },
 })

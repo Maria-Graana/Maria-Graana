@@ -201,6 +201,36 @@ class AddDiary extends Component {
             })
     }
 
+    performTaskActions = (type) => {
+        const { route, navigation } = this.props;
+        const {data} = route.params
+        let endPoint = ``
+        endPoint = `/api/diary/update?id=${data.id}`
+        let that = this;
+        switch (type) {
+          case 'completed':
+            axios.patch(endPoint, {
+              status: type
+            }).then(function (response) {
+              if (response.status == 200) {
+                helper.deleteLocalNotification(data.id)
+                navigation.goBack();
+              }
+            })
+            break;
+          case 'inProgress':
+            axios.patch(endPoint, {
+              status: type
+            }).then(function (response) {
+              if (response.status == 200)
+               navigation.goBack();
+            })
+            break;
+          default:
+            break;
+        }
+      }
+
     render() {
         const { checkValidation, taskValues, loading } = this.state;
         const { route } = this.props;
@@ -212,9 +242,11 @@ class AddDiary extends Component {
                             formSubmit={this.formSubmit}
                             props={this.props}
                             editableData={route.params.update ? route.params.data : null}
+                            screenName = {route.params.screenName ? route.params.screenName : null}
                             taskValues={taskValues}
                             checkValidation={checkValidation}
                             loading={loading}
+                            performTaskActions = {(type)=> this.performTaskActions(type)}
                         />
                     </SafeAreaView>
                 </TouchableWithoutFeedback>

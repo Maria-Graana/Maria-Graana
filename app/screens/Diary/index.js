@@ -35,8 +35,6 @@ class Diary extends React.Component {
       diaryData: {},
       loading: true,
       agentId: '',
-      openPopup: false,
-      selectedDiary: {},
       selectedDate: _today,
       newDiaryData: [],
       selectedMonth: moment(_today).format('MM'),
@@ -79,24 +77,17 @@ class Diary extends React.Component {
   }
 
   listData = () => {
-
     var time = 7
-    var checkAmPm = 'AM'
+    let showZero = ''
+    // var checkAmPm = 'AM'
     var showTime = []
-    var showZero = '0'
     for (let hour = 0; hour <= 15; hour++) {
-      if (time > 12) {
-        time = 1
-      }
-      if (time > 11) {
-        checkAmPm = 'PM'
-      }
-      if (time > 9 && time <= 12) {
-        showZero = ''
-      } else {
+      if (time < 10) {
         showZero = '0'
+      } else {
+        showZero = ''
       }
-      showTime[hour] = showZero + time++ + ' ' + checkAmPm
+      showTime[hour] = showZero + time++ + ':00'
     }
     this.setState({
       calendarList: showTime
@@ -183,7 +174,7 @@ class Diary extends React.Component {
       if (selectedObject.dayTasks.length) { // Do manipulation on mapped dates
         let groupTasksByTime = _.map(selectedObject.dayTasks, (item) => {
           item.statusColor = helper.checkStatusColor(item, _today); // check status color for example todo task is indicated with red color
-          item.hour = moment(item.start).format('hh A');
+          item.hour = moment(item.start).format('HH:00');
         })
         groupTasksByTime = (_.groupBy(selectedObject.dayTasks, 'hour')); // group tasks in a day by hour
         calendarData = calendarList.map((item, index) => {
@@ -270,35 +261,20 @@ class Diary extends React.Component {
     });
   }
 
-  showPopup = (val) => {
-    if (val.taskCategory === 'simpleTask') {
-      this.setState({
-        openPopup: true,
-        selectedDiary: val
-      });
+  editTask = (val) => {
+    const {navigation, route, user} = this.props;
+    const { screen, managerId } = route.params;
+    const { agentId } = this.state;
+    let isManager = false;
+    isManager = managerId ? user.id == managerId ? true : false : false;
+    if (val.taskCategory === 'simpleTask' &&
+     (val.addedBy === 'self' || isManager) && 
+     (val.status === 'pending' || val.status === 'inProgress') &&
+      Ability.canEdit(user.subRole, screen)) {
+      navigation.navigate('AddDiary', {update: true, data: val, screenName: screen, managerId, agentId})
     }
   }
 
-  closePopup = () => {
-    this.setState({
-      openPopup: false,
-      loading: true,
-    }, () => {
-      this.diaryMain()
-    })
-  }
-
-  updateDiary = (data) => {
-    this.props.navigation.navigate('AddDiary',
-      {
-        'agentId': this.state.agentId,
-        'update': true,
-        'data': data
-      })
-    this.setState({
-      openPopup: false,
-    })
-  }
 
   deleteDiary = (data) => {
     let endPoint = ``
@@ -315,34 +291,6 @@ class Diary extends React.Component {
       helper.successToast(error.message)
     })
 
-  }
-
-  popupAction = (val, type) => {
-    let endPoint = ``
-    endPoint = `/api/diary/update?id=${val.id}`
-    let that = this;
-    switch (type) {
-      case 'completed':
-        axios.patch(endPoint, {
-          status: type
-        }).then(function (response) {
-          if (response.status == 200) {
-            helper.deleteLocalNotification(val.id)
-            that.diaryMain()
-          }
-        })
-        break;
-      case 'inProgress':
-        axios.patch(endPoint, {
-          status: type
-        }).then(function (response) {
-          if (response.status == 200)
-            that.diaryMain();
-        })
-        break;
-      default:
-        break;
-    }
   }
 
   handleLongPress = (val) => {
@@ -382,12 +330,58 @@ class Diary extends React.Component {
     let url = diaryObject.armsLeadId ? `/api/leads/byId?id=${diaryObject.armsLeadId}` :
       `/api/leads/project/byId?id=${diaryObject.armsProjectLeadId}`
     axios.get(url).then(response => {
-      this.setState({ openPopup: false })
+      //this.setState({ openPopup: false })
       this.props.navigation.navigate('LeadDetail', { lead: response.data, purposeTab: response.data.purpose ? response.data.purpose : 'invest' })
     }).catch(error => {
       console.log('error', error)
     })
   }
+
+  createTaskPayLoad = (title, time) => {
+    const { selectedDate } = this.state;
+    const { user } = this.props
+    let start = moment(selectedDate + 'T' + time).format('YYYY-MM-DDTHH:mm:ssZ');
+    let end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ'); // If end date is not selected by user, add plus 1 hour in start time
+    let payload = Object.create({});
+    payload.date = start;
+    payload.userId = user.id;
+    payload.time = start;
+    payload.diaryTime = start;
+    payload.start = start;
+    payload.end = end;
+    payload.taskCategory = 'simpleTask';
+    payload.addedBy = 'self';
+    payload.managerId = null;
+    payload.subject = title;
+    payload.taskType = 'task';
+    payload.status = 'pending';
+    return payload
+  }
+
+  addTask = (description, time) => {
+    let payload = this.createTaskPayLoad(description, time)
+    this.setState({ loading: true }, () => {
+      axios.post(`/api/diary/create`, payload)
+        .then((res) => {
+          if (res.status === 200) {
+            helper.successToast('TASK ADDED SUCCESSFULLY!')
+            this.diaryMain();
+          }
+          else {
+            helper.errorToast('ERROR: SOMETHING WENT WRONG')
+          }
+
+        })
+        .catch((error) => {
+          helper.errorToast('ERROR: ADDING TASK')
+          console.log('error', error.message)
+        }).finally(() => {
+          this.setState({ loading: false });
+        })
+    })
+  }
+
+
 
   render() {
     const { showCalendar, startDate, loading, selectedDiary, newDiaryData, diaryData, selectedDate } = this.state;
@@ -396,70 +390,75 @@ class Diary extends React.Component {
     return (
       !loading ?
         <View style={styles.container}>
+            {/* <DairyPopup
+              screenName={route.params.screen}
+              data={selectedDiary}
+              updateDiary={this.updateDiary}
+              // openPopup={this.state.openPopup}
+              // closePopup={this.closePopup}
+              onLeadLinkClicked={this.handleLeadLinkPress}
+              popupAction={(val, type) => this.popupAction(val, type)}
+            /> */}
 
-          <DairyPopup
-            screenName={route.params.screen}
-            data={selectedDiary}
-            updateDiary={this.updateDiary}
-            openPopup={this.state.openPopup}
-            closePopup={this.closePopup}
-            onLeadLinkClicked={this.handleLeadLinkPress}
-            popupAction={(val, type) => this.popupAction(val, type)}
-          />
+            {
+              Ability.canAdd(user.subRole, route.params.screen) ?
+                <Fab
+                  active='true'
+                  containerStyle={{ zIndex: 20 }}
+                  style={{ backgroundColor: AppStyles.colors.primaryColor }}
+                  position="bottomRight"
+                  onPress={this.goToDiaryForm}
+                >
+                  <Ionicons name="md-add" color="#ffffff" />
+                </Fab> :
+                null
+            }
 
-          {
-            Ability.canAdd(user.subRole, route.params.screen) ?
-              <Fab
-                active='true'
-                containerStyle={{ zIndex: 20 }}
-                style={{ backgroundColor: AppStyles.colors.primaryColor }}
-                position="bottomRight"
-                onPress={this.goToDiaryForm}
-              >
-                <Ionicons name="md-add" color="#ffffff" />
-              </Fab> :
-              null
-          }
-
-          {
-            // Show view with team member name if coming from team member screen
-            route.params.screen === 'TeamDiary' ?
-              <View style={styles.calenderIconContainer}>
-                <View style={AppStyles.flexDirectionRow}>
-                  <Text style={styles.teamMemberNameText}>{name !== null && name !== undefined ? name : ''}</Text>
-                  <Text style={styles.diaryText}>Diary</Text>
-                </View>
-              </View>
-              : null
-          }
-
-
-          {
-            !showCalendar ?
-              <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
-                <View style={styles.underLine} />
+            {
+              // Show view with team member name if coming from team member screen
+              route.params.screen === 'TeamDiary' ?
                 <View style={styles.calenderIconContainer}>
-                  <Image style={{ width: 30, height: 26 }} source={require('../../../assets/img/calendar2.png')} />
-                  <Text style={styles.calendarText}>Calendar</Text>
+                  <View style={AppStyles.flexDirectionRow}>
+                    <Text style={styles.teamMemberNameText}>{name !== null && name !== undefined ? name : ''}</Text>
+                    <Text style={styles.diaryText}>Diary</Text>
+                  </View>
                 </View>
-                <View style={styles.underLine}
-                />
-              </TouchableOpacity>
-              :
-              <CalendarComponent startDate={startDate}
-                diaryData={diaryData}
-                updateMonth={(value) => this.updateMonth(value)}
-                updateDay={(value) => this.updateDay(value)}
-                selectedDate={selectedDate}
-                onPress={this._toggleShow} />
-          }
+                : null
+            }
 
 
-          {
-            newDiaryData && newDiaryData.length ?
-              <DiaryTile data={newDiaryData} showPopup={this.showPopup} onLeadLinkPressed={this.handleLeadLinkPress} onLongPress={(val) => this.handleLongPress(val)} /> : null
-          }
-        </View >
+            {
+              !showCalendar ?
+                <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
+                  <View style={styles.underLine} />
+                  <View style={styles.calenderIconContainer}>
+                    <Image style={{ width: 30, height: 26 }} source={require('../../../assets/img/calendar2.png')} />
+                    <Text style={styles.calendarText}>Calendar</Text>
+                  </View>
+                  <View style={styles.underLine}
+                  />
+                </TouchableOpacity>
+                :
+                <CalendarComponent startDate={startDate}
+                  diaryData={diaryData}
+                  updateMonth={(value) => this.updateMonth(value)}
+                  updateDay={(value) => this.updateDay(value)}
+                  selectedDate={selectedDate}
+                  onPress={this._toggleShow} />
+            }
+
+
+            {
+              newDiaryData && newDiaryData.length ?
+                <DiaryTile data={newDiaryData}
+                 editTask = {this.editTask}
+                  // showPopup={this.showPopup}
+                  onLeadLinkPressed={this.handleLeadLinkPress}
+                  onLongPress={(val) => this.handleLongPress(val)}
+                  addTask={(description, selectedTime) => this.addTask(description, selectedTime)}
+                /> : null
+            }
+          </View>
         :
         <Loader loading={loading} />
     )

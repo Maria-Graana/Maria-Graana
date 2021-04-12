@@ -728,20 +728,22 @@ const helper = {
     let legalServicesCount = 2
     let cleared = 0
     let legalPaymentCleared = 0
-    let legalCount = 12
+    let legalCount = 8
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true) {
       commissionsLength = 1
       legalServicesCount = 1
-      legalCount = 6
+      legalCount = 4
     }
-    const { commissions, propsureOutstandingPayment } = lead
+    const { commissions, propsureOutstandingPayment, sellerLegalMail, legalMailSent } = lead
+    if (!sellerLegalMail) legalServicesCount = legalServicesCount - 1
+    if (!legalMailSent) legalServicesCount = legalServicesCount - 1
     if (legalServicesFee && legalServicesFee.fee <= 0) legalServicesCount = 0
     if (commissions && commissions.length) {
       commissions.map((item) => {
-        if (item.status !== 'cleared' && item.paymentCategory === 'commission') paymentCheck = false
         if (item.status === 'cleared' && item.paymentCategory === 'commission') cleared++
         if (item.status === 'cleared' && item.paymentCategory === 'legal_payment')
           legalPaymentCleared++
+        if (item.status !== 'cleared' && item.paymentCategory === 'commission') paymentCheck = false
         if (item.status !== 'cleared' && item.paymentCategory === 'propsure_services')
           propsureCheck = false
         if (item.status !== 'cleared' && item.paymentCategory === 'legal_payment')
@@ -754,7 +756,7 @@ const helper = {
         propsureOutstandingPayment <= 0 &&
         cleared === commissionsLength &&
         legalPaymentCleared === legalServicesCount &&
-        Number(legalDocCount) === legalCount
+        Number(legalDocCount) >= legalCount
       )
         check = true
       return check

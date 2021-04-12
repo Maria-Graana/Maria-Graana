@@ -63,16 +63,7 @@ class DairyPopup extends React.Component {
         } = this.props;
         let checkTaskType = null;
         const { todayDate } = this.state;
-        let isManager = false;
-
-        if (data.taskType === 'Daily Task' || data.taskType === 'Weekly Task') {
-            checkTaskType = false;
-        }
-        else {
-            checkTaskType = true
-        }
-        const managerId = data.managerId ? data.managerId : null;
-        isManager = managerId ? user.id == managerId ? true : false : false;
+        
         return (
             <Modal visible={openPopup}
                 animationType="slide"

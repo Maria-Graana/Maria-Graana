@@ -228,8 +228,10 @@ export function checkToken() {
 
 export function getCurrentUser() {
   return (dispatch, getsState) => {
+    getItem('token').then((token) => {
+    const url = `${config.apiPath}/api/user/me`;
     axios
-      .post(`${config.apiPath}/api/user/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .get(url, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         // store in async storage
         dispatch({
@@ -237,6 +239,7 @@ export function getCurrentUser() {
           payload: response.data,
         })
       })
+    })
   }
 }
 

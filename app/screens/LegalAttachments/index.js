@@ -53,6 +53,7 @@ class LegalAttachment extends Component {
       legalPaymentObj: null,
       editable: false,
       legalServicesFee: null,
+      officeLocations: [],
     }
   }
 
@@ -60,6 +61,7 @@ class LegalAttachment extends Component {
     this.fetchLead()
     this.fetchDocuments()
     this.fetchLegalPaymentInfo()
+    this.fetchOfficeLocations()
   }
 
   componentWillUnmount() {
@@ -79,6 +81,25 @@ class LegalAttachment extends Component {
           this.setState({ loading: false })
         })
     })
+  }
+  fetchOfficeLocations = () => {
+    axios
+      .get(`/api/user/locations`)
+      .then((response) => {
+        if (response.data) {
+          this.setState({
+            officeLocations: response.data.map((item) => {
+              return {
+                name: item.name,
+                value: item.id,
+              }
+            }),
+          })
+        }
+      })
+      .catch((error) => {
+        console.log(`/api/user/locations`, error)
+      })
   }
 
   fetchLead = () => {
@@ -110,7 +131,11 @@ class LegalAttachment extends Component {
                   )
                 })
               newcheckListDoc.name = 'CHECKLIST'
-              this.setState({ checkListDoc: newcheckListDoc, legalPaymentObj: newlegalPayment })
+              this.setState({
+                checkListDoc: newcheckListDoc,
+                legalPaymentObj: newlegalPayment,
+                assignToAccountsLoading: false,
+              })
             }
           }
         })
@@ -474,9 +499,28 @@ class LegalAttachment extends Component {
   }
 
   setCommissionEditData = (data) => {
-    const { dispatch } = this.props
-    this.setState({ editable: true })
-    dispatch(setLegalPayment({ ...data, visible: true }))
+    const { dispatch, user } = this.props
+    this.setState({
+      editable: true,
+      officeLocationId:
+        data && data.officeLocationId
+          ? data.officeLocationId
+          : user && user.officeLocation
+          ? user.officeLocation.id
+          : null,
+    })
+    dispatch(
+      setLegalPayment({
+        ...data,
+        visible: true,
+        officeLocationId:
+          data && data.officeLocationId
+            ? data.officeLocationId
+            : user && user.officeLocation
+            ? user.officeLocation.id
+            : null,
+      })
+    )
   }
 
   goToPayAttachments = () => {
@@ -647,6 +691,11 @@ class LegalAttachment extends Component {
     )
   }
 
+  handleOfficeLocation = (value) => {
+    const { legalPayment, dispatch } = this.props
+    dispatch(setLegalPayment({ ...legalPayment, officeLocationId: value }))
+  }
+
   deletePayment = async (reason) => {
     const { legalPayment } = this.props
     this.showHideDeletePayment(false)
@@ -696,6 +745,7 @@ class LegalAttachment extends Component {
       legalPaymentObj,
       deletePaymentVisible,
       legalServicesFee,
+      officeLocations,
     } = this.state
     const { lead, route } = this.props
     let mailCheck = this.mailSentCheck()
@@ -719,6 +769,8 @@ class LegalAttachment extends Component {
           assignToAccounts={() => {
             this.assignToAccounts()
           }}
+          officeLocations={officeLocations}
+          handleOfficeLocationChange={this.handleOfficeLocation}
         />
         <DeleteModal
           isVisible={deletePaymentVisible}

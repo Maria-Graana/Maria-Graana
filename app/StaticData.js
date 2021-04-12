@@ -3,6 +3,10 @@
 export default StaticData = {
   taskValues: [
     {
+      name: 'Task',
+      value: 'task',
+    },
+    {
       name: 'Meeting',
       value: 'meeting',
     },

@@ -264,13 +264,14 @@ class Diary extends React.Component {
   editTask = (val) => {
     const {navigation, route, user} = this.props;
     const { screen, managerId } = route.params;
+    const { agentId } = this.state;
     let isManager = false;
     isManager = managerId ? user.id == managerId ? true : false : false;
     if (val.taskCategory === 'simpleTask' &&
      (val.addedBy === 'self' || isManager) && 
      (val.status === 'pending' || val.status === 'inProgress') &&
       Ability.canEdit(user.subRole, screen)) {
-      navigation.navigate('AddDiary', {update: true, data: val, screenName: screen, managerId})
+      navigation.navigate('AddDiary', {update: true, data: val, screenName: screen, managerId, agentId})
     }
   }
 

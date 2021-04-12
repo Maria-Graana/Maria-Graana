@@ -139,7 +139,6 @@ class DetailForm extends Component {
                             containerBackgroundColor={formData.status == 'inProgress' ? '#8baaef' : AppStyles.colors.primaryColor}
                             onPress={() => { performTaskActions('inProgress') }}
                             disabled={formData.status == 'inProgress'}
-                            loading={loading}
 
                         />
                     </View>
@@ -156,7 +155,6 @@ class DetailForm extends Component {
                                 containerBackgroundColor={formData.status == 'completed' ? '#8baaef' : AppStyles.colors.primaryColor}
                                 onPress={() => { performTaskActions('completed') }}
                                 disabled={formData.status == 'completed'}
-                                loading={loading}
 
                             />
                         </View>

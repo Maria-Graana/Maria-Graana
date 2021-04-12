@@ -171,11 +171,10 @@ class Diary extends React.Component {
       }
     }
     if (!_.isEmpty(selectedObject)) {
-      //console.log(selectedObject)
       if (selectedObject.dayTasks.length) { // Do manipulation on mapped dates
         let groupTasksByTime = _.map(selectedObject.dayTasks, (item) => {
           item.statusColor = helper.checkStatusColor(item, _today); // check status color for example todo task is indicated with red color
-          item.hour = moment(item.start).format('HH:mm');
+          item.hour = moment(item.start).format('HH:00');
         })
         groupTasksByTime = (_.groupBy(selectedObject.dayTasks, 'hour')); // group tasks in a day by hour
         calendarData = calendarList.map((item, index) => {
@@ -360,7 +359,6 @@ class Diary extends React.Component {
 
   addTask = (description, time) => {
     let payload = this.createTaskPayLoad(description, time)
-    //console.log(payload);
     this.setState({ loading: true }, () => {
       axios.post(`/api/diary/create`, payload)
         .then((res) => {

@@ -14,7 +14,7 @@ class MeetingModal extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      selectedOption: 'tomorrow',
+      selectedOption: '',
     }
   }
 
@@ -30,7 +30,8 @@ class MeetingModal extends React.Component {
       diaryForm,
       diaryTask,
       handleFormDiary,
-      formSubmitDiary,
+      addFollowUpTask,
+      //formSubmitDiary,
       loading,
     } = this.props
     const { selectedOption } = this.state;
@@ -44,18 +45,24 @@ class MeetingModal extends React.Component {
 
             <View style={styles.row}>
 
-              <TouchableButton label={"Tomorrow"}
+              <TouchableButton label={"Today"}
                 loading={false}
-                onPress={() => this.setState({ selectedOption: 'tomorrow' })}
+                onPress={() => {
+                  this.setState({ selectedOption: 'today' })
+                  addFollowUpTask('today')
+                }}
+                containerBackgroundColor={selectedOption === 'today' ? AppStyles.colors.primaryColor : '#8baaef'}
                 containerStyle={styles.button}
-                containerBackgroundColor={selectedOption === 'tomorrow' ? AppStyles.colors.primaryColor : '#8baaef'}
               />
 
-              <TouchableButton label={"Next Week"}
+              <TouchableButton label={"Tomorrow"}
                 loading={false}
-                onPress={() => this.setState({ selectedOption: 'next week' })}
-                containerBackgroundColor={selectedOption === 'next week' ? AppStyles.colors.primaryColor : '#8baaef'}
+                onPress={() => {
+                  this.setState({ selectedOption: 'tomorrow' })
+                  addFollowUpTask('tomorrow')
+                }}
                 containerStyle={styles.button}
+                containerBackgroundColor={selectedOption === 'tomorrow' ? AppStyles.colors.primaryColor : '#8baaef'}
               />
 
             </View>
@@ -63,58 +70,75 @@ class MeetingModal extends React.Component {
 
             <View style={styles.row}>
 
-              <TouchableButton label={"Next Month"}
+              <TouchableButton label={"Next Week"}
                 loading={false}
-                onPress={() => this.setState({ selectedOption: 'next month' })}
+                onPress={() => {
+                  this.setState({ selectedOption: 'next_week' })
+                  addFollowUpTask('next_week')
+                }}
+                containerBackgroundColor={selectedOption === 'next_week' ? AppStyles.colors.primaryColor : '#8baaef'}
                 containerStyle={styles.button}
-                containerBackgroundColor={selectedOption === 'next month' ? AppStyles.colors.primaryColor : '#8baaef'}
               />
 
+              <TouchableButton label={"In 3 Days"}
+                loading={false}
+                onPress={() => {
+                  this.setState({ selectedOption: 'in_3_days' })
+                  addFollowUpTask('in_3_days')
+                }}
+                containerStyle={styles.button}
+                containerBackgroundColor={selectedOption === 'in_3_days' ? AppStyles.colors.primaryColor : '#8baaef'}
+              />
+
+            </View>
+
+            <View style={styles.row}>
               <TouchableButton label={"Custom"}
                 loading={false}
                 onPress={() => this.setState({ selectedOption: 'custom' })}
                 containerBackgroundColor={selectedOption === 'custom' ? AppStyles.colors.primaryColor : '#8baaef'}
                 containerStyle={styles.button}
               />
-
             </View>
+            {
+              selectedOption === 'custom' &&
 
-            <View style={[styles.formMain]}>
-              <DateTimePicker
-                placeholderLabel={'Select Date'}
-                name={'date'}
-                mode={'date'}
-                disabled={selectedOption != 'custom'}
-                showError={checkValidation === true && diaryTask.date === ''}
-                errorMessage={'Required'}
-                iconSource={require('../../../assets/img/calendar.png')}
-                date={diaryTask.date ? new Date(diaryTask.date) : new Date()}
-                selectedValue={diaryTask.date ? helper.formatDate(diaryTask.date) : ''}
-                handleForm={(value, name) => handleFormDiary(value, name)}
-              />
-
-              <DateTimePicker
-                placeholderLabel={'Select Time'}
-                name={'start'}
-                mode={'time'}
-                disabled={selectedOption != 'custom'}
-                showError={checkValidation === true && diaryTask.start === ''}
-                errorMessage={'Required'}
-                iconSource={require('../../../assets/img/clock.png')}
-                date={diaryTask.start ? new Date(diaryTask.start) : new Date()}
-                selectedValue={diaryTask.start ? helper.formatTime(diaryTask.start) : ''}
-                handleForm={(value, name) => handleFormDiary(value, name)}
-              />
-              {/* **************************************** */}
-              <View style={[AppStyles.mainInputWrap]}>
-                <TouchableButton
-                  containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-                  label={'ADD FOLLOW UP TASK'}
-                  onPress={() => formSubmitDiary()}
-                  loading={loading}
+              <View style={[styles.formMain]}>
+                <DateTimePicker
+                  placeholderLabel={'Select Date'}
+                  name={'date'}
+                  mode={'date'}
+                  disabled={selectedOption != 'custom'}
+                  showError={checkValidation === true && diaryTask.date === ''}
+                  errorMessage={'Required'}
+                  iconSource={require('../../../assets/img/calendar.png')}
+                  date={diaryTask.date ? new Date(diaryTask.date) : new Date()}
+                  selectedValue={diaryTask.date ? helper.formatDate(diaryTask.date) : ''}
+                  handleForm={(value, name) => handleFormDiary(value, name)}
                 />
+
+                <DateTimePicker
+                  placeholderLabel={'Select Time'}
+                  name={'start'}
+                  mode={'time'}
+                  disabled={selectedOption != 'custom'}
+                  showError={checkValidation === true && diaryTask.start === ''}
+                  errorMessage={'Required'}
+                  iconSource={require('../../../assets/img/clock.png')}
+                  date={diaryTask.start ? new Date(diaryTask.start) : new Date()}
+                  selectedValue={diaryTask.start ? helper.formatTime(diaryTask.start) : ''}
+                  handleForm={(value, name) => handleFormDiary(value, name)}
+                />
+                {/* **************************************** */}
+                <View style={[AppStyles.mainInputWrap]}>
+                  <TouchableButton
+                    containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+                    label={'Done'}
+                    onPress={() => addFollowUpTask('custom')}
+                  />
+                </View>
               </View>
-            </View>
+            }
           </View>
         </Modal>
       )

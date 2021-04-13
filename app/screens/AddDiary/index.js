@@ -203,37 +203,52 @@ class AddDiary extends Component {
 
     performTaskActions = (type) => {
         const { route, navigation } = this.props;
-        const {data} = route.params
+        const { data } = route.params
         let endPoint = ``
         endPoint = `/api/diary/update?id=${data.id}`
         let that = this;
         switch (type) {
-          case 'completed':
-            axios.patch(endPoint, {
-              status: type
-            }).then(function (response) {
-              if (response.status == 200) {
-                helper.deleteLocalNotification(data.id)
-                navigation.goBack();
-              }
-            })
-            break;
-          case 'inProgress':
-            axios.patch(endPoint, {
-              status: type
-            }).then(function (response) {
-              if (response.status == 200)
-               navigation.goBack();
-            })
-            break;
-          default:
-            break;
+            case 'completed':
+                axios.patch(endPoint, {
+                    status: type
+                }).then(function (response) {
+                    if (response.status == 200) {
+                        helper.deleteLocalNotification(data.id)
+                        navigation.goBack();
+                    }
+                })
+                break;
+            case 'inProgress':
+                axios.patch(endPoint, {
+                    status: type
+                }).then(function (response) {
+                    if (response.status == 200)
+                        navigation.goBack();
+                })
+                break;
+            default:
+                break;
         }
-      }
+    }
+
+    addFollowUpForCall = (data) => {
+        const {navigation} = this.props;
+        axios
+        .post(`api/leads/project/meeting`, data)
+        .then((res) => {
+          helper.successToast(`Follow up task added to the Diary`)
+          navigation.goBack();
+        })
+        .catch((error) => {
+          console.log(error)
+          helper.errorToast(`Some thing went wrong!!!`)
+        })
+    }
 
     render() {
         const { checkValidation, taskValues, loading } = this.state;
         const { route } = this.props;
+
         return (
             <KeyboardAwareScrollView style={[AppStyles.container]} keyboardShouldPersistTaps="always" enableOnAndroid>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} onLongPress={Keyboard.dismiss}>
@@ -242,11 +257,13 @@ class AddDiary extends Component {
                             formSubmit={this.formSubmit}
                             props={this.props}
                             editableData={route.params.update ? route.params.data : null}
-                            screenName = {route.params.screenName ? route.params.screenName : null}
+                            screenName={route.params.screenName ? route.params.screenName : null}
+                            fromScreen={route.params.fromScreen ? route.params.fromScreen : null}
                             taskValues={taskValues}
                             checkValidation={checkValidation}
                             loading={loading}
-                            performTaskActions = {(type)=> this.performTaskActions(type)}
+                            performTaskActions={(type) => this.performTaskActions(type)}
+                            addFollowUpForCall={this.addFollowUpForCall}
                         />
                     </SafeAreaView>
                 </TouchableWithoutFeedback>

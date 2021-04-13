@@ -12,7 +12,7 @@ export default StaticData = {
     },
     {
       name: 'Follow Up',
-      value: 'follow up',
+      value: 'follow_up',
     },
     {
       name: 'Other',
@@ -349,7 +349,7 @@ export default StaticData = {
     { value: 'other_agent', name: 'In contact with some other agent' },
     { value: 'call_back', name: 'Call Back' },
     { value: 'awaiting_call', name: 'Awaiting Response' },
-    { value: 'follow up', name: 'Follow up' },
+    { value: 'follow_up', name: 'Follow up' },
     { value: 'details_sent', name: 'Details Sent' },
     { value: 'expected_visit', name: 'Expected Visit' },
     { value: 'viewing', name: 'Viewing' },

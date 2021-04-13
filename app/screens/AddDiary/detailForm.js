@@ -62,7 +62,7 @@ class DetailForm extends Component {
     render() {
         const { taskType, date, startTime, endTime, subject, notes } = this.state.formData;
         const { formData, buttonText } = this.state;
-        const { formSubmit, checkValidation, taskValues, loading, performTaskActions, user, screenName } = this.props
+        const { formSubmit, checkValidation, taskValues, loading, performTaskActions, user, screenName, editableData } = this.props
         return (
             <View>
                 <View style={[AppStyles.mainInputWrap]}>
@@ -131,7 +131,7 @@ class DetailForm extends Component {
                         loading={loading}
                     />
                 </View>
-                {Ability.canEdit(user.subRole, screenName) && formData.status === 'pending' || formData.status === 'inProgress' ?
+                {Ability.canEdit(user.subRole, screenName) && editableData && formData.status === 'pending' || formData.status === 'inProgress' ?
                     <View style={{ marginVertical: 10 }}>
                         <TouchableButton
                             containerStyle={AppStyles.formBtn}
@@ -147,7 +147,7 @@ class DetailForm extends Component {
                 }
 
                 {
-                    Ability.canEdit(user.subRole, screenName) && formData.status !== 'completed' ?
+                    Ability.canEdit(user.subRole, screenName) && editableData && formData.status !== 'completed' ?
                         <View style={{ marginVertical: 10 }}>
                             <TouchableButton
                                 containerStyle={AppStyles.formBtn}

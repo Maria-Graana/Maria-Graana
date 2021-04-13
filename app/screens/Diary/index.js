@@ -258,6 +258,7 @@ class Diary extends React.Component {
       'agentId': agentId,
       addedBy: screen === 'TeamDiary' ? 'manager' : 'self',
       managerId: managerId ? managerId : null,
+      screenName: screen
     });
   }
 

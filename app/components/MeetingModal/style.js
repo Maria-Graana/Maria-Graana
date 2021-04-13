@@ -26,17 +26,17 @@ export default styles = StyleSheet.create({
     height: 20,
     resizeMode: 'contain',
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 10,
+  rowVertical: {
+    justifyContent: 'center',
+    alignItems:'center',
+    marginVertical: 5,
     width: '100%'
   },
   button: {
     padding: 10, 
     borderRadius: 4,
-    width: '45%',
-    marginHorizontal: 10,
+    width: '70%',
+    alignSelf:'center',
+    margin: 10,
   }
 });

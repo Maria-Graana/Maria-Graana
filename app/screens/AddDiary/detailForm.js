@@ -62,7 +62,7 @@ class DetailForm extends Component {
     render() {
         const { taskType, date, startTime, endTime, subject, notes } = this.state.formData;
         const { formData, buttonText } = this.state;
-        const { formSubmit, checkValidation, taskValues, loading, performTaskActions, user, screenName, editableData, fromScreen, addFollowUpForCall } = this.props
+        const { formSubmit, checkValidation, taskValues, loading, performTaskActions, user, screenName, editableData } = this.props
         return (
             <View>
                 <View style={[AppStyles.mainInputWrap]}>
@@ -143,7 +143,7 @@ class DetailForm extends Component {
 
                 }
 
-                {Ability.canEdit(user.subRole, screenName) && editableData && (formData.status === 'pending' || formData.status === 'inProgress') && fromScreen!== 'meeting' ?
+                {Ability.canEdit(user.subRole, screenName) && editableData && (formData.status === 'pending' || formData.status === 'inProgress') ?
                     <View style={{ marginVertical: 10 }}>
                         <TouchableButton
                             containerStyle={AppStyles.formBtn}
@@ -159,11 +159,11 @@ class DetailForm extends Component {
                 }
 
                 {
-                    Ability.canEdit(user.subRole, screenName) && editableData && formData.status !== 'completed' && fromScreen !== 'meeting' ?
+                    Ability.canEdit(user.subRole, screenName) && editableData && formData.status !== 'completed' ?
                         <View style={{ marginVertical: 10 }}>
                             <TouchableButton
                                 containerStyle={AppStyles.formBtn}
-                                label={'DONE'}
+                                label={'Mark Task as Done'}
                                 containerBackgroundColor={formData.status == 'completed' ? '#8baaef' : AppStyles.colors.primaryColor}
                                 onPress={() => { performTaskActions('completed') }}
                                 disabled={formData.status == 'completed'}

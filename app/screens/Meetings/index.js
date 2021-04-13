@@ -241,7 +241,7 @@ class Meetings extends Component {
       case 'tomorrow':
         let tomorrowPayload = { ...payload };
         let startForTomorrow = moment().add(1, 'day');
-        startForTomorrow.set({hour:9,minute:0,second:0}).toISOString();
+        startForTomorrow.set({ hour: 9, minute: 0, second: 0 }).toISOString();
         startForTomorrow.format('YYYY-MM-DDTHH:mm:ssZ')
         tomorrowPayload.start = startForTomorrow;
         tomorrowPayload.date = startForTomorrow;
@@ -252,7 +252,7 @@ class Meetings extends Component {
       case 'in_3_days':
         let inThreeDaysPayload = { ...payload };
         let startForIn3days = moment().add(3, 'days');
-        startForIn3days.set({hour:9,minute:0,second:0}).toISOString();
+        startForIn3days.set({ hour: 9, minute: 0, second: 0 }).toISOString();
         startForIn3days.format('YYYY-MM-DDTHH:mm:ssZ')
         inThreeDaysPayload.start = startForIn3days;
         inThreeDaysPayload.date = startForIn3days;
@@ -263,7 +263,7 @@ class Meetings extends Component {
       case 'next_week':
         let nextWeekPayload = { ...payload };
         let startForNextWeek = moment().add(7, 'days');
-        startForNextWeek.set({hour:9,minute:0,second:0}).toISOString();
+        startForNextWeek.set({ hour: 9, minute: 0, second: 0 }).toISOString();
         startForNextWeek.format('YYYY-MM-DDTHH:mm:ssZ')
         nextWeekPayload.start = startForNextWeek;
         nextWeekPayload.date = startForNextWeek;
@@ -272,8 +272,9 @@ class Meetings extends Component {
         payload = nextWeekPayload;
         break;
       case 'custom':
-        payload = {...diaryTask};
+        payload = { ...diaryTask };
         payload.end = moment(payload.start).add(1, 'hour');
+        payload.time = payload.start;
         break;
       default:
         break;
@@ -282,16 +283,22 @@ class Meetings extends Component {
       active: false,
       editMeeting: false,
     }, () => {
-      navigation.navigate('AddDiary', {
-        update: true,
-        data: payload,
-        screenName: 'Diary',
-        managerId: null,
-        agentId: user.id,
-        fromScreen: 'meeting'
-      })
+      this.addFollowUpForCall(payload);
     })
+  }
 
+  addFollowUpForCall = (data) => {
+    axios
+      .post(`api/leads/project/meeting`, data)
+      .then((res) => {
+        if (res && res.data) {
+          helper.successToast(`Follow up task added for ${moment(res.data.start).format('hh:mm a')}, ${moment(res.data.start).format('MMM D')}`, 5000)
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        helper.errorToast(`Some thing went wrong!!!`)
+      })
   }
 
   // formSubmitDiary = (id) => {

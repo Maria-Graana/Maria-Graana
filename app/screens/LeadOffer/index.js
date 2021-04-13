@@ -308,6 +308,7 @@ class LeadOffer extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
+      screenName : 'Diary'
     })
   }
 

@@ -62,7 +62,7 @@ class DetailForm extends Component {
     render() {
         const { taskType, date, startTime, endTime, subject, notes } = this.state.formData;
         const { formData, buttonText } = this.state;
-        const { formSubmit, checkValidation, taskValues, loading, performTaskActions, user, screenName, editableData } = this.props
+        const { formSubmit, checkValidation, taskValues, loading, performTaskActions, user, screenName, editableData, fromScreen, addFollowUpForCall } = this.props
         return (
             <View>
                 <View style={[AppStyles.mainInputWrap]}>
@@ -122,16 +122,28 @@ class DetailForm extends Component {
                     />
                 </View>
 
+                {
+                    fromScreen === 'meeting' ? <View style={{ marginVertical: 10 }}>
+                        <TouchableButton
+                            containerStyle={[AppStyles.formBtn]}
+                            label={'ADD FOLLOW UP TASK'}
+                            onPress={() => addFollowUpForCall(formData)}
+                            //loading={loading}
+                        />
+                    </View> :
 
-                <View style={{ marginVertical: 10 }}>
-                    <TouchableButton
-                        containerStyle={[AppStyles.formBtn]}
-                        label={buttonText}
-                        onPress={() => formSubmit(formData)}
-                        loading={loading}
-                    />
-                </View>
-                {Ability.canEdit(user.subRole, screenName) && editableData && formData.status === 'pending' || formData.status === 'inProgress' ?
+                        <View style={{ marginVertical: 10 }}>
+                            <TouchableButton
+                                containerStyle={[AppStyles.formBtn]}
+                                label={buttonText}
+                                onPress={() => formSubmit(formData)}
+                                loading={loading}
+                            />
+                        </View>
+
+                }
+
+                {Ability.canEdit(user.subRole, screenName) && editableData && (formData.status === 'pending' || formData.status === 'inProgress') && fromScreen!== 'meeting' ?
                     <View style={{ marginVertical: 10 }}>
                         <TouchableButton
                             containerStyle={AppStyles.formBtn}
@@ -147,7 +159,7 @@ class DetailForm extends Component {
                 }
 
                 {
-                    Ability.canEdit(user.subRole, screenName) && editableData && formData.status !== 'completed' ?
+                    Ability.canEdit(user.subRole, screenName) && editableData && formData.status !== 'completed' && fromScreen !== 'meeting' ?
                         <View style={{ marginVertical: 10 }}>
                             <TouchableButton
                                 containerStyle={AppStyles.formBtn}

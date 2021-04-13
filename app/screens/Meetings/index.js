@@ -61,7 +61,7 @@ class Meetings extends Component {
       diaryForm: false,
       diaryTask: {
         subject: '',
-        taskType: 'follow up',
+        taskType: 'follow_up',
         start: '',
         end: '',
         date: '',
@@ -214,43 +214,106 @@ class Meetings extends Component {
     }
   }
 
-  formSubmitDiary = (id) => {
+  addFollowUpTask = (selectedOption) => {
     const { diaryTask } = this.state
-    if (!diaryTask.start || !diaryTask.date) {
-      this.setState({ checkValidation: true })
-    } else {
-      this.setState({ loading: true })
-      let formattedDate = helper.formatDate(diaryTask.date)
-      const start = helper.formatDateAndTime(formattedDate, diaryTask.start)
-      const end = moment(start).add(0.33, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
-      let body = {
-        subject: 'Follow up with client',
-        date: start,
-        end: end,
-        leadId: diaryTask.leadId,
-        start: start,
-        taskType: diaryTask.taskType,
-        time: start,
-      }
-      axios
-        .post(`api/leads/project/meeting`, body)
-        .then((res) => {
-          helper.successToast(`Follow up task added to the Diary`)
-          this.getMeetingLead()
-          this.setState({
-            active: false,
-            editMeeting: false,
-          })
-        })
-        .catch((error) => {
-          console.log(error)
-          helper.errorToast(`Some thing went wrong!!!`)
-        })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
+    const { navigation, user } = this.props;
+    let payload = {
+      subject: 'Follow up with client',
+      date: null,
+      end: null,
+      leadId: diaryTask.leadId,
+      start: null,
+      taskType: diaryTask.taskType,
+      time: null,
+      notes: '',
+      status: 'pending'
     }
+    switch (selectedOption) {
+      case 'today':
+        let todayPayload = { ...payload };
+        let startForToday = moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
+        todayPayload.start = startForToday;
+        todayPayload.date = startForToday;
+        todayPayload.end = moment(todayPayload.start).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
+        todayPayload.time = startForToday;
+        payload = todayPayload;
+        break;
+      case 'tomorrow':
+        let tomorrowPayload = { ...payload };
+        let startForTomorrow = moment().add(1, 'day');
+        startForTomorrow.set({hour:9,minute:0,second:0}).toISOString();
+        startForTomorrow.format('YYYY-MM-DDTHH:mm:ssZ')
+        tomorrowPayload.start = startForTomorrow;
+        tomorrowPayload.date = startForTomorrow;
+        tomorrowPayload.end = moment(startForTomorrow).add(1, 'hour');
+        tomorrowPayload.time = startForTomorrow;
+        payload = tomorrowPayload;
+        break;
+      case 'in_3_days':
+        let inThreeDaysPayload = { ...payload };
+        let startForIn3days = moment().add(3, 'days');
+        startForIn3days.set({hour:9,minute:0,second:0}).toISOString();
+        startForIn3days.format('YYYY-MM-DDTHH:mm:ssZ')
+        inThreeDaysPayload.start = startForIn3days;
+        inThreeDaysPayload.date = startForIn3days;
+        inThreeDaysPayload.end = moment(startForIn3days).add(1, 'hour');
+        inThreeDaysPayload.time = startForIn3days;
+        payload = inThreeDaysPayload;
+        break;
+      case 'next_week':
+        let nextWeekPayload = { ...payload };
+        let startForNextWeek = moment().add(7, 'days');
+        startForNextWeek.set({hour:9,minute:0,second:0}).toISOString();
+        startForNextWeek.format('YYYY-MM-DDTHH:mm:ssZ')
+        nextWeekPayload.start = startForNextWeek;
+        nextWeekPayload.date = startForNextWeek;
+        nextWeekPayload.end = moment(startForNextWeek).add(1, 'hour');
+        nextWeekPayload.time = startForNextWeek;
+        payload = nextWeekPayload;
+        break;
+      case 'custom':
+        payload = {...diaryTask};
+        payload.end = moment(payload.start).add(1, 'hour');
+        break;
+      default:
+        break;
+    }
+    this.setState({
+      active: false,
+      editMeeting: false,
+    }, () => {
+      navigation.navigate('AddDiary', {
+        update: true,
+        data: payload,
+        screenName: 'Diary',
+        managerId: null,
+        agentId: user.id,
+        fromScreen: 'meeting'
+      })
+    })
+
   }
+
+  // formSubmitDiary = (id) => {
+  //   const { diaryTask } = this.state
+  //   if (!diaryTask.start || !diaryTask.date) {
+  //     this.setState({ checkValidation: true })
+  //   } else {
+  //     this.setState({ loading: true })
+  //     let formattedDate = helper.formatDate(diaryTask.date)
+  //     const start = helper.formatDateAndTime(formattedDate, diaryTask.start)
+  //     const end = moment(start).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
+  //     let body = {
+  //       subject: 'Follow up with client',
+  //       date: start,
+  //       end: end,
+  //       leadId: diaryTask.leadId,
+  //       start: start,
+  //       taskType: diaryTask.taskType,
+  //       time: start,
+  //     }
+  //   }
+  // }
 
   openStatus = (data) => {
     this.setState({
@@ -305,13 +368,14 @@ class Meetings extends Component {
   addDiary = () => {
     const { diaryTask } = this.state
     const startTime = moment()
-    const endTime = moment()
-    const add20Minutes = startTime.add(20, 'minutes')
+    const start = startTime.add(1, 'hours')
     const newformData = { ...diaryTask }
-    newformData['taskType'] = 'follow up'
-    newformData['start'] = add20Minutes
-    newformData['end'] = endTime
-    newformData['date'] = add20Minutes
+    newformData['subject'] = 'Follow up with client'
+    newformData['status'] = 'pending'
+    newformData['taskType'] = 'follow_up'
+    newformData['start'] = start
+    newformData['end'] = start
+    newformData['date'] = start
     this.setState({
       active: !this.state.active,
       diaryForm: true,
@@ -698,7 +762,8 @@ class Meetings extends Component {
             editMeeting={editMeeting}
             diaryTask={diaryTask}
             handleFormDiary={this.handleFormDiary}
-            formSubmitDiary={this.formSubmitDiary}
+            addFollowUpTask={(selectedOption) => this.addFollowUpTask(selectedOption)}
+            // formSubmitDiary={this.formSubmitDiary}
             loading={loading}
           />
         )}

@@ -12,20 +12,7 @@ class MeetingTile extends React.Component {
     super(props)
   }
 
-  showStatus = (status) => {
-    if (status === 'not interested out of city')
-      return 'out of city';
-    else if (status === 'not interested low budget')
-      return 'low budget';
-    else if (status === 'not interested re only')
-      return 'interested in RE only';
-    else if (status === 'no response busy')
-      return 'busy'
-    else if (status === 'no response no signals')
-      return 'no signals';
-    else return status;
-
-  }
+  
 
   render() {
     const { data, openStatus, editFunction, leadClosedCheck } = this.props
@@ -48,7 +35,7 @@ class MeetingTile extends React.Component {
             </View>
             <View style={[styles.dotsWrap]}>
               <View>
-                <Text style={[styles.doneText, response != 'DNC' && styles.uperCase]}>{data.response !== null ? this.showStatus(response) : 'Called'}</Text>
+                <Text style={[styles.doneText, response != 'DNC' && styles.uperCase]}>{data.response !== null ? helper.showStatus(response) : 'Called'}</Text>
               </View>
               {
                 leadClosedCheck &&

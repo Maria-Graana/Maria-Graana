@@ -301,26 +301,6 @@ class Meetings extends Component {
       })
   }
 
-  // formSubmitDiary = (id) => {
-  //   const { diaryTask } = this.state
-  //   if (!diaryTask.start || !diaryTask.date) {
-  //     this.setState({ checkValidation: true })
-  //   } else {
-  //     this.setState({ loading: true })
-  //     let formattedDate = helper.formatDate(diaryTask.date)
-  //     const start = helper.formatDateAndTime(formattedDate, diaryTask.start)
-  //     const end = moment(start).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
-  //     let body = {
-  //       subject: 'Follow up with client',
-  //       date: start,
-  //       end: end,
-  //       leadId: diaryTask.leadId,
-  //       start: start,
-  //       taskType: diaryTask.taskType,
-  //       time: start,
-  //     }
-  //   }
-  // }
 
   openStatus = (data) => {
     this.setState({
@@ -485,6 +465,7 @@ class Meetings extends Component {
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
       taskType: taskType != '' ? taskType : null,
+      screenName : 'Diary'
     })
   }
 

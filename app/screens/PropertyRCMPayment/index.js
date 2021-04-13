@@ -481,6 +481,7 @@ class PropertyRCMPayment extends React.Component {
       rcmLeadId: lead.id,
       agentId: user.id,
       addedBy: 'self',
+      screenName : 'Diary'
     })
   }
 

@@ -122,26 +122,15 @@ class DetailForm extends Component {
                     />
                 </View>
 
-                {
-                    fromScreen === 'meeting' ? <View style={{ marginVertical: 10 }}>
-                        <TouchableButton
-                            containerStyle={[AppStyles.formBtn]}
-                            label={'ADD FOLLOW UP TASK'}
-                            onPress={() => addFollowUpForCall(formData)}
-                            //loading={loading}
-                        />
-                    </View> :
 
-                        <View style={{ marginVertical: 10 }}>
-                            <TouchableButton
-                                containerStyle={[AppStyles.formBtn]}
-                                label={buttonText}
-                                onPress={() => formSubmit(formData)}
-                                loading={loading}
-                            />
-                        </View>
-
-                }
+                <View style={{ marginVertical: 10 }}>
+                    <TouchableButton
+                        containerStyle={[AppStyles.formBtn]}
+                        label={buttonText}
+                        onPress={() => formSubmit(formData)}
+                        loading={loading}
+                    />
+                </View>
 
                 {Ability.canEdit(user.subRole, screenName) && editableData && (formData.status === 'pending' || formData.status === 'inProgress') ?
                     <View style={{ marginVertical: 10 }}>

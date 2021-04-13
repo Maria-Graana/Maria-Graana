@@ -335,6 +335,7 @@ class CMPayment extends Component {
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
       taskType: taskType != '' ? taskType : null,
+      screenName : 'Diary'
     })
   }
 

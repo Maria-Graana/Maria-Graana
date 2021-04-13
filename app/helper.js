@@ -950,7 +950,7 @@ const helper = {
       return 'busy'
     else if (status === 'no response no signals')
       return 'no signals';
-      else if (status === 'number_not_on_whatsapp')
+      else if (status === 'number not on whatsapp')
       return 'Not on WhatsApp'
     else return status;
   }

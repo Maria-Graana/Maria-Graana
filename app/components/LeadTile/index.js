@@ -143,7 +143,7 @@ class LeadTile extends React.Component {
                   ) : data.status === 'meeting' ? (
                     data.status.split('_').join(' ').toUpperCase() + ' PLANNED'
                   ) : (
-                    data.status.split('_').join(' ').toUpperCase()
+                    helper.showStatus(data.status.replace(/_+/g, " ")).toUpperCase()
                   )}
                 </Text>
 

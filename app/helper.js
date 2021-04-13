@@ -939,6 +939,21 @@ const helper = {
     }
     return statusColor
   },
+  showStatus(status){
+    if (status === 'not interested out of city')
+      return 'out of city';
+    else if (status === 'not interested low budget')
+      return 'low budget';
+    else if (status === 'not interested re only')
+      return 'interested in RE only';
+    else if (status === 'no response busy')
+      return 'busy'
+    else if (status === 'no response no signals')
+      return 'no signals';
+      else if (status === 'number_not_on_whatsapp')
+      return 'Not on WhatsApp'
+    else return status;
+  }
 }
 
 module.exports = helper

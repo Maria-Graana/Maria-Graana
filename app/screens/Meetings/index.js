@@ -751,7 +751,6 @@ class Meetings extends Component {
             diaryTask={diaryTask}
             handleFormDiary={this.handleFormDiary}
             addFollowUpTask={(selectedOption) => this.addFollowUpTask(selectedOption)}
-            // formSubmitDiary={this.formSubmitDiary}
             loading={loading}
           />
         )}

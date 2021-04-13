@@ -101,6 +101,7 @@ const RentPaymentView = (props) => {
           btnImage={RoundPlus}
           btnText={'ADD TOKEN'}
           checkLeadClosedOrNot={false}
+          isLeadClosed={isLeadClosed}
         />
       ) : null}
       {tokenPayment ? (
@@ -116,6 +117,7 @@ const RentPaymentView = (props) => {
           confirmTokenAction={confirmTokenAction}
           singleCommission={singleCommission}
           onSubmitNewToken={onAddCommissionPayment}
+          isLeadClosed={isLeadClosed}
         />
       ) : null}
       {tokenPayment && <View style={{ paddingVertical: 3 }} />}

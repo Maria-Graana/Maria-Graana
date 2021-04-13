@@ -80,6 +80,7 @@ class TokenTile extends Component {
       menuData,
       singleCommission = false,
       onSubmitNewToken,
+      isLeadClosed,
     } = this.props
     let showStatus = { label: '', value: '' }
     showStatus = this.findStatusLabel()
@@ -92,7 +93,7 @@ class TokenTile extends Component {
         onLongPress={() => {
           data.status === 'at_buyer_agent' ? onPaymentLongPress(data) : null
         }}
-        disabled={commissionEdit}
+        disabled={commissionEdit || isLeadClosed}
         style={{ zIndex: 10, flex: 1 }}
         onPress={() => {
           data.status === 'at_buyer_agent' ||
@@ -102,7 +103,12 @@ class TokenTile extends Component {
             : null
         }}
       >
-        <View style={[styles.tileTopWrap, { backgroundColor: commissionEdit ? '#ddd' : '#fff' }]}>
+        <View
+          style={[
+            styles.tileTopWrap,
+            { backgroundColor: commissionEdit || isLeadClosed ? '#ddd' : '#fff' },
+          ]}
+        >
           <View style={styles.upperLayer}>
             <Text style={styles.paymnetHeading}>{title}</Text>
             <View style={{ flexDirection: 'row' }}>

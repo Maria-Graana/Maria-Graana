@@ -26,8 +26,9 @@ const RCMBuyerModal = (props) => {
     updateRentLead,
     agreedNotZero,
     advanceNotZero,
+    isLeadClosed,
   } = props
-  let readOnlyMode = this.checkReadOnlyMode()
+  let readOnlyMode = checkReadOnlyMode()
 
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
@@ -57,6 +58,7 @@ const RCMBuyerModal = (props) => {
               formatValue={formData.agreedAmount}
               keyboardType={'numeric'}
               onChangeHandle={handleForm}
+              editable={readOnlyMode}
             />
             {agreedNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
             <SimpleInputText
@@ -68,6 +70,7 @@ const RCMBuyerModal = (props) => {
               formatValue={formData.advance}
               keyboardType={'numeric'}
               onChangeHandle={handleForm}
+              editable={readOnlyMode}
             />
             {advanceNotZero ? (
               <ErrorMessage errorMessage={'Amount must be greater than 0'} />

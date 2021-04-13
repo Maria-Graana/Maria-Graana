@@ -19,8 +19,9 @@ const RCMRentMonthlyModal = (props) => {
   }
 
   checkMonthlyRentReadOnlyMode = () => {
-    const { lead, leadAgentType } = props
+    const { lead, leadAgentType, isLeadClosed } = props
     if (leadAgentType === 'seller') return false
+    else if (isLeadClosed) return false
     else return true
   }
 

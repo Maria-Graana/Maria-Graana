@@ -750,6 +750,9 @@ class LegalAttachment extends Component {
     const { lead, route } = this.props
     let mailCheck = this.mailSentCheck()
     let onReadOnly = this.checkReadOnlyMode()
+    const isLeadClosed =
+      lead.status === StaticData.Constants.lead_closed_lost ||
+      lead.status === StaticData.Constants.lead_closed_won
     return (
       <View style={[AppStyles.mb1]}>
         <AddLegalPaymentModal
@@ -797,6 +800,7 @@ class LegalAttachment extends Component {
                   checkLeadClosedOrNot={false}
                   hiddenBtn={false}
                   addBorder={true}
+                  isLeadClosed={isLeadClosed}
                 />
               ) : null}
               {mailCheck ? (
@@ -823,6 +827,7 @@ class LegalAttachment extends Component {
                         checkLeadClosedOrNot={false}
                         hiddenBtn={false}
                         addBorder={true}
+                        isLeadClosed={isLeadClosed}
                       />
                     ) : null}
                     {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
@@ -842,6 +847,7 @@ class LegalAttachment extends Component {
                     getAttachmentFromStorage={this.getAttachmentFromStorage}
                     downloadLegalDocs={this.downloadLegalDocs}
                     addBorder={true}
+                    isLeadClosed={isLeadClosed}
                   />
                 </View>
               ) : null}
@@ -856,6 +862,7 @@ class LegalAttachment extends Component {
                   submitMenu={this.submitMenu}
                   getAttachmentFromStorage={this.getAttachmentFromStorage}
                   downloadLegalDocs={this.downloadLegalDocs}
+                  isLeadClosed={isLeadClosed}
                 />
               )}
               keyExtractor={(item, index) => {

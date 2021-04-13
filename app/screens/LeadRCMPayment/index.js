@@ -713,6 +713,7 @@ class LeadRCMPayment extends React.Component {
     if (val === '') {
       return null
     } else if (typeof val === 'string' && val != '') {
+      val = val.replace(/,/g, '')
       return parseInt(val)
     }
   }
@@ -879,7 +880,7 @@ class LeadRCMPayment extends React.Component {
       rcmLeadId: lead.id,
       agentId: user.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 

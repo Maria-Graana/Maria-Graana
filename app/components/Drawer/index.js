@@ -84,7 +84,9 @@ class CustomDrawerContent extends React.Component {
           )}
           {Ability.canView(subRole, 'Leads') && (
             <DrawerIconItem
-              screen={'Leads'}
+              screen={
+                user && user.organization && user.organization.isPP ? 'Leads' : 'Client Leads'
+              }
               badges={count.leads}
               navigateTo={() => {
                 this.navigateTo('Leads')

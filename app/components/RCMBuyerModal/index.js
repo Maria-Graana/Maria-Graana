@@ -51,7 +51,6 @@ const RCMBuyerModal = (props) => {
           <View>
             <SimpleInputText
               name={'agreedAmount'}
-              fromatName={false}
               placeholder={'Enter Agreed Amount'}
               label={'AGREED AMOUNT'}
               value={formData.agreedAmount}
@@ -59,11 +58,11 @@ const RCMBuyerModal = (props) => {
               keyboardType={'numeric'}
               onChangeHandle={handleForm}
               editable={readOnlyMode}
+              fromatName={'agreedAmount'}
             />
             {agreedNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
             <SimpleInputText
               name={'advance'}
-              fromatName={false}
               placeholder={'Enter Down Payment'}
               label={'DOWN PAYMENT'}
               value={formData.advance}
@@ -71,6 +70,7 @@ const RCMBuyerModal = (props) => {
               keyboardType={'numeric'}
               onChangeHandle={handleForm}
               editable={readOnlyMode}
+              fromatName={'advance'}
             />
             {advanceNotZero ? (
               <ErrorMessage errorMessage={'Amount must be greater than 0'} />

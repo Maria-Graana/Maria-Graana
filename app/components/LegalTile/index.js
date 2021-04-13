@@ -236,18 +236,22 @@ class LegalTile extends React.Component {
     const { data } = this.props
     return (
       <View>
-        {data && data.fileKey === null && <View>{this.UploadTile()}</View>}
+        {data && data.fileKey === null ? <View>{this.UploadTile()}</View> : null}
         {data &&
-          data.status !== 'pending' &&
-          data.status !== 'pending_legal' &&
-          data.status !== 'approved' &&
-          data.fileKey !== null && <View>{this.MenuTile()}</View>}
+        data.status !== 'pending' &&
+        data.status !== 'pending_legal' &&
+        data.status !== 'approved' &&
+        data.fileKey !== null ? (
+          <View>{this.MenuTile()}</View>
+        ) : null}
         {data &&
-          data.status &&
-          data.status !== 'uploaded' &&
-          data.status !== 'pending' &&
-          data.status !== 'rejected' &&
-          data.fileKey !== null && <View>{this.StatusTile()}</View>}
+        data.status &&
+        data.status !== 'uploaded' &&
+        data.status !== 'pending' &&
+        data.status !== 'rejected' &&
+        data.fileKey !== null ? (
+          <View>{this.StatusTile()}</View>
+        ) : null}
       </View>
     )
   }

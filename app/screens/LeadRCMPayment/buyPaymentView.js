@@ -118,6 +118,7 @@ class BuyPaymentView extends React.Component {
             btnImage={RoundPlus}
             btnText={'ADD TOKEN'}
             checkLeadClosedOrNot={false}
+            isLeadClosed={isLeadClosed}
           />
         ) : null}
 
@@ -134,6 +135,7 @@ class BuyPaymentView extends React.Component {
             confirmTokenAction={confirmTokenAction}
             singleCommission={singleCommission}
             onSubmitNewToken={onAddCommissionPayment}
+            isLeadClosed={isLeadClosed}
           />
         ) : null}
         <BuyerSellerTile

@@ -42,7 +42,7 @@ class LegalTile extends React.Component {
   }
 
   UploadTile = () => {
-    const { data, index, getAttachmentFromStorage, addBorder = false } = this.props
+    const { data, index, getAttachmentFromStorage, addBorder = false, isLeadClosed } = this.props
     let newStyle = {}
     if (addBorder) {
       newStyle = {
@@ -56,6 +56,7 @@ class LegalTile extends React.Component {
           getAttachmentFromStorage(data)
         }}
         style={[styles.legalBtnView, newStyle]}
+        disabled={isLeadClosed}
       >
         <View style={{ flexDirection: 'row', flex: 1 }}>
           {index && (
@@ -82,7 +83,7 @@ class LegalTile extends React.Component {
   }
 
   MenuTile = () => {
-    const { data, submitMenu, downloadLegalDocs, addBorder = false } = this.props
+    const { data, submitMenu, downloadLegalDocs, addBorder = false, isLeadClosed } = this.props
     const { menuToggle } = this.state
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)
@@ -97,6 +98,7 @@ class LegalTile extends React.Component {
       <TouchableOpacity
         onPress={() => downloadLegalDocs(data)}
         style={[styles.legalBtnView, newStyle]}
+        disabled={isLeadClosed}
       >
         <AntDesign
           style={styles.checkCircle}
@@ -188,7 +190,7 @@ class LegalTile extends React.Component {
   }
 
   StatusTile = () => {
-    const { data, downloadLegalDocs, addBorder = false } = this.props
+    const { data, downloadLegalDocs, addBorder = false, isLeadClosed } = this.props
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)
     let newStyle = {}
@@ -202,6 +204,7 @@ class LegalTile extends React.Component {
       <TouchableOpacity
         onPress={() => downloadLegalDocs(data)}
         style={[styles.legalBtnView, newStyle]}
+        disabled={isLeadClosed}
       >
         <AntDesign
           style={styles.checkCircle}

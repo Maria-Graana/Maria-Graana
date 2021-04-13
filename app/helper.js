@@ -21,10 +21,10 @@ import { formatPrice } from './PriceFormate'
 import StaticData from './StaticData'
 
 const helper = {
-  successToast(message) {
+  successToast(message, duration = 3000) {
     Toast.show({
       text: message,
-      duration: 3000,
+      duration: duration,
       type: 'success',
     })
   },

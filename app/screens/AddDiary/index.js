@@ -231,20 +231,6 @@ class AddDiary extends Component {
         }
     }
 
-    addFollowUpForCall = (data) => {
-        const {navigation} = this.props;
-        axios
-        .post(`api/leads/project/meeting`, data)
-        .then((res) => {
-          helper.successToast(`Follow up task added to the Diary`)
-          navigation.goBack();
-        })
-        .catch((error) => {
-          console.log(error)
-          helper.errorToast(`Some thing went wrong!!!`)
-        })
-    }
-
     render() {
         const { checkValidation, taskValues, loading } = this.state;
         const { route } = this.props;
@@ -258,12 +244,10 @@ class AddDiary extends Component {
                             props={this.props}
                             editableData={route.params.update ? route.params.data : null}
                             screenName={route.params.screenName ? route.params.screenName : null}
-                            fromScreen={route.params.fromScreen ? route.params.fromScreen : null}
                             taskValues={taskValues}
                             checkValidation={checkValidation}
                             loading={loading}
                             performTaskActions={(type) => this.performTaskActions(type)}
-                            addFollowUpForCall={this.addFollowUpForCall}
                         />
                     </SafeAreaView>
                 </TouchableWithoutFeedback>

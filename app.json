@@ -7,8 +7,8 @@
       "ios",
       "android"
     ],
-    "version": "1.22.13",
-    "orientation": "portrait",
+    "version": "1.22.14",
+    "orientation": "portrait", 
     "icon": "./assets/img/ICON1024PNG.png",
     "scheme": "arms",
     "splash": {

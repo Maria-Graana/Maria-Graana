@@ -90,12 +90,13 @@ class HistoryModal extends React.Component {
           subject: 'Follow up with client',
           date: null,
           end: null,
-          leadId: diaryTask.leadId,
+          armsLeadId: diaryTask.leadId,
           start: null,
           taskType: diaryTask.taskType,
           time: null,
           notes: '',
           status: 'pending'
+
         }
         switch (selectedOption) {
           case 'today':
@@ -114,7 +115,7 @@ class HistoryModal extends React.Component {
             startForTomorrow.format('YYYY-MM-DDTHH:mm:ssZ')
             tomorrowPayload.start = startForTomorrow;
             tomorrowPayload.date = startForTomorrow;
-            tomorrowPayload.end = moment(startForTomorrow).add(1, 'hour');
+            tomorrowPayload.end = moment(startForTomorrow).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
             tomorrowPayload.time = startForTomorrow;
             payload = tomorrowPayload;
             break;
@@ -125,7 +126,7 @@ class HistoryModal extends React.Component {
             startForIn3days.format('YYYY-MM-DDTHH:mm:ssZ')
             inThreeDaysPayload.start = startForIn3days;
             inThreeDaysPayload.date = startForIn3days;
-            inThreeDaysPayload.end = moment(startForIn3days).add(1, 'hour');
+            inThreeDaysPayload.end = moment(startForIn3days).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
             inThreeDaysPayload.time = startForIn3days;
             payload = inThreeDaysPayload;
             break;
@@ -136,14 +137,18 @@ class HistoryModal extends React.Component {
             startForNextWeek.format('YYYY-MM-DDTHH:mm:ssZ')
             nextWeekPayload.start = startForNextWeek;
             nextWeekPayload.date = startForNextWeek;
-            nextWeekPayload.end = moment(startForNextWeek).add(1, 'hour');
+            nextWeekPayload.end = moment(startForNextWeek).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
             nextWeekPayload.time = startForNextWeek;
             payload = nextWeekPayload;
             break;
           case 'custom':
-            payload = { ...diaryTask };
-            payload.end = moment(payload.start).add(1, 'hour');
-            payload.time = payload.start;
+            let customPayload = { ...payload };
+            let customStart = helper.formatDateAndTime(helper.formatDate(diaryTask.date), diaryTask.start);
+            customPayload.start = customStart;
+            customPayload.date = customStart;
+            customPayload.end = moment(customStart).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
+            customPayload.time = customStart;
+            payload = customPayload;
             break;
           default:
             break;

@@ -81,7 +81,9 @@ class SimpleInputField extends React.Component {
               editable={editable}
             />
             <Text style={[styles.BottomFormat]}>
-              {formatPrice(formatValue != null ? formatValue.replace(/,/g, '') : '')}
+              {formatPrice(
+                formatValue != null && formatValue ? String(formatValue).replace(/,/g, '') : ''
+              )}
             </Text>
           </View>
         </View>

@@ -90,7 +90,7 @@ class HistoryModal extends React.Component {
           subject: 'Follow up with client',
           date: null,
           end: null,
-          leadId: diaryTask.leadId,
+          armsLeadId: diaryTask.leadId,
           start: null,
           taskType: diaryTask.taskType,
           time: null,
@@ -142,12 +142,13 @@ class HistoryModal extends React.Component {
             payload = nextWeekPayload;
             break;
           case 'custom':
-            payload = { ...diaryTask };
-            let customStart = helper.formatDateAndTime(helper.formatDate(payload.date), payload.start);
-            payload.start = customStart;
-            payload.date = customStart;
-            payload.end = moment(customStart).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
-            payload.time = customStart;
+            let customPayload = { ...payload };
+            let customStart = helper.formatDateAndTime(helper.formatDate(diaryTask.date), diaryTask.start);
+            customPayload.start = customStart;
+            customPayload.date = customStart;
+            customPayload.end = moment(customStart).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
+            customPayload.time = customStart;
+            payload = customPayload;
             break;
           default:
             break;

@@ -148,8 +148,10 @@ class HistoryModal extends React.Component {
           default:
             break;
         }
-        this.props.closePopup()
-        this.addFollowUpForCall(payload);
+        this.setState({active: false}, () => {
+            this.props.closePopup()
+            this.addFollowUpForCall(payload);
+        })
       }
     
       addFollowUpForCall = (data) => {

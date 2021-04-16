@@ -46,7 +46,7 @@ class MeetingTile extends React.Component {
                 </View>
               }
               {
-                leadClosedCheck &&
+                leadClosedCheck &&  data.taskType === 'meeting' &&
                 <View>
                   <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data) }}>
                     <Image source={dots} style={styles.dotsImg} />

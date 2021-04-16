@@ -742,7 +742,7 @@ class Meetings extends Component {
           />
         </View>
 
-        {/* ************Modal Component************ */}
+        {/* ************Modal Component************ */} 
         {active === true && (
           <MeetingModal
             active={active}
@@ -760,7 +760,7 @@ class Meetings extends Component {
           />
         )}
 
-        <MeetingStatusModal
+        {/* <MeetingStatusModal
           doneStatus={doneStatus}
           sendStatus={this.sendStatus}
           data={doneStatusId}
@@ -769,7 +769,7 @@ class Meetings extends Component {
           goToDiaryForm={this.goToDiaryForm}
           goToAttachments={this.goToAttachments}
           goToComments={this.goToComments}
-        />
+        /> */}
 
         <LeadRCMPaymentPopup
           reasons={reasons}

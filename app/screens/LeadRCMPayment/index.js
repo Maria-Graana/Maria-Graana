@@ -18,7 +18,7 @@ import {
   Platform,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
@@ -30,6 +30,7 @@ import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import DeleteModal from '../../components/DeleteModal'
+import FollowUpModal from '../../components/FollowUpModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
@@ -37,7 +38,6 @@ import MatchTile from '../../components/MatchTile/index'
 import ViewDocs from '../../components/ViewDocs'
 import config from '../../config'
 import helper from '../../helper'
-import rcmPayment from '../../reducers/rcmPayment'
 import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
@@ -121,6 +121,7 @@ class LeadRCMPayment extends React.Component {
       legalServicesFee: null,
       buyerToggleModal: false,
       advanceNotZero: false,
+      active: false
     }
   }
 
@@ -1539,6 +1540,13 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1577,6 +1585,7 @@ class LeadRCMPayment extends React.Component {
       buyerToggleModal,
       buyerDetailForm,
       advanceNotZero,
+      active
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1765,6 +1774,7 @@ class LeadRCMPayment extends React.Component {
               />
             </>
           )}
+          <FollowUpModal active={active} openModal={this.openModal} diaryForm={true} />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1779,6 +1789,7 @@ class LeadRCMPayment extends React.Component {
               lead={lead}
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
+              goToFollowUp={this.openModal}
             />
           </View>
         </View>

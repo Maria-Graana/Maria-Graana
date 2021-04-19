@@ -1,15 +1,14 @@
 /** @format */
 
-import { Entypo, Feather, FontAwesome, Ionicons } from '@expo/vector-icons'
+import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons'
 import { CheckBox } from 'native-base'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Menu } from 'react-native-paper'
-import Carousel from 'react-native-snap-carousel'
-import { formatPrice } from '../../PriceFormate'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
+import { formatPrice } from '../../PriceFormate'
 import styles from './style'
 
 class MatchTile extends React.Component {
@@ -183,31 +182,32 @@ class MatchTile extends React.Component {
         <View style={styles.tileContainer}>
           <View style={[styles.pad5]}>
             {imagesList.length ? (
-              <Carousel
-                // ref={(c) => { this._carousel = c; }}
-                data={imagesList}
-                renderItem={this._renderItem}
-                sliderWidth={130}
-                itemWidth={130}
-                enableSnap={true}
-                enableMomentum={false}
-                autoplay={true}
-                lockScrollWhileSnapping={true}
-                autoplayDelay={3000}
-                loop={true}
-                containerCustomStyle={{ position: 'relative' }}
-              />
+              <Image source={{ uri: imagesList[0] }} style={styles.noImage} />
             ) : (
+              // <Carousel
+              //   // ref={(c) => { this._carousel = c; }}
+              //   data={imagesList}
+              //   renderItem={this._renderItem}
+              //   sliderWidth={130}
+              //   itemWidth={130}
+              //   enableSnap={true}
+              //   enableMomentum={false}
+              //   autoplay={true}
+              //   lockScrollWhileSnapping={true}
+              //   autoplayDelay={3000}
+              //   loop={true}
+              //   containerCustomStyle={{ position: 'relative' }}
+              // />
               <Image
                 source={require('../../../assets/images/no-image-found.png')}
                 style={styles.noImage}
               />
             )}
           </View>
-          <View style={styles.imageCountViewStyle}>
+          {/* <View style={styles.imageCountViewStyle}>
             <Feather name={'camera'} color={'#fff'} size={16} />
             <Text style={styles.imageCount}>{totalImages}</Text>
-          </View>
+          </View> */}
           <View
             style={[
               AppStyles.mb1,
@@ -216,12 +216,9 @@ class MatchTile extends React.Component {
             ]}
           >
             <View>
-              <Text style={styles.currencyText}>
+              <Text style={styles.priceText}>
                 {' '}
-                PKR{' '}
-                <Text style={styles.priceText}>
-                  {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
-                </Text>{' '}
+                {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
               </Text>
               <Text numberOfLines={1} style={styles.marlaText}>
                 {' '}
@@ -230,16 +227,20 @@ class MatchTile extends React.Component {
               </Text>
               <Text numberOfLines={1} style={styles.addressText}>
                 {' '}
-                {data.area ? data.area.name + ', ' : null} {data.city ? data.city.name : null}{' '}
+                {data.area ? data.area.name : null}
               </Text>
             </View>
             <View style={styles.iconContainer}>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
-                <Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
+                {data.bed && Number(data.bed) > 0 ? (
+                  <Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
+                ) : null}
                 <Text style={{ fontSize: 18 }}> {data.bed} </Text>
               </View>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
-                <FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
+                {data.bath && Number(data.bath) > 0 ? (
+                  <FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
+                ) : null}
                 <Text style={{ fontSize: 18 }}> {data.bath} </Text>
               </View>
             </View>
@@ -249,120 +250,7 @@ class MatchTile extends React.Component {
             screen !== 'viewing' &&
             screen !== 'propsure' &&
             screen !== 'payment' ? (
-              <Menu
-                visible={data.checkBox}
-                onDismiss={() => this.props.toggleMenu(false, data.id)}
-                anchor={
-                  <Entypo
-                    onPress={() => this.props.toggleMenu(true, data.id)}
-                    name="dots-three-vertical"
-                    size={20}
-                  />
-                }
-              >
-                <View>
-                  <Menu.Item
-                    onPress={() => {
-                      this.props.goToPropertyComments(data)
-                    }}
-                    title="Comments"
-                  />
-                </View>
-              </Menu>
-            ) : null}
-            {screen === 'payment' && lead.shortlist_id && (
-              <Menu
-                visible={data.checkBox}
-                onDismiss={() => this.props.toggleMenu(false, data.id)}
-                anchor={
-                  <Entypo
-                    onPress={() => this.props.toggleMenu(true, data.id)}
-                    name="dots-three-vertical"
-                    size={20}
-                  />
-                }
-              >
-                <View>
-                  <Menu.Item
-                    onPress={() => {
-                      this.props.goToPropertyComments(data)
-                    }}
-                    title="Comments"
-                  />
-                  {/* <Menu.Item
-                    onPress={
-                      lead.shortlist_id === null
-                        ? () => selectForPayment(item)
-                        : () => showConfirmationDialog()
-                    }
-                    title="Select a Different Property"
-                  /> */}
-                </View>
-              </Menu>
-            )}
-            {screen === 'payment' && !lead.shortlist_id && (
-              <Menu
-                visible={data.checkBox}
-                onDismiss={() => this.props.toggleMenu(false, data.id)}
-                anchor={
-                  <Entypo
-                    onPress={() => this.props.toggleMenu(true, data.id)}
-                    name="dots-three-vertical"
-                    size={20}
-                  />
-                }
-              >
-                <View>
-                  <Menu.Item
-                    onPress={() => {
-                      this.props.goToPropertyComments(data)
-                    }}
-                    title="Comments"
-                  />
-                </View>
-              </Menu>
-            )}
-            {screen === 'propsure' ? (
-              <Menu
-                visible={data.checkBox}
-                onDismiss={() => this.props.toggleMenu(false, data.id)}
-                anchor={
-                  <Entypo
-                    onPress={() => this.props.toggleMenu(true, data.id)}
-                    name="dots-three-vertical"
-                    size={20}
-                  />
-                }
-              >
-                <View>
-                  {!helper.checkPropsureDocs(data.propsures, 'buyer') ? (
-                    <Menu.Item
-                      onPress={() => {
-                        this.props.goToPropertyComments(data)
-                      }}
-                      title="Comments"
-                    />
-                  ) : (
-                    <View>
-                      <Menu.Item
-                        onPress={() => {
-                          this.props.goToPropertyComments(data)
-                        }}
-                        title="Comments"
-                      />
-                      <Menu.Item
-                        onPress={() => {
-                          this.props.cancelPropsureRequest(data)
-                        }}
-                        title="Cancel Request"
-                      />
-                    </View>
-                  )}
-                </View>
-              </Menu>
-            ) : null}
-            {screen === 'viewing' ? (
-              <View>
+              <View style={styles.menuView}>
                 <Menu
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -370,7 +258,120 @@ class MatchTile extends React.Component {
                     <Entypo
                       onPress={() => this.props.toggleMenu(true, data.id)}
                       name="dots-three-vertical"
-                      size={20}
+                      size={25}
+                    />
+                  }
+                >
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        this.props.goToPropertyComments(data)
+                      }}
+                      title="Comments"
+                    />
+                  </View>
+                </Menu>
+              </View>
+            ) : null}
+            {screen === 'payment' && lead.shortlist_id && (
+              <View style={styles.menuView}>
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={25}
+                    />
+                  }
+                >
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        this.props.goToPropertyComments(data)
+                      }}
+                      title="Comments"
+                    />
+                  </View>
+                </Menu>
+              </View>
+            )}
+            {screen === 'payment' && !lead.shortlist_id && (
+              <View style={styles.menuView}>
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={25}
+                    />
+                  }
+                >
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        this.props.goToPropertyComments(data)
+                      }}
+                      title="Comments"
+                    />
+                  </View>
+                </Menu>
+              </View>
+            )}
+            {screen === 'propsure' ? (
+              <View style={styles.menuView}>
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={25}
+                    />
+                  }
+                >
+                  <View>
+                    {!helper.checkPropsureDocs(data.propsures, 'buyer') ? (
+                      <Menu.Item
+                        onPress={() => {
+                          this.props.goToPropertyComments(data)
+                        }}
+                        title="Comments"
+                      />
+                    ) : (
+                      <View>
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.goToPropertyComments(data)
+                          }}
+                          title="Comments"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.cancelPropsureRequest(data)
+                          }}
+                          title="Cancel Request"
+                        />
+                      </View>
+                    )}
+                  </View>
+                </Menu>
+              </View>
+            ) : null}
+            {screen === 'viewing' ? (
+              <View style={styles.menuView}>
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={25}
                     />
                   }
                 >
@@ -466,16 +467,14 @@ class MatchTile extends React.Component {
             ) : (
               <View />
             )}
-            <View style={{ flexDirection: 'row-reverse' }}>
-              <FontAwesome
-                onPress={() => {
-                  if (show) this.call(data)
-                }}
-                name="phone"
-                size={30}
-                color={AppStyles.colors.subTextColor}
-              />
-            </View>
+            <TouchableOpacity
+              onPress={() => {
+                if (show) this.call(data)
+              }}
+              style={styles.phoneView}
+            >
+              <Image source={require('../../../assets/img/call.png')} style={styles.callImage} />
+            </TouchableOpacity>
           </View>
         </View>
       </TouchableOpacity>

@@ -25,6 +25,7 @@ import config from '../../config'
 import CheckListModal from '../../components/CheckListModal'
 import ViewCheckListModal from '../../components/ViewCheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
+import FollowUpModal from '../../components/FollowUpModal'
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -250,7 +251,7 @@ class LeadViewing extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -427,7 +428,7 @@ class LeadViewing extends React.Component {
               <TouchableOpacity
                 style={{
                   backgroundColor: 'white',
-                  height: 30,
+                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
@@ -455,7 +456,7 @@ class LeadViewing extends React.Component {
               <TouchableOpacity
                 style={{
                   backgroundColor: AppStyles.colors.primaryColor,
-                  height: 30,
+                  height: 40,
                   borderBottomEndRadius: 10,
                   borderBottomLeftRadius: 10,
                   justifyContent: 'center',
@@ -481,14 +482,7 @@ class LeadViewing extends React.Component {
     } else {
       return (
         <TouchableOpacity
-          style={{
-            backgroundColor: 'white',
-            height: 30,
-            borderBottomEndRadius: 10,
-            borderBottomLeftRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          style={styles.viewingBtn}
           onPress={() => {
             if (leadAssignedSharedStatus) {
               this.openModal()
@@ -496,14 +490,7 @@ class LeadViewing extends React.Component {
             }
           }}
         >
-          <Text
-            style={{
-              color: AppStyles.colors.primaryColor,
-              fontFamily: AppStyles.fonts.defaultFont,
-            }}
-          >
-            BOOK VIEWING
-          </Text>
+          <Text style={styles.viewingText}>BOOK VIEWING</Text>
         </TouchableOpacity>
       )
     }
@@ -824,6 +811,13 @@ class LeadViewing extends React.Component {
     }
   }
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -854,6 +848,7 @@ class LeadViewing extends React.Component {
       longitude,
       propsure_id,
       legalDocLoader,
+      active,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -987,7 +982,7 @@ class LeadViewing extends React.Component {
             )}
           </View>
         </View>
-
+        <FollowUpModal active={active} openModal={this.openModal} diaryForm={true} />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}
@@ -1004,6 +999,7 @@ class LeadViewing extends React.Component {
             goToPropertyScreen={this.goToPropertyScreen}
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
+            goToFollowUp={this.openModal}
           />
         </View>
         <LeadRCMPaymentPopup

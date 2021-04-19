@@ -1,29 +1,24 @@
 /** @format */
 
-import React, { Component } from 'react'
-import { View, ScrollView, TouchableOpacity, Text, Linking, Image } from 'react-native'
-import { Fab } from 'native-base'
-import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
+import moment from 'moment'
+import React, { Component } from 'react'
+import { Linking, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
-import styles from './style'
-import MeetingTile from '../../components/MeetingTile'
+import { setContacts } from '../../actions/contacts'
+import { setLeadRes } from '../../actions/lead'
+import AppStyles from '../../AppStyles'
+import CMBottomNav from '../../components/CMBottomNav'
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import MeetingModal from '../../components/MeetingModal'
 import MeetingStatusModal from '../../components/MeetingStatusModal'
-import moment from 'moment'
+import MeetingTile from '../../components/MeetingTile'
 import helper from '../../helper'
-import AppStyles from '../../AppStyles'
-import { ProgressBar, Colors } from 'react-native-paper'
-import { FAB } from 'react-native-paper'
-import { setlead, setLeadRes } from '../../actions/lead'
-import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import StaticData from '../../StaticData'
-import CMBottomNav from '../../components/CMBottomNav'
-import { Platform } from 'react-native'
-import { setContacts } from '../../actions/contacts'
 import TimerNotification from '../../LocalNotifications'
 import PaymentMethods from '../../PaymentMethods'
-import { cos } from 'react-native-reanimated'
+import StaticData from '../../StaticData'
+import styles from './style'
 
 class Meetings extends Component {
   constructor(props) {
@@ -216,7 +211,7 @@ class Meetings extends Component {
 
   addFollowUpTask = (selectedOption) => {
     const { diaryTask } = this.state
-    const { navigation, user } = this.props;
+    const { navigation, user } = this.props
     let payload = {
       subject: 'Follow up with client',
       date: null,
@@ -226,70 +221,77 @@ class Meetings extends Component {
       taskType: diaryTask.taskType,
       time: null,
       notes: '',
-      status: 'pending'
+      status: 'pending',
     }
 
     switch (selectedOption) {
       case 'today':
-        let todayPayload = { ...payload };
-        let startForToday = moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
-        todayPayload.start = startForToday;
-        todayPayload.date = startForToday;
-        todayPayload.end = moment(todayPayload.start).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
-        todayPayload.time = startForToday;
-        payload = todayPayload;
-        break;
+        let todayPayload = { ...payload }
+        let startForToday = moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
+        todayPayload.start = startForToday
+        todayPayload.date = startForToday
+        todayPayload.end = moment(todayPayload.start).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
+        todayPayload.time = startForToday
+        payload = todayPayload
+        break
       case 'tomorrow':
-        let tomorrowPayload = { ...payload };
-        let startForTomorrow = moment().add(1, 'day');
-        startForTomorrow.set({ hour: 9, minute: 0, second: 0 }).toISOString();
+        let tomorrowPayload = { ...payload }
+        let startForTomorrow = moment().add(1, 'day')
+        startForTomorrow.set({ hour: 9, minute: 0, second: 0 }).toISOString()
         startForTomorrow.format('YYYY-MM-DDTHH:mm:ssZ')
-        tomorrowPayload.start = startForTomorrow;
-        tomorrowPayload.date = startForTomorrow;
-        tomorrowPayload.end = moment(startForTomorrow).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
-        tomorrowPayload.time = startForTomorrow;
-        payload = tomorrowPayload;
-        break;
+        tomorrowPayload.start = startForTomorrow
+        tomorrowPayload.date = startForTomorrow
+        tomorrowPayload.end = moment(startForTomorrow).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
+        tomorrowPayload.time = startForTomorrow
+        payload = tomorrowPayload
+        break
       case 'in_3_days':
-        let inThreeDaysPayload = { ...payload };
-        let startForIn3days = moment().add(3, 'days');
-        startForIn3days.set({ hour: 9, minute: 0, second: 0 }).toISOString();
+        let inThreeDaysPayload = { ...payload }
+        let startForIn3days = moment().add(3, 'days')
+        startForIn3days.set({ hour: 9, minute: 0, second: 0 }).toISOString()
         startForIn3days.format('YYYY-MM-DDTHH:mm:ssZ')
-        inThreeDaysPayload.start = startForIn3days;
-        inThreeDaysPayload.date = startForIn3days;
-        inThreeDaysPayload.end = moment(startForIn3days).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
-        inThreeDaysPayload.time = startForIn3days;
-        payload = inThreeDaysPayload;
-        break;
+        inThreeDaysPayload.start = startForIn3days
+        inThreeDaysPayload.date = startForIn3days
+        inThreeDaysPayload.end = moment(startForIn3days)
+          .add(1, 'hour')
+          .format('YYYY-MM-DDTHH:mm:ssZ')
+        inThreeDaysPayload.time = startForIn3days
+        payload = inThreeDaysPayload
+        break
       case 'next_week':
-        let nextWeekPayload = { ...payload };
-        let startForNextWeek = moment().add(7, 'days');
-        startForNextWeek.set({ hour: 9, minute: 0, second: 0 }).toISOString();
+        let nextWeekPayload = { ...payload }
+        let startForNextWeek = moment().add(7, 'days')
+        startForNextWeek.set({ hour: 9, minute: 0, second: 0 }).toISOString()
         startForNextWeek.format('YYYY-MM-DDTHH:mm:ssZ')
-        nextWeekPayload.start = startForNextWeek;
-        nextWeekPayload.date = startForNextWeek;
-        nextWeekPayload.end = moment(startForNextWeek).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
-        nextWeekPayload.time = startForNextWeek;
-        payload = nextWeekPayload;
-        break;
+        nextWeekPayload.start = startForNextWeek
+        nextWeekPayload.date = startForNextWeek
+        nextWeekPayload.end = moment(startForNextWeek).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
+        nextWeekPayload.time = startForNextWeek
+        payload = nextWeekPayload
+        break
       case 'custom':
-        let customPayload = { ...payload };
-        let customStart = helper.formatDateAndTime(helper.formatDate(diaryTask.date), diaryTask.start);
-        customPayload.start = customStart;
-        customPayload.date = customStart;
-        customPayload.end = moment(customStart).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ');
-        customPayload.time = customStart;
-        payload = customPayload;
-        break;
+        let customPayload = { ...payload }
+        let customStart = helper.formatDateAndTime(
+          helper.formatDate(diaryTask.date),
+          diaryTask.start
+        )
+        customPayload.start = customStart
+        customPayload.date = customStart
+        customPayload.end = moment(customStart).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
+        customPayload.time = customStart
+        payload = customPayload
+        break
       default:
-        break;
+        break
     }
-    this.setState({
-      active: false,
-      editMeeting: false,
-    }, () => {
-      this.addFollowUpForCall(payload);
-    })
+    this.setState(
+      {
+        editMeeting: false,
+      },
+      () => {
+        this.addFollowUpForCall(payload)
+      }
+    )
   }
 
   addFollowUpForCall = (data) => {
@@ -297,7 +299,12 @@ class Meetings extends Component {
       .post(`api/leads/project/meeting`, data)
       .then((res) => {
         if (res && res.data) {
-          helper.successToast(`Follow up task added for ${moment(res.data.start).format('hh:mm a')}, ${moment(res.data.start).format('MMM D')}`, 5000)
+          helper.successToast(
+            `Follow up task added for ${moment(res.data.start).format('hh:mm a')}, ${moment(
+              res.data.start
+            ).format('MMM D')}`,
+            5000
+          )
         }
       })
       .catch((error) => {
@@ -305,7 +312,6 @@ class Meetings extends Component {
         helper.errorToast(`Some thing went wrong!!!`)
       })
   }
-
 
   openStatus = (data) => {
     this.setState({
@@ -470,7 +476,7 @@ class Meetings extends Component {
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
       taskType: taskType != '' ? taskType : null,
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 

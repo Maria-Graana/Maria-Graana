@@ -21,6 +21,7 @@ import { ProgressBar } from 'react-native-paper'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import CMBottomNav from '../../components/CMBottomNav'
+import FollowUpModal from '../../components/FollowUpModal'
 import config from '../../config'
 
 class LeadMatch extends React.Component {
@@ -86,6 +87,8 @@ class LeadMatch extends React.Component {
       callModal: false,
       meetings: [],
       legalDocLoader: false,
+      active: false,
+      followUpDiary: false,
     }
   }
 
@@ -659,7 +662,7 @@ class LeadMatch extends React.Component {
       rcmLeadId: lead.id,
       agentId: user.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -731,6 +734,13 @@ class LeadMatch extends React.Component {
     this.setState({ formData: copyObject })
   }
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
   render() {
     const { lead, user, navigation } = this.props
     const {
@@ -759,6 +769,7 @@ class LeadMatch extends React.Component {
       checkReasonValidation,
       closedLeadEdit,
       legalDocLoader,
+      active,
     } = this.state
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
 
@@ -868,11 +879,16 @@ class LeadMatch extends React.Component {
                 paddingLeft: 15,
                 paddingBottom: 10,
                 elevation: 10,
-                zIndex: 15,
-                shadowOffset: { width: 5, height: 5 },
-                shadowColor: 'lightgrey',
-                shadowOpacity: 1,
+                zIndex: 10,
                 backgroundColor: AppStyles.colors.backgroundColor,
+                shadowColor: 'lightgrey',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 2,
+                shadowRadius: 15,
+                elevation: 10,
               },
             ]}
           >
@@ -921,9 +937,6 @@ class LeadMatch extends React.Component {
                   style={{
                     width: 20,
                     height: 20,
-                    tintColor: filterColor
-                      ? AppStyles.colors.primaryColor
-                      : AppStyles.colors.subTextColor,
                   }}
                 />
               </TouchableOpacity>
@@ -991,6 +1004,7 @@ class LeadMatch extends React.Component {
             <Text style={{ color: 'white' }}> Continue With Selected Properties </Text>
           </TouchableOpacity>
         ) : null}
+        <FollowUpModal active={active} openModal={this.openModal} diaryForm={true} />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}
@@ -1005,6 +1019,7 @@ class LeadMatch extends React.Component {
             lead={lead}
             goToHistory={this.goToHistory}
             getCallHistory={this.getCallHistory}
+            goToFollowUp={this.openModal}
           />
         </View>
         <LeadRCMPaymentPopup

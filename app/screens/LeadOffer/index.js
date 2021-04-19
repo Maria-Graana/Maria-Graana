@@ -19,6 +19,8 @@ import OfferModal from '../../components/OfferModal'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
+import FollowUpModal from '../../components/FollowUpModal'
+import style from './style'
 
 class LeadOffer extends React.Component {
   constructor(props) {
@@ -53,6 +55,7 @@ class LeadOffer extends React.Component {
       agreedNotZero: false,
       offerReadOnly: false,
       legalDocLoader: false,
+      active: false,
     }
   }
 
@@ -308,7 +311,7 @@ class LeadOffer extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -349,14 +352,7 @@ class LeadOffer extends React.Component {
     if (property.agreedOffer.length) {
       return (
         <TouchableOpacity
-          style={{
-            backgroundColor: AppStyles.colors.primaryColor,
-            height: 30,
-            borderBottomEndRadius: 10,
-            borderBottomLeftRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          style={style.tileAgreedBtn}
           onPress={() => {
             if (leadAssignedSharedStatusAndReadOnly) {
               this.openOfferModalReadOnly()
@@ -375,14 +371,7 @@ class LeadOffer extends React.Component {
     } else if (property.leadOffers.length) {
       return (
         <TouchableOpacity
-          style={{
-            backgroundColor: 'white',
-            height: 30,
-            borderBottomEndRadius: 10,
-            borderBottomLeftRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          style={style.tileOfferBtn}
           onPress={() => {
             if (leadAssignedSharedStatus) {
               this.openChatModal()
@@ -406,14 +395,7 @@ class LeadOffer extends React.Component {
     } else {
       return (
         <TouchableOpacity
-          style={{
-            backgroundColor: 'white',
-            height: 30,
-            borderBottomEndRadius: 10,
-            borderBottomLeftRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          style={style.tileBtn}
           onPress={() => {
             if (leadAssignedSharedStatus) {
               this.openChatModal()
@@ -421,15 +403,7 @@ class LeadOffer extends React.Component {
             }
           }}
         >
-          <Text
-            style={{
-              color: AppStyles.colors.primaryColor,
-              fontFamily: AppStyles.fonts.defaultFont,
-            }}
-          >
-            {' '}
-            PLACE OFFER
-          </Text>
+          <Text style={style.tileText}> PLACE OFFER</Text>
         </TouchableOpacity>
       )
     }
@@ -614,6 +588,13 @@ class LeadOffer extends React.Component {
     )
   }
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -641,6 +622,7 @@ class LeadOffer extends React.Component {
       customerNotZero,
       offerReadOnly,
       legalDocLoader,
+      active,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -741,6 +723,7 @@ class LeadOffer extends React.Component {
             )}
           </View>
         </View>
+        <FollowUpModal active={active} openModal={this.openModal} diaryForm={true} />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}
@@ -755,6 +738,7 @@ class LeadOffer extends React.Component {
             lead={lead}
             goToHistory={this.goToHistory}
             getCallHistory={this.getCallHistory}
+            goToFollowUp={this.openModal}
           />
         </View>
 

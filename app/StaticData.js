@@ -920,4 +920,31 @@ export default StaticData = {
     { value: 'rejected', name: 'Rejected' },
     { value: 'approved', name: 'Approved' },
   ],
+  actionListItems: [
+    {
+      id: 1,
+      title: 'Attach',
+      image: require('../assets/img/Path-20.png'),
+    },
+    {
+      id: 2,
+      title: 'Diary Task',
+      image: require('../assets/img/diary-task.png'),
+    },
+    {
+      id: 3,
+      title: 'Comment',
+      image: require('../assets/img/comment.png'),
+    },
+    {
+      id: 4,
+      title: 'Whatsapp',
+      image: require('../assets/img/whatsapp.png'),
+    },
+    {
+      id: 5,
+      title: 'Call',
+      image: require('../assets/img/call.png'),
+    },
+  ],
 }

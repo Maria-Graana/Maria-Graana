@@ -34,6 +34,7 @@ import { ActionSheet, StyleProvider } from 'native-base'
 import AddPropsurePayment from '../../components/AddPRopsurePayment'
 import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
+import FollowUpModal from '../../components/FollowUpModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -77,6 +78,7 @@ class LeadPropsure extends React.Component {
       legalDocLoader: false,
       assignToAccountsLoading: false,
       officeLocations: [],
+      active: false,
     }
   }
 
@@ -392,10 +394,10 @@ class LeadPropsure extends React.Component {
       <TouchableOpacity
         key={item.id.toString()}
         onPress={() => this.showReportsModal(item)}
-        style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]}
+        style={[styles.viewButtonStyle]}
         activeOpacity={0.7}
       >
-        <Text style={styles.propsureVerificationTextStyle}>PROPSURE VERIFICATION</Text>
+        <Text style={styles.PVTextStyle}>PROPSURE VERIFICATION</Text>
       </TouchableOpacity>
     )
   }
@@ -519,7 +521,7 @@ class LeadPropsure extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -1014,6 +1016,13 @@ class LeadPropsure extends React.Component {
 
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1043,6 +1052,7 @@ class LeadPropsure extends React.Component {
       legalDocLoader,
       assignToAccountsLoading,
       officeLocations,
+      active,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1164,6 +1174,7 @@ class LeadPropsure extends React.Component {
               </>
             )}
           </View>
+          <FollowUpModal active={active} openModal={this.openModal} diaryForm={true} />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1178,6 +1189,7 @@ class LeadPropsure extends React.Component {
               lead={lead}
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
+              goToFollowUp={this.openModal}
             />
           </View>
           <LeadRCMPaymentPopup

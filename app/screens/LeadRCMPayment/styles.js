@@ -5,16 +5,17 @@ import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   viewButtonStyle: {
-    backgroundColor: '#fff',
-    height: 30,
+    backgroundColor: AppStyles.colors.primaryColor,
+    height: 40,
     borderBottomEndRadius: 10,
     borderBottomLeftRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonTextStyle: {
-    fontFamily: AppStyles.fonts.defaultFont,
-    color: AppStyles.colors.primaryColor,
+    fontFamily: AppStyles.fonts.boldFont,
+    color: 'white',
+    fontSize: 16,
   },
   mainBlackWrap: {
     flexDirection: 'row',

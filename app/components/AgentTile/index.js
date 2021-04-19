@@ -7,8 +7,8 @@ import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Menu } from 'react-native-paper'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
-import { formatPrice } from '../../PriceFormate'
 import helper from '../../helper'
+import { formatPrice } from '../../PriceFormate'
 import styles from './style'
 
 class AgentTile extends React.Component {
@@ -162,12 +162,9 @@ class AgentTile extends React.Component {
             ]}
           >
             <View>
-              <Text style={styles.currencyText}>
+              <Text style={styles.priceText}>
                 {' '}
-                PKR{' '}
-                <Text style={styles.priceText}>
-                  {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
-                </Text>{' '}
+                {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
               </Text>
               <Text numberOfLines={1} style={styles.marlaText}>
                 {' '}
@@ -176,24 +173,32 @@ class AgentTile extends React.Component {
               </Text>
               <Text numberOfLines={1} style={styles.addressText}>
                 {' '}
-                {data.area ? data.area.name + ', ' : null} {data.city ? data.city.name : null}{' '}
+                {data.area ? data.area.name : null}
               </Text>
             </View>
             <View style={styles.iconContainer}>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
-                <Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
+                {data.bed && Number(data.bed) > 0 ? (
+                  <Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
+                ) : null}
                 <Text style={{ fontSize: 18 }}> {data.bed} </Text>
               </View>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
-                <FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
+                {data.bath && Number(data.bath) > 0 ? (
+                  <FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
+                ) : null}
                 <Text style={{ fontSize: 18 }}> {data.bath} </Text>
               </View>
             </View>
           </View>
           <View style={styles.underLine} />
-          <View style={[styles.pad5, { marginRight: 5 }]}>
-            <View style={{ flexDirection: 'row', height: 20 }}>
-              <View style={{ flex: 1 }}></View>
+          <View style={[styles.pad5, { marginRight: 2 }]}>
+            <View
+              style={{
+                flexDirection: 'row-reverse',
+                height: 30,
+              }}
+            >
               {screen !== 'match' &&
               screen !== 'viewing' &&
               screen !== 'propsure' &&
@@ -205,7 +210,7 @@ class AgentTile extends React.Component {
                     <Entypo
                       onPress={() => this.props.toggleMenu(true, data.id)}
                       name="dots-three-vertical"
-                      size={20}
+                      size={25}
                     />
                   }
                 >
@@ -227,7 +232,7 @@ class AgentTile extends React.Component {
                     <Entypo
                       onPress={() => this.props.toggleMenu(true, data.id)}
                       name="dots-three-vertical"
-                      size={20}
+                      size={25}
                     />
                   }
                 >
@@ -238,14 +243,6 @@ class AgentTile extends React.Component {
                       }}
                       title="Comments"
                     />
-                    {/* <Menu.Item
-                      onPress={
-                        lead.shortlist_id === null
-                          ? () => selectForPayment(data)
-                          : () => showConfirmationDialog()
-                      }
-                      title="Select a Different Property"
-                    /> */}
                   </View>
                 </Menu>
               )}
@@ -257,7 +254,7 @@ class AgentTile extends React.Component {
                     <Entypo
                       onPress={() => this.props.toggleMenu(true, data.id)}
                       name="dots-three-vertical"
-                      size={20}
+                      size={25}
                     />
                   }
                 >
@@ -279,7 +276,7 @@ class AgentTile extends React.Component {
                     <Entypo
                       onPress={() => this.props.toggleMenu(true, data.id)}
                       name="dots-three-vertical"
-                      size={20}
+                      size={25}
                     />
                   }
                 >
@@ -311,7 +308,7 @@ class AgentTile extends React.Component {
                 </Menu>
               ) : null}
               {screen === 'viewing' ? (
-                <View>
+                <View style={{}}>
                   <Menu
                     visible={data.checkBox}
                     onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -319,7 +316,7 @@ class AgentTile extends React.Component {
                       <Entypo
                         onPress={() => this.props.toggleMenu(true, data.id)}
                         name="dots-three-vertical"
-                        size={20}
+                        size={25}
                       />
                     }
                   >
@@ -433,24 +430,25 @@ class AgentTile extends React.Component {
                 </View>
               ) : null}
             </View>
-            <View style={{ marginTop: 10, height: 125, justifyContent: 'space-between' }}>
-              <View>
-                <Text style={styles.agentText}> Agent Name </Text>
+            <View style={styles.agentView}>
+              <View style={AppStyles.mb1}>
+                <Text style={styles.agentText}>Agent Name </Text>
                 <Text numberOfLines={1} style={styles.labelText}>
                   {agentName}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row-reverse' }}>
-                {/* <View style={{ flex: 1 }}></View> */}
-                <FontAwesome
+                <TouchableOpacity
                   onPress={() => {
                     if (show) this.call(data)
                   }}
-                  style={{ paddingTop: 40, paddingRight: 0 }}
-                  name="phone"
-                  size={30}
-                  color={AppStyles.colors.subTextColor}
-                />
+                  style={[styles.phoneView]}
+                >
+                  <Image
+                    source={require('../../../assets/img/call.png')}
+                    style={styles.callImage}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           </View>

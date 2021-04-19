@@ -1,6 +1,8 @@
-import { StyleSheet } from 'react-native';
+/** @format */
+
+import { StyleSheet } from 'react-native'
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import AppStyles from '../../AppStyles'
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default styles = StyleSheet.create({
   noImage: {
@@ -8,14 +10,17 @@ export default styles = StyleSheet.create({
     height: 140,
     borderRadius: 5,
   },
+  callImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
   tileContainer: {
     backgroundColor: 'white',
     flex: 1,
     borderRadius: 5,
-    // borderTopEndRadius: 10,
-    // borderTopLeftRadius: 10,
     height: 150,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   pad5: {
     padding: 5,
@@ -23,23 +28,24 @@ export default styles = StyleSheet.create({
   currencyText: {
     paddingTop: 5,
     fontSize: 15,
-    fontFamily: AppStyles.fonts.lightFont
+    fontFamily: AppStyles.fonts.lightFont,
   },
   priceText: {
     fontSize: 22,
     fontFamily: AppStyles.fonts.semiBoldFont,
-    color: AppStyles.colors.primaryColor
+    color: AppStyles.colors.primaryColor,
   },
   marlaText: {
     fontSize: 17,
     paddingTop: 2,
-    fontFamily: AppStyles.fonts.defaultFont
+    fontFamily: AppStyles.fonts.defaultFont,
+    color: AppStyles.colors.textColor,
   },
   addressText: {
     fontSize: 17,
     paddingTop: 5,
     fontFamily: AppStyles.fonts.defaultFont,
-    color: AppStyles.colors.subTextColor
+    color: AppStyles.colors.textColor,
   },
   iconContainer: {
     flexDirection: 'row',
@@ -47,27 +53,25 @@ export default styles = StyleSheet.create({
   textStyle: {
     fontSize: 12,
     fontFamily: AppStyles.fonts.defaultFont,
-    color: AppStyles.colors.primaryColor
+    color: AppStyles.colors.primaryColor,
   },
   mainView: {
     borderColor: AppStyles.colors.primaryColor,
-    // height: 20,
     paddingVertical: 5,
     paddingHorizontal: 10,
-    // width: 80,
     borderWidth: 1,
     borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center"
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconInner: {
     flexDirection: 'row',
-    padding: 5
+    padding: 5,
   },
   phoneIcon: {
-    justifyContent: "space-between",
-    padding: 10,
-    paddingBottom: 0
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    paddingBottom: 0,
   },
   imageCountViewStyle: {
     position: 'absolute',
@@ -80,10 +84,22 @@ export default styles = StyleSheet.create({
     opacity: 0.7,
     borderRadius: 4,
     width: wp('12%'),
-    height: 20
+    height: 20,
   },
   imageCount: {
     color: 'white',
-    paddingLeft: wp('1%')
+    paddingLeft: wp('1%'),
   },
-});
+  menuView: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginLeft: 7,
+  },
+  phoneView: {
+    backgroundColor: AppStyles.colors.backgroundColor,
+    borderRadius: 20,
+    padding: 10,
+    marginVertical: 5,
+    marginRight: 7,
+  },
+})

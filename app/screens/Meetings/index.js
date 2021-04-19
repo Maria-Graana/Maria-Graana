@@ -23,7 +23,7 @@ import { Platform } from 'react-native'
 import { setContacts } from '../../actions/contacts'
 import TimerNotification from '../../LocalNotifications'
 import PaymentMethods from '../../PaymentMethods'
-import { cos } from 'react-native-reanimated'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal';
 
 class Meetings extends Component {
   constructor(props) {
@@ -72,6 +72,7 @@ class Meetings extends Component {
       loading: false,
       secondScreenData: {},
       checkForNewLeadData: false,
+      statusfeedbackModalVisible: false,
     }
   }
 
@@ -781,6 +782,11 @@ class Meetings extends Component {
           onPress={this.onHandleCloseLead}
           CMlead={true}
         />
+
+        <StatusFeedbackModal visible={true} 
+        comment={''}
+         handleCommentsChange={()=> console.log('handle comment change')}
+         />
       </View>
     )
   }

@@ -1,29 +1,41 @@
-import React from 'react'
-import { StyleSheet, Text, View, Platform, TouchableOpacity, FlatList, ScrollView, Modal, SafeAreaView } from 'react-native'
+import React, {useState} from 'react'
+import { StyleSheet, Text, View, Platform, TouchableOpacity, FlatList, ScrollView, Modal, SafeAreaView, Image } from 'react-native'
 import AppStyles from '../../AppStyles'
 import { Textarea } from 'native-base';
-//import Modal from 'react-native-modal'
+import fuzzy from 'fuzzy'
 import StaticData from '../../StaticData';
 import TouchableButton from '../TouchableButton';
-import { useState } from 'react';
+import times from '../../../assets/img/times.png'
 
 
 const CommentChip = ({ comment, setSelectedComment }) => {
     return (
-        <TouchableOpacity style={[styles.itemContainer, {borderColor: comment.colorCode}]} onPress={() => setSelectedComment(comment)}>
+        <TouchableOpacity style={[styles.itemContainer, { borderColor: comment.colorCode }]} onPress={() => setSelectedComment(comment)}>
             <Text style={styles.itemName}>{comment.name}</Text>
         </TouchableOpacity>
     )
 }
 
-const StatusFeedbackModal = ({ visible, handleCommentsChange, comment }) => {
-    let data = StaticData.commentsFeedback;
+const StatusFeedbackModal = ({ visible, showFeedbackModal }) => {
     const [selectedComment, setSelectedComment] = useState(null);
-
+    let data = [];
+    if (selectedComment != null && data && data.length === 0) {
+        data = fuzzy.filter(selectedComment, StaticData.commentsFeedback, { extract: (e) => (e.name) })
+        data = data.map((item) => item.original)
+    }
+    else {
+        data = StaticData.commentsFeedback;
+    }
     return (
         <Modal visible={visible}>
             <SafeAreaView style={AppStyles.mb1}>
                 <View style={styles.modalMain}>
+                    <TouchableOpacity
+                        style={styles.closeBtn}
+                        onPress={() => showFeedbackModal(false)}
+                    >
+                        <Image source={times} style={styles.closeImg} />
+                    </TouchableOpacity>
                     <View style={[AppStyles.mainInputWrap]}>
                         <Textarea
                             placeholderTextColor={'#a8a8aa'}
@@ -35,8 +47,8 @@ const StatusFeedbackModal = ({ visible, handleCommentsChange, comment }) => {
                             ]}
                             rowSpan={5}
                             placeholder="Comments"
-                            onChangeText={(text) => handleCommentsChange(text)}
-                            value={selectedComment ? selectedComment.name : ''}
+                            onChangeText={(text) => setSelectedComment(text)}
+                            value={selectedComment}
                         />
                     </View>
                     <ScrollView scrollEnabled={true} horizontal showsHorizontalScrollIndicator={false}>
@@ -47,9 +59,9 @@ const StatusFeedbackModal = ({ visible, handleCommentsChange, comment }) => {
                             numColumns={5}
                             showsVerticalScrollIndicator={false}
                             renderItem={({ item }) => (
-                                <CommentChip comment={item} setSelectedComment={setSelectedComment} />
+                                <CommentChip comment={item} setSelectedComment={(comment) => setSelectedComment(comment.name)} />
                             )}
-                            keyExtractor={(item,index)=> item.value}
+                            keyExtractor={(item, index) => item.value}
                         />
                     </ScrollView>
 
@@ -58,11 +70,11 @@ const StatusFeedbackModal = ({ visible, handleCommentsChange, comment }) => {
                             containerStyle={styles.button}
                             fontFamily={AppStyles.fonts.boldFont}
                             fontSize={16}
-                            onPress={() => console.log('action')}
+                            onPress={() => console.log(selectedComment)}
                             label={'Action'}
                         />
                         <TouchableButton
-                             containerStyle={styles.button}
+                            containerStyle={styles.button}
                             containerBackgroundColor={AppStyles.colors.yellowBg}
                             fontFamily={AppStyles.fonts.boldFont}
                             fontSize={16}
@@ -102,7 +114,7 @@ const styles = StyleSheet.create({
         elevation: 5,
         borderWidth: 1,
         borderColor: AppStyles.colors.textColor,
-        color:  AppStyles.colors.textColor,
+        color: AppStyles.colors.textColor,
     },
     itemContainer: {
         borderWidth: 1,
@@ -130,5 +142,16 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         padding: 10,
         width: '30%'
-    }
+    },
+    closeBtn: {
+        alignSelf: 'flex-end',
+        backgroundColor: '#fff',
+        padding: 5,
+        borderRadius: 50,
+      },
+    closeImg: {
+        width: 16,
+        height: 16,
+        resizeMode: 'contain',
+      },
 })

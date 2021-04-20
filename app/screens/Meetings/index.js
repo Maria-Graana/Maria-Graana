@@ -72,7 +72,7 @@ class Meetings extends Component {
       loading: false,
       secondScreenData: {},
       checkForNewLeadData: false,
-      statusfeedbackModalVisible: false,
+      statusfeedbackModalVisible: true,
     }
   }
 
@@ -659,6 +659,7 @@ class Meetings extends Component {
       diaryForm,
       diaryTask,
       loading,
+      statusfeedbackModalVisible
     } = this.state
     const { contacts } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
@@ -783,9 +784,9 @@ class Meetings extends Component {
           CMlead={true}
         />
 
-        <StatusFeedbackModal visible={true} 
-        comment={''}
-         handleCommentsChange={()=> console.log('handle comment change')}
+        <StatusFeedbackModal
+         visible={statusfeedbackModalVisible} 
+         showFeedbackModal = {(value) => this.setState({statusfeedbackModalVisible:value})}
          />
       </View>
     )

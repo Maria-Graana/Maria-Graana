@@ -34,13 +34,13 @@ class HeaderTitle extends React.Component {
           {headerName}
         </Text>
         {!lead.projectId && !lead.projectName ? (
-          <Text numberOfLines={1} style={[styles.detailText, AppStyles.darkColor]}>
+          <Text numberOfLines={1} style={[styles.detailText]}>
             {leadSize}
             {lead.subtype && helper.capitalize(lead.subtype)} {lead.purpose != null && 'to '}
             {lead.purpose === 'sale' ? 'Buy' : 'Rent'}
           </Text>
         ) : (
-          <Text numberOfLines={1} style={[styles.detailText, AppStyles.darkColor]}>
+          <Text numberOfLines={1} style={[styles.detailText]}>
             {lead.project
               ? helper.capitalize(lead.project.name)
               : helper.capitalize(lead.projectName)}
@@ -60,10 +60,12 @@ const styles = StyleSheet.create({
   headerText: {
     fontFamily: AppStyles.fonts.boldFont,
     fontSize: 16,
+    color: AppStyles.colors.primaryColor,
   },
   detailText: {
     fontFamily: AppStyles.fonts.defaultFont,
     fontSize: 14,
+    color: AppStyles.colors.primaryColor,
   },
 })
 

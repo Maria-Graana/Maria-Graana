@@ -888,8 +888,8 @@ class LeadMatch extends React.Component {
                     <Image
                       source={require('../../../assets/img/filter.png')}
                       style={{
-                        width: 20,
-                        height: 20,
+                        width: 25,
+                        height: 25,
                       }}
                     />
                   </TouchableOpacity>

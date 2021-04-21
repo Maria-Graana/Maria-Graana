@@ -848,6 +848,7 @@ class LegalAttachment extends Component {
                     downloadLegalDocs={this.downloadLegalDocs}
                     addBorder={true}
                     isLeadClosed={isLeadClosed}
+                    checkList={true}
                   />
                 </View>
               ) : null}

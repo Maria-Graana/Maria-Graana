@@ -11,6 +11,7 @@ import AppStyles from '../../AppStyles'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
+import style from './style'
 
 class LegalTile extends React.Component {
   constructor(props) {
@@ -83,7 +84,14 @@ class LegalTile extends React.Component {
   }
 
   MenuTile = () => {
-    const { data, submitMenu, downloadLegalDocs, addBorder = false, isLeadClosed } = this.props
+    const {
+      data,
+      submitMenu,
+      downloadLegalDocs,
+      addBorder = false,
+      isLeadClosed,
+      checkList,
+    } = this.props
     const { menuToggle } = this.state
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)
@@ -119,78 +127,80 @@ class LegalTile extends React.Component {
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
               )}
             </View>
-            <Text numberOfLines={1} style={styles.textPadding}>
+            <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
               {data.name}
             </Text>
           </View>
-          <View style={[data.status === 'rejected' ? { paddingTop: 10 } : styles.contentCenter]}>
-            <Menu
-              visible={menuToggle}
-              onDismiss={() => this.toggleMenu()}
-              anchor={
-                <Entypo
-                  onPress={() => this.toggleMenu()}
-                  onDismiss={this.toggleMenu}
-                  name="dots-three-vertical"
-                  size={20}
-                  color={menuToggle ? AppStyles.colors.primaryColor : 'black'}
-                />
-              }
-            >
-              <View>
-                {data.status === 'rejected' ? (
-                  <View>
-                    <Menu.Item
-                      onPress={() => {
-                        submitMenu('edit', data)
-                        this.toggleMenu()
-                      }}
-                      title="Edit"
-                    />
-                    <Menu.Item
-                      onPress={() => {
-                        submitMenu('remove', data)
-                        this.toggleMenu()
-                      }}
-                      title="Remove"
-                    />
-                  </View>
-                ) : (
-                  <View>
-                    <Menu.Item
-                      onPress={() => {
-                        submitMenu('edit', data)
-                        this.toggleMenu()
-                      }}
-                      title="Edit"
-                    />
-                    <Menu.Item
-                      onPress={() => {
-                        submitMenu('remove', data)
-                        this.toggleMenu()
-                      }}
-                      title="Remove"
-                    />
-                    <Menu.Item
-                      onPress={() => {
-                        submitMenu('assign_to_legal', data)
-                        this.toggleMenu()
-                      }}
-                      title="Assign to Legal"
-                      titleStyle={styles.assignText}
-                    />
-                  </View>
-                )}
-              </View>
-            </Menu>
-          </View>
+          {!checkList ? (
+            <View style={[data.status === 'rejected' ? { paddingTop: 10 } : styles.contentCenter]}>
+              <Menu
+                visible={menuToggle}
+                onDismiss={() => this.toggleMenu()}
+                anchor={
+                  <Entypo
+                    onPress={() => this.toggleMenu()}
+                    onDismiss={this.toggleMenu}
+                    name="dots-three-vertical"
+                    size={20}
+                    color={menuToggle ? AppStyles.colors.primaryColor : 'black'}
+                  />
+                }
+              >
+                <View>
+                  {data.status === 'rejected' ? (
+                    <View>
+                      <Menu.Item
+                        onPress={() => {
+                          submitMenu('edit', data)
+                          this.toggleMenu()
+                        }}
+                        title="Edit"
+                      />
+                      <Menu.Item
+                        onPress={() => {
+                          submitMenu('remove', data)
+                          this.toggleMenu()
+                        }}
+                        title="Remove"
+                      />
+                    </View>
+                  ) : (
+                    <View>
+                      <Menu.Item
+                        onPress={() => {
+                          submitMenu('edit', data)
+                          this.toggleMenu()
+                        }}
+                        title="Edit"
+                      />
+                      <Menu.Item
+                        onPress={() => {
+                          submitMenu('remove', data)
+                          this.toggleMenu()
+                        }}
+                        title="Remove"
+                      />
+                      <Menu.Item
+                        onPress={() => {
+                          submitMenu('assign_to_legal', data)
+                          this.toggleMenu()
+                        }}
+                        title="Assign to Legal"
+                        titleStyle={styles.assignText}
+                      />
+                    </View>
+                  )}
+                </View>
+              </Menu>
+            </View>
+          ) : null}
         </View>
       </TouchableOpacity>
     )
   }
 
   StatusTile = () => {
-    const { data, downloadLegalDocs, addBorder = false, isLeadClosed } = this.props
+    const { data, downloadLegalDocs, addBorder = false, isLeadClosed, checkList } = this.props
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)
     let newStyle = {}
@@ -223,7 +233,7 @@ class LegalTile extends React.Component {
             <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
           </View>
           <View style={styles.contentSpace}>
-            <Text numberOfLines={1} style={styles.textPadding}>
+            <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
               {data.name}
             </Text>
           </View>

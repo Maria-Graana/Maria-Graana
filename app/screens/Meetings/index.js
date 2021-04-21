@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { Component } from 'react'
-import { View, ScrollView, TouchableOpacity, Text, Linking, Image } from 'react-native'
+import { View, ScrollView, TouchableOpacity, Text, Linking, Image, Alert } from 'react-native'
 import { Fab } from 'native-base'
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
@@ -410,7 +410,6 @@ class Meetings extends Component {
             // this.sendCallStatus()
             console.log("Can't handle url: " + url)
           } else {
-            this.sendCallStatus()
             this.call()
             return Linking.openURL(url)
           }
@@ -432,7 +431,10 @@ class Meetings extends Component {
       newContact.phone &&
       newContact.phone !== ''
     )
-      if (!result) helper.addContact(newContact)
+      if (!result) {
+        helper.addContact(newContact)
+        this.setState({statusfeedbackModalVisible: true})
+      }
   }
 
   editFunction = (id) => {
@@ -471,7 +473,7 @@ class Meetings extends Component {
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
       taskType: taskType != '' ? taskType : null,
-      screenName : 'Diary'
+      screenName: 'Diary'
     })
   }
 
@@ -638,6 +640,40 @@ class Meetings extends Component {
     }
   }
 
+  performAction = (modalMode, comment) => {
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      if (modalMode === 'call') {
+        this.openModal();
+      }
+      else {
+        console.log('meeting action')
+      }
+    });
+  }
+
+  performFollowup = (comment) => {
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      this.addDiary();
+    });
+  }
+
+  performReject = (comment) => {
+    this.setState({
+      statusfeedbackModalVisible: false,
+      reasons: StaticData.paymentPopup,
+      isVisible: true,
+      checkReasonValidation: ''
+    });
+  }
+
+  showRejectModal(val) {
+    Alert.alert('Reject', 'Are you sure you want to continue?', [
+      { text: 'No', style: 'cancel' },
+      { text: 'Yes', onPress: () => this.performReject(val) },
+    ],
+      { cancelable: false })
+  }
+
   render() {
     const {
       active,
@@ -744,7 +780,7 @@ class Meetings extends Component {
           />
         </View>
 
-        {/* ************Modal Component************ */} 
+        {/* ************Modal Component************ */}
         {active === true && (
           <MeetingModal
             active={active}
@@ -785,9 +821,13 @@ class Meetings extends Component {
         />
 
         <StatusFeedbackModal
-         visible={statusfeedbackModalVisible} 
-         showFeedbackModal = {(value) => this.setState({statusfeedbackModalVisible:value})}
-         />
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+          commentsList={StaticData.commentsFeedback}
+          performAction={(modalMode, comment) => this.performAction(modalMode, comment)}
+          performFollowup={(comment) => this.performFollowup(comment)}
+          performReject={(comment) => this.showRejectModal(comment)}
+        />
       </View>
     )
   }

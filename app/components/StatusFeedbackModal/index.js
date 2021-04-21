@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { StyleSheet, Text, View, Platform, TouchableOpacity, FlatList, ScrollView, Modal, SafeAreaView, Image } from 'react-native'
 import AppStyles from '../../AppStyles'
 import { Textarea } from 'native-base';
@@ -16,11 +16,20 @@ const CommentChip = ({ comment, setSelectedComment }) => {
     )
 }
 
-const StatusFeedbackModal = ({ visible, showFeedbackModal }) => {
+const StatusFeedbackModal = ({ visible, 
+    showFeedbackModal, 
+    commentsList, 
+    showAction = true, 
+    showFollowup = true, 
+    modalMode='call',
+    performAction,
+    performFollowup,
+    performReject,
+}) => {
     const [selectedComment, setSelectedComment] = useState(null);
     let data = [];
     if (selectedComment != null && data && data.length === 0) {
-        data = fuzzy.filter(selectedComment, StaticData.commentsFeedback, { extract: (e) => (e.name) })
+        data = fuzzy.filter(selectedComment, commentsList, { extract: (e) => (e.name) })
         data = data.map((item) => item.original)
     }
     else {
@@ -66,28 +75,32 @@ const StatusFeedbackModal = ({ visible, showFeedbackModal }) => {
                     </ScrollView>
 
                     <View style={styles.buttonsContainer}>
+                        {
+                            showAction && <TouchableButton
+                                containerStyle={styles.button}
+                                fontFamily={AppStyles.fonts.boldFont}
+                                fontSize={14}
+                                onPress={() => selectedComment ? performAction(modalMode, selectedComment) : alert('Please select a comment to continue')}
+                                label={ modalMode === 'call' ? 'Meeting Setup' : 'Deal Signed'}
+                            />
+                        }
+                        {
+                            showFollowup && <TouchableButton
+                                containerStyle={styles.button}
+                                containerBackgroundColor={AppStyles.colors.yellowBg}
+                                fontFamily={AppStyles.fonts.boldFont}
+                                fontSize={14}
+                                textColor={AppStyles.colors.textColor}
+                                onPress={() => selectedComment ? performFollowup(selectedComment) :  alert('Please select a comment to continue')}
+                                label={'Follow up'}
+                            />
+                        }
                         <TouchableButton
-                            containerStyle={styles.button}
+                            containerStyle={[styles.button, {width: showAction ? '30%' : '100%'}]}
                             fontFamily={AppStyles.fonts.boldFont}
-                            fontSize={16}
-                            onPress={() => console.log(selectedComment)}
-                            label={'Action'}
-                        />
-                        <TouchableButton
-                            containerStyle={styles.button}
-                            containerBackgroundColor={AppStyles.colors.yellowBg}
-                            fontFamily={AppStyles.fonts.boldFont}
-                            fontSize={16}
-                            textColor={AppStyles.colors.textColor}
-                            onPress={() => console.log('follow up')}
-                            label={'Follow up'}
-                        />
-                        <TouchableButton
-                            containerStyle={styles.button}
-                            fontFamily={AppStyles.fonts.boldFont}
-                            fontSize={16}
+                            fontSize={14}
                             containerBackgroundColor={AppStyles.colors.redBg}
-                            onPress={() => console.log('reject')}
+                            onPress={() => selectedComment ? performReject(selectedComment) :  alert('Please select a comment to continue')}
                             label={'Reject'}
                         />
                     </View>
@@ -148,10 +161,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         padding: 5,
         borderRadius: 50,
-      },
+    },
     closeImg: {
         width: 16,
         height: 16,
         resizeMode: 'contain',
-      },
+    },
 })

@@ -101,4 +101,8 @@ export default styles = StyleSheet.create({
     height: 100,
     justifyContent: 'space-between',
   },
+  checkBox: {
+    width: 25,
+    height: 25,
+  },
 })

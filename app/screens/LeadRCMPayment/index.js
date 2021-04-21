@@ -18,7 +18,7 @@ import {
   Platform,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
@@ -121,7 +121,7 @@ class LeadRCMPayment extends React.Component {
       legalServicesFee: null,
       buyerToggleModal: false,
       advanceNotZero: false,
-      active: false
+      active: false,
     }
   }
 
@@ -1585,7 +1585,7 @@ class LeadRCMPayment extends React.Component {
       buyerToggleModal,
       buyerDetailForm,
       advanceNotZero,
-      active
+      active,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1774,7 +1774,12 @@ class LeadRCMPayment extends React.Component {
               />
             </>
           )}
-          <FollowUpModal active={active} openModal={this.openModal} diaryForm={true} />
+          <FollowUpModal
+            leadType={'rcm'}
+            active={active}
+            openModal={this.openModal}
+            diaryForm={true}
+          />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1790,6 +1795,7 @@ class LeadRCMPayment extends React.Component {
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
               goToFollowUp={this.openModal}
+              navigation={navigation}
             />
           </View>
         </View>

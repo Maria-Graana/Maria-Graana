@@ -141,23 +141,28 @@ class FollowUpModal extends React.Component {
   }
 
   addFollowUpForCall = (data) => {
-    console.log('addFollowUpForCall: ', data)
-    // axios
-    //   .post(`api/leads/project/meeting`, data)
-    //   .then((res) => {
-    //     if (res && res.data) {
-    //       helper.successToast(
-    //         `Follow up task added for ${moment(res.data.start).format('hh:mm a')}, ${moment(
-    //           res.data.start
-    //         ).format('MMM D')}`,
-    //         5000
-    //       )
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error)
-    //     helper.errorToast(`Some thing went wrong!!!`)
-    //   })
+    const { leadType } = this.props
+    if (leadType === 'rcm') {
+      data.armsLeadId = data.leadId
+      delete data.leadId
+    }
+    axios
+      .post(`api/leads/project/meeting`, data)
+      .then((res) => {
+        if (res && res.data) {
+          this.closeModal()
+          helper.successToast(
+            `Follow up task added for ${moment(res.data.start).format('hh:mm a')}, ${moment(
+              res.data.start
+            ).format('MMM D')}`,
+            5000
+          )
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        helper.errorToast(`Some thing went wrong!!!`)
+      })
   }
 
   //  ************ Function for open modal ************

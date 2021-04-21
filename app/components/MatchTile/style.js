@@ -78,13 +78,9 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    top: 120,
+    top: 10,
     left: 10,
-    backgroundColor: '#000',
     opacity: 0.7,
-    borderRadius: 4,
-    width: wp('12%'),
-    height: 20,
   },
   imageCount: {
     color: 'white',
@@ -101,5 +97,13 @@ export default styles = StyleSheet.create({
     padding: 10,
     marginVertical: 5,
     marginRight: 7,
+  },
+  checkBox: {
+    width: 25,
+    height: 25,
+  },
+  greenDot: {
+    width: 20,
+    height: 20,
   },
 })

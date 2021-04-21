@@ -745,6 +745,7 @@ class Meetings extends Component {
             alreadyClosedLead={this.closedLead}
             closedLeadEdit={leadClosedCheck}
             closeLead={this.checkLeadClosureReasons}
+            goToFollowUp={this.openModal}
           />
         </View>
 

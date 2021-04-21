@@ -1174,7 +1174,12 @@ class LeadPropsure extends React.Component {
               </>
             )}
           </View>
-          <FollowUpModal active={active} openModal={this.openModal} diaryForm={true} />
+          <FollowUpModal
+            leadType={'rcm'}
+            active={active}
+            openModal={this.openModal}
+            diaryForm={true}
+          />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1190,6 +1195,7 @@ class LeadPropsure extends React.Component {
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
               goToFollowUp={this.openModal}
+              navigation={navigation}
             />
           </View>
           <LeadRCMPaymentPopup

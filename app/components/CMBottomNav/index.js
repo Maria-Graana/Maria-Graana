@@ -3,6 +3,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import React from 'react'
+import { ActionSheet } from 'native-base'
 import { Image, Linking, Text, TouchableOpacity, View, TouchableHighlight } from 'react-native'
 import { Menu as PopupMenu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu'
 import { Menu, Divider } from 'react-native-paper'
@@ -11,6 +12,15 @@ import AppStyles from '../../AppStyles'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
+import Ability from '../../hoc/Ability'
+
+var BUTTONS = [
+  'Assign to team member',
+  'Share lead with other agent',
+  'Create new Buy lead for this client',
+  'Cancel',
+]
+var CANCEL_INDEX = 3
 
 const triggerStyles = {
   triggerText: {
@@ -148,12 +158,104 @@ class CMBottomNav extends React.Component {
   }
 
   performListActions = (title) => {
-    const { goToComments, goToDiaryForm, goToAttachments } = this.props
+    const { goToComments, goToDiaryForm, goToAttachments, lead } = this.props
     if (title === 'Comment') goToComments()
     if (title === 'Diary Task') goToDiaryForm()
     if (title === 'Whatsapp') this.openWhatsapp()
     if (title === 'Attach') goToAttachments()
     if (title === 'Call') this.call()
+    if (title === 'ReAssign') this.handleLongPress(lead)
+  }
+
+  handleLongPress = (val) => {
+    ActionSheet.show(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Select an Option',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 1) {
+          //Share
+          this.navigateToShareScreen(val)
+        } else if (buttonIndex === 2) {
+          this.goToFormPage('AddCMLead', 'CM', val && val.customer ? val.customer : null)
+        } else if (buttonIndex === 0) {
+          this.checkAssignedLead(val)
+        }
+      }
+    )
+  }
+
+  navigateToShareScreen = (data) => {
+    const { user } = this.props
+    if (data) {
+      if (
+        data.status === StaticData.Constants.lead_closed_lost ||
+        data.status === StaticData.Constants.lead_closed_won
+      ) {
+        helper.errorToast('Closed leads cannot be shared with other agents')
+        return
+      }
+      if (user.id === data.assigned_to_armsuser_id) {
+        if (data.shared_with_armsuser_id) {
+          helper.errorToast('lead is already shared')
+        } else {
+          const { navigation } = this.props
+          navigation.navigate('AssignLead', { leadId: data.id, type: 'Buy', screen: 'BuyLead' })
+        }
+      } else {
+        helper.errorToast('Only the leads assigned to you can be shared')
+      }
+    } else {
+      helper.errorToast('Something went wrong!')
+    }
+  }
+
+  checkAssignedLead = (lead) => {
+    const { user } = this.props
+    // Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
+    if (
+      Ability.canView(user.subRole, 'AssignLead') &&
+      lead.status !== StaticData.Constants.lead_closed_lost &&
+      lead.status !== StaticData.Constants.lead_closed_won
+    ) {
+      // Lead can only be assigned to someone else if it is assigned to no one or to current user
+      if (lead.assigned_to_armsuser_id === null || user.id === lead.assigned_to_armsuser_id) {
+        this.setState({ showAssignToButton: true }, () => {
+          this.navigateToAssignLead(lead)
+        })
+      } else {
+        // Lead is already assigned to some other user (any other user)
+        this.setState({ showAssignToButton: false }, () => {
+          this.navigateToAssignLead(lead)
+        })
+      }
+    }
+  }
+
+  navigateToAssignLead = (lead) => {
+    const { navigation } = this.props
+    const { showAssignToButton } = this.state
+    if (showAssignToButton === true) {
+      navigation.navigate('AssignLead', { leadId: lead.id, type: 'sale', screen: 'LeadDetail' })
+    } else {
+      helper.errorToast('Lead Already Assign')
+    }
+  }
+
+  goToFormPage = (page, status, client, clientId) => {
+    const { navigation } = this.props
+    const copyClient = client ? { ...client } : null
+    if (copyClient) {
+      copyClient.id = clientId
+    }
+    navigation.navigate(page, {
+      pageName: status,
+      client: copyClient,
+      name: copyClient && copyClient.customerName,
+      purpose: 'sale',
+    })
   }
 
   openWhatsapp = () => {
@@ -182,7 +284,7 @@ class CMBottomNav extends React.Component {
             <Image style={styles.bottomNavImg} source={item.image} />
             <Text style={styles.menuText}>{item.title}</Text>
           </View>
-          {item.id !== 5 && <Divider />}
+          {item.id !== 6 && <Divider />}
         </MenuOption>
       )
     })
@@ -272,30 +374,17 @@ class CMBottomNav extends React.Component {
                 title="Add Property"
               />
             ) : null}
-            {/* <Menu.Item
-                onPress={() => {
-                  goToComments()
-                  this.openMenu(false)
-                }}
-                icon={require('../../../assets/img/msg.png')}
-                title="Comments"
-              />
+            {callButton ? (
               <Menu.Item
                 onPress={() => {
-                  goToAttachments()
+                  goToHistory()
                   this.openMenu(false)
                 }}
-                icon={require('../../../assets/img/files.png')}
-                title="Files"
-              /> */}
-            <Menu.Item
-              onPress={() => {
-                if (callButton === true) goToHistory()
-                this.openMenu(false)
-              }}
-              icon={require('../../../assets/img/callIcon.png')}
-              title="Call History"
-            />
+                icon={require('../../../assets/img/callIcon.png')}
+                title="Call History"
+              />
+            ) : null}
+            {!callButton ? <Menu.Item title="No Option" /> : null}
           </Menu>
         </View>
       </View>

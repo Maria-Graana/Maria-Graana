@@ -119,15 +119,11 @@ class AgentTile extends React.Component {
       isMenuVisible,
       showCheckBoxes,
       viewingMenu,
-      menuShow,
       screen,
       bookAnotherViewing,
       toggleCheckListModal,
       propertyGeoTagging,
       lead,
-      user,
-      selectForPayment,
-      showConfirmationDialog,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let otherAgentdiary = this.getOtherDiary(data) || null
@@ -144,34 +140,65 @@ class AgentTile extends React.Component {
     }
     return (
       <TouchableOpacity
-        style={{ flexDirection: 'row' }}
-        onLongPress={() => {
-          this.props.displayChecks()
-          this.props.addProperty(data)
-        }}
+        style={[
+          { flexDirection: 'row' },
+          data.checkBox && screen === 'match'
+            ? { backgroundColor: AppStyles.colors.primaryColor }
+            : null,
+        ]}
         onPress={() => {
           this.props.addProperty(data)
         }}
       >
-        <View style={styles.tileContainer}>
+        <View
+          style={[
+            styles.tileContainer,
+            data.checkBox && screen === 'match'
+              ? { backgroundColor: AppStyles.colors.primaryColor }
+              : null,
+          ]}
+        >
           <View
             style={[
               AppStyles.mb1,
               styles.pad5,
               { paddingBottom: 2, justifyContent: 'space-between' },
+              data.checkBox && screen === 'match'
+                ? { backgroundColor: AppStyles.colors.primaryColor }
+                : null,
             ]}
           >
             <View>
-              <Text style={styles.priceText}>
+              <Text
+                style={[
+                  styles.priceText,
+                  ,
+                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                ]}
+              >
                 {' '}
                 {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
               </Text>
-              <Text numberOfLines={1} style={styles.marlaText}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.marlaText,
+                  ,
+                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                ]}
+              >
                 {' '}
                 {data.size} {data.size_unit} {data.subtype && helper.capitalize(data.subtype)} For{' '}
                 {data.purpose && helper.capitalize(data.purpose)}{' '}
               </Text>
-              <Text numberOfLines={1} style={styles.addressText}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.addressText,
+                  ,
+                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                ]}
+              >
                 {' '}
                 {data.area ? data.area.name : null}
               </Text>
@@ -181,17 +208,42 @@ class AgentTile extends React.Component {
                 {data.bed && Number(data.bed) > 0 ? (
                   <Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
                 ) : null}
-                <Text style={{ fontSize: 18 }}> {data.bed} </Text>
+                <Text
+                  style={[
+                    { fontSize: 18 },
+                    ,
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
+                  {' '}
+                  {data.bed}{' '}
+                </Text>
               </View>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
                 {data.bath && Number(data.bath) > 0 ? (
                   <FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
                 ) : null}
-                <Text style={{ fontSize: 18 }}> {data.bath} </Text>
+                <Text
+                  style={[
+                    { fontSize: 18 },
+                    ,
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
+                  {' '}
+                  {data.bath}{' '}
+                </Text>
               </View>
             </View>
           </View>
-          <View style={styles.underLine} />
+          <View
+            style={[
+              styles.underLine,
+              data.checkBox && screen === 'match'
+                ? { backgroundColor: AppStyles.colors.primaryColor }
+                : null,
+            ]}
+          />
           <View style={[styles.pad5, { marginRight: 2 }]}>
             <View
               style={{
@@ -424,7 +476,7 @@ class AgentTile extends React.Component {
                     onPress={() => {
                       this.props.addProperty(data)
                     }}
-                    color={AppStyles.colors.primaryColor}
+                    style={styles.checkBox}
                     checked={data.checkBox}
                   />
                 </View>
@@ -432,8 +484,23 @@ class AgentTile extends React.Component {
             </View>
             <View style={styles.agentView}>
               <View style={AppStyles.mb1}>
-                <Text style={styles.agentText}>Agent Name </Text>
-                <Text numberOfLines={1} style={styles.labelText}>
+                <Text
+                  style={[
+                    styles.agentText,
+                    ,
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
+                  Agent Name{' '}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.labelText,
+                    ,
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
                   {agentName}
                 </Text>
               </View>

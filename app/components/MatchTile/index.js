@@ -143,14 +143,11 @@ class MatchTile extends React.Component {
       isMenuVisible,
       showCheckBoxes,
       viewingMenu,
-      menuShow,
       screen,
       bookAnotherViewing,
       toggleCheckListModal,
       propertyGeoTagging,
       lead,
-      selectForPayment,
-      showConfirmationDialog,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let imagesList = this.checkImages()
@@ -158,7 +155,6 @@ class MatchTile extends React.Component {
     let phoneNumber = null
     let totalImages = imagesList.length
     let showDone = this.checkDiaryStatus(data)
-
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false
@@ -170,44 +166,37 @@ class MatchTile extends React.Component {
     phoneNumber = this.displayPhoneNumber(data)
     return (
       <TouchableOpacity
-        style={{ flexDirection: 'row', marginVertical: 2 }}
-        onLongPress={() => {
-          this.props.displayChecks()
-          this.props.addProperty(data)
-        }}
+        style={[{ flexDirection: 'row', marginVertical: 2 }]}
         onPress={() => {
           this.props.addProperty(data)
         }}
       >
-        <View style={styles.tileContainer}>
+        <View
+          style={[
+            styles.tileContainer,
+            data.checkBox && screen === 'match'
+              ? { backgroundColor: AppStyles.colors.primaryColor }
+              : null,
+          ]}
+        >
           <View style={[styles.pad5]}>
             {imagesList.length ? (
               <Image source={{ uri: imagesList[0] }} style={styles.noImage} />
             ) : (
-              // <Carousel
-              //   // ref={(c) => { this._carousel = c; }}
-              //   data={imagesList}
-              //   renderItem={this._renderItem}
-              //   sliderWidth={130}
-              //   itemWidth={130}
-              //   enableSnap={true}
-              //   enableMomentum={false}
-              //   autoplay={true}
-              //   lockScrollWhileSnapping={true}
-              //   autoplayDelay={3000}
-              //   loop={true}
-              //   containerCustomStyle={{ position: 'relative' }}
-              // />
               <Image
                 source={require('../../../assets/images/no-image-found.png')}
                 style={styles.noImage}
               />
             )}
           </View>
-          {/* <View style={styles.imageCountViewStyle}>
-            <Feather name={'camera'} color={'#fff'} size={16} />
-            <Text style={styles.imageCount}>{totalImages}</Text>
-          </View> */}
+          {imagesList.length ? (
+            <View style={styles.imageCountViewStyle}>
+              <Image
+                source={require('../../../assets/img/green-dot.png')}
+                style={styles.greenDot}
+              />
+            </View>
+          ) : null}
           <View
             style={[
               AppStyles.mb1,
@@ -216,16 +205,33 @@ class MatchTile extends React.Component {
             ]}
           >
             <View>
-              <Text style={styles.priceText}>
+              <Text
+                style={[
+                  styles.priceText,
+                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                ]}
+              >
                 {' '}
                 {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
               </Text>
-              <Text numberOfLines={1} style={styles.marlaText}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.marlaText,
+                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                ]}
+              >
                 {' '}
                 {data.size} {data.size_unit} {data.subtype && helper.capitalize(data.subtype)} For{' '}
                 {data.purpose && helper.capitalize(data.purpose)}{' '}
               </Text>
-              <Text numberOfLines={1} style={styles.addressText}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.addressText,
+                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                ]}
+              >
                 {' '}
                 {data.area ? data.area.name : null}
               </Text>
@@ -233,15 +239,43 @@ class MatchTile extends React.Component {
             <View style={styles.iconContainer}>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
                 {data.bed && Number(data.bed) > 0 ? (
-                  <Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
+                  <Ionicons
+                    name="ios-bed"
+                    size={25}
+                    color={
+                      data.checkBox && screen === 'match' ? '#fff' : AppStyles.colors.subTextColor
+                    }
+                  />
                 ) : null}
-                <Text style={{ fontSize: 18 }}> {data.bed} </Text>
+                <Text
+                  style={[
+                    { fontSize: 18 },
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
+                  {' '}
+                  {data.bed}{' '}
+                </Text>
               </View>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
                 {data.bath && Number(data.bath) > 0 ? (
-                  <FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
+                  <FontAwesome
+                    name="bath"
+                    size={22}
+                    color={
+                      data.checkBox && screen === 'match' ? '#fff' : AppStyles.colors.subTextColor
+                    }
+                  />
                 ) : null}
-                <Text style={{ fontSize: 18 }}> {data.bath} </Text>
+                <Text
+                  style={[
+                    { fontSize: 18 },
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
+                  {' '}
+                  {data.bath}{' '}
+                </Text>
               </View>
             </View>
           </View>
@@ -460,7 +494,7 @@ class MatchTile extends React.Component {
                   onPress={() => {
                     this.props.addProperty(data)
                   }}
-                  color={AppStyles.colors.primaryColor}
+                  style={styles.checkBox}
                   checked={data.checkBox}
                 />
               </View>

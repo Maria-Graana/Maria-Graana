@@ -982,7 +982,12 @@ class LeadViewing extends React.Component {
             )}
           </View>
         </View>
-        <FollowUpModal active={active} openModal={this.openModal} diaryForm={true} />
+        <FollowUpModal
+          leadType={'rcm'}
+          active={active}
+          openModal={this.openModal}
+          diaryForm={true}
+        />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}
@@ -1000,6 +1005,7 @@ class LeadViewing extends React.Component {
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
             goToFollowUp={this.openModal}
+            navigation={navigation}
           />
         </View>
         <LeadRCMPaymentPopup

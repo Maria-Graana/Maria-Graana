@@ -166,7 +166,6 @@ class AddInventory extends Component {
     setEditValues = () => {
         const { route } = this.props
         const { property } = route.params
-        console.log(property);
         let parsedFeatures = property.features ? JSON.parse(property.features) : {};
         let amentities = _.isEmpty(parsedFeatures) ? [] : (_.keys(parsedFeatures));
         if (amentities.length) {

@@ -80,6 +80,12 @@ export default styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: AppStyles.fonts.defaultFont,
   },
+  hyperLinkPadding: {
+    padding: 2,
+    fontSize: 12,
+    fontFamily: AppStyles.fonts.defaultFont,
+    textDecorationLine: 'underline',
+  },
   assignText: {
     color: AppStyles.colors.primaryColor,
     fontFamily: AppStyles.fonts.semiBoldFont,

@@ -843,11 +843,12 @@ class LegalAttachment extends Component {
                   <LegalTile
                     data={checkListDoc}
                     index={null}
-                    submitMenu={this.submitMenu}
-                    getAttachmentFromStorage={this.getAttachmentFromStorage}
+                    submitMenu={() => {}}
+                    getAttachmentFromStorage={() => {}}
                     downloadLegalDocs={this.downloadLegalDocs}
                     addBorder={true}
                     isLeadClosed={isLeadClosed}
+                    checkList={true}
                   />
                 </View>
               ) : null}

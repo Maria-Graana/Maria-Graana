@@ -15,13 +15,12 @@ const CommentChip = ({ comment, setSelectedComment }) => {
         </TouchableOpacity>
     )
 }
-
 const StatusFeedbackModal = ({ visible, 
     showFeedbackModal, 
     commentsList, 
     showAction = true, 
     showFollowup = true, 
-    modalMode='call',
+    modalMode,
     performAction,
     performFollowup,
     performReject,
@@ -79,7 +78,7 @@ const StatusFeedbackModal = ({ visible,
                             showAction && <TouchableButton
                                 containerStyle={styles.button}
                                 fontFamily={AppStyles.fonts.boldFont}
-                                fontSize={14}
+                                fontSize={16}
                                 onPress={() => selectedComment ? performAction(modalMode, selectedComment) : alert('Please select a comment to continue')}
                                 label={ modalMode === 'call' ? 'Meeting Setup' : 'Deal Signed'}
                             />
@@ -89,16 +88,16 @@ const StatusFeedbackModal = ({ visible,
                                 containerStyle={styles.button}
                                 containerBackgroundColor={AppStyles.colors.yellowBg}
                                 fontFamily={AppStyles.fonts.boldFont}
-                                fontSize={14}
+                                fontSize={16}
                                 textColor={AppStyles.colors.textColor}
                                 onPress={() => selectedComment ? performFollowup(selectedComment) :  alert('Please select a comment to continue')}
                                 label={'Follow up'}
                             />
                         }
                         <TouchableButton
-                            containerStyle={[styles.button, {width: showAction ? '30%' : '100%'}]}
+                            containerStyle={[styles.button, {width: showAction ? '32%' : '100%'}]}
                             fontFamily={AppStyles.fonts.boldFont}
-                            fontSize={14}
+                            fontSize={16}
                             containerBackgroundColor={AppStyles.colors.redBg}
                             onPress={() => selectedComment ? performReject(selectedComment) :  alert('Please select a comment to continue')}
                             label={'Reject'}
@@ -137,7 +136,7 @@ const styles = StyleSheet.create({
         paddingBottom: 3,
         paddingLeft: 10,
         paddingRight: 10,
-        margin: 5,
+        margin: 8,
     },
     itemName: {
         fontSize: 12,
@@ -151,10 +150,10 @@ const styles = StyleSheet.create({
     },
     button: {
         justifyContent: 'center',
-        minHeight: 40,
+        minHeight: 55,
         borderRadius: 4,
         padding: 10,
-        width: '30%'
+        width: '32%'
     },
     closeBtn: {
         alignSelf: 'flex-end',

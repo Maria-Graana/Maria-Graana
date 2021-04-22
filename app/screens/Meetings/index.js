@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { Component } from 'react'
-import { View, ScrollView, TouchableOpacity, Text, Linking, Image, Alert } from 'react-native'
+import { View, TouchableOpacity, Text, Linking, FlatList, Alert } from 'react-native'
 import { Fab } from 'native-base'
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
@@ -72,7 +72,9 @@ class Meetings extends Component {
       loading: false,
       secondScreenData: {},
       checkForNewLeadData: false,
-      statusfeedbackModalVisible: true,
+      statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
     }
   }
 
@@ -123,10 +125,14 @@ class Meetings extends Component {
   }
 
   getMeetingLead = () => {
-    const { formData } = this.state
     const { lead } = this.props
     axios.get(`/api/diary/all?leadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data })
+      if (res && res.data) {
+        const { rows } = res.data;
+        let newRows = rows;
+        newRows = newRows.filter(item => item.taskType === 'called' ? item.response !== null : item)
+        this.setState({ meetings: { count: res.data.count, rows: newRows } })
+      }
     })
   }
 
@@ -307,53 +313,27 @@ class Meetings extends Component {
       })
   }
 
-
-  openStatus = (data) => {
-    this.setState({
-      doneStatus: !this.state.doneStatus,
-      doneStatusId: data,
-      modalStatus: 'dropdown',
-    })
-  }
-
-  openAttechment = () => {
-    this.setState({
-      modalStatus: 'btnOptions',
-      doneStatus: !this.state.doneStatus,
-    })
-  }
-
-  sendStatus = (status) => {
+  sendStatus = (status, id) => {
     const { formData } = this.state
     let body = {
       response: status,
+      comments: status,
       leadId: formData.leadId,
     }
-
+    console.log(body);
     if (status === 'cancel_meeting') {
       axios
-        .delete(`/api/diary/delete?id=${this.state.doneStatusId.id}&cmLeadId=${formData.leadId}`)
+        .delete(`/api/diary/delete?id=${id}&cmLeadId=${formData.leadId}`)
         .then((res) => {
           this.getMeetingLead()
-          this.setState({
-            doneStatus: !this.state.doneStatus,
-          })
         })
-    } else {
-      axios.patch(`/api/diary/update?id=${this.state.doneStatusId.id}`, body).then((res) => {
+    }
+    else if (status === 'meeting_done') {
+      this.setState({ statusfeedbackModalVisible: true, modalMode: 'meeting' })
+    }
+    else {
+      axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
         this.getMeetingLead()
-        this.setState(
-          {
-            doneStatus: !this.state.doneStatus,
-          },
-          () => {
-            if (status === 'follow_up') {
-              setTimeout(() => {
-                this.addDiary()
-              }, 500)
-            }
-          }
-        )
       })
     }
   }
@@ -391,14 +371,15 @@ class Meetings extends Component {
       time: start,
       date: start,
       taskType: 'called',
-      response: 'Called',
       subject: 'Call to client ' + this.props.lead.customer.customerName,
-      cutomerId: this.props.lead.customer.id,
+      customerId: this.props.lead.customer.id,
       leadId: this.props.lead.id,
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.getMeetingLead()
+      this.setState({ currentCall: res.data }, () => {
+        this.getMeetingLead()
+      })
     })
   }
 
@@ -407,7 +388,6 @@ class Meetings extends Component {
       Linking.canOpenURL(url)
         .then((supported) => {
           if (!supported) {
-            // this.sendCallStatus()
             console.log("Can't handle url: " + url)
           } else {
             this.call()
@@ -432,8 +412,9 @@ class Meetings extends Component {
       newContact.phone !== ''
     )
       if (!result) {
+        this.sendCallStatus();
         helper.addContact(newContact)
-        this.setState({statusfeedbackModalVisible: true})
+        this.setState({ statusfeedbackModalVisible: true })
       }
   }
 
@@ -643,7 +624,13 @@ class Meetings extends Component {
   performAction = (modalMode, comment) => {
     this.setState({ statusfeedbackModalVisible: false }, () => {
       if (modalMode === 'call') {
-        this.openModal();
+        const { currentCall } = this.state;
+        if (currentCall) {
+          this.setState({ statusfeedbackModalVisible: false }, () => {
+            this.sendStatus(comment, currentCall.id)
+            this.openModal();
+          });
+        }
       }
       else {
         console.log('meeting action')
@@ -652,26 +639,62 @@ class Meetings extends Component {
   }
 
   performFollowup = (comment) => {
-    this.setState({ statusfeedbackModalVisible: false }, () => {
-      this.addDiary();
-    });
+    const { currentCall } = this.state;
+    if (currentCall) {
+      this.setState({ statusfeedbackModalVisible: false }, () => {
+        this.sendStatus(comment, currentCall.id)
+        this.addDiary();
+      });
+    }
   }
 
   performReject = (comment) => {
-    this.setState({
-      statusfeedbackModalVisible: false,
-      reasons: StaticData.paymentPopup,
-      isVisible: true,
-      checkReasonValidation: ''
+    const { currentCall } = this.state;
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      this.sendStatus(comment, currentCall.id)
+      var leadId = []
+      leadId.push(lead.id)
+      axios
+        .patch(`/api/leads/project`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        });
     });
   }
 
   showRejectModal(val) {
-    Alert.alert('Reject', 'Are you sure you want to continue?', [
+    Alert.alert('Reject(Close as Lost)', 'Are you sure you want to continue?', [
       { text: 'No', style: 'cancel' },
       { text: 'Yes', onPress: () => this.performReject(val) },
     ],
       { cancelable: false })
+  }
+
+  toggleMenu = (val, id) => {
+    const { meetings } = this.state
+    let newMeetingObj = Object.create({});
+    if (meetings) {
+      const { rows } = meetings;
+      newMeetingObj.count = meetings.count;
+      newMeetingObj.rows = rows.map((item) => {
+        if (item.id === id) {
+          item.showMenu = val
+          return item
+        } else return item
+      })
+    }
+    else {
+      newMeetingObj = meetings;
+    }
+    this.setState({ meetings: newMeetingObj })
   }
 
   render() {
@@ -680,8 +703,6 @@ class Meetings extends Component {
       formData,
       checkValidation,
       meetings,
-      doneStatus,
-      doneStatusId,
       modalStatus,
       open,
       progressValue,
@@ -695,7 +716,8 @@ class Meetings extends Component {
       diaryForm,
       diaryTask,
       loading,
-      statusfeedbackModalVisible
+      statusfeedbackModalVisible,
+      modalMode,
     } = this.state
     const { contacts } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
@@ -711,33 +733,24 @@ class Meetings extends Component {
         />
 
         {/* ************Fab For Open Modal************ */}
-        <View
+        <FlatList
           style={[
             styles.meetingConteiner,
             leadClosedCheck === true ? styles.openLeadHeight : styles.closeLeadHeight,
           ]}
-        >
-          <ScrollView>
-            <View style={styles.paddBottom}>
-              {meetings &&
-                meetings != '' &&
-                meetings.rows.map((item, key) => {
-                  return (
-                    <MeetingTile
-                      data={item}
-                      key={key}
-                      openStatus={this.openStatus}
-                      sendStatus={this.sendStatus}
-                      doneStatus={doneStatus}
-                      doneStatusId={doneStatusId}
-                      editFunction={this.editFunction}
-                      leadClosedCheck={leadClosedCheck}
-                    />
-                  )
-                })}
-            </View>
-          </ScrollView>
-        </View>
+          data={meetings.rows}
+          renderItem={({ item, index }) => (
+            <MeetingTile
+              data={item}
+              key={index}
+              sendStatus={this.sendStatus}
+              editFunction={this.editFunction}
+              leadClosedCheck={leadClosedCheck}
+              toggleMenu={(val, id) => this.toggleMenu(val, id)}
+            />
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
         {leadClosedCheck == true && (
           <View style={[styles.callMeetingBtn]}>
             <View style={[styles.btnsMainWrap]}>
@@ -798,11 +811,9 @@ class Meetings extends Component {
           />
         )}
 
+
         {/* <MeetingStatusModal
-          doneStatus={doneStatus}
           sendStatus={this.sendStatus}
-          data={doneStatusId}
-          openStatus={this.openStatus}
           modalType={modalStatus}
           goToDiaryForm={this.goToDiaryForm}
           goToAttachments={this.goToAttachments}
@@ -824,6 +835,7 @@ class Meetings extends Component {
           visible={statusfeedbackModalVisible}
           showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
           commentsList={StaticData.commentsFeedback}
+          modalMode={modalMode}
           performAction={(modalMode, comment) => this.performAction(modalMode, comment)}
           performFollowup={(comment) => this.performFollowup(comment)}
           performReject={(comment) => this.showRejectModal(comment)}

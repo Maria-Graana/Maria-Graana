@@ -21,6 +21,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
+import FollowUpModal from '../../components/FollowUpModal'
 import PaymentHelper from './PaymentHelper'
 
 var BUTTONS = ['Delete', 'Cancel']
@@ -100,6 +101,7 @@ class CMPayment extends Component {
       checkFirstFormToken: false,
       officeLocations: [],
       assignToAccountsLoading: false,
+      active: false,
     }
   }
 
@@ -335,7 +337,7 @@ class CMPayment extends Component {
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
       taskType: taskType != '' ? taskType : null,
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -1069,6 +1071,13 @@ class CMPayment extends Component {
     dispatch(setCMPayment({ ...CMPayment, officeLocationId: value }))
   }
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
   render() {
     const {
       checkLeadClosedOrNot,
@@ -1111,6 +1120,7 @@ class CMPayment extends Component {
       checkFirstFormToken,
       assignToAccountsLoading,
       officeLocations,
+      active,
     } = this.state
     const { lead } = this.props
     return (
@@ -1227,6 +1237,12 @@ class CMPayment extends Component {
               </View>
             </ScrollView>
           </KeyboardAvoidingView>
+          <FollowUpModal
+            leadType={'cm'}
+            active={active}
+            openModal={this.openModal}
+            diaryForm={true}
+          />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1237,6 +1253,7 @@ class CMPayment extends Component {
               alreadyClosedLead={this.closedLead}
               closeLead={this.fetchLead}
               closeLeadFor={'leadClose'}
+              goToFollowUp={this.openModal}
             />
           </View>
         </View>

@@ -23,6 +23,8 @@ export default AppStyles = {
     textColor: '#1d1d26',
     subTextColor: '#a8a8aa',
     backgroundColor: '#e7ecf0',
+    redBg: 'red',
+    yellowBg: '#FDD835',
   },
   flexDirectionRow: {
     flexDirection: 'row',

@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
-import { StyleSheet, Text, View, Platform, TouchableOpacity, FlatList, ScrollView, Modal, SafeAreaView, Image } from 'react-native'
+import React, { useState, useRef } from 'react'
+import { StyleSheet, Text, View, Platform, TouchableOpacity, ScrollView, Modal, SafeAreaView, Image, TextInput } from 'react-native'
 import AppStyles from '../../AppStyles'
-import { Textarea } from 'native-base';
 import fuzzy from 'fuzzy'
 import StaticData from '../../StaticData';
 import TouchableButton from '../TouchableButton';
@@ -26,6 +25,7 @@ const StatusFeedbackModal = ({ visible,
     performReject,
 }) => {
     const [selectedComment, setSelectedComment] = useState(null);
+    const textInput = useRef(null);
     let data = [];
     if (selectedComment != null && data && data.length === 0) {
         data = fuzzy.filter(selectedComment, commentsList, { extract: (e) => (e.name) })
@@ -45,7 +45,8 @@ const StatusFeedbackModal = ({ visible,
                         <Image source={times} style={styles.closeImg} />
                     </TouchableOpacity>
                     <View style={[AppStyles.mainInputWrap]}>
-                        <Textarea
+                        <TextInput
+                            ref={textInput}
                             placeholderTextColor={'#a8a8aa'}
                             style={[
                                 AppStyles.formControl,
@@ -53,32 +54,31 @@ const StatusFeedbackModal = ({ visible,
                                 AppStyles.formFontSettings,
                                 styles.commentContainer,
                             ]}
-                            rowSpan={5}
+                            multiline
+                            autoFocus
                             placeholder="Comments"
                             onChangeText={(text) => setSelectedComment(text)}
                             value={selectedComment}
                         />
                     </View>
-                    <ScrollView scrollEnabled={true} horizontal showsHorizontalScrollIndicator={false}>
-                        <FlatList
-                            scrollEnabled={false}
-                            style={{ minHeight: 100, marginVertical: 10 }}
-                            data={data}
-                            numColumns={5}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <CommentChip comment={item} setSelectedComment={(comment) => setSelectedComment(comment.name)} />
-                            )}
-                            keyExtractor={(item, index) => item.value}
-                        />
+                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.flatlistContent}>
+                        {
+                            data.map(item => (
+                                <CommentChip key={item.value} comment={item} setSelectedComment={(comment) => {
+                                    setSelectedComment(comment.name);
+                                     textInput.current.focus()
+                                }
+                                } />
+                            ))
+                        }
                     </ScrollView>
-
                     <View style={styles.buttonsContainer}>
                         {
                             showAction && <TouchableButton
                                 containerStyle={styles.button}
                                 fontFamily={AppStyles.fonts.boldFont}
                                 fontSize={16}
+                                containerBackgroundColor={AppStyles.colors.actionBg}
                                 onPress={() => selectedComment ? performAction(modalMode, selectedComment) : alert('Please select a comment to continue')}
                                 label={ modalMode === 'call' ? 'Meeting Setup' : 'Deal Signed'}
                             />
@@ -132,8 +132,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         overflow: 'hidden',
         borderRadius: 12,
-        paddingTop: 3,
-        paddingBottom: 3,
+        paddingVertical: 5,
         paddingLeft: 10,
         paddingRight: 10,
         margin: 8,
@@ -165,5 +164,9 @@ const styles = StyleSheet.create({
         width: 16,
         height: 16,
         resizeMode: 'contain',
+    },
+    flatlistContent:{
+        flexDirection : "row", 
+        flexWrap : "wrap"
     },
 })

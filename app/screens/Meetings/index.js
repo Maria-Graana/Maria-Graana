@@ -305,6 +305,7 @@ class Meetings extends Component {
     this.setState(
       {
         editMeeting: false,
+        active: false,
       },
       () => {
         this.addFollowUpForCall(payload)
@@ -332,19 +333,18 @@ class Meetings extends Component {
   }
 
   sendStatus = (status, id) => {
-    const { formData } = this.state
+    const { formData, meetings } = this.state
     let body = {
       response: status,
       comments: status,
       leadId: formData.leadId,
     }
-    console.log(body)
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${id}&cmLeadId=${formData.leadId}`).then((res) => {
         this.getMeetingLead()
       })
     } else if (status === 'meeting_done') {
-      this.setState({ statusfeedbackModalVisible: true, modalMode: 'meeting' })
+      this.setState({ statusfeedbackModalVisible: true, modalMode: 'meeting', currentCall: meetings && meetings.rows ? meetings.rows.find(item => item.id === id) : null })
     } else {
       axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
         this.getMeetingLead()
@@ -404,7 +404,7 @@ class Meetings extends Component {
           if (!supported) {
             console.log("Can't handle url: " + url)
           } else {
-            this.call()
+            this.call();
             return Linking.openURL(url)
           }
         })
@@ -636,9 +636,10 @@ class Meetings extends Component {
   }
 
   performAction = (modalMode, comment) => {
+    const { navigation } = this.props;
+    const { currentCall } = this.state
     this.setState({ statusfeedbackModalVisible: false }, () => {
       if (modalMode === 'call') {
-        const { currentCall } = this.state
         if (currentCall) {
           this.setState({ statusfeedbackModalVisible: false }, () => {
             this.sendStatus(comment, currentCall.id)
@@ -646,7 +647,10 @@ class Meetings extends Component {
           })
         }
       } else {
-        console.log('meeting action')
+        if (currentCall) {
+          this.sendStatus(comment, currentCall.id);
+          navigation.navigate('CMLeadTabs', { screen: 'Payments' })
+        }
       }
     })
   }
@@ -667,20 +671,22 @@ class Meetings extends Component {
     let body = {
       reasons: comment,
     }
-    this.setState({ statusfeedbackModalVisible: false }, () => {
-      this.sendStatus(comment, currentCall.id)
-      var leadId = []
-      leadId.push(lead.id)
-      axios
-        .patch(`/api/leads/project`, body, { params: { id: leadId } })
-        .then((res) => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    })
+    if (currentCall) {
+      this.setState({ statusfeedbackModalVisible: false }, () => {
+        this.sendStatus(comment, currentCall.id)
+        var leadId = []
+        leadId.push(lead.id)
+        axios
+          .patch(`/api/leads/project`, body, { params: { id: leadId } })
+          .then((res) => {
+            helper.successToast(`Lead Closed`)
+            navigation.navigate('Leads')
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      })
+    }
   }
 
   showRejectModal(val) {

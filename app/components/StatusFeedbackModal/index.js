@@ -32,7 +32,7 @@ const StatusFeedbackModal = ({ visible,
         data = data.map((item) => item.original)
     }
     else {
-        data = StaticData.commentsFeedback;
+        data = commentsList;
     }
     return (
         <Modal visible={visible}>
@@ -79,7 +79,9 @@ const StatusFeedbackModal = ({ visible,
                                 fontFamily={AppStyles.fonts.boldFont}
                                 fontSize={16}
                                 containerBackgroundColor={AppStyles.colors.actionBg}
-                                onPress={() => selectedComment ? performAction(modalMode, selectedComment) : alert('Please select a comment to continue')}
+                                onPress={() => selectedComment ? 
+                                      performAction(modalMode, selectedComment)
+                                     : alert('Please select a comment to continue')}
                                 label={ modalMode === 'call' ? 'Meeting Setup' : 'Deal Signed'}
                             />
                         }

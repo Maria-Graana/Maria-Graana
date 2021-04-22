@@ -856,7 +856,7 @@ class Meetings extends Component {
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
           showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
-          commentsList={StaticData.commentsFeedback}
+          commentsList={modalMode ==='call' ? StaticData.commentsFeedbackCall :  StaticData.commentsFeedbackMeeting }
           modalMode={modalMode}
           performAction={(modalMode, comment) => this.performAction(modalMode, comment)}
           performFollowup={(comment) => this.performFollowup(comment)}

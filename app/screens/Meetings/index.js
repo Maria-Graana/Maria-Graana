@@ -110,6 +110,16 @@ class Meetings extends Component {
     })
   }
 
+  //  ************ Function for open Follow up modal ************
+  openFollowUpModal = () => {
+    this.setState({
+      active: !this.state.active,
+      formData: {},
+      editMeeting: false,
+      diaryForm: true,
+    })
+  }
+
   //  ************ Form Handle Function  ************
   handleForm = (value, name) => {
     const { formData } = this.state
@@ -796,7 +806,7 @@ class Meetings extends Component {
             alreadyClosedLead={this.closedLead}
             closedLeadEdit={leadClosedCheck}
             closeLead={this.checkLeadClosureReasons}
-            goToFollowUp={this.openModal}
+            goToFollowUp={this.openFollowUpModal}
           />
         </View>
 

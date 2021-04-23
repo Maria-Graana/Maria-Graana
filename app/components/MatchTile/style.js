@@ -89,10 +89,8 @@ export default styles = StyleSheet.create({
   menuView: {
     justifyContent: 'center',
     alignSelf: 'center',
-    marginLeft: 7,
   },
   phoneView: {
-    backgroundColor: AppStyles.colors.backgroundColor,
     borderRadius: 20,
     padding: 10,
     marginVertical: 5,
@@ -105,5 +103,16 @@ export default styles = StyleSheet.create({
   greenDot: {
     width: 20,
     height: 20,
+  },
+  textPadTop: {
+    paddingTop: 5,
+  },
+  menuBtn: {
+    width: 40,
+    height: 40,
+    flexDirection: 'row-reverse',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 7,
   },
 })

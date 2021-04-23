@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import styles from './style'
-import { View, Text, FlatList, Image, TouchableOpacity, Linking } from 'react-native'
+import { View, Text, FlatList, Image, TouchableOpacity, Linking, Alert } from 'react-native'
 import { connect } from 'react-redux'
 import * as Location from 'expo-location'
 import _ from 'underscore'
@@ -26,6 +26,7 @@ import CheckListModal from '../../components/CheckListModal'
 import ViewCheckListModal from '../../components/ViewCheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
 import FollowUpModal from '../../components/FollowUpModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -68,6 +69,8 @@ class LeadViewing extends React.Component {
       propsure_id: null,
       selectedPropertyId: null,
       legalDocLoader: false,
+      statusfeedbackModalVisible: false,
+      closedWon: false,
     }
   }
 
@@ -139,6 +142,7 @@ class LeadViewing extends React.Component {
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
+        this.closeLead(res.data)
       })
       .catch((error) => {
         console.log(error)
@@ -172,32 +176,15 @@ class LeadViewing extends React.Component {
     helper.leadClosedToast()
   }
 
-  closeLead = async () => {
-    const { lead } = this.props
+  closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
       if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
-          reasons: StaticData.leadCloseReasonsWithPayment,
-          isCloseLeadVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
-        })
-      } else {
-        this.setState({
-          reasons: StaticData.leadCloseReasons,
-          isCloseLeadVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
+          closedWon: true,
         })
       }
-    } else {
-      this.setState({
-        reasons: StaticData.leadCloseReasons,
-        isCloseLeadVisible: true,
-        checkReasonValidation: '',
-      })
     }
   }
 
@@ -426,12 +413,7 @@ class LeadViewing extends React.Component {
           <View>
             {diary && diary.status === 'pending' && (
               <TouchableOpacity
-                style={{
-                  backgroundColor: 'white',
-                  height: 40,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
+                style={styles.viewingAtBtn}
                 onPress={() => {
                   if (leadAssignedSharedStatus) {
                     this.openModal()
@@ -439,35 +421,18 @@ class LeadViewing extends React.Component {
                   }
                 }}
               >
-                <Text style={{ fontFamily: AppStyles.fonts.lightFont }}>
+                <Text style={styles.viewingAtText2}>
                   Viewing at{' '}
-                  <Text
-                    style={{
-                      color: AppStyles.colors.primaryColor,
-                      fontFamily: AppStyles.fonts.defaultFont,
-                    }}
-                  >
-                    {moment(diary.start).format('LLL')}
-                  </Text>
+                  <Text style={styles.viewingAtText1}>{moment(diary.start).format('LLL')}</Text>
                 </Text>
               </TouchableOpacity>
             )}
             {viewingDoneCount && viewingDoneCount.length > 0 && (
               <TouchableOpacity
-                style={{
-                  backgroundColor: AppStyles.colors.primaryColor,
-                  height: 40,
-                  borderBottomEndRadius: 10,
-                  borderBottomLeftRadius: 10,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}
+                style={styles.viewingDoneBtn}
                 onPress={() => this.simplifyViewingData(viewingDoneCount)}
               >
-                <Text style={{ color: 'white', fontFamily: AppStyles.fonts.defaultFont }}>
-                  VIEWING{greaterOneViewing && 'S'} DONE
-                </Text>
+                <Text style={styles.viewDoneText}>VIEWING{greaterOneViewing && 'S'} DONE</Text>
                 {greaterOneViewing && (
                   <View style={styles.countView}>
                     <Text style={styles.countText}>{`${viewingDoneCount.length}`}</Text>
@@ -818,6 +783,46 @@ class LeadViewing extends React.Component {
     })
   }
 
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+    })
+  }
+
+  performReject = (comment) => {
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      var leadId = []
+      leadId.push(lead.id)
+      axios
+        .patch(`/api/leads`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
+  }
+
+  showRejectModal(val) {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => this.performReject(val) },
+      ],
+      { cancelable: false }
+    )
+  }
+
   render() {
     const {
       menuShow,
@@ -849,6 +854,8 @@ class LeadViewing extends React.Component {
       propsure_id,
       legalDocLoader,
       active,
+      statusfeedbackModalVisible,
+      closedWon,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -988,6 +995,14 @@ class LeadViewing extends React.Component {
           openModal={this.openModal}
           diaryForm={true}
         />
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+          commentsList={StaticData.leadClosedCommentsFeedback}
+          showAction={false}
+          showFollowup={false}
+          performReject={(comment) => this.showRejectModal(comment)}
+        />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}
@@ -1006,6 +1021,8 @@ class LeadViewing extends React.Component {
             isFromViewingScreen={true}
             goToFollowUp={this.openModal}
             navigation={navigation}
+            goToRejectForm={this.goToRejectForm}
+            closedWon={closedWon}
           />
         </View>
         <LeadRCMPaymentPopup

@@ -3,7 +3,7 @@
 import axios from 'axios'
 import { StyleProvider } from 'native-base'
 import * as React from 'react'
-import { FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Linking, Text, TouchableOpacity, View, Alert } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
@@ -24,6 +24,7 @@ import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 class LeadMatch extends React.Component {
   constructor(props) {
@@ -90,6 +91,8 @@ class LeadMatch extends React.Component {
       legalDocLoader: false,
       active: false,
       followUpDiary: false,
+      statusfeedbackModalVisible: false,
+      closedWon: false,
     }
   }
 
@@ -107,6 +110,7 @@ class LeadMatch extends React.Component {
       .get(`/api/leads/byId?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
+        this.closeLead(res.data)
         this.setState({ lead: res.data }, () => this.getCities())
       })
       .catch((error) => {
@@ -332,6 +336,7 @@ class LeadMatch extends React.Component {
       delete params.maxBath
     }
     if (callApi || !showCheckBoxes) {
+      if (organization === 'graana') params.organization = 'graanaDU'
       axios
         .get(`/api/leads/matches`, {
           params: params,
@@ -569,32 +574,15 @@ class LeadMatch extends React.Component {
     })
   }
 
-  closeLead = async () => {
-    const { lead } = this.props
+  closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
       if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
-          reasons: StaticData.leadCloseReasonsWithPayment,
-          isVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
-        })
-      } else {
-        this.setState({
-          reasons: StaticData.leadCloseReasons,
-          isVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
+          closedWon: true,
         })
       }
-    } else {
-      this.setState({
-        reasons: StaticData.leadCloseReasons,
-        isVisible: true,
-        checkReasonValidation: '',
-      })
     }
   }
 
@@ -742,6 +730,46 @@ class LeadMatch extends React.Component {
     })
   }
 
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+    })
+  }
+
+  performReject = (comment) => {
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      var leadId = []
+      leadId.push(lead.id)
+      axios
+        .patch(`/api/leads`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
+  }
+
+  showRejectModal(val) {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => this.performReject(val) },
+      ],
+      { cancelable: false }
+    )
+  }
+
   render() {
     const { lead, user, navigation } = this.props
     const {
@@ -767,6 +795,8 @@ class LeadMatch extends React.Component {
       closedLeadEdit,
       legalDocLoader,
       active,
+      statusfeedbackModalVisible,
+      closedWon,
     } = this.state
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
     return !loading ? (
@@ -967,6 +997,14 @@ class LeadMatch extends React.Component {
               openModal={this.openModal}
               diaryForm={true}
             />
+            <StatusFeedbackModal
+              visible={statusfeedbackModalVisible}
+              showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+              commentsList={StaticData.leadClosedCommentsFeedback}
+              showAction={false}
+              showFollowup={false}
+              performReject={(comment) => this.showRejectModal(comment)}
+            />
             <View style={AppStyles.mainCMBottomNav}>
               <CMBottomNav
                 goToAttachments={this.goToAttachments}
@@ -983,6 +1021,8 @@ class LeadMatch extends React.Component {
                 getCallHistory={this.getCallHistory}
                 goToFollowUp={this.openModal}
                 navigation={navigation}
+                goToRejectForm={this.goToRejectForm}
+                closedWon={closedWon}
               />
             </View>
             <LeadRCMPaymentPopup

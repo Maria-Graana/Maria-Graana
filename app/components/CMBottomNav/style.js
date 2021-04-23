@@ -104,6 +104,6 @@ export default styles = StyleSheet.create({
   },
   popMenu: {
     marginHorizontal: 1,
-    width: '18%',
+    width: '20%',
   },
 })

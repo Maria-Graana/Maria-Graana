@@ -6,7 +6,7 @@ import AppStyles from '../../AppStyles'
 export default styles = StyleSheet.create({
   tileOfferBtn: {
     backgroundColor: 'white',
-    height: 40,
+    height: 50,
     borderBottomEndRadius: 10,
     borderBottomLeftRadius: 10,
     justifyContent: 'center',
@@ -14,7 +14,7 @@ export default styles = StyleSheet.create({
   },
   tileAgreedBtn: {
     backgroundColor: AppStyles.colors.primaryColor,
-    height: 40,
+    height: 50,
     borderBottomEndRadius: 10,
     borderBottomLeftRadius: 10,
     justifyContent: 'center',
@@ -22,7 +22,7 @@ export default styles = StyleSheet.create({
   },
   tileBtn: {
     backgroundColor: AppStyles.colors.primaryColor,
-    height: 40,
+    height: 50,
     borderBottomEndRadius: 10,
     borderBottomLeftRadius: 10,
     justifyContent: 'center',
@@ -31,6 +31,14 @@ export default styles = StyleSheet.create({
   tileText: {
     color: 'white',
     fontFamily: AppStyles.fonts.boldFont,
-    fontSize: 16,
+    fontSize: 18,
+  },
+  agreedText: { color: 'white', fontFamily: AppStyles.fonts.lightFont, fontSize: 18 },
+  offerText: { fontFamily: AppStyles.fonts.defaultFont, fontSize: 18 },
+  viewText: { fontFamily: AppStyles.fonts.lightFont, fontSize: 18 },
+  offerViewText: {
+    color: AppStyles.colors.primaryColor,
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: 18,
   },
 })

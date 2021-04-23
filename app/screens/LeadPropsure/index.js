@@ -35,6 +35,7 @@ import AddPropsurePayment from '../../components/AddPRopsurePayment'
 import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
 import FollowUpModal from '../../components/FollowUpModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -79,6 +80,8 @@ class LeadPropsure extends React.Component {
       assignToAccountsLoading: false,
       officeLocations: [],
       active: false,
+      statusfeedbackModalVisible: false,
+      closedWon: false,
     }
   }
 
@@ -231,6 +234,7 @@ class LeadPropsure extends React.Component {
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
+        this.closeLead(res.data)
         this.setState({
           assignToAccountsLoading: false,
         })
@@ -442,32 +446,15 @@ class LeadPropsure extends React.Component {
     })
   }
 
-  closeLead = async () => {
-    const { lead } = this.props
+  closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
       if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
-          reasons: StaticData.leadCloseReasonsWithPayment,
-          isCloseLeadVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
-        })
-      } else {
-        this.setState({
-          reasons: StaticData.leadCloseReasons,
-          isCloseLeadVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
+          closedWon: true,
         })
       }
-    } else {
-      this.setState({
-        reasons: StaticData.leadCloseReasons,
-        isCloseLeadVisible: true,
-        checkReasonValidation: '',
-      })
     }
   }
 
@@ -1023,6 +1010,46 @@ class LeadPropsure extends React.Component {
     })
   }
 
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+    })
+  }
+
+  performReject = (comment) => {
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      var leadId = []
+      leadId.push(lead.id)
+      axios
+        .patch(`/api/leads`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
+  }
+
+  showRejectModal(val) {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => this.performReject(val) },
+      ],
+      { cancelable: false }
+    )
+  }
+
   render() {
     const {
       menuShow,
@@ -1053,6 +1080,8 @@ class LeadPropsure extends React.Component {
       assignToAccountsLoading,
       officeLocations,
       active,
+      statusfeedbackModalVisible,
+      closedWon,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1180,6 +1209,14 @@ class LeadPropsure extends React.Component {
             openModal={this.openModal}
             diaryForm={true}
           />
+          <StatusFeedbackModal
+            visible={statusfeedbackModalVisible}
+            showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+            commentsList={StaticData.leadClosedCommentsFeedback}
+            showAction={false}
+            showFollowup={false}
+            performReject={(comment) => this.showRejectModal(comment)}
+          />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1196,6 +1233,8 @@ class LeadPropsure extends React.Component {
               getCallHistory={this.getCallHistory}
               goToFollowUp={this.openModal}
               navigation={navigation}
+              goToRejectForm={this.goToRejectForm}
+              closedWon={closedWon}
             />
           </View>
           <LeadRCMPaymentPopup

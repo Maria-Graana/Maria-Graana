@@ -1,28 +1,47 @@
+
 import React, { useState, useRef } from 'react'
 import { StyleSheet, Text, View, Platform, TouchableOpacity, ScrollView, Modal, SafeAreaView, Image, TextInput } from 'react-native'
 import AppStyles from '../../AppStyles'
+/** @format */
+import {
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  TouchableOpacity,
+  FlatList,
+  ScrollView,
+  Modal,
+  SafeAreaView,
+  Image,
+} from 'react-native'
+import AppStyles from '../../AppStyles'
+import { Textarea } from 'native-base'
 import fuzzy from 'fuzzy'
-import StaticData from '../../StaticData';
-import TouchableButton from '../TouchableButton';
+import StaticData from '../../StaticData'
+import TouchableButton from '../TouchableButton'
 import times from '../../../assets/img/times.png'
 
-
 const CommentChip = ({ comment, setSelectedComment }) => {
-    return (
-        <TouchableOpacity style={[styles.itemContainer, { borderColor: comment.colorCode }]} onPress={() => setSelectedComment(comment)}>
-            <Text style={styles.itemName}>{comment.name}</Text>
-        </TouchableOpacity>
-    )
+  return (
+    <TouchableOpacity
+      style={[styles.itemContainer, { borderColor: comment.colorCode }]}
+      onPress={() => setSelectedComment(comment)}
+    >
+      <Text style={styles.itemName}>{comment.name}</Text>
+    </TouchableOpacity>
+  )
 }
-const StatusFeedbackModal = ({ visible, 
-    showFeedbackModal, 
-    commentsList, 
-    showAction = true, 
-    showFollowup = true, 
-    modalMode,
-    performAction,
-    performFollowup,
-    performReject,
+const StatusFeedbackModal = ({
+  visible,
+  showFeedbackModal,
+  commentsList,
+  showAction = true,
+  showFollowup = true,
+  modalMode,
+  performAction,
+  performFollowup,
+  performReject,
 }) => {
     const [selectedComment, setSelectedComment] = useState(null);
     const textInput = useRef(null);

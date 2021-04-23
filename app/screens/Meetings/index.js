@@ -662,27 +662,35 @@ class Meetings extends Component {
   }
 
   performReject = (comment) => {
-    const { currentCall } = this.state
+    const { currentCall, modalMode } = this.state
     const { lead, navigation } = this.props
     let body = {
       reasons: comment,
     }
-    if (currentCall) {
+    if (currentCall && modalMode === 'call' || modalMode === 'meeting') {
       this.setState({ statusfeedbackModalVisible: false }, () => {
         this.sendStatus(comment, currentCall.id)
-        var leadId = []
-        leadId.push(lead.id)
-        axios
-          .patch(`/api/leads/project`, body, { params: { id: leadId } })
-          .then((res) => {
-            helper.successToast(`Lead Closed`)
-            navigation.navigate('Leads')
-          })
-          .catch((error) => {
-            console.log(error)
-          })
+        this.closeLeadOnReject(body)
       })
     }
+    else{
+      this.closeLeadOnReject(body)
+    }
+  }
+
+  closeLeadOnReject = (body) => {
+    const { lead, navigation } = this.props
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then((res) => {
+        helper.successToast(`Lead Closed`)
+        navigation.navigate('Leads')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   showRejectModal(val) {
@@ -716,7 +724,7 @@ class Meetings extends Component {
   }
 
   goToRejectForm = () => {
-    console.log('go to reject form');
+    this.setState({modalMode: 'reject', statusfeedbackModalVisible: true})
   }
 
 
@@ -856,8 +864,10 @@ class Meetings extends Component {
 
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
+          showAction={modalMode === 'call' || modalMode === 'meeting'}
+          showFollowup={modalMode === 'call' || modalMode === 'meeting'}
           showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
-          commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.commentsFeedbackMeeting}
+          commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : modalMode === 'meeting' ? StaticData.commentsFeedbackMeeting : StaticData.leadClosedCommentsFeedback}
           modalMode={modalMode}
           performAction={(modalMode, comment) => this.performAction(modalMode, comment)}
           performFollowup={(comment) => this.performFollowup(comment)}

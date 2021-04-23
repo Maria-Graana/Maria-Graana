@@ -33,6 +33,7 @@ const triggerStyles = {
     padding: 5,
     backgroundColor: AppStyles.colors.primaryColor,
     height: '100%',
+    width: '100%',
     justifyContent: 'center',
     borderRadius: 5,
   },
@@ -277,14 +278,17 @@ class CMBottomNav extends React.Component {
   }
 
   listActionMenuItems = () => {
-    return StaticData.actionListItems.map((item, index) => {
+    const { closedWon = false } = this.props
+    let actionData = StaticData.actionListItems
+    if (closedWon) actionData = StaticData.actionClosedWonListItems
+    return actionData.map((item, index) => {
       return (
         <MenuOption onSelect={() => this.performListActions(item.title)}>
           <View style={styles.menuStyle}>
             <Image style={styles.bottomNavImg} source={item.image} />
             <Text style={styles.menuText}>{item.title}</Text>
           </View>
-          {item.id !== 6 && <Divider />}
+          {actionData.length - 1 !== index && <Divider />}
         </MenuOption>
       )
     })
@@ -293,16 +297,14 @@ class CMBottomNav extends React.Component {
   render() {
     const {
       navigateTo,
-      goToComments,
-      goToDiaryForm,
-      goToAttachments,
       callButton,
       goToHistory,
       goToPropertyScreen,
       isFromViewingScreen,
       goToFollowUp,
+      goToRejectForm,
     } = this.props
-    const { visible, actionVisible } = this.state
+    const { visible } = this.state
 
     return (
       <View style={styles.bottomNavMain}>
@@ -317,30 +319,9 @@ class CMBottomNav extends React.Component {
         <TouchableOpacity style={styles.followBtn} onPress={() => goToFollowUp()}>
           <Text style={styles.followText}>Follow Up</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.rejectBtn} onPress={() => goToDiaryForm()}>
+        <TouchableOpacity style={styles.rejectBtn} onPress={() => goToRejectForm()}>
           <Text style={styles.actionText}>Reject</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={styles.bottomNavBtn}
-          onPress={() => {
-            closedLeadEdit == true ? closeLead(closeLeadFor) : alreadyClosedLead()
-          }}
-        >
-          <Image
-            style={styles.bottomNavImg}
-            source={require('../../../assets/img/roundCheck.png')}
-          />
-          <Text style={styles.bottomNavBtnText}>Close</Text>
-        </TouchableOpacity> */}
-        {/* {callButton === true && (
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.call()}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/callIcon.png')}
-            />
-            <Text style={styles.bottomNavBtnText}>Call</Text>
-          </TouchableOpacity>
-        )} */}
         <View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>
           <Menu
             visible={visible}

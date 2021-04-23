@@ -85,7 +85,6 @@ export default styles = StyleSheet.create({
     padding: 10,
   },
   phoneView: {
-    backgroundColor: AppStyles.colors.backgroundColor,
     borderRadius: 20,
     padding: 10,
     width: 40,
@@ -104,5 +103,13 @@ export default styles = StyleSheet.create({
   checkBox: {
     width: 25,
     height: 25,
+  },
+  menuBtn: {
+    width: 40,
+    height: 40,
+    flexDirection: 'row-reverse',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20,
   },
 })

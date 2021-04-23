@@ -69,6 +69,7 @@ class Meetings extends Component {
       statusfeedbackModalVisible: false,
       modalMode: 'call',
       currentCall: null,
+      closedWon: false,
     }
   }
 
@@ -89,6 +90,7 @@ class Meetings extends Component {
       .get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setLeadRes(res.data))
+        this.checkLeadClosureReasons(res.data)
         this.setState({
           progressValue: cmProgressBar[res.data.status] || 0,
           secondScreenData: res.data,
@@ -521,15 +523,9 @@ class Meetings extends Component {
     lead.assigned_to_armsuser_id != user.id && helper.leadNotAssignedToast()
   }
 
-  checkLeadClosureReasons = () => {
-    const { lead } = this.props
+  checkLeadClosureReasons = (lead) => {
     const { payment, unit } = lead
     if (!unit) {
-      this.setState({
-        reasons: StaticData.paymentPopup,
-        isVisible: true,
-        checkReasonValidation: '',
-      })
       return
     }
     let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
@@ -539,24 +535,8 @@ class Meetings extends Component {
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
     if (outStandingTax <= 0 && remainingPayment <= 0) {
       this.setState({
-        reasons: StaticData.paymentPopupDone,
-        isVisible: true,
-        checkReasonValidation: '',
+        closedWon: true,
       })
-    } else {
-      if (PaymentMethods.findPaymentClearedStatus(payment)) {
-        this.setState({
-          reasons: StaticData.paymentPopupAnyPaymentAdded,
-          isVisible: true,
-          checkReasonValidation: '',
-        })
-      } else {
-        this.setState({
-          reasons: StaticData.paymentPopup,
-          isVisible: true,
-          checkReasonValidation: '',
-        })
-      }
     }
   }
 

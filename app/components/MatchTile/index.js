@@ -3,7 +3,7 @@
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons'
 import { CheckBox } from 'native-base'
 import React from 'react'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Text, TouchableOpacity, View, TouchableHighlight } from 'react-native'
 import { Menu } from 'react-native-paper'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
@@ -168,7 +168,7 @@ class MatchTile extends React.Component {
       <TouchableOpacity
         style={[{ flexDirection: 'row', marginVertical: 2 }]}
         onPress={() => {
-          this.props.addProperty(data)
+          if (screen !== 'match') this.props.addProperty(data)
         }}
       >
         <View
@@ -204,7 +204,7 @@ class MatchTile extends React.Component {
               { paddingBottom: 2, justifyContent: 'space-between' },
             ]}
           >
-            <View>
+            <View style={styles.textPadTop}>
               <Text
                 style={[
                   styles.priceText,
@@ -289,11 +289,17 @@ class MatchTile extends React.Component {
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
                   anchor={
-                    <Entypo
+                    <TouchableHighlight
+                      style={styles.menuBtn}
                       onPress={() => this.props.toggleMenu(true, data.id)}
-                      name="dots-three-vertical"
-                      size={25}
-                    />
+                      underlayColor={AppStyles.colors.backgroundColor}
+                    >
+                      <Entypo
+                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        name="dots-three-vertical"
+                        size={25}
+                      />
+                    </TouchableHighlight>
                   }
                 >
                   <View>
@@ -313,11 +319,17 @@ class MatchTile extends React.Component {
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
                   anchor={
-                    <Entypo
+                    <TouchableHighlight
+                      style={styles.menuBtn}
                       onPress={() => this.props.toggleMenu(true, data.id)}
-                      name="dots-three-vertical"
-                      size={25}
-                    />
+                      underlayColor={AppStyles.colors.backgroundColor}
+                    >
+                      <Entypo
+                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        name="dots-three-vertical"
+                        size={25}
+                      />
+                    </TouchableHighlight>
                   }
                 >
                   <View>
@@ -337,11 +349,17 @@ class MatchTile extends React.Component {
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
                   anchor={
-                    <Entypo
+                    <TouchableHighlight
+                      style={styles.menuBtn}
                       onPress={() => this.props.toggleMenu(true, data.id)}
-                      name="dots-three-vertical"
-                      size={25}
-                    />
+                      underlayColor={AppStyles.colors.backgroundColor}
+                    >
+                      <Entypo
+                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        name="dots-three-vertical"
+                        size={25}
+                      />
+                    </TouchableHighlight>
                   }
                 >
                   <View>
@@ -361,11 +379,17 @@ class MatchTile extends React.Component {
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
                   anchor={
-                    <Entypo
+                    <TouchableHighlight
+                      style={styles.menuBtn}
                       onPress={() => this.props.toggleMenu(true, data.id)}
-                      name="dots-three-vertical"
-                      size={25}
-                    />
+                      underlayColor={AppStyles.colors.backgroundColor}
+                    >
+                      <Entypo
+                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        name="dots-three-vertical"
+                        size={25}
+                      />
+                    </TouchableHighlight>
                   }
                 >
                   <View>
@@ -402,11 +426,17 @@ class MatchTile extends React.Component {
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
                   anchor={
-                    <Entypo
+                    <TouchableHighlight
+                      style={styles.menuBtn}
                       onPress={() => this.props.toggleMenu(true, data.id)}
-                      name="dots-three-vertical"
-                      size={25}
-                    />
+                      underlayColor={AppStyles.colors.backgroundColor}
+                    >
+                      <Entypo
+                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        name="dots-three-vertical"
+                        size={25}
+                      />
+                    </TouchableHighlight>
                   }
                 >
                   <View>
@@ -501,14 +531,18 @@ class MatchTile extends React.Component {
             ) : (
               <View />
             )}
-            <TouchableOpacity
+            <TouchableHighlight
               onPress={() => {
                 if (show) this.call(data)
               }}
               style={styles.phoneView}
+              underlayColor={AppStyles.colors.backgroundColor}
             >
-              <Image source={require('../../../assets/img/call.png')} style={styles.callImage} />
-            </TouchableOpacity>
+              <Image
+                source={require('../../../assets/img/call.png')}
+                style={[styles.callImage, data.checkBox ? { tintColor: 'grey' } : null]}
+              />
+            </TouchableHighlight>
           </View>
         </View>
       </TouchableOpacity>

@@ -82,7 +82,7 @@ const StatusFeedbackModal = ({ visible,
                                 onPress={() => selectedComment ? 
                                       performAction(modalMode, selectedComment)
                                      : alert('Please select a comment to continue')}
-                                label={ modalMode === 'call' ? 'Meeting Setup' : 'Deal Signed'}
+                                label={ modalMode === 'call' ? 'Meeting Setup' : 'Action'}
                             />
                         }
                         {

@@ -715,6 +715,10 @@ class Meetings extends Component {
     this.setState({ meetings: newMeetingObj })
   }
 
+  goToRejectForm = () => {
+    console.log('go to reject form');
+  }
+
 
   render() {
     const {
@@ -811,6 +815,7 @@ class Meetings extends Component {
             closedLeadEdit={leadClosedCheck}
             closeLead={this.checkLeadClosureReasons}
             goToFollowUp={this.openFollowUpModal}
+            goToRejectForm={this.goToRejectForm}
           />
         </View>
 

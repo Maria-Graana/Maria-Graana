@@ -20,10 +20,6 @@ import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import styles from './style'
 import CallFeedbackActionMeeting from '../../components/CallFeedbackActionMeeting';
-
-
-var BUTTONS = ['Book Unit', 'Setup another meeting', 'Cancel'];
-var CANCEL_INDEX = 2;
 class Meetings extends Component {
   constructor(props) {
     super(props)

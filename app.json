@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "1.23.0",
+    "version": "1.23.4",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "scheme": "arms",

@@ -60,6 +60,7 @@
     "react-native-modal-datetime-picker": "^8.9.3",
     "react-native-multiple-select": "^0.5.5",
     "react-native-paper": "^4.7.2",
+    "react-native-popup-menu": "^0.15.10",
     "react-native-reanimated": "1.13.2",
     "react-native-responsive-screen": "^1.4.1",
     "react-native-safe-area-context": "3.1.9",

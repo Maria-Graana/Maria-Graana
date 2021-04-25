@@ -50,19 +50,11 @@ export default styles = StyleSheet.create({
     padding: 7,
   },
   doneText: {
-    borderWidth: 1,
-    borderColor: '#2A7EF0',
     overflow: 'hidden',
-    borderRadius: 12,
-    color: '#2A7EF0',
+    color: AppStyles.colors.subTextColor,
     position: 'relative',
-    top: 1,
-    paddingTop: 3,
-    paddingBottom: 3,
-    paddingLeft: 10,
-    paddingRight: 10,
-    marginRight: 10,
-    fontSize: 11,
+    fontSize: 14,
+    marginTop:5,
   },
   uperCase: {
     textTransform: 'capitalize'

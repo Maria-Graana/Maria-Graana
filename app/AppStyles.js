@@ -23,15 +23,18 @@ export default AppStyles = {
     textColor: '#1d1d26',
     subTextColor: '#a8a8aa',
     backgroundColor: '#e7ecf0',
+    redBg: '#DC3546',
+    yellowBg: '#FEC107',
+    actionBg: '#0F73EF'
   },
   flexDirectionRow: {
     flexDirection: 'row',
   },
   fonts: {
-    defaultFont: 'OpenSans_regular',
-    boldFont: 'OpenSans_bold',
-    lightFont: 'OpenSans_light',
-    semiBoldFont: 'OpenSans_semi_bold',
+    defaultFont: 'Poppins_regular',
+    boldFont: 'Poppins_bold',
+    lightFont: 'Poppins_light',
+    semiBoldFont: 'Poppins_semi_bold',
   },
   mb1: {
     flex: 1,

@@ -1,27 +1,30 @@
 /** @format */
 
-import * as React from 'react'
-import styles from './style'
-import { View, Text, FlatList, Image, TouchableOpacity, Linking } from 'react-native'
-import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import { CheckBox } from 'native-base'
-import MatchTile from '../../components/MatchTile/index'
-import AgentTile from '../../components/AgentTile/index'
 import axios from 'axios'
-import Loader from '../../components/loader'
-import FilterModal from '../../components/FilterModal/index'
-import HistoryModal from '../../components/HistoryModal/index'
-import _ from 'underscore'
-import helper from '../../helper'
-import { setlead } from '../../actions/lead'
-import { FAB } from 'react-native-paper'
-import StaticData from '../../StaticData'
+import { StyleProvider } from 'native-base'
+import * as React from 'react'
+import { FlatList, Image, Linking, Text, TouchableOpacity, View, Alert } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
-import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import { connect } from 'react-redux'
+import _ from 'underscore'
+import getTheme from '../../../native-base-theme/components'
+import CheckBoxTheme from '../../../native-base-theme/variables/CheckBoxTheme'
+import { setlead } from '../../actions/lead'
+import AppStyles from '../../AppStyles'
+import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
+import FilterModal from '../../components/FilterModal/index'
+import FollowUpModal from '../../components/FollowUpModal'
+import HistoryModal from '../../components/HistoryModal/index'
+import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import Loader from '../../components/loader'
+import MatchTile from '../../components/MatchTile/index'
 import config from '../../config'
+import helper from '../../helper'
+import StaticData from '../../StaticData'
+import styles from './style'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 class LeadMatch extends React.Component {
   constructor(props) {
@@ -29,7 +32,7 @@ class LeadMatch extends React.Component {
     const { user, lead } = this.props
     this.state = {
       open: false,
-      organization: 'arms',
+      organization: 'graana',
       loading: true,
       matchData: {
         data: [],
@@ -39,7 +42,7 @@ class LeadMatch extends React.Component {
       showFilter: false,
       active: false,
       matchesBol: true,
-      showCheckBoxes: false,
+      showCheckBoxes: true,
       armsBol: false,
       graanaBol: false,
       agency21Bol: false,
@@ -86,6 +89,10 @@ class LeadMatch extends React.Component {
       callModal: false,
       meetings: [],
       legalDocLoader: false,
+      active: false,
+      followUpDiary: false,
+      statusfeedbackModalVisible: false,
+      closedWon: false,
     }
   }
 
@@ -103,6 +110,7 @@ class LeadMatch extends React.Component {
       .get(`/api/leads/byId?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
+        this.closeLead(res.data)
         this.setState({ lead: res.data }, () => this.getCities())
       })
       .catch((error) => {
@@ -328,6 +336,7 @@ class LeadMatch extends React.Component {
       delete params.maxBath
     }
     if (callApi || !showCheckBoxes) {
+      if (organization === 'graana') params.organization = 'graanaDU'
       axios
         .get(`/api/leads/matches`, {
           params: params,
@@ -565,32 +574,15 @@ class LeadMatch extends React.Component {
     })
   }
 
-  closeLead = async () => {
-    const { lead } = this.props
+  closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
       if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
-          reasons: StaticData.leadCloseReasonsWithPayment,
-          isVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
-        })
-      } else {
-        this.setState({
-          reasons: StaticData.leadCloseReasons,
-          isVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
+          closedWon: true,
         })
       }
-    } else {
-      this.setState({
-        reasons: StaticData.leadCloseReasons,
-        isVisible: true,
-        checkReasonValidation: '',
-      })
     }
   }
 
@@ -659,7 +651,7 @@ class LeadMatch extends React.Component {
       rcmLeadId: lead.id,
       agentId: user.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -731,6 +723,53 @@ class LeadMatch extends React.Component {
     this.setState({ formData: copyObject })
   }
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+    })
+  }
+
+  performReject = (comment) => {
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      var leadId = []
+      leadId.push(lead.id)
+      axios
+        .patch(`/api/leads`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
+  }
+
+  showRejectModal(val) {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => this.performReject(val) },
+      ],
+      { cancelable: false }
+    )
+  }
+
   render() {
     const { lead, user, navigation } = this.props
     const {
@@ -738,19 +777,15 @@ class LeadMatch extends React.Component {
       callModal,
       sizeUnitList,
       selectedCity,
-      visible,
       subTypVal,
       areas,
       cities,
-      filterColor,
       progressValue,
       organization,
       loading,
       matchData,
       selectedProperties,
-      checkAllBoolean,
       showFilter,
-      showCheckBoxes,
       formData,
       displayButton,
       reasons,
@@ -759,9 +794,11 @@ class LeadMatch extends React.Component {
       checkReasonValidation,
       closedLeadEdit,
       legalDocLoader,
+      active,
+      statusfeedbackModalVisible,
+      closedWon,
     } = this.state
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
-
     return !loading ? (
       <View
         style={[
@@ -769,254 +806,237 @@ class LeadMatch extends React.Component {
           { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 },
         ]}
       >
-        <ProgressBar
-          style={{ backgroundColor: 'ffffff' }}
-          progress={progressValue}
-          color={'#0277FD'}
-        />
-        <View style={{ minHeight: '85%' }}>
-          <View style={{ flexDirection: 'row', marginLeft: 25 }}>
-            <TouchableOpacity
-              style={{ padding: 10, paddingLeft: 0 }}
-              onPress={() => {
-                this.selectedOrganization('arms')
-              }}
-            >
-              <Text
-                style={[
-                  organization === 'arms' ? styles.tokenLabelBlue : styles.tokenLabel,
-                  AppStyles.mrFive,
-                ]}
-              >
-                {' '}
-                ARMS{' '}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ padding: 10, paddingLeft: 0 }}
-              onPress={() => {
-                this.selectedOrganization('graana')
-              }}
-            >
-              <Text
-                style={[
-                  organization === 'graana' ? styles.tokenLabelBlue : styles.tokenLabel,
-                  AppStyles.mrFive,
-                ]}
-              >
-                {' '}
-                Graana.com{' '}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ padding: 10, paddingLeft: 0 }}
-              onPress={() => {
-                this.selectedOrganization('agency21')
-              }}
-            >
-              <Text
-                style={[
-                  organization === 'agency21' ? styles.tokenLabelBlue : styles.tokenLabel,
-                  AppStyles.mrFive,
-                ]}
-              >
-                {' '}
-                Agency21{' '}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <HistoryModal
-            getCallHistory={this.getCallHistory}
-            navigation={navigation}
-            data={meetings}
-            closePopup={this.goToHistory}
-            openPopup={callModal}
-          />
-          <FilterModal
-            lead={lead}
-            sizeUnitList={sizeUnitList}
-            onRef={(ref) => (this.filterModalRef = ref)}
-            selectedCity={selectedCity}
-            onSizeUnitSliderValueChange={this.onSizeUnitSliderValueChange}
-            onSliderValueChange={this.onSliderValueChange}
-            getAreas={this.getAreas}
-            subTypVal={subTypVal}
-            handleForm={this.handleForm}
-            areas={_.clone(areas)}
-            cities={cities}
-            resetFilter={this.resetFilter}
-            formData={_.clone(formData)}
-            openPopup={showFilter}
-            getSubType={this.getSubType}
-            filterModal={this.filterModal}
-            onModalPriceDonePressed={(minValue, maxValue) =>
-              this.onModalPriceDonePressed(minValue, maxValue)
-            }
-            onBedBathModalDonePressed={(minValue, maxValue, modalType) =>
-              this.onBedBathModalDonePressed(minValue, maxValue, modalType)
-            }
-            onModalSizeDonePressed={(minValue, maxValue, unit) =>
-              this.onModalSizeDonePressed(minValue, maxValue, unit)
-            }
-            submitFilter={this.submitFilter}
-          />
-          <View
-            style={[
-              {
-                flexDirection: 'row',
-                paddingTop: 10,
-                paddingLeft: 15,
-                paddingBottom: 10,
-                elevation: 10,
-                zIndex: 15,
-                shadowOffset: { width: 5, height: 5 },
-                shadowColor: 'lightgrey',
-                shadowOpacity: 1,
-                backgroundColor: AppStyles.colors.backgroundColor,
-              },
-            ]}
-          >
-            {selectedProperties.length ? (
-              <View style={{ marginRight: 15, justifyContent: 'center' }}>
-                <CheckBox
-                  onPress={() => {
-                    this.unSelectAll()
-                  }}
-                  color={AppStyles.colors.primaryColor}
-                  checked={checkAllBoolean}
-                />
-              </View>
-            ) : null}
-            <View style={{ justifyContent: 'center', marginRight: 5 }}>
-              <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}>
-                {selectedProperties.length}{' '}
-                <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>
-                  Selected
-                </Text>
-              </Text>
-            </View>
-            <View
-              style={{
-                borderLeftWidth: 1,
-                height: heightPercentageToDP('1.5%'),
-                marginTop: 5,
-                justifyContent: 'center',
-              }}
+        <StyleProvider style={getTheme(CheckBoxTheme)}>
+          <View style={AppStyles.mb1}>
+            <ProgressBar
+              style={{ backgroundColor: 'ffffff' }}
+              progress={progressValue}
+              color={'#0277FD'}
             />
-            <View style={{ justifyContent: 'center' }}>
-              <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}>
-                {' '}
-                {matchData.data.length}{' '}
-                <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>Matched</Text>
-              </Text>
+            <View style={{ minHeight: '85%' }}>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  style={organization === 'graana' ? styles.labelBtn : styles.unselectedLabelBtn}
+                  onPress={() => {
+                    this.selectedOrganization('graana')
+                  }}
+                >
+                  <Text
+                    style={[
+                      organization === 'graana' ? styles.tokenLabelBlue : styles.tokenLabel,
+                      AppStyles.mrFive,
+                    ]}
+                  >
+                    {' '}
+                    Graana DU{' '}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={organization === 'arms' ? styles.labelBtn : styles.unselectedLabelBtn}
+                  onPress={() => {
+                    this.selectedOrganization('arms')
+                  }}
+                >
+                  <Text
+                    style={[
+                      organization === 'arms' ? styles.tokenLabelBlue : styles.tokenLabel,
+                      AppStyles.mrFive,
+                    ]}
+                  >
+                    {' '}
+                    ARMS{' '}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <HistoryModal
+                getCallHistory={this.getCallHistory}
+                navigation={navigation}
+                data={meetings}
+                closePopup={this.goToHistory}
+                openPopup={callModal}
+              />
+              <FilterModal
+                lead={lead}
+                sizeUnitList={sizeUnitList}
+                onRef={(ref) => (this.filterModalRef = ref)}
+                selectedCity={selectedCity}
+                onSizeUnitSliderValueChange={this.onSizeUnitSliderValueChange}
+                onSliderValueChange={this.onSliderValueChange}
+                getAreas={this.getAreas}
+                subTypVal={subTypVal}
+                handleForm={this.handleForm}
+                areas={_.clone(areas)}
+                cities={cities}
+                resetFilter={this.resetFilter}
+                formData={_.clone(formData)}
+                openPopup={showFilter}
+                getSubType={this.getSubType}
+                filterModal={this.filterModal}
+                onModalPriceDonePressed={(minValue, maxValue) =>
+                  this.onModalPriceDonePressed(minValue, maxValue)
+                }
+                onBedBathModalDonePressed={(minValue, maxValue, modalType) =>
+                  this.onBedBathModalDonePressed(minValue, maxValue, modalType)
+                }
+                onModalSizeDonePressed={(minValue, maxValue, unit) =>
+                  this.onModalSizeDonePressed(minValue, maxValue, unit)
+                }
+                submitFilter={this.submitFilter}
+              />
+              <View style={styles.checkBoxView}>
+                <View style={{ justifyContent: 'center', marginRight: 5 }}>
+                  <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}>
+                    {selectedProperties.length}{' '}
+                    <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>
+                      Selected
+                    </Text>
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    borderLeftWidth: 1,
+                    height: heightPercentageToDP('1.5%'),
+                    marginTop: 5,
+                    justifyContent: 'center',
+                  }}
+                />
+                <View style={{ justifyContent: 'center' }}>
+                  <Text style={{ fontFamily: AppStyles.fonts.defaultFont, fontSize: 16 }}>
+                    {' '}
+                    {matchData.data.length}{' '}
+                    <Text style={{ fontFamily: AppStyles.fonts.lightFont, fontSize: 14 }}>
+                      Matched
+                    </Text>
+                  </Text>
+                </View>
+                <View style={{ position: 'absolute', right: 15, alignSelf: 'center' }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.filterModal()
+                    }}
+                  >
+                    <Image
+                      source={require('../../../assets/img/filter.png')}
+                      style={{
+                        width: 25,
+                        height: 25,
+                      }}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              {matchData.data.length ? (
+                <FlatList
+                  style={{ flex: 1 }}
+                  data={matchData.data}
+                  renderItem={(item, index) => (
+                    <View style={{ marginVertical: 2, marginHorizontal: 8 }}>
+                      {this.ownProperty(item.item) ? (
+                        <MatchTile
+                          data={_.clone(item.item)}
+                          user={user}
+                          displayChecks={this.displayChecks}
+                          showCheckBoxes={true}
+                          addProperty={this.addProperty}
+                          organization={matchData.type}
+                          isMenuVisible={showMenuItem}
+                          screen={'match'}
+                        />
+                      ) : (
+                        <AgentTile
+                          data={_.clone(item.item)}
+                          user={user}
+                          displayChecks={this.displayChecks}
+                          showCheckBoxes={true}
+                          addProperty={this.addProperty}
+                          organization={matchData.type}
+                          isMenuVisible={showMenuItem}
+                          screen={'match'}
+                        />
+                      )}
+                    </View>
+                  )}
+                  keyExtractor={(item, index) => item.id.toString()}
+                />
+              ) : (
+                <Image
+                  source={require('../../../assets/img/no-result-found.png')}
+                  resizeMode={'center'}
+                  style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }}
+                />
+              )}
             </View>
-            <View style={{ position: 'absolute', right: 15, alignSelf: 'center' }}>
+            {displayButton ? (
               <TouchableOpacity
-                onPress={() => {
-                  this.filterModal()
+                onPress={() => this.sendProperties()}
+                style={{
+                  height: 50,
+                  alignSelf: 'center',
+                  marginBottom: 20,
+                  width: '90%',
+                  opacity: 1,
+                  backgroundColor: AppStyles.colors.primaryColor,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: 10,
+                  borderRadius: 5,
+                  position: 'absolute',
+                  bottom: 70,
                 }}
               >
-                <Image
-                  source={require('../../../assets/img/filter.png')}
-                  style={{
-                    width: 20,
-                    height: 20,
-                    tintColor: filterColor
-                      ? AppStyles.colors.primaryColor
-                      : AppStyles.colors.subTextColor,
-                  }}
-                />
+                <Text
+                  style={{ color: 'white', fontFamily: AppStyles.fonts.semiBoldFont, fontSize: 16 }}
+                >
+                  Book Viewing
+                </Text>
               </TouchableOpacity>
+            ) : null}
+            <FollowUpModal
+              leadType={'rcm'}
+              active={active}
+              openModal={this.openModal}
+              diaryForm={true}
+            />
+            <StatusFeedbackModal
+              visible={statusfeedbackModalVisible}
+              showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+              commentsList={StaticData.leadClosedCommentsFeedback}
+              showAction={false}
+              showFollowup={false}
+              performReject={(comment) => this.showRejectModal(comment)}
+            />
+            <View style={AppStyles.mainCMBottomNav}>
+              <CMBottomNav
+                goToAttachments={this.goToAttachments}
+                navigateTo={this.navigateToDetails}
+                goToDiaryForm={this.goToDiaryForm}
+                goToComments={this.goToComments}
+                alreadyClosedLead={() => this.closedLead()}
+                closeLead={this.closeLead}
+                closedLeadEdit={closedLeadEdit}
+                callButton={true}
+                customer={lead.customer}
+                lead={lead}
+                goToHistory={this.goToHistory}
+                getCallHistory={this.getCallHistory}
+                goToFollowUp={this.openModal}
+                navigation={navigation}
+                goToRejectForm={this.goToRejectForm}
+                closedWon={closedWon}
+              />
             </View>
+            <LeadRCMPaymentPopup
+              reasons={reasons}
+              selectedReason={selectedReason}
+              changeReason={(value) => this.handleReasonChange(value)}
+              checkValidation={checkReasonValidation}
+              isVisible={isVisible}
+              closeModal={() => this.closeModal()}
+              onPress={() => this.onHandleCloseLead()}
+              legalDocLoader={legalDocLoader}
+            />
           </View>
-          {matchData.data.length ? (
-            <FlatList
-              style={{ flex: 1 }}
-              data={matchData.data}
-              renderItem={(item, index) => (
-                <View style={{ marginVertical: 2, marginHorizontal: 8 }}>
-                  {this.ownProperty(item.item) ? (
-                    <MatchTile
-                      data={_.clone(item.item)}
-                      user={user}
-                      displayChecks={this.displayChecks}
-                      showCheckBoxes={showCheckBoxes}
-                      addProperty={this.addProperty}
-                      organization={matchData.type}
-                      isMenuVisible={showMenuItem}
-                      screen={'match'}
-                    />
-                  ) : (
-                    <AgentTile
-                      data={_.clone(item.item)}
-                      user={user}
-                      displayChecks={this.displayChecks}
-                      showCheckBoxes={showCheckBoxes}
-                      addProperty={this.addProperty}
-                      organization={matchData.type}
-                      isMenuVisible={showMenuItem}
-                      screen={'match'}
-                    />
-                  )}
-                </View>
-              )}
-              keyExtractor={(item, index) => item.id.toString()}
-            />
-          ) : (
-            <Image
-              source={require('../../../assets/img/no-result-found.png')}
-              resizeMode={'center'}
-              style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }}
-            />
-          )}
-        </View>
-        {displayButton ? (
-          <TouchableOpacity
-            onPress={() => this.sendProperties()}
-            style={{
-              height: 50,
-              alignSelf: 'center',
-              marginBottom: 20,
-              width: '90%',
-              opacity: 1,
-              backgroundColor: AppStyles.colors.primaryColor,
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: 10,
-              borderRadius: 5,
-              position: 'absolute',
-              bottom: 70,
-            }}
-          >
-            <Text style={{ color: 'white' }}> Continue With Selected Properties </Text>
-          </TouchableOpacity>
-        ) : null}
-        <View style={AppStyles.mainCMBottomNav}>
-          <CMBottomNav
-            goToAttachments={this.goToAttachments}
-            navigateTo={this.navigateToDetails}
-            goToDiaryForm={this.goToDiaryForm}
-            goToComments={this.goToComments}
-            alreadyClosedLead={() => this.closedLead()}
-            closeLead={this.closeLead}
-            closedLeadEdit={closedLeadEdit}
-            callButton={true}
-            customer={lead.customer}
-            lead={lead}
-            goToHistory={this.goToHistory}
-            getCallHistory={this.getCallHistory}
-          />
-        </View>
-        <LeadRCMPaymentPopup
-          reasons={reasons}
-          selectedReason={selectedReason}
-          changeReason={(value) => this.handleReasonChange(value)}
-          checkValidation={checkReasonValidation}
-          isVisible={isVisible}
-          closeModal={() => this.closeModal()}
-          onPress={() => this.onHandleCloseLead()}
-          legalDocLoader={legalDocLoader}
-        />
+        </StyleProvider>
       </View>
     ) : (
       <Loader loading={loading} />

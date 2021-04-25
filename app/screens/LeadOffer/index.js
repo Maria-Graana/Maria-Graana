@@ -2,8 +2,7 @@
 
 import axios from 'axios'
 import * as React from 'react'
-import { Alert } from 'react-native'
-import { FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Linking, Text, TouchableOpacity, View, Alert } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
@@ -19,7 +18,9 @@ import OfferModal from '../../components/OfferModal'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
-
+import FollowUpModal from '../../components/FollowUpModal'
+import styles from './styles'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
@@ -53,6 +54,9 @@ class LeadOffer extends React.Component {
       agreedNotZero: false,
       offerReadOnly: false,
       legalDocLoader: false,
+      active: false,
+      statusfeedbackModalVisible: false,
+      closedWon: false,
     }
   }
 
@@ -94,6 +98,7 @@ class LeadOffer extends React.Component {
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
+        this.closeLead(res.data)
       })
       .catch((error) => {
         console.log(error)
@@ -229,32 +234,15 @@ class LeadOffer extends React.Component {
     })
   }
 
-  closeLead = async () => {
-    const { lead } = this.props
+  closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
       if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
-          reasons: StaticData.leadCloseReasonsWithPayment,
-          isCloseLeadVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
-        })
-      } else {
-        this.setState({
-          reasons: StaticData.leadCloseReasons,
-          isCloseLeadVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
+          closedWon: true,
         })
       }
-    } else {
-      this.setState({
-        reasons: StaticData.leadCloseReasons,
-        isCloseLeadVisible: true,
-        checkReasonValidation: '',
-      })
     }
   }
 
@@ -308,7 +296,7 @@ class LeadOffer extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -349,14 +337,7 @@ class LeadOffer extends React.Component {
     if (property.agreedOffer.length) {
       return (
         <TouchableOpacity
-          style={{
-            backgroundColor: AppStyles.colors.primaryColor,
-            height: 30,
-            borderBottomEndRadius: 10,
-            borderBottomLeftRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          style={styles.tileAgreedBtn}
           onPress={() => {
             if (leadAssignedSharedStatusAndReadOnly) {
               this.openOfferModalReadOnly()
@@ -364,25 +345,16 @@ class LeadOffer extends React.Component {
             }
           }}
         >
-          <Text style={{ color: 'white', fontFamily: AppStyles.fonts.lightFont }}>
+          <Text style={styles.agreedText}>
             Agreed Amount:{' '}
-            <Text style={{ fontFamily: AppStyles.fonts.defaultFont }}>
-              {property && property.agreedOffer[0].offer}
-            </Text>
+            <Text style={styles.offerText}>{property && property.agreedOffer[0].offer}</Text>
           </Text>
         </TouchableOpacity>
       )
     } else if (property.leadOffers.length) {
       return (
         <TouchableOpacity
-          style={{
-            backgroundColor: 'white',
-            height: 30,
-            borderBottomEndRadius: 10,
-            borderBottomLeftRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          style={styles.tileOfferBtn}
           onPress={() => {
             if (leadAssignedSharedStatus) {
               this.openChatModal()
@@ -390,30 +362,15 @@ class LeadOffer extends React.Component {
             }
           }}
         >
-          <Text style={{ fontFamily: AppStyles.fonts.lightFont }}>
-            View{' '}
-            <Text
-              style={{
-                color: AppStyles.colors.primaryColor,
-                fontFamily: AppStyles.fonts.defaultFont,
-              }}
-            >
-              Offers
-            </Text>
+          <Text style={styles.viewText}>
+            View <Text style={styles.offerViewText}>Offers</Text>
           </Text>
         </TouchableOpacity>
       )
     } else {
       return (
         <TouchableOpacity
-          style={{
-            backgroundColor: 'white',
-            height: 30,
-            borderBottomEndRadius: 10,
-            borderBottomLeftRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          style={styles.tileBtn}
           onPress={() => {
             if (leadAssignedSharedStatus) {
               this.openChatModal()
@@ -421,15 +378,7 @@ class LeadOffer extends React.Component {
             }
           }}
         >
-          <Text
-            style={{
-              color: AppStyles.colors.primaryColor,
-              fontFamily: AppStyles.fonts.defaultFont,
-            }}
-          >
-            {' '}
-            PLACE OFFER
-          </Text>
+          <Text style={styles.tileText}> PLACE OFFER</Text>
         </TouchableOpacity>
       )
     }
@@ -528,7 +477,7 @@ class LeadOffer extends React.Component {
   acceptOffer = (offerId) => {
     const { lead } = this.props
     axios
-      .patch(`/api/offer/agree?leadId=${lead.id}&offerId=${offerId}`)
+      .patch(`/api/offer/agree?leadId=${lead.id}&offerId=${offerId}&addedBy=buyer`)
       .then((res) => {
         if (res.data.msg) {
           helper.errorToast(res.data.msg)
@@ -614,6 +563,53 @@ class LeadOffer extends React.Component {
     )
   }
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+    })
+  }
+
+  performReject = (comment) => {
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      var leadId = []
+      leadId.push(lead.id)
+      axios
+        .patch(`/api/leads`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
+  }
+
+  showRejectModal(val) {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => this.performReject(val) },
+      ],
+      { cancelable: false }
+    )
+  }
+
   render() {
     const {
       menuShow,
@@ -641,6 +637,9 @@ class LeadOffer extends React.Component {
       customerNotZero,
       offerReadOnly,
       legalDocLoader,
+      active,
+      statusfeedbackModalVisible,
+      closedWon,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -741,6 +740,20 @@ class LeadOffer extends React.Component {
             )}
           </View>
         </View>
+        <FollowUpModal
+          leadType={'rcm'}
+          active={active}
+          openModal={this.openModal}
+          diaryForm={true}
+        />
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+          commentsList={StaticData.leadClosedCommentsFeedback}
+          showAction={false}
+          showFollowup={false}
+          performReject={(comment) => this.showRejectModal(comment)}
+        />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}
@@ -755,6 +768,10 @@ class LeadOffer extends React.Component {
             lead={lead}
             goToHistory={this.goToHistory}
             getCallHistory={this.getCallHistory}
+            goToFollowUp={this.openModal}
+            navigation={navigation}
+            goToRejectForm={this.goToRejectForm}
+            closedWon={closedWon}
           />
         </View>
 

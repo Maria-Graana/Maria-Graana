@@ -30,6 +30,7 @@ import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import DeleteModal from '../../components/DeleteModal'
+import FollowUpModal from '../../components/FollowUpModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
@@ -37,11 +38,11 @@ import MatchTile from '../../components/MatchTile/index'
 import ViewDocs from '../../components/ViewDocs'
 import config from '../../config'
 import helper from '../../helper'
-import rcmPayment from '../../reducers/rcmPayment'
 import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import styles from './styles'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -121,6 +122,9 @@ class LeadRCMPayment extends React.Component {
       legalServicesFee: null,
       buyerToggleModal: false,
       advanceNotZero: false,
+      active: false,
+      statusfeedbackModalVisible: false,
+      closedWon: false,
     }
   }
 
@@ -567,31 +571,15 @@ class LeadRCMPayment extends React.Component {
     this.setState({ isVisible: false })
   }
 
-  showLeadPaymentModal = async () => {
-    const { lead, legalServicesFee } = this.state
+  showLeadPaymentModal = async (lead) => {
+    const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
       if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
-          reasons: StaticData.leadCloseReasonsWithPayment,
-          isVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
-        })
-      } else {
-        this.setState({
-          reasons: StaticData.leadCloseReasons,
-          isVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
+          closedWon: true,
         })
       }
-    } else {
-      this.setState({
-        reasons: StaticData.leadCloseReasons,
-        isVisible: true,
-        checkReasonValidation: '',
-      })
     }
   }
 
@@ -1331,6 +1319,7 @@ class LeadRCMPayment extends React.Component {
         .then((response) => {
           if (response.data) {
             dispatch(setlead(response.data))
+            this.showLeadPaymentModal(response.data)
             this.setState({
               progressValue: rcmProgressBar[response.data.status],
               loading: false,
@@ -1539,6 +1528,53 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+    })
+  }
+
+  performReject = (comment) => {
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      var leadId = []
+      leadId.push(lead.id)
+      axios
+        .patch(`/api/leads`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
+  }
+
+  showRejectModal(val) {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => this.performReject(val) },
+      ],
+      { cancelable: false }
+    )
+  }
+
   render() {
     const {
       menuShow,
@@ -1577,6 +1613,9 @@ class LeadRCMPayment extends React.Component {
       buyerToggleModal,
       buyerDetailForm,
       advanceNotZero,
+      active,
+      statusfeedbackModalVisible,
+      closedWon,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1765,6 +1804,20 @@ class LeadRCMPayment extends React.Component {
               />
             </>
           )}
+          <FollowUpModal
+            leadType={'rcm'}
+            active={active}
+            openModal={this.openModal}
+            diaryForm={true}
+          />
+          <StatusFeedbackModal
+            visible={statusfeedbackModalVisible}
+            showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+            commentsList={StaticData.leadClosedCommentsFeedback}
+            showAction={false}
+            showFollowup={false}
+            performReject={(comment) => this.showRejectModal(comment)}
+          />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1779,6 +1832,10 @@ class LeadRCMPayment extends React.Component {
               lead={lead}
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
+              goToFollowUp={this.openModal}
+              navigation={navigation}
+              goToRejectForm={this.goToRejectForm}
+              closedWon={closedWon}
             />
           </View>
         </View>

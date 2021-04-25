@@ -7,6 +7,7 @@ import AppLoading from 'expo-app-loading'
 import Constants from 'expo-constants'
 import { Ionicons } from '@expo/vector-icons'
 import { Provider as PaperProvider } from 'react-native-paper'
+import { MenuProvider } from 'react-native-popup-menu'
 import { PersistGate } from 'redux-persist/integration/react'
 import { Provider } from 'react-redux'
 import React from 'react'
@@ -92,6 +93,10 @@ export default class App extends React.Component {
       OpenSans_bold: require('./assets/fonts/OpenSans-Bold.ttf'),
       OpenSans_light: require('./assets/fonts/OpenSans-Light.ttf'),
       OpenSans_semi_bold: require('./assets/fonts/OpenSans-SemiBold.ttf'),
+      Poppins_regular: require('./assets/fonts/Poppins-Regular.ttf'),
+      Poppins_bold: require('./assets/fonts/Poppins-Bold.ttf'),
+      Poppins_light: require('./assets/fonts/Poppins-Light.ttf'),
+      Poppins_semi_bold: require('./assets/fonts/Poppins-SemiBold.ttf'),
       ...Ionicons.font,
     })
     const customTextProps = {
@@ -273,9 +278,11 @@ export default class App extends React.Component {
           <Root>
             <SafeAreaProvider>
               <PaperProvider>
-                <NavigationContainer ref={navigationRef}>
-                  <RootStack />
-                </NavigationContainer>
+                <MenuProvider>
+                  <NavigationContainer ref={navigationRef}>
+                    <RootStack />
+                  </NavigationContainer>
+                </MenuProvider>
               </PaperProvider>
             </SafeAreaProvider>
           </Root>

@@ -3,12 +3,12 @@
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons'
 import { CheckBox } from 'native-base'
 import React from 'react'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Text, TouchableOpacity, View, TouchableHighlight } from 'react-native'
 import { Menu } from 'react-native-paper'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
-import { formatPrice } from '../../PriceFormate'
 import helper from '../../helper'
+import { formatPrice } from '../../PriceFormate'
 import styles from './style'
 
 class AgentTile extends React.Component {
@@ -119,15 +119,11 @@ class AgentTile extends React.Component {
       isMenuVisible,
       showCheckBoxes,
       viewingMenu,
-      menuShow,
       screen,
       bookAnotherViewing,
       toggleCheckListModal,
       propertyGeoTagging,
       lead,
-      user,
-      selectForPayment,
-      showConfirmationDialog,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let otherAgentdiary = this.getOtherDiary(data) || null
@@ -144,56 +140,117 @@ class AgentTile extends React.Component {
     }
     return (
       <TouchableOpacity
-        style={{ flexDirection: 'row' }}
-        onLongPress={() => {
-          this.props.displayChecks()
-          this.props.addProperty(data)
-        }}
+        style={[
+          { flexDirection: 'row' },
+          data.checkBox && screen === 'match'
+            ? { backgroundColor: AppStyles.colors.primaryColor }
+            : null,
+        ]}
         onPress={() => {
-          this.props.addProperty(data)
+          if (screen !== 'match') this.props.addProperty(data)
         }}
       >
-        <View style={styles.tileContainer}>
+        <View
+          style={[
+            styles.tileContainer,
+            data.checkBox && screen === 'match'
+              ? { backgroundColor: AppStyles.colors.primaryColor }
+              : null,
+          ]}
+        >
           <View
             style={[
               AppStyles.mb1,
               styles.pad5,
               { paddingBottom: 2, justifyContent: 'space-between' },
+              data.checkBox && screen === 'match'
+                ? { backgroundColor: AppStyles.colors.primaryColor }
+                : null,
             ]}
           >
             <View>
-              <Text style={styles.currencyText}>
+              <Text
+                style={[
+                  styles.priceText,
+                  ,
+                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                ]}
+              >
                 {' '}
-                PKR{' '}
-                <Text style={styles.priceText}>
-                  {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
-                </Text>{' '}
+                {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
               </Text>
-              <Text numberOfLines={1} style={styles.marlaText}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.marlaText,
+                  ,
+                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                ]}
+              >
                 {' '}
                 {data.size} {data.size_unit} {data.subtype && helper.capitalize(data.subtype)} For{' '}
                 {data.purpose && helper.capitalize(data.purpose)}{' '}
               </Text>
-              <Text numberOfLines={1} style={styles.addressText}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.addressText,
+                  ,
+                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                ]}
+              >
                 {' '}
-                {data.area ? data.area.name + ', ' : null} {data.city ? data.city.name : null}{' '}
+                {data.area ? data.area.name : null}
               </Text>
             </View>
             <View style={styles.iconContainer}>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
-                <Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
-                <Text style={{ fontSize: 18 }}> {data.bed} </Text>
+                {data.bed && Number(data.bed) > 0 ? (
+                  <Ionicons name="ios-bed" size={25} color={AppStyles.colors.subTextColor} />
+                ) : null}
+                <Text
+                  style={[
+                    { fontSize: 18 },
+                    ,
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
+                  {' '}
+                  {data.bed}{' '}
+                </Text>
               </View>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
-                <FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
-                <Text style={{ fontSize: 18 }}> {data.bath} </Text>
+                {data.bath && Number(data.bath) > 0 ? (
+                  <FontAwesome name="bath" size={22} color={AppStyles.colors.subTextColor} />
+                ) : null}
+                <Text
+                  style={[
+                    { fontSize: 18 },
+                    ,
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
+                  {' '}
+                  {data.bath}{' '}
+                </Text>
               </View>
             </View>
           </View>
-          <View style={styles.underLine} />
-          <View style={[styles.pad5, { marginRight: 5 }]}>
-            <View style={{ flexDirection: 'row', height: 20 }}>
-              <View style={{ flex: 1 }}></View>
+          <View
+            style={[
+              styles.underLine,
+              data.checkBox && screen === 'match'
+                ? { backgroundColor: AppStyles.colors.primaryColor }
+                : null,
+            ]}
+          />
+          <View style={[styles.pad5, { marginRight: 2 }]}>
+            <View
+              style={{
+                flexDirection: 'row-reverse',
+                height: 30,
+              }}
+            >
               {screen !== 'match' &&
               screen !== 'viewing' &&
               screen !== 'propsure' &&
@@ -202,11 +259,17 @@ class AgentTile extends React.Component {
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
                   anchor={
-                    <Entypo
+                    <TouchableHighlight
+                      style={styles.menuBtn}
                       onPress={() => this.props.toggleMenu(true, data.id)}
-                      name="dots-three-vertical"
-                      size={20}
-                    />
+                      underlayColor={AppStyles.colors.backgroundColor}
+                    >
+                      <Entypo
+                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        name="dots-three-vertical"
+                        size={25}
+                      />
+                    </TouchableHighlight>
                   }
                 >
                   <View>
@@ -224,11 +287,17 @@ class AgentTile extends React.Component {
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
                   anchor={
-                    <Entypo
+                    <TouchableHighlight
+                      style={styles.menuBtn}
                       onPress={() => this.props.toggleMenu(true, data.id)}
-                      name="dots-three-vertical"
-                      size={20}
-                    />
+                      underlayColor={AppStyles.colors.backgroundColor}
+                    >
+                      <Entypo
+                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        name="dots-three-vertical"
+                        size={25}
+                      />
+                    </TouchableHighlight>
                   }
                 >
                   <View>
@@ -238,14 +307,6 @@ class AgentTile extends React.Component {
                       }}
                       title="Comments"
                     />
-                    {/* <Menu.Item
-                      onPress={
-                        lead.shortlist_id === null
-                          ? () => selectForPayment(data)
-                          : () => showConfirmationDialog()
-                      }
-                      title="Select a Different Property"
-                    /> */}
                   </View>
                 </Menu>
               )}
@@ -254,11 +315,17 @@ class AgentTile extends React.Component {
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
                   anchor={
-                    <Entypo
+                    <TouchableHighlight
+                      style={styles.menuBtn}
                       onPress={() => this.props.toggleMenu(true, data.id)}
-                      name="dots-three-vertical"
-                      size={20}
-                    />
+                      underlayColor={AppStyles.colors.backgroundColor}
+                    >
+                      <Entypo
+                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        name="dots-three-vertical"
+                        size={25}
+                      />
+                    </TouchableHighlight>
                   }
                 >
                   <View>
@@ -276,11 +343,17 @@ class AgentTile extends React.Component {
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
                   anchor={
-                    <Entypo
+                    <TouchableHighlight
+                      style={styles.menuBtn}
                       onPress={() => this.props.toggleMenu(true, data.id)}
-                      name="dots-three-vertical"
-                      size={20}
-                    />
+                      underlayColor={AppStyles.colors.backgroundColor}
+                    >
+                      <Entypo
+                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        name="dots-three-vertical"
+                        size={25}
+                      />
+                    </TouchableHighlight>
                   }
                 >
                   <View>
@@ -311,16 +384,22 @@ class AgentTile extends React.Component {
                 </Menu>
               ) : null}
               {screen === 'viewing' ? (
-                <View>
+                <View style={{}}>
                   <Menu
                     visible={data.checkBox}
                     onDismiss={() => this.props.toggleMenu(false, data.id)}
                     anchor={
-                      <Entypo
+                      <TouchableHighlight
+                        style={styles.menuBtn}
                         onPress={() => this.props.toggleMenu(true, data.id)}
-                        name="dots-three-vertical"
-                        size={20}
-                      />
+                        underlayColor={AppStyles.colors.backgroundColor}
+                      >
+                        <Entypo
+                          onPress={() => this.props.toggleMenu(true, data.id)}
+                          name="dots-three-vertical"
+                          size={25}
+                        />
+                      </TouchableHighlight>
                     }
                   >
                     <View>
@@ -427,30 +506,50 @@ class AgentTile extends React.Component {
                     onPress={() => {
                       this.props.addProperty(data)
                     }}
-                    color={AppStyles.colors.primaryColor}
+                    style={[
+                      styles.checkBox,
+                      !data.checkBox ? { borderColor: AppStyles.colors.backgroundColor } : null,
+                    ]}
                     checked={data.checkBox}
                   />
                 </View>
               ) : null}
             </View>
-            <View style={{ marginTop: 10, height: 125, justifyContent: 'space-between' }}>
-              <View>
-                <Text style={styles.agentText}> Agent Name </Text>
-                <Text numberOfLines={1} style={styles.labelText}>
+            <View style={styles.agentView}>
+              <View style={AppStyles.mb1}>
+                <Text
+                  style={[
+                    styles.agentText,
+                    ,
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
+                  Agent Name{' '}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.labelText,
+                    ,
+                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
+                  ]}
+                >
                   {agentName}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row-reverse' }}>
-                {/* <View style={{ flex: 1 }}></View> */}
-                <FontAwesome
+                <TouchableHighlight
                   onPress={() => {
                     if (show) this.call(data)
                   }}
-                  style={{ paddingTop: 40, paddingRight: 0 }}
-                  name="phone"
-                  size={30}
-                  color={AppStyles.colors.subTextColor}
-                />
+                  style={[styles.phoneView]}
+                  underlayColor={AppStyles.colors.backgroundColor}
+                >
+                  <Image
+                    source={require('../../../assets/img/call.png')}
+                    style={[styles.callImage, data.checkBox ? { tintColor: 'grey' } : null]}
+                  />
+                </TouchableHighlight>
               </View>
             </View>
           </View>

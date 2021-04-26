@@ -1023,30 +1023,35 @@ export default StaticData = {
     {
       id: 1,
       title: 'ReAssign',
-      image: require('../assets/img/refer.png'),
+      image: require('../assets/img/reassign.png'),
     },
     {
       id: 2,
+      title: 'Transfer',
+      image: require('../assets/img/transfer-lead.png'),
+    },
+    {
+      id: 3,
       title: 'Attach',
       image: require('../assets/img/Path-20.png'),
     },
     {
-      id: 3,
+      id: 4,
       title: 'Diary Task',
       image: require('../assets/img/diary-task.png'),
     },
     {
-      id: 4,
+      id: 5,
       title: 'Comment',
       image: require('../assets/img/comment.png'),
     },
     {
-      id: 5,
+      id: 6,
       title: 'Whatsapp',
       image: require('../assets/img/whatsapp.png'),
     },
     {
-      id: 6,
+      id: 7,
       title: 'Call',
       image: require('../assets/img/call.png'),
     },
@@ -1055,35 +1060,40 @@ export default StaticData = {
     {
       id: 1,
       title: 'ReAssign',
-      image: require('../assets/img/refer.png'),
+      image: require('../assets/img/reassign.png'),
     },
     {
       id: 2,
+      title: 'Transfer',
+      image: require('../assets/img/transfer-lead.png'),
+    },
+    {
+      id: 3,
       title: 'Attach',
       image: require('../assets/img/Path-20.png'),
     },
     {
-      id: 3,
+      id: 4,
       title: 'Diary Task',
       image: require('../assets/img/diary-task.png'),
     },
     {
-      id: 4,
+      id: 5,
       title: 'Comment',
       image: require('../assets/img/comment.png'),
     },
     {
-      id: 5,
+      id: 6,
       title: 'Whatsapp',
       image: require('../assets/img/whatsapp.png'),
     },
     {
-      id: 6,
+      id: 7,
       title: 'Call',
       image: require('../assets/img/call.png'),
     },
     {
-      id: 7,
+      id: 8,
       title: 'Closed Won',
       image: require('../assets/img/call.png'),
     },

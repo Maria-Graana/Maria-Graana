@@ -1,9 +1,11 @@
 
 /** @format */
 
+import axios from 'axios'
 import fuzzy from 'fuzzy'
 import React, { useRef, useState } from 'react'
 import {
+  Alert,
   Image,
   Modal,
   Platform,
@@ -18,6 +20,9 @@ import {
 import times from '../../../assets/img/times.png'
 import AppStyles from '../../AppStyles'
 import TouchableButton from '../TouchableButton'
+
+
+
 
 const CommentChip = ({ comment, setSelectedComment }) => {
   return (
@@ -36,9 +41,12 @@ const StatusFeedbackModal = ({
   showAction = true,
   showFollowup = true,
   modalMode,
-  performAction,
-  performFollowup,
-  performReject,
+  sendStatus,
+  currentCall,
+  openModal,
+  addDiary,
+  showFeedbackMeetingModal,
+  rejectLead,
 }) => {
   const [selectedComment, setSelectedComment] = useState(null)
   const textInput = useRef(null)
@@ -49,6 +57,58 @@ const StatusFeedbackModal = ({
   } else {
     data = commentsList
   }
+
+  const performAction = () => {
+    showFeedbackModal(false);
+    if (currentCall) {
+      if (modalMode === 'call') {
+        sendStatus(selectedComment, currentCall.id)
+        openModal()
+      } else {
+        // Meeting Mode & actions for book unit and set up another meeting
+          showFeedbackMeetingModal(true);
+          sendStatus(selectedComment, currentCall.id);
+      }
+    }
+  }
+
+  const performFollowup = () => {
+    if (currentCall) {
+        showFeedbackModal(false);
+        sendStatus(selectedComment, currentCall.id)
+        addDiary();
+    }
+  }
+
+  const performReject = () => {
+    let body = {
+      reasons: selectedComment,
+    }
+    showFeedbackModal(false);
+    if (currentCall && modalMode === 'call' || modalMode === 'meeting') {
+        sendStatus(selectedComment, currentCall.id)
+        rejectLead(body)
+    }
+    else{
+      rejectLead(body)
+    }
+  }
+
+  
+  const showRejectModal = () => {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => performReject() },
+      ],
+      { cancelable: false }
+    )
+  }
+
+
+
   return (
     <Modal visible={visible}>
       <SafeAreaView style={AppStyles.mb1}>
@@ -97,7 +157,7 @@ const StatusFeedbackModal = ({
                 containerBackgroundColor={AppStyles.colors.actionBg}
                 onPress={() =>
                   selectedComment
-                    ? performAction(modalMode, selectedComment)
+                    ? performAction()
                     : alert('Please select a comment to continue')
                 }
                 label={modalMode === 'call' ? 'Meeting Setup' : 'Action'}
@@ -112,7 +172,7 @@ const StatusFeedbackModal = ({
                 textColor={AppStyles.colors.textColor}
                 onPress={() =>
                   selectedComment
-                    ? performFollowup(selectedComment)
+                    ? performFollowup()
                     : alert('Please select a comment to continue')
                 }
                 label={'Follow up'}
@@ -125,7 +185,7 @@ const StatusFeedbackModal = ({
               containerBackgroundColor={AppStyles.colors.redBg}
               onPress={() =>
                 selectedComment
-                  ? performReject(selectedComment)
+                  ? showRejectModal()
                   : alert('Please select a comment to continue')
               }
               label={'Reject'}

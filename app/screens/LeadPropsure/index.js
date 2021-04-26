@@ -574,13 +574,21 @@ class LeadPropsure extends React.Component {
   }
 
   addRemoveReport = (report) => {
-    const { selectedReports } = this.state
+    const { selectedReports, propsureReportTypes } = this.state
     let reports = [...selectedReports]
     let totalReportPrice = 0
     if (reports.some((item) => item.title === report.title)) {
+      if (report.title === 'Basic Property Survey Report') return
       reports = _.without(reports, report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     } else {
+      if (!_.findWhere(reports, { title: 'Basic Property Survey Report' })) {
+        let basicReport = _.find(
+          propsureReportTypes,
+          (item) => item.title === 'Basic Property Survey Report'
+        )
+        reports.push(basicReport)
+      }
       reports.push(report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     }
@@ -645,7 +653,13 @@ class LeadPropsure extends React.Component {
 
   onHandleRequestVerification = () => {
     const { lead } = this.props
-    const { selectedReports, selectedPropertyId, selectedProperty, totalReportPrice } = this.state
+    const {
+      selectedReports,
+      selectedPropertyId,
+      selectedProperty,
+      totalReportPrice,
+      propsureReportTypes,
+    } = this.state
     if (selectedReports.length === 0) {
       alert('Please select at least one report!')
     } else {
@@ -657,8 +671,17 @@ class LeadPropsure extends React.Component {
           fee: item.fee,
         }
       })
+      let packageNames = _.pluck(selectedReports, 'title')
+      if (!packageNames.includes('Basic Property Survey Report')) {
+        let basicReport = _.find(
+          propsureReportTypes,
+          (item) => item.title === 'Basic Property Survey Report'
+        )
+        packageNames.push(basicReport.title)
+        reportIds.push({ id: basicReport.id, fee: basicReport.fee })
+      }
       const body = {
-        packageName: _.pluck(selectedReports, 'title'),
+        packageName: packageNames,
         propertyId: selectedPropertyId,
         pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
         org: selectedProperty.arms_id ? 'arms' : 'graana',

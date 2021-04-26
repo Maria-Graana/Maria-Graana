@@ -239,11 +239,11 @@ class HistoryModal extends React.Component {
                             :
                             <LoadingNoResult loading={false} />
                     }
-                    <HistoryStatusModal
+                    {/* <HistoryStatusModal
                         visibleStatus={visibleStatus}
                         sendStatus={this.sendStatus}
                         openStatus={this.openStatus}
-                    />
+                    /> */}
                     <MeetingModal
                         active={active}
                         formData={formData}

@@ -738,36 +738,19 @@ class LeadMatch extends React.Component {
     })
   }
 
-  performReject = (comment) => {
-    const { lead, navigation } = this.props
-    let body = {
-      reasons: comment,
-    }
-    this.setState({ statusfeedbackModalVisible: false }, () => {
-      var leadId = []
-      leadId.push(lead.id)
-      axios
-        .patch(`/api/leads`, body, { params: { id: leadId } })
-        .then((res) => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    })
-  }
-
-  showRejectModal(val) {
-    Alert.alert(
-      'Reject(Close as Lost)',
-      'Are you sure you want to continue?',
-      [
-        { text: 'No', style: 'cancel' },
-        { text: 'Yes', onPress: () => this.performReject(val) },
-      ],
-      { cancelable: false }
-    )
+  rejectLead = (body) => {
+    const {navigation, lead} = this.props;
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads`, body, { params: { id: leadId } })
+      .then((res) => {
+        helper.successToast(`Lead Closed`)
+        navigation.navigate('Leads')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   render() {
@@ -1003,7 +986,8 @@ class LeadMatch extends React.Component {
               commentsList={StaticData.leadClosedCommentsFeedback}
               showAction={false}
               showFollowup={false}
-              performReject={(comment) => this.showRejectModal(comment)}
+              rejectLead={(body)=>this.rejectLead(body)}
+              leadType={'RCM'}
             />
             <View style={AppStyles.mainCMBottomNav}>
               <CMBottomNav

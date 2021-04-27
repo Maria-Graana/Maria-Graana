@@ -96,9 +96,17 @@ export default styles = StyleSheet.create({
     marginVertical: 5,
     marginRight: 7,
   },
+  notCheckBox: {
+    width: 25,
+    height: 25,
+    borderColor: AppStyles.colors.primaryColor,
+    backgroundColor: '#fff',
+  },
   checkBox: {
     width: 25,
     height: 25,
+    borderColor: '#fff',
+    backgroundColor: '#fff',
   },
   greenDot: {
     width: 20,

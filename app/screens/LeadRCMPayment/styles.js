@@ -5,7 +5,7 @@ import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   viewButtonStyle: {
-    backgroundColor: AppStyles.colors.primaryColor,
+    backgroundColor: '#fff',
     height: 50,
     borderBottomEndRadius: 10,
     borderBottomLeftRadius: 10,
@@ -13,8 +13,8 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonTextStyle: {
-    fontFamily: AppStyles.fonts.boldFont,
-    color: 'white',
+    fontFamily: AppStyles.fonts.semiBoldFont,
+    color: AppStyles.colors.primaryColor,
     fontSize: 18,
   },
   mainBlackWrap: {

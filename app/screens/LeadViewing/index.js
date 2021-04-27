@@ -777,7 +777,7 @@ class LeadViewing extends React.Component {
   }
 
   //  ************ Function for open modal ************
-  openModal = () => {
+  openFollowUpModal = () => {
     this.setState({
       active: !this.state.active,
     })
@@ -992,7 +992,7 @@ class LeadViewing extends React.Component {
         <FollowUpModal
           leadType={'rcm'}
           active={active}
-          openModal={this.openModal}
+          openModal={this.openFollowUpModal}
           diaryForm={true}
         />
         <StatusFeedbackModal
@@ -1019,7 +1019,7 @@ class LeadViewing extends React.Component {
             goToPropertyScreen={this.goToPropertyScreen}
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
-            goToFollowUp={this.openModal}
+            goToFollowUp={this.openFollowUpModal}
             navigation={navigation}
             goToRejectForm={this.goToRejectForm}
             closedWon={closedWon}

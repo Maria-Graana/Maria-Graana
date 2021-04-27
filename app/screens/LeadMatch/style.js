@@ -8,7 +8,6 @@ export default styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   unselectedLabelBtn: {
-    padding: 10,
     width: '40%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -21,7 +20,6 @@ export default styles = StyleSheet.create({
     flex: 1,
   },
   labelBtn: {
-    padding: 10,
     width: '40%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -36,11 +34,13 @@ export default styles = StyleSheet.create({
   tokenLabel: {
     fontFamily: AppStyles.fonts.semiBoldFont,
     fontSize: 16,
+    alignSelf: 'center',
   },
   tokenLabelBlue: {
     color: '#fff',
     fontFamily: AppStyles.fonts.semiBoldFont,
     fontSize: 16,
+    alignSelf: 'center',
   },
   headingText: {
     fontSize: 16,

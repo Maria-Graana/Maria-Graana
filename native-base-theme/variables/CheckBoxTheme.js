@@ -113,15 +113,15 @@ export default {
   // CheckBox
   CheckboxRadius: 0,
   CheckboxBorderWidth: 2,
-  CheckboxPaddingLeft: 0,
-  CheckboxPaddingBottom: 0,
-  CheckboxIconSize: 15,
-  CheckboxIconMarginTop: 5,
+  CheckboxPaddingLeft: 2,
+  CheckboxPaddingBottom: 5,
+  CheckboxIconSize: 20,
+  CheckboxIconMarginTop: 1,
   CheckboxFontSize: 20,
-  checkboxBgColor: '#e7ecf0',
-  checkboxSize: 60,
+  checkboxBgColor: '#039BE5',
+  checkboxSize: 20,
   checkboxTickColor: '#0f73ee',
-  checkboxDefaultColor: '#e7ecf0',
+  checkboxDefaultColor: 'transparent',
 
   // Color
   brandPrimary: '#3F51B5',

@@ -1027,7 +1027,7 @@ export default StaticData = {
     },
     {
       id: 2,
-      title: 'Transfer',
+      title: 'Share',
       image: require('../assets/img/transfer-lead.png'),
     },
     {
@@ -1064,7 +1064,7 @@ export default StaticData = {
     },
     {
       id: 2,
-      title: 'Transfer',
+      title: 'Share',
       image: require('../assets/img/transfer-lead.png'),
     },
     {

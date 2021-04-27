@@ -50,11 +50,10 @@ class Meetings extends Component {
 
   componentDidMount() {
     const { navigation } = this.props
-    this.fetchLead()
-    this.getMeetingLead()
     this.props.dispatch(setContacts())
     this._unsubscribe = navigation.addListener('focus', () => {
       this.fetchLead()
+      this.getMeetingLead()
     })
   }
 
@@ -380,7 +379,7 @@ class Meetings extends Component {
       if (type === 'book unit')
         navigation.navigate('CMLeadTabs', { screen: 'Payments' });
       else if (type === 'setup another meeting')
-        this.openModal();
+        this.openModalInMeetingMode(false, null)
     }
   }
 

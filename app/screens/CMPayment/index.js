@@ -106,28 +106,14 @@ class CMPayment extends Component {
       active: false,
       closedWon: false,
       statusfeedbackModalVisible: false,
-      currentCall: null,
       modalMode: 'call',
-      diaryForm: false,
-      diaryTask: {
-        subject: '',
-        taskType: 'follow_up',
-        start: '',
-        end: '',
-        date: '',
-        notes: '',
-        status: 'pending',
-        leadId: this.props.lead.id,
-      },
+      currentCall: null,
+      isFeedbackMeetingModalVisible: false,
+      isFollowUpMode: false,
     }
   }
 
   componentDidMount = () => {
-    // this.axiosCancelSource = axios.CancelToken.source()
-    // axios
-    //   .get('data.json', { cancelToken: this.axiosCancelSource.token })
-    //   .then((response) => {})
-    //   .catch((err) => console.log(err))
     const { firstForm, secondForm } = this.state
     const { lead } = this.props
     const { paidProject, project } = lead
@@ -1065,44 +1051,6 @@ class CMPayment extends Component {
     dispatch(setCMPayment({ ...CMPayment, officeLocationId: value }))
   }
 
-  //  ************ Function for open modal ************
-  openModal = () => {
-    this.setState({
-      active: !this.state.active,
-      formData: {},
-      editMeeting: false,
-      diaryForm: false,
-    })
-  }
-
-  //  ************ Function for open Follow up modal ************
-  openFollowUpModal = () => {
-    this.setState({
-      active: !this.state.active,
-      formData: {},
-      editMeeting: false,
-      diaryForm: true,
-    })
-  }
-
-  addDiary = () => {
-    const { diaryTask } = this.state
-    const startTime = moment()
-    const start = startTime.add(1, 'hours')
-    const newformData = { ...diaryTask }
-    newformData['subject'] = 'Follow up with client'
-    newformData['status'] = 'pending'
-    newformData['taskType'] = 'follow_up'
-    newformData['start'] = start
-    newformData['end'] = start
-    newformData['date'] = start
-    this.setState({
-      active: !this.state.active,
-      diaryForm: true,
-      diaryTask: newformData,
-    })
-  }
-
   // ************ Function for Reject modal ************
 
   goToRejectForm = () => {
@@ -1141,6 +1089,29 @@ class CMPayment extends Component {
       leadId: lead.id,
     }
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+  }
+
+  //  ************ Function for open modal ************
+  openModalInMeetingMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    });
+  }
+
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
+    })
   }
 
 
@@ -1191,7 +1162,7 @@ class CMPayment extends Component {
       closedWon,
       modalMode,
       currentCall,
-      diaryForm,
+      isFollowUpMode,
     } = this.state
     const { lead } = this.props
     return (
@@ -1317,18 +1288,20 @@ class CMPayment extends Component {
             showFollowup={modalMode === 'call'}
             rejectLead={(body) => this.rejectLead(body)}
             sendStatus={(comment, id) => this.sendStatus(comment, id)}
-            openModal={this.openModal}
-            addDiary={this.addDiary}
+            addMeeting={() => this.openModalInMeetingMode()}
+            addFollowup={() => this.openModalInFollowupMode()}
             leadType={'CM'}
             currentCall={currentCall}
           />
 
-          {/* <MeetingFollowupModal
-            leadType={'CM'}
+          <MeetingFollowupModal
+            closeModal={() => this.closeMeetingFollowupModal()}
             active={active}
-            openModal={this.openModal}
-            diaryForm={diaryForm}
-          /> */}
+            isFollowUpMode={isFollowUpMode}
+            lead={lead}
+            leadType={'CM'}
+          />
+
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1339,7 +1312,7 @@ class CMPayment extends Component {
               alreadyClosedLead={this.closedLead}
               closeLead={this.fetchLead}
               closeLeadFor={'leadClose'}
-              goToFollowUp={this.openModal}
+              goToFollowUp={this.openModalInFollowupMode}
               goToRejectForm={this.goToRejectForm}
               closedWon={closedWon}
               showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}

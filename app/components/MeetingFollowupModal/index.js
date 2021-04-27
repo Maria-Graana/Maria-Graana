@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Modal from 'react-native-modal'
-import { connect } from 'react-redux'
 import times from '../../../assets/img/times.png'
 import AppStyles from '../../AppStyles'
 import TouchableButton from '../TouchableButton'
@@ -118,7 +117,7 @@ const MeetingFollowupModal = ({ active,
               title: res.data.subject,
               body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
             }
-            getMeetingLead()
+            getMeetingLead && getMeetingLead()
             closeModal();
             clearFormData();
           })
@@ -418,9 +417,9 @@ const MeetingFollowupModal = ({ active,
 
 MeetingFollowupModal.propTypes = {
   isFollowUpMode: PropTypes.bool.isRequired,
-  editMeeting: PropTypes.bool.isRequired,
   lead: PropTypes.object.isRequired,
   closeModal: PropTypes.func.isRequired,
+  editMeeting: PropTypes.bool,
   leadType: PropTypes.string,
   getMeetingLead: PropTypes.func,
   currentMeeting: PropTypes.object,

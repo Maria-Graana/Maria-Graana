@@ -59,4 +59,18 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 0.8,
   },
+  notCheckBox: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 25,
+    height: 25,
+    borderColor: AppStyles.colors.primaryColor,
+  },
+  checkBox: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 25,
+    height: 25,
+    borderColor: '#fff',
+  },
 })

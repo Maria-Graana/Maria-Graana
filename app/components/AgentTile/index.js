@@ -506,10 +506,7 @@ class AgentTile extends React.Component {
                     onPress={() => {
                       this.props.addProperty(data)
                     }}
-                    style={[
-                      styles.checkBox,
-                      !data.checkBox ? { borderColor: AppStyles.colors.backgroundColor } : null,
-                    ]}
+                    style={[!data.checkBox ? styles.notCheckBox : styles.checkBox]}
                     checked={data.checkBox}
                   />
                 </View>
@@ -547,7 +544,7 @@ class AgentTile extends React.Component {
                 >
                   <Image
                     source={require('../../../assets/img/call.png')}
-                    style={[styles.callImage, data.checkBox ? { tintColor: 'grey' } : null]}
+                    style={[styles.callImage, data.checkBox ? { tintColor: '#fff' } : null]}
                   />
                 </TouchableHighlight>
               </View>

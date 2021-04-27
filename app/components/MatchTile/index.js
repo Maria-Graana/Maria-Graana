@@ -525,7 +525,7 @@ class MatchTile extends React.Component {
                   onPress={() => {
                     this.props.addProperty(data)
                   }}
-                  style={styles.checkBox}
+                  style={[!data.checkBox ? styles.notCheckBox : styles.checkBox]}
                   checked={data.checkBox}
                 />
               </View>
@@ -541,7 +541,7 @@ class MatchTile extends React.Component {
             >
               <Image
                 source={require('../../../assets/img/call.png')}
-                style={[styles.callImage, data.checkBox ? { tintColor: 'grey' } : null]}
+                style={[styles.callImage, data.checkBox ? { tintColor: '#fff' } : null]}
               />
             </TouchableHighlight>
           </View>

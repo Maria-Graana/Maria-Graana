@@ -736,7 +736,7 @@ class LegalAttachment extends Component {
       <TouchableOpacity
         style={styles.btnView}
         onPress={() => {
-          this.downloadLegalDocs(item)
+          if (item) this.downloadLegalDocs(item)
         }}
         activeOpacity={0.7}
       >
@@ -777,6 +777,7 @@ class LegalAttachment extends Component {
     const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
+
     return (
       <View style={[AppStyles.mb1]}>
         <AddLegalPaymentModal
@@ -864,7 +865,19 @@ class LegalAttachment extends Component {
                       />
                     ) : null}
                   </View>
-                  {this.legalDownLoadTile(checkListDoc)}
+                  {checkListDoc && checkListDoc.fileKey !== null ? (
+                    <View>{this.legalDownLoadTile(checkListDoc)}</View>
+                  ) : (
+                    <LegalTile
+                      data={checkListDoc}
+                      index={null}
+                      submitMenu={() => {}}
+                      getAttachmentFromStorage={() => {}}
+                      downloadLegalDocs={() => {}}
+                      isLeadClosed={isLeadClosed}
+                      addBorder={true}
+                    />
+                  )}
                 </View>
               ) : null}
             </View>

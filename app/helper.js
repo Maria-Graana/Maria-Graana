@@ -939,21 +939,26 @@ const helper = {
     }
     return statusColor
   },
-  showStatus(status){
-    if (status === 'not interested out of city')
-      return 'out of city';
-    else if (status === 'not interested low budget')
-      return 'low budget';
-    else if (status === 'not interested re only')
-      return 'interested in RE only';
-    else if (status === 'no response busy')
-      return 'busy'
-    else if (status === 'no response no signals')
-      return 'no signals';
-      else if (status === 'number not on whatsapp')
-      return 'Not on WhatsApp'
-    else return status;
-  }
+  showStatus(status) {
+    if (status === 'not interested out of city') return 'out of city'
+    else if (status === 'not interested low budget') return 'low budget'
+    else if (status === 'not interested re only') return 'interested in RE only'
+    else if (status === 'no response busy') return 'busy'
+    else if (status === 'no response no signals') return 'no signals'
+    else if (status === 'number not on whatsapp') return 'Not on WhatsApp'
+    else return status
+  },
+  checkPPFlag(property) {
+    if (property && property.agency_id) {
+      if (property.agency) {
+        return property.agency.is_premium_partner
+      }
+    } else {
+      if (property.armsuser) {
+        return property.armsuser.organization.isPP
+      }
+    }
+  },
 }
 
 module.exports = helper

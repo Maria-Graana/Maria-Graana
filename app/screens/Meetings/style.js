@@ -1,3 +1,5 @@
+/** @format */
+
 import { StyleSheet } from 'react-native'
 export default styles = StyleSheet.create({
   meetingConteiner: {
@@ -24,7 +26,7 @@ export default styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginBottom: 15,
     position: 'absolute',
-    bottom: 70,
+    bottom: 80,
     right: 10,
   },
   // btnsMainWrap: {
@@ -75,16 +77,16 @@ export default styles = StyleSheet.create({
   },
   bottomNavBtn: {
     width: '20%',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   bottomNavImg: {
     resizeMode: 'contain',
     width: 20,
-    height: 20
+    height: 20,
   },
   bottomNavBtnText: {
     marginTop: 5,
     color: '#4E4E4E',
     fontSize: 12,
   },
-});
+})

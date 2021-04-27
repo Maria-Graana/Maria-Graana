@@ -34,6 +34,8 @@ import { ActionSheet, StyleProvider } from 'native-base'
 import AddPropsurePayment from '../../components/AddPRopsurePayment'
 import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
+import FollowUpModal from '../../components/FollowUpModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -77,6 +79,9 @@ class LeadPropsure extends React.Component {
       legalDocLoader: false,
       assignToAccountsLoading: false,
       officeLocations: [],
+      active: false,
+      statusfeedbackModalVisible: false,
+      closedWon: false,
     }
   }
 
@@ -229,6 +234,7 @@ class LeadPropsure extends React.Component {
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
+        this.closeLead(res.data)
         this.setState({
           assignToAccountsLoading: false,
         })
@@ -392,10 +398,10 @@ class LeadPropsure extends React.Component {
       <TouchableOpacity
         key={item.id.toString()}
         onPress={() => this.showReportsModal(item)}
-        style={[styles.viewButtonStyle, { backgroundColor: AppStyles.bgcWhite.backgroundColor }]}
+        style={[styles.viewButtonStyle]}
         activeOpacity={0.7}
       >
-        <Text style={styles.propsureVerificationTextStyle}>PROPSURE VERIFICATION</Text>
+        <Text style={styles.PVTextStyle}>PROPSURE VERIFICATION</Text>
       </TouchableOpacity>
     )
   }
@@ -440,32 +446,15 @@ class LeadPropsure extends React.Component {
     })
   }
 
-  closeLead = async () => {
-    const { lead } = this.props
+  closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
       let { count } = await this.getLegalDocumentsCount()
       if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
         this.setState({
-          reasons: StaticData.leadCloseReasonsWithPayment,
-          isCloseLeadVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
-        })
-      } else {
-        this.setState({
-          reasons: StaticData.leadCloseReasons,
-          isCloseLeadVisible: true,
-          checkReasonValidation: '',
-          legalDocLoader: false,
+          closedWon: true,
         })
       }
-    } else {
-      this.setState({
-        reasons: StaticData.leadCloseReasons,
-        isCloseLeadVisible: true,
-        checkReasonValidation: '',
-      })
     }
   }
 
@@ -519,7 +508,7 @@ class LeadPropsure extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -585,13 +574,21 @@ class LeadPropsure extends React.Component {
   }
 
   addRemoveReport = (report) => {
-    const { selectedReports } = this.state
+    const { selectedReports, propsureReportTypes } = this.state
     let reports = [...selectedReports]
     let totalReportPrice = 0
     if (reports.some((item) => item.title === report.title)) {
+      if (report.title === 'Basic Property Survey Report') return
       reports = _.without(reports, report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     } else {
+      if (!_.findWhere(reports, { title: 'Basic Property Survey Report' })) {
+        let basicReport = _.find(
+          propsureReportTypes,
+          (item) => item.title === 'Basic Property Survey Report'
+        )
+        reports.push(basicReport)
+      }
       reports.push(report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     }
@@ -656,7 +653,13 @@ class LeadPropsure extends React.Component {
 
   onHandleRequestVerification = () => {
     const { lead } = this.props
-    const { selectedReports, selectedPropertyId, selectedProperty, totalReportPrice } = this.state
+    const {
+      selectedReports,
+      selectedPropertyId,
+      selectedProperty,
+      totalReportPrice,
+      propsureReportTypes,
+    } = this.state
     if (selectedReports.length === 0) {
       alert('Please select at least one report!')
     } else {
@@ -668,8 +671,17 @@ class LeadPropsure extends React.Component {
           fee: item.fee,
         }
       })
+      let packageNames = _.pluck(selectedReports, 'title')
+      if (!packageNames.includes('Basic Property Survey Report')) {
+        let basicReport = _.find(
+          propsureReportTypes,
+          (item) => item.title === 'Basic Property Survey Report'
+        )
+        packageNames.push(basicReport.title)
+        reportIds.push({ id: basicReport.id, fee: basicReport.fee })
+      }
       const body = {
-        packageName: _.pluck(selectedReports, 'title'),
+        packageName: packageNames,
         propertyId: selectedPropertyId,
         pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
         org: selectedProperty.arms_id ? 'arms' : 'graana',
@@ -1014,6 +1026,53 @@ class LeadPropsure extends React.Component {
 
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+    })
+  }
+
+  performReject = (comment) => {
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      var leadId = []
+      leadId.push(lead.id)
+      axios
+        .patch(`/api/leads`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
+  }
+
+  showRejectModal(val) {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => this.performReject(val) },
+      ],
+      { cancelable: false }
+    )
+  }
+
   render() {
     const {
       menuShow,
@@ -1043,6 +1102,9 @@ class LeadPropsure extends React.Component {
       legalDocLoader,
       assignToAccountsLoading,
       officeLocations,
+      active,
+      statusfeedbackModalVisible,
+      closedWon,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1164,6 +1226,20 @@ class LeadPropsure extends React.Component {
               </>
             )}
           </View>
+          <FollowUpModal
+            leadType={'rcm'}
+            active={active}
+            openModal={this.openModal}
+            diaryForm={true}
+          />
+          <StatusFeedbackModal
+            visible={statusfeedbackModalVisible}
+            showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+            commentsList={StaticData.leadClosedCommentsFeedback}
+            showAction={false}
+            showFollowup={false}
+            performReject={(comment) => this.showRejectModal(comment)}
+          />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1178,6 +1254,10 @@ class LeadPropsure extends React.Component {
               lead={lead}
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
+              goToFollowUp={this.openModal}
+              navigation={navigation}
+              goToRejectForm={this.goToRejectForm}
+              closedWon={closedWon}
             />
           </View>
           <LeadRCMPaymentPopup

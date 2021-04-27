@@ -21,7 +21,9 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
+import FollowUpModal from '../../components/FollowUpModal'
 import PaymentHelper from './PaymentHelper'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -100,6 +102,9 @@ class CMPayment extends Component {
       checkFirstFormToken: false,
       officeLocations: [],
       assignToAccountsLoading: false,
+      active: false,
+      statusfeedbackModalVisible: false,
+      closedWon: false,
     }
   }
 
@@ -171,9 +176,7 @@ class CMPayment extends Component {
         if (secondForm) {
           this.calculatePayments(responseData, functionCallingFor)
         }
-        if (functionCallingFor === 'leadClose' && firstForm) {
-          this.checkLeadClosureReasons()
-        }
+        this.checkLeadClosureReasons()
       })
       .catch((error) => {
         console.log('/api/leads/project/byId?id - Error', error)
@@ -209,11 +212,6 @@ class CMPayment extends Component {
     const { lead } = this.props
     const { payment, unit } = lead
     if (!unit) {
-      this.setState({
-        reasons: StaticData.paymentPopup,
-        leadCloseToggle: true,
-        checkReasonValidation: '',
-      })
       return
     }
     let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
@@ -223,24 +221,8 @@ class CMPayment extends Component {
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
     if (outStandingTax <= 0 && remainingPayment <= 0) {
       this.setState({
-        reasons: StaticData.paymentPopupDone,
-        leadCloseToggle: true,
-        checkReasonValidation: '',
+        closedWon: true,
       })
-    } else {
-      if (PaymentMethods.findPaymentClearedStatus(payment)) {
-        this.setState({
-          reasons: StaticData.paymentPopupAnyPaymentAdded,
-          leadCloseToggle: true,
-          checkReasonValidation: '',
-        })
-      } else {
-        this.setState({
-          reasons: StaticData.paymentPopup,
-          leadCloseToggle: true,
-          checkReasonValidation: '',
-        })
-      }
     }
   }
 
@@ -335,7 +317,7 @@ class CMPayment extends Component {
       addedBy: 'self',
       tasksList: StaticData.taskValuesCMLead,
       taskType: taskType != '' ? taskType : null,
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -1069,6 +1051,53 @@ class CMPayment extends Component {
     dispatch(setCMPayment({ ...CMPayment, officeLocationId: value }))
   }
 
+  //  ************ Function for open modal ************
+  openModal = () => {
+    this.setState({
+      active: !this.state.active,
+    })
+  }
+
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+    })
+  }
+
+  performReject = (comment) => {
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    this.setState({ statusfeedbackModalVisible: false }, () => {
+      var leadId = []
+      leadId.push(lead.id)
+      axios
+        .patch(`/api/leads/project`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    })
+  }
+
+  showRejectModal(val) {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => this.performReject(val) },
+      ],
+      { cancelable: false }
+    )
+  }
+
   render() {
     const {
       checkLeadClosedOrNot,
@@ -1111,6 +1140,9 @@ class CMPayment extends Component {
       checkFirstFormToken,
       assignToAccountsLoading,
       officeLocations,
+      active,
+      statusfeedbackModalVisible,
+      closedWon,
     } = this.state
     const { lead } = this.props
     return (
@@ -1227,6 +1259,20 @@ class CMPayment extends Component {
               </View>
             </ScrollView>
           </KeyboardAvoidingView>
+          <FollowUpModal
+            leadType={'cm'}
+            active={active}
+            openModal={this.openModal}
+            diaryForm={true}
+          />
+          <StatusFeedbackModal
+            visible={statusfeedbackModalVisible}
+            showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+            commentsList={StaticData.leadClosedCommentsFeedback}
+            showAction={false}
+            showFollowup={false}
+            performReject={(comment) => this.showRejectModal(comment)}
+          />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1237,6 +1283,9 @@ class CMPayment extends Component {
               alreadyClosedLead={this.closedLead}
               closeLead={this.fetchLead}
               closeLeadFor={'leadClose'}
+              goToFollowUp={this.openModal}
+              goToRejectForm={this.goToRejectForm}
+              closedWon={closedWon}
             />
           </View>
         </View>

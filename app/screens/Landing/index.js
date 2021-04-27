@@ -4,6 +4,10 @@ import axios from 'axios'
 import * as Linking from 'expo-linking'
 import React from 'react'
 import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
 import MapBlue from '../../../assets/img/geotag.png'
@@ -23,6 +27,7 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
+
 
 class Landing extends React.Component {
   constructor(props) {
@@ -64,15 +69,15 @@ class Landing extends React.Component {
         const purposeTab = pathArray.includes('cmLead')
           ? 'invest'
           : pathArray.includes('rcmLead') && pathArray.includes('buy')
-          ? 'sale'
-          : pathArray.includes('rcmLead') && pathArray.includes('rent')
-          ? 'rent'
-          : ''
+            ? 'sale'
+            : pathArray.includes('rcmLead') && pathArray.includes('rent')
+              ? 'rent'
+              : ''
         pathArray.includes('cmLead') || pathArray.includes('rcmLead')
           ? navigation.navigate('LeadDetail', {
-              purposeTab,
-              lead: { id: leadId },
-            })
+            purposeTab,
+            lead: { id: leadId },
+          })
           : null
       }
     })
@@ -87,15 +92,15 @@ class Landing extends React.Component {
       const purposeTab = pathArray.includes('cmLead')
         ? 'invest'
         : pathArray.includes('rcmLead') && pathArray.includes('buy')
-        ? 'sale'
-        : pathArray.includes('rcmLead') && pathArray.includes('rent')
-        ? 'rent'
-        : ''
+          ? 'sale'
+          : pathArray.includes('rcmLead') && pathArray.includes('rent')
+            ? 'rent'
+            : ''
       pathArray.includes('cmLead') || pathArray.includes('rcmLead')
         ? navigation.navigate('LeadDetail', {
-            purposeTab,
-            lead: { id: leadId },
-          })
+          purposeTab,
+          lead: { id: leadId },
+        })
         : null
     }
   }
@@ -183,10 +188,21 @@ class Landing extends React.Component {
     })
   }
 
+  isBcOrCCRole = () => {
+    const {user} = this.props;
+    if (user.subRole === 'business_centre_manager'
+      || user.subRole === 'business_centre_agent'
+      || user.subRole === 'call_centre_manager'
+      || user.subRole === 'call_centre_warrior'
+      || user.subRole === 'call_centre_agent')
+      return true;
+    else
+      return false;
+  }
+
   render() {
     const { tiles, userStatistics, loading, toggleStatsTile } = this.state
     const { user, navigation } = this.props
-
     return (
       <SafeAreaView style={[AppStyles.container, styles.mainContainer]}>
         <AndroidNotifications navigation={navigation} />
@@ -212,7 +228,9 @@ class Landing extends React.Component {
           onPress={() => {
             this.toggleStats()
           }}
-          style={toggleStatsTile ? styles.kpiContainer : styles.kpiContainerFalse}
+          style={toggleStatsTile ?
+             [styles.kpiContainer, {minHeight: this.isBcOrCCRole() ? null : hp('20%')}] : 
+             [styles.kpiContainerFalse, {minHeight: this.isBcOrCCRole() ? null : hp('20%') }]}
         >
           {toggleStatsTile ? (
             <View style={{ flex: 1 }}>
@@ -224,8 +242,14 @@ class Landing extends React.Component {
                 <>
                   <Text style={styles.kpiText}>KPIs</Text>
                   <StatisticsTile imagePath={TargetNew} value={userStatistics.avgTime} />
-                  <StatisticsTile imagePath={HomeBlue} value={userStatistics.listing} />
-                  <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
+                  {
+                     this.isBcOrCCRole() ?
+                      null
+                      : <>
+                        <StatisticsTile imagePath={HomeBlue} value={userStatistics.listing} />
+                        <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
+                      </>
+                  }
                   <StatisticsTile
                     title={'LCR'}
                     value={this.showLeadWonAssignedPercentage(

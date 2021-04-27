@@ -1,33 +1,28 @@
 /** @format */
 
+import axios from 'axios'
+import moment from 'moment'
 import React from 'react'
 import {
-  Text,
-  View,
-  StyleSheet,
-  Modal,
-  SafeAreaView,
   FlatList,
-  TouchableOpacity,
   Image,
   Linking,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native'
 import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import HistoryTile from '../HistoryTile'
-import backArrow from '../../../assets/img/backArrow.png'
-import LoadingNoResult from '../LoadingNoResult'
-import MeetingTile from '../MeetingTile'
-import helper from '../../helper'
-import HistoryStatusModal from '../HistoryStatusModal'
-import MeetingModal from '../MeetingModal'
-import MatchTile from '../MatchTile'
-import config from '../../config'
-import AgentTile from '../AgentTile'
-import moment from 'moment'
-import Loader from '../loader'
-import axios from 'axios'
 import _ from 'underscore'
+import backArrow from '../../../assets/img/backArrow.png'
+import AppStyles from '../../AppStyles'
+import config from '../../config'
+import helper from '../../helper'
+import AgentTile from '../AgentTile'
+import LoadingNoResult from '../LoadingNoResult'
+import MatchTile from '../MatchTile'
 
 class ShortlistedProperties extends React.Component {
   constructor(props) {

@@ -276,7 +276,7 @@ class PropertyOffer extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -493,7 +493,7 @@ class PropertyOffer extends React.Component {
     const { lead } = this.props
     axios
       .patch(
-        `/api/offer/agree?leadId=${lead.id}&offerId=${offerId}&shortlistedPropId=${currentProperty.id}`
+        `/api/offer/agree?leadId=${lead.id}&offerId=${offerId}&shortlistedPropId=${currentProperty.id}&addedBy=seller`
       )
       .then((res) => {
         if (res.data.msg) {

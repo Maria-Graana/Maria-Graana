@@ -155,6 +155,7 @@ class MatchTile extends React.Component {
     let phoneNumber = null
     let totalImages = imagesList.length
     let showDone = this.checkDiaryStatus(data)
+    let isPP = helper.checkPPFlag(data)
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false
@@ -189,7 +190,7 @@ class MatchTile extends React.Component {
               />
             )}
           </View>
-          {imagesList.length ? (
+          {imagesList.length && isPP ? (
             <View style={styles.imageCountViewStyle}>
               <Image
                 source={require('../../../assets/img/green-dot.png')}

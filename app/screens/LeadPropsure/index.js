@@ -578,7 +578,7 @@ class LeadPropsure extends React.Component {
     let reports = [...selectedReports]
     let totalReportPrice = 0
     if (reports.some((item) => item.title === report.title)) {
-      if (report.title === 'Basic Property Survey Report') return
+      if (reports && reports.length > 1 && report.title === 'Basic Property Survey Report') return
       reports = _.without(reports, report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     } else {
@@ -589,7 +589,7 @@ class LeadPropsure extends React.Component {
         )
         reports.push(basicReport)
       }
-      reports.push(report)
+      if (report.title !== 'Basic Property Survey Report') reports.push(report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     }
     this.setState({ selectedReports: reports, totalReportPrice: totalReportPrice })

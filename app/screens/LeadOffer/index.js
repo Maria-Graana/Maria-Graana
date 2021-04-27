@@ -18,7 +18,6 @@ import OfferModal from '../../components/OfferModal'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
-import FollowUpModal from '../../components/FollowUpModal'
 import styles from './styles'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 class LeadOffer extends React.Component {
@@ -725,12 +724,12 @@ class LeadOffer extends React.Component {
             )}
           </View>
         </View>
-        <FollowUpModal
+        {/* <FollowUpModal
           leadType={'rcm'}
           active={active}
           openModal={this.openModal}
           diaryForm={true}
-        />
+        /> */}
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
           showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}

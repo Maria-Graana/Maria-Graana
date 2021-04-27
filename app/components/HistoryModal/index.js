@@ -8,7 +8,7 @@ import LoadingNoResult from '../LoadingNoResult';
 import MeetingTile from '../MeetingTile';
 import helper from '../../helper';
 import HistoryStatusModal from '../HistoryStatusModal';
-import MeetingModal from '../MeetingModal';
+// import MeetingModal from '../MeetingModal';
 import moment from 'moment';
 import Loader from '../loader';
 import axios from 'axios';
@@ -244,7 +244,7 @@ class HistoryModal extends React.Component {
                         sendStatus={this.sendStatus}
                         openStatus={this.openStatus}
                     /> */}
-                    <MeetingModal
+                    {/* <MeetingModal
                         active={active}
                         formData={formData}
                         checkValidation={checkValidation}
@@ -254,7 +254,7 @@ class HistoryModal extends React.Component {
                         handleFormDiary={this.handleFormDiary}
                         addFollowUpTask={(selectedOption) => this.addFollowUpTask(selectedOption)}
                         loading={loading}
-                    />
+                    /> */}
                 </SafeAreaView>
             </Modal>
         )

@@ -34,7 +34,6 @@ import { ActionSheet, StyleProvider } from 'native-base'
 import AddPropsurePayment from '../../components/AddPRopsurePayment'
 import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
-import FollowUpModal from '../../components/FollowUpModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 var BUTTONS = ['Delete', 'Cancel']
@@ -1188,12 +1187,12 @@ class LeadPropsure extends React.Component {
               </>
             )}
           </View>
-          <FollowUpModal
+          {/* <FollowUpModal
             leadType={'rcm'}
             active={active}
             openModal={this.openModal}
             diaryForm={true}
-          />
+          /> */}
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
             showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}

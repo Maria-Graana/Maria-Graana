@@ -30,7 +30,6 @@ import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import DeleteModal from '../../components/DeleteModal'
-import FollowUpModal from '../../components/FollowUpModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
@@ -1829,12 +1828,12 @@ class LeadRCMPayment extends React.Component {
               />
             </>
           )}
-          <FollowUpModal
+          {/* <FollowUpModal
             leadType={'rcm'}
             active={active}
             openModal={this.openModal}
             diaryForm={true}
-          />
+          /> */}
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
             showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}

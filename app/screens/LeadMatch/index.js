@@ -15,7 +15,6 @@ import AppStyles from '../../AppStyles'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import FilterModal from '../../components/FilterModal/index'
-import FollowUpModal from '../../components/FollowUpModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
@@ -974,12 +973,12 @@ class LeadMatch extends React.Component {
                 </Text>
               </TouchableOpacity>
             ) : null}
-            <FollowUpModal
+            {/* <FollowUpModal
               leadType={'rcm'}
               active={active}
               openModal={this.openModal}
               diaryForm={true}
-            />
+            /> */}
             <StatusFeedbackModal
               visible={statusfeedbackModalVisible}
               showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}

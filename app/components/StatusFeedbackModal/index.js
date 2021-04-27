@@ -21,9 +21,6 @@ import times from '../../../assets/img/times.png'
 import AppStyles from '../../AppStyles'
 import TouchableButton from '../TouchableButton'
 
-
-
-
 const CommentChip = ({ comment, setSelectedComment }) => {
   return (
     <TouchableOpacity
@@ -43,8 +40,8 @@ const StatusFeedbackModal = ({
   modalMode,
   sendStatus,
   currentCall,
-  openModal,
-  addDiary,
+  addMeeting,
+  addFollowup,
   showFeedbackMeetingModal,
   rejectLead,
   leadType,
@@ -66,7 +63,7 @@ const StatusFeedbackModal = ({
       if (currentCall) {
         if (modalMode === 'call') {
           sendStatus(selectedComment, currentCall.id)
-          openModal()
+          addMeeting()
         } else {
           // Meeting Mode & actions for book unit and set up another meeting
             showFeedbackMeetingModal(true);
@@ -86,7 +83,7 @@ const StatusFeedbackModal = ({
     if (currentCall) {
         showFeedbackModal(false);
         sendStatus(selectedComment, currentCall.id)
-        addDiary();
+        addFollowup();
     }
   }
 

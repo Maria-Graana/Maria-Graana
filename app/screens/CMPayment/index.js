@@ -1271,6 +1271,8 @@ class CMPayment extends Component {
               goToFollowUp={this.openModal}
               goToRejectForm={this.goToRejectForm}
               closedWon={closedWon}
+              customer={lead.customer}
+              leadType = {'CM'}
             />
           </View>
         </View>

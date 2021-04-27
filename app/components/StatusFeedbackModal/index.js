@@ -47,6 +47,8 @@ const StatusFeedbackModal = ({
   addDiary,
   showFeedbackMeetingModal,
   rejectLead,
+  leadType,
+  goToViewingScreen,
 }) => {
   const [selectedComment, setSelectedComment] = useState(null)
   const textInput = useRef(null)
@@ -60,14 +62,22 @@ const StatusFeedbackModal = ({
 
   const performAction = () => {
     showFeedbackModal(false);
-    if (currentCall) {
-      if (modalMode === 'call') {
+    if(leadType === 'CM') {
+      if (currentCall) {
+        if (modalMode === 'call') {
+          sendStatus(selectedComment, currentCall.id)
+          openModal()
+        } else {
+          // Meeting Mode & actions for book unit and set up another meeting
+            showFeedbackMeetingModal(true);
+            sendStatus(selectedComment, currentCall.id);
+        }
+      }
+    }
+    else{
+      if(currentCall){
         sendStatus(selectedComment, currentCall.id)
-        openModal()
-      } else {
-        // Meeting Mode & actions for book unit and set up another meeting
-          showFeedbackMeetingModal(true);
-          sendStatus(selectedComment, currentCall.id);
+        goToViewingScreen();
       }
     }
   }
@@ -160,7 +170,7 @@ const StatusFeedbackModal = ({
                     ? performAction()
                     : alert('Please select a comment to continue')
                 }
-                label={modalMode === 'call' ? 'Meeting Setup' : 'Action'}
+                label={modalMode === 'call' ? leadType === 'RCM' ? 'Book Viewing' : 'Meeting Setup' : 'Action'}
               />
             )}
             {showFollowup && (

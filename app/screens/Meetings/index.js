@@ -391,13 +391,12 @@ class Meetings extends Component {
       taskType: 'called',
       subject: 'Call to client ' + this.props.lead.customer.customerName,
       customerId: this.props.lead.customer.id,
-      leadId: this.props.lead.id,
+      leadId: this.props.lead.id, // For CM send leadID and armsLeadID for RCM
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.setState({ currentCall: res.data }, () => {
-        this.getMeetingLead()
-      })
+      this.setCurrentCall(res.data);
+      this.getMeetingLead()
     })
   }
 
@@ -671,6 +670,14 @@ class Meetings extends Component {
     this.setState({modalMode: 'reject', statusfeedbackModalVisible: true})
   }
 
+  setCurrentCall = (call) => {
+    this.setState({currentCall: call});
+}
+
+  showStatusFeedbackModal = (value) => {
+    this.setState({ statusfeedbackModalVisible: value })
+  }
+
 
   render() {
     const {
@@ -767,6 +774,10 @@ class Meetings extends Component {
             closeLead={this.checkLeadClosureReasons}
             goToFollowUp={this.openFollowUpModal}
             goToRejectForm={this.goToRejectForm}
+            showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            setCurrentCall = {(call)=> this.setCurrentCall(call)}
+            customer={leadData.customer}
+            leadType = {'CM'}
           />
         </View>
 
@@ -809,14 +820,14 @@ class Meetings extends Component {
           visible={statusfeedbackModalVisible}
           showAction={modalMode === 'call' || modalMode === 'meeting'}
           showFollowup={modalMode === 'call' || modalMode === 'meeting'}
-          showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
           commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : modalMode === 'meeting' ? StaticData.commentsFeedbackMeeting : StaticData.leadClosedCommentsFeedback}
           modalMode={modalMode}
-          currentCall={currentCall}
           sendStatus={(comment, id)=> this.sendStatus(comment, id)}
           openModal={this.openModal}
           addDiary={this.addDiary}
           showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
+          currentCall={currentCall}
           rejectLead={(body)=>this.rejectLead(body)}
           leadType={'CM'}
         />

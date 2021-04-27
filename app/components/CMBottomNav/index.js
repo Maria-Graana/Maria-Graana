@@ -71,9 +71,11 @@ class CMBottomNav extends React.Component {
       visible: false,
       actionVisible: false,
     }
+
   }
 
   callNumber = (url) => {
+    console.log(url);
     if (url != 'tel:null') {
       Linking.canOpenURL(url)
         .then((supported) => {
@@ -103,19 +105,19 @@ class CMBottomNav extends React.Component {
   }
 
   call = () => {
-    const { contacts, customer } = this.props
+    const { contacts, customer, showStatusFeedbackModal } = this.props
     if (customer) {
       let newContact = helper.createContactPayload(customer)
-      this.updateStatus()
       this.sendCallStatus()
-      this.props.getCallHistory()
       helper.callNumber(newContact, contacts)
+      showStatusFeedbackModal(true);
     } else {
       helper.errorToast('No Phone Number')
     }
   }
 
   sendCallStatus = () => {
+    const {leadType} = this.props;
     const start = moment().format()
     let body = {
       start: start,
@@ -126,37 +128,15 @@ class CMBottomNav extends React.Component {
       response: 'Called',
       subject: 'Call to client ' + this.props.lead.customer.customerName,
       cutomerId: this.props.lead.customer.id,
-      armsLeadId: this.props.lead.id,
+      armsLeadId: leadType === 'RCM' ? this.props.lead.id : null, // For RCM Call
+      leadId:  leadType === 'CM' ? this.props.lead.id : null ,// For CM Call
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
-      // console.log('sendCallStatus: ', res.data)
+      this.props.setCurrentCall(res.data)
     })
   }
 
-  updateStatus = () => {
-    const { lead, user } = this.props
-    var leadId = []
-    leadId.push(lead.id)
-    if (lead.assigned_to_armsuser_id === user.id) {
-      if (lead.status === 'open') {
-        axios
-          .patch(
-            `/api/leads`,
-            {
-              status: 'called',
-            },
-            { params: { id: leadId } }
-          )
-          .then((res) => {
-            console.log('success')
-          })
-          .catch((error) => {
-            console.log(`ERROR: /api/leads/?id=${data.id}`, error)
-          })
-      }
-    }
-  }
 
   performListActions = (title) => {
     const { goToComments, goToDiaryForm, goToAttachments, lead } = this.props

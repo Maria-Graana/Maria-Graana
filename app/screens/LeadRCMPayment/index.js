@@ -43,6 +43,7 @@ import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import styles from './styles'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import moment from 'moment'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -123,8 +124,10 @@ class LeadRCMPayment extends React.Component {
       buyerToggleModal: false,
       advanceNotZero: false,
       active: false,
-      statusfeedbackModalVisible: false,
       closedWon: false,
+      statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
     }
   }
 
@@ -1535,11 +1538,35 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
+  sendStatus = (status, id) => {
+    const { formData, meetings } = this.state
+    let body = {
+      response: status,
+      comments: status,
+      leadId: formData.leadId,
+    }
+      axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
+        this.getMeetingLead()
+      })
+  }
+
+
+  sendStatus = (status, id) => {
+    const { formData, meetings } = this.state
+    let body = {
+      response: status,
+      comments: status,
+      leadId: formData.leadId,
+    }
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+  }
+
   // ************ Function for Reject modal ************
   goToRejectForm = () => {
     const { statusfeedbackModalVisible } = this.state
     this.setState({
       statusfeedbackModalVisible: !statusfeedbackModalVisible,
+      modalMode: 'reject'
     })
   }
 
@@ -1556,6 +1583,19 @@ class LeadRCMPayment extends React.Component {
       .catch((error) => {
         console.log(error)
       })
+  }
+
+  showStatusFeedbackModal = (value) => {
+    this.setState({ statusfeedbackModalVisible: value })
+  }
+
+  setCurrentCall = (call) => {
+      this.setState({currentCall: call});
+  }
+
+  goToViewingScreen = () => {
+    const {navigation} = this.props;
+    navigation.navigate('RCMLeadTabs', {screen: 'Viewing',})
   }
 
   render() {
@@ -1598,7 +1638,9 @@ class LeadRCMPayment extends React.Component {
       advanceNotZero,
       active,
       statusfeedbackModalVisible,
+      modalMode,
       closedWon,
+      currentCall,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1795,12 +1837,17 @@ class LeadRCMPayment extends React.Component {
           />
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
-            commentsList={StaticData.leadClosedCommentsFeedback}
-            showAction={false}
-            showFollowup={false}
+            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            modalMode={modalMode}
+            commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall  :StaticData.leadClosedCommentsFeedback}
+            showAction={modalMode === 'call'}
+            showFollowup={modalMode === 'call'}
             rejectLead={(body)=>this.rejectLead(body)}
+            sendStatus={(comment, id)=> this.sendStatus(comment, id)}
+            addDiary={this.openModal}
             leadType={'RCM'}
+            currentCall={currentCall}
+            goToViewingScreen={this.goToViewingScreen}
           />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
@@ -1819,6 +1866,9 @@ class LeadRCMPayment extends React.Component {
               goToFollowUp={this.openModal}
               navigation={navigation}
               goToRejectForm={this.goToRejectForm}
+              showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+              setCurrentCall = {(call)=> this.setCurrentCall(call)}
+              leadType={'RCM'}
               closedWon={closedWon}
             />
           </View>

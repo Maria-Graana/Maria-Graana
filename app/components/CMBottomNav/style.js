@@ -7,8 +7,6 @@ export default styles = StyleSheet.create({
   bottomNavMain: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-
-    // marginTop: 15,
     elevation: -3,
     shadowOffset: { width: -1, height: -1 },
     shadowColor: '#33333312',

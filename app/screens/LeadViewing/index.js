@@ -785,6 +785,13 @@ class LeadViewing extends React.Component {
       isFollowUpMode: false,
     })
   }
+  //  ************ Function for open modal ************
+  openFollowUpModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = () => {

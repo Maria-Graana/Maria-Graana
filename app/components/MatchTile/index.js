@@ -155,6 +155,7 @@ class MatchTile extends React.Component {
     let phoneNumber = null
     let totalImages = imagesList.length
     let showDone = this.checkDiaryStatus(data)
+    let isPP = helper.checkPPFlag(data)
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false
@@ -189,7 +190,7 @@ class MatchTile extends React.Component {
               />
             )}
           </View>
-          {imagesList.length ? (
+          {imagesList.length && isPP ? (
             <View style={styles.imageCountViewStyle}>
               <Image
                 source={require('../../../assets/img/green-dot.png')}
@@ -524,7 +525,7 @@ class MatchTile extends React.Component {
                   onPress={() => {
                     this.props.addProperty(data)
                   }}
-                  style={styles.checkBox}
+                  style={[!data.checkBox ? styles.notCheckBox : styles.checkBox]}
                   checked={data.checkBox}
                 />
               </View>
@@ -540,7 +541,7 @@ class MatchTile extends React.Component {
             >
               <Image
                 source={require('../../../assets/img/call.png')}
-                style={[styles.callImage, data.checkBox ? { tintColor: 'grey' } : null]}
+                style={[styles.callImage, data.checkBox ? { tintColor: '#fff' } : null]}
               />
             </TouchableHighlight>
           </View>

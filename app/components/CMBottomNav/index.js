@@ -145,7 +145,8 @@ class CMBottomNav extends React.Component {
     if (title === 'Whatsapp') this.openWhatsapp()
     if (title === 'Attach') goToAttachments()
     if (title === 'Call') this.call()
-    if (title === 'ReAssign') this.handleLongPress(lead)
+    if (title === 'ReAssign') this.checkAssignedLead(lead)
+    if (title === 'Share') this.navigateToShareScreen(lead)
   }
 
   handleLongPress = (val) => {

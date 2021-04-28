@@ -17,14 +17,16 @@ import CMPaymentModal from '../../components/CMPaymentModal'
 import CMSecondForm from '../../components/CMSecondForm'
 import DeleteModal from '../../components/DeleteModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
+import FollowUpModal from '../../components/FollowUpModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import PaymentHelper from './PaymentHelper'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import StaticData from '../../StaticData'
+import PaymentHelper from './PaymentHelper'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -1164,7 +1166,7 @@ class CMPayment extends Component {
       currentCall,
       isFollowUpMode,
     } = this.state
-    const { lead } = this.props
+    const { lead, navigation } = this.props
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -1317,8 +1319,11 @@ class CMPayment extends Component {
               closedWon={closedWon}
               showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
               setCurrentCall={(call) => this.setCurrentCall(call)}
-              customer={lead.customer}
               leadType={'CM'}
+              navigation={navigation}
+              customer={lead.customer}
+              goToHistory={() => {}}
+              getCallHistory={() => {}}
             />
           </View>
         </View>

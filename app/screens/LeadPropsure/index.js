@@ -1005,9 +1005,7 @@ class LeadPropsure extends React.Component {
   }
 
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
-
-
-
+  
   closeMeetingFollowupModal = () => {
     this.setState({
       active: !this.state.active,

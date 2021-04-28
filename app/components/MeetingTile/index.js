@@ -33,19 +33,7 @@ class MeetingTile extends React.Component {
               <Text style={[styles.fontBold]}>{moment(data.date).format("MMM DD")}</Text>
             </View>
             <View style={[styles.dotsWrap]}>
-              {
-                data.taskType === 'called' && data.response != 'pending' &&
-                <View>
-                  <Text style={[styles.doneText, response != 'DNC' && styles.uperCase]}>{data.response !== null ? helper.showStatus(response) : 'Called'}</Text>
-                </View>
-              }
-
-              {
-                data.taskType === 'meeting' &&
-                <View>
-                  <Text style={[styles.doneText, styles.uperCase]}>{data.response != null ? response : 'Meeting Planned'}</Text>
-                </View>
-              }
+            
               {
                 leadClosedCheck && data.taskType === 'meeting' ?
                   <Menu
@@ -86,6 +74,19 @@ class MeetingTile extends React.Component {
               } */}
             </View>
           </View>
+          {
+                data.taskType === 'called' && data.response != 'pending' &&
+                <View>
+                  <Text style={[styles.doneText, response != 'DNC' && styles.uperCase]}>{data.response !== null ? helper.showStatus(response) : 'Called'}</Text>
+                </View>
+              }
+
+              {
+                data.taskType === 'meeting' &&
+                <View>
+                  <Text style={[styles.doneText, styles.uperCase]}>{data.response != null ? response : 'Meeting Planned'}</Text>
+                </View>
+              }
         </View>
       </TouchableOpacity >
     )

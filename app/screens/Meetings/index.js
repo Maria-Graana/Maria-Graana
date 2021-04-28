@@ -3,6 +3,7 @@ import axios from 'axios'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { Alert, FlatList, Linking, Platform, Text, TouchableOpacity, View } from 'react-native'
+import { ActionSheet } from 'native-base';
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import { setContacts } from '../../actions/contacts'
@@ -18,6 +19,7 @@ import TimerNotification from '../../LocalNotifications'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import styles from './style'
+
 class Meetings extends Component {
   constructor(props) {
     super(props)
@@ -68,6 +70,7 @@ class Meetings extends Component {
       statusfeedbackModalVisible: false,
       modalMode: 'call',
       currentCall: null,
+      isFeedbackMeetingModalVisible: false,
       closedWon: false,
     }
   }
@@ -306,6 +309,7 @@ class Meetings extends Component {
     this.setState(
       {
         editMeeting: false,
+        active: false,
       },
       () => {
         this.addFollowUpForCall(payload)
@@ -333,13 +337,12 @@ class Meetings extends Component {
   }
 
   sendStatus = (status, id) => {
-    const { formData } = this.state
+    const { formData, meetings } = this.state
     let body = {
       response: status,
       comments: status,
       leadId: formData.leadId,
     }
-    console.log(body)
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${id}&cmLeadId=${formData.leadId}`).then((res) => {
         this.getMeetingLead()
@@ -410,7 +413,7 @@ class Meetings extends Component {
           if (!supported) {
             console.log("Can't handle url: " + url)
           } else {
-            this.call()
+            this.call();
             return Linking.openURL(url)
           }
         })
@@ -633,8 +636,6 @@ class Meetings extends Component {
             this.sendStatus(comment, currentCall.id)
           })
         }
-      } else {
-        console.log('meeting action')
       }
     })
   }
@@ -664,7 +665,7 @@ class Meetings extends Component {
   }
 
   performReject = (comment) => {
-    const { currentCall } = this.state
+    const { currentCall, modalMode } = this.state
     const { lead, navigation } = this.props
     let body = {
       reasons: comment,
@@ -748,6 +749,7 @@ class Meetings extends Component {
       diaryTask,
       loading,
       statusfeedbackModalVisible,
+      isFeedbackMeetingModalVisible,
       modalMode,
     } = this.state
     const { navigation, lead } = this.props
@@ -848,13 +850,11 @@ class Meetings extends Component {
           />
         )}
 
-        {/* <MeetingStatusModal
-          sendStatus={this.sendStatus}
-          modalType={modalStatus}
-          goToDiaryForm={this.goToDiaryForm}
-          goToAttachments={this.goToAttachments}
-          goToComments={this.goToComments}
-        /> */}
+        <CallFeedbackActionMeeting
+          isFeedbackMeetingModalVisible={isFeedbackMeetingModalVisible}
+          performMeetingAction={(type) => this.performMeetingAction(type)}
+          showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
+        />
 
         <LeadRCMPaymentPopup
           reasons={reasons}
@@ -869,6 +869,8 @@ class Meetings extends Component {
 
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
+          showAction={modalMode === 'call' || modalMode === 'meeting'}
+          showFollowup={modalMode === 'call' || modalMode === 'meeting'}
           showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
           commentsList={
             modalMode === 'call'

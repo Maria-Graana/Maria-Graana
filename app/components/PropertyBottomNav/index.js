@@ -1,16 +1,59 @@
 /** @format */
 
-import React from 'react'
-import { View, Text, Image, TouchableOpacity, Linking } from 'react-native'
-import AppStyles from '../../AppStyles'
-import styles from './style'
-import { connect } from 'react-redux'
-import Avatar from '../Avatar'
-import helper from '../../helper'
-import { Button, Menu, Divider, Provider } from 'react-native-paper'
 import axios from 'axios'
 import moment from 'moment'
+import React from 'react'
+import { Image, Linking, Text, TouchableOpacity, View, TouchableHighlight } from 'react-native'
+import { Menu, Divider } from 'react-native-paper'
+import { Menu as PopupMenu, MenuOptions, MenuTrigger, MenuOption } from 'react-native-popup-menu'
+import { connect } from 'react-redux'
+import AppStyles from '../../AppStyles'
+import StaticData from '../../StaticData'
+import helper from '../../helper'
+import styles from './style'
 
+const triggerStyles = {
+  triggerText: {
+    color: '#fff',
+    fontFamily: AppStyles.fonts.boldFont,
+    fontSize: 16,
+    alignSelf: 'center',
+  },
+  triggerWrapper: {
+    padding: 5,
+    backgroundColor: AppStyles.colors.primaryColor,
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    borderRadius: 5,
+  },
+  triggerTouchable: {
+    underlayColor: '#fff',
+    activeOpacity: 70,
+  },
+  TriggerTouchableComponent: TouchableHighlight,
+}
+
+const optionsStyles = {
+  optionsContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: AppStyles.colors.primaryColor,
+    padding: 5,
+  },
+  optionsWrapper: {
+    backgroundColor: '#fff',
+  },
+  optionWrapper: {
+    backgroundColor: '#fff',
+    margin: 5,
+  },
+  optionTouchable: {
+    // activeOpacity: 70,
+  },
+  optionText: {},
+}
 class PropertyBottomNav extends React.Component {
   constructor(props) {
     super(props)
@@ -94,129 +137,74 @@ class PropertyBottomNav extends React.Component {
     }
   }
 
+  listActionMenuItems = () => {
+    let actionData = StaticData.propertyActionItems
+    return actionData.map((item, index) => {
+      return (
+        <MenuOption onSelect={() => this.performListActions(item.title)}>
+          <View style={styles.menuStyle}>
+            <Image style={styles.bottomNavImg} source={item.image} />
+            <Text style={styles.menuText}>{item.title}</Text>
+          </View>
+          {actionData.length - 1 !== index && <Divider />}
+        </MenuOption>
+      )
+    })
+  }
+
+  performListActions = (title) => {
+    const { goToComments, goToDiaryForm, goToAttachments } = this.props
+    if (title === 'Comment') goToComments()
+    if (title === 'Diary Task') goToDiaryForm()
+    if (title === 'Attach') goToAttachments()
+  }
+
   render() {
-    const {
-      navigateTo,
-      goToComments,
-      goToDiaryForm,
-      goToAttachments,
-      closedLeadEdit,
-      closeLead,
-      alreadyClosedLead,
-      callButton,
-      goToHistory,
-    } = this.props
+    const { navigateTo } = this.props
     const { visible } = this.state
 
     return (
       <View style={styles.bottomNavMain}>
         <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
           <Image style={styles.bottomNavImg} source={require('../../../assets/img/details.png')} />
-          <Text style={styles.bottomNavBtnText}>Details</Text>
+          <Text style={styles.bottomNavBtnText}>CIF</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomNavBtn}
-          onPress={() => {
-            goToComments()
-            this.openMenu(false)
-          }}
-        >
-          <Image style={styles.bottomNavImg} source={require('../../../assets/img/msg.png')} />
-          <Text style={styles.bottomNavBtnText}>Comments</Text>
+        <PopupMenu style={styles.popMenu}>
+          <MenuTrigger text="Action" customStyles={triggerStyles} />
+          <MenuOptions customStyles={optionsStyles}>{this.listActionMenuItems()}</MenuOptions>
+        </PopupMenu>
+        <TouchableOpacity style={styles.followBtn} onPress={() => {}}>
+          <Text style={styles.followText}>Follow Up</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomNavBtn}
-          onPress={() => {
-            goToAttachments()
-            this.openMenu(false)
-          }}
-        >
-          <Image style={styles.bottomNavImg} source={require('../../../assets/img/files.png')} />
-          <Text style={styles.bottomNavBtnText}>Files</Text>
+        <TouchableOpacity style={styles.rejectBtn} onPress={() => {}}>
+          <Text style={styles.actionText}>Reject</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomNavBtn} onPress={() => goToDiaryForm()}>
-          <Image
-            style={styles.bottomNavImg}
-            source={require('../../../assets/img/roundPlus.png')}
-          />
-          <Text style={styles.bottomNavBtnText}>Add Task</Text>
-        </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={styles.bottomNavBtn}
-          onPress={() => {
-            closedLeadEdit == true ? closeLead() : alreadyClosedLead()
-          }}
-        >
-          <Image
-            style={styles.bottomNavImg}
-            source={require('../../../assets/img/roundCheck.png')}
-          />
-          <Text style={styles.bottomNavBtnText}>Close</Text>
-        </TouchableOpacity> */}
-        {/* {callButton === true && (
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => this.call()}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/callIcon.png')}
-            />
-            <Text style={styles.bottomNavBtnText}>Call</Text>
-          </TouchableOpacity>
-        )} */}
-        {/* {callButton === true && (
-          <TouchableOpacity style={[styles.bottomNavBtn, styles.forMenuIcon]} onPress={() => goToAttachments()}>
-            <Image style={styles.bottomNavImg} source={require('../../../assets/img/menuIcon.png')} />
-            <Text style={[styles.bottomNavBtnText, styles.colorWhite]}>Menu</Text>
-          </TouchableOpacity>
-          <View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>
-            <Menu
-              visible={visible}
-              onDismiss={() => this.openMenu(false)}
-              anchor={
-                <TouchableOpacity onPress={() => this.openMenu(true)} style={styles.align}>
-                  {visible === true ? (
-                    <Image
-                      style={styles.bottomNavImg}
-                      source={require('../../../assets/img/menuIcon.png')}
-                    />
-                  ) : (
-                    <Image
-                      style={styles.bottomNavImg}
-                      source={require('../../../assets/img/menuIcon2.png')}
-                    />
-                  )}
-                  <Text style={[styles.bottomNavBtnText, visible === true && styles.colorWhite]}>
-                    Menu
-                  </Text>
-                </TouchableOpacity>
-              }
-            >
-              <Menu.Item
-                onPress={() => {
-                  goToComments()
-                  this.openMenu(false)
-                }}
-                icon={require('../../../assets/img/msg.png')}
-                title="Comments"
-              />
-              <Menu.Item
-                onPress={() => {
-                  goToAttachments()
-                  this.openMenu(false)
-                }}
-                icon={require('../../../assets/img/files.png')}
-                title="Files"
-              />
-              <Menu.Item
-                onPress={() => {
-                  goToHistory()
-                  this.openMenu(false)
-                }}
-                icon={require('../../../assets/img/callIcon.png')}
-                title="Call History"
-              />
-            </Menu>
-          </View>
-        )} */}
+        <View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>
+          <Menu
+            visible={visible}
+            onDismiss={() => this.openMenu(false)}
+            anchor={
+              <TouchableOpacity onPress={() => this.openMenu(true)} style={styles.align}>
+                {visible === true ? (
+                  <Image
+                    style={styles.bottomNavImg}
+                    source={require('../../../assets/img/menuIcon.png')}
+                  />
+                ) : (
+                  <Image
+                    style={styles.bottomNavImg}
+                    source={require('../../../assets/img/menuIcon2.png')}
+                  />
+                )}
+                <Text style={[styles.bottomNavBtnText, visible === true && styles.colorWhite]}>
+                  Menu
+                </Text>
+              </TouchableOpacity>
+            }
+          >
+            <Menu.Item title="No Option" />
+          </Menu>
+        </View>
       </View>
     )
   }

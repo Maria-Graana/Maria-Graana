@@ -25,4 +25,34 @@ export default styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
   },
+  tileView: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  tileInnerView: {
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    borderWidth: 0,
+    height: 50,
+    marginHorizontal: 10,
+    flex: 0.8,
+    justifyContent: 'center',
+  },
+  titleText: {
+    letterSpacing: 1,
+    fontFamily: AppStyles.fonts.semiBoldFont,
+    color: AppStyles.colors.textColor,
+  },
+  iconView: {
+    flex: 0.2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnView: {
+    borderWidth: 1,
+    marginHorizontal: 15,
+    borderRadius: 5,
+    borderColor: AppStyles.colors.primaryColor,
+    backgroundColor: '#fff',
+  },
 })

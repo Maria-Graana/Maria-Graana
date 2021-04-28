@@ -396,7 +396,7 @@ class InvestLeads extends React.Component {
       var leadId = []
       leadId.push(selectedLead.id)
       axios
-        .patch(`/api/leads`, body, { params: { id: leadId } })
+        .patch(`/api/leads/project`, body, { params: { id: leadId } })
         .then((res) => {
           helper.successToast(`Lead Closed`)
           navigation.navigate('Leads')

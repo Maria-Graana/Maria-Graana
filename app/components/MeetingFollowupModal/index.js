@@ -21,6 +21,7 @@ const MeetingFollowupModal = ({ active,
   getMeetingLead,
   currentMeeting
 }) => {
+  console.log(lead ? lead.id : null)
   const [selectedOption, setSelectedOption] = useState('');
   const [formData, setFormData] = useState({
     time: '',
@@ -28,7 +29,6 @@ const MeetingFollowupModal = ({ active,
     addedBy: '',
     taskCategory: '',
     leadId: null,
-    armsLeadId: null,
     start: '',
     end: '',
     subject: lead && lead.customer
@@ -44,7 +44,6 @@ const MeetingFollowupModal = ({ active,
     notes: '',
     status: 'pending',
     leadId:  null,
-    armsLeadId: null,
   });
   const [checkValidation, setValidation] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -66,25 +65,16 @@ const MeetingFollowupModal = ({ active,
     newFollowupData.notes = '';
     newFollowupData.status = 'pending';
     newFollowupData.leadId = null;
-    newFollowupData.armsLeadId = null;
     setFormData(newFollowupData)
   }
 
   useEffect(()=>{
     const newFormData = { ...formData };
-    if(leadType === 'CM') 
     newFormData.leadId = lead ? lead.id : null;  //cm lead
-    else
-    newFormData.armsLeadId = lead ? lead.id : null;  // rcm lead
-
     setFormData(newFormData); // update meeting form data on lead prop change
 
     const newFormDataFollowup = { ...followUpData }; 
-    if(leadType === 'CM')
     newFormDataFollowup.leadId = lead ? lead.id : null; // cm lead
-    else
-    newFormDataFollowup.armsLeadId = lead ? lead.id : null; // rcm lead
-
     setFollowUpData(newFormDataFollowup); // update meeting form data for followup
 
   },[lead])
@@ -236,9 +226,11 @@ const MeetingFollowupModal = ({ active,
   }
 
   const addFollowUpForCall = (data) => {
+    console.log(data);
     axios
       .post(`api/leads/project/meeting`, data)
       .then((res) => {
+        console.log(res.data);
         if (res && res.data) {
           setSelectedOption('');
           clearFollowupData();

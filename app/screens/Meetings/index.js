@@ -19,7 +19,7 @@ import TimerNotification from '../../LocalNotifications'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import styles from './style'
-import CallFeedbackActionMeeting from '../../components/CallFeedbackActionMeeting';
+
 class Meetings extends Component {
   constructor(props) {
     super(props)
@@ -348,7 +348,12 @@ class Meetings extends Component {
         this.getMeetingLead()
       })
     } else if (status === 'meeting_done') {
-      this.setState({ statusfeedbackModalVisible: true, modalMode: 'meeting', currentCall: meetings && meetings.rows ? meetings.rows.find(item => item.id === id) : null })
+      this.setState({
+        statusfeedbackModalVisible: true,
+        modalMode: 'meeting',
+        currentCall:
+          meetings && meetings.rows ? meetings.rows.find((item) => item.id === id) : null,
+      })
     } else {
       axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
         this.getMeetingLead()
@@ -618,7 +623,7 @@ class Meetings extends Component {
   }
 
   performAction = (modalMode, comment, type = null) => {
-    const { navigation } = this.props;
+    const { navigation } = this.props
     const { currentCall } = this.state
     this.setState({ statusfeedbackModalVisible: false }, () => {
       if (currentCall) {
@@ -628,7 +633,7 @@ class Meetings extends Component {
         } else {
           // Meeting Mode & actions for book unit and set up another meeting
           this.setState({ isFeedbackMeetingModalVisible: true }, () => {
-            this.sendStatus(comment, currentCall.id);
+            this.sendStatus(comment, currentCall.id)
           })
         }
       }
@@ -636,19 +641,17 @@ class Meetings extends Component {
   }
 
   performMeetingAction = (type) => {
-    const { navigation } = this.props;
+    const { navigation } = this.props
     this.setState({ isFeedbackMeetingModalVisible: false }, () => {
       if (type) {
-        if (type === 'book unit')
-          navigation.navigate('CMLeadTabs', { screen: 'Payments' });
-        else if (type === 'setup another meeting')
-          this.openModal();
+        if (type === 'book unit') navigation.navigate('CMLeadTabs', { screen: 'Payments' })
+        else if (type === 'setup another meeting') this.openModal()
       }
-    });
+    })
   }
 
   showFeedbackMeetingModal = (value) => {
-    this.setState({ isFeedbackMeetingModalVisible: value });
+    this.setState({ isFeedbackMeetingModalVisible: value })
   }
 
   performFollowup = (comment) => {
@@ -667,13 +670,12 @@ class Meetings extends Component {
     let body = {
       reasons: comment,
     }
-    if (currentCall && modalMode === 'call' || modalMode === 'meeting') {
+    if ((currentCall && modalMode === 'call') || modalMode === 'meeting') {
       this.setState({ statusfeedbackModalVisible: false }, () => {
         this.sendStatus(comment, currentCall.id)
         this.closeLeadOnReject(body)
       })
-    }
-    else{
+    } else {
       this.closeLeadOnReject(body)
     }
   }
@@ -724,9 +726,8 @@ class Meetings extends Component {
   }
 
   goToRejectForm = () => {
-    this.setState({modalMode: 'reject', statusfeedbackModalVisible: true})
+    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: true })
   }
-
 
   render() {
     const {
@@ -751,7 +752,7 @@ class Meetings extends Component {
       isFeedbackMeetingModalVisible,
       modalMode,
     } = this.state
-    const { contacts } = this.props
+    const { navigation, lead } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
     let leadData = this.props.lead
     let leadClosedCheck =
@@ -824,6 +825,10 @@ class Meetings extends Component {
             closeLead={this.checkLeadClosureReasons}
             goToFollowUp={this.openFollowUpModal}
             goToRejectForm={this.goToRejectForm}
+            navigation={navigation}
+            customer={lead.customer}
+            goToHistory={() => {}}
+            getCallHistory={() => {}}
           />
         </View>
 
@@ -867,7 +872,13 @@ class Meetings extends Component {
           showAction={modalMode === 'call' || modalMode === 'meeting'}
           showFollowup={modalMode === 'call' || modalMode === 'meeting'}
           showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
-          commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : modalMode === 'meeting' ? StaticData.commentsFeedbackMeeting : StaticData.leadClosedCommentsFeedback}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : modalMode === 'meeting'
+              ? StaticData.commentsFeedbackMeeting
+              : StaticData.leadClosedCommentsFeedback
+          }
           modalMode={modalMode}
           performAction={(modalMode, comment) => this.performAction(modalMode, comment)}
           performFollowup={(comment) => this.performFollowup(comment)}

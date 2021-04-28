@@ -17,13 +17,13 @@ import CMPaymentModal from '../../components/CMPaymentModal'
 import CMSecondForm from '../../components/CMSecondForm'
 import DeleteModal from '../../components/DeleteModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
+import FollowUpModal from '../../components/FollowUpModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
-import FollowUpModal from '../../components/FollowUpModal'
 import PaymentHelper from './PaymentHelper'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -1144,7 +1144,7 @@ class CMPayment extends Component {
       statusfeedbackModalVisible,
       closedWon,
     } = this.state
-    const { lead } = this.props
+    const { lead, navigation } = this.props
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -1286,6 +1286,10 @@ class CMPayment extends Component {
               goToFollowUp={this.openModal}
               goToRejectForm={this.goToRejectForm}
               closedWon={closedWon}
+              navigation={navigation}
+              customer={lead.customer}
+              goToHistory={() => {}}
+              getCallHistory={() => {}}
             />
           </View>
         </View>

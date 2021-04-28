@@ -3,7 +3,7 @@ import axios from 'axios'
 import moment from 'moment'
 import React, { Component } from 'react'
 import { Alert, FlatList, Linking, Platform, Text, TouchableOpacity, View } from 'react-native'
-import { ActionSheet } from 'native-base';
+import { ActionSheet } from 'native-base'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import { setContacts } from '../../actions/contacts'
@@ -18,6 +18,7 @@ import helper from '../../helper'
 import TimerNotification from '../../LocalNotifications'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
+import CallFeedbackActionMeeting from '../../components/CallFeedbackActionMeeting'
 import styles from './style'
 
 class Meetings extends Component {
@@ -413,7 +414,7 @@ class Meetings extends Component {
           if (!supported) {
             console.log("Can't handle url: " + url)
           } else {
-            this.call();
+            this.call()
             return Linking.openURL(url)
           }
         })

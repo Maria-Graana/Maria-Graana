@@ -54,6 +54,19 @@ const MeetingFollowupModal = ({ active,
     setFormData(newFormData)
   }
 
+  const clearFollowupData = () => {
+    const newFollowupData = { ...followUpData };
+    newFollowupData.subject = '';
+    newFollowupData.taskCategory = 'follow_up';
+    newFollowupData.start = '';
+    newFollowupData.end = '';
+    newFollowupData.date = '';
+    newFollowupData.notes = '';
+    newFollowupData.status = 'pending';
+    newFollowupData.leadId = lead.id;
+    setFormData(newFollowupData)
+  }
+
   useEffect(() => {
     const newFormData = { ...formData };
     if (editMeeting && currentMeeting) {
@@ -86,7 +99,7 @@ const MeetingFollowupModal = ({ active,
           .patch(`/api/diary/update?id=${currentMeeting.id}`, body)
           .then((res) => {
             helper.successToast(`Meeting Updated`)
-            getMeetingLead()
+            getMeetingLead && getMeetingLead()
             closeModal();
             clearFormData();
           })
@@ -107,16 +120,7 @@ const MeetingFollowupModal = ({ active,
         axios
           .post(`api/leads/project/meeting`, formData)
           .then((res) => {
-            formData['time'] = ''
-            formData['date'] = ''
             helper.successToast(`Meeting Added`)
-            let start = new Date(res.data.start)
-            let end = new Date(res.data.end)
-            let data = {
-              id: res.data.id,
-              title: res.data.subject,
-              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
-            }
             getMeetingLead && getMeetingLead()
             closeModal();
             clearFormData();
@@ -131,7 +135,7 @@ const MeetingFollowupModal = ({ active,
     }
   }
 
-  const addFollowUpTask = () => {
+  const addFollowUpTask = (selectedOption) => {
     let payload = {
       subject: 'Follow up with client',
       date: null,
@@ -214,6 +218,9 @@ const MeetingFollowupModal = ({ active,
       .post(`api/leads/project/meeting`, data)
       .then((res) => {
         if (res && res.data) {
+          setSelectedOption('');
+          clearFollowupData();
+          getMeetingLead && getMeetingLead()
           helper.successToast(
             `Follow up task added for ${moment(res.data.start).format('hh:mm a')}, ${moment(
               res.data.start
@@ -276,7 +283,7 @@ const MeetingFollowupModal = ({ active,
               loading={false}
               onPress={() => {
                 setSelectedOption('today')
-                addFollowUpTask()
+                addFollowUpTask('today')
               }}
               containerStyle={styles.button}
             />
@@ -286,7 +293,7 @@ const MeetingFollowupModal = ({ active,
               loading={false}
               onPress={() => {
                 setSelectedOption('tomorrow')
-                addFollowUpTask()
+                addFollowUpTask('tomorrow')
               }}
               containerStyle={styles.button}
             />
@@ -296,7 +303,7 @@ const MeetingFollowupModal = ({ active,
               loading={false}
               onPress={() => {
                 setSelectedOption('in_3_days')
-                addFollowUpTask()
+                addFollowUpTask('in_3_days')
               }}
               containerStyle={styles.button}
             />
@@ -305,7 +312,7 @@ const MeetingFollowupModal = ({ active,
               loading={false}
               onPress={() => {
                 setSelectedOption('next_week')
-                addFollowUpTask()
+                addFollowUpTask('next_week')
               }}
               containerStyle={styles.button}
             />
@@ -353,7 +360,7 @@ const MeetingFollowupModal = ({ active,
                   <TouchableButton
                     containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
                     label={'Done'}
-                    onPress={() => addFollowUpTask()}
+                    onPress={() => addFollowUpTask('custom')}
                   />
                 </View>
               </View>

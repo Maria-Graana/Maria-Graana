@@ -25,7 +25,6 @@ import config from '../../config'
 import CheckListModal from '../../components/CheckListModal'
 import ViewCheckListModal from '../../components/ViewCheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 class LeadViewing extends React.Component {
@@ -974,12 +973,6 @@ class LeadViewing extends React.Component {
             )}
           </View>
         </View>
-        <MeetingFollowupModal
-          leadType={'RCM'}
-          active={active}
-          openModal={this.openModal}
-          diaryForm={true}
-        />
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
           showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}

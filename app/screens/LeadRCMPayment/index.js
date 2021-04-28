@@ -43,6 +43,7 @@ import RentPaymentView from './rentPaymentView'
 import styles from './styles'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import moment from 'moment'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -127,6 +128,7 @@ class LeadRCMPayment extends React.Component {
       statusfeedbackModalVisible: false,
       modalMode: 'call',
       currentCall: null,
+      isFollowUpMode: false,
     }
   }
 
@@ -545,7 +547,7 @@ class LeadRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -937,7 +939,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -950,7 +952,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -1079,8 +1081,8 @@ class LeadRCMPayment extends React.Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = payment.paymentAttachments
           ? _.filter(payment.paymentAttachments, (item) => {
-              return !_.has(item, 'id')
-            })
+            return !_.has(item, 'id')
+          })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1119,8 +1121,8 @@ class LeadRCMPayment extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
   }
@@ -1188,8 +1190,8 @@ class LeadRCMPayment extends React.Component {
         if (body.paymentCategory === 'token') {
           baseUrl = `/api/leads/tokenPayment`
           body.status = 'at_buyer_agent'
-          ;(body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
-            (toastMsg = 'Token Payment Added')
+            ; (body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
+              (toastMsg = 'Token Payment Added')
           errorMsg = 'Error Adding Token Payment'
         }
         axios
@@ -1247,8 +1249,8 @@ class LeadRCMPayment extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -1296,8 +1298,7 @@ class LeadRCMPayment extends React.Component {
     const selectedProperty = allProperties[0]
     axios
       .post(
-        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${
-          selectedProperty ? selectedProperty.id : null
+        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null
         }`
       )
       .then((response) => {
@@ -1530,25 +1531,28 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
-  //  ************ Function for open modal ************
-  openModal = () => {
+   //  ************ Function for open modal ************
+   openModalInMeetingMode = (edit = false, id = null) => {
     this.setState({
       active: !this.state.active,
+      isFollowUpMode: false,
+    });
+  }
+
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
     })
   }
 
-  sendStatus = (status, id) => {
-    const { formData, meetings } = this.state
-    let body = {
-      response: status,
-      comments: status,
-      leadId: formData.leadId,
-    }
-      axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
-        this.getMeetingLead()
-      })
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
+    })
   }
-
 
   sendStatus = (status, id) => {
     const { formData, meetings } = this.state
@@ -1570,7 +1574,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   rejectLead = (body) => {
-    const {navigation, lead} = this.props;
+    const { navigation, lead } = this.props;
     var leadId = []
     leadId.push(lead.id)
     axios
@@ -1589,12 +1593,12 @@ class LeadRCMPayment extends React.Component {
   }
 
   setCurrentCall = (call) => {
-      this.setState({currentCall: call});
+    this.setState({ currentCall: call });
   }
 
   goToViewingScreen = () => {
-    const {navigation} = this.props;
-    navigation.navigate('RCMLeadTabs', {screen: 'Viewing',})
+    const { navigation } = this.props;
+    navigation.navigate('RCMLeadTabs', { screen: 'Viewing', })
   }
 
   render() {
@@ -1640,6 +1644,7 @@ class LeadRCMPayment extends React.Component {
       modalMode,
       closedWon,
       currentCall,
+      isFollowUpMode,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1828,22 +1833,27 @@ class LeadRCMPayment extends React.Component {
               />
             </>
           )}
-          {/* <FollowUpModal
-            leadType={'rcm'}
+
+          <MeetingFollowupModal
+            closeModal={() => this.closeMeetingFollowupModal()}
             active={active}
-            openModal={this.openModal}
-            diaryForm={true}
-          /> */}
+            isFollowUpMode={isFollowUpMode}
+            lead={lead}
+            leadType={'RCM'}
+            getMeetingLead={this.getCallHistory}
+          />
+
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
             showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
             modalMode={modalMode}
-            commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall  :StaticData.leadClosedCommentsFeedback}
+            commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
             showAction={modalMode === 'call'}
             showFollowup={modalMode === 'call'}
-            rejectLead={(body)=>this.rejectLead(body)}
-            sendStatus={(comment, id)=> this.sendStatus(comment, id)}
-            addDiary={this.openModal}
+            rejectLead={(body) => this.rejectLead(body)}
+            sendStatus={(comment, id) => this.sendStatus(comment, id)}
+            addMeeting={() => this.openModalInMeetingMode()}
+            addFollowup={() => this.openModalInFollowupMode()}
             leadType={'RCM'}
             currentCall={currentCall}
             goToViewingScreen={this.goToViewingScreen}
@@ -1862,11 +1872,11 @@ class LeadRCMPayment extends React.Component {
               lead={lead}
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
-              goToFollowUp={this.openModal}
+              goToFollowUp={this.openModalInFollowupMode}
               navigation={navigation}
               goToRejectForm={this.goToRejectForm}
               showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-              setCurrentCall = {(call)=> this.setCurrentCall(call)}
+              setCurrentCall={(call) => this.setCurrentCall(call)}
               leadType={'RCM'}
               closedWon={closedWon}
             />

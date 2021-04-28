@@ -27,10 +27,11 @@ const MeetingFollowupModal = ({ active,
     date: '',
     addedBy: '',
     taskCategory: '',
-    leadId: lead.id,
+    leadId: null,
+    armsLeadId: null,
     start: '',
     end: '',
-    subject: lead.customer
+    subject: lead && lead.customer
       ? `Meeting with ${lead.customer.customerName}`
       : null,
   });
@@ -42,7 +43,8 @@ const MeetingFollowupModal = ({ active,
     date: '',
     notes: '',
     status: 'pending',
-    leadId: lead.id,
+    leadId:  null,
+    armsLeadId: null,
   });
   const [checkValidation, setValidation] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,9 +65,29 @@ const MeetingFollowupModal = ({ active,
     newFollowupData.date = '';
     newFollowupData.notes = '';
     newFollowupData.status = 'pending';
-    newFollowupData.leadId = lead.id;
+    newFollowupData.leadId = null;
+    newFollowupData.armsLeadId = null;
     setFormData(newFollowupData)
   }
+
+  useEffect(()=>{
+    const newFormData = { ...formData };
+    if(leadType === 'CM') 
+    newFormData.leadId = lead ? lead.id : null;  //cm lead
+    else
+    newFormData.armsLeadId = lead ? lead.id : null;  // rcm lead
+
+    setFormData(newFormData); // update meeting form data on lead prop change
+
+    const newFormDataFollowup = { ...followUpData }; 
+    if(leadType === 'CM')
+    newFormDataFollowup.leadId = lead ? lead.id : null; // cm lead
+    else
+    newFormDataFollowup.armsLeadId = lead ? lead.id : null; // rcm lead
+
+    setFollowUpData(newFormDataFollowup); // update meeting form data for followup
+
+  },[lead])
 
   useEffect(() => {
     const newFormData = { ...formData };
@@ -424,7 +446,7 @@ const MeetingFollowupModal = ({ active,
 
 MeetingFollowupModal.propTypes = {
   isFollowUpMode: PropTypes.bool.isRequired,
-  lead: PropTypes.object.isRequired,
+  lead: PropTypes.object,
   closeModal: PropTypes.func.isRequired,
   editMeeting: PropTypes.bool,
   leadType: PropTypes.string,

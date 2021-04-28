@@ -16,39 +16,6 @@ class LeadTile extends React.Component {
     super(props)
   }
 
-  call = (data) => {
-    const { contacts, purposeTab, updateStatus, user } = this.props
-    if (data.customer) {
-      let newContact = helper.createContactPayload(data.customer)
-      this.sendCallStatus(data)
-      if (purposeTab !== 'invest') if (data.assigned_to_armsuser_id === user.id) updateStatus(data)
-      helper.callNumber(newContact, contacts)
-    } else {
-      helper.errorToast(`No Phone Number`)
-    }
-  }
-
-  sendCallStatus = (data) => {
-    const start = moment().format()
-    const { purposeTab } = this.props
-    let body = {}
-    body = {
-      start: start,
-      end: start,
-      time: start,
-      date: start,
-      taskType: 'called',
-      response: 'Called',
-      subject: 'Call to client ' + data.customer.customerName,
-      cutomerId: data.customer.id,
-      taskCategory: 'leadTask',
-    }
-    if (purposeTab === 'invest') body.leadId = data.id
-    else body.armsLeadId = data.id
-
-    axios.post(`api/leads/project/meeting`, body).then((res) => {})
-  }
-
   leadSize = () => {
     const { data } = this.props
     let minSize = !data.projectId && data.size !== null && data.size !== undefined ? data.size : ''
@@ -268,7 +235,7 @@ class LeadTile extends React.Component {
                   <TouchableOpacity
                     style={styles.actionBtn}
                     onPress={() => {
-                      this.call(data)
+                      callNumber(data)
                     }}
                   >
                     <Image style={[styles.fireIcon, AppStyles.mlFive]} source={phone} />

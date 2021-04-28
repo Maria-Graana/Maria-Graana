@@ -21,7 +21,6 @@ const MeetingFollowupModal = ({ active,
   getMeetingLead,
   currentMeeting
 }) => {
-  console.log(lead ? lead.id : null)
   const [selectedOption, setSelectedOption] = useState('');
   const [formData, setFormData] = useState({
     time: '',

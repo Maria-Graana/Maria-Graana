@@ -58,14 +58,13 @@ class RentLeads extends React.Component {
       showAssignToButton: false,
       shortListedProperties: [],
       openPopup: false,
-      selectedLead: {},
+      selectedLead: null,
       popupLoading: false,
       serverTime: null,
       statusfeedbackModalVisible: false,
       modalMode: 'call',
       currentCall: null,
       isFollowUpMode: false,
-      selectedLead: null,
       active: false,
     }
   }

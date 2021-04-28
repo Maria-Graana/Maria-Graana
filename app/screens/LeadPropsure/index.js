@@ -35,6 +35,7 @@ import AddPropsurePayment from '../../components/AddPRopsurePayment'
 import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -80,6 +81,9 @@ class LeadPropsure extends React.Component {
       officeLocations: [],
       active: false,
       statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
+      isFollowUpMode: false,
       closedWon: false,
     }
   }
@@ -243,7 +247,7 @@ class LeadPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -266,14 +270,14 @@ class LeadPropsure extends React.Component {
       let installment = property.cmInstallment
         ? property.cmInstallment
         : {
-            installmentAmount: null,
-            type: '',
-            rcmLeadId: null,
-            details: '',
-            visible: false,
-            paymentAttachments: [],
-            selectedPropertyId: property.id,
-          }
+          installmentAmount: null,
+          type: '',
+          rcmLeadId: null,
+          details: '',
+          visible: false,
+          paymentAttachments: [],
+          selectedPropertyId: property.id,
+        }
       dispatch(setPropsurePayment(installment))
       this.setState({
         documentModalVisible: true,
@@ -744,8 +748,8 @@ class LeadPropsure extends React.Component {
         data && data.officeLocationId
           ? data.officeLocationId
           : user && user.officeLocation
-          ? user.officeLocation.id
-          : null,
+            ? user.officeLocation.id
+            : null,
     })
     dispatch(
       setPropsurePayment({
@@ -755,8 +759,8 @@ class LeadPropsure extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
   }
@@ -880,8 +884,8 @@ class LeadPropsure extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
               ? _.filter(propsurePayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -943,9 +947,9 @@ class LeadPropsure extends React.Component {
       let pendingPropsures =
         data.propsures && data.propsures.length
           ? _.filter(
-              data.propsures,
-              (item) => item.status === 'pending' && item.addedBy === 'buyer'
-            )
+            data.propsures,
+            (item) => item.status === 'pending' && item.addedBy === 'buyer'
+          )
           : null
       let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'buyer')
       totalFee = Number(propsureOutstandingPayment) - Number(totalFee)
@@ -1002,10 +1006,20 @@ class LeadPropsure extends React.Component {
 
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
 
-  //  ************ Function for open modal ************
-  openModal = () => {
+
+
+  closeMeetingFollowupModal = () => {
     this.setState({
       active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
     })
   }
 
@@ -1014,12 +1028,12 @@ class LeadPropsure extends React.Component {
     const { statusfeedbackModalVisible } = this.state
     this.setState({
       statusfeedbackModalVisible: !statusfeedbackModalVisible,
+      modalMode: 'reject'
     })
   }
 
-
   rejectLead = (body) => {
-    const {navigation, lead} = this.props;
+    const { navigation, lead } = this.props;
     var leadId = []
     leadId.push(lead.id)
     axios
@@ -1031,6 +1045,29 @@ class LeadPropsure extends React.Component {
       .catch((error) => {
         console.log(error)
       })
+  }
+
+  showStatusFeedbackModal = (value) => {
+    this.setState({ statusfeedbackModalVisible: value })
+  }
+
+  setCurrentCall = (call) => {
+    this.setState({ currentCall: call, modalMode: 'call' });
+  }
+
+  goToViewingScreen = () => {
+    const { navigation } = this.props;
+    navigation.navigate('RCMLeadTabs', { screen: 'Viewing', })
+  }
+
+  sendStatus = (status, id) => {
+    const { lead } = this.props
+    let body = {
+      response: status,
+      comments: status,
+      leadId: lead.id,
+    }
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
   }
 
 
@@ -1065,6 +1102,9 @@ class LeadPropsure extends React.Component {
       officeLocations,
       active,
       statusfeedbackModalVisible,
+      currentCall,
+      isFollowUpMode,
+      modalMode,
       closedWon,
     } = this.state
     const { lead, navigation, user } = this.props
@@ -1187,20 +1227,29 @@ class LeadPropsure extends React.Component {
               </>
             )}
           </View>
-          {/* <FollowUpModal
-            leadType={'rcm'}
-            active={active}
-            openModal={this.openModal}
-            diaryForm={true}
-          /> */}
+
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
-            commentsList={StaticData.leadClosedCommentsFeedback}
-            showAction={false}
-            showFollowup={false}
-            rejectLead={(body)=>this.rejectLead(body)}
+            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            modalMode={modalMode}
+            commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
+            showAction={modalMode === 'call'}
+            showFollowup={modalMode === 'call'}
+            rejectLead={(body) => this.rejectLead(body)}
+            sendStatus={(comment, id) => this.sendStatus(comment, id)}
+            addFollowup={() => this.openModalInFollowupMode()}
             leadType={'RCM'}
+            currentCall={currentCall}
+            goToViewingScreen={this.goToViewingScreen}
+          />
+
+          <MeetingFollowupModal
+            closeModal={() => this.closeMeetingFollowupModal()}
+            active={active}
+            isFollowUpMode={isFollowUpMode}
+            lead={lead}
+            leadType={'RCM'}
+            getMeetingLead={this.getCallHistory}
           />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
@@ -1216,9 +1265,12 @@ class LeadPropsure extends React.Component {
               lead={lead}
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
-              goToFollowUp={this.openModal}
+              goToFollowUp={this.openModalInFollowupMode}
               navigation={navigation}
               goToRejectForm={this.goToRejectForm}
+              showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+              setCurrentCall={(call) => this.setCurrentCall(call)}
+              leadType={'RCM'}
               closedWon={closedWon}
             />
           </View>

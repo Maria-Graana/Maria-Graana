@@ -57,6 +57,10 @@ const StatusFeedbackModal = ({
     data = commentsList
   }
 
+  const clearFormData = () => {
+    setSelectedComment(null);
+  }
+
   const performAction = () => {
     showFeedbackModal(false);
     if(leadType === 'CM') {
@@ -64,16 +68,19 @@ const StatusFeedbackModal = ({
         if (modalMode === 'call') {
           sendStatus(selectedComment, currentCall.id)
           addMeeting()
+          clearFormData();
         } else {
           // Meeting Mode & actions for book unit and set up another meeting
             showFeedbackMeetingModal(true);
             sendStatus(selectedComment, currentCall.id);
+            clearFormData();
         }
       }
     }
     else{
       if(currentCall){
         sendStatus(selectedComment, currentCall.id)
+        clearFormData();
         goToViewingScreen();
       }
     }
@@ -84,6 +91,7 @@ const StatusFeedbackModal = ({
         showFeedbackModal(false);
         sendStatus(selectedComment, currentCall.id)
         addFollowup();
+        clearFormData();
     }
   }
 
@@ -95,9 +103,11 @@ const StatusFeedbackModal = ({
     if (currentCall && modalMode === 'call' || modalMode === 'meeting') {
         sendStatus(selectedComment, currentCall.id)
         rejectLead(body)
+        clearFormData();
     }
     else{
       rejectLead(body)
+      clearFormData();
     }
   }
 
@@ -120,7 +130,10 @@ const StatusFeedbackModal = ({
     <Modal visible={visible}>
       <SafeAreaView style={AppStyles.mb1}>
         <View style={styles.modalMain}>
-          <TouchableOpacity style={styles.closeBtn} onPress={() => showFeedbackModal(false)}>
+          <TouchableOpacity style={styles.closeBtn} onPress={() => { 
+            showFeedbackModal(false)
+            clearFormData();
+          }}>
             <Image source={times} style={styles.closeImg} />
           </TouchableOpacity>
           <View style={[AppStyles.mainInputWrap]}>

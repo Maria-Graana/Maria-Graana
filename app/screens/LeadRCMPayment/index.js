@@ -1531,14 +1531,6 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
-   //  ************ Function for open modal ************
-   openModalInMeetingMode = (edit = false, id = null) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    });
-  }
-
   closeMeetingFollowupModal = () => {
     this.setState({
       active: !this.state.active,
@@ -1593,7 +1585,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call });
+    this.setState({ currentCall: call, modalMode: 'call' });
   }
 
   goToViewingScreen = () => {
@@ -1852,7 +1844,6 @@ class LeadRCMPayment extends React.Component {
             showFollowup={modalMode === 'call'}
             rejectLead={(body) => this.rejectLead(body)}
             sendStatus={(comment, id) => this.sendStatus(comment, id)}
-            addMeeting={() => this.openModalInMeetingMode()}
             addFollowup={() => this.openModalInFollowupMode()}
             leadType={'RCM'}
             currentCall={currentCall}

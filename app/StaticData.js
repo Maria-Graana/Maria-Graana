@@ -475,7 +475,7 @@ export default StaticData = {
     { value: 'duplicate', name: 'Duplicate', colorCode: '#DC3546' },
     { value: 'property_agent', name: 'Property Agent', colorCode: '#DC3546' },
     { value: 'DNC', name: 'DNC', colorCode: '#DC3546' },
- ],
+  ],
   commentsFeedback: [
     { value: 'no_response', name: 'No Response', colorCode: '#FDD835' },
     { value: 'powered_off', name: 'Powered Off', colorCode: '#FDD835' },
@@ -1112,7 +1112,7 @@ export default StaticData = {
     {
       id: 2,
       title: 'Share',
-      image: require('../assets/img/transfer-lead.png'),
+      image: require('../assets/img/share-lead-with-agent.png'),
     },
     {
       id: 3,
@@ -1149,7 +1149,7 @@ export default StaticData = {
     {
       id: 2,
       title: 'Share',
-      image: require('../assets/img/transfer-lead.png'),
+      image: require('../assets/img/share-lead-with-agent.png'),
     },
     {
       id: 3,
@@ -1179,7 +1179,7 @@ export default StaticData = {
     {
       id: 8,
       title: 'Closed Won',
-      image: require('../assets/img/call.png'),
+      image: require('../assets/img/Close.png'),
     },
   ],
 }

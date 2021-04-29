@@ -14,6 +14,7 @@ import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import DeleteModal from '../../components/DeleteModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import PropAgentTile from '../../components/PropAgentTile'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
 import PropMatchTile from '../../components/PropMatchTile'
@@ -82,6 +83,8 @@ class PropertyRCMPayment extends React.Component {
       assignToAccountsLoading: false,
       officeLocations: [],
       rentMonthlyToggle: false,
+      active: false,
+      isFollowUpMode: false,
     }
   }
 
@@ -89,12 +92,10 @@ class PropertyRCMPayment extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
-        this.getCallHistory(lead)
         this.fetchOfficeLocations()
         this.getSelectedProperty(lead)
       } else {
         const { lead } = this.props
-        this.getCallHistory(lead)
         this.fetchOfficeLocations()
         this.getSelectedProperty(lead)
       }
@@ -253,7 +254,7 @@ class PropertyRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -428,7 +429,7 @@ class PropertyRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
-    this.setState({ formData }, () => {})
+    this.setState({ formData }, () => { })
     if (formData.monthlyRent !== '' && name === 'monthlyRent') {
       this.setState({ showMonthlyRentArrow: true })
     }
@@ -481,7 +482,7 @@ class PropertyRCMPayment extends React.Component {
       rcmLeadId: lead.id,
       agentId: user.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary'
     })
   }
 
@@ -546,7 +547,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -559,7 +560,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -612,17 +613,6 @@ class PropertyRCMPayment extends React.Component {
     })
   }
 
-  goToHistory = () => {
-    const { callModal } = this.state
-    this.setState({ callModal: !callModal })
-  }
-
-  getCallHistory = (lead) => {
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
-    })
-  }
-
   onAddCommissionPayment = (type, paymentCategory) => {
     const { dispatch, rcmPayment } = this.props
     console.log('paymentCategory: ', paymentCategory)
@@ -661,8 +651,8 @@ class PropertyRCMPayment extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
   }
@@ -770,8 +760,8 @@ class PropertyRCMPayment extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -863,8 +853,7 @@ class PropertyRCMPayment extends React.Component {
     const selectedProperty = allProperties[0]
     axios
       .post(
-        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${
-          selectedProperty ? selectedProperty.id : null
+        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null
         }`
       )
       .then((response) => {
@@ -975,8 +964,8 @@ class PropertyRCMPayment extends React.Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = payment.paymentAttachments
           ? _.filter(payment.paymentAttachments, (item) => {
-              return !_.has(item, 'id')
-            })
+            return !_.has(item, 'id')
+          })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1048,6 +1037,21 @@ class PropertyRCMPayment extends React.Component {
     })
   }
 
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1084,9 +1088,10 @@ class PropertyRCMPayment extends React.Component {
       assignToAccountsLoading,
       officeLocations,
       rentMonthlyToggle,
+      active,
+      isFollowUpMode
     } = this.state
     const { user } = this.props
-
     return !loading ? (
       <KeyboardAvoidingView
         style={[
@@ -1140,14 +1145,6 @@ class PropertyRCMPayment extends React.Component {
           deletePayment={(reason) => this.deletePayment(reason)}
           showHideModal={(val) => this.showHideDeletePayment(val)}
         />
-        {/* 
-                <HistoryModal
-                    getCallHistory={this.getCallHistory}
-                    navigation={navigation}
-                    data={meetings}
-                    closePopup={this.goToHistory}
-                    openPopup={callModal}
-                /> */}
         <View style={{ flex: 1, minHeight: '100%', paddingBottom: 100 }}>
           {allProperties.length > 0 ? (
             <FlatList
@@ -1271,6 +1268,14 @@ class PropertyRCMPayment extends React.Component {
               </Text>
             </View>
           )}
+
+          <MeetingFollowupModal
+            closeModal={() => this.closeMeetingFollowupModal()}
+            active={active}
+            isFollowUpMode={isFollowUpMode}
+            lead={lead}
+            leadType={'RCM'}
+          />
           <View style={AppStyles.mainCMBottomNav}>
             <PropertyBottomNav
               goToAttachments={this.goToAttachments}
@@ -1283,10 +1288,12 @@ class PropertyRCMPayment extends React.Component {
               callButton={true}
               customer={lead.customer}
               lead={lead}
-              goToHistory={this.goToHistory}
-              getCallHistory={this.getCallHistory}
+              goToHistory={()=> null}
+              getCallHistory={()=> null}
+              goToFollowup={() => this.openModalInFollowupMode()}
             />
           </View>
+
         </View>
       </KeyboardAvoidingView>
     ) : (

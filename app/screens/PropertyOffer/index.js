@@ -11,6 +11,7 @@ import { setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import OfferModal from '../../components/OfferModal'
 import PropAgentTile from '../../components/PropAgentTile/index'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
@@ -52,13 +53,14 @@ class PropertyOffer extends React.Component {
       sellerNotZero: false,
       agreedNotZero: false,
       offerReadOnly: false,
+      active: false,
+      isFollowUpMode: false,
     }
   }
 
   componentDidMount = () => {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.fetchLead()
-      this.getCallHistory()
       this.fetchProperties()
     })
   }
@@ -411,18 +413,6 @@ class PropertyOffer extends React.Component {
     })
   }
 
-  goToHistory = () => {
-    const { callModal } = this.state
-    this.setState({ callModal: !callModal })
-  }
-
-  getCallHistory = () => {
-    const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
-    })
-  }
-
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
@@ -580,6 +570,22 @@ class PropertyOffer extends React.Component {
     }
   }
 
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
+    })
+  }
+
+
   render() {
     const {
       menuShow,
@@ -606,6 +612,8 @@ class PropertyOffer extends React.Component {
       sellerNotZero,
       customerNotZero,
       offerReadOnly,
+      active,
+      isFollowUpMode,
     } = this.state
     const { lead, navigation, user } = this.props
 
@@ -706,6 +714,13 @@ class PropertyOffer extends React.Component {
           </View>
         </View>
         <View style={AppStyles.mainCMBottomNav}>
+        <MeetingFollowupModal
+          closeModal={() => this.closeMeetingFollowupModal()}
+          active={active}
+          isFollowUpMode={isFollowUpMode}
+          lead={lead}
+          leadType={'RCM'}
+        />
           <PropertyBottomNav
             goToAttachments={this.goToAttachments}
             navigateTo={this.navigateToDetails}
@@ -717,8 +732,9 @@ class PropertyOffer extends React.Component {
             callButton={true}
             customer={lead.customer}
             lead={lead}
-            goToHistory={this.goToHistory}
-            getCallHistory={this.getCallHistory}
+            goToHistory={()=> null}
+            getCallHistory={()=> null}
+            goToFollowup={()=> this.openModalInFollowupMode()}
           />
         </View>
 

@@ -15,6 +15,7 @@ import CheckListModal from '../../components/CheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import PropAgentTile from '../../components/PropAgentTile/index'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
 import PropMatchTile from '../../components/PropMatchTile/index'
@@ -65,6 +66,8 @@ class PropertyViewing extends React.Component {
       longitude: null,
       propsure_id: null,
       selectedPropertyId: null,
+      active: false,
+      isFollowUpMode: false,
     }
   }
 
@@ -84,7 +87,6 @@ class PropertyViewing extends React.Component {
         })
       } else {
         this.fetchLead()
-        this.getCallHistory()
         this.fetchProperties()
       }
     })
@@ -565,18 +567,6 @@ class PropertyViewing extends React.Component {
     })
   }
 
-  goToHistory = () => {
-    const { callModal } = this.state
-    this.setState({ callModal: !callModal })
-  }
-
-  getCallHistory = () => {
-    const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
-    })
-  }
-
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
@@ -683,7 +673,6 @@ class PropertyViewing extends React.Component {
           if (response.data) {
             this.hideGeoTaggingModal()
             this.fetchProperties()
-            this.getCallHistory()
             navigation.setParams({ mapValues: null, fromScreen: null })
           }
         })
@@ -745,6 +734,21 @@ class PropertyViewing extends React.Component {
     }
   }
 
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -774,6 +778,8 @@ class PropertyViewing extends React.Component {
       latitude,
       longitude,
       propsure_id,
+      active,
+      isFollowUpMode
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = true
@@ -801,14 +807,6 @@ class PropertyViewing extends React.Component {
           propertyGeoTaggingDone={this.propertyGeoTaggingDone}
           goToMapsForGeotagging={this.goToMapsForGeotagging}
         />
-        {/* <HistoryModal
-          getCallHistory={this.getCallHistory}
-          navigation={navigation}
-          data={meetings}
-          closePopup={this.goToHistory}
-          openPopup={callModal}
-        /> */}
-
         <CheckListModal
           data={StaticData.realEstateAgentsCheckList}
           selectedCheckList={selectedCheckList}
@@ -907,6 +905,13 @@ class PropertyViewing extends React.Component {
             )}
           </View>
         </View>
+        <MeetingFollowupModal
+          closeModal={() => this.closeMeetingFollowupModal()}
+          active={active}
+          isFollowUpMode={isFollowUpMode}
+          lead={lead}
+          leadType={'RCM'}
+        />
         <View style={AppStyles.mainCMBottomNav}>
           <PropertyBottomNav
             goToAttachments={this.goToAttachments}
@@ -919,8 +924,9 @@ class PropertyViewing extends React.Component {
             callButton={true}
             customer={lead.customer}
             lead={lead}
-            goToHistory={this.goToHistory}
-            getCallHistory={this.getCallHistory}
+            goToHistory={()=> null}
+            getCallHistory={()=> null}
+            goToFollowup={()=> this.openModalInFollowupMode()}
           />
         </View>
         <LeadRCMPaymentPopup

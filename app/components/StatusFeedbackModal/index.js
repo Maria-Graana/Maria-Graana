@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     elevation: 5,
     borderWidth: 1,
-    borderColor: AppStyles.colors.textColor,
+    borderColor: AppStyles.colors.subTextColor,
     color: AppStyles.colors.textColor,
   },
   itemContainer: {
@@ -269,8 +269,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   closeImg: {
-    width: 16,
-    height: 16,
+    width: 24,
+    height: 24,
     resizeMode: 'contain',
   },
   flatlistContent: {

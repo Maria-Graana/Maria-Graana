@@ -160,7 +160,7 @@ class PropertyBottomNav extends React.Component {
   }
 
   render() {
-    const { navigateTo } = this.props
+    const { navigateTo, goToFollowup } = this.props
     const { visible } = this.state
 
     return (
@@ -173,7 +173,7 @@ class PropertyBottomNav extends React.Component {
           <MenuTrigger text="Action" customStyles={triggerStyles} />
           <MenuOptions customStyles={optionsStyles}>{this.listActionMenuItems()}</MenuOptions>
         </PopupMenu>
-        <TouchableOpacity style={styles.followBtn} onPress={() => {}}>
+        <TouchableOpacity style={styles.followBtn} onPress={() => goToFollowup()}>
           <Text style={styles.followText}>Follow Up</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.rejectBtn} onPress={() => {}}>

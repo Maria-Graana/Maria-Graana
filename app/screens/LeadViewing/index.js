@@ -872,7 +872,6 @@ class LeadViewing extends React.Component {
       longitude,
       propsure_id,
       legalDocLoader,
-      closedWon,
       active,
       statusfeedbackModalVisible,
       modalMode,

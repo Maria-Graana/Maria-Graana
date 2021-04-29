@@ -68,8 +68,11 @@ class LeadViewing extends React.Component {
       propsure_id: null,
       selectedPropertyId: null,
       legalDocLoader: false,
-      statusfeedbackModalVisible: false,
       closedWon: false,
+      statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
+      isFollowUpMode: false,
     }
   }
 

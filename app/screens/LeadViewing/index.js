@@ -785,13 +785,6 @@ class LeadViewing extends React.Component {
       isFollowUpMode: false,
     })
   }
-  //  ************ Function for open modal ************
-  openFollowUpModal = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = () => {
@@ -799,6 +792,16 @@ class LeadViewing extends React.Component {
       active: !this.state.active,
       isFollowUpMode: true,
     })
+  }
+
+  sendStatus = (status, id) => {
+    const { formData, meetings } = this.state
+    let body = {
+      response: status,
+      comments: status,
+      leadId: formData.leadId,
+    }
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
 
   // ************ Function for Reject modal ************
@@ -838,18 +841,7 @@ class LeadViewing extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing', })
   }
 
-  sendStatus = (status, id) => {
-    const { lead } = this.props
-    let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
-  }
-
-
-
+ 
   render() {
     const {
       menuShow,
@@ -880,12 +872,13 @@ class LeadViewing extends React.Component {
       longitude,
       propsure_id,
       legalDocLoader,
+      closedWon,
       active,
       statusfeedbackModalVisible,
-      currentCall,
-      isFollowUpMode,
       modalMode,
       closedWon,
+      currentCall,
+      isFollowUpMode,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1034,14 +1027,33 @@ class LeadViewing extends React.Component {
          goToViewingScreen={this.goToViewingScreen}
         />
 
-        <MeetingFollowupModal
-          closeModal={() => this.closeMeetingFollowupModal()}
-          active={active}
-          isFollowUpMode={isFollowUpMode}
-          lead={lead}
-          leadType={'RCM'}
-          getMeetingLead={this.getCallHistory}
-        />
+         <MeetingFollowupModal
+            closeModal={() => this.closeMeetingFollowupModal()}
+            active={active}
+            isFollowUpMode={isFollowUpMode}
+            lead={lead}
+            leadType={'RCM'}
+            getMeetingLead={this.getCallHistory}
+          />
+
+          <StatusFeedbackModal
+            visible={statusfeedbackModalVisible}
+            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            modalMode={modalMode}
+            commentsList={
+              modalMode === 'call'
+                ? StaticData.commentsFeedbackCall
+                : StaticData.leadClosedCommentsFeedback
+            }
+            showAction={modalMode === 'call'}
+            showFollowup={modalMode === 'call'}
+            rejectLead={(body) => this.rejectLead(body)}
+            sendStatus={(comment, id) => this.sendStatus(comment, id)}
+            addFollowup={() => this.openModalInFollowupMode()}
+            leadType={'RCM'}
+            currentCall={currentCall}
+            goToViewingScreen={this.goToViewingScreen}
+          />
 
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav

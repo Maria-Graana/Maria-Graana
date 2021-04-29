@@ -2,24 +2,22 @@
 import axios from 'axios'
 import moment from 'moment'
 import React, { Component } from 'react'
-import { Alert, FlatList, Linking, Platform, Text, TouchableOpacity, View } from 'react-native'
-import { ActionSheet } from 'native-base'
+import { FlatList, Linking, Platform, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import { setContacts } from '../../actions/contacts'
 import { setLeadRes } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
+import CallFeedbackActionMeeting from '../../components/CallFeedbackActionMeeting'
 import CMBottomNav from '../../components/CMBottomNav'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import MeetingTile from '../../components/MeetingTile'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
-import CallFeedbackActionMeeting from '../../components/CallFeedbackActionMeeting'
 import styles from './style'
-import CallFeedbackActionMeeting from '../../components/CallFeedbackActionMeeting';
-import MeetingFollowupModal from '../../components/MeetingFollowupModal';
 class Meetings extends Component {
   constructor(props) {
     super(props)
@@ -80,13 +78,13 @@ class Meetings extends Component {
 
   //  ************ Function for open modal ************
   openModalInMeetingMode = (edit = false, id = null) => {
-    const {meetings} = this.state;
+    const { meetings } = this.state
     this.setState({
       active: !this.state.active,
       editMeeting: edit,
       isFollowUpMode: false,
-      currentMeeting: edit ? meetings.rows.find(item => item.id === id) : null,
-    });
+      currentMeeting: edit ? meetings.rows.find((item) => item.id === id) : null,
+    })
   }
 
   closeMeetingFollowupModal = () => {
@@ -94,7 +92,7 @@ class Meetings extends Component {
       active: !this.state.active,
       editMeeting: false,
       isFollowUpMode: false,
-      currentMeeting : null,
+      currentMeeting: null,
     })
   }
 
@@ -104,11 +102,9 @@ class Meetings extends Component {
       active: !this.state.active,
       editMeeting: false,
       isFollowUpMode: true,
-      currentMeeting : null,
+      currentMeeting: null,
     })
   }
-
-  
 
   getMeetingLead = () => {
     const { lead } = this.props
@@ -126,7 +122,7 @@ class Meetings extends Component {
 
   sendStatus = (status, id) => {
     const { formData, meetings } = this.state
-    const {lead} = this.props;
+    const { lead } = this.props
     let body = {
       response: status,
       comments: status,
@@ -150,8 +146,6 @@ class Meetings extends Component {
     }
   }
 
-
-
   sendCallStatus = () => {
     const start = moment().format()
     let body = {
@@ -166,7 +160,7 @@ class Meetings extends Component {
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.setCurrentCall(res.data);
+      this.setCurrentCall(res.data)
       this.getMeetingLead()
     })
   }
@@ -207,7 +201,7 @@ class Meetings extends Component {
   }
 
   editMeeting = (id) => {
-    this.openModalInMeetingMode(true, id);
+    this.openModalInMeetingMode(true, id)
   }
 
   goToComments = () => {
@@ -374,7 +368,6 @@ class Meetings extends Component {
     }
   }
 
-
   performAction = (modalMode, comment, type = null) => {
     const { navigation } = this.props
     const { currentCall } = this.state
@@ -408,16 +401,13 @@ class Meetings extends Component {
   }
 
   performMeetingAction = (type) => {
-    const { navigation } = this.props;
-    this.showFeedbackMeetingModal(false);
+    const { navigation } = this.props
+    this.showFeedbackMeetingModal(false)
     if (type) {
-      if (type === 'book unit')
-        navigation.navigate('CMLeadTabs', { screen: 'Payments' });
-      else if (type === 'setup another meeting')
-        this.openModalInMeetingMode(false, null)
+      if (type === 'book unit') navigation.navigate('CMLeadTabs', { screen: 'Payments' })
+      else if (type === 'setup another meeting') this.openModalInMeetingMode(false, null)
     }
   }
-
 
   toggleMenu = (val, id) => {
     const { meetings } = this.state
@@ -454,7 +444,7 @@ class Meetings extends Component {
   }
 
   rejectLead = (body) => {
-    const { navigation, lead } = this.props;
+    const { navigation, lead } = this.props
     var leadId = []
     leadId.push(lead.id)
     axios
@@ -473,9 +463,8 @@ class Meetings extends Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call });
+    this.setState({ currentCall: call })
   }
-
 
   showStatusFeedbackModal = (value) => {
     this.setState({ statusfeedbackModalVisible: value })
@@ -502,12 +491,11 @@ class Meetings extends Component {
       modalMode,
       currentCall,
       isFollowUpMode,
-      currentMeeting
+      currentMeeting,
     } = this.state
 
     const { navigation, lead } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
-    const { lead } = this.props;
     let leadClosedCheck =
       closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
     return (
@@ -545,7 +533,9 @@ class Meetings extends Component {
                   styles.actionBtn,
                   platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid,
                 ]}
-                onPress={() => {this.openModalInMeetingMode()}}
+                onPress={() => {
+                  this.openModalInMeetingMode()
+                }}
               >
                 <Text style={styles.alignCenter}>Add Meeting</Text>
               </TouchableOpacity>
@@ -592,11 +582,11 @@ class Meetings extends Component {
           isFollowUpMode={isFollowUpMode}
           lead={lead}
           leadType={'CM'}
-          getMeetingLead={()=> this.getMeetingLead()}
+          getMeetingLead={() => this.getMeetingLead()}
           currentMeeting={currentMeeting}
           editMeeting={editMeeting}
         />
-        
+
         <CallFeedbackActionMeeting
           isFeedbackMeetingModalVisible={isFeedbackMeetingModalVisible}
           showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
@@ -619,7 +609,13 @@ class Meetings extends Component {
           showAction={modalMode === 'call' || modalMode === 'meeting'}
           showFollowup={modalMode === 'call' || modalMode === 'meeting'}
           showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : modalMode === 'meeting' ? StaticData.commentsFeedbackMeeting : StaticData.leadClosedCommentsFeedback}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : modalMode === 'meeting'
+              ? StaticData.commentsFeedbackMeeting
+              : StaticData.leadClosedCommentsFeedback
+          }
           modalMode={modalMode}
           sendStatus={(comment, id) => this.sendStatus(comment, id)}
           addMeeting={() => this.openModalInMeetingMode()}

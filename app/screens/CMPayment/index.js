@@ -17,14 +17,12 @@ import CMPaymentModal from '../../components/CMPaymentModal'
 import CMSecondForm from '../../components/CMSecondForm'
 import DeleteModal from '../../components/DeleteModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
-import FollowUpModal from '../../components/FollowUpModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import StaticData from '../../StaticData'
 import PaymentHelper from './PaymentHelper'
 
@@ -477,8 +475,8 @@ class CMPayment extends Component {
           payment && payment.officeLocationId
             ? payment.officeLocationId
             : user && user.officeLocation
-              ? user.officeLocation.id
-              : null,
+            ? user.officeLocation.id
+            : null,
       })
     )
     this.setState({
@@ -574,8 +572,8 @@ class CMPayment extends Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = CMPayment.paymentAttachments
               ? _.filter(CMPayment.paymentAttachments, (item) => {
-                return !_.has(item, 'id')
-              })
+                  return !_.has(item, 'id')
+                })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -676,38 +674,38 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-      ; (newcheckPaymentPlan['rental'] =
-        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-        this.setState(
-          {
-            checkPaymentPlan: newcheckPaymentPlan,
-            firstFormData: {
-              project:
-                lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
-              floor: '',
-              unitType: '',
-              pearl: '',
-              unit: lead.unit != null ? lead.unit.id : '',
-              unitPrice: 0,
-              cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
-              paymentPlan: 'no',
-              approvedDiscount: 0,
-              approvedDiscountPrice: 0,
-              finalPrice: 0,
-              fullPaymentDiscountPrice: 0,
-              pearlName: 'New Pearl',
-            },
+    ;(newcheckPaymentPlan['rental'] =
+      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+      this.setState(
+        {
+          checkPaymentPlan: newcheckPaymentPlan,
+          firstFormData: {
+            project:
+              lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
+            floor: '',
+            unitType: '',
+            pearl: '',
+            unit: lead.unit != null ? lead.unit.id : '',
+            unitPrice: 0,
+            cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
+            paymentPlan: 'no',
+            approvedDiscount: 0,
+            approvedDiscountPrice: 0,
+            finalPrice: 0,
+            fullPaymentDiscountPrice: 0,
+            pearlName: 'New Pearl',
           },
-          () => {
-            const { checkPaymentPlan } = this.state
-            let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-            this.setState({
-              progressValue: cmProgressBar[lead.status] || 0,
-              paymentPlan: paymentArray,
-              editable: false,
-            })
-          }
-        )
+        },
+        () => {
+          const { checkPaymentPlan } = this.state
+          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+          this.setState({
+            progressValue: cmProgressBar[lead.status] || 0,
+            paymentPlan: paymentArray,
+            editable: false,
+          })
+        }
+      )
   }
 
   handleFirstForm = (value, name) => {
@@ -1044,7 +1042,7 @@ class CMPayment extends Component {
           helper.errorToast('Closed lead API failed!!')
         })
     } else {
-      ; ('Please select a reason for lead closure!')
+      ;('Please select a reason for lead closure!')
     }
   }
 
@@ -1061,7 +1059,7 @@ class CMPayment extends Component {
   }
 
   rejectLead = (body) => {
-    const { navigation, lead } = this.props;
+    const { navigation, lead } = this.props
     var leadId = []
     leadId.push(lead.id)
     axios
@@ -1076,7 +1074,7 @@ class CMPayment extends Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call });
+    this.setState({ currentCall: call })
   }
 
   showStatusFeedbackModal = (value) => {
@@ -1084,13 +1082,13 @@ class CMPayment extends Component {
   }
 
   sendStatus = (status, id) => {
-    const { lead } = this.props;
+    const { lead } = this.props
     let body = {
       response: status,
       comments: status,
       leadId: lead.id,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
 
   //  ************ Function for open modal ************
@@ -1098,7 +1096,7 @@ class CMPayment extends Component {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: false,
-    });
+    })
   }
 
   closeMeetingFollowupModal = () => {
@@ -1115,7 +1113,6 @@ class CMPayment extends Component {
       isFollowUpMode: true,
     })
   }
-
 
   render() {
     const {
@@ -1285,7 +1282,11 @@ class CMPayment extends Component {
             visible={statusfeedbackModalVisible}
             showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
             modalMode={modalMode}
-            commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
+            commentsList={
+              modalMode === 'call'
+                ? StaticData.commentsFeedbackCall
+                : StaticData.leadClosedCommentsFeedback
+            }
             showAction={modalMode === 'call'}
             showFollowup={modalMode === 'call'}
             rejectLead={(body) => this.rejectLead(body)}

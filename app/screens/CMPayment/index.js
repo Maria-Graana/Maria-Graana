@@ -23,6 +23,9 @@ import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import StaticData from '../../StaticData'
 import PaymentHelper from './PaymentHelper'
 
 var BUTTONS = ['Delete', 'Cancel']
@@ -103,17 +106,16 @@ class CMPayment extends Component {
       officeLocations: [],
       assignToAccountsLoading: false,
       active: false,
-      statusfeedbackModalVisible: false,
       closedWon: false,
+      statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
+      isFeedbackMeetingModalVisible: false,
+      isFollowUpMode: false,
     }
   }
 
   componentDidMount = () => {
-    // this.axiosCancelSource = axios.CancelToken.source()
-    // axios
-    //   .get('data.json', { cancelToken: this.axiosCancelSource.token })
-    //   .then((response) => {})
-    //   .catch((err) => console.log(err))
     const { firstForm, secondForm } = this.state
     const { lead } = this.props
     const { paidProject, project } = lead
@@ -475,8 +477,8 @@ class CMPayment extends Component {
           payment && payment.officeLocationId
             ? payment.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
     this.setState({
@@ -572,8 +574,8 @@ class CMPayment extends Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = CMPayment.paymentAttachments
               ? _.filter(CMPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -674,38 +676,38 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-    ;(newcheckPaymentPlan['rental'] =
-      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-      this.setState(
-        {
-          checkPaymentPlan: newcheckPaymentPlan,
-          firstFormData: {
-            project:
-              lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
-            floor: '',
-            unitType: '',
-            pearl: '',
-            unit: lead.unit != null ? lead.unit.id : '',
-            unitPrice: 0,
-            cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
-            paymentPlan: 'no',
-            approvedDiscount: 0,
-            approvedDiscountPrice: 0,
-            finalPrice: 0,
-            fullPaymentDiscountPrice: 0,
-            pearlName: 'New Pearl',
+      ; (newcheckPaymentPlan['rental'] =
+        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+        this.setState(
+          {
+            checkPaymentPlan: newcheckPaymentPlan,
+            firstFormData: {
+              project:
+                lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
+              floor: '',
+              unitType: '',
+              pearl: '',
+              unit: lead.unit != null ? lead.unit.id : '',
+              unitPrice: 0,
+              cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
+              paymentPlan: 'no',
+              approvedDiscount: 0,
+              approvedDiscountPrice: 0,
+              finalPrice: 0,
+              fullPaymentDiscountPrice: 0,
+              pearlName: 'New Pearl',
+            },
           },
-        },
-        () => {
-          const { checkPaymentPlan } = this.state
-          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-          this.setState({
-            progressValue: cmProgressBar[lead.status] || 0,
-            paymentPlan: paymentArray,
-            editable: false,
-          })
-        }
-      )
+          () => {
+            const { checkPaymentPlan } = this.state
+            let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+            this.setState({
+              progressValue: cmProgressBar[lead.status] || 0,
+              paymentPlan: paymentArray,
+              editable: false,
+            })
+          }
+        )
   }
 
   handleFirstForm = (value, name) => {
@@ -1042,7 +1044,7 @@ class CMPayment extends Component {
           helper.errorToast('Closed lead API failed!!')
         })
     } else {
-      ;('Please select a reason for lead closure!')
+      ; ('Please select a reason for lead closure!')
     }
   }
 
@@ -1051,52 +1053,69 @@ class CMPayment extends Component {
     dispatch(setCMPayment({ ...CMPayment, officeLocationId: value }))
   }
 
-  //  ************ Function for open modal ************
-  openModal = () => {
-    this.setState({
-      active: !this.state.active,
-    })
-  }
-
   // ************ Function for Reject modal ************
+
   goToRejectForm = () => {
     const { statusfeedbackModalVisible } = this.state
-    this.setState({
-      statusfeedbackModalVisible: !statusfeedbackModalVisible,
-    })
+    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: !statusfeedbackModalVisible })
   }
 
-  performReject = (comment) => {
-    const { lead, navigation } = this.props
+  rejectLead = (body) => {
+    const { navigation, lead } = this.props;
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then((res) => {
+        helper.successToast(`Lead Closed`)
+        navigation.navigate('Leads')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  setCurrentCall = (call) => {
+    this.setState({ currentCall: call });
+  }
+
+  showStatusFeedbackModal = (value) => {
+    this.setState({ statusfeedbackModalVisible: value })
+  }
+
+  sendStatus = (status, id) => {
+    const { lead } = this.props;
     let body = {
-      reasons: comment,
+      response: status,
+      comments: status,
+      leadId: lead.id,
     }
-    this.setState({ statusfeedbackModalVisible: false }, () => {
-      var leadId = []
-      leadId.push(lead.id)
-      axios
-        .patch(`/api/leads/project`, body, { params: { id: leadId } })
-        .then((res) => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-        })
-        .catch((error) => {
-          console.log(error)
-        })
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+  }
+
+  //  ************ Function for open modal ************
+  openModalInMeetingMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    });
+  }
+
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
     })
   }
 
-  showRejectModal(val) {
-    Alert.alert(
-      'Reject(Close as Lost)',
-      'Are you sure you want to continue?',
-      [
-        { text: 'No', style: 'cancel' },
-        { text: 'Yes', onPress: () => this.performReject(val) },
-      ],
-      { cancelable: false }
-    )
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
+    })
   }
+
 
   render() {
     const {
@@ -1143,6 +1162,9 @@ class CMPayment extends Component {
       active,
       statusfeedbackModalVisible,
       closedWon,
+      modalMode,
+      currentCall,
+      isFollowUpMode,
     } = this.state
     const { lead, navigation } = this.props
     return (
@@ -1259,20 +1281,29 @@ class CMPayment extends Component {
               </View>
             </ScrollView>
           </KeyboardAvoidingView>
-          <FollowUpModal
-            leadType={'cm'}
-            active={active}
-            openModal={this.openModal}
-            diaryForm={true}
-          />
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
-            commentsList={StaticData.leadClosedCommentsFeedback}
-            showAction={false}
-            showFollowup={false}
-            performReject={(comment) => this.showRejectModal(comment)}
+            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            modalMode={modalMode}
+            commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
+            showAction={modalMode === 'call'}
+            showFollowup={modalMode === 'call'}
+            rejectLead={(body) => this.rejectLead(body)}
+            sendStatus={(comment, id) => this.sendStatus(comment, id)}
+            addMeeting={() => this.openModalInMeetingMode()}
+            addFollowup={() => this.openModalInFollowupMode()}
+            leadType={'CM'}
+            currentCall={currentCall}
           />
+
+          <MeetingFollowupModal
+            closeModal={() => this.closeMeetingFollowupModal()}
+            active={active}
+            isFollowUpMode={isFollowUpMode}
+            lead={lead}
+            leadType={'CM'}
+          />
+
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1283,9 +1314,12 @@ class CMPayment extends Component {
               alreadyClosedLead={this.closedLead}
               closeLead={this.fetchLead}
               closeLeadFor={'leadClose'}
-              goToFollowUp={this.openModal}
+              goToFollowUp={this.openModalInFollowupMode}
               goToRejectForm={this.goToRejectForm}
               closedWon={closedWon}
+              showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+              setCurrentCall={(call) => this.setCurrentCall(call)}
+              leadType={'CM'}
               navigation={navigation}
               customer={lead.customer}
               goToHistory={() => {}}

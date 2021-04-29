@@ -25,7 +25,6 @@ import config from '../../config'
 import CheckListModal from '../../components/CheckListModal'
 import ViewCheckListModal from '../../components/ViewCheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
-import FollowUpModal from '../../components/FollowUpModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 class LeadViewing extends React.Component {

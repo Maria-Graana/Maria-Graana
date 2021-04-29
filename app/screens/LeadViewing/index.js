@@ -783,10 +783,9 @@ class LeadViewing extends React.Component {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
-   )}
+   })
   }
-
-
+  
   sendStatus = (status, id) => {
     const { formData, meetings } = this.state
     let body = {

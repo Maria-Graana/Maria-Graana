@@ -797,26 +797,22 @@ class LeadRCMPayment extends React.Component {
   }
 
   onHandleCloseLead = () => {
-    const { navigation } = this.props
-    const { lead, selectedReason } = this.state
+    const { navigation, lead } = this.props
     let payload = Object.create({})
-    payload.reasons = selectedReason
-    if (selectedReason !== '') {
-      var leadId = []
-      leadId.push(lead.id)
-      axios
-        .patch(`/api/leads`, payload, { params: { id: leadId } })
-        .then((response) => {
-          this.setState({ isVisible: false }, () => {
-            navigation.navigate('Leads')
-          })
+    payload.reasons = 'payment_done'
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads`, payload, { params: { id: leadId } })
+      .then((response) => {
+        this.setState({ isVisible: false }, () => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
         })
-        .catch((error) => {
-          console.log(error)
-        })
-    } else {
-      alert('Please select a reason for lead closure!')
-    }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   handleForm = (value, name) => {
@@ -1535,44 +1531,51 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
+  sendStatus = (status, id) => {
+    const { formData, meetings } = this.state
+    let body = {
+      response: status,
+      comments: status,
+      leadId: formData.leadId,
+    }
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  }
+
   // ************ Function for Reject modal ************
   goToRejectForm = () => {
     const { statusfeedbackModalVisible } = this.state
     this.setState({
       statusfeedbackModalVisible: !statusfeedbackModalVisible,
+      modalMode: 'reject',
     })
   }
 
-  performReject = (comment) => {
-    const { lead, navigation } = this.props
-    let body = {
-      reasons: comment,
-    }
-    this.setState({ statusfeedbackModalVisible: false }, () => {
-      var leadId = []
-      leadId.push(lead.id)
-      axios
-        .patch(`/api/leads`, body, { params: { id: leadId } })
-        .then((res) => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    })
+  rejectLead = (body) => {
+    const { navigation, lead } = this.props
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads`, body, { params: { id: leadId } })
+      .then((res) => {
+        helper.successToast(`Lead Closed`)
+        navigation.navigate('Leads')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
-  showRejectModal(val) {
-    Alert.alert(
-      'Reject(Close as Lost)',
-      'Are you sure you want to continue?',
-      [
-        { text: 'No', style: 'cancel' },
-        { text: 'Yes', onPress: () => this.performReject(val) },
-      ],
-      { cancelable: false }
-    )
+  showStatusFeedbackModal = (value) => {
+    this.setState({ statusfeedbackModalVisible: value })
+  }
+
+  setCurrentCall = (call) => {
+    this.setState({ currentCall: call, modalMode: 'call' })
+  }
+
+  goToViewingScreen = () => {
+    const { navigation } = this.props
+    navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
   render() {
@@ -1812,11 +1815,21 @@ class LeadRCMPayment extends React.Component {
           />
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
-            commentsList={StaticData.leadClosedCommentsFeedback}
-            showAction={false}
-            showFollowup={false}
-            performReject={(comment) => this.showRejectModal(comment)}
+            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            modalMode={modalMode}
+            commentsList={
+              modalMode === 'call'
+                ? StaticData.commentsFeedbackCall
+                : StaticData.leadClosedCommentsFeedback
+            }
+            showAction={modalMode === 'call'}
+            showFollowup={modalMode === 'call'}
+            rejectLead={(body) => this.rejectLead(body)}
+            sendStatus={(comment, id) => this.sendStatus(comment, id)}
+            addFollowup={() => this.openModalInFollowupMode()}
+            leadType={'RCM'}
+            currentCall={currentCall}
+            goToViewingScreen={this.goToViewingScreen}
           />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
@@ -1836,6 +1849,7 @@ class LeadRCMPayment extends React.Component {
               navigation={navigation}
               goToRejectForm={this.goToRejectForm}
               closedWon={closedWon}
+              onHandleCloseLead={this.onHandleCloseLead}
             />
           </View>
         </View>

@@ -110,12 +110,14 @@ class CMBottomNav extends React.Component {
       this.sendCallStatus()
       this.props.getCallHistory()
       helper.callNumber(newContact, contacts)
+      showStatusFeedbackModal(true)
     } else {
       helper.errorToast('No Phone Number')
     }
   }
 
   sendCallStatus = () => {
+    const { leadType } = this.props
     const start = moment().format()
     let body = {
       start: start,
@@ -126,7 +128,8 @@ class CMBottomNav extends React.Component {
       response: 'Called',
       subject: 'Call to client ' + this.props.lead.customer.customerName,
       cutomerId: this.props.lead.customer.id,
-      armsLeadId: this.props.lead.id,
+      armsLeadId: leadType === 'RCM' ? this.props.lead.id : null, // For RCM Call
+      leadId: leadType === 'CM' ? this.props.lead.id : null, // For CM Call
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
@@ -134,32 +137,8 @@ class CMBottomNav extends React.Component {
     })
   }
 
-  updateStatus = () => {
-    const { lead, user } = this.props
-    var leadId = []
-    leadId.push(lead.id)
-    if (lead.assigned_to_armsuser_id === user.id) {
-      if (lead.status === 'open') {
-        axios
-          .patch(
-            `/api/leads`,
-            {
-              status: 'called',
-            },
-            { params: { id: leadId } }
-          )
-          .then((res) => {
-            console.log('success')
-          })
-          .catch((error) => {
-            console.log(`ERROR: /api/leads/?id=${data.id}`, error)
-          })
-      }
-    }
-  }
-
   performListActions = (title) => {
-    const { goToComments, goToDiaryForm, goToAttachments, lead } = this.props
+    const { goToComments, goToDiaryForm, goToAttachments, lead, onHandleCloseLead } = this.props
     if (title === 'Comment') goToComments()
     if (title === 'Diary Task') goToDiaryForm()
     if (title === 'Whatsapp') this.openWhatsapp()
@@ -167,6 +146,7 @@ class CMBottomNav extends React.Component {
     if (title === 'Call') this.call()
     if (title === 'ReAssign') this.checkAssignedLead(lead)
     if (title === 'Share') this.navigateToShareScreen(lead)
+    if (title === 'Closed Won') onHandleCloseLead(lead)
   }
 
   handleLongPress = (val) => {

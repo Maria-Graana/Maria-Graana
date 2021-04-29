@@ -1020,30 +1020,25 @@ class CMPayment extends Component {
     this.setState({ selectedReason: value })
   }
 
-  onHandleCloseLead = (reason) => {
+  onHandleCloseLead = () => {
     const { lead, navigation } = this.props
-    const { selectedReason } = this.state
     let body = {
-      reasons: selectedReason,
+      reasons: 'payment_done',
     }
     var leadId = []
     leadId.push(lead.id)
-    if (selectedReason && selectedReason !== '') {
-      axios
-        .patch(`/api/leads/project`, body, { params: { id: leadId } })
-        .then((res) => {
-          this.setState({ isVisible: false }, () => {
-            helper.successToast(`Lead Closed`)
-            navigation.navigate('Leads')
-          })
+    axios
+      .patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then((res) => {
+        this.setState({ isVisible: false }, () => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
         })
-        .catch((error) => {
-          console.log('/api/leads/project - Error', error)
-          helper.errorToast('Closed lead API failed!!')
-        })
-    } else {
-      ;('Please select a reason for lead closure!')
-    }
+      })
+      .catch((error) => {
+        console.log('/api/leads/project - Error', error)
+        helper.errorToast('Closed lead API failed!!')
+      })
   }
 
   handleOfficeLocation = (value) => {
@@ -1325,6 +1320,7 @@ class CMPayment extends Component {
               customer={lead.customer}
               goToHistory={() => {}}
               getCallHistory={() => {}}
+              onHandleCloseLead={this.onHandleCloseLead}
             />
           </View>
         </View>

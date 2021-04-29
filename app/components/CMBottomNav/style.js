@@ -11,6 +11,7 @@ export default styles = StyleSheet.create({
     shadowOffset: { width: -1, height: -1 },
     shadowColor: '#33333312',
     shadowOpacity: 1,
+    height: 65,
   },
   bottomNavBtn: {
     width: '20%',
@@ -33,9 +34,8 @@ export default styles = StyleSheet.create({
     height: 25,
   },
   bottomNavBtnText: {
-    marginTop: 5,
     color: AppStyles.colors.primaryColor,
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: AppStyles.fonts.boldFont,
   },
   forMenuIcon: {
@@ -48,7 +48,7 @@ export default styles = StyleSheet.create({
     width: '20%',
     alignItems: 'center',
     // paddingBottom: 15,
-    // paddingTop: 15,
+    paddingTop: 15,
     backgroundColor: AppStyles.colors.primaryColor,
     borderRadius: 5,
     marginHorizontal: 1,
@@ -59,7 +59,6 @@ export default styles = StyleSheet.create({
     width: '20%',
     alignItems: 'center',
     paddingBottom: 15,
-    paddingTop: 15,
     backgroundColor: '#F0B512',
     borderRadius: 5,
     marginHorizontal: 1,

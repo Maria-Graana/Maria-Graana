@@ -2,19 +2,19 @@
 import axios from 'axios'
 import moment from 'moment'
 import React, { Component } from 'react'
-import { Alert, FlatList, Linking, Platform, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Linking, Platform, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import { setContacts } from '../../actions/contacts'
 import { setLeadRes } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
+import CallFeedbackActionMeeting from '../../components/CallFeedbackActionMeeting'
 import CMBottomNav from '../../components/CMBottomNav'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import MeetingModal from '../../components/MeetingModal'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import MeetingTile from '../../components/MeetingTile'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import helper from '../../helper'
-import TimerNotification from '../../LocalNotifications'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import styles from './style'
@@ -24,24 +24,8 @@ class Meetings extends Component {
     const { lead, user } = this.props
     this.state = {
       active: false,
-      formData: {
-        time: '',
-        date: '',
-        addedBy: '',
-        taskCategory: '',
-        leadId: this.props.lead.id,
-        start: '',
-        end: '',
-        subject: this.props.lead.customer
-          ? `Meeting with ${this.props.lead.customer.customerName}`
-          : null,
-      },
       meetings: [],
       checkValidation: false,
-      doneStatus: false,
-      doneStatusId: '',
-      editMeeting: false,
-      meetingId: '',
       modalStatus: 'dropdown',
       open: false,
       progressValue: 0,
@@ -51,34 +35,25 @@ class Meetings extends Component {
       checkReasonValidation: false,
       closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
       checkForUnassignedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
-      diaryForm: false,
-      diaryTask: {
-        subject: '',
-        taskType: 'follow_up',
-        start: '',
-        end: '',
-        date: '',
-        notes: '',
-        status: 'pending',
-        leadId: this.props.lead.id,
-      },
-      loading: false,
       secondScreenData: {},
       checkForNewLeadData: false,
       statusfeedbackModalVisible: false,
       modalMode: 'call',
       currentCall: null,
+      currentMeeting: null,
+      isFeedbackMeetingModalVisible: false,
+      isFollowUpMode: false,
+      editMeeting: false,
       closedWon: false,
     }
   }
 
   componentDidMount() {
     const { navigation } = this.props
-    this.fetchLead()
-    this.getMeetingLead()
     this.props.dispatch(setContacts())
     this._unsubscribe = navigation.addListener('focus', () => {
       this.fetchLead()
+      this.getMeetingLead()
     })
   }
 
@@ -102,31 +77,33 @@ class Meetings extends Component {
   }
 
   //  ************ Function for open modal ************
-  openModal = () => {
+  openModalInMeetingMode = (edit = false, id = null) => {
+    const { meetings } = this.state
     this.setState({
       active: !this.state.active,
-      formData: {},
+      editMeeting: edit,
+      isFollowUpMode: false,
+      currentMeeting: edit ? meetings.rows.find((item) => item.id === id) : null,
+    })
+  }
+
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
       editMeeting: false,
-      diaryForm: false,
+      isFollowUpMode: false,
+      currentMeeting: null,
     })
   }
 
   //  ************ Function for open Follow up modal ************
-  openFollowUpModal = () => {
+  openModalInFollowupMode = () => {
     this.setState({
       active: !this.state.active,
-      formData: {},
       editMeeting: false,
-      diaryForm: true,
+      isFollowUpMode: true,
+      currentMeeting: null,
     })
-  }
-
-  //  ************ Form Handle Function  ************
-  handleForm = (value, name) => {
-    const { formData } = this.state
-    formData[name] = value
-    formData['leadId'] = this.props.lead.id
-    this.setState({ formData })
   }
 
   getMeetingLead = () => {
@@ -143,205 +120,16 @@ class Meetings extends Component {
     })
   }
 
-  //  ************ Form submit Function  ************
-  formSubmit = (id) => {
-    const { formData, editMeeting, meetingId } = this.state
-    if (!formData.time || !formData.date) {
-      this.setState({ checkValidation: true })
-    } else {
-      this.setState({ loading: true })
-      let formattedDate = helper.formatDate(formData.date)
-      const start = helper.formatDateAndTime(formattedDate, formData.time)
-      const end = moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ')
-      if (editMeeting === true) {
-        // Update meeting
-        let body = {
-          date: start,
-          time: start,
-          leadId: formData.leadId,
-          start: start,
-          end: end,
-        }
-
-        axios
-          .patch(`/api/diary/update?id=${meetingId}`, body)
-          .then((res) => {
-            helper.successToast(`Meeting Updated`)
-            let start = new Date(res.data.start)
-            let end = new Date(res.data.end)
-            let data = {
-              id: res.data.id,
-              title: res.data.subject,
-              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
-            }
-            helper.deleteAndUpdateNotification(data, start, res.data.id)
-            this.getMeetingLead()
-            formData['time'] = ''
-            formData['date'] = ''
-            this.setState({
-              active: false,
-              formData,
-              editMeeting: false,
-            })
-          })
-          .catch(() => {
-            helper.errorToast(`Some thing went wrong!!!`)
-          })
-          .finally(() => {
-            this.setState({ loading: false })
-          })
-      } else {
-        formData.addedBy = 'self'
-        formData.taskCategory = 'leadTask'
-        formData.date = start
-        formData.time = start
-        formData.start = start
-        formData.end = end
-        // Add meeting
-        axios
-          .post(`api/leads/project/meeting`, formData)
-          .then((res) => {
-            formData['time'] = ''
-            formData['date'] = ''
-            helper.successToast(`Meeting Added`)
-            let start = new Date(res.data.start)
-            let end = new Date(res.data.end)
-            let data = {
-              id: res.data.id,
-              title: res.data.subject,
-              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
-            }
-            TimerNotification(data, start)
-            this.getMeetingLead()
-            this.setState({
-              active: false,
-              formData,
-            })
-          })
-          .catch(() => {
-            helper.errorToast(`Some thing went wrong!!!`)
-          })
-          .finally(() => {
-            this.setState({ loading: false })
-          })
-      }
-    }
-  }
-
-  addFollowUpTask = (selectedOption) => {
-    const { diaryTask } = this.state
-    const { navigation, user } = this.props
-    let payload = {
-      subject: 'Follow up with client',
-      date: null,
-      end: null,
-      leadId: diaryTask.leadId,
-      start: null,
-      taskType: diaryTask.taskType,
-      time: null,
-      notes: '',
-      status: 'pending',
-    }
-
-    switch (selectedOption) {
-      case 'today':
-        let todayPayload = { ...payload }
-        let startForToday = moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
-        todayPayload.start = startForToday
-        todayPayload.date = startForToday
-        todayPayload.end = moment(todayPayload.start).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
-        todayPayload.time = startForToday
-        payload = todayPayload
-        break
-      case 'tomorrow':
-        let tomorrowPayload = { ...payload }
-        let startForTomorrow = moment().add(1, 'day')
-        startForTomorrow.set({ hour: 9, minute: 0, second: 0 }).toISOString()
-        startForTomorrow.format('YYYY-MM-DDTHH:mm:ssZ')
-        tomorrowPayload.start = startForTomorrow
-        tomorrowPayload.date = startForTomorrow
-        tomorrowPayload.end = moment(startForTomorrow).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
-        tomorrowPayload.time = startForTomorrow
-        payload = tomorrowPayload
-        break
-      case 'in_3_days':
-        let inThreeDaysPayload = { ...payload }
-        let startForIn3days = moment().add(3, 'days')
-        startForIn3days.set({ hour: 9, minute: 0, second: 0 }).toISOString()
-        startForIn3days.format('YYYY-MM-DDTHH:mm:ssZ')
-        inThreeDaysPayload.start = startForIn3days
-        inThreeDaysPayload.date = startForIn3days
-        inThreeDaysPayload.end = moment(startForIn3days)
-          .add(1, 'hour')
-          .format('YYYY-MM-DDTHH:mm:ssZ')
-        inThreeDaysPayload.time = startForIn3days
-        payload = inThreeDaysPayload
-        break
-      case 'next_week':
-        let nextWeekPayload = { ...payload }
-        let startForNextWeek = moment().add(7, 'days')
-        startForNextWeek.set({ hour: 9, minute: 0, second: 0 }).toISOString()
-        startForNextWeek.format('YYYY-MM-DDTHH:mm:ssZ')
-        nextWeekPayload.start = startForNextWeek
-        nextWeekPayload.date = startForNextWeek
-        nextWeekPayload.end = moment(startForNextWeek).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
-        nextWeekPayload.time = startForNextWeek
-        payload = nextWeekPayload
-        break
-      case 'custom':
-        let customPayload = { ...payload }
-        let customStart = helper.formatDateAndTime(
-          helper.formatDate(diaryTask.date),
-          diaryTask.start
-        )
-        customPayload.start = customStart
-        customPayload.date = customStart
-        customPayload.end = moment(customStart).add(1, 'hour').format('YYYY-MM-DDTHH:mm:ssZ')
-        customPayload.time = customStart
-        payload = customPayload
-        break
-      default:
-        break
-    }
-    this.setState(
-      {
-        editMeeting: false,
-      },
-      () => {
-        this.addFollowUpForCall(payload)
-      }
-    )
-  }
-
-  addFollowUpForCall = (data) => {
-    axios
-      .post(`api/leads/project/meeting`, data)
-      .then((res) => {
-        if (res && res.data) {
-          helper.successToast(
-            `Follow up task added for ${moment(res.data.start).format('hh:mm a')}, ${moment(
-              res.data.start
-            ).format('MMM D')}`,
-            5000
-          )
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-        helper.errorToast(`Some thing went wrong!!!`)
-      })
-  }
-
   sendStatus = (status, id) => {
-    const { formData } = this.state
+    const { formData, meetings } = this.state
+    const { lead } = this.props
     let body = {
       response: status,
       comments: status,
-      leadId: formData.leadId,
+      leadId: lead.id,
     }
-    console.log(body)
     if (status === 'cancel_meeting') {
-      axios.delete(`/api/diary/delete?id=${id}&cmLeadId=${formData.leadId}`).then((res) => {
+      axios.delete(`/api/diary/delete?id=${id}&cmLeadId=${lead.id}`).then((res) => {
         this.getMeetingLead()
       })
     } else if (status === 'meeting_done') {
@@ -358,31 +146,6 @@ class Meetings extends Component {
     }
   }
 
-  addDiary = () => {
-    const { diaryTask } = this.state
-    const startTime = moment()
-    const start = startTime.add(1, 'hours')
-    const newformData = { ...diaryTask }
-    newformData['subject'] = 'Follow up with client'
-    newformData['status'] = 'pending'
-    newformData['taskType'] = 'follow_up'
-    newformData['start'] = start
-    newformData['end'] = start
-    newformData['date'] = start
-    this.setState({
-      active: !this.state.active,
-      diaryForm: true,
-      diaryTask: newformData,
-    })
-  }
-
-  handleFormDiary = (value, name) => {
-    const { diaryTask } = this.state
-    let newdiaryTask = { ...diaryTask }
-    newdiaryTask[name] = value
-    this.setState({ diaryTask: newdiaryTask })
-  }
-
   sendCallStatus = () => {
     const start = moment().format()
     let body = {
@@ -393,13 +156,12 @@ class Meetings extends Component {
       taskType: 'called',
       subject: 'Call to client ' + this.props.lead.customer.customerName,
       customerId: this.props.lead.customer.id,
-      leadId: this.props.lead.id,
+      leadId: this.props.lead.id, // For CM send leadID and armsLeadID for RCM
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.setState({ currentCall: res.data }, () => {
-        this.getMeetingLead()
-      })
+      this.setCurrentCall(res.data)
+      this.getMeetingLead()
     })
   }
 
@@ -438,21 +200,8 @@ class Meetings extends Component {
       }
   }
 
-  editFunction = (id) => {
-    const { meetings, active } = this.state
-    let filter = meetings.rows.filter((item) => {
-      return item.id === id && item
-    })
-    this.setState({
-      active: !active,
-      formData: {
-        date: filter[0].date,
-        time: filter[0].time,
-        leadId: this.props.lead.id,
-      },
-      editMeeting: true,
-      meetingId: id,
-    })
+  editMeeting = (id) => {
+    this.openModalInMeetingMode(true, id)
   }
 
   goToComments = () => {
@@ -629,8 +378,6 @@ class Meetings extends Component {
             this.sendStatus(comment, currentCall.id)
           })
         }
-      } else {
-        console.log('meeting action')
       }
     })
   }
@@ -649,57 +396,13 @@ class Meetings extends Component {
     this.setState({ isFeedbackMeetingModalVisible: value })
   }
 
-  performFollowup = (comment) => {
-    const { currentCall } = this.state
-    if (currentCall) {
-      this.setState({ statusfeedbackModalVisible: false }, () => {
-        this.sendStatus(comment, currentCall.id)
-        this.addDiary()
-      })
+  performMeetingAction = (type) => {
+    const { navigation } = this.props
+    this.showFeedbackMeetingModal(false)
+    if (type) {
+      if (type === 'book unit') navigation.navigate('CMLeadTabs', { screen: 'Payments' })
+      else if (type === 'setup another meeting') this.openModalInMeetingMode(false, null)
     }
-  }
-
-  performReject = (comment) => {
-    const { currentCall } = this.state
-    const { lead, navigation } = this.props
-    let body = {
-      reasons: comment,
-    }
-    if ((currentCall && modalMode === 'call') || modalMode === 'meeting') {
-      this.setState({ statusfeedbackModalVisible: false }, () => {
-        this.sendStatus(comment, currentCall.id)
-        this.closeLeadOnReject(body)
-      })
-    } else {
-      this.closeLeadOnReject(body)
-    }
-  }
-
-  closeLeadOnReject = (body) => {
-    const { lead, navigation } = this.props
-    var leadId = []
-    leadId.push(lead.id)
-    axios
-      .patch(`/api/leads/project`, body, { params: { id: leadId } })
-      .then((res) => {
-        helper.successToast(`Lead Closed`)
-        navigation.navigate('Leads')
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
-  showRejectModal(val) {
-    Alert.alert(
-      'Reject(Close as Lost)',
-      'Are you sure you want to continue?',
-      [
-        { text: 'No', style: 'cancel' },
-        { text: 'Yes', onPress: () => this.performReject(val) },
-      ],
-      { cancelable: false }
-    )
   }
 
   toggleMenu = (val, id) => {
@@ -720,6 +423,49 @@ class Meetings extends Component {
     this.setState({ meetings: newMeetingObj })
   }
 
+  performReject = (comment) => {
+    const { currentCall, modalMode } = this.state
+    const { lead, navigation } = this.props
+    let body = {
+      reasons: comment,
+    }
+    if ((currentCall && modalMode === 'call') || modalMode === 'meeting') {
+      this.setState({ statusfeedbackModalVisible: false }, () => {
+        this.sendStatus(comment, currentCall.id)
+        this.closeLeadOnReject(body)
+      })
+    } else {
+      this.closeLeadOnReject(body)
+    }
+  }
+
+  rejectLead = (body) => {
+    const { navigation, lead } = this.props
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then((res) => {
+        helper.successToast(`Lead Closed`)
+        navigation.navigate('Leads')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  goToRejectForm = () => {
+    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: true })
+  }
+
+  setCurrentCall = (call) => {
+    this.setState({ currentCall: call })
+  }
+
+  showStatusFeedbackModal = (value) => {
+    this.setState({ statusfeedbackModalVisible: value })
+  }
+
   goToRejectForm = () => {
     this.setState({ modalMode: 'reject', statusfeedbackModalVisible: true })
   }
@@ -727,11 +473,7 @@ class Meetings extends Component {
   render() {
     const {
       active,
-      formData,
-      checkValidation,
       meetings,
-      modalStatus,
-      open,
       progressValue,
       editMeeting,
       reasons,
@@ -740,15 +482,16 @@ class Meetings extends Component {
       closedLeadEdit,
       isVisible,
       checkForUnassignedLeadEdit,
-      diaryForm,
-      diaryTask,
-      loading,
       statusfeedbackModalVisible,
+      isFeedbackMeetingModalVisible,
       modalMode,
+      currentCall,
+      isFollowUpMode,
+      currentMeeting,
     } = this.state
+
     const { navigation, lead } = this.props
     let platform = Platform.OS == 'ios' ? 'ios' : 'android'
-    let leadData = this.props.lead
     let leadClosedCheck =
       closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
     return (
@@ -771,7 +514,7 @@ class Meetings extends Component {
               data={item}
               key={index}
               sendStatus={this.sendStatus}
-              editFunction={this.editFunction}
+              editFunction={this.editMeeting}
               leadClosedCheck={leadClosedCheck}
               toggleMenu={(val, id) => this.toggleMenu(val, id)}
             />
@@ -787,7 +530,7 @@ class Meetings extends Component {
                   platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid,
                 ]}
                 onPress={() => {
-                  this.openModal()
+                  this.openModalInMeetingMode()
                 }}
               >
                 <Text style={styles.alignCenter}>Add Meeting</Text>
@@ -800,7 +543,7 @@ class Meetings extends Component {
                   platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid,
                 ]}
                 onPress={() => {
-                  this.callNumber(`tel:${leadData.customer && leadData.customer.phone}`)
+                  this.callNumber(`tel:${lead.customer && lead.customer.phone}`)
                 }}
               >
                 <Text style={styles.alignCenter}>Call</Text>
@@ -817,8 +560,11 @@ class Meetings extends Component {
             alreadyClosedLead={this.closedLead}
             closedLeadEdit={leadClosedCheck}
             closeLead={this.checkLeadClosureReasons}
-            goToFollowUp={this.openFollowUpModal}
+            goToFollowUp={this.openModalInFollowupMode}
             goToRejectForm={this.goToRejectForm}
+            showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            setCurrentCall={(call) => this.setCurrentCall(call)}
+            leadType={'CM'}
             navigation={navigation}
             customer={lead.customer}
             goToHistory={() => {}}
@@ -827,31 +573,22 @@ class Meetings extends Component {
           />
         </View>
 
-        {/* ************Modal Component************ */}
-        {active === true && (
-          <MeetingModal
-            active={active}
-            formData={formData}
-            checkValidation={checkValidation}
-            openModal={this.openModal}
-            handleForm={this.handleForm}
-            formSubmit={this.formSubmit}
-            diaryForm={diaryForm}
-            editMeeting={editMeeting}
-            diaryTask={diaryTask}
-            handleFormDiary={this.handleFormDiary}
-            addFollowUpTask={(selectedOption) => this.addFollowUpTask(selectedOption)}
-            loading={loading}
-          />
-        )}
+        <MeetingFollowupModal
+          closeModal={() => this.closeMeetingFollowupModal()}
+          active={active}
+          isFollowUpMode={isFollowUpMode}
+          lead={lead}
+          leadType={'CM'}
+          getMeetingLead={() => this.getMeetingLead()}
+          currentMeeting={currentMeeting}
+          editMeeting={editMeeting}
+        />
 
-        {/* <MeetingStatusModal
-          sendStatus={this.sendStatus}
-          modalType={modalStatus}
-          goToDiaryForm={this.goToDiaryForm}
-          goToAttachments={this.goToAttachments}
-          goToComments={this.goToComments}
-        /> */}
+        <CallFeedbackActionMeeting
+          isFeedbackMeetingModalVisible={isFeedbackMeetingModalVisible}
+          showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
+          performMeetingAction={(type) => this.performMeetingAction(type)}
+        />
 
         <LeadRCMPaymentPopup
           reasons={reasons}
@@ -866,7 +603,9 @@ class Meetings extends Component {
 
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+          showAction={modalMode === 'call' || modalMode === 'meeting'}
+          showFollowup={modalMode === 'call' || modalMode === 'meeting'}
+          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
           commentsList={
             modalMode === 'call'
               ? StaticData.commentsFeedbackCall
@@ -875,9 +614,13 @@ class Meetings extends Component {
               : StaticData.leadClosedCommentsFeedback
           }
           modalMode={modalMode}
-          performAction={(modalMode, comment) => this.performAction(modalMode, comment)}
-          performFollowup={(comment) => this.performFollowup(comment)}
-          performReject={(comment) => this.showRejectModal(comment)}
+          sendStatus={(comment, id) => this.sendStatus(comment, id)}
+          addMeeting={() => this.openModalInMeetingMode()}
+          addFollowup={() => this.openModalInFollowupMode()}
+          showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
+          currentCall={currentCall}
+          rejectLead={(body) => this.rejectLead(body)}
+          leadType={'CM'}
         />
       </View>
     )

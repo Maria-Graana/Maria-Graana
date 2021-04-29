@@ -18,9 +18,9 @@ import OfferModal from '../../components/OfferModal'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
-import FollowUpModal from '../../components/FollowUpModal'
 import styles from './styles'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
@@ -56,6 +56,9 @@ class LeadOffer extends React.Component {
       legalDocLoader: false,
       active: false,
       statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
+      isFollowUpMode: false,
       closedWon: false,
     }
   }
@@ -558,10 +561,18 @@ class LeadOffer extends React.Component {
     )
   }
 
-  //  ************ Function for open modal ************
-  openModal = () => {
+  closeMeetingFollowupModal = () => {
     this.setState({
       active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
     })
   }
 
@@ -639,6 +650,9 @@ class LeadOffer extends React.Component {
       legalDocLoader,
       active,
       statusfeedbackModalVisible,
+      currentCall,
+      isFollowUpMode,
+      modalMode,
       closedWon,
     } = this.state
     const { lead, navigation, user } = this.props
@@ -740,13 +754,15 @@ class LeadOffer extends React.Component {
             )}
           </View>
         </View>
-        <FollowUpModal
-          leadType={'rcm'}
+        <MeetingFollowupModal
+          closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
-          openModal={this.openModal}
-          diaryForm={true}
+          isFollowUpMode={isFollowUpMode}
+          lead={lead}
+          leadType={'RCM'}
+          getMeetingLead={this.getCallHistory}
         />
-
+            
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
           showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
@@ -779,8 +795,11 @@ class LeadOffer extends React.Component {
             lead={lead}
             goToHistory={this.goToHistory}
             getCallHistory={this.getCallHistory}
-            goToFollowUp={this.openModal}
+            goToFollowUp={this.openModalInFollowupMode}
             navigation={navigation}
+            showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            setCurrentCall={(call) => this.setCurrentCall(call)}
+            leadType={'RCM'}
             goToRejectForm={this.goToRejectForm}
             closedWon={closedWon}
             onHandleCloseLead={this.onHandleCloseLead}

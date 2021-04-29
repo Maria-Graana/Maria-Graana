@@ -25,7 +25,7 @@ class MeetingTile extends React.Component {
     let response = data && data.response != null && data.response.replace(/_+/g, " ");
 
     return (
-      <TouchableOpacity onPress={() => { }}>
+      <TouchableOpacity onPress={() => null}>
         <View style={[styles.mainTileView,]}>
           <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
             <View style={styles.border}>
@@ -33,21 +33,11 @@ class MeetingTile extends React.Component {
               <Text style={[styles.fontBold]}>{helper.formatTime(data.start)} </Text>
               <Text style={[styles.fontBold]}>{moment(data.date).format("MMM DD")}</Text>
             </View>
-            <View style={[styles.dotsWrap]}>
+          </View>
               <View>
                 <Text style={[styles.doneText, response != 'DNC' && styles.uperCase]}>{data.response !== null ? helper.showStatus(response) : 'Called'}</Text>
               </View>
-              {
-                leadClosedCheck &&
-                <View>
-                  <TouchableOpacity style={[styles.doneBtn]} onPress={() => { openStatus(data) }}>
-                    <Image source={dots} style={styles.dotsImg} />
-                  </TouchableOpacity>
-                </View>
-              }
             </View>
-          </View>
-        </View>
       </TouchableOpacity>
     )
   }

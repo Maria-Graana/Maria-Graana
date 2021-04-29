@@ -71,9 +71,11 @@ class CMBottomNav extends React.Component {
       visible: false,
       actionVisible: false,
     }
+
   }
 
   callNumber = (url) => {
+    console.log(url);
     if (url != 'tel:null') {
       Linking.canOpenURL(url)
         .then((supported) => {
@@ -103,12 +105,10 @@ class CMBottomNav extends React.Component {
   }
 
   call = () => {
-    const { contacts, customer } = this.props
+    const { contacts, customer, showStatusFeedbackModal } = this.props
     if (customer) {
       let newContact = helper.createContactPayload(customer)
-      this.updateStatus()
       this.sendCallStatus()
-      this.props.getCallHistory()
       helper.callNumber(newContact, contacts)
       showStatusFeedbackModal(true)
     } else {
@@ -133,7 +133,7 @@ class CMBottomNav extends React.Component {
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
-      // console.log('sendCallStatus: ', res.data)
+      this.props.setCurrentCall(res.data)
     })
   }
 

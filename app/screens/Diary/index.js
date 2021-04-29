@@ -263,16 +263,16 @@ class Diary extends React.Component {
   }
 
   editTask = (val) => {
-    const {navigation, route, user} = this.props;
+    const { navigation, route, user } = this.props;
     const { screen, managerId } = route.params;
     const { agentId } = this.state;
     let isManager = false;
     isManager = managerId ? user.id == managerId ? true : false : false;
     if (val.taskCategory === 'simpleTask' &&
-     (val.addedBy === 'self' || isManager) && 
-     (val.status === 'pending' || val.status === 'inProgress') &&
+      (val.addedBy === 'self' || isManager) &&
+      (val.status === 'pending' || val.status === 'inProgress') &&
       Ability.canEdit(user.subRole, screen)) {
-      navigation.navigate('AddDiary', {update: true, data: val, screenName: screen, managerId, agentId})
+      navigation.navigate('AddDiary', { update: true, data: val, screenName: screen, managerId, agentId })
     }
   }
 
@@ -391,7 +391,7 @@ class Diary extends React.Component {
     return (
       !loading ?
         <View style={styles.container}>
-            {/* <DairyPopup
+          {/* <DairyPopup
               screenName={route.params.screen}
               data={selectedDiary}
               updateDiary={this.updateDiary}
@@ -400,7 +400,7 @@ class Diary extends React.Component {
               onLeadLinkClicked={this.handleLeadLinkPress}
               popupAction={(val, type) => this.popupAction(val, type)}
             /> */}
-
+          {/* 
             {
               Ability.canAdd(user.subRole, route.params.screen) ?
                 <Fab
@@ -413,53 +413,53 @@ class Diary extends React.Component {
                   <Ionicons name="md-add" color="#ffffff" />
                 </Fab> :
                 null
-            }
+            } */}
 
-            {
-              // Show view with team member name if coming from team member screen
-              route.params.screen === 'TeamDiary' ?
-                <View style={styles.calenderIconContainer}>
-                  <View style={AppStyles.flexDirectionRow}>
-                    <Text style={styles.teamMemberNameText}>{name !== null && name !== undefined ? name : ''}</Text>
-                    <Text style={styles.diaryText}>Diary</Text>
-                  </View>
+          {
+            // Show view with team member name if coming from team member screen
+            route.params.screen === 'TeamDiary' ?
+              <View style={styles.calenderIconContainer}>
+                <View style={AppStyles.flexDirectionRow}>
+                  <Text style={styles.teamMemberNameText}>{name !== null && name !== undefined ? name : ''}</Text>
+                  <Text style={styles.diaryText}>Diary</Text>
                 </View>
-                : null
-            }
+              </View>
+              : null
+          }
 
 
-            {
-              !showCalendar ?
-                <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
-                  <View style={styles.underLine} />
-                  <View style={styles.calenderIconContainer}>
-                    <Image style={{ width: 30, height: 26 }} source={require('../../../assets/img/calendar2.png')} />
-                    <Text style={styles.calendarText}>Calendar</Text>
-                  </View>
-                  <View style={styles.underLine}
-                  />
-                </TouchableOpacity>
-                :
-                <CalendarComponent startDate={startDate}
-                  diaryData={diaryData}
-                  updateMonth={(value) => this.updateMonth(value)}
-                  updateDay={(value) => this.updateDay(value)}
-                  selectedDate={selectedDate}
-                  onPress={this._toggleShow} />
-            }
+          {
+            !showCalendar ?
+              <TouchableOpacity onPress={this._toggleShow} activeOpacity={0.7}>
+                <View style={styles.underLine} />
+                <View style={styles.calenderIconContainer}>
+                  <Image style={{ width: 30, height: 26 }} source={require('../../../assets/img/calendar2.png')} />
+                  <Text style={styles.calendarText}>Calendar</Text>
+                </View>
+                <View style={styles.underLine}
+                />
+              </TouchableOpacity>
+              :
+              <CalendarComponent startDate={startDate}
+                diaryData={diaryData}
+                updateMonth={(value) => this.updateMonth(value)}
+                updateDay={(value) => this.updateDay(value)}
+                selectedDate={selectedDate}
+                onPress={this._toggleShow} />
+          }
 
 
-            {
-              newDiaryData && newDiaryData.length ?
-                <DiaryTile data={newDiaryData}
-                 editTask = {this.editTask}
-                  // showPopup={this.showPopup}
-                  onLeadLinkPressed={this.handleLeadLinkPress}
-                  onLongPress={(val) => this.handleLongPress(val)}
-                  addTask={(description, selectedTime) => this.addTask(description, selectedTime)}
-                /> : null
-            }
-          </View>
+          {
+            newDiaryData && newDiaryData.length ?
+              <DiaryTile data={newDiaryData}
+                editTask={this.editTask}
+                // showPopup={this.showPopup}
+                onLeadLinkPressed={this.handleLeadLinkPress}
+                onLongPress={(val) => this.handleLongPress(val)}
+                addTask={(description, selectedTime) => this.addTask(description, selectedTime)}
+              /> : null
+          }
+        </View>
         :
         <Loader loading={loading} />
     )

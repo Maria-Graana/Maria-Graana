@@ -2,6 +2,7 @@
 
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
+import moment from 'moment';
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
@@ -16,12 +17,14 @@ import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
 import LeadTile from '../../components/LeadTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import PickerComponent from '../../components/Picker/index'
 import PPLeadTile from '../../components/PPLeadTile'
 import Search from '../../components/Search'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
 import SortModal from '../../components/SortModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import config from '../../config'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
@@ -55,9 +58,14 @@ class RentLeads extends React.Component {
       showAssignToButton: false,
       shortListedProperties: [],
       openPopup: false,
-      selectedLead: {},
+      selectedLead: null,
       popupLoading: false,
       serverTime: null,
+      statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
+      isFollowUpMode: false,
+      active: false,
     }
   }
 
@@ -259,20 +267,46 @@ class RentLeads extends React.Component {
     }
   }
 
-  callNumber = (url) => {
+  callNumber = (data) => {
+    let url = `tel:${data.customer ? data.customer.phone : null}`
     if (url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            console.log("Can't handle url: " + url)
-          } else {
-            return Linking.openURL(url)
-          }
-        })
-        .catch((err) => console.error('An error occurred', err))
-    } else {
+      this.setState({ selectedLead: data }, () => {
+        Linking.canOpenURL(url)
+          .then((supported) => {
+            if (!supported) {
+              console.log("Can't handle url: " + url)
+            } else {
+              if (data) {
+                this.call(data);
+                return Linking.openURL(url)
+              }
+            }
+          })
+          .catch((err) => console.error('An error occurred', err))
+      })
+    }
+    else {
       helper.errorToast(`No Phone Number`)
     }
+  }
+
+  sendCallStatus = () => {
+    const start = moment().format()
+    const { selectedLead } = this.state;
+    let body = {
+      start: start,
+      end: start,
+      time: start,
+      date: start,
+      taskType: 'called',
+      subject: 'Call to client ' + selectedLead.customer.customerName,
+      customerId: selectedLead.customer.id,
+      armsLeadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
+      taskCategory: 'leadTask',
+    }
+    axios.post(`api/leads/project/meeting`, body).then((res) => {
+      this.setCurrentCall(res.data);
+    })
   }
 
   sendStatus = (status) => {
@@ -281,6 +315,26 @@ class RentLeads extends React.Component {
       this.fetchLeads()
     })
   }
+
+  call = (lead) => {
+    const { contacts } = this.props
+    let newContact = helper.createContactPayload(lead.customer)
+    let result = helper.contacts(newContact.phone, contacts)
+    if (
+      newContact.name &&
+      newContact.name !== '' &&
+      newContact.name !== ' ' &&
+      newContact.phone &&
+      newContact.phone !== ''
+    )
+      if (!result) {
+        this.sendCallStatus()
+        helper.addContact(newContact)
+        this.showStatusFeedbackModal(true);
+      }
+  }
+
+
 
   openStatus = () => {
     this.setState({ activeSortModal: !this.state.activeSortModal })
@@ -439,6 +493,80 @@ class RentLeads extends React.Component {
     })
   }
 
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
+    })
+  }
+
+  openModalInMeetingMode = (edit = false, id = null) => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    });
+  }
+
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+      modalMode: 'reject'
+    })
+  }
+
+  rejectLead = (body) => {
+    const { navigation, lead } = this.props;
+    const { selectedLead } = this.state;
+    if (selectedLead) {
+      var leadId = []
+      leadId.push(selectedLead.id)
+      axios
+        .patch(`/api/leads`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+
+  }
+
+  showStatusFeedbackModal = (value) => {
+    this.setState({ statusfeedbackModalVisible: value })
+  }
+
+  setCurrentCall = (call) => {
+    this.setState({ currentCall: call, modalMode: 'call' });
+  }
+
+  sendStatusCall = (status, id) => {
+    const { selectedLead } = this.state;
+    let body = {
+      response: status,
+      comments: status,
+      leadId: selectedLead.id,
+    }
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+  }
+
+  goToViewingScreen = () => {
+    const { navigation } = this.props;
+    navigation.navigate('RCMLeadTabs', { screen: 'Viewing', })
+  }
+
+
   render() {
     const {
       leadsData,
@@ -455,6 +583,12 @@ class RentLeads extends React.Component {
       shortListedProperties,
       popupLoading,
       serverTime,
+      active,
+      statusfeedbackModalVisible,
+      currentCall,
+      isFollowUpMode,
+      modalMode,
+      selectedLead,
     } = this.state
     const { user, navigation } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -531,9 +665,8 @@ class RentLeads extends React.Component {
             renderItem={({ item }) => (
               <View>
                 {(!user.organization && user.subRole === 'group_management') ||
-                (user.organization && !user.organization.isPP) ? (
+                  (user.organization && !user.organization.isPP) ? (
                   <LeadTile
-                    updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
                     purposeTab={'rent'}
                     user={user}
@@ -545,7 +678,6 @@ class RentLeads extends React.Component {
                   />
                 ) : (
                   <PPLeadTile
-                    updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
                     purposeTab={'rent'}
                     user={user}
@@ -615,6 +747,29 @@ class RentLeads extends React.Component {
             onStateChange={({ open }) => this.setState({ open })}
           />
         )}
+        <MeetingFollowupModal
+          closeModal={() => this.closeMeetingFollowupModal()}
+          active={active}
+          isFollowUpMode={isFollowUpMode}
+          lead={selectedLead}
+          leadType={'RCM'}
+        />
+
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+          modalMode={modalMode}
+          commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
+          showAction={modalMode === 'call'}
+          showFollowup={modalMode === 'call'}
+          rejectLead={(body) => this.rejectLead(body)}
+          sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
+          addFollowup={() => this.openModalInFollowupMode()}
+          addMeeting={() => this.openModalInMeetingMode()}
+          leadType={'RCM'}
+          goToViewingScreen={this.goToViewingScreen}
+          currentCall={currentCall}
+        />
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -631,6 +786,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     PPBuyNotification: store.Notification.PPBuyNotification,
+    contacts: store.contacts.contacts,
   }
 }
 export default connect(mapStateToProps)(RentLeads)

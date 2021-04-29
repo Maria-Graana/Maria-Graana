@@ -34,8 +34,8 @@ import { ActionSheet, StyleProvider } from 'native-base'
 import AddPropsurePayment from '../../components/AddPRopsurePayment'
 import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
-import FollowUpModal from '../../components/FollowUpModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -81,6 +81,9 @@ class LeadPropsure extends React.Component {
       officeLocations: [],
       active: false,
       statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
+      isFollowUpMode: false,
       closedWon: false,
     }
   }
@@ -244,7 +247,7 @@ class LeadPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -267,14 +270,14 @@ class LeadPropsure extends React.Component {
       let installment = property.cmInstallment
         ? property.cmInstallment
         : {
-            installmentAmount: null,
-            type: '',
-            rcmLeadId: null,
-            details: '',
-            visible: false,
-            paymentAttachments: [],
-            selectedPropertyId: property.id,
-          }
+          installmentAmount: null,
+          type: '',
+          rcmLeadId: null,
+          details: '',
+          visible: false,
+          paymentAttachments: [],
+          selectedPropertyId: property.id,
+        }
       dispatch(setPropsurePayment(installment))
       this.setState({
         documentModalVisible: true,
@@ -569,14 +572,22 @@ class LeadPropsure extends React.Component {
   }
 
   addRemoveReport = (report) => {
-    const { selectedReports } = this.state
+    const { selectedReports, propsureReportTypes } = this.state
     let reports = [...selectedReports]
     let totalReportPrice = 0
     if (reports.some((item) => item.title === report.title)) {
+      if (reports && reports.length > 1 && report.title === 'Basic Property Survey Report') return
       reports = _.without(reports, report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     } else {
-      reports.push(report)
+      if (!_.findWhere(reports, { title: 'Basic Property Survey Report' })) {
+        let basicReport = _.find(
+          propsureReportTypes,
+          (item) => item.title === 'Basic Property Survey Report'
+        )
+        reports.push(basicReport)
+      }
+      if (report.title !== 'Basic Property Survey Report') reports.push(report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     }
     this.setState({ selectedReports: reports, totalReportPrice: totalReportPrice })
@@ -640,7 +651,13 @@ class LeadPropsure extends React.Component {
 
   onHandleRequestVerification = () => {
     const { lead } = this.props
-    const { selectedReports, selectedPropertyId, selectedProperty, totalReportPrice } = this.state
+    const {
+      selectedReports,
+      selectedPropertyId,
+      selectedProperty,
+      totalReportPrice,
+      propsureReportTypes,
+    } = this.state
     if (selectedReports.length === 0) {
       alert('Please select at least one report!')
     } else {
@@ -652,8 +669,17 @@ class LeadPropsure extends React.Component {
           fee: item.fee,
         }
       })
+      let packageNames = _.pluck(selectedReports, 'title')
+      if (!packageNames.includes('Basic Property Survey Report')) {
+        let basicReport = _.find(
+          propsureReportTypes,
+          (item) => item.title === 'Basic Property Survey Report'
+        )
+        packageNames.push(basicReport.title)
+        reportIds.push({ id: basicReport.id, fee: basicReport.fee })
+      }
       const body = {
-        packageName: _.pluck(selectedReports, 'title'),
+        packageName: packageNames,
         propertyId: selectedPropertyId,
         pId: selectedProperty.arms_id ? selectedProperty.arms_id : selectedProperty.graana_id,
         org: selectedProperty.arms_id ? 'arms' : 'graana',
@@ -740,8 +766,8 @@ class LeadPropsure extends React.Component {
         data && data.officeLocationId
           ? data.officeLocationId
           : user && user.officeLocation
-          ? user.officeLocation.id
-          : null,
+            ? user.officeLocation.id
+            : null,
     })
     dispatch(
       setPropsurePayment({
@@ -751,8 +777,8 @@ class LeadPropsure extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
   }
@@ -876,8 +902,8 @@ class LeadPropsure extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
               ? _.filter(propsurePayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -939,9 +965,9 @@ class LeadPropsure extends React.Component {
       let pendingPropsures =
         data.propsures && data.propsures.length
           ? _.filter(
-              data.propsures,
-              (item) => item.status === 'pending' && item.addedBy === 'buyer'
-            )
+            data.propsures,
+            (item) => item.status === 'pending' && item.addedBy === 'buyer'
+          )
           : null
       let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'buyer')
       totalFee = Number(propsureOutstandingPayment) - Number(totalFee)
@@ -997,6 +1023,13 @@ class LeadPropsure extends React.Component {
   }
 
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
+  
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
 
   closeMeetingFollowupModal = () => {
     this.setState({
@@ -1009,6 +1042,7 @@ class LeadPropsure extends React.Component {
   openModal = () => {
     this.setState({
       active: !this.state.active,
+      isFollowUpMode: true,
     })
   }
 
@@ -1052,7 +1086,9 @@ class LeadPropsure extends React.Component {
   sendStatus = (status, id) => {
     const { lead } = this.props
     let body = {
-      reasons: comment,
+      response: status,
+      comments: status,
+      leadId: lead.id,
     }
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
@@ -1088,6 +1124,9 @@ class LeadPropsure extends React.Component {
       officeLocations,
       active,
       statusfeedbackModalVisible,
+      currentCall,
+      isFollowUpMode,
+      modalMode,
       closedWon,
     } = this.state
     const { lead, navigation, user } = this.props
@@ -1210,12 +1249,7 @@ class LeadPropsure extends React.Component {
               </>
             )}
           </View>
-          <FollowUpModal
-            leadType={'rcm'}
-            active={active}
-            openModal={this.openModal}
-            diaryForm={true}
-          />
+
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
             showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
@@ -1257,9 +1291,12 @@ class LeadPropsure extends React.Component {
               lead={lead}
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
-              goToFollowUp={this.openModal}
+              goToFollowUp={this.openModalInFollowupMode}
               navigation={navigation}
               goToRejectForm={this.goToRejectForm}
+              showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+              setCurrentCall={(call) => this.setCurrentCall(call)}
+              leadType={'RCM'}
               closedWon={closedWon}
               onHandleCloseLead={this.onHandleCloseLead}
             />

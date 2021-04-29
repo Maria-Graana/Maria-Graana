@@ -1,8 +1,11 @@
+
 /** @format */
 
+import axios from 'axios'
 import fuzzy from 'fuzzy'
 import React, { useRef, useState } from 'react'
 import {
+  Alert,
   Image,
   Modal,
   Platform,
@@ -35,9 +38,14 @@ const StatusFeedbackModal = ({
   showAction = true,
   showFollowup = true,
   modalMode,
-  performAction,
-  performFollowup,
-  performReject,
+  sendStatus,
+  currentCall,
+  addMeeting,
+  addFollowup,
+  showFeedbackMeetingModal,
+  rejectLead,
+  leadType,
+  goToViewingScreen,
 }) => {
   const [selectedComment, setSelectedComment] = useState(null)
   const textInput = useRef(null)
@@ -48,11 +56,84 @@ const StatusFeedbackModal = ({
   } else {
     data = commentsList
   }
+
+  const clearFormData = () => {
+    setSelectedComment(null);
+  }
+
+  const performAction = () => {
+    showFeedbackModal(false);
+    if(leadType === 'CM') {
+      if (currentCall) {
+        if (modalMode === 'call') {
+          sendStatus(selectedComment, currentCall.id)
+          addMeeting()
+          clearFormData();
+        } else {
+          // Meeting Mode & actions for book unit and set up another meeting
+            showFeedbackMeetingModal(true);
+            sendStatus(selectedComment, currentCall.id);
+            clearFormData();
+        }
+      }
+    }
+    else{
+      if(currentCall){
+        sendStatus(selectedComment, currentCall.id)
+        clearFormData();
+        goToViewingScreen();
+      }
+    }
+  }
+
+  const performFollowup = () => {
+    if (currentCall) {
+        showFeedbackModal(false);
+        sendStatus(selectedComment, currentCall.id)
+        addFollowup();
+        clearFormData();
+    }
+  }
+
+  const performReject = () => {
+    let body = {
+      reasons: selectedComment,
+    }
+    showFeedbackModal(false);
+    if (currentCall && modalMode === 'call' || modalMode === 'meeting') {
+        sendStatus(selectedComment, currentCall.id)
+        rejectLead(body)
+        clearFormData();
+    }
+    else{
+      rejectLead(body)
+      clearFormData();
+    }
+  }
+
+  
+  const showRejectModal = () => {
+    Alert.alert(
+      'Reject(Close as Lost)',
+      'Are you sure you want to continue?',
+      [
+        { text: 'No', style: 'cancel' },
+        { text: 'Yes', onPress: () => performReject() },
+      ],
+      { cancelable: false }
+    )
+  }
+
+
+
   return (
     <Modal visible={visible}>
       <SafeAreaView style={AppStyles.mb1}>
         <View style={styles.modalMain}>
-          <TouchableOpacity style={styles.closeBtn} onPress={() => showFeedbackModal(false)}>
+          <TouchableOpacity style={styles.closeBtn} onPress={() => { 
+            showFeedbackModal(false)
+            clearFormData();
+          }}>
             <Image source={times} style={styles.closeImg} />
           </TouchableOpacity>
           <View style={[AppStyles.mainInputWrap]}>
@@ -96,10 +177,10 @@ const StatusFeedbackModal = ({
                 containerBackgroundColor={AppStyles.colors.actionBg}
                 onPress={() =>
                   selectedComment
-                    ? performAction(modalMode, selectedComment)
+                    ? performAction()
                     : alert('Please select a comment to continue')
                 }
-                label={modalMode === 'call' ? 'Meeting Setup' : 'Action'}
+                label={modalMode === 'call' ? leadType === 'RCM' ? 'Book Viewing' : 'Meeting Setup' : 'Action'}
               />
             )}
             {showFollowup && (
@@ -111,7 +192,7 @@ const StatusFeedbackModal = ({
                 textColor={AppStyles.colors.textColor}
                 onPress={() =>
                   selectedComment
-                    ? performFollowup(selectedComment)
+                    ? performFollowup()
                     : alert('Please select a comment to continue')
                 }
                 label={'Follow up'}
@@ -124,7 +205,7 @@ const StatusFeedbackModal = ({
               containerBackgroundColor={AppStyles.colors.redBg}
               onPress={() =>
                 selectedComment
-                  ? performReject(selectedComment)
+                  ? showRejectModal()
                   : alert('Please select a comment to continue')
               }
               label={'Reject'}
@@ -152,7 +233,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     elevation: 5,
     borderWidth: 1,
-    borderColor: AppStyles.colors.textColor,
+    borderColor: AppStyles.colors.subTextColor,
     color: AppStyles.colors.textColor,
   },
   itemContainer: {
@@ -188,8 +269,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   closeImg: {
-    width: 16,
-    height: 16,
+    width: 24,
+    height: 24,
     resizeMode: 'contain',
   },
   flatlistContent: {

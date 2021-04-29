@@ -15,7 +15,6 @@ import AppStyles from '../../AppStyles'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import FilterModal from '../../components/FilterModal/index'
-import FollowUpModal from '../../components/FollowUpModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
@@ -25,6 +24,7 @@ import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 
 class LeadMatch extends React.Component {
   constructor(props) {
@@ -90,8 +90,10 @@ class LeadMatch extends React.Component {
       meetings: [],
       legalDocLoader: false,
       active: false,
-      followUpDiary: false,
       statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
+      isFollowUpMode: false,
       closedWon: false,
     }
   }
@@ -718,10 +720,18 @@ class LeadMatch extends React.Component {
     this.setState({ formData: copyObject })
   }
 
-  //  ************ Function for open modal ************
-  openModal = () => {
+  closeMeetingFollowupModal = () => {
     this.setState({
       active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
     })
   }
 
@@ -765,7 +775,9 @@ class LeadMatch extends React.Component {
   sendStatus = (status, id) => {
     const { lead } = this.props
     let body = {
-      reasons: comment,
+      response: status,
+      comments: status,
+      leadId: lead.id,
     }
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
@@ -796,6 +808,9 @@ class LeadMatch extends React.Component {
       legalDocLoader,
       active,
       statusfeedbackModalVisible,
+      currentCall,
+      isFollowUpMode,
+      modalMode,
       closedWon,
     } = this.state
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -991,12 +1006,6 @@ class LeadMatch extends React.Component {
                 </Text>
               </TouchableOpacity>
             ) : null}
-            <FollowUpModal
-              leadType={'rcm'}
-              active={active}
-              openModal={this.openModal}
-              diaryForm={true}
-            />
             <StatusFeedbackModal
               visible={statusfeedbackModalVisible}
               showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
@@ -1037,9 +1046,12 @@ class LeadMatch extends React.Component {
                 lead={lead}
                 goToHistory={this.goToHistory}
                 getCallHistory={this.getCallHistory}
-                goToFollowUp={this.openModal}
+                goToFollowUp={this.openModalInFollowupMode}
                 navigation={navigation}
                 goToRejectForm={this.goToRejectForm}
+                showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+                setCurrentCall={(call) => this.setCurrentCall(call)}
+                leadType={'RCM'}
                 closedWon={closedWon}
                 onHandleCloseLead={this.onHandleCloseLead}
               />

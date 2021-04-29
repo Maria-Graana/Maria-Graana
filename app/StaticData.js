@@ -334,7 +334,7 @@ export default StaticData = {
   buyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
-    { value: 'follow_up', name: 'Follow up' },
+    { value: 'follow_up', name: 'Follow Up' },
     { value: 'viewing', name: 'Viewing' },
     { value: 'offer', name: 'Offer' },
     { value: 'propsure', name: 'Propsure' },
@@ -353,8 +353,8 @@ export default StaticData = {
   investmentFilter: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
-    { value: 'follow_up', name: 'Follow up' },
-    { value: 'meeting', name: 'Meeting Planned' },
+    { value: 'follow_up', name: 'Follow Up' },
+    { value: 'meeting', name: 'Meeting' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
@@ -475,8 +475,7 @@ export default StaticData = {
     { value: 'duplicate', name: 'Duplicate', colorCode: '#DC3546' },
     { value: 'property_agent', name: 'Property Agent', colorCode: '#DC3546' },
     { value: 'DNC', name: 'DNC', colorCode: '#DC3546' },
-  ],
-
+ ],
   commentsFeedback: [
     { value: 'no_response', name: 'No Response', colorCode: '#FDD835' },
     { value: 'powered_off', name: 'Powered Off', colorCode: '#FDD835' },
@@ -552,7 +551,7 @@ export default StaticData = {
     {
       value: 'not_interested_re_only',
       name: 'Not Interested - Interested in RE Only',
-      colorCode: 'red',
+      colorCode: '#DC3546',
     },
     {
       value: 'interested_in_projects_in_other_city',

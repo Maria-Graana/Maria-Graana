@@ -8,7 +8,8 @@ import * as MediaLibrary from 'expo-media-library'
 import * as Permissions from 'expo-permissions'
 import { ActionSheet } from 'native-base'
 import React, { Component } from 'react'
-import { Alert, FlatList, Text, View } from 'react-native'
+import { Alert, FlatList, Text, View, TouchableOpacity } from 'react-native'
+import { AntDesign } from '@expo/vector-icons'
 import { connect } from 'react-redux'
 import { Buffer } from 'buffer'
 import _ from 'underscore'
@@ -730,6 +731,29 @@ class LegalAttachment extends Component {
     else return lead.legalMailSent
   }
 
+  legalDownLoadTile = (item) => {
+    return (
+      <TouchableOpacity
+        style={styles.btnView}
+        onPress={() => {
+          if (item) this.downloadLegalDocs(item)
+        }}
+        activeOpacity={0.7}
+      >
+        <View style={[AppStyles.flexDirectionRow, styles.tileView]}>
+          <View style={styles.tileInnerView}>
+            <Text style={styles.titleText} numberOfLines={2}>
+              {item && item.name}
+            </Text>
+          </View>
+          <View style={styles.iconView}>
+            <AntDesign name="checkcircleo" size={32} color={AppStyles.colors.primaryColor} />
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
   render() {
     const {
       legalListing,
@@ -753,6 +777,7 @@ class LegalAttachment extends Component {
     const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
+
     return (
       <View style={[AppStyles.mb1]}>
         <AddLegalPaymentModal
@@ -840,16 +865,19 @@ class LegalAttachment extends Component {
                       />
                     ) : null}
                   </View>
-                  <LegalTile
-                    data={checkListDoc}
-                    index={null}
-                    submitMenu={() => {}}
-                    getAttachmentFromStorage={() => {}}
-                    downloadLegalDocs={this.downloadLegalDocs}
-                    addBorder={true}
-                    isLeadClosed={isLeadClosed}
-                    checkList={true}
-                  />
+                  {checkListDoc && checkListDoc.fileKey !== null ? (
+                    <View>{this.legalDownLoadTile(checkListDoc)}</View>
+                  ) : (
+                    <LegalTile
+                      data={checkListDoc}
+                      index={null}
+                      submitMenu={() => {}}
+                      getAttachmentFromStorage={() => {}}
+                      downloadLegalDocs={() => {}}
+                      isLeadClosed={isLeadClosed}
+                      addBorder={true}
+                    />
+                  )}
                 </View>
               ) : null}
             </View>

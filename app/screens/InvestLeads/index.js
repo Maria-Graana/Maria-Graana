@@ -2,6 +2,7 @@
 
 import React from 'react'
 import styles from './style'
+import moment from 'moment';
 import { View, Text, TouchableOpacity, Image, SafeAreaView, Linking, FlatList } from 'react-native'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
@@ -23,6 +24,8 @@ import Search from '../../components/Search'
 import Ability from '../../hoc/Ability'
 import { getItem, storeItem } from '../../actions/user'
 import { getListingsCount } from '../../actions/listings'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 
 var BUTTONS = [
   'Assign to team member',
@@ -51,11 +54,17 @@ class InvestLeads extends React.Component {
       searchText: '',
       showAssignToButton: false,
       serverTime: null,
+      active: false,
+      statusfeedbackModalVisible: false,
+      modalMode: 'call',
+      currentCall: null,
+      isFollowUpMode: false,
+      selectedLead: null,
     }
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.getServerTime();
@@ -84,10 +93,10 @@ class InvestLeads extends React.Component {
 
   getServerTime = () => {
     axios.get(`/api/user/serverTime?fullTime=true`).then(res => {
-      if(res){
-        this.setState({serverTime: res.data})
+      if (res) {
+        this.setState({ serverTime: res.data })
       }
-      else{
+      else {
         console.log('Something went wrong while getting server time');
       }
     }).catch(error => {
@@ -231,20 +240,46 @@ class InvestLeads extends React.Component {
     }
   }
 
-  callNumber = (url) => {
+  callNumber = (data) => {
+    let url = `tel:${data.customer ? data.customer.phone : null}`
     if (url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            console.log("Can't handle url: " + url)
-          } else {
-            return Linking.openURL(url)
-          }
-        })
-        .catch((err) => console.error('An error occurred', err))
-    } else {
+      this.setState({ selectedLead: data }, () => {
+        Linking.canOpenURL(url)
+          .then((supported) => {
+            if (!supported) {
+              console.log("Can't handle url: " + url)
+            } else {
+              if(data){
+                this.call(data);
+                return Linking.openURL(url)
+              }
+            }
+          })
+          .catch((err) => console.error('An error occurred', err))
+      })
+    }
+    else {
       helper.errorToast(`No Phone Number`)
     }
+  }
+
+  sendCallStatus = () => {
+    const start = moment().format()
+    const {selectedLead} = this.state;
+    let body = {
+      start: start,
+      end: start,
+      time: start,
+      date: start,
+      taskType: 'called',
+      subject: 'Call to client ' + selectedLead.customer.customerName,
+      customerId: selectedLead.customer.id,
+      leadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
+      taskCategory: 'leadTask',
+    }
+    axios.post(`api/leads/project/meeting`, body).then((res) => {
+      this.setCurrentCall(res.data);
+    })
   }
 
   sendStatus = (status) => {
@@ -252,6 +287,24 @@ class InvestLeads extends React.Component {
       storeItem('sortInvest', status)
       this.fetchLeads()
     })
+  }
+
+  call = (lead) => {
+    const { contacts } = this.props
+    let newContact = helper.createContactPayload(lead.customer)
+    let result = helper.contacts(newContact.phone, contacts)
+    if (
+      newContact.name &&
+      newContact.name !== '' &&
+      newContact.name !== ' ' &&
+      newContact.phone &&
+      newContact.phone !== ''
+    )
+      if (!result) {
+        this.sendCallStatus()
+        helper.addContact(newContact)
+        this.showStatusFeedbackModal(true);
+      }
   }
 
   openStatus = () => {
@@ -305,6 +358,74 @@ class InvestLeads extends React.Component {
     }
   }
 
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
+    })
+  }
+
+  openModalInMeetingMode = (edit = false, id = null) => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    });
+  }
+
+  // ************ Function for Reject modal ************
+  goToRejectForm = () => {
+    const { statusfeedbackModalVisible } = this.state
+    this.setState({
+      statusfeedbackModalVisible: !statusfeedbackModalVisible,
+      modalMode: 'reject'
+    })
+  }
+
+  rejectLead = (body) => {
+    const { navigation, lead } = this.props;
+    const {selectedLead} = this.state;
+    if(selectedLead){
+      var leadId = []
+      leadId.push(selectedLead.id)
+      axios
+        .patch(`/api/leads/project`, body, { params: { id: leadId } })
+        .then((res) => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+   
+  }
+
+  showStatusFeedbackModal = (value) => {
+    this.setState({ statusfeedbackModalVisible: value })
+  }
+
+  setCurrentCall = (call) => {
+    this.setState({ currentCall: call, modalMode: 'call' });
+  }
+
+  sendStatusCall = (status, id) => {
+    const {selectedLead} = this.state;
+    let body = {
+      response: status,
+      comments: status,
+      leadId: selectedLead.id,
+    }
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+  }
+
   render() {
     const {
       leadsData,
@@ -318,8 +439,14 @@ class InvestLeads extends React.Component {
       searchText,
       showSearchBar,
       serverTime,
+      active,
+      statusfeedbackModalVisible,
+      currentCall,
+      isFollowUpMode,
+      modalMode,
+      selectedLead,
     } = this.state
-    const { user } = this.props
+    const { user, lead } = this.props
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
@@ -440,6 +567,29 @@ class InvestLeads extends React.Component {
           doneStatus={activeSortModal}
           sort={sort}
         />
+
+        <MeetingFollowupModal
+          closeModal={() => this.closeMeetingFollowupModal()}
+          active={active}
+          isFollowUpMode={isFollowUpMode}
+          lead={selectedLead}
+          leadType={'CM'}
+        />
+
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+          modalMode={modalMode}
+          commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
+          showAction={modalMode === 'call'}
+          showFollowup={modalMode === 'call'}
+          rejectLead={(body) => this.rejectLead(body)}
+          sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
+          addFollowup={() => this.openModalInFollowupMode()}
+          addMeeting={() => this.openModalInMeetingMode()}
+          leadType={'CM'}
+          currentCall={currentCall}
+        />
       </View>
     )
   }
@@ -448,6 +598,7 @@ class InvestLeads extends React.Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    contacts: store.contacts.contacts,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

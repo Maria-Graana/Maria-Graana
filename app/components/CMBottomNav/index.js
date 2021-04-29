@@ -110,14 +110,14 @@ class CMBottomNav extends React.Component {
       let newContact = helper.createContactPayload(customer)
       this.sendCallStatus()
       helper.callNumber(newContact, contacts)
-      showStatusFeedbackModal(true);
+      showStatusFeedbackModal(true)
     } else {
       helper.errorToast('No Phone Number')
     }
   }
 
   sendCallStatus = () => {
-    const {leadType} = this.props;
+    const { leadType } = this.props
     const start = moment().format()
     let body = {
       start: start,
@@ -129,7 +129,7 @@ class CMBottomNav extends React.Component {
       subject: 'Call to client ' + this.props.lead.customer.customerName,
       cutomerId: this.props.lead.customer.id,
       armsLeadId: leadType === 'RCM' ? this.props.lead.id : null, // For RCM Call
-      leadId:  leadType === 'CM' ? this.props.lead.id : null ,// For CM Call
+      leadId: leadType === 'CM' ? this.props.lead.id : null, // For CM Call
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
@@ -137,9 +137,8 @@ class CMBottomNav extends React.Component {
     })
   }
 
-
   performListActions = (title) => {
-    const { goToComments, goToDiaryForm, goToAttachments, lead } = this.props
+    const { goToComments, goToDiaryForm, goToAttachments, lead, onHandleCloseLead } = this.props
     if (title === 'Comment') goToComments()
     if (title === 'Diary Task') goToDiaryForm()
     if (title === 'Whatsapp') this.openWhatsapp()
@@ -147,6 +146,7 @@ class CMBottomNav extends React.Component {
     if (title === 'Call') this.call()
     if (title === 'ReAssign') this.checkAssignedLead(lead)
     if (title === 'Share') this.navigateToShareScreen(lead)
+    if (title === 'Closed Won') onHandleCloseLead(lead)
   }
 
   handleLongPress = (val) => {

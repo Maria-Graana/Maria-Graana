@@ -25,8 +25,8 @@ import config from '../../config'
 import CheckListModal from '../../components/CheckListModal'
 import ViewCheckListModal from '../../components/ViewCheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
+import FollowUpModal from '../../components/FollowUpModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -69,11 +69,8 @@ class LeadViewing extends React.Component {
       propsure_id: null,
       selectedPropertyId: null,
       legalDocLoader: false,
-      closedWon: false,
       statusfeedbackModalVisible: false,
-      modalMode: 'call',
-      currentCall: null,
-      isFollowUpMode: false,
+      closedWon: false,
     }
   }
 
@@ -159,7 +156,7 @@ class LeadViewing extends React.Component {
     })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -204,26 +201,21 @@ class LeadViewing extends React.Component {
 
   onHandleCloseLead = () => {
     const { navigation, lead } = this.props
-    const { selectedReason } = this.state
     let payload = Object.create({})
-    payload.reasons = selectedReason
-    if (selectedReason !== '') {
-      var leadId = []
-      leadId.push(lead.id)
-      axios
-        .patch(`/api/leads`, payload, { params: { id: leadId } })
-        .then((response) => {
-          this.setState({ isCloseLeadVisible: false }, () => {
-            helper.successToast(`Lead Closed`)
-            navigation.navigate('Leads')
-          })
+    payload.reasons = 'payment_done'
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads`, payload, { params: { id: leadId } })
+      .then((response) => {
+        this.setState({ isVisible: false }, () => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
         })
-        .catch((error) => {
-          console.log(error)
-        })
-    } else {
-      alert('Please select a reason for lead closure!')
-    }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   handleReasonChange = (value) => {
@@ -779,25 +771,10 @@ class LeadViewing extends React.Component {
     }
   }
 
-  closeMeetingFollowupModal = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
   //  ************ Function for open modal ************
   openFollowUpModal = () => {
     this.setState({
       active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
     })
   }
 
@@ -806,12 +783,12 @@ class LeadViewing extends React.Component {
     const { statusfeedbackModalVisible } = this.state
     this.setState({
       statusfeedbackModalVisible: !statusfeedbackModalVisible,
-      modalMode: 'reject'
+      modalMode: 'reject',
     })
   }
 
   rejectLead = (body) => {
-    const { navigation, lead } = this.props;
+    const { navigation, lead } = this.props
     var leadId = []
     leadId.push(lead.id)
     axios
@@ -830,25 +807,21 @@ class LeadViewing extends React.Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' });
+    this.setState({ currentCall: call, modalMode: 'call' })
   }
 
   goToViewingScreen = () => {
-    const { navigation } = this.props;
-    navigation.navigate('RCMLeadTabs', { screen: 'Viewing', })
+    const { navigation } = this.props
+    navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
   sendStatus = (status, id) => {
     const { lead } = this.props
     let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
+      reasons: comment,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
-
-
 
   render() {
     const {
@@ -882,9 +855,6 @@ class LeadViewing extends React.Component {
       legalDocLoader,
       active,
       statusfeedbackModalVisible,
-      currentCall,
-      isFollowUpMode,
-      modalMode,
       closedWon,
     } = this.state
     const { lead, user, navigation } = this.props
@@ -1020,29 +990,38 @@ class LeadViewing extends React.Component {
           </View>
         </View>
         <StatusFeedbackModal
-         visible={statusfeedbackModalVisible}
-         showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-         modalMode={modalMode}
-         commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
-         showAction={modalMode === 'call'}
-         showFollowup={modalMode === 'call'}
-         rejectLead={(body) => this.rejectLead(body)}
-         sendStatus={(comment, id) => this.sendStatus(comment, id)}
-         addFollowup={() => this.openModalInFollowupMode()}
-         leadType={'RCM'}
-         currentCall={currentCall}
-         goToViewingScreen={this.goToViewingScreen}
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+          modalMode={modalMode}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
+          showAction={modalMode === 'call'}
+          showFollowup={modalMode === 'call'}
+          rejectLead={(body) => this.rejectLead(body)}
+          sendStatus={(comment, id) => this.sendStatus(comment, id)}
+          addFollowup={() => this.openModalInFollowupMode()}
+          leadType={'RCM'}
+          currentCall={currentCall}
+          goToViewingScreen={this.goToViewingScreen}
         />
 
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
-          isFollowUpMode={isFollowUpMode}
-          lead={lead}
-          leadType={'RCM'}
-          getMeetingLead={this.getCallHistory}
+          openModal={this.openFollowUpModal}
+          diaryForm={true}
         />
-
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value) => this.setState({ statusfeedbackModalVisible: value })}
+          commentsList={StaticData.leadClosedCommentsFeedback}
+          showAction={false}
+          showFollowup={false}
+          performReject={(comment) => this.showRejectModal(comment)}
+        />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}
@@ -1059,13 +1038,11 @@ class LeadViewing extends React.Component {
             goToPropertyScreen={this.goToPropertyScreen}
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
-            goToFollowUp={this.openModalInFollowupMode}
+            goToFollowUp={this.openFollowUpModal}
             navigation={navigation}
             goToRejectForm={this.goToRejectForm}
-            showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            setCurrentCall={(call) => this.setCurrentCall(call)}
-            leadType={'RCM'}
             closedWon={closedWon}
+            onHandleCloseLead={this.onHandleCloseLead}
           />
         </View>
         <LeadRCMPaymentPopup

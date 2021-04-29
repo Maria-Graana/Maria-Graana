@@ -3,7 +3,7 @@
 import axios from 'axios'
 import { StyleProvider } from 'native-base'
 import * as React from 'react'
-import { FlatList, Image, Linking, Text, TouchableOpacity, View, Alert } from 'react-native'
+import { FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
@@ -19,11 +19,11 @@ import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
 import MatchTile from '../../components/MatchTile/index'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 
 class LeadMatch extends React.Component {
@@ -601,26 +601,21 @@ class LeadMatch extends React.Component {
 
   onHandleCloseLead = () => {
     const { navigation, lead } = this.props
-    const { selectedReason } = this.state
-    if (selectedReason) {
-      let payload = Object.create({})
-      payload.reasons = selectedReason
-      var leadId = []
-      leadId.push(lead.id)
-      axios
-        .patch(`/api/leads`, payload, { params: { id: leadId } })
-        .then((response) => {
-          this.setState({ isVisible: false }, () => {
-            helper.successToast(`Lead Closed`)
-            navigation.navigate('Leads')
-          })
+    let payload = Object.create({})
+    payload.reasons = 'payment_done'
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads`, payload, { params: { id: leadId } })
+      .then((response) => {
+        this.setState({ isVisible: false }, () => {
+          helper.successToast(`Lead Closed`)
+          navigation.navigate('Leads')
         })
-        .catch((error) => {
-          console.log(error)
-        })
-    } else {
-      alert('Please select a reason for lead closure!')
-    }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   handleReasonChange = (value) => {
@@ -745,12 +740,12 @@ class LeadMatch extends React.Component {
     const { statusfeedbackModalVisible } = this.state
     this.setState({
       statusfeedbackModalVisible: !statusfeedbackModalVisible,
-      modalMode: 'reject'
+      modalMode: 'reject',
     })
   }
 
   rejectLead = (body) => {
-    const { navigation, lead } = this.props;
+    const { navigation, lead } = this.props
     var leadId = []
     leadId.push(lead.id)
     axios
@@ -769,12 +764,12 @@ class LeadMatch extends React.Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' });
+    this.setState({ currentCall: call, modalMode: 'call' })
   }
 
   goToViewingScreen = () => {
-    const { navigation } = this.props;
-    navigation.navigate('RCMLeadTabs', { screen: 'Viewing', })
+    const { navigation } = this.props
+    navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
   sendStatus = (status, id) => {
@@ -784,9 +779,8 @@ class LeadMatch extends React.Component {
       comments: status,
       leadId: lead.id,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
-
 
   render() {
     const { lead, user, navigation } = this.props
@@ -1016,7 +1010,11 @@ class LeadMatch extends React.Component {
               visible={statusfeedbackModalVisible}
               showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
               modalMode={modalMode}
-              commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
+              commentsList={
+                modalMode === 'call'
+                  ? StaticData.commentsFeedbackCall
+                  : StaticData.leadClosedCommentsFeedback
+              }
               showAction={modalMode === 'call'}
               showFollowup={modalMode === 'call'}
               rejectLead={(body) => this.rejectLead(body)}
@@ -1055,6 +1053,7 @@ class LeadMatch extends React.Component {
                 setCurrentCall={(call) => this.setCurrentCall(call)}
                 leadType={'RCM'}
                 closedWon={closedWon}
+                onHandleCloseLead={this.onHandleCloseLead}
               />
             </View>
             <LeadRCMPaymentPopup

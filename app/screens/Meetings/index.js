@@ -459,15 +459,11 @@ class Meetings extends Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call })
+    this.setState({ currentCall: call, modalMode: 'call' })
   }
 
   showStatusFeedbackModal = (value) => {
     this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  goToRejectForm = () => {
-    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: true })
   }
 
   render() {

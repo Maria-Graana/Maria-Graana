@@ -1069,7 +1069,7 @@ class CMPayment extends Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call })
+    this.setState({ currentCall: call, modalMode: 'call' })
   }
 
   showStatusFeedbackModal = (value) => {

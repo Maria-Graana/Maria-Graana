@@ -90,7 +90,6 @@ class LeadMatch extends React.Component {
       meetings: [],
       legalDocLoader: false,
       active: false,
-      followUpDiary: false,
       statusfeedbackModalVisible: false,
       modalMode: 'call',
       currentCall: null,

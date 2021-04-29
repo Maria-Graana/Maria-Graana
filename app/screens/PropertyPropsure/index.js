@@ -30,6 +30,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Permissions from 'expo-permissions'
 import * as IntentLauncher from 'expo-intent-launcher'
 import AddPropsurePayment from '../../components/AddPRopsurePayment'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -68,6 +69,8 @@ class PropertyPropsure extends React.Component {
       deletePaymentVisible: false,
       previousPayment: 0,
       selectedPayment: {},
+      active: false,
+      isFollowUpMode: false,
     }
   }
 
@@ -76,14 +79,12 @@ class PropertyPropsure extends React.Component {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
         this.fetchLead(lead)
-        this.getCallHistory(lead)
         this.fetchProperties(lead)
         this.fetchPropsureReportsList()
       } else {
         const { lead, rcmPayment, dispatch } = this.props
         dispatch(setRCMPayment({ ...rcmPayment, visible: false }))
         this.fetchLead(lead)
-        this.getCallHistory(lead)
         this.fetchProperties(lead)
         this.fetchPropsureReportsList()
       }
@@ -534,17 +535,6 @@ class PropertyPropsure extends React.Component {
     })
   }
 
-  goToHistory = () => {
-    const { callModal } = this.state
-    this.setState({ callModal: !callModal })
-  }
-
-  getCallHistory = (lead) => {
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
-    })
-  }
-
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
@@ -855,6 +845,21 @@ class PropertyPropsure extends React.Component {
     }
   }
 
+  closeMeetingFollowupModal = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: false,
+    })
+  }
+
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = () => {
+    this.setState({
+      active: !this.state.active,
+      isFollowUpMode: true,
+    })
+  }
+
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
 
   render() {
@@ -882,6 +887,8 @@ class PropertyPropsure extends React.Component {
       selectedProperty,
       propsureReportTypes,
       deletePaymentVisible,
+      active,
+      isFollowUpMode
     } = this.state
     const { lead, navigation, user } = this.props
 
@@ -897,13 +904,6 @@ class PropertyPropsure extends React.Component {
           progress={progressValue}
           color={'#0277FD'}
         />
-        {/* <HistoryModal
-          getCallHistory={this.getCallHistory}
-          navigation={navigation}
-          data={meetings}
-          closePopup={this.goToHistory}
-          openPopup={callModal}
-        /> */}
         <PropsureReportsPopup
           reports={propsureReportTypes}
           addRemoveReport={(item) => this.addRemoveReport(item)}
@@ -999,6 +999,13 @@ class PropertyPropsure extends React.Component {
             </>
           )}
         </View>
+        <MeetingFollowupModal
+          closeModal={() => this.closeMeetingFollowupModal()}
+          active={active}
+          isFollowUpMode={isFollowUpMode}
+          lead={lead}
+          leadType={'RCM'}
+        />
         <View style={AppStyles.mainCMBottomNav}>
           <PropertyBottomNav
             goToAttachments={this.goToAttachments}
@@ -1011,8 +1018,9 @@ class PropertyPropsure extends React.Component {
             callButton={true}
             customer={lead.customer}
             lead={lead}
-            goToHistory={this.goToHistory}
-            getCallHistory={this.getCallHistory}
+            goToHistory={()=> null}
+            getCallHistory={()=> null}
+            goToFollowup={()=> this.openModalInFollowupMode()}
           />
         </View>
         <LeadRCMPaymentPopup

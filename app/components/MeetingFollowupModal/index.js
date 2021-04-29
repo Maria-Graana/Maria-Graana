@@ -28,6 +28,7 @@ const MeetingFollowupModal = ({ active,
     addedBy: '',
     taskCategory: '',
     leadId: null,
+    armsLeadId: null,
     start: '',
     end: '',
     subject: lead && lead.customer
@@ -43,6 +44,7 @@ const MeetingFollowupModal = ({ active,
     notes: '',
     status: 'pending',
     leadId:  null,
+    armsLeadId: null,
   });
   const [checkValidation, setValidation] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -64,6 +66,7 @@ const MeetingFollowupModal = ({ active,
     newFollowupData.notes = '';
     newFollowupData.status = 'pending';
     newFollowupData.leadId = null;
+    newFollowupData.armsLeadId = null;
     setFormData(newFollowupData)
   }
 
@@ -101,7 +104,8 @@ const MeetingFollowupModal = ({ active,
         let body = {
           date: start,
           time: start,
-          leadId: formData.leadId,
+          leadId: leadType === 'CM' ? formData.leadId : null,
+          armsLeadId: leadType === 'RCM' ? formData.leadId : null,
           start: start,
           end: end,
         }
@@ -151,7 +155,8 @@ const MeetingFollowupModal = ({ active,
       subject: 'Follow up with client',
       date: null,
       end: null,
-      leadId: followUpData.leadId,
+      leadId: leadType === 'CM' ? followUpData.leadId : null,
+      armsLeadId: leadType === 'RCM' ? followUpData.leadId : null,
       start: null,
       taskType: followUpData.taskType,
       time: null,
@@ -225,11 +230,9 @@ const MeetingFollowupModal = ({ active,
   }
 
   const addFollowUpForCall = (data) => {
-    console.log(data);
     axios
       .post(`api/leads/project/meeting`, data)
       .then((res) => {
-        console.log(res.data);
         if (res && res.data) {
           setSelectedOption('');
           clearFollowupData();
@@ -440,7 +443,7 @@ MeetingFollowupModal.propTypes = {
   lead: PropTypes.object,
   closeModal: PropTypes.func.isRequired,
   editMeeting: PropTypes.bool,
-  leadType: PropTypes.string,
+  leadType: PropTypes.string.isRequired,
   getMeetingLead: PropTypes.func,
   currentMeeting: PropTypes.object,
 }

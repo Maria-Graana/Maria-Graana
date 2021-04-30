@@ -475,6 +475,16 @@ const helper = {
       }
     } else return false
   },
+  propertyLeadNavAccess(user, lead) {
+    if (user && lead) {
+      if (
+        lead.status === StaticData.Constants.lead_closed_lost ||
+        lead.status === StaticData.Constants.lead_closed_won
+      ) {
+        return true
+      } else return false
+    } else return false
+  },
   propertyCheckAssignedSharedStatus(user, lead) {
     if (user && lead) {
       if (

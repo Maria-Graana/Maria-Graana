@@ -139,7 +139,7 @@ const StatusFeedbackModal = ({
     else if (modalMode === 'meeting')
       return 'Enter meeting outcome';
     else if (modalMode === 'reject')
-      return 'Enter reason for rejection';
+      return 'Enter reason of rejection';
       else 
       return 'comments'
   }
@@ -257,6 +257,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: AppStyles.colors.subTextColor,
     color: AppStyles.colors.textColor,
+    textAlignVertical: 'top',
     backgroundColor: '#fff',
     borderRadius: 4,
     fontFamily: 'OpenSans_regular',

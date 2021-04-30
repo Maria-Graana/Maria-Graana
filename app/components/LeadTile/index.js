@@ -106,11 +106,11 @@ class LeadTile extends React.Component {
                 >
                   {/* Disabled Sentry in development  Sentry in */}
                   {data.status === 'token' ? (
-                    <Text>DEAL SIGNED - TOKEN</Text>
+                    <Text>TOKEN</Text>
                   ) : data.status === 'meeting' ? (
                     data.status.split('_').join(' ').toUpperCase() + ' PLANNED'
                   ) : (
-                    helper.showStatus(data.status.replace(/_+/g, " ")).toUpperCase()
+                    helper.showStatus(data.status.replace(/_+/g, ' ')).toUpperCase()
                   )}
                 </Text>
 

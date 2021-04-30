@@ -946,6 +946,7 @@ const helper = {
     else if (status === 'no response busy') return 'busy'
     else if (status === 'no response no signals') return 'no signals'
     else if (status === 'number not on whatsapp') return 'Not on WhatsApp'
+    else if (status === 'follow up') return 'Nurture'
     else return status
   },
   checkPPFlag(property) {

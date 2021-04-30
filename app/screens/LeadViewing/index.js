@@ -26,6 +26,7 @@ import CheckListModal from '../../components/CheckListModal'
 import ViewCheckListModal from '../../components/ViewCheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -1066,7 +1067,7 @@ class LeadViewing extends React.Component {
             goToPropertyScreen={this.goToPropertyScreen}
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
-            goToFollowUp={this.openFollowUpModal}
+            goToFollowUp={this.openModalInFollowupMode}
             navigation={navigation}
             goToRejectForm={this.goToRejectForm}
             closedWon={closedWon}

@@ -257,6 +257,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: AppStyles.colors.subTextColor,
     color: AppStyles.colors.textColor,
+    textAlignVertical: 'top',
     backgroundColor: '#fff',
     borderRadius: 4,
     fontFamily: 'OpenSans_regular',

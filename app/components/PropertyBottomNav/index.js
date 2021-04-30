@@ -138,10 +138,16 @@ class PropertyBottomNav extends React.Component {
   }
 
   listActionMenuItems = () => {
+    const { user, lead } = this.props
     let actionData = StaticData.propertyActionItems
     return actionData.map((item, index) => {
       return (
-        <MenuOption onSelect={() => this.performListActions(item.title)}>
+        <MenuOption
+          onSelect={() => {
+            if (helper.propertyLeadNavAccess(user, lead)) helper.leadClosedToast()
+            else this.performListActions(item.title)
+          }}
+        >
           <View style={styles.menuStyle}>
             <Image style={styles.bottomNavImg} source={item.image} />
             <Text style={styles.menuText}>{item.title}</Text>
@@ -160,7 +166,7 @@ class PropertyBottomNav extends React.Component {
   }
 
   render() {
-    const { navigateTo, goToFollowup } = this.props
+    const { navigateTo, goToFollowup, closedLeadEdit, user, lead } = this.props
     const { visible } = this.state
 
     return (
@@ -173,10 +179,23 @@ class PropertyBottomNav extends React.Component {
           <MenuTrigger text="Action" customStyles={triggerStyles} />
           <MenuOptions customStyles={optionsStyles}>{this.listActionMenuItems()}</MenuOptions>
         </PopupMenu>
-        <TouchableOpacity style={styles.followBtn} onPress={() => goToFollowup()}>
+        <TouchableOpacity
+          disabled={closedLeadEdit ? false : true}
+          style={styles.followBtn}
+          onPress={() => {
+            if (helper.propertyLeadNavAccess(user, lead)) helper.leadClosedToast()
+            else goToFollowup()
+          }}
+        >
           <Text style={styles.followText}>Follow Up</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.rejectBtn} onPress={() => {}}>
+        <TouchableOpacity
+          style={styles.rejectBtn}
+          onPress={() => {
+            if (helper.propertyLeadNavAccess(user, lead)) helper.leadClosedToast()
+            else helper.leadNotAssignedToast()
+          }}
+        >
           <Text style={styles.actionText}>Reject</Text>
         </TouchableOpacity>
         <View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>

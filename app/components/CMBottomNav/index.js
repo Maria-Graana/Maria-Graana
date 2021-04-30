@@ -71,11 +71,10 @@ class CMBottomNav extends React.Component {
       visible: false,
       actionVisible: false,
     }
-
   }
 
   callNumber = (url) => {
-    console.log(url);
+    console.log(url)
     if (url != 'tel:null') {
       Linking.canOpenURL(url)
         .then((supported) => {
@@ -259,12 +258,17 @@ class CMBottomNav extends React.Component {
   }
 
   listActionMenuItems = () => {
-    const { closedWon = false } = this.props
+    const { closedWon = false, closedLeadEdit } = this.props
     let actionData = StaticData.actionListItems
     if (closedWon) actionData = StaticData.actionClosedWonListItems
     return actionData.map((item, index) => {
       return (
-        <MenuOption onSelect={() => this.performListActions(item.title)}>
+        <MenuOption
+          onSelect={() => {
+            if (closedLeadEdit) this.performListActions(item.title)
+            else helper.leadClosedToast()
+          }}
+        >
           <View style={styles.menuStyle}>
             <Image style={styles.bottomNavImg} source={item.image} />
             <Text style={styles.menuText}>{item.title}</Text>
@@ -284,6 +288,7 @@ class CMBottomNav extends React.Component {
       isFromViewingScreen,
       goToFollowUp,
       goToRejectForm,
+      closedLeadEdit,
     } = this.props
     const { visible } = this.state
 
@@ -297,10 +302,18 @@ class CMBottomNav extends React.Component {
           <MenuTrigger text="Action" customStyles={triggerStyles} />
           <MenuOptions customStyles={optionsStyles}>{this.listActionMenuItems()}</MenuOptions>
         </PopupMenu>
-        <TouchableOpacity style={styles.followBtn} onPress={() => goToFollowUp()}>
+        <TouchableOpacity
+          disabled={closedLeadEdit ? false : true}
+          style={styles.followBtn}
+          onPress={() => goToFollowUp()}
+        >
           <Text style={styles.followText}>Follow Up</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.rejectBtn} onPress={() => goToRejectForm()}>
+        <TouchableOpacity
+          disabled={closedLeadEdit ? false : true}
+          style={styles.rejectBtn}
+          onPress={() => goToRejectForm()}
+        >
           <Text style={styles.actionText}>Reject</Text>
         </TouchableOpacity>
         <View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>
@@ -329,8 +342,10 @@ class CMBottomNav extends React.Component {
             {isFromViewingScreen ? (
               <Menu.Item
                 onPress={() => {
-                  goToPropertyScreen()
-                  this.openMenu(false)
+                  if (closedLeadEdit) {
+                    goToPropertyScreen()
+                    this.openMenu(false)
+                  } else helper.leadClosedToast()
                 }}
                 icon={require('../../../assets/img/properties-icon-l.png')}
                 title="Add Property"
@@ -339,8 +354,10 @@ class CMBottomNav extends React.Component {
             {callButton ? (
               <Menu.Item
                 onPress={() => {
-                  goToHistory()
-                  this.openMenu(false)
+                  if (closedLeadEdit) {
+                    goToHistory()
+                    this.openMenu(false)
+                  } else helper.leadClosedToast()
                 }}
                 icon={require('../../../assets/img/callIcon.png')}
                 title="Call History"

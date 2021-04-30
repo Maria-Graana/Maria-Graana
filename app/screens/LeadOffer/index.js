@@ -616,10 +616,13 @@ class LeadOffer extends React.Component {
   sendStatus = (status, id) => {
     const { lead } = this.props
     let body = {
-      reasons: comment,
+      response: status,
+      comments: status,
+      leadId: lead.id,
     }
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
+
 
   render() {
     const {

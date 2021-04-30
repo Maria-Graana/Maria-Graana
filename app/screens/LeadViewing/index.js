@@ -790,11 +790,11 @@ class LeadViewing extends React.Component {
   }
   
   sendStatus = (status, id) => {
-    const { formData, meetings } = this.state
+    const { lead } = this.props
     let body = {
       response: status,
       comments: status,
-      leadId: formData.leadId,
+      leadId: lead.id,
     }
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
@@ -1068,6 +1068,9 @@ class LeadViewing extends React.Component {
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
             goToFollowUp={this.openModalInFollowupMode}
+            showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            setCurrentCall={(call) => this.setCurrentCall(call)}
+            leadType={'RCM'}
             navigation={navigation}
             goToRejectForm={this.goToRejectForm}
             closedWon={closedWon}

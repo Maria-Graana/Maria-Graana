@@ -547,7 +547,7 @@ class LeadRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -935,7 +935,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -948,7 +948,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -1077,8 +1077,8 @@ class LeadRCMPayment extends React.Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = payment.paymentAttachments
           ? _.filter(payment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1117,8 +1117,8 @@ class LeadRCMPayment extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-              ? user.officeLocation.id
-              : null,
+            ? user.officeLocation.id
+            : null,
       })
     )
   }
@@ -1186,8 +1186,8 @@ class LeadRCMPayment extends React.Component {
         if (body.paymentCategory === 'token') {
           baseUrl = `/api/leads/tokenPayment`
           body.status = 'at_buyer_agent'
-            ; (body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
-              (toastMsg = 'Token Payment Added')
+          ;(body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
+            (toastMsg = 'Token Payment Added')
           errorMsg = 'Error Adding Token Payment'
         }
         axios
@@ -1245,8 +1245,8 @@ class LeadRCMPayment extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
               ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                return !_.has(item, 'id')
-              })
+                  return !_.has(item, 'id')
+                })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -1294,7 +1294,8 @@ class LeadRCMPayment extends React.Component {
     const selectedProperty = allProperties[0]
     axios
       .post(
-        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null
+        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${
+          selectedProperty ? selectedProperty.id : null
         }`
       )
       .then((response) => {
@@ -1645,7 +1646,7 @@ class LeadRCMPayment extends React.Component {
             backgroundColor: AppStyles.colors.backgroundColor,
             paddingLeft: 0,
             paddingRight: 0,
-            marginBottom: 30,
+            marginBottom: 10,
           },
         ]}
         behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
@@ -1707,7 +1708,7 @@ class LeadRCMPayment extends React.Component {
           deletePayment={(reason) => this.deletePayment(reason)}
           showHideModal={(val) => this.showHideDeletePayment(val)}
         />
-        <View style={{ flex: 1, minHeight: '100%', paddingBottom: 100 }}>
+        <View style={{ flex: 1, minHeight: '100%', paddingBottom: 65 }}>
           {allProperties.length > 0 ? (
             <FlatList
               data={_.clone(allProperties)}

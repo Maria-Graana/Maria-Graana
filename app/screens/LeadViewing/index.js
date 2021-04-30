@@ -786,9 +786,9 @@ class LeadViewing extends React.Component {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
-   })
+    })
   }
-  
+
   sendStatus = (status, id) => {
     const { lead } = this.props
     let body = {
@@ -923,87 +923,85 @@ class LeadViewing extends React.Component {
           selectedViewingData={selectedViewingData}
           toggleExpandable={(status, id) => this.toggleExpandable(status, id)}
         />
+        <AddViewing
+          update={updateViewing}
+          onPress={this.submitViewing}
+          handleForm={this.handleForm}
+          openModal={this.openModal}
+          loading={addLoading}
+          viewing={viewing}
+          checkValidation={checkValidation}
+          isVisible={isVisible}
+        />
         <View
           style={[
             AppStyles.container,
             styles.container,
-            { backgroundColor: AppStyles.colors.backgroundColor },
+            { backgroundColor: AppStyles.colors.backgroundColor, paddingBottom: 65 },
           ]}
         >
-          <View style={{ paddingBottom: 100 }}>
-            <AddViewing
-              update={updateViewing}
-              onPress={this.submitViewing}
-              handleForm={this.handleForm}
-              openModal={this.openModal}
-              loading={addLoading}
-              viewing={viewing}
-              checkValidation={checkValidation}
-              isVisible={isVisible}
+          {matchData.length !== 0 ? (
+            <FlatList
+              data={_.clone(matchData)}
+              renderItem={(item, index) => (
+                <View style={{ marginVertical: 3 }}>
+                  {this.ownProperty(item.item) ? (
+                    <MatchTile
+                      bookAnotherViewing={this.bookAnotherViewing}
+                      deleteProperty={this.deleteProperty}
+                      cancelViewing={this.cancelViewing}
+                      toggleCheckListModal={(toggleState, data) =>
+                        this.toggleCheckListModal(toggleState, data)
+                      }
+                      isMenuVisible={showMenuItem && isMenuVisible}
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      viewingMenu={true}
+                      goToPropertyComments={this.goToPropertyComments}
+                      menuShow={menuShow}
+                      toggleMenu={this.toggleMenu}
+                      screen={'viewing'}
+                      propertyGeoTagging={this.propertyGeoTagging}
+                    />
+                  ) : (
+                    <AgentTile
+                      bookAnotherViewing={this.bookAnotherViewing}
+                      deleteProperty={this.deleteProperty}
+                      cancelViewing={this.cancelViewing}
+                      toggleCheckListModal={(toggleState, data) =>
+                        this.toggleCheckListModal(toggleState, data)
+                      }
+                      isMenuVisible={showMenuItem && isMenuVisible}
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      viewingMenu={true}
+                      goToPropertyComments={this.goToPropertyComments}
+                      menuShow={menuShow}
+                      toggleMenu={this.toggleMenu}
+                      screen={'viewing'}
+                      propertyGeoTagging={this.propertyGeoTagging}
+                    />
+                  )}
+                  <View>{this.checkStatus(item.item)}</View>
+                </View>
+              )}
+              keyExtractor={(item, index) => item.id.toString()}
             />
-            {matchData.length !== 0 ? (
-              <FlatList
-                data={_.clone(matchData)}
-                renderItem={(item, index) => (
-                  <View style={{ marginVertical: 3 }}>
-                    {this.ownProperty(item.item) ? (
-                      <MatchTile
-                        bookAnotherViewing={this.bookAnotherViewing}
-                        deleteProperty={this.deleteProperty}
-                        cancelViewing={this.cancelViewing}
-                        toggleCheckListModal={(toggleState, data) =>
-                          this.toggleCheckListModal(toggleState, data)
-                        }
-                        isMenuVisible={showMenuItem && isMenuVisible}
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        viewingMenu={true}
-                        goToPropertyComments={this.goToPropertyComments}
-                        menuShow={menuShow}
-                        toggleMenu={this.toggleMenu}
-                        screen={'viewing'}
-                        propertyGeoTagging={this.propertyGeoTagging}
-                      />
-                    ) : (
-                      <AgentTile
-                        bookAnotherViewing={this.bookAnotherViewing}
-                        deleteProperty={this.deleteProperty}
-                        cancelViewing={this.cancelViewing}
-                        toggleCheckListModal={(toggleState, data) =>
-                          this.toggleCheckListModal(toggleState, data)
-                        }
-                        isMenuVisible={showMenuItem && isMenuVisible}
-                        data={_.clone(item.item)}
-                        user={user}
-                        displayChecks={this.displayChecks}
-                        showCheckBoxes={false}
-                        addProperty={this.addProperty}
-                        viewingMenu={true}
-                        goToPropertyComments={this.goToPropertyComments}
-                        menuShow={menuShow}
-                        toggleMenu={this.toggleMenu}
-                        screen={'viewing'}
-                        propertyGeoTagging={this.propertyGeoTagging}
-                      />
-                    )}
-                    <View>{this.checkStatus(item.item)}</View>
-                  </View>
-                )}
-                keyExtractor={(item, index) => item.id.toString()}
+          ) : (
+            <>
+              <Image
+                source={require('../../../assets/img/no-result-found.png')}
+                resizeMode={'center'}
+                style={{ alignSelf: 'center', width: 300, height: 300 }}
               />
-            ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
-          </View>
+            </>
+          )}
         </View>
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
@@ -1024,33 +1022,33 @@ class LeadViewing extends React.Component {
           goToViewingScreen={this.goToViewingScreen}
         />
 
-         <MeetingFollowupModal
-            closeModal={() => this.closeMeetingFollowupModal()}
-            active={active}
-            isFollowUpMode={isFollowUpMode}
-            lead={lead}
-            leadType={'RCM'}
-            getMeetingLead={this.getCallHistory}
-          />
+        <MeetingFollowupModal
+          closeModal={() => this.closeMeetingFollowupModal()}
+          active={active}
+          isFollowUpMode={isFollowUpMode}
+          lead={lead}
+          leadType={'RCM'}
+          getMeetingLead={this.getCallHistory}
+        />
 
-          <StatusFeedbackModal
-            visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            modalMode={modalMode}
-            commentsList={
-              modalMode === 'call'
-                ? StaticData.commentsFeedbackCall
-                : StaticData.leadClosedCommentsFeedback
-            }
-            showAction={modalMode === 'call'}
-            showFollowup={modalMode === 'call'}
-            rejectLead={(body) => this.rejectLead(body)}
-            sendStatus={(comment, id) => this.sendStatus(comment, id)}
-            addFollowup={() => this.openModalInFollowupMode()}
-            leadType={'RCM'}
-            currentCall={currentCall}
-            goToViewingScreen={this.goToViewingScreen}
-          />
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+          modalMode={modalMode}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
+          showAction={modalMode === 'call'}
+          showFollowup={modalMode === 'call'}
+          rejectLead={(body) => this.rejectLead(body)}
+          sendStatus={(comment, id) => this.sendStatus(comment, id)}
+          addFollowup={() => this.openModalInFollowupMode()}
+          leadType={'RCM'}
+          currentCall={currentCall}
+          goToViewingScreen={this.goToViewingScreen}
+        />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}

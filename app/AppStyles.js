@@ -25,7 +25,7 @@ export default AppStyles = {
     backgroundColor: '#e7ecf0',
     redBg: '#DC3546',
     yellowBg: '#FEC107',
-    actionBg: '#0F73EF'
+    actionBg: '#0F73EF',
   },
   flexDirectionRow: {
     flexDirection: 'row',

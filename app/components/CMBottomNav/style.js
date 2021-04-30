@@ -7,11 +7,14 @@ export default styles = StyleSheet.create({
   bottomNavMain: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    elevation: -3,
+    elevation: 10,
     shadowOffset: { width: -5, height: -5 },
     shadowColor: 'lightgrey',
     shadowOpacity: 1,
+    zIndex: 10,
     height: 65,
+    borderTopWidth: 1,
+    borderTopColor: AppStyles.colors.backgroundColor,
   },
   bottomNavBtn: {
     width: '20%',
@@ -58,12 +61,12 @@ export default styles = StyleSheet.create({
   followBtn: {
     width: '20%',
     alignItems: 'center',
-    paddingBottom: 15,
     backgroundColor: '#F0B512',
     borderRadius: 5,
     marginHorizontal: 1,
     justifyContent: 'center',
     padding: 5,
+    paddingTop: 9,
   },
   rejectBtn: {
     width: '20%',

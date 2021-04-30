@@ -623,7 +623,6 @@ class LeadOffer extends React.Component {
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
 
-
   render() {
     const {
       menuShow,
@@ -678,85 +677,80 @@ class LeadOffer extends React.Component {
         <View
           style={[
             AppStyles.container,
-            styles.container,
-            { backgroundColor: AppStyles.colors.backgroundColor },
+            { backgroundColor: AppStyles.colors.backgroundColor, marginBottom: 65 },
           ]}
         >
-          <View style={{ paddingBottom: 100 }}>
-            {matchData.length ? (
-              <View>
-                <FlatList
-                  data={_.clone(matchData)}
-                  renderItem={(item, index) => (
-                    <View style={{ marginVertical: 3 }}>
-                      {this.ownProperty(item.item) ? (
-                        <MatchTile
-                          data={_.clone(item.item)}
-                          user={user}
-                          displayChecks={this.displayChecks}
-                          showCheckBoxes={false}
-                          addProperty={this.addProperty}
-                          isMenuVisible={showMenuItem}
-                          viewingMenu={false}
-                          goToPropertyComments={this.goToPropertyComments}
-                          toggleMenu={this.toggleMenu}
-                          menuShow={menuShow}
-                          screen={'offer'}
-                        />
-                      ) : (
-                        <AgentTile
-                          data={_.clone(item.item)}
-                          user={user}
-                          displayChecks={this.displayChecks}
-                          showCheckBoxes={false}
-                          addProperty={this.addProperty}
-                          isMenuVisible={showMenuItem}
-                          viewingMenu={false}
-                          goToPropertyComments={this.goToPropertyComments}
-                          toggleMenu={this.toggleMenu}
-                          menuShow={menuShow}
-                          screen={'offer'}
-                        />
-                      )}
-                      <View>{this.checkStatus(item.item)}</View>
-                    </View>
+          {matchData.length ? (
+            <FlatList
+              data={_.clone(matchData)}
+              renderItem={(item, index) => (
+                <View style={{ marginVertical: 3 }}>
+                  {this.ownProperty(item.item) ? (
+                    <MatchTile
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      isMenuVisible={showMenuItem}
+                      viewingMenu={false}
+                      goToPropertyComments={this.goToPropertyComments}
+                      toggleMenu={this.toggleMenu}
+                      menuShow={menuShow}
+                      screen={'offer'}
+                    />
+                  ) : (
+                    <AgentTile
+                      data={_.clone(item.item)}
+                      user={user}
+                      displayChecks={this.displayChecks}
+                      showCheckBoxes={false}
+                      addProperty={this.addProperty}
+                      isMenuVisible={showMenuItem}
+                      viewingMenu={false}
+                      goToPropertyComments={this.goToPropertyComments}
+                      toggleMenu={this.toggleMenu}
+                      menuShow={menuShow}
+                      screen={'offer'}
+                    />
                   )}
-                  keyExtractor={(item, index) => item.id.toString()}
-                />
-                <OfferModal
-                  showWarning={showWarning}
-                  agreedAmount={this.agreedAmount}
-                  loading={btnLoading}
-                  user={user}
-                  property={currentProperty}
-                  lead={lead}
-                  leadData={leadData}
-                  offersData={offersData}
-                  active={modalActive}
-                  offerChat={offerChat}
-                  placeCustomerOffer={this.placeCustomerOffer}
-                  placeSellerOffer={this.placeSellerOffer}
-                  placeAgreedOffer={this.placeAgreedOffer}
-                  handleForm={this.handleForm}
-                  disableButton={disableButton}
-                  openModal={this.openChatModal}
-                  agreedNotZero={agreedNotZero}
-                  sellerNotZero={sellerNotZero}
-                  customerNotZero={customerNotZero}
-                  offerReadOnly={offerReadOnly}
-                />
-              </View>
-            ) : (
-              <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
-              </>
-            )}
-          </View>
+                  <View>{this.checkStatus(item.item)}</View>
+                </View>
+              )}
+              keyExtractor={(item, index) => item.id.toString()}
+            />
+          ) : (
+            <>
+              <Image
+                source={require('../../../assets/img/no-result-found.png')}
+                resizeMode={'center'}
+                style={{ alignSelf: 'center', width: 300, height: 300 }}
+              />
+            </>
+          )}
         </View>
+        <OfferModal
+          showWarning={showWarning}
+          agreedAmount={this.agreedAmount}
+          loading={btnLoading}
+          user={user}
+          property={currentProperty}
+          lead={lead}
+          leadData={leadData}
+          offersData={offersData}
+          active={modalActive}
+          offerChat={offerChat}
+          placeCustomerOffer={this.placeCustomerOffer}
+          placeSellerOffer={this.placeSellerOffer}
+          placeAgreedOffer={this.placeAgreedOffer}
+          handleForm={this.handleForm}
+          disableButton={disableButton}
+          openModal={this.openChatModal}
+          agreedNotZero={agreedNotZero}
+          sellerNotZero={sellerNotZero}
+          customerNotZero={customerNotZero}
+          offerReadOnly={offerReadOnly}
+        />
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
@@ -765,7 +759,7 @@ class LeadOffer extends React.Component {
           leadType={'RCM'}
           getMeetingLead={this.getCallHistory}
         />
-            
+
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
           showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}

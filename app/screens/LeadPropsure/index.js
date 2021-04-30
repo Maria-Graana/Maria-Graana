@@ -247,7 +247,7 @@ class LeadPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -270,14 +270,14 @@ class LeadPropsure extends React.Component {
       let installment = property.cmInstallment
         ? property.cmInstallment
         : {
-          installmentAmount: null,
-          type: '',
-          rcmLeadId: null,
-          details: '',
-          visible: false,
-          paymentAttachments: [],
-          selectedPropertyId: property.id,
-        }
+            installmentAmount: null,
+            type: '',
+            rcmLeadId: null,
+            details: '',
+            visible: false,
+            paymentAttachments: [],
+            selectedPropertyId: property.id,
+          }
       dispatch(setPropsurePayment(installment))
       this.setState({
         documentModalVisible: true,
@@ -766,8 +766,8 @@ class LeadPropsure extends React.Component {
         data && data.officeLocationId
           ? data.officeLocationId
           : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+          ? user.officeLocation.id
+          : null,
     })
     dispatch(
       setPropsurePayment({
@@ -777,8 +777,8 @@ class LeadPropsure extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-              ? user.officeLocation.id
-              : null,
+            ? user.officeLocation.id
+            : null,
       })
     )
   }
@@ -902,8 +902,8 @@ class LeadPropsure extends React.Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
               ? _.filter(propsurePayment.paymentAttachments, (item) => {
-                return !_.has(item, 'id')
-              })
+                  return !_.has(item, 'id')
+                })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -965,9 +965,9 @@ class LeadPropsure extends React.Component {
       let pendingPropsures =
         data.propsures && data.propsures.length
           ? _.filter(
-            data.propsures,
-            (item) => item.status === 'pending' && item.addedBy === 'buyer'
-          )
+              data.propsures,
+              (item) => item.status === 'pending' && item.addedBy === 'buyer'
+            )
           : null
       let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'buyer')
       totalFee = Number(propsureOutstandingPayment) - Number(totalFee)
@@ -1023,7 +1023,7 @@ class LeadPropsure extends React.Component {
   }
 
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
-  
+
   closeMeetingFollowupModal = () => {
     this.setState({
       active: !this.state.active,
@@ -1136,7 +1136,11 @@ class LeadPropsure extends React.Component {
         <View
           style={[
             AppStyles.container,
-            { backgroundColor: AppStyles.colors.backgroundColor, paddingLeft: 0, paddingRight: 0 },
+            {
+              backgroundColor: AppStyles.colors.backgroundColor,
+              paddingLeft: 0,
+              paddingRight: 0,
+            },
           ]}
         >
           <ProgressBar
@@ -1193,7 +1197,7 @@ class LeadPropsure extends React.Component {
             deletePayment={(reason) => this.deletePayment(reason)}
             showHideModal={(val) => this.showHideDeletePayment(val)}
           />
-          <View style={{ paddingBottom: 100 }}>
+          <View style={{ paddingBottom: 65, flex: 1 }}>
             {matchData.length ? (
               <FlatList
                 data={_.clone(matchData)}

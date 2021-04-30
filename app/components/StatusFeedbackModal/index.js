@@ -139,7 +139,7 @@ const StatusFeedbackModal = ({
     else if (modalMode === 'meeting')
       return 'Enter meeting outcome';
     else if (modalMode === 'reject')
-      return 'Enter reason for rejection';
+      return 'Enter reason of rejection';
       else 
       return 'comments'
   }

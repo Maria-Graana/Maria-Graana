@@ -257,6 +257,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: AppStyles.colors.subTextColor,
     color: AppStyles.colors.textColor,
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    fontFamily: 'OpenSans_regular',
   },
   itemContainer: {
     borderWidth: 1,

@@ -63,7 +63,7 @@ const StatusFeedbackModal = ({
 
   const performAction = () => {
     showFeedbackModal(false);
-    if(leadType === 'CM') {
+    if (leadType === 'CM') {
       if (currentCall) {
         if (modalMode === 'call') {
           sendStatus(selectedComment, currentCall.id)
@@ -71,14 +71,14 @@ const StatusFeedbackModal = ({
           clearFormData();
         } else {
           // Meeting Mode & actions for book unit and set up another meeting
-            showFeedbackMeetingModal(true);
-            sendStatus(selectedComment, currentCall.id);
-            clearFormData();
+          showFeedbackMeetingModal(true);
+          sendStatus(selectedComment, currentCall.id);
+          clearFormData();
         }
       }
     }
-    else{
-      if(currentCall){
+    else {
+      if (currentCall) {
         sendStatus(selectedComment, currentCall.id)
         clearFormData();
         goToViewingScreen();
@@ -88,10 +88,10 @@ const StatusFeedbackModal = ({
 
   const performFollowup = () => {
     if (currentCall) {
-        showFeedbackModal(false);
-        sendStatus(selectedComment, currentCall.id)
-        addFollowup();
-        clearFormData();
+      showFeedbackModal(false);
+      sendStatus(selectedComment, currentCall.id)
+      addFollowup();
+      clearFormData();
     }
   }
 
@@ -101,17 +101,17 @@ const StatusFeedbackModal = ({
     }
     showFeedbackModal(false);
     if (currentCall && modalMode === 'call' || modalMode === 'meeting') {
-        sendStatus(selectedComment, currentCall.id)
-        rejectLead(body)
-        clearFormData();
+      sendStatus(selectedComment, currentCall.id)
+      rejectLead(body)
+      clearFormData();
     }
-    else{
+    else {
       rejectLead(body)
       clearFormData();
     }
   }
 
-  
+
   const showRejectModal = () => {
     Alert.alert(
       'Reject(Close as Lost)',
@@ -124,18 +124,40 @@ const StatusFeedbackModal = ({
     )
   }
 
+  const showTitle = () => {
+    if (modalMode === 'call')
+      return 'Call Feedback';
+    else if (modalMode === 'meeting')
+      return 'Meeting Outcome';
+    else if (modalMode === 'reject')
+      return 'Reject with Reason';
+  }
 
+  const showTextBoxPlaceholder = () => {
+    if (modalMode === 'call')
+      return 'Enter call feedback';
+    else if (modalMode === 'meeting')
+      return 'Enter meeting outcome';
+    else if (modalMode === 'reject')
+      return 'Enter reason for rejection';
+      else 
+      return 'comments'
+  }
 
   return (
     <Modal visible={visible}>
       <SafeAreaView style={AppStyles.mb1}>
         <View style={styles.modalMain}>
-          <TouchableOpacity style={styles.closeBtn} onPress={() => { 
-            showFeedbackModal(false)
-            clearFormData();
-          }}>
-            <Image source={times} style={styles.closeImg} />
-          </TouchableOpacity>
+          <View style={styles.row}>
+            <Text style={styles.title}>{showTitle()}</Text>
+            <TouchableOpacity style={styles.closeBtn} onPress={() => {
+              showFeedbackModal(false)
+              clearFormData();
+            }}>
+              <Image source={times} style={styles.closeImg} />
+            </TouchableOpacity>
+          </View>
+
           <View style={[AppStyles.mainInputWrap]}>
             <TextInput
               ref={textInput}
@@ -148,7 +170,7 @@ const StatusFeedbackModal = ({
               ]}
               multiline
               autoFocus
-              placeholder="Comments"
+              placeholder={showTextBoxPlaceholder()}
               onChangeText={(text) => setSelectedComment(text)}
               value={selectedComment}
             />
@@ -235,6 +257,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: AppStyles.colors.subTextColor,
     color: AppStyles.colors.textColor,
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    fontFamily: 'OpenSans_regular',
   },
   itemContainer: {
     borderWidth: 1,
@@ -267,6 +292,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 5,
     borderRadius: 50,
+    width: '10%'
   },
   closeImg: {
     width: 24,
@@ -276,5 +302,16 @@ const styles = StyleSheet.create({
   flatlistContent: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  row: {
+    flexDirection: 'row', 
+    width: '100%', 
+    alignItems:'center'
+  },
+  title: {
+    width: '90%',
+    color: AppStyles.colors.textColor,
+    fontFamily: AppStyles.fonts.boldFont,
+    fontSize: AppStyles.fontSize.large,
   },
 })

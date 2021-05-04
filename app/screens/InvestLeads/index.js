@@ -241,31 +241,20 @@ class InvestLeads extends React.Component {
   }
 
   callNumber = (data) => {
-    let url = `tel:${data.customer ? data.customer.phone : null}`
-    if (url != 'tel:null') {
-      this.setState({ selectedLead: data }, () => {
-        Linking.canOpenURL(url)
-          .then((supported) => {
-            if (!supported) {
-              console.log("Can't handle url: " + url)
-            } else {
-              if(data){
-                this.call(data);
-                return Linking.openURL(url)
-              }
-            }
-          })
-          .catch((err) => console.error('An error occurred', err))
-      })
-    }
-    else {
-      helper.errorToast(`No Phone Number`)
-    }
+    const { contacts } = this.props
+    this.setState({ selectedLead: data }, () => {
+      if (data && data.customer) {
+        let newContact = helper.createContactPayload(data.customer)
+        this.showStatusFeedbackModal(true);
+        this.sendCallStatus()
+        helper.callNumber(newContact, contacts)
+      }
+    })
   }
 
   sendCallStatus = () => {
     const start = moment().format()
-    const {selectedLead} = this.state;
+    const { selectedLead } = this.state;
     let body = {
       start: start,
       end: start,
@@ -287,24 +276,6 @@ class InvestLeads extends React.Component {
       storeItem('sortInvest', status)
       this.fetchLeads()
     })
-  }
-
-  call = (lead) => {
-    const { contacts } = this.props
-    let newContact = helper.createContactPayload(lead.customer)
-    let result = helper.contacts(newContact.phone, contacts)
-    if (
-      newContact.name &&
-      newContact.name !== '' &&
-      newContact.name !== ' ' &&
-      newContact.phone &&
-      newContact.phone !== ''
-    )
-      if (!result) {
-        this.sendCallStatus()
-        helper.addContact(newContact)
-        this.showStatusFeedbackModal(true);
-      }
   }
 
   openStatus = () => {
@@ -391,8 +362,8 @@ class InvestLeads extends React.Component {
 
   rejectLead = (body) => {
     const { navigation, lead } = this.props;
-    const {selectedLead} = this.state;
-    if(selectedLead){
+    const { selectedLead } = this.state;
+    if (selectedLead) {
       var leadId = []
       leadId.push(selectedLead.id)
       axios
@@ -405,7 +376,7 @@ class InvestLeads extends React.Component {
           console.log(error)
         })
     }
-   
+
   }
 
   showStatusFeedbackModal = (value) => {
@@ -417,7 +388,7 @@ class InvestLeads extends React.Component {
   }
 
   sendStatusCall = (status, id) => {
-    const {selectedLead} = this.state;
+    const { selectedLead } = this.state;
     let body = {
       response: status,
       comments: status,

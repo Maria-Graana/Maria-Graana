@@ -165,39 +165,16 @@ class Meetings extends Component {
     })
   }
 
-  callNumber = (url) => {
-    if (url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            console.log("Can't handle url: " + url)
-          } else {
-            this.call()
-            return Linking.openURL(url)
-          }
-        })
-        .catch((err) => console.error('An error occurred', err))
-    } else {
-      helper.errorToast(`No Phone Number`)
-    }
-  }
-
-  call = () => {
-    const { lead, contacts } = this.props
-    let newContact = helper.createContactPayload(lead.customer)
-    let result = helper.contacts(newContact.phone, contacts)
-    if (
-      newContact.name &&
-      newContact.name !== '' &&
-      newContact.name !== ' ' &&
-      newContact.phone &&
-      newContact.phone !== ''
-    )
-      if (!result) {
-        this.sendCallStatus()
-        helper.addContact(newContact)
-        this.setState({ statusfeedbackModalVisible: true })
+  callNumber = (data) => {
+    const { contacts } = this.props
+    this.setState({ selectedLead: data }, () => {
+      if (data && data.customer) {
+        let newContact = helper.createContactPayload(data.customer)
+        this.showStatusFeedbackModal(true);
+        this.sendCallStatus();
+        helper.callNumber(newContact, contacts)
       }
+    })
   }
 
   editMeeting = (id) => {
@@ -539,7 +516,7 @@ class Meetings extends Component {
                   platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid,
                 ]}
                 onPress={() => {
-                  this.callNumber(`tel:${lead.customer && lead.customer.phone}`)
+                  this.callNumber(lead)
                 }}
               >
                 <Text style={styles.alignCenter}>Call</Text>

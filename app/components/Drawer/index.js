@@ -43,7 +43,6 @@ class CustomDrawerContent extends React.Component {
       <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
         <ScrollView
           style={[styles.scrollContainer, { width: '100%' }]}
-          contentContainerStyle={AppStyles.mb1}
         >
           <View style={AppStyles.flexDirectionRow}>
             <View>

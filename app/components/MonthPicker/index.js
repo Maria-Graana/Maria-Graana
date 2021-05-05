@@ -11,7 +11,7 @@ import {
 import moment from 'moment'
 import AppStyles from '../../AppStyles'
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
-import Picker from '@react-native-picker/picker';
+import {Picker} from '@react-native-picker/picker';
 
 
 class MonthPicker extends Component {

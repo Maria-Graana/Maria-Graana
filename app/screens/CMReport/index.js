@@ -431,7 +431,7 @@ class CMReport extends React.Component {
 
   showPicker = () => {
     const { startYear, endYear, selectedYear, selectedMonth } = this.state
-    this.picker
+    this.monthPicker
       .show({ startYear, endYear, selectedYear, selectedMonth })
       .then(({ year, month }) => {
         this.setState(
@@ -1184,7 +1184,7 @@ class CMReport extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
-        <MonthPicker ref={(picker) => (this.picker = picker)} />
+        <MonthPicker ref={(picker) => (this.monthPicker = picker)} />
         <YearPicker ref={(picker) => (this.yearPicker = picker)} />
         <QuarterPicker ref={(picker) => (this.quarterPicker = picker)} />
         {showCalendar ? (

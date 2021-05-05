@@ -233,7 +233,7 @@ class BuyLeads extends React.Component {
           //Share
           this.navigateToShareScreen(val)
         } else if (buttonIndex === 2) {
-          this.goToFormPage('AddCMLead', 'CM', val && val.customer ? val.customer : null)
+          this.goToFormPage('AddRCMLead','RCM', val && val.customer ? val.customer : null)
         } else if (buttonIndex === 0) {
           this.checkAssignedLead(val)
         }

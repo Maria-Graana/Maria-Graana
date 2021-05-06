@@ -17,6 +17,7 @@ import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
+import PaymentHelper from '../CMPayment/PaymentHelper'
 import styles from './style'
 class Meetings extends Component {
   constructor(props) {
@@ -170,8 +171,8 @@ class Meetings extends Component {
     this.setState({ selectedLead: data }, () => {
       if (data && data.customer) {
         let newContact = helper.createContactPayload(data.customer)
-        this.showStatusFeedbackModal(true);
-        this.sendCallStatus();
+        this.showStatusFeedbackModal(true)
+        this.sendCallStatus()
         helper.callNumber(newContact, contacts)
       }
     })
@@ -254,10 +255,14 @@ class Meetings extends Component {
     if (!unit) {
       return
     }
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
-      payment,
-      unit.finalPrice
+    let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
+    let finalPrice = PaymentMethods.findFinalPrice(
+      unit,
+      unit.discounted_price,
+      fullPaymentDiscount,
+      unit.type === 'regular' ? false : true
     )
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(payment, finalPrice)
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
     if (outStandingTax <= 0 && remainingPayment <= 0) {
       this.setState({
@@ -461,6 +466,7 @@ class Meetings extends Component {
       currentCall,
       isFollowUpMode,
       currentMeeting,
+      closedWon,
     } = this.state
 
     const { navigation, lead } = this.props
@@ -543,6 +549,7 @@ class Meetings extends Component {
             goToHistory={() => {}}
             getCallHistory={() => {}}
             onHandleCloseLead={this.onHandleCloseLead}
+            closedWon={closedWon}
           />
         </View>
 

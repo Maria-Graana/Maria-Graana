@@ -176,7 +176,7 @@ class CMPayment extends Component {
         if (secondForm) {
           this.calculatePayments(responseData, functionCallingFor)
         }
-        this.checkLeadClosureReasons()
+        this.checkLeadClosureReasons(res.data)
       })
       .catch((error) => {
         console.log('/api/leads/project/byId?id - Error', error)
@@ -194,30 +194,26 @@ class CMPayment extends Component {
     )
     let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(payment, finalPrice)
     let outStandingTax = PaymentMethods.findRemainingTax(payment, remainingTax)
-    this.setState(
-      {
-        remainingPayment: remainingPayment,
-        outStandingTax: outStandingTax,
-        finalPrice: finalPrice,
-      },
-      () => {
-        if (functionCallingFor === 'leadClose') {
-          this.checkLeadClosureReasons()
-        }
-      }
-    )
+    this.setState({
+      remainingPayment: remainingPayment,
+      outStandingTax: outStandingTax,
+      finalPrice: finalPrice,
+    })
   }
 
-  checkLeadClosureReasons = () => {
-    const { lead } = this.props
+  checkLeadClosureReasons = (lead) => {
     const { payment, unit } = lead
     if (!unit) {
       return
     }
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
-      payment,
-      unit.finalPrice
+    let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
+    let finalPrice = PaymentMethods.findFinalPrice(
+      unit,
+      unit.discounted_price,
+      fullPaymentDiscount,
+      unit.type === 'regular' ? false : true
     )
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(payment, finalPrice)
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
     if (outStandingTax <= 0 && remainingPayment <= 0) {
       this.setState({

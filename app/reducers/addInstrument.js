@@ -7,10 +7,11 @@ const instrument = {
     customerId: null,
     instrumentType: '',
     instrumentNo: null,
-    instrumentAmount: null
+    instrumentAmount: null,
 }
 
-const InstrumentInformation = (state = instrument, action) => {
+
+const addInstrument = (state = instrument, action) => {
     switch (action.type) {
         case types.SET_INSTRUMENT_INFORMATION:
             return action.payload
@@ -19,6 +20,16 @@ const InstrumentInformation = (state = instrument, action) => {
     }
 }
 
+const instruments = (state= [], action) => {
+    switch (action.type) {
+        case types.SET_INSTRUMENTS:
+            return action.payload
+        default:
+            return state
+    }
+}
+
 export default combineReducers({
-    InstrumentInformation,
+    addInstrument,
+    instruments,
 })

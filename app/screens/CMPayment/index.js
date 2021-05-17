@@ -8,6 +8,7 @@ import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import { setCMPayment } from '../../actions/addCMPayment'
+import { getInstrumentDetails } from '../../actions/addInstrument'
 import { setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import BookingDetailsModal from '../../components/BookingDetailsModal'
@@ -393,13 +394,16 @@ class CMPayment extends Component {
     navigation.navigate('Attachments')
   }
 
-  handleCommissionChange = (value, name) => {
-    const { CMPayment, dispatch } = this.props
+   handleCommissionChange = async (value, name) => {
+    const { CMPayment, dispatch, lead } = this.props
     const newSecondFormData = {
       ...CMPayment,
       visible: CMPayment.visible,
     }
     newSecondFormData[name] = value
+    if (name === 'type')
+      dispatch(getInstrumentDetails(value, lead))
+
     this.setState({ buyerNotZero: false })
     dispatch(setCMPayment(newSecondFormData))
   }
@@ -471,8 +475,8 @@ class CMPayment extends Component {
           payment && payment.officeLocationId
             ? payment.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
     this.setState({
@@ -568,8 +572,8 @@ class CMPayment extends Component {
             // upload only the new attachments that do not have id with them in object.
             const filterAttachmentsWithoutId = CMPayment.paymentAttachments
               ? _.filter(CMPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
+                return !_.has(item, 'id')
+              })
               : []
             if (filterAttachmentsWithoutId.length > 0) {
               filterAttachmentsWithoutId.map((item, index) => {
@@ -670,38 +674,38 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-    ;(newcheckPaymentPlan['rental'] =
-      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-      this.setState(
-        {
-          checkPaymentPlan: newcheckPaymentPlan,
-          firstFormData: {
-            project:
-              lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
-            floor: '',
-            unitType: '',
-            pearl: '',
-            unit: lead.unit != null ? lead.unit.id : '',
-            unitPrice: 0,
-            cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
-            paymentPlan: 'no',
-            approvedDiscount: 0,
-            approvedDiscountPrice: 0,
-            finalPrice: 0,
-            fullPaymentDiscountPrice: 0,
-            pearlName: 'New Pearl',
+      ; (newcheckPaymentPlan['rental'] =
+        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+        this.setState(
+          {
+            checkPaymentPlan: newcheckPaymentPlan,
+            firstFormData: {
+              project:
+                lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
+              floor: '',
+              unitType: '',
+              pearl: '',
+              unit: lead.unit != null ? lead.unit.id : '',
+              unitPrice: 0,
+              cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
+              paymentPlan: 'no',
+              approvedDiscount: 0,
+              approvedDiscountPrice: 0,
+              finalPrice: 0,
+              fullPaymentDiscountPrice: 0,
+              pearlName: 'New Pearl',
+            },
           },
-        },
-        () => {
-          const { checkPaymentPlan } = this.state
-          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-          this.setState({
-            progressValue: cmProgressBar[lead.status] || 0,
-            paymentPlan: paymentArray,
-            editable: false,
-          })
-        }
-      )
+          () => {
+            const { checkPaymentPlan } = this.state
+            let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+            this.setState({
+              progressValue: cmProgressBar[lead.status] || 0,
+              paymentPlan: paymentArray,
+              editable: false,
+            })
+          }
+        )
   }
 
   handleFirstForm = (value, name) => {
@@ -1079,7 +1083,7 @@ class CMPayment extends Component {
       comments: status,
       leadId: lead.id,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
   }
 
   //  ************ Function for open modal ************
@@ -1154,7 +1158,8 @@ class CMPayment extends Component {
       currentCall,
       isFollowUpMode,
     } = this.state
-    const { lead, navigation } = this.props
+    const { lead, navigation, instruments } = this.props
+    console.log(instruments);
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -1314,8 +1319,8 @@ class CMPayment extends Component {
               leadType={'CM'}
               navigation={navigation}
               customer={lead.customer}
-              goToHistory={() => {}}
-              getCallHistory={() => {}}
+              goToHistory={() => { }}
+              getCallHistory={() => { }}
               onHandleCloseLead={this.onHandleCloseLead}
             />
           </View>
@@ -1330,6 +1335,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     CMPayment: store.CMPayment.CMPayment,
+    instruments: store.Instruments.instruments,
   }
 }
 

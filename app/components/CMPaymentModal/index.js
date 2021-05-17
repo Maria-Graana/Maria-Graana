@@ -49,8 +49,6 @@ const CMPaymentModal = ({
   const [remarks, setRemarks] = useState([])
   const [loading, setLoading] = useState(false)
   const [isCollapsed, setCollapsed] = useState(false)
-  const [editLocation, setEditLocation] = useState(false)
-  const officeLocation = officeLocations.find((item) => item.value === CMPayment.officeLocationId)
   const fetchRemarks = () => {
     if (isCollapsed === false) {
       const url = `/api/leads/paymentremarks?id=${CMPayment.id}`
@@ -146,7 +144,7 @@ const CMPaymentModal = ({
               <ErrorMessage errorMessage={'Amount must be greater than 0'} />
             ) : null}
             {modalValidation === true &&
-            (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
+              (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
               <ErrorMessage errorMessage={'Required'} />
             ) : null}
             <View style={[AppStyles.mainInputWrap]}>
@@ -164,6 +162,37 @@ const CMPaymentModal = ({
                 )}
               </View>
             </View>
+
+            {
+              CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer' ?
+                <>
+                  <SimpleInputText
+                    // editable={CMPayment.status !== 'pendingAccount'}
+                    name={'instrumentNumber'}
+                    fromatName={false}
+                    placeholder={'Enter Instrument Number'}
+                    label={'INSTRUMENT NUMBER'}
+                    // value={CMPayment.installmentAmount}
+                    // formatValue={CMPayment.installmentAmount}
+                    keyboardType={'numeric'}
+                  // onChangeHandle={handleCommissionChange}
+                  />
+
+                  <SimpleInputText
+                    // editable={CMPayment.status !== 'pendingAccount'}
+                    name={'installmentAmount'}
+                    fromatName={false}
+                    placeholder={'Enter Instrument Amount'}
+                    label={'INSTRUMENT AMOUNT'}
+                    // value={CMPayment.installmentAmount}
+                    // formatValue={CMPayment.installmentAmount}
+                    keyboardType={'numeric'}
+                  // onChangeHandle={handleCommissionChange}
+                  />
+                </>
+                :
+                null
+            }
 
             <SimpleInputText
               editable={CMPayment.status !== 'pendingAccount'}
@@ -271,8 +300,8 @@ const CMPaymentModal = ({
                   }
                   containerBackgroundColor={
                     CMPayment.status === 'open' ||
-                    CMPayment.status === 'pendingSales' ||
-                    CMPayment.status === 'notCleared'
+                      CMPayment.status === 'pendingSales' ||
+                      CMPayment.status === 'notCleared'
                       ? AppStyles.colors.primaryColor
                       : '#8baaef'
                   }
@@ -284,8 +313,8 @@ const CMPaymentModal = ({
                       marginRight: 10,
                       borderColor:
                         CMPayment.status === 'open' ||
-                        CMPayment.status === 'pendingSales' ||
-                        CMPayment.status === 'notCleared'
+                          CMPayment.status === 'pendingSales' ||
+                          CMPayment.status === 'notCleared'
                           ? AppStyles.colors.primaryColor
                           : '#8baaef',
                     },
@@ -293,8 +322,8 @@ const CMPaymentModal = ({
                   label={'ASSIGN TO ACCOUNTS'}
                   textColor={
                     CMPayment.status === 'open' ||
-                    CMPayment.status === 'pendingSales' ||
-                    CMPayment.status === 'notCleared'
+                      CMPayment.status === 'pendingSales' ||
+                      CMPayment.status === 'notCleared'
                       ? '#fff'
                       : '#f3f5f7'
                   }

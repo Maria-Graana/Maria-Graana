@@ -42,6 +42,9 @@ const CMPaymentModal = ({
   officeLocations,
   handleOfficeLocationChange,
   assignToAccountsLoading,
+  instrumentList,
+  handleInstrumentInfoChange,
+  instrument,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -164,7 +167,7 @@ const CMPaymentModal = ({
             </View>
 
             {
-              CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer' ?
+              !CMPayment.id  && (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer') ?
                 <>
                   <SimpleInputText
                     // editable={CMPayment.status !== 'pendingAccount'}
@@ -172,22 +175,21 @@ const CMPaymentModal = ({
                     fromatName={false}
                     placeholder={'Enter Instrument Number'}
                     label={'INSTRUMENT NUMBER'}
-                    // value={CMPayment.installmentAmount}
-                    // formatValue={CMPayment.installmentAmount}
+                    value={instrument.instrumentNo}
                     keyboardType={'numeric'}
-                  // onChangeHandle={handleCommissionChange}
+                    onChangeHandle={handleInstrumentInfoChange}
                   />
 
                   <SimpleInputText
                     // editable={CMPayment.status !== 'pendingAccount'}
-                    name={'installmentAmount'}
+                    name={'instrumentAmount'}
                     fromatName={false}
                     placeholder={'Enter Instrument Amount'}
                     label={'INSTRUMENT AMOUNT'}
-                    // value={CMPayment.installmentAmount}
-                    // formatValue={CMPayment.installmentAmount}
+                    value={instrument.instrumentAmount}
+                    formatValue={instrument.instrumentAmount}
                     keyboardType={'numeric'}
-                  // onChangeHandle={handleCommissionChange}
+                    onChangeHandle={handleInstrumentInfoChange}
                   />
                 </>
                 :

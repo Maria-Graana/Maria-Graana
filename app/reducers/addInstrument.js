@@ -14,7 +14,9 @@ const instrument = {
 const addInstrument = (state = instrument, action) => {
     switch (action.type) {
         case types.SET_INSTRUMENT_INFORMATION:
-            return action.payload
+            return action.payload;
+        case types.CLEAR_INSTRUMENT_INFORMATION:
+            return instrument;
         default:
             return state
     }

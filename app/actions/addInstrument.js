@@ -13,6 +13,14 @@ export function setInstrumentInformation(instrument) {
     }
 }
 
+export function clearInstrumentInformation() {
+    return (dispatch, getsState) => {
+        dispatch({
+            type: types.CLEAR_INSTRUMENT_INFORMATION,
+        })
+    }
+}
+
 export function getInstrumentDetails(type, lead) {
     return (dispatch, getsState) => {
         if (type && lead && lead.customerId) {

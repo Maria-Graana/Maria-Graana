@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   View,
-  Picker,
   Text,
   StyleSheet,
   TouchableOpacity,
@@ -12,6 +11,7 @@ import {
 import moment from 'moment'
 import AppStyles from '../../AppStyles'
 import { AntDesign } from '@expo/vector-icons';
+import {Picker} from '@react-native-picker/picker';
 
 
 class YearPicker extends Component {

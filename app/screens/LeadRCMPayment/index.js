@@ -446,6 +446,7 @@ class LeadRCMPayment extends React.Component {
         .get(`/api/leads/byId?id=${lead.id}`)
         .then((response) => {
           dispatch(setlead(response.data))
+          this.showLeadPaymentModal(response.data)
           this.getLegalDocumentsCount()
           this.setState(
             {

@@ -112,6 +112,9 @@ class InventoryTile extends React.Component {
             <Text style={styles.priceTextStyle} numberOfLines={1}>
               {helper.checkPrice(data.price)}
             </Text>
+            {
+              data && data.propsure_id ? <Image style={styles.propsureIcon} source={require('../../../assets/img/pp_logo.png')}/> : null
+            }
             {screen === 'fields' && data.status === 'onhold' ? (
               <View style={{
                 alignSelf: 'flex-end',

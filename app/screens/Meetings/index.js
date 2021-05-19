@@ -17,6 +17,7 @@ import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
+import PaymentHelper from '../CMPayment/PaymentHelper'
 import styles from './style'
 class Meetings extends Component {
   constructor(props) {
@@ -165,39 +166,16 @@ class Meetings extends Component {
     })
   }
 
-  callNumber = (url) => {
-    if (url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            console.log("Can't handle url: " + url)
-          } else {
-            this.call()
-            return Linking.openURL(url)
-          }
-        })
-        .catch((err) => console.error('An error occurred', err))
-    } else {
-      helper.errorToast(`No Phone Number`)
-    }
-  }
-
-  call = () => {
-    const { lead, contacts } = this.props
-    let newContact = helper.createContactPayload(lead.customer)
-    let result = helper.contacts(newContact.phone, contacts)
-    if (
-      newContact.name &&
-      newContact.name !== '' &&
-      newContact.name !== ' ' &&
-      newContact.phone &&
-      newContact.phone !== ''
-    )
-      if (!result) {
+  callNumber = (data) => {
+    const { contacts } = this.props
+    this.setState({ selectedLead: data }, () => {
+      if (data && data.customer) {
+        let newContact = helper.createContactPayload(data.customer)
+        this.showStatusFeedbackModal(true)
         this.sendCallStatus()
-        helper.addContact(newContact)
-        this.setState({ statusfeedbackModalVisible: true })
+        helper.callNumber(newContact, contacts)
       }
+    })
   }
 
   editMeeting = (id) => {
@@ -277,10 +255,14 @@ class Meetings extends Component {
     if (!unit) {
       return
     }
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
-      payment,
-      unit.finalPrice
+    let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
+    let finalPrice = PaymentMethods.findFinalPrice(
+      unit,
+      unit.discounted_price,
+      fullPaymentDiscount,
+      unit.type === 'regular' ? false : true
     )
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(payment, finalPrice)
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
     if (outStandingTax <= 0 && remainingPayment <= 0) {
       this.setState({
@@ -484,6 +466,7 @@ class Meetings extends Component {
       currentCall,
       isFollowUpMode,
       currentMeeting,
+      closedWon,
     } = this.state
 
     const { navigation, lead } = this.props
@@ -539,7 +522,7 @@ class Meetings extends Component {
                   platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid,
                 ]}
                 onPress={() => {
-                  this.callNumber(`tel:${lead.customer && lead.customer.phone}`)
+                  this.callNumber(lead)
                 }}
               >
                 <Text style={styles.alignCenter}>Call</Text>
@@ -566,6 +549,7 @@ class Meetings extends Component {
             goToHistory={() => {}}
             getCallHistory={() => {}}
             onHandleCloseLead={this.onHandleCloseLead}
+            closedWon={closedWon}
           />
         </View>
 

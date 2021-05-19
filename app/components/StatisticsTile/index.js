@@ -10,7 +10,7 @@ const displayValue = (value) => {
   else return value
 }
 
-const StatisticsTile = ({ value, title, imagePath }) => {
+const StatisticsTile = ({ value, title, imagePath, unit = '' }) => {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.flexView}>
@@ -23,7 +23,7 @@ const StatisticsTile = ({ value, title, imagePath }) => {
       </View>
       <View style={styles.flexView}>
         <Text numberOfLines={1} style={styles.value}>
-          {displayValue(value)}
+          {displayValue(value)} {unit}
         </Text>
       </View>
     </View>

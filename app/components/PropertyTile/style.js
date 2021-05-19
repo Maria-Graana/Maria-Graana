@@ -78,6 +78,11 @@ imageStyle: {
     fontFamily: AppStyles.fonts.semiBoldFont,
     paddingLeft: wp('1.5%'),
     fontSize: AppStyles.fontSize.medium
+  },
+  propsureIcon: {
+     width: 24,
+     height: 24, 
+     marginHorizontal:10,
   }
 
 });

@@ -233,7 +233,7 @@ class BuyLeads extends React.Component {
           //Share
           this.navigateToShareScreen(val)
         } else if (buttonIndex === 2) {
-          this.goToFormPage('AddCMLead', 'CM', val && val.customer ? val.customer : null)
+          this.goToFormPage('AddRCMLead','RCM', val && val.customer ? val.customer : null)
         } else if (buttonIndex === 0) {
           this.checkAssignedLead(val)
         }
@@ -267,26 +267,15 @@ class BuyLeads extends React.Component {
   }
 
   callNumber = (data) => {
-    let url = `tel:${data.customer ? data.customer.phone : null}`
-    if (url != 'tel:null') {
-      this.setState({ selectedLead: data }, () => {
-        Linking.canOpenURL(url)
-          .then((supported) => {
-            if (!supported) {
-              console.log("Can't handle url: " + url)
-            } else {
-              if (data) {
-                this.call(data);
-                return Linking.openURL(url)
-              }
-            }
-          })
-          .catch((err) => console.error('An error occurred', err))
-      })
-    }
-    else {
-      helper.errorToast(`No Phone Number`)
-    }
+    const { contacts } = this.props
+    this.setState({ selectedLead: data }, () => {
+      if (data && data.customer) {
+        let newContact = helper.createContactPayload(data.customer)
+        this.showStatusFeedbackModal(true);
+        this.sendCallStatus()
+        helper.callNumber(newContact, contacts)
+      }
+    })
   }
 
   sendCallStatus = () => {
@@ -306,24 +295,6 @@ class BuyLeads extends React.Component {
     axios.post(`api/leads/project/meeting`, body).then((res) => {
       this.setCurrentCall(res.data);
     })
-  }
-
-  call = (lead) => {
-    const { contacts } = this.props
-    let newContact = helper.createContactPayload(lead.customer)
-    let result = helper.contacts(newContact.phone, contacts)
-    if (
-      newContact.name &&
-      newContact.name !== '' &&
-      newContact.name !== ' ' &&
-      newContact.phone &&
-      newContact.phone !== ''
-    )
-      if (!result) {
-        this.sendCallStatus()
-        helper.addContact(newContact)
-        this.showStatusFeedbackModal(true);
-      }
   }
 
 

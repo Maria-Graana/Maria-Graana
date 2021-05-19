@@ -409,6 +409,9 @@ class CMPayment extends Component {
           ? lead.customerId
           : null,
         instrumentType: value,
+        instrumentAmount: null,
+        instrumentNo: null,
+        id: null,
       }))
     }
 
@@ -417,16 +420,24 @@ class CMPayment extends Component {
   }
 
   handleInstrumentInfoChange = (value, name) => {
-    const { addInstrument, dispatch } = this.props
+    const { addInstrument, dispatch, instruments } = this.props
+    // console.log(value, name)
     const copyInstrument = { ...addInstrument };
-    if (name === 'instrumentNumber')
+    if (name === 'instrumentNumber') {
       copyInstrument.instrumentNo = value;
+      const instrument = instruments.find((item) => item.instrumentNo === value);
+      if (instrument) {
+        copyInstrument.instrumentAmount = instrument.instrumentAmount;
+        copyInstrument.id = instrument.id;
+        copyInstrument.editable = false;
+      }
+    }
     else if (name === 'instrumentAmount')
       copyInstrument.instrumentAmount = value;
 
     dispatch(setInstrumentInformation(copyInstrument));
-
   }
+  
 
   clearReduxAndStateValues = () => {
     const { dispatch } = this.props
@@ -488,6 +499,7 @@ class CMPayment extends Component {
 
   editTile = (payment) => {
     const { dispatch, user } = this.props
+    console.log(payment);
     dispatch(
       setCMPayment({
         ...payment,
@@ -539,6 +551,22 @@ class CMPayment extends Component {
         // for commission addition
         if (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer') {
           const { addInstrument } = this.props;
+          if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
+            alert('Instrument Number cannot be empty');
+            this.setState({
+              addPaymentLoading: false,
+              assignToAccountsLoading: false
+            })
+            return;
+          }
+          else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+            alert('Instrument Amount cannot be empty');
+            this.setState({
+              addPaymentLoading: false,
+              assignToAccountsLoading: false
+            })
+            return;
+          }
           axios.post(`api/leads/instruments`, addInstrument).then(res => {
             if (res && res.data) {
               body = {
@@ -549,14 +577,15 @@ class CMPayment extends Component {
                 installmentAmount: CMPayment.installmentAmount,
                 instrumentId: res.data.id,
               }
+              console.log(body);
               this.addPayment(body)
             }
           }).catch(error => {
             console.log('Error: ', error)
           })
-          .finally(()=>{
-            dispatch(clearInstrumentInformation());
-          })
+            .finally(() => {
+              dispatch(clearInstrumentInformation());
+            })
         }
         else {
           body = {
@@ -569,7 +598,7 @@ class CMPayment extends Component {
           this.addPayment(body)
         }
         delete body.visible
-       
+
       } else {
         // commission update mode
         let body = {
@@ -1210,7 +1239,7 @@ class CMPayment extends Component {
       currentCall,
       isFollowUpMode,
     } = this.state
-    const { lead, navigation, instruments, addInstrument } = this.props
+    const { lead, navigation, addInstrument } = this.props
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -1272,7 +1301,6 @@ class CMPayment extends Component {
             officeLocations={officeLocations}
             handleOfficeLocationChange={this.handleOfficeLocation}
             assignToAccountsLoading={assignToAccountsLoading}
-            instrumentsList={instruments}
             handleInstrumentInfoChange={this.handleInstrumentInfoChange}
             instrument={addInstrument}
 
@@ -1390,8 +1418,8 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     CMPayment: store.CMPayment.CMPayment,
-    instruments: store.Instruments.instruments,
     addInstrument: store.Instruments.addInstrument,
+    instruments: store.Instruments.instruments,
   }
 }
 

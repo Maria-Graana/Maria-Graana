@@ -4,6 +4,7 @@ import { combineReducers } from 'redux'
 import * as types from '../types'
 
 const instrument = {
+    id: null,
     customerId: null,
     instrumentType: '',
     instrumentNo: null,

@@ -31,6 +31,7 @@ export function getInstrumentDetails(type, lead) {
                             type: types.SET_INSTRUMENTS,
                             payload: res.data,
                         })
+                        return res.data;
                     }
                     else
                         return [];

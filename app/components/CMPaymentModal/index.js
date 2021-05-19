@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { CheckBox, ListItem, Body, Switch } from 'native-base'
 // import Modal from 'react-native-modal'
-import { connect } from 'react-redux'
+import { connect, useDispatch } from 'react-redux'
 import times from '../../../assets/img/times.png'
 import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index'
@@ -26,6 +26,7 @@ import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
 import OfficeLocationSelector from '../OfficeLocationSelector'
+import { clearInstrumentInformation, setInstrumentInformation } from '../../actions/addInstrument'
 
 const CMPaymentModal = ({
   onModalCloseClick,
@@ -42,16 +43,18 @@ const CMPaymentModal = ({
   officeLocations,
   handleOfficeLocationChange,
   assignToAccountsLoading,
-  instrumentList,
+  instruments,
   handleInstrumentInfoChange,
   instrument,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
   }
+  const dispatch = useDispatch()
   const [remarks, setRemarks] = useState([])
   const [loading, setLoading] = useState(false)
   const [isCollapsed, setCollapsed] = useState(false)
+  const [manualInstrumentSelect, setManualInstrumentSelected] = useState(false);
   const fetchRemarks = () => {
     if (isCollapsed === false) {
       const url = `/api/leads/paymentremarks?id=${CMPayment.id}`
@@ -70,6 +73,17 @@ const CMPaymentModal = ({
       setCollapsed(!isCollapsed)
     }
   }
+  let instrumentNumbers = []
+  if (instruments &&
+    (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer')) {
+    instruments.map((item) => {
+      return instrumentNumbers.push({
+        name: item.instrumentNo,
+        value: item.instrumentNo,
+      })
+    })
+  }
+
   return (
     <Modal visible={CMPayment.visible}>
       <SafeAreaView style={AppStyles.mb1}>
@@ -81,6 +95,7 @@ const CMPaymentModal = ({
               onPress={() => {
                 setCollapsed(false)
                 setRemarks([])
+                setManualInstrumentSelected(false);
                 onModalCloseClick()
               }}
             >
@@ -167,21 +182,57 @@ const CMPaymentModal = ({
             </View>
 
             {
-              !CMPayment.id  && (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer') ?
+              CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer' ?
                 <>
-                  <SimpleInputText
-                    // editable={CMPayment.status !== 'pendingAccount'}
-                    name={'instrumentNumber'}
-                    fromatName={false}
-                    placeholder={'Enter Instrument Number'}
-                    label={'INSTRUMENT NUMBER'}
-                    value={instrument.instrumentNo}
-                    keyboardType={'numeric'}
-                    onChangeHandle={handleInstrumentInfoChange}
-                  />
+                  <View style={styles.row}>
+                    <View style={styles.instrumentNumberContainer}>
+                      {
+                        manualInstrumentSelect ?
+                          <View style={[AppStyles.mainInputWrap]}>
+                            <View style={[AppStyles.inputWrap]}>
+                              <PickerComponent
+                                onValueChange={(itemValue, name) => {
+                                  handleInstrumentInfoChange(itemValue, name);
+                                  setManualInstrumentSelected(false);
+                                }}
+                                data={instrumentNumbers}
+                                name={'instrumentNumber'}
+                                placeholder="Select Instrument Number"
+                                selectedItem={instrument.instrumentNo}
+                              />
+                            </View>
+                          </View> :
+                          <SimpleInputText
+                            editable={instrument.editable}
+                            name={'instrumentNumber'}
+                            fromatName={false}
+                            placeholder={'Enter Instrument Number'}
+                            label={'INSTRUMENT NUMBER'}
+                            value={instrument.instrumentNo}
+                            keyboardType={'numeric'}
+                            onChangeHandle={handleInstrumentInfoChange}
+                          />
+                      }
+
+                    </View>
+                    <Text style={styles.orText}>Or</Text>
+                    <Text onPress={() => {
+                      if (instrument && instrument.id)
+                        dispatch(setInstrumentInformation({ // clear selection
+                          ...instrument,
+                          instrumentNo: null,
+                          instrumentAmount: null,
+                          id: null,
+                          editable: true,
+                        }));
+                      else
+                        setManualInstrumentSelected(!manualInstrumentSelect) // manual selection of instrument
+                    }} style={styles.selectText}>{instrument.id ? 'Clear' : 'Select'}</Text>
+                  </View>
+
 
                   <SimpleInputText
-                    // editable={CMPayment.status !== 'pendingAccount'}
+                    editable={instrument.editable}
                     name={'instrumentAmount'}
                     fromatName={false}
                     placeholder={'Enter Instrument Amount'}
@@ -374,6 +425,7 @@ const CMPaymentModal = ({
 mapStateToProps = (store) => {
   return {
     CMPayment: store.CMPayment.CMPayment,
+    instruments: store.Instruments.instruments,
   }
 }
 
@@ -382,14 +434,6 @@ export default connect(mapStateToProps)(CMPaymentModal)
 const styles = StyleSheet.create({
   modalMain: {
     backgroundColor: '#e7ecf0',
-    // borderRadius: 7,
-    // overflow: 'hidden',
-    // zIndex: 5,
-    // position: 'relative',
-    // elevation: 5,
-    // shadowOffset: { width: 5, height: 5 },
-    // shadowColor: '#33333312',
-    // shadowOpacity: 1,
   },
   timesBtn: {
     position: 'absolute',
@@ -540,4 +584,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  instrumentNumberContainer: {
+    width: '75%'
+  },
+  orText: {
+    width: '5%',
+    marginLeft: 10,
+    fontSize: AppStyles.noramlSize.fontSize,
+    fontFamily: AppStyles.fonts.defaultFont,
+  },
+  selectText: {
+    width: '20%',
+    marginRight: 10,
+    textDecorationLine: 'underline',
+    fontSize: AppStyles.fontSize.medium,
+    fontFamily: AppStyles.fonts.defaultFont,
+  }
 })

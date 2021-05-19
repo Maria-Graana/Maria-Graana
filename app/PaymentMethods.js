@@ -36,6 +36,13 @@ const PaymentMethods = {
       return (PaymentMethods.findUnitPrice(unit) * discount) / 100
     }
   },
+  findProductDiscountAmount(unit, product) {
+    if (unit && product) {
+      let { discount } = product.projectProduct
+      discount = PaymentMethods.handleEmptyValue(discount)
+      return (PaymentMethods.findUnitPrice(unit) * discount) / 100
+    }
+  },
   findDiscountPrice(unit) {
     if (unit) {
       return PaymentMethods.findUnitPrice(unit) - PaymentMethods.findDiscountAmount(unit)
@@ -194,6 +201,27 @@ const PaymentMethods = {
     } else {
       return 0
     }
+  },
+  calculateDownPayment(oneProduct, finalPrice, token) {
+    if (oneProduct && finalPrice && token) {
+      let { downPayment } = oneProduct.projectProduct
+      downPayment = PaymentMethods.handleEmptyValue(downPayment)
+      finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
+      token = PaymentMethods.handleEmptyValue(token)
+      console.log(downPayment, finalPrice, token)
+      return (finalPrice * downPayment) / 100 - token
+    } else return null
+  },
+  calculateNoOfInstallments(oneProduct, frequency) {
+    if (oneProduct && frequency) {
+      let { investmentDurationPeriod } = oneProduct.projectProduct
+      let value = 4
+      investmentDurationPeriod = PaymentMethods.handleEmptyValue(investmentDurationPeriod)
+      if (frequency === 'monthly') value = 12
+      console.log(frequency, investmentDurationPeriod)
+      console.log(value)
+      return investmentDurationPeriod * value
+    } else return null
   },
 }
 module.exports = PaymentMethods

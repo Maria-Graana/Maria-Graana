@@ -8,7 +8,7 @@ import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal'
 import times from '../../../assets/img/times.png'
 import PaymentMethods from '../../PaymentMethods'
-import ViewDocs from '../ViewDocs';
+import ViewDocs from '../ViewDocs'
 import * as MediaLibrary from 'expo-media-library'
 import * as Permissions from 'expo-permissions'
 import * as FileSystem from 'expo-file-system'
@@ -32,13 +32,14 @@ class UnitDetailsModal extends React.Component {
 
   downloadImage = async (image) => {
     let fileUri = FileSystem.documentDirectory + image.fileName
-    FileSystem.downloadAsync(image.url, fileUri).then(({ uri }) => {
-      FileSystem.getInfoAsync(fileUri).then((res) => {
-        this.saveFile(res.uri)
+    FileSystem.downloadAsync(image.url, fileUri)
+      .then(({ uri }) => {
+        FileSystem.getInfoAsync(fileUri).then((res) => {
+          this.saveFile(res.uri)
+        })
       })
-    })
-      .catch(error => {
-        console.error(error);
+      .catch((error) => {
+        console.error(error)
       })
   }
 
@@ -60,9 +61,18 @@ class UnitDetailsModal extends React.Component {
   }
 
   render() {
-    const { active, openUnitDetailsModal, data, pearlModal, formData, pearlUnitPrice } = this.props
+    const {
+      active,
+      openUnitDetailsModal,
+      data,
+      pearlModal,
+      formData,
+      pearlUnitPrice,
+      lead,
+    } = this.props
+    const { noProducts } = lead
     var optionalArray = data && data.optional_fields != null && data.optional_fields
-    const { imageUrl, showWebView } = this.state;
+    const { imageUrl, showWebView } = this.state
     var optional = []
     optional = data && data != '' && JSON.parse([optionalArray])
     var optionalObjectKey = Object.keys(optional)
@@ -81,7 +91,6 @@ class UnitDetailsModal extends React.Component {
         ) : null}
         {pearlModal === false && data && data != '' && (
           <View style={[styles.modalMain]}>
-
             <TouchableOpacity
               style={styles.timesBtn}
               onPress={() => {
@@ -91,12 +100,12 @@ class UnitDetailsModal extends React.Component {
               <Image source={times} style={styles.timesImg} />
             </TouchableOpacity>
 
-            <ScrollView style={{marginVertical:10}}>
+            <ScrollView style={{ marginVertical: 10 }}>
               <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Unit ID</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(data.id)}</Text>
-                  </View>
+                <View>
+                  <Text style={styles.smallText}>Unit ID</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(data.id)}</Text>
+                </View>
               </View>
               {/* ===================== */}
               {/* {optionalObjectKey &&
@@ -118,18 +127,24 @@ class UnitDetailsModal extends React.Component {
                     <Text style={styles.smallText}>Unit Name</Text>
                     <Text style={styles.largeText}>{this.handleEmptyValue(data.name)}</Text>
                   </View>
-                  {
-                    data.projectInventoryImage &&
+                  {data.projectInventoryImage && (
                     <TouchableOpacity
                       onLongPress={() => this.downloadImage(data.projectInventoryImage)}
                       onPress={() => {
-                        this.setState({ imageUrl: data.projectInventoryImage.url, showWebView: true })
-                      }}>
-                      <Image source={{ uri: data.projectInventoryImage.url }} style={{ width: 70, height: 70 }} borderRadius={5} />
+                        this.setState({
+                          imageUrl: data.projectInventoryImage.url,
+                          showWebView: true,
+                        })
+                      }}
+                    >
+                      <Image
+                        source={{ uri: data.projectInventoryImage.url }}
+                        style={{ width: 70, height: 70 }}
+                        borderRadius={5}
+                      />
                     </TouchableOpacity>
-                  }
+                  )}
                 </View>
-
               </View>
 
               {/* ===================== */}
@@ -193,7 +208,7 @@ class UnitDetailsModal extends React.Component {
                 </View>
               </View>
               {/* ===================== */}
-              {data.rentPerSqFt !== null && (
+              {data.rentPerSqFt !== null && noProducts && (
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discount</Text>
@@ -206,7 +221,7 @@ class UnitDetailsModal extends React.Component {
                   </View>
                 </View>
               )}
-              {data.rentPerSqFt !== null && (
+              {data.rentPerSqFt !== null && noProducts && (
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discount Amount</Text>
@@ -214,7 +229,7 @@ class UnitDetailsModal extends React.Component {
                   </View>
                 </View>
               )}
-              {data.rentPerSqFt !== null && (
+              {data.rentPerSqFt !== null && noProducts && (
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discounted Price</Text>
@@ -224,7 +239,7 @@ class UnitDetailsModal extends React.Component {
                   </View>
                 </View>
               )}
-              {data.rentPerSqFt !== null && (
+              {data.rentPerSqFt !== null && noProducts && (
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rent/Sqft</Text>
@@ -235,7 +250,7 @@ class UnitDetailsModal extends React.Component {
                 </View>
               )}
               {/* ===================== */}
-              {data.rentPerSqFt !== null && (
+              {data.rentPerSqFt !== null && noProducts && (
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Rent Amount</Text>
@@ -263,66 +278,62 @@ class UnitDetailsModal extends React.Component {
               {/* ===================== */}
             </ScrollView>
           </View>
-        )
-        }
-        {
-          pearlModal === true && data && data != '' && (
-            <View style={[styles.modalMain]}>
-              <TouchableOpacity
-                style={styles.timesBtn}
-                onPress={() => {
-                  openUnitDetailsModal(null, false)
-                }}
-              >
-                <Image source={times} style={styles.timesImg} />
-              </TouchableOpacity>
-              <ScrollView>
-                {/* ===================== */}
-                {
-                  data && data.project &&
-                  <View style={styles.MainTileView}>
-                    <View>
-                      <Text style={styles.smallText}>Project</Text>
-                      <Text style={styles.largeText}>{this.handleEmptyValue(data.project.name)}</Text>
-                    </View>
-                  </View>
-                }
-
-                {/* ===================== */}
-                {
-                  data && data.name &&
-                  <View style={styles.MainTileView}>
-                    <View>
-                      <Text style={styles.smallText}>Floor</Text>
-                      <Text style={styles.largeText}>{this.handleEmptyValue(data.name)}</Text>
-                    </View>
-                  </View>
-                }
-
-
-                {/* ===================== */}
+        )}
+        {pearlModal === true && data && data != '' && (
+          <View style={[styles.modalMain]}>
+            <TouchableOpacity
+              style={styles.timesBtn}
+              onPress={() => {
+                openUnitDetailsModal(null, false)
+              }}
+            >
+              <Image source={times} style={styles.timesImg} />
+            </TouchableOpacity>
+            <ScrollView>
+              {/* ===================== */}
+              {data && data.project && (
                 <View style={styles.MainTileView}>
                   <View>
-                    <Text style={styles.smallText}>Size</Text>
-                    <Text style={styles.largeText}>{this.handleEmptyValue(formData.pearl)}</Text>
+                    <Text style={styles.smallText}>Project</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.project.name)}</Text>
                   </View>
                 </View>
-                {/* ===================== */}
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Rate/Sqft</Text>
-                    <Text style={styles.largeText}>{PaymentMethods.findRatePerSqft(data)}</Text>
-                  </View>
-                </View>
-                {/* ===================== */}
-                <View style={styles.MainTileView}>
-                  <View>
-                    <Text style={styles.smallText}>Unit Price</Text>
-                    <Text style={styles.largeText}>{pearlUnitPrice}</Text>
-                  </View>
-                </View>
+              )}
 
-                {/* ===================== */}
+              {/* ===================== */}
+              {data && data.name && (
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Floor</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.name)}</Text>
+                  </View>
+                </View>
+              )}
+
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Size</Text>
+                  <Text style={styles.largeText}>{this.handleEmptyValue(formData.pearl)}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Rate/Sqft</Text>
+                  <Text style={styles.largeText}>{PaymentMethods.findRatePerSqft(data)}</Text>
+                </View>
+              </View>
+              {/* ===================== */}
+              <View style={styles.MainTileView}>
+                <View>
+                  <Text style={styles.smallText}>Unit Price</Text>
+                  <Text style={styles.largeText}>{pearlUnitPrice}</Text>
+                </View>
+              </View>
+
+              {/* ===================== */}
+              {noProducts && (
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discount</Text>
@@ -334,52 +345,54 @@ class UnitDetailsModal extends React.Component {
                     </Text>
                   </View>
                 </View>
+              )}
 
-                {/* ===================== */}
+              {/* ===================== */}
+              {noProducts && (
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Discount Amount</Text>
                     <Text style={styles.largeText}>{formData.approvedDiscountPrice}</Text>
                   </View>
                 </View>
+              )}
 
-                {/* ===================== */}
-                {data.rentPerSqFt !== null && (
-                  <View style={styles.MainTileView}>
-                    <View>
-                      <Text style={styles.smallText}>Final Amount</Text>
-                      <Text style={styles.largeText}>
-                        {this.handleEmptyValueReturnZero(formData.finalPrice)}
-                      </Text>
-                    </View>
+              {/* ===================== */}
+              {data.rentPerSqFt !== null && (
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Final Amount</Text>
+                    <Text style={styles.largeText}>
+                      {this.handleEmptyValueReturnZero(formData.finalPrice)}
+                    </Text>
                   </View>
-                )}
+                </View>
+              )}
 
-                {/* ===================== */}
-                {data.rentPerSqFt !== null && (
-                  <View style={styles.MainTileView}>
-                    <View>
-                      <Text style={styles.smallText}>Rent/Sqft</Text>
-                      <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
-                    </View>
+              {/* ===================== */}
+              {data.rentPerSqFt !== null && noProducts && (
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Rent/Sqft</Text>
+                    <Text style={styles.largeText}>{this.handleEmptyValue(data.rentPerSqFt)}</Text>
                   </View>
-                )}
-                {/* ===================== */}
-                {data.rentPerSqFt !== null && (
-                  <View style={styles.MainTileView}>
-                    <View>
-                      <Text style={styles.smallText}>Rent Amount</Text>
-                      <Text style={styles.largeText}>
-                        {PaymentMethods.findRentAmount(data, formData.pearl)}
-                      </Text>
-                    </View>
+                </View>
+              )}
+              {/* ===================== */}
+              {data.rentPerSqFt !== null && noProducts && (
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Rent Amount</Text>
+                    <Text style={styles.largeText}>
+                      {PaymentMethods.findRentAmount(data, formData.pearl)}
+                    </Text>
                   </View>
-                )}
-              </ScrollView>
-            </View>
-          )
-        }
-      </Modal >
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        )}
+      </Modal>
     )
   }
 }

@@ -59,7 +59,6 @@ const PaymentMethods = {
   findApprovedDiscountAmount(unit, discount) {
     if (unit && discount) {
       discount = PaymentMethods.handleEmptyValue(discount)
-      console.log('findApprovedDiscountAmount: ', discount)
       return (PaymentMethods.findUnitPrice(unit) * discount) / 100
     } else return 0
   },
@@ -208,7 +207,6 @@ const PaymentMethods = {
       downPayment = PaymentMethods.handleEmptyValue(downPayment)
       finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
       token = PaymentMethods.handleEmptyValue(token)
-      console.log(downPayment, finalPrice, token)
       return (finalPrice * downPayment) / 100 - token
     } else return null
   },
@@ -218,8 +216,6 @@ const PaymentMethods = {
       let value = 4
       investmentDurationPeriod = PaymentMethods.handleEmptyValue(investmentDurationPeriod)
       if (frequency === 'monthly') value = 12
-      console.log(frequency, investmentDurationPeriod)
-      console.log(value)
       return investmentDurationPeriod * value
     } else return null
   },

@@ -86,7 +86,6 @@ class ProductDetailsModal extends React.Component {
 
   render() {
     const { active, openProductDetailsModal, data } = this.props
-    // console.log('ProductDetailsModal: ', data)
     const { projectProduct } = data
     return (
       <Modal isVisible={active}>

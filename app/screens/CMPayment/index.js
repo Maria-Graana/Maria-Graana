@@ -127,7 +127,6 @@ class CMPayment extends Component {
   componentDidMount = () => {
     const { firstForm, secondForm } = this.state
     const { lead } = this.props
-    console.log('lead: ', lead)
     const { paidProject, project } = lead
     if (firstForm) {
       let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
@@ -157,11 +156,9 @@ class CMPayment extends Component {
     const { lead } = this.props
     const { paidProject, project } = lead
     let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
-    console.log(`/api/project/products?projectId=${projectID}`)
     axios
       .get(`/api/project/products?projectId=${projectID}`)
       .then((res) => {
-        console.log('fetchProducts res.data: ', res.data)
         this.setState({
           projectProducts: res.data,
           productsPickerData: PaymentHelper.normalizeProjectProducts(res.data),
@@ -854,11 +851,7 @@ class CMPayment extends Component {
         newData['fullPaymentDiscountPrice'],
         copyPearlUnit ? true : false
       )
-      console.log('newData', newData['finalPrice'])
     }
-    console.log('newData: ', newData)
-    console.log('oneProduct: ', oneProduct)
-
     this.setState({
       firstFormData: { ...newData },
       unitPearlDetailsData: { ...oneFloor },
@@ -937,7 +930,6 @@ class CMPayment extends Component {
     } = this.state
     const { lead } = this.props
     const { noProduct } = lead
-    console.log('firstFormData: ', firstFormData)
     if (!noProduct && firstFormData.paymentPlan === 'no') firstFormData.paymentPlan = null
     if (firstFormData.pearl != null) {
       if (
@@ -1051,48 +1043,47 @@ class CMPayment extends Component {
         )
     let leadId = []
     leadId.push(lead.id)
-    console.log('body: ', body)
-    // axios
-    //   .patch(`/api/leads/project`, body, { params: { id: leadId } })
-    //   .then((res) => {
-    //     axios
-    //       .get(`/api/leads/project/byId?id=${lead.id}`)
-    //       .then((res) => {
-    //         let responseData = res.data
-    //         if (!responseData.paidProject) {
-    //           responseData.paidProject = responseData.project
-    //         }
-    //         this.props.dispatch(setlead(responseData))
-    //         this.setState(
-    //           {
-    //             secondScreenData: res.data,
-    //             openFirstScreenModal: false,
-    //             firstForm: false,
-    //             secondForm: true,
-    //             firstScreenConfirmLoading: false,
-    //           },
-    //           () => {
-    //             helper.successToast('Unit Has Been Booked')
-    //             this.clearReduxAndStateValues()
-    //             this.fetchLead()
-    //           }
-    //         )
-    //       })
-    //       .catch((error) => {
-    //         console.log('/api/leads/project/byId?id - Error', error)
-    //         helper.errorToast('Something went wrong!!!')
-    //         this.setState({
-    //           firstScreenConfirmLoading: false,
-    //         })
-    //       })
-    //   })
-    //   .catch((error) => {
-    //     console.log('/api/leads/project - Error', error)
-    //     helper.errorToast('Something went wrong!!')
-    //     this.setState({
-    //       firstScreenConfirmLoading: false,
-    //     })
-    //   })
+    axios
+      .patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then((res) => {
+        axios
+          .get(`/api/leads/project/byId?id=${lead.id}`)
+          .then((res) => {
+            let responseData = res.data
+            if (!responseData.paidProject) {
+              responseData.paidProject = responseData.project
+            }
+            this.props.dispatch(setlead(responseData))
+            this.setState(
+              {
+                secondScreenData: res.data,
+                openFirstScreenModal: false,
+                firstForm: false,
+                secondForm: true,
+                firstScreenConfirmLoading: false,
+              },
+              () => {
+                helper.successToast('Unit Has Been Booked')
+                this.clearReduxAndStateValues()
+                this.fetchLead()
+              }
+            )
+          })
+          .catch((error) => {
+            console.log('/api/leads/project/byId?id - Error', error)
+            helper.errorToast('Something went wrong!!!')
+            this.setState({
+              firstScreenConfirmLoading: false,
+            })
+          })
+      })
+      .catch((error) => {
+        console.log('/api/leads/project - Error', error)
+        helper.errorToast('Something went wrong!!')
+        this.setState({
+          firstScreenConfirmLoading: false,
+        })
+      })
   }
   // **************** First Screen Ends *******************
 

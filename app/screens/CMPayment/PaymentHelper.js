@@ -195,7 +195,6 @@ const PaymentHelper = {
     }
   },
   generateProductApiPayload(firstFormData, lead, unitId, CMPayment, oneProduct) {
-    console.log('CMPayment: ', CMPayment)
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -278,7 +277,6 @@ const PaymentHelper = {
     if (oneProduct) {
       if (oneProduct && oneProduct.projectProduct) {
         let { installmentFrequency } = oneProduct.projectProduct
-        console.log('installmentFrequency: ', installmentFrequency)
         let newData =
           installmentFrequency &&
           installmentFrequency.map((item) => {

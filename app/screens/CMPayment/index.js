@@ -437,7 +437,7 @@ class CMPayment extends Component {
 
     dispatch(setInstrumentInformation(copyInstrument));
   }
-  
+
 
   clearReduxAndStateValues = () => {
     const { dispatch } = this.props
@@ -499,7 +499,6 @@ class CMPayment extends Component {
 
   editTile = (payment) => {
     const { dispatch, user } = this.props
-    console.log(payment);
     dispatch(
       setCMPayment({
         ...payment,
@@ -510,15 +509,15 @@ class CMPayment extends Component {
             : user && user.officeLocation
               ? user.officeLocation.id
               : null,
-      })
-    )
+      }))
+    dispatch(setInstrumentInformation({ ...payment.paymentInstrument, editable: false }));
     this.setState({
       editable: true,
     })
   }
 
   submitCommissionCMPayment = async () => {
-    const { CMPayment, user, lead, dispatch } = this.props
+    const { CMPayment, user, lead } = this.props
     const { editable, firstForm } = this.state
     if (
       (firstForm && CMPayment.paymentCategory === null) ||
@@ -548,46 +547,13 @@ class CMPayment extends Component {
 
       if (editable === false) {
         let body = {};
-        // for commission addition
+        // for payment addition
         if (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer') {
-          const { addInstrument } = this.props;
-          if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
-            alert('Instrument Number cannot be empty');
-            this.setState({
-              addPaymentLoading: false,
-              assignToAccountsLoading: false
-            })
-            return;
-          }
-          else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
-            alert('Instrument Amount cannot be empty');
-            this.setState({
-              addPaymentLoading: false,
-              assignToAccountsLoading: false
-            })
-            return;
-          }
-          axios.post(`api/leads/instruments`, addInstrument).then(res => {
-            if (res && res.data) {
-              body = {
-                ...CMPayment,
-                cmLeadId: lead.id,
-                armsUserId: user.id,
-                addedBy: 'buyer',
-                installmentAmount: CMPayment.installmentAmount,
-                instrumentId: res.data.id,
-              }
-              console.log(body);
-              this.addPayment(body)
-            }
-          }).catch(error => {
-            console.log('Error: ', error)
-          })
-            .finally(() => {
-              dispatch(clearInstrumentInformation());
-            })
+          // for cheque,pay order and bank transfer
+          this.checkInstrumentValidation();
+          this.addInstrumentToServerAndAddPayment();
         }
-        else {
+        else { // for all other types
           body = {
             ...CMPayment,
             cmLeadId: lead.id,
@@ -600,46 +566,21 @@ class CMPayment extends Component {
         delete body.visible
 
       } else {
-        // commission update mode
-        let body = {
-          ...CMPayment,
-          cmLeadId: lead.id,
-          armsUserId: user.id,
-          // addedBy: 'buyer',
-          installmentAmount: CMPayment.installmentAmount,
+        // for payment updation
+        if (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          this.checkInstrumentValidation();
+          this.editInstrumentOnServerAndEditPayment();
         }
-        delete body.visible
-        // delete body.remarks
-        if (CMPayment.paymentType === 'token') {
-          dispatch(setCMPayment({ ...CMPayment, visible: false }))
-          this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
-          return
+        else { // for all other types
+          body = {
+            ...CMPayment,
+            cmLeadId: lead.id,
+            armsUserId: user.id,
+            installmentAmount: CMPayment.installmentAmount,
+          }
+          this.updatePayment(body)
         }
-        axios
-          .patch(`/api/leads/project/payment?id=${body.id}`, body)
-          .then((res) => {
-            // upload only the new attachments that do not have id with them in object.
-            const filterAttachmentsWithoutId = CMPayment.paymentAttachments
-              ? _.filter(CMPayment.paymentAttachments, (item) => {
-                return !_.has(item, 'id')
-              })
-              : []
-            if (filterAttachmentsWithoutId.length > 0) {
-              filterAttachmentsWithoutId.map((item, index) => {
-                // payment attachments
-                this.uploadPaymentAttachment(item, body.id)
-              })
-            } else {
-              this.fetchLead(lead)
-              this.clearReduxAndStateValues()
-              helper.successToast('Payment Updated')
-            }
-          })
-          .catch((error) => {
-            helper.errorToast('Error Updating Payment', error)
-            console.log('error: ', error)
-            this.clearReduxAndStateValues()
-          })
       }
     } else {
       // Installment amount or type is missing so validation goes true, show error
@@ -679,6 +620,133 @@ class CMPayment extends Component {
         console.log('Error: ', error)
         helper.errorToast('Error Adding Payment')
       })
+  }
+
+  addInstrumentToServerAndAddPayment = () => {
+    let body = {};
+    const { addInstrument, CMPayment, dispatch, lead, user } = this.props;
+    if (addInstrument.id) { // selected existing instrument // add mode
+      body = {
+        ...CMPayment,
+        cmLeadId: lead.id,
+        armsUserId: user.id,
+        installmentAmount: CMPayment.installmentAmount,
+        instrumentId: addInstrument.id,
+      }
+      this.addPayment(body);
+      dispatch(clearInstrumentInformation());
+    }
+    else { // add mode // new instrument info
+      axios.post(`api/leads/instruments`, addInstrument).then(res => {
+        if (res && res.data) {
+          body = {
+            ...CMPayment,
+            cmLeadId: lead.id,
+            armsUserId: user.id,
+            addedBy: 'buyer',
+            installmentAmount: CMPayment.installmentAmount,
+            instrumentId: res.data.id,
+          }
+          this.addPayment(body)
+        }
+      }).catch(error => {
+        console.log('Error: ', error)
+      })
+        .finally(() => {
+          dispatch(clearInstrumentInformation());
+        })
+    }
+  }
+
+  editInstrumentOnServerAndEditPayment = () => {
+    let body = {};
+    const { addInstrument, CMPayment, dispatch, lead, user } = this.props;
+    if (addInstrument.id) { // existing instrument selected, so id is there// edit mode
+      console.log('instrument id', addInstrument)
+      body = {
+        ...CMPayment,
+        cmLeadId: lead.id,
+        armsUserId: user.id,
+        installmentAmount: CMPayment.installmentAmount,
+        instrumentId: addInstrument.id,
+      }
+      this.updatePayment(body);
+      dispatch(clearInstrumentInformation());
+    }
+    else { // new instrument information added, no id, post api call
+      console.log('no instrument id')
+      axios.post(`api/leads/instruments`, addInstrument).then(res => {
+        if (res && res.data) {
+          body = {
+            ...CMPayment,
+            cmLeadId: lead.id,
+            armsUserId: user.id,
+            installmentAmount: CMPayment.installmentAmount,
+            instrumentId: res.data.id,
+          }
+          this.updatePayment(body)
+        }
+      }).catch(error => {
+        console.log('Error: ', error)
+      })
+        .finally(() => {
+          dispatch(clearInstrumentInformation());
+        })
+    }
+  }
+
+  updatePayment = (body) => {
+    const { CMPayment, lead, dispatch } = this.props
+    if (CMPayment.paymentType === 'token') {
+      dispatch(setCMPayment({ ...CMPayment, visible: false }))
+      this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
+      return
+    }
+    axios
+      .patch(`/api/leads/project/payment?id=${body.id}`, body)
+      .then((res) => {
+        // upload only the new attachments that do not have id with them in object.
+        const filterAttachmentsWithoutId = CMPayment.paymentAttachments
+          ? _.filter(CMPayment.paymentAttachments, (item) => {
+            return !_.has(item, 'id')
+          })
+          : []
+        if (filterAttachmentsWithoutId.length > 0) {
+          filterAttachmentsWithoutId.map((item, index) => {
+            // payment attachments
+            this.uploadPaymentAttachment(item, body.id)
+          })
+        } else {
+          this.fetchLead(lead)
+          this.clearReduxAndStateValues()
+          helper.successToast('Payment Updated')
+        }
+      })
+      .catch((error) => {
+        helper.errorToast('Error Updating Payment', error)
+        console.log('error: ', error)
+        this.clearReduxAndStateValues()
+      })
+  }
+
+  checkInstrumentValidation = () => {
+    const { addInstrument } = this.props;
+    if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
+      alert('Instrument Number cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return;
+    }
+    else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+      alert('Instrument Amount cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return;
+    }
   }
 
   uploadPaymentAttachment = (paymentAttachment, paymentId) => {
@@ -1302,8 +1370,6 @@ class CMPayment extends Component {
             handleOfficeLocationChange={this.handleOfficeLocation}
             assignToAccountsLoading={assignToAccountsLoading}
             handleInstrumentInfoChange={this.handleInstrumentInfoChange}
-            instrument={addInstrument}
-
           />
           <DeleteModal
             isVisible={deletePaymentVisible}

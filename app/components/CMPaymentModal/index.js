@@ -12,9 +12,9 @@ import {
   Modal,
   SafeAreaView,
 } from 'react-native'
-import { CheckBox, ListItem, Body, Switch } from 'native-base'
+import { Switch } from 'native-base'
 // import Modal from 'react-native-modal'
-import { connect, useDispatch } from 'react-redux'
+import { connect } from 'react-redux'
 import times from '../../../assets/img/times.png'
 import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index'
@@ -26,7 +26,7 @@ import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
 import OfficeLocationSelector from '../OfficeLocationSelector'
-import { clearInstrumentInformation, setInstrumentInformation } from '../../actions/addInstrument'
+import AddEditInstrument from '../AddEditInstrument'
 
 const CMPaymentModal = ({
   onModalCloseClick,
@@ -43,18 +43,16 @@ const CMPaymentModal = ({
   officeLocations,
   handleOfficeLocationChange,
   assignToAccountsLoading,
-  instruments,
   handleInstrumentInfoChange,
   instrument,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
   }
-  const dispatch = useDispatch()
   const [remarks, setRemarks] = useState([])
   const [loading, setLoading] = useState(false)
   const [isCollapsed, setCollapsed] = useState(false)
-  const [manualInstrumentSelect, setManualInstrumentSelected] = useState(false);
+
   const fetchRemarks = () => {
     if (isCollapsed === false) {
       const url = `/api/leads/paymentremarks?id=${CMPayment.id}`
@@ -73,16 +71,7 @@ const CMPaymentModal = ({
       setCollapsed(!isCollapsed)
     }
   }
-  let instrumentNumbers = []
-  if (instruments &&
-    (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer')) {
-    instruments.map((item) => {
-      return instrumentNumbers.push({
-        name: item.instrumentNo,
-        value: item.instrumentNo,
-      })
-    })
-  }
+ 
 
   return (
     <Modal visible={CMPayment.visible}>
@@ -95,7 +84,6 @@ const CMPaymentModal = ({
               onPress={() => {
                 setCollapsed(false)
                 setRemarks([])
-                setManualInstrumentSelected(false);
                 onModalCloseClick()
               }}
             >
@@ -183,66 +171,10 @@ const CMPaymentModal = ({
 
             {
               CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer' ?
-                <>
-                  <View style={styles.row}>
-                    <View style={styles.instrumentNumberContainer}>
-                      {
-                        manualInstrumentSelect ?
-                          <View style={[AppStyles.mainInputWrap]}>
-                            <View style={[AppStyles.inputWrap]}>
-                              <PickerComponent
-                                onValueChange={(itemValue, name) => {
-                                  handleInstrumentInfoChange(itemValue, name);
-                                  setManualInstrumentSelected(false);
-                                }}
-                                data={instrumentNumbers}
-                                name={'instrumentNumber'}
-                                placeholder="Select Instrument Number"
-                                selectedItem={instrument.instrumentNo}
-                              />
-                            </View>
-                          </View> :
-                          <SimpleInputText
-                            editable={instrument.editable}
-                            name={'instrumentNumber'}
-                            fromatName={false}
-                            placeholder={'Enter Instrument Number'}
-                            label={'INSTRUMENT NUMBER'}
-                            value={instrument.instrumentNo}
-                            keyboardType={'numeric'}
-                            onChangeHandle={handleInstrumentInfoChange}
-                          />
-                      }
-
-                    </View>
-                    <Text style={styles.orText}>Or</Text>
-                    <Text onPress={() => {
-                      if (instrument && instrument.id)
-                        dispatch(setInstrumentInformation({ // clear selection
-                          ...instrument,
-                          instrumentNo: null,
-                          instrumentAmount: null,
-                          id: null,
-                          editable: true,
-                        }));
-                      else
-                        setManualInstrumentSelected(!manualInstrumentSelect) // manual selection of instrument
-                    }} style={styles.selectText}>{instrument.id ? 'Clear' : 'Select'}</Text>
-                  </View>
-
-
-                  <SimpleInputText
-                    editable={instrument.editable}
-                    name={'instrumentAmount'}
-                    fromatName={false}
-                    placeholder={'Enter Instrument Amount'}
-                    label={'INSTRUMENT AMOUNT'}
-                    value={instrument.instrumentAmount}
-                    formatValue={instrument.instrumentAmount}
-                    keyboardType={'numeric'}
-                    onChangeHandle={handleInstrumentInfoChange}
-                  />
-                </>
+                <AddEditInstrument 
+                type={CMPayment.type}
+                handleInstrumentInfoChange={handleInstrumentInfoChange}
+                />
                 :
                 null
             }
@@ -583,21 +515,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  instrumentNumberContainer: {
-    width: '75%'
-  },
-  orText: {
-    width: '5%',
-    marginLeft: 10,
-    fontSize: AppStyles.noramlSize.fontSize,
-    fontFamily: AppStyles.fonts.defaultFont,
-  },
-  selectText: {
-    width: '20%',
-    marginRight: 10,
-    textDecorationLine: 'underline',
-    fontSize: AppStyles.fontSize.medium,
-    fontFamily: AppStyles.fonts.defaultFont,
-  }
+},
+  
 })

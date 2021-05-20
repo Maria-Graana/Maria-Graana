@@ -511,7 +511,7 @@ class CMPayment extends Component {
               ? user.officeLocation.id
               : null,
       }))
-    dispatch(setInstrumentInformation({ ...payment.paymentInstrument, editable: false }));
+    dispatch(setInstrumentInformation({ ...payment.paymentInstrument, editable: payment && payment.paymentInstrument && payment.paymentInstrument.id ?  false  : true}));
     this.setState({
       editable: true,
     })
@@ -779,7 +779,7 @@ class CMPayment extends Component {
   editTokenPayment = () => {
     const { CMPayment, dispatch, addInstrument } = this.props
     dispatch(setCMPayment({ ...CMPayment, visible: true }))
-    dispatch(setInstrumentInformation({ ...addInstrument, editable: false }));
+    dispatch(setInstrumentInformation({ ...addInstrument, editable: addInstrument && addInstrument.id ?  false  : true }));
   }
 
   assignToAccounts = () => {

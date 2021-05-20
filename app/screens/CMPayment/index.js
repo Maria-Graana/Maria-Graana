@@ -138,7 +138,9 @@ class CMPayment extends Component {
   }
 
   componentWillUnmount = () => {
+    const {dispatch} = this.props;
     this.clearReduxAndStateValues()
+    dispatch(clearInstrumentInformation());
   }
 
   fetchOfficeLocations = () => {
@@ -662,7 +664,6 @@ class CMPayment extends Component {
     let body = {};
     const { addInstrument, CMPayment, dispatch, lead, user } = this.props;
     if (addInstrument.id) { // existing instrument selected, so id is there// edit mode
-      console.log('instrument id', addInstrument)
       body = {
         ...CMPayment,
         cmLeadId: lead.id,
@@ -674,7 +675,6 @@ class CMPayment extends Component {
       dispatch(clearInstrumentInformation());
     }
     else { // new instrument information added, no id, post api call
-      console.log('no instrument id')
       axios.post(`api/leads/instruments`, addInstrument).then(res => {
         if (res && res.data) {
           body = {

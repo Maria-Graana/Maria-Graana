@@ -21,10 +21,18 @@ export function clearInstrumentInformation() {
     }
 }
 
-export function getInstrumentDetails(type, lead) {
+export function clearInstrumentsList() {
     return (dispatch, getsState) => {
-        if (type && lead && lead.customerId) {
-            let url = `api/leads/instruments?instrumentType=${type}&customerId=${lead.customerId}`
+        dispatch({
+            type: types.CLEAR_INSTRUMENTS_LIST,
+        })
+    }
+}
+
+export function getInstrumentDetails(type, customerId) {
+    return (dispatch, getsState) => {
+        if (type && customerId ) {
+            let url = `api/leads/instruments?instrumentType=${type}&customerId=${customerId}`
             axios.get(url)
                 .then(res => {
                     if (res){

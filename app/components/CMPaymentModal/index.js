@@ -44,7 +44,6 @@ const CMPaymentModal = ({
   handleOfficeLocationChange,
   assignToAccountsLoading,
   handleInstrumentInfoChange,
-  instrument,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -172,7 +171,6 @@ const CMPaymentModal = ({
             {
               CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer' ?
                 <AddEditInstrument 
-                type={CMPayment.type}
                 handleInstrumentInfoChange={handleInstrumentInfoChange}
                 />
                 :

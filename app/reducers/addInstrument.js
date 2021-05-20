@@ -27,6 +27,8 @@ const instruments = (state= [], action) => {
     switch (action.type) {
         case types.SET_INSTRUMENTS:
             return action.payload
+            case types.CLEAR_INSTRUMENTS_LIST:
+                return [];
         default:
             return state
     }

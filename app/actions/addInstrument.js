@@ -24,7 +24,9 @@ export function clearInstrumentInformation() {
 export function getInstrumentDetails(type, lead) {
     return (dispatch, getsState) => {
         if (type && lead && lead.customerId) {
-            axios.get(`api/leads/instruments?instrumentType=${type}&customerId=${lead.customerId}`)
+            let url = `api/leads/instruments?instrumentType=${type}&customerId=${lead.customerId}`
+            console.log(url);
+            axios.get(url)
                 .then(res => {
                     if (res){
                         dispatch({

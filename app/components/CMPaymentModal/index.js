@@ -72,7 +72,7 @@ const CMPaymentModal = ({
     }
   }
  
-
+    
   return (
     <Modal visible={CMPayment.visible}>
       <SafeAreaView style={AppStyles.mb1}>
@@ -357,7 +357,6 @@ const CMPaymentModal = ({
 mapStateToProps = (store) => {
   return {
     CMPayment: store.CMPayment.CMPayment,
-    instruments: store.Instruments.instruments,
   }
 }
 

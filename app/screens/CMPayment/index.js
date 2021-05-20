@@ -423,7 +423,6 @@ class CMPayment extends Component {
 
   handleInstrumentInfoChange = (value, name) => {
     const { addInstrument, dispatch, instruments } = this.props
-    // console.log(value, name)
     const copyInstrument = { ...addInstrument };
     if (name === 'instrumentNumber') {
       copyInstrument.instrumentNo = value;
@@ -495,8 +494,8 @@ class CMPayment extends Component {
       }
     } else {
       this.clearReduxAndStateValues()
+      dispatch(clearInstrumentInformation());
     }
-    dispatch(clearInstrumentInformation());
   }
 
   editTile = (payment) => {
@@ -552,8 +551,10 @@ class CMPayment extends Component {
         // for payment addition
         if (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer') {
           // for cheque,pay order and bank transfer
-          this.checkInstrumentValidation();
-          this.addInstrumentToServerAndAddPayment();
+          let isValid = this.checkInstrumentValidation();
+          if(isValid){
+            this.addInstrumentToServerAndAddPayment();
+          }
         }
         else { // for all other types
           body = {
@@ -571,8 +572,10 @@ class CMPayment extends Component {
         // for payment updation
         if (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer') {
           // for cheque,pay order and bank transfer
-          this.checkInstrumentValidation();
-          this.editInstrumentOnServerAndEditPayment();
+          let isValid = this.checkInstrumentValidation();
+          if(isValid){
+            this.editInstrumentOnServerAndEditPayment();
+          }
         }
         else { // for all other types
           body = {
@@ -612,6 +615,7 @@ class CMPayment extends Component {
             })
           } else {
             this.clearReduxAndStateValues()
+            dispatch(clearInstrumentInformation());
             this.fetchLead(lead)
             helper.successToast('Payment Added')
           }
@@ -619,6 +623,7 @@ class CMPayment extends Component {
       })
       .catch((error) => {
         this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
         console.log('Error: ', error)
         helper.errorToast('Error Adding Payment')
       })
@@ -636,7 +641,6 @@ class CMPayment extends Component {
         instrumentId: addInstrument.id,
       }
       this.addPayment(body);
-      dispatch(clearInstrumentInformation());
     }
     else { // add mode // new instrument info
       axios.post(`api/leads/instruments`, addInstrument).then(res => {
@@ -654,9 +658,6 @@ class CMPayment extends Component {
       }).catch(error => {
         console.log('Error: ', error)
       })
-        .finally(() => {
-          dispatch(clearInstrumentInformation());
-        })
     }
   }
 
@@ -672,7 +673,6 @@ class CMPayment extends Component {
         instrumentId: addInstrument.id,
       }
       this.updatePayment(body);
-      dispatch(clearInstrumentInformation());
     }
     else { // new instrument information added, no id, post api call
       axios.post(`api/leads/instruments`, addInstrument).then(res => {
@@ -689,9 +689,6 @@ class CMPayment extends Component {
       }).catch(error => {
         console.log('Error: ', error)
       })
-        .finally(() => {
-          dispatch(clearInstrumentInformation());
-        })
     }
   }
 
@@ -719,6 +716,7 @@ class CMPayment extends Component {
         } else {
           this.fetchLead(lead)
           this.clearReduxAndStateValues()
+          dispatch(clearInstrumentInformation());
           helper.successToast('Payment Updated')
         }
       })
@@ -726,6 +724,7 @@ class CMPayment extends Component {
         helper.errorToast('Error Updating Payment', error)
         console.log('error: ', error)
         this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
       })
   }
 
@@ -737,7 +736,7 @@ class CMPayment extends Component {
         addPaymentLoading: false,
         assignToAccountsLoading: false
       })
-      return;
+      return false;;
     }
     else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
       alert('Instrument Amount cannot be empty');
@@ -745,7 +744,10 @@ class CMPayment extends Component {
         addPaymentLoading: false,
         assignToAccountsLoading: false
       })
-      return;
+      return false;
+    }
+    else{
+       return true;
     }
   }
 
@@ -775,8 +777,9 @@ class CMPayment extends Component {
   }
 
   editTokenPayment = () => {
-    const { CMPayment, dispatch } = this.props
+    const { CMPayment, dispatch, addInstrument } = this.props
     dispatch(setCMPayment({ ...CMPayment, visible: true }))
+    dispatch(setInstrumentInformation({ ...addInstrument, editable: false }));
   }
 
   assignToAccounts = () => {
@@ -1103,9 +1106,9 @@ class CMPayment extends Component {
   }
 
   firstFormApiCall = (unitId) => {
-    const { lead, CMPayment } = this.props
+    const { lead, CMPayment, addInstrument } = this.props
     const { firstFormData } = this.state
-    let body = PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment)
+    let body = PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment, addInstrument)
     let leadId = []
     leadId.push(lead.id)
     axios
@@ -1307,7 +1310,7 @@ class CMPayment extends Component {
       currentCall,
       isFollowUpMode,
     } = this.state
-    const { lead, navigation, addInstrument } = this.props
+    const { lead, navigation } = this.props
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar

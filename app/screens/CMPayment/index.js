@@ -799,10 +799,12 @@ class CMPayment extends Component {
     }
     if (name === 'approvedDiscount') {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+      if (Number(value) > 100) return
       newData['approvedDiscountPrice'] = PaymentMethods.findApprovedDiscountAmount(oneUnit, value)
     }
     if (name === 'approvedDiscountPrice') {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+      value = value.replace(/,/g, '')
       newData['approvedDiscount'] = PaymentMethods.findApprovedDiscountPercentage(oneUnit, value)
     }
     if (name === 'paymentPlan' && value === 'Sold on Investment Plan') {

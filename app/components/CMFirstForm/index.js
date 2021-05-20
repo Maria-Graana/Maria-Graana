@@ -221,7 +221,7 @@ class CMFirstForm extends Component {
                 onValueChange={handleFirstForm}
                 data={productsPickerData}
                 name={'productId'}
-                placeholder="Products"
+                placeholder="Investment Product"
                 selectedItem={firstFormData.productId}
                 // enabled={checkLeadClosedOrNot}
                 customStyle={styles.equalHeight}
@@ -305,9 +305,9 @@ class CMFirstForm extends Component {
         />
         <SimpleInputText
           name={'approvedDiscountPrice'}
-          fromatName={''}
-          placeholder={'APPROVED DISCOUNT PRICE'}
-          label={'APPROVED DISCOUNT PRICE'}
+          fromatName={'approvedDiscountPrice'}
+          placeholder={'APPROVED DISCOUNT AMOUNT'}
+          label={'APPROVED DISCOUNT AMOUNT'}
           value={firstFormData.approvedDiscountPrice}
           onChangeHandle={handleFirstForm}
           formatValue={''}

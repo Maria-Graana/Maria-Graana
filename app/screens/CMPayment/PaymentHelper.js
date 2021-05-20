@@ -310,8 +310,8 @@ const PaymentHelper = {
           paymentPlanDuration &&
           paymentPlanDuration.map((item) => {
             return {
-              name: item,
-              value: item,
+              name: item.toString(),
+              value: item.toString(),
             }
           })
         return newData

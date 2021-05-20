@@ -50,34 +50,41 @@ class ProductDetailsModal extends React.Component {
       let newValues = values
       if (parseBol) newValues = JSON.parse(values)
       let newString = ''
+      let duplicate = false
       for (let i = 0; i < newValues.length; i++) {
         if (i === 0) {
           newString = newString + newValues[i]
         }
         if (i > 0) {
-          newString =
-            helper.capitalize(newString.toString()).replace(/_/g, ' ') +
-            ` ${delimeter} ` +
-            helper.capitalize(newValues[i].toString()).replace(/_/g, ' ')
+          if (newString === newValues[i]) helper.capitalize(newString.toString()).replace(/_/g, ' ')
+          else {
+            newString =
+              helper.capitalize(newString.toString()).replace(/_/g, ' ') +
+              ` ${delimeter} ` +
+              helper.capitalize(newValues[i].toString()).replace(/_/g, ' ')
+          }
         }
       }
       return newString
     }
   }
 
-  setArrayValues = (values, delimeter) => {
+  setRange = (values, delimeter, parseBol) => {
     if (values) {
       let newValues = values
+      if (parseBol) newValues = JSON.parse(values)
       let newString = ''
-      for (let i = 0; i < newValues.length; i++) {
+      if (newValues.length === 2) {
+        if (newValues[0] === newValues[1]) return [newValues[1]]
+      }
+      for (let i = 0; i < Number(newValues[newValues.length - 1]); i++) {
         if (i === 0) {
-          newString = newString + newValues[i]
+          let increment = Number(i) + 1
+          newString = newString + increment.toString()
         }
         if (i > 0) {
-          newString =
-            helper.capitalize(newString.toString()) +
-            ` ${delimeter} ` +
-            helper.capitalize(newValues[i].toString())
+          let increment = Number(i) + 1
+          newString = newString + ` ${delimeter} ` + increment.toString()
         }
       }
       return newString
@@ -116,17 +123,15 @@ class ProductDetailsModal extends React.Component {
                 } - ${projectProduct && moment(projectProduct.validTo).format('YYYY-MM-DD')}`,
               })}
               {this.detailTile({
+                title: 'Discount',
+                value: `${this.handleEmptyValueReturnZero(
+                  projectProduct && projectProduct.discount
+                )}%`,
+              })}
+              {this.detailTile({
                 title: 'Reservation Amount Option',
                 value: helper.capitalize(projectProduct && projectProduct.reservationAmount),
               })}
-              {/* {this.detailTile({
-                title: 'Rayment Plan',
-                value: this.setParseArrayValues(
-                  projectProduct && projectProduct.paymentPlan,
-                  '/',
-                  true
-                ),
-              })} */}
               {this.detailTile({
                 title: 'Down Payment',
                 value: `${this.handleEmptyValueReturnZero(
@@ -140,16 +145,14 @@ class ProductDetailsModal extends React.Component {
                 )}%`,
               })}
               {this.detailTile({
-                title: 'Discount',
-                value: `${this.handleEmptyValueReturnZero(
-                  projectProduct && projectProduct.discount
-                )}%`,
+                title: 'Rayment Plan',
+                value: `${helper.capitalize(projectProduct && projectProduct.paymentPlan)} (Years)`,
               })}
               {this.detailTile({
                 title: 'Payment Plan Duration',
-                value: this.setParseArrayValues(
+                value: this.setRange(
                   projectProduct && projectProduct.paymentPlanDuration,
-                  '/',
+                  '-',
                   true
                 ),
               })}
@@ -157,7 +160,7 @@ class ProductDetailsModal extends React.Component {
                 title: 'Installment Frequency',
                 value: this.setParseArrayValues(
                   projectProduct && projectProduct.installmentFrequency,
-                  '-',
+                  '/',
                   false
                 ),
               })}
@@ -166,16 +169,12 @@ class ProductDetailsModal extends React.Component {
                 value: projectProduct && formatPrice(projectProduct.annualProfit),
               })}
               {this.detailTile({
-                title: 'Monthly Rent',
+                title: 'Annual Rent',
                 value: projectProduct && formatPrice(projectProduct.monthlyRent),
               })}
               {this.detailTile({
                 title: 'Investment Duration',
-                value: projectProduct && projectProduct.investmentDurationPeriod,
-              })}
-              {this.detailTile({
-                title: 'Discount',
-                value: projectProduct && formatPrice(projectProduct.discount),
+                value: `${projectProduct && projectProduct.value} (Months)`,
               })}
             </ScrollView>
           </View>

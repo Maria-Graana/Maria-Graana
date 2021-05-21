@@ -158,7 +158,7 @@ const PaymentHelper = {
       name: 'name',
     }
   },
-  generateApiPayload(firstFormData, lead, unitId, CMPayment) {
+  generateApiPayload(firstFormData, lead, unitId, CMPayment, instrument) {
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -192,6 +192,7 @@ const PaymentHelper = {
           : firstFormData.cnic.replace(/[^\w\s]/gi, ''),
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
+      instrumentId: instrument.id,
     }
   },
   generateProductApiPayload(firstFormData, lead, unitId, CMPayment, oneProduct) {

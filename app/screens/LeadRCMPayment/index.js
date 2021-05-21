@@ -44,6 +44,7 @@ import styles from './styles'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import moment from 'moment'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import { clearInstrumentInformation, clearInstrumentsList, getInstrumentDetails, setInstrumentInformation } from '../../actions/addInstrument'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -433,7 +434,10 @@ class LeadRCMPayment extends React.Component {
   }
 
   componentWillUnmount() {
+    const {dispatch} = this.props;
     this.clearReduxAndStateValues()
+    dispatch(clearInstrumentInformation());
+    dispatch(clearInstrumentsList());
     this._unsubscribe()
   }
 
@@ -1050,7 +1054,7 @@ class LeadRCMPayment extends React.Component {
     )
   }
 
-  submitMenu = (payment, status) => {
+  submitMenu = (payment, status) => { // pending implementation here for instrument...
     const { allProperties } = this.state
     let property = allProperties[0]
     let armsUserId = property && property.armsuser && property.armsuser.id && property.armsuser.id
@@ -1100,15 +1104,51 @@ class LeadRCMPayment extends React.Component {
   }
 
   handleCommissionChange = (value, name) => {
-    const { rcmPayment, dispatch } = this.props
+    const { rcmPayment, dispatch, lead, addInstrument } = this.props
     const newSecondFormData = { ...rcmPayment, visible: rcmPayment.visible }
     newSecondFormData[name] = value
+
+    if (name === 'type' && (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')) {
+      if(lead && lead.customer_id){
+        dispatch(getInstrumentDetails(value, lead.customer_id))
+        dispatch(setInstrumentInformation({
+          ...addInstrument,
+          customerId: lead && lead.customer_id
+            ? lead.customer_id
+            : null,
+          instrumentType: value,
+          instrumentAmount: null,
+          instrumentNo: null,
+          id: null,
+        }))
+      }
+     
+    }
     this.setState({ buyerNotZero: false })
     dispatch(setRCMPayment(newSecondFormData))
   }
 
+  handleInstrumentInfoChange = (value, name) => {
+    const { addInstrument, dispatch, instruments } = this.props
+    const copyInstrument = { ...addInstrument };
+    if (name === 'instrumentNumber') {
+      copyInstrument.instrumentNo = value;
+      const instrument = instruments.find((item) => item.instrumentNo === value);
+      if (instrument) {
+        copyInstrument.instrumentAmount = instrument.instrumentAmount;
+        copyInstrument.id = instrument.id;
+        copyInstrument.editable = false;
+      }
+    }
+    else if (name === 'instrumentAmount')
+      copyInstrument.instrumentAmount = value;
+
+    dispatch(setInstrumentInformation(copyInstrument));
+  }
+
+
   setCommissionEditData = (data) => {
-    const { dispatch, user } = this.props
+    const { dispatch, user, lead } = this.props
     this.setState({ editable: true })
     dispatch(
       setRCMPayment({
@@ -1122,6 +1162,10 @@ class LeadRCMPayment extends React.Component {
             : null,
       })
     )
+    if(data && data.paymentInstrument && lead){
+      dispatch(getInstrumentDetails(data.paymentInstrument.instrumentType, lead.customer_id))
+      dispatch(setInstrumentInformation({ ...data.paymentInstrument, editable: data.paymentInstrument.id ? false : true}));
+    }
   }
 
   goToPayAttachments = () => {
@@ -1157,7 +1201,6 @@ class LeadRCMPayment extends React.Component {
   submitCommissionPayment = () => {
     const { rcmPayment, user } = this.props
     const { lead, editable } = this.state
-    let baseUrl = `/api/leads/project/payments`
     if (
       rcmPayment.installmentAmount != null &&
       rcmPayment.installmentAmount != '' &&
@@ -1173,104 +1216,200 @@ class LeadRCMPayment extends React.Component {
       }
       if (editable === false) {
         // for commission addition
-        let body = {
-          ...rcmPayment,
-          rcmLeadId: lead.id,
-          armsUserId: user.id,
-          // paymentCategory: 'commission',
-          addedBy: rcmPayment.addedBy,
-          active: true,
+        let body = {};
+        // for payment addition
+        if (rcmPayment.type === 'cheque' || rcmPayment.type === 'pay-Order' || rcmPayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+          if(isValid){
+            this.addEditRCMInstrumentOnServer();
+          }
         }
-        delete body.visible
-        let toastMsg = 'Commission Payment Added'
-        let errorMsg = 'Error Adding Commission Payment'
-        if (body.paymentCategory === 'token') {
-          baseUrl = `/api/leads/tokenPayment`
-          body.status = 'at_buyer_agent'
-          ;(body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
-            (toastMsg = 'Token Payment Added')
-          errorMsg = 'Error Adding Token Payment'
+        else { // for all other types
+          body = {
+            ...rcmPayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            addedBy: rcmPayment.addedBy,
+            active: true,
+          }
+          delete body.visible
+          this.addRCMPayment(body)
         }
-        axios
-          .post(baseUrl, body)
-          .then((response) => {
-            if (response.data) {
-              // check if some attachment exists so upload that as well to server with payment id.
-              if (rcmPayment.paymentAttachments.length > 0) {
-                rcmPayment.paymentAttachments.map((paymentAttachment) =>
-                  // payment attachments
-                  this.uploadAttachment(paymentAttachment, response.data.id)
-                )
-              } else {
-                this.clearReduxAndStateValues()
-                this.fetchLead()
-                helper.successToast(toastMsg)
-              }
-            }
-          })
-          .catch((error) => {
-            this.clearReduxAndStateValues()
-            helper.errorToast(errorMsg)
-          })
+
+       
       } else {
+        let body = {};
         // commission update mode
-        let toastMsg = 'Commission Payment Updated'
-        let errorMsg = 'Error Updating Commission Payment'
-        baseUrl = `/api/leads/project/payment` // for patch request
-        const { allProperties } = this.state
-        let property = allProperties[0]
-        let armsUserId =
-          property && property.armsuser && property.armsuser.id && property.armsuser.id
-        let body = { ...rcmPayment }
-        let paymentID = body.id
-        delete body.visible
-        delete body.remarks
-        delete body.id
-        if (body.paymentCategory === 'token') {
-          baseUrl = `/api/leads/tokenPayment`
-          toastMsg = 'Token Payment Updated'
-          errorMsg = 'Error Updating Token Payment'
-        }
-        if (
-          (body.paymentCategory === 'token' && body.status === 'pendingSales') ||
-          (body.paymentCategory === 'token' && body.status === 'notCleared')
-        ) {
-          body.status = 'pendingAccount'
-        }
-        if (body.paymentCategory === 'token' && body.status === 'given_back_to_buyer') {
-          body.active = false
-        }
-        axios
-          .patch(`${baseUrl}?id=${paymentID}`, body)
-          .then((response) => {
-            // upload only the new attachments that do not have id with them in object.
-            const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
-              ? _.filter(rcmPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
-              : []
-            if (filterAttachmentsWithoutId.length > 0) {
-              filterAttachmentsWithoutId.map((item, index) => {
-                // payment attachments
-                this.uploadAttachment(item, paymentID)
-              })
-            } else {
-              this.fetchLead()
-              this.clearReduxAndStateValues()
-              helper.successToast(toastMsg)
+        if (rcmPayment.type === 'cheque' || rcmPayment.type === 'pay-Order' || rcmPayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+            if(isValid){
+              this.addEditRCMInstrumentOnServer(true);
             }
-          })
-          .catch((error) => {
-            helper.errorToast(errorMsg)
-            console.log('ERROR: ', error)
-            this.clearReduxAndStateValues()
-          })
+        }
+        else { // for all other types
+          body = { ...rcmPayment }
+          this.updateRCMPayment(body)
+        }
       }
     } else {
       // Installment amount or type is missing so validation goes true, show error
       this.setState({
         modalValidation: true,
       })
+    }
+  }
+
+  addRCMPayment = (body) => {
+    const { rcmPayment, user, dispatch } = this.props
+    let baseUrl = `/api/leads/project/payments`
+
+    let toastMsg = 'Commission Payment Added'
+    let errorMsg = 'Error Adding Commission Payment'
+    if (body.paymentCategory === 'token') {
+      baseUrl = `/api/leads/tokenPayment`
+      body.status = 'at_buyer_agent'
+      ;(body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
+        (toastMsg = 'Token Payment Added')
+      errorMsg = 'Error Adding Token Payment'
+    }
+    axios
+      .post(baseUrl, body)
+      .then((response) => {
+        if (response.data) {
+          // check if some attachment exists so upload that as well to server with payment id.
+          if (rcmPayment.paymentAttachments.length > 0) {
+            rcmPayment.paymentAttachments.map((paymentAttachment) =>
+              // payment attachments
+              this.uploadAttachment(paymentAttachment, response.data.id)
+            )
+          } else {
+            this.clearReduxAndStateValues()
+            dispatch(clearInstrumentInformation());
+            this.fetchLead()
+            helper.successToast(toastMsg)
+          }
+        }
+      })
+      .catch((error) => {
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
+        helper.errorToast(errorMsg)
+      })
+  }
+
+  updateRCMPayment = (body) => {
+    const {dispatch, rcmPayment} = this.props;
+    let toastMsg = 'Commission Payment Updated'
+    let errorMsg = 'Error Updating Commission Payment'
+    let baseUrl = `/api/leads/project/payment` // for patch request
+    let paymentID = body.id
+    delete body.visible
+    delete body.remarks
+    delete body.id
+    if (body.paymentCategory === 'token') {
+      baseUrl = `/api/leads/tokenPayment`
+      toastMsg = 'Token Payment Updated'
+      errorMsg = 'Error Updating Token Payment'
+    }
+    if (
+      (body.paymentCategory === 'token' && body.status === 'pendingSales') ||
+      (body.paymentCategory === 'token' && body.status === 'notCleared')
+    ) {
+      body.status = 'pendingAccount'
+    }
+    if (body.paymentCategory === 'token' && body.status === 'given_back_to_buyer') {
+      body.active = false
+    }
+    axios
+      .patch(`${baseUrl}?id=${paymentID}`, body)
+      .then((response) => {
+        // upload only the new attachments that do not have id with them in object.
+        const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
+          ? _.filter(rcmPayment.paymentAttachments, (item) => {
+              return !_.has(item, 'id')
+            })
+          : []
+        if (filterAttachmentsWithoutId.length > 0) {
+          filterAttachmentsWithoutId.map((item, index) => {
+            // payment attachments
+            this.uploadAttachment(item, paymentID)
+          })
+        } else {
+          this.fetchLead()
+          this.clearReduxAndStateValues()
+          dispatch(clearInstrumentInformation());
+          helper.successToast(toastMsg)
+        }
+      })
+      .catch((error) => {
+        helper.errorToast(errorMsg)
+        console.log('ERROR: ', error)
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
+      })
+  }
+
+  addEditRCMInstrumentOnServer = (isRCMEdit=false) => {
+    let body = {};
+    const { addInstrument, rcmPayment, dispatch, lead, user } = this.props;
+    if (addInstrument.id) { // selected existing instrument // add mode
+      body = {
+        ...rcmPayment,
+        rcmLeadId: lead.id,
+        armsUserId: user.id,
+        addedBy: rcmPayment.addedBy,
+        active: true,
+        instrumentId: addInstrument.id,
+      }
+      if(isRCMEdit)
+      this.updateRCMPayment(body)
+      else
+      this.addRCMPayment(body);
+    }
+    else { // add mode // new instrument info
+      axios.post(`api/leads/instruments`, addInstrument).then(res => {
+        if (res && res.data) {
+          body = {
+            ...rcmPayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            addedBy: rcmPayment.addedBy,
+            active: true,
+            instrumentId: res.data.id,
+          }
+          if(isRCMEdit)
+          this.updateRCMPayment(body)
+          else
+          this.addRCMPayment(body); 
+        }
+      }).catch(error => {
+        console.log('Error: ', error)
+      })
+    }
+  }
+
+  checkInstrumentValidation = () => {
+    const { addInstrument } = this.props;
+    if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
+      alert('Instrument Number cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;;
+    }
+    else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+      alert('Instrument Amount cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;
+    }
+    else{
+       return true;
     }
   }
 
@@ -1687,6 +1826,7 @@ class LeadRCMPayment extends React.Component {
           }}
           officeLocations={officeLocations}
           handleOfficeLocationChange={this.handleOfficeLocation}
+          handleInstrumentInfoChange={this.handleInstrumentInfoChange}
         />
         {showWebView ? (
           <ViewDocs
@@ -1888,6 +2028,8 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     rcmPayment: store.RCMPayment.RCMPayment,
+    addInstrument: store.Instruments.addInstrument,
+    instruments: store.Instruments.instruments,
   }
 }
 

@@ -730,9 +730,9 @@ class CMPayment extends Component {
             instrumentId: res.data.id,
           }
           if(isCMEdit)
-          this.updatePayment(body);
+          this.updateCMPayment(body);
           else
-          this.addPayment(body);
+          this.addCMPayment(body);
         }
       }).catch(error => {
         console.log('Error: ', error)

@@ -167,15 +167,15 @@ class PropertyPropsure extends React.Component {
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
-        this.setState({assignToAccountsLoading: false})
-      
+        this.setState({ assignToAccountsLoading: false })
+
       })
       .catch((error) => {
         console.log(error)
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   downloadFile = async (data) => {
     const { pendingPropsures } = this.state
@@ -298,14 +298,14 @@ class PropertyPropsure extends React.Component {
     let installment = property.cmInstallment
       ? property.cmInstallment
       : {
-          installmentAmount: null,
-          type: '',
-          rcmLeadId: null,
-          details: '',
-          visible: false,
-          paymentAttachments: [],
-          selectedPropertyId: property.id,
-        }
+        installmentAmount: null,
+        type: '',
+        rcmLeadId: null,
+        details: '',
+        visible: false,
+        paymentAttachments: [],
+        selectedPropertyId: property.id,
+      }
     dispatch(setPropsurePayment(installment))
     this.setState({
       documentModalVisible: true,
@@ -526,7 +526,7 @@ class PropertyPropsure extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary'
     })
   }
 
@@ -689,7 +689,7 @@ class PropertyPropsure extends React.Component {
   }
 
   handleCommissionChange = (value, name) => {
-    const { propsurePayment, dispatch, lead, addInstrument} = this.props
+    const { propsurePayment, dispatch, lead, addInstrument } = this.props
     const newSecondFormData = {
       ...propsurePayment,
       visible: propsurePayment.visible,
@@ -782,7 +782,7 @@ class PropertyPropsure extends React.Component {
       if (editable === false) {
 
         let body = {};
-        let outstandingPaymentCalc =   Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount);
+        let outstandingPaymentCalc = Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount);
 
         // for payment addition
         if (propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer') {
@@ -823,7 +823,7 @@ class PropertyPropsure extends React.Component {
           }
         }
         else { // for all other types
-     
+
           body = {
             ...propsurePayment,
             rcmLeadId: lead.id,
@@ -886,20 +886,19 @@ class PropertyPropsure extends React.Component {
               this.uploadPaymentAttachment(paymentAttachment, response.data.id)
             )
           } else {
-            this.clearReduxAndStateValues()
             this.fetchLead(lead)
             this.fetchProperties(lead)
             this.fetchPropsureReportsList()
-            dispatch(clearInstrumentInformation());
             helper.successToast('Propsure Payment Added')
           }
         }
       })
       .catch((error) => {
-        this.clearReduxAndStateValues()
-        dispatch(clearInstrumentInformation());
         console.log('Error: ', error)
         helper.errorToast('Error Adding Propsure Payment')
+      }).finally(() => {
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
       })
   }
 
@@ -923,13 +922,12 @@ class PropertyPropsure extends React.Component {
           this.fetchLead(lead)
           this.fetchProperties(lead)
           this.fetchPropsureReportsList()
-          this.clearReduxAndStateValues()
-          dispatch(clearInstrumentInformation());
           helper.successToast('Propsure Payment Updated')
         }
       })
       .catch((error) => {
         helper.errorToast('Error Updating Propsure Payment', error)
+      }).finally(() => {
         this.clearReduxAndStateValues()
         dispatch(clearInstrumentInformation());
       })
@@ -1044,9 +1042,9 @@ class PropertyPropsure extends React.Component {
       let pendingPropsures =
         data.propsures && data.propsures.length
           ? _.filter(
-              data.propsures,
-              (item) => item.status === 'pending' && item.addedBy === 'seller'
-            )
+            data.propsures,
+            (item) => item.status === 'pending' && item.addedBy === 'seller'
+          )
           : null
       let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'seller')
       totalFee = Number(propsureOutstandingPayment) - Number(totalFee)
@@ -1253,9 +1251,9 @@ class PropertyPropsure extends React.Component {
             callButton={true}
             customer={lead.customer}
             lead={lead}
-            goToHistory={()=> null}
-            getCallHistory={()=> null}
-            goToFollowup={()=> this.openModalInFollowupMode()}
+            goToHistory={() => null}
+            getCallHistory={() => null}
+            goToFollowup={() => this.openModalInFollowupMode()}
           />
         </View>
         <LeadRCMPaymentPopup

@@ -879,7 +879,7 @@ class LeadPropsure extends React.Component {
       if (editable === false) {
 
         let body = {};
-        let outstandingPaymentCalc =   Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount);
+        let outstandingPaymentCalc = Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount);
 
         // for payment addition
         if (propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer') {
@@ -920,7 +920,7 @@ class LeadPropsure extends React.Component {
           }
         }
         else { // for all other types
-     
+
           body = {
             ...propsurePayment,
             rcmLeadId: lead.id,
@@ -983,21 +983,20 @@ class LeadPropsure extends React.Component {
               this.uploadPaymentAttachment(paymentAttachment, response.data.id)
             )
           } else {
-            this.clearReduxAndStateValues()
             this.fetchLead(lead)
             this.getCallHistory()
             this.fetchProperties(lead)
             this.fetchPropsureReportsList()
-            dispatch(clearInstrumentInformation());
             helper.successToast('Propsure Payment Added')
           }
         }
       })
       .catch((error) => {
-        this.clearReduxAndStateValues()
-        dispatch(clearInstrumentInformation());
         console.log('Error: ', error)
         helper.errorToast('Error Adding Propsure Payment')
+      }).finally(() => {
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
       })
   }
 
@@ -1022,13 +1021,12 @@ class LeadPropsure extends React.Component {
           this.getCallHistory()
           this.fetchProperties(lead)
           this.fetchPropsureReportsList()
-          this.clearReduxAndStateValues()
-          dispatch(clearInstrumentInformation());
           helper.successToast('Propsure Payment Updated')
         }
       })
       .catch((error) => {
         helper.errorToast('Error Updating Propsure Payment', error)
+      }).finally(() => {
         this.clearReduxAndStateValues()
         dispatch(clearInstrumentInformation());
       })

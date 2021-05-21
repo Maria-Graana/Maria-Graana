@@ -158,7 +158,7 @@ const PaymentHelper = {
       name: 'name',
     }
   },
-  generateApiPayload(firstFormData, lead, unitId, CMPayment) {
+  generateApiPayload(firstFormData, lead, unitId, CMPayment, instrument) {
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -192,9 +192,10 @@ const PaymentHelper = {
           : firstFormData.cnic.replace(/[^\w\s]/gi, ''),
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
+      instrumentId: instrument.id,
     }
   },
-  generateProductApiPayload(firstFormData, lead, unitId, CMPayment, oneProduct) {
+  generateProductApiPayload(firstFormData, lead, unitId, CMPayment, oneProduct, instrument) {
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -250,6 +251,7 @@ const PaymentHelper = {
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
           ? null
           : firstFormData.finalPrice - CMPayment.installmentAmount,
+      instrumentId: instrument.id,
     }
   },
   normalizeProjectProducts(products) {
@@ -310,8 +312,8 @@ const PaymentHelper = {
           paymentPlanDuration &&
           paymentPlanDuration.map((item) => {
             return {
-              name: item,
-              value: item,
+              name: item.toString(),
+              value: item.toString(),
             }
           })
         return newData

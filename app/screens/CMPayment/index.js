@@ -8,6 +8,7 @@ import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import { setCMPayment } from '../../actions/addCMPayment'
+import { clearInstrumentInformation, clearInstrumentsList, getInstrumentDetails, setInstrumentInformation } from '../../actions/addInstrument'
 import { setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import BookingDetailsModal from '../../components/BookingDetailsModal'
@@ -149,7 +150,10 @@ class CMPayment extends Component {
   }
 
   componentWillUnmount = () => {
+    const {dispatch} = this.props;
     this.clearReduxAndStateValues()
+    dispatch(clearInstrumentInformation());
+    dispatch(clearInstrumentsList());
   }
 
   fetchProducts = () => {
@@ -424,15 +428,50 @@ class CMPayment extends Component {
   }
 
   handleCommissionChange = (value, name) => {
-    const { CMPayment, dispatch } = this.props
+    const { CMPayment, dispatch, lead, addInstrument } = this.props
     const newSecondFormData = {
       ...CMPayment,
       visible: CMPayment.visible,
     }
     newSecondFormData[name] = value
+    if (name === 'type' && (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')) {
+      if(lead && lead.customerId) {
+        dispatch(getInstrumentDetails(value, lead.customerId))
+        dispatch(setInstrumentInformation({
+          ...addInstrument,
+          customerId: lead && lead.customerId
+            ? lead.customerId
+            : null,
+          instrumentType: value,
+          instrumentAmount: null,
+          instrumentNo: null,
+          id: null,
+        }))
+      }
+    }
+
     this.setState({ buyerNotZero: false })
     dispatch(setCMPayment(newSecondFormData))
   }
+
+  handleInstrumentInfoChange = (value, name) => {
+    const { addInstrument, dispatch, instruments } = this.props
+    const copyInstrument = { ...addInstrument };
+    if (name === 'instrumentNumber') {
+      copyInstrument.instrumentNo = value;
+      const instrument = instruments.find((item) => item.instrumentNo === value);
+      if (instrument) {
+        copyInstrument.instrumentAmount = instrument.instrumentAmount;
+        copyInstrument.id = instrument.id;
+        copyInstrument.editable = false;
+      }
+    }
+    else if (name === 'instrumentAmount')
+      copyInstrument.instrumentAmount = value;
+
+    dispatch(setInstrumentInformation(copyInstrument));
+  }
+
 
   clearReduxAndStateValues = () => {
     const { dispatch } = this.props
@@ -488,11 +527,12 @@ class CMPayment extends Component {
       }
     } else {
       this.clearReduxAndStateValues()
+      dispatch(clearInstrumentInformation());
     }
   }
 
   editTile = (payment) => {
-    const { dispatch, user } = this.props
+    const { dispatch, user, lead } = this.props
     dispatch(
       setCMPayment({
         ...payment,
@@ -501,17 +541,21 @@ class CMPayment extends Component {
           payment && payment.officeLocationId
             ? payment.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
-      })
-    )
+              ? user.officeLocation.id
+              : null,
+      }))
+      if(payment && payment.paymentInstrument && lead){
+        dispatch(getInstrumentDetails(payment.paymentInstrument.instrumentType, lead.customerId))
+        dispatch(setInstrumentInformation({ ...payment.paymentInstrument, editable: payment.paymentInstrument.id ?  false  : true}));
+      }
+   
     this.setState({
       editable: true,
     })
   }
 
-  submitCommissionCMPayment = () => {
-    const { CMPayment, user, lead, dispatch } = this.props
+  submitCommissionCMPayment = async () => {
+    const { CMPayment, user, lead } = this.props
     const { editable, firstForm } = this.state
     if (
       (firstForm && CMPayment.paymentCategory === null) ||
@@ -538,91 +582,184 @@ class CMPayment extends Component {
         })
         return
       }
+
       if (editable === false) {
-        // for commission addition
-        let body = {
-          ...CMPayment,
-          cmLeadId: lead.id,
-          armsUserId: user.id,
-          addedBy: 'buyer',
-          installmentAmount: CMPayment.installmentAmount,
+        let body = {};
+        // for payment addition
+        if (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+          if(isValid){
+            this.addEditCMInstrumentOnServer();
+          }
+        }
+        else { // for all other types
+          body = {
+            ...CMPayment,
+            cmLeadId: lead.id,
+            armsUserId: user.id,
+            addedBy: 'buyer',
+            installmentAmount: CMPayment.installmentAmount,
+          }
+          this.addCMPayment(body)
         }
         delete body.visible
-        if (CMPayment.paymentType === 'token') {
-          dispatch(setCMPayment({ ...CMPayment, visible: false }))
-          this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
-          return
-        }
-        body.paymentCategory = CMPayment.paymentType
-        axios
-          .post(`/api/leads/project/payments`, body)
-          .then((response) => {
-            if (response.data) {
-              // check if some attachment exists so upload that as well to server with payment id.
-              if (CMPayment.paymentAttachments.length > 0) {
-                CMPayment.paymentAttachments.map((paymentAttachment) => {
-                  // payment attachments
-                  this.uploadPaymentAttachment(paymentAttachment, response.data.id)
-                })
-              } else {
-                this.clearReduxAndStateValues()
-                this.fetchLead(lead)
-                helper.successToast('Payment Added')
-              }
-            }
-          })
-          .catch((error) => {
-            this.clearReduxAndStateValues()
-            console.log('Error: ', error)
-            helper.errorToast('Error Adding Payment')
-          })
+
       } else {
-        // commission update mode
-        let body = {
-          ...CMPayment,
-          cmLeadId: lead.id,
-          armsUserId: user.id,
-          // addedBy: 'buyer',
-          installmentAmount: CMPayment.installmentAmount,
+        // for payment updation
+        if (CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+          if(isValid){
+            this.addEditCMInstrumentOnServer(true);
+          }
         }
-        delete body.visible
-        // delete body.remarks
-        if (CMPayment.paymentType === 'token') {
-          dispatch(setCMPayment({ ...CMPayment, visible: false }))
-          this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
-          return
+        else { // for all other types
+          body = {
+            ...CMPayment,
+            cmLeadId: lead.id,
+            armsUserId: user.id,
+            installmentAmount: CMPayment.installmentAmount,
+          }
+          this.updateCMPayment(body)
         }
-        axios
-          .patch(`/api/leads/project/payment?id=${body.id}`, body)
-          .then((res) => {
-            // upload only the new attachments that do not have id with them in object.
-            const filterAttachmentsWithoutId = CMPayment.paymentAttachments
-              ? _.filter(CMPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
-              : []
-            if (filterAttachmentsWithoutId.length > 0) {
-              filterAttachmentsWithoutId.map((item, index) => {
-                // payment attachments
-                this.uploadPaymentAttachment(item, body.id)
-              })
-            } else {
-              this.fetchLead(lead)
-              this.clearReduxAndStateValues()
-              helper.successToast('Payment Updated')
-            }
-          })
-          .catch((error) => {
-            helper.errorToast('Error Updating Payment', error)
-            console.log('error: ', error)
-            this.clearReduxAndStateValues()
-          })
       }
     } else {
       // Installment amount or type is missing so validation goes true, show error
       this.setState({
         modalValidation: true,
       })
+    }
+  }
+
+  addCMPayment = (body) => {
+    const { CMPayment, user, lead, dispatch } = this.props
+    if (CMPayment.paymentType === 'token') {
+      dispatch(setCMPayment({ ...CMPayment, visible: false }))
+      this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
+      return
+    }
+    body.paymentCategory = CMPayment.paymentType
+    axios
+      .post(`/api/leads/project/payments`, body)
+      .then((response) => {
+        if (response.data) {
+          // check if some attachment exists so upload that as well to server with payment id.
+          if (CMPayment.paymentAttachments.length > 0) {
+            CMPayment.paymentAttachments.map((paymentAttachment) => {
+              // payment attachments
+              this.uploadPaymentAttachment(paymentAttachment, response.data.id)
+            })
+          } else {
+            this.clearReduxAndStateValues()
+            dispatch(clearInstrumentInformation());
+            this.fetchLead(lead)
+            helper.successToast('Payment Added')
+          }
+        }
+      })
+      .catch((error) => {
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
+        console.log('Error: ', error)
+        helper.errorToast('Error Adding Payment')
+      })
+  }
+
+  updateCMPayment = (body) => {
+    const { CMPayment, lead, dispatch } = this.props
+    if (CMPayment.paymentType === 'token') {
+      dispatch(setCMPayment({ ...CMPayment, visible: false }))
+      this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
+      return
+    }
+    axios
+      .patch(`/api/leads/project/payment?id=${body.id}`, body)
+      .then((res) => {
+        // upload only the new attachments that do not have id with them in object.
+        const filterAttachmentsWithoutId = CMPayment.paymentAttachments
+          ? _.filter(CMPayment.paymentAttachments, (item) => {
+            return !_.has(item, 'id')
+          })
+          : []
+        if (filterAttachmentsWithoutId.length > 0) {
+          filterAttachmentsWithoutId.map((item, index) => {
+            // payment attachments
+            this.uploadPaymentAttachment(item, body.id)
+          })
+        } else {
+          this.fetchLead(lead)
+          this.clearReduxAndStateValues()
+          dispatch(clearInstrumentInformation());
+          helper.successToast('Payment Updated')
+        }
+      })
+      .catch((error) => {
+        helper.errorToast('Error Updating Payment', error)
+        console.log('error: ', error)
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
+      })
+  }
+
+  addEditCMInstrumentOnServer = (isCMEdit=false) => {
+    let body = {};
+    const { addInstrument, CMPayment, lead, user } = this.props;
+    if (addInstrument.id) { // selected existing instrument // add mode
+      body = {
+        ...CMPayment,
+        cmLeadId: lead.id,
+        armsUserId: user.id,
+        installmentAmount: CMPayment.installmentAmount,
+        instrumentId: addInstrument.id,
+      }
+      if(isCMEdit)
+      this.updateCMPayment(body);
+      else
+      this.addCMPayment(body);
+    }
+    else { // add mode // new instrument info
+      axios.post(`api/leads/instruments`, addInstrument).then(res => {
+        if (res && res.data) {
+          body = {
+            ...CMPayment,
+            cmLeadId: lead.id,
+            armsUserId: user.id,
+            addedBy: 'buyer',
+            installmentAmount: CMPayment.installmentAmount,
+            instrumentId: res.data.id,
+          }
+          if(isCMEdit)
+          this.updatePayment(body);
+          else
+          this.addPayment(body);
+        }
+      }).catch(error => {
+        console.log('Error: ', error)
+      })
+    }
+  }
+
+  checkInstrumentValidation = () => {
+    const { addInstrument } = this.props;
+    if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
+      alert('Instrument Number cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;
+    }
+    else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+      alert('Instrument Amount cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;
+    }
+    else{
+       return true;
     }
   }
 
@@ -652,8 +789,9 @@ class CMPayment extends Component {
   }
 
   editTokenPayment = () => {
-    const { CMPayment, dispatch } = this.props
+    const { CMPayment, dispatch, addInstrument } = this.props
     dispatch(setCMPayment({ ...CMPayment, visible: true }))
+    dispatch(setInstrumentInformation({ ...addInstrument, editable: addInstrument && addInstrument.id ?  false  : true }));
   }
 
   assignToAccounts = () => {
@@ -700,38 +838,38 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-    ;(newcheckPaymentPlan['rental'] =
-      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-      this.setState(
-        {
-          checkPaymentPlan: newcheckPaymentPlan,
-          firstFormData: {
-            project:
-              lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
-            floor: '',
-            unitType: '',
-            pearl: '',
-            unit: lead.unit != null ? lead.unit.id : '',
-            unitPrice: 0,
-            cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
-            paymentPlan: 'no',
-            approvedDiscount: 0,
-            approvedDiscountPrice: 0,
-            finalPrice: 0,
-            fullPaymentDiscountPrice: 0,
-            pearlName: 'New Pearl',
+      ; (newcheckPaymentPlan['rental'] =
+        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+        this.setState(
+          {
+            checkPaymentPlan: newcheckPaymentPlan,
+            firstFormData: {
+              project:
+                lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
+              floor: '',
+              unitType: '',
+              pearl: '',
+              unit: lead.unit != null ? lead.unit.id : '',
+              unitPrice: 0,
+              cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
+              paymentPlan: 'no',
+              approvedDiscount: 0,
+              approvedDiscountPrice: 0,
+              finalPrice: 0,
+              fullPaymentDiscountPrice: 0,
+              pearlName: 'New Pearl',
+            },
           },
-        },
-        () => {
-          const { checkPaymentPlan } = this.state
-          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-          this.setState({
-            progressValue: cmProgressBar[lead.status] || 0,
-            paymentPlan: paymentArray,
-            editable: false,
-          })
-        }
-      )
+          () => {
+            const { checkPaymentPlan } = this.state
+            let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+            this.setState({
+              progressValue: cmProgressBar[lead.status] || 0,
+              paymentPlan: paymentArray,
+              editable: false,
+            })
+          }
+        )
   }
 
   handleFirstForm = (value, name) => {
@@ -1027,17 +1165,18 @@ class CMPayment extends Component {
   }
 
   firstFormApiCall = (unitId) => {
-    const { lead, CMPayment } = this.props
+    const { lead, CMPayment, addInstrument } = this.props
     const { noProduct } = lead
     const { firstFormData, oneProductData } = this.state
     let body = noProduct
-      ? PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment)
+      ? PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment, addInstrument)
       : PaymentHelper.generateProductApiPayload(
           firstFormData,
           lead,
           unitId,
           CMPayment,
-          oneProductData
+          oneProductData,
+          addInstrument
         )
     let leadId = []
     leadId.push(lead.id)
@@ -1165,7 +1304,7 @@ class CMPayment extends Component {
       comments: status,
       leadId: lead.id,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
   }
 
   //  ************ Function for open modal ************
@@ -1315,6 +1454,7 @@ class CMPayment extends Component {
             officeLocations={officeLocations}
             handleOfficeLocationChange={this.handleOfficeLocation}
             assignToAccountsLoading={assignToAccountsLoading}
+            handleInstrumentInfoChange={this.handleInstrumentInfoChange}
           />
           <DeleteModal
             isVisible={deletePaymentVisible}
@@ -1420,8 +1560,8 @@ class CMPayment extends Component {
               leadType={'CM'}
               navigation={navigation}
               customer={lead.customer}
-              goToHistory={() => {}}
-              getCallHistory={() => {}}
+              goToHistory={() => { }}
+              getCallHistory={() => { }}
               onHandleCloseLead={this.onHandleCloseLead}
             />
           </View>
@@ -1436,6 +1576,8 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     CMPayment: store.CMPayment.CMPayment,
+    addInstrument: store.Instruments.addInstrument,
+    instruments: store.Instruments.instruments,
   }
 }
 

@@ -12,7 +12,7 @@ import {
   Modal,
   SafeAreaView,
 } from 'react-native'
-import { CheckBox, ListItem, Body, Switch } from 'native-base'
+import { Switch } from 'native-base'
 // import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
 import times from '../../../assets/img/times.png'
@@ -26,6 +26,7 @@ import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
 import OfficeLocationSelector from '../OfficeLocationSelector'
+import AddEditInstrument from '../AddEditInstrument'
 
 const CMPaymentModal = ({
   onModalCloseClick,
@@ -42,6 +43,7 @@ const CMPaymentModal = ({
   officeLocations,
   handleOfficeLocationChange,
   assignToAccountsLoading,
+  handleInstrumentInfoChange,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -49,8 +51,7 @@ const CMPaymentModal = ({
   const [remarks, setRemarks] = useState([])
   const [loading, setLoading] = useState(false)
   const [isCollapsed, setCollapsed] = useState(false)
-  const [editLocation, setEditLocation] = useState(false)
-  const officeLocation = officeLocations.find((item) => item.value === CMPayment.officeLocationId)
+
   const fetchRemarks = () => {
     if (isCollapsed === false) {
       const url = `/api/leads/paymentremarks?id=${CMPayment.id}`
@@ -69,6 +70,8 @@ const CMPaymentModal = ({
       setCollapsed(!isCollapsed)
     }
   }
+ 
+    
   return (
     <Modal visible={CMPayment.visible}>
       <SafeAreaView style={AppStyles.mb1}>
@@ -146,7 +149,7 @@ const CMPaymentModal = ({
               <ErrorMessage errorMessage={'Amount must be greater than 0'} />
             ) : null}
             {modalValidation === true &&
-            (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
+              (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
               <ErrorMessage errorMessage={'Required'} />
             ) : null}
             <View style={[AppStyles.mainInputWrap]}>
@@ -164,6 +167,15 @@ const CMPaymentModal = ({
                 )}
               </View>
             </View>
+
+            {
+              CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer' ?
+                <AddEditInstrument 
+                handleInstrumentInfoChange={handleInstrumentInfoChange}
+                />
+                :
+                null
+            }
 
             <SimpleInputText
               editable={CMPayment.status !== 'pendingAccount'}
@@ -271,8 +283,8 @@ const CMPaymentModal = ({
                   }
                   containerBackgroundColor={
                     CMPayment.status === 'open' ||
-                    CMPayment.status === 'pendingSales' ||
-                    CMPayment.status === 'notCleared'
+                      CMPayment.status === 'pendingSales' ||
+                      CMPayment.status === 'notCleared'
                       ? AppStyles.colors.primaryColor
                       : '#8baaef'
                   }
@@ -284,8 +296,8 @@ const CMPaymentModal = ({
                       marginRight: 10,
                       borderColor:
                         CMPayment.status === 'open' ||
-                        CMPayment.status === 'pendingSales' ||
-                        CMPayment.status === 'notCleared'
+                          CMPayment.status === 'pendingSales' ||
+                          CMPayment.status === 'notCleared'
                           ? AppStyles.colors.primaryColor
                           : '#8baaef',
                     },
@@ -293,8 +305,8 @@ const CMPaymentModal = ({
                   label={'ASSIGN TO ACCOUNTS'}
                   textColor={
                     CMPayment.status === 'open' ||
-                    CMPayment.status === 'pendingSales' ||
-                    CMPayment.status === 'notCleared'
+                      CMPayment.status === 'pendingSales' ||
+                      CMPayment.status === 'notCleared'
                       ? '#fff'
                       : '#f3f5f7'
                   }
@@ -351,14 +363,6 @@ export default connect(mapStateToProps)(CMPaymentModal)
 const styles = StyleSheet.create({
   modalMain: {
     backgroundColor: '#e7ecf0',
-    // borderRadius: 7,
-    // overflow: 'hidden',
-    // zIndex: 5,
-    // position: 'relative',
-    // elevation: 5,
-    // shadowOffset: { width: 5, height: 5 },
-    // shadowColor: '#33333312',
-    // shadowOpacity: 1,
   },
   timesBtn: {
     position: 'absolute',
@@ -508,5 +512,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
+},
+  
 })

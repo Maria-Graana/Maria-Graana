@@ -195,7 +195,7 @@ const PaymentHelper = {
       instrumentId: instrument.id,
     }
   },
-  generateProductApiPayload(firstFormData, lead, unitId, CMPayment, oneProduct) {
+  generateProductApiPayload(firstFormData, lead, unitId, CMPayment, oneProduct, instrument) {
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -251,6 +251,7 @@ const PaymentHelper = {
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
           ? null
           : firstFormData.finalPrice - CMPayment.installmentAmount,
+      instrumentId: instrument.id,
     }
   },
   normalizeProjectProducts(products) {

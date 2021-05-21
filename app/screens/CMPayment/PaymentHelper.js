@@ -1,5 +1,6 @@
 /** @format */
 import PaymentMethods from '../../PaymentMethods'
+import helper from '../../helper'
 
 const PaymentHelper = {
   createPearlObject(floor, area) {
@@ -192,6 +193,130 @@ const PaymentHelper = {
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       instrumentId: instrument.id,
+    }
+  },
+  generateProductApiPayload(firstFormData, lead, unitId, CMPayment, oneProduct) {
+    return {
+      unitId: unitId,
+      projectId: firstFormData.project,
+      floorId: firstFormData.floor,
+      unitDiscount:
+        firstFormData.approvedDiscount === null || firstFormData.approvedDiscount === ''
+          ? null
+          : firstFormData.approvedDiscount,
+      discounted_price:
+        firstFormData.approvedDiscountPrice === null || firstFormData.approvedDiscountPrice === ''
+          ? null
+          : firstFormData.approvedDiscountPrice,
+      discount_amount:
+        firstFormData.finalPrice === null || firstFormData.finalPrice === ''
+          ? null
+          : firstFormData.finalPrice,
+      unitStatus:
+        CMPayment.paymentType === 'token' ? CMPayment.paymentCategory : firstFormData.paymentPlan,
+      installmentDue: firstFormData.paymentPlan,
+      finalPrice:
+        firstFormData.finalPrice === null || firstFormData.finalPrice === ''
+          ? null
+          : firstFormData.finalPrice,
+      installmentAmount: CMPayment.installmentAmount,
+      type: CMPayment.type,
+      pearl:
+        firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
+      cnic:
+        lead.customer && lead.customer.cnic != null
+          ? lead.customer.cnic
+          : firstFormData.cnic.replace(/[^\w\s]/gi, ''),
+      customerId: lead.customer.id,
+      taxIncluded: CMPayment.taxIncluded,
+      productId: firstFormData.productId,
+      installmentFrequency: firstFormData.installmentFrequency,
+      paymentPlan: firstFormData.paymentPlan,
+      downPayment:
+        firstFormData.paymentPlan === 'installments'
+          ? PaymentMethods.calculateDownPayment(
+              oneProduct,
+              firstFormData.finalPrice,
+              CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+            )
+          : null,
+      noOfInstallment:
+        firstFormData.paymentPlan === 'installments'
+          ? PaymentMethods.calculateNoOfInstallments(oneProduct, firstFormData.installmentFrequency)
+          : null,
+      paymentPlanDuration: firstFormData.paymentPlanDuration
+        ? Number(firstFormData.paymentPlanDuration)
+        : null,
+      remainingPayment:
+        firstFormData.finalPrice === null || firstFormData.finalPrice === ''
+          ? null
+          : firstFormData.finalPrice - CMPayment.installmentAmount,
+    }
+  },
+  normalizeProjectProducts(products) {
+    if (products) {
+      let newProducts = products.map((item) => {
+        const { projectProduct } = item
+        return {
+          value: projectProduct.id,
+          name: projectProduct.name,
+        }
+      })
+      return newProducts
+    }
+  },
+  setProductPaymentPlan(oneProduct) {
+    if (oneProduct) {
+      if (oneProduct && oneProduct.projectProduct) {
+        let { paymentPlan } = oneProduct.projectProduct
+        if (paymentPlan === 'full_payment') return false
+        if (paymentPlan === 'installments') return true
+      }
+    }
+  },
+  setInstallmentFrequency(oneProduct) {
+    if (oneProduct) {
+      if (oneProduct && oneProduct.projectProduct) {
+        let { installmentFrequency } = oneProduct.projectProduct
+        let newData =
+          installmentFrequency &&
+          installmentFrequency.map((item) => {
+            return {
+              name: helper.capitalize(item),
+              value: item,
+            }
+          })
+        return newData
+      }
+    }
+  },
+  setPaymentPlanDuration(oneProduct) {
+    if (oneProduct) {
+      if (oneProduct && oneProduct.projectProduct) {
+        let { paymentPlanDuration } = oneProduct.projectProduct
+        paymentPlanDuration = JSON.parse(paymentPlanDuration)
+        if (
+          paymentPlanDuration &&
+          paymentPlanDuration.length > 1 &&
+          Number(paymentPlanDuration[0]) === Number(paymentPlanDuration[1])
+        ) {
+          return [
+            {
+              name: paymentPlanDuration[0],
+              value: paymentPlanDuration[0],
+            },
+          ]
+        }
+        let newData =
+          paymentPlanDuration &&
+          paymentPlanDuration.map((item) => {
+            return {
+              name: item.toString(),
+              value: item.toString(),
+            }
+          })
+        return newData
+      }
     }
   },
 }

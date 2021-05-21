@@ -22,6 +22,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
+import ProductDetailsModal from '../../components/ProductDetailsModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
@@ -63,6 +64,9 @@ class CMPayment extends Component {
         finalPrice: 0,
         fullPaymentDiscountPrice: 0,
         pearlName: 'New Pearl',
+        productId: null,
+        installmentFrequency: null,
+        paymentPlanDuration: null,
       },
       unitPearlDetailsData: {},
       oneUnitData: {},
@@ -111,6 +115,13 @@ class CMPayment extends Component {
       currentCall: null,
       isFeedbackMeetingModalVisible: false,
       isFollowUpMode: false,
+      projectProducts: [],
+      productsPickerData: [],
+      productDetailModal: false,
+      oneProductData: {},
+      showInstallmentFields: false,
+      paymentPlanDuration: [],
+      installmentFrequency: [],
     }
   }
 
@@ -130,6 +141,7 @@ class CMPayment extends Component {
           lead && lead.unit && lead.unit.type && lead.unit.type === 'regular' ? false : true,
       })
     }
+    this.fetchProducts()
     this.fetchOfficeLocations()
     this.fetchLead()
     this.getAllProjects()
@@ -142,6 +154,23 @@ class CMPayment extends Component {
     this.clearReduxAndStateValues()
     dispatch(clearInstrumentInformation());
     dispatch(clearInstrumentsList());
+  }
+
+  fetchProducts = () => {
+    const { lead } = this.props
+    const { paidProject, project } = lead
+    let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
+    axios
+      .get(`/api/project/products?projectId=${projectID}`)
+      .then((res) => {
+        this.setState({
+          projectProducts: res.data,
+          productsPickerData: PaymentHelper.normalizeProjectProducts(res.data),
+        })
+      })
+      .catch((error) => {
+        console.log(`/api/user/locations`, error)
+      })
   }
 
   fetchOfficeLocations = () => {
@@ -176,6 +205,7 @@ class CMPayment extends Component {
         let responseData = res.data
         if (!responseData.paidProject) responseData.paidProject = responseData.project
         this.props.dispatch(setlead(responseData))
+        this.fetchProducts()
         this.setdefaultFields(responseData)
         if (secondForm) {
           this.calculatePayments(responseData, functionCallingFor)
@@ -853,14 +883,24 @@ class CMPayment extends Component {
       allProjects,
       finalPrice,
       pearlUnitPrice,
+      oneProductData,
+      projectProducts,
+      showInstallmentFields,
+      paymentPlanDuration,
+      installmentFrequency,
     } = this.state
     const { lead } = this.props
+    const { noProduct } = lead
     let newData = firstFormData
     let oneFloor = unitPearlDetailsData
     let oneUnit = oneUnitData
     let copyPearlUnit = pearlUnit
     let copyFinalPrice = finalPrice
     let copyPearlUnitPrice = pearlUnitPrice
+    let oneProduct = oneProductData
+    let newShowInstallmentFields = showInstallmentFields
+    let newPaymentPlanDuration = paymentPlanDuration
+    let newInstallmentFrequency = installmentFrequency
     if (name === 'project') {
       if (lead.projectId !== value) {
         this.changeProject(value)
@@ -889,16 +929,20 @@ class CMPayment extends Component {
     }
     if (name === 'unit') {
       oneUnit = this.fetchOneUnit(value)
-      newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(oneUnit.discount)
-      newData['approvedDiscountPrice'] = PaymentMethods.findDiscountAmount(oneUnit)
+      if (noProduct) {
+        newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(oneUnit.discount)
+        newData['approvedDiscountPrice'] = PaymentMethods.findDiscountAmount(oneUnit)
+      }
       newData['pearl'] = null
     }
     if (name === 'approvedDiscount') {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+      if (Number(value) > 100) return
       newData['approvedDiscountPrice'] = PaymentMethods.findApprovedDiscountAmount(oneUnit, value)
     }
     if (name === 'approvedDiscountPrice') {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+      value = value.replace(/,/g, '')
       newData['approvedDiscount'] = PaymentMethods.findApprovedDiscountPercentage(oneUnit, value)
     }
     if (name === 'paymentPlan' && value === 'Sold on Investment Plan') {
@@ -915,6 +959,26 @@ class CMPayment extends Component {
     }
     if (name === 'pearl') this.pearlCalculations(oneFloor, value)
     newData[name] = value
+    if (name === 'productId') {
+      oneProduct = _.find(projectProducts, (item) => {
+        return item.projectProductId === value
+      })
+      newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(
+        oneProduct.projectProduct.discount
+      )
+      newData['approvedDiscountPrice'] = PaymentMethods.findProductDiscountAmount(
+        oneUnit,
+        oneProduct
+      )
+      newShowInstallmentFields = PaymentHelper.setProductPaymentPlan(oneProduct)
+      newPaymentPlanDuration = PaymentHelper.setPaymentPlanDuration(oneProduct)
+      newInstallmentFrequency = PaymentHelper.setInstallmentFrequency(oneProduct)
+      if (newPaymentPlanDuration && newPaymentPlanDuration.length === 1)
+        newData.paymentPlanDuration = newPaymentPlanDuration[0].value
+      if (newInstallmentFrequency && newInstallmentFrequency.length === 1)
+        newData.installmentFrequency = newInstallmentFrequency[0].value
+      newData.paymentPlan = oneProduct.projectProduct.paymentPlan
+    }
     if (oneUnit) {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['finalPrice'] = PaymentMethods.findFinalPrice(
@@ -929,6 +993,10 @@ class CMPayment extends Component {
       unitPearlDetailsData: { ...oneFloor },
       oneUnitData: copyPearlUnit ? { ...oneFloor } : { ...oneUnit },
       pearlUnit: copyPearlUnit,
+      oneProductData: oneProduct,
+      showInstallmentFields: newShowInstallmentFields,
+      installmentFrequency: newInstallmentFrequency,
+      paymentPlanDuration: newPaymentPlanDuration,
     })
   }
 
@@ -962,6 +1030,12 @@ class CMPayment extends Component {
       unitDetailModal: !unitDetailModal,
     })
   }
+  openProductDetailsModal = () => {
+    const { productDetailModal } = this.state
+    this.setState({
+      productDetailModal: !productDetailModal,
+    })
+  }
 
   fetchOneUnit = (unit) => {
     const { allUnits } = this.state
@@ -990,6 +1064,9 @@ class CMPayment extends Component {
       unitPearlDetailsData,
       checkFirstFormPayment,
     } = this.state
+    const { lead } = this.props
+    const { noProduct } = lead
+    if (!noProduct && firstFormData.paymentPlan === 'no') firstFormData.paymentPlan = null
     if (firstFormData.pearl != null) {
       if (
         firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
@@ -1089,8 +1166,18 @@ class CMPayment extends Component {
 
   firstFormApiCall = (unitId) => {
     const { lead, CMPayment, addInstrument } = this.props
-    const { firstFormData } = this.state
-    let body = PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment, addInstrument)
+    const { noProduct } = lead
+    const { firstFormData, oneProductData } = this.state
+    let body = noProduct
+      ? PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment, addInstrument)
+      : PaymentHelper.generateProductApiPayload(
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          oneProductData,
+          addInstrument
+        )
     let leadId = []
     leadId.push(lead.id)
     axios
@@ -1291,6 +1378,13 @@ class CMPayment extends Component {
       modalMode,
       currentCall,
       isFollowUpMode,
+      projectProducts,
+      productsPickerData,
+      productDetailModal,
+      oneProductData,
+      showInstallmentFields,
+      paymentPlanDuration,
+      installmentFrequency,
     } = this.state
     const { lead, navigation } = this.props
     return (
@@ -1339,6 +1433,12 @@ class CMPayment extends Component {
             pearlModal={pearlUnit}
             openUnitDetailsModal={this.openUnitDetailsModal}
             pearlUnitPrice={pearlUnitPrice}
+            lead={lead}
+          />
+          <ProductDetailsModal
+            active={productDetailModal}
+            data={oneProductData}
+            openProductDetailsModal={this.openProductDetailsModal}
           />
           <CMPaymentModal
             onModalCloseClick={this.onModalCloseClick}
@@ -1389,6 +1489,13 @@ class CMPayment extends Component {
                     editTokenPayment={this.editTokenPayment}
                     cnicEditable={cnicEditable}
                     leftPearlSqft={leftPearlSqft}
+                    projectProducts={projectProducts}
+                    productsPickerData={productsPickerData}
+                    openProductDetailsModal={this.openProductDetailsModal}
+                    showInstallmentFields={showInstallmentFields}
+                    paymentPlanDuration={paymentPlanDuration}
+                    installmentFrequency={installmentFrequency}
+                    lead={lead}
                   />
                 )}
                 {secondForm && (

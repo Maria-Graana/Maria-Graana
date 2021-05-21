@@ -133,7 +133,7 @@ class AddCMLead extends Component {
         formData.projectName = project.name
       }
       this.setState({ loading: true })
-      console.log(`/api/leads/project`, formData)
+      formData.noProduct = false
       axios
         .post(`/api/leads/project`, formData)
         .then((res) => {

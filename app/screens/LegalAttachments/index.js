@@ -522,12 +522,13 @@ class LegalAttachment extends Component {
     const copyInstrument = { ...addInstrument };
     if (name === 'instrumentNumber') {
       copyInstrument.instrumentNo = value;
+    }
+    else if (name === 'instrumentNumberPicker') {
       const instrument = instruments.find((item) => item.instrumentNo === value);
-      if (instrument) {
-        copyInstrument.instrumentAmount = instrument.instrumentAmount;
-        copyInstrument.id = instrument.id;
-        copyInstrument.editable = false;
-      }
+      copyInstrument.instrumentNo = instrument.instrumentNo;
+      copyInstrument.instrumentAmount = instrument.instrumentAmount;
+      copyInstrument.id = instrument.id;
+      copyInstrument.editable = false;
     }
     else if (name === 'instrumentAmount')
       copyInstrument.instrumentAmount = value;

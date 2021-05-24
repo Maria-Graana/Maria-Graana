@@ -434,7 +434,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   componentWillUnmount() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     this.clearReduxAndStateValues()
     dispatch(clearInstrumentInformation());
     dispatch(clearInstrumentsList());
@@ -552,7 +552,7 @@ class LeadRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -940,7 +940,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -953,7 +953,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const {} = this.state
+    const { } = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -1082,8 +1082,8 @@ class LeadRCMPayment extends React.Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = payment.paymentAttachments
           ? _.filter(payment.paymentAttachments, (item) => {
-              return !_.has(item, 'id')
-            })
+            return !_.has(item, 'id')
+          })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1109,7 +1109,7 @@ class LeadRCMPayment extends React.Component {
     newSecondFormData[name] = value
 
     if (name === 'type' && (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')) {
-      if(lead && lead.customer_id){
+      if (lead && lead.customer_id) {
         dispatch(getInstrumentDetails(value, lead.customer_id))
         dispatch(setInstrumentInformation({
           ...addInstrument,
@@ -1122,7 +1122,7 @@ class LeadRCMPayment extends React.Component {
           id: null,
         }))
       }
-     
+
     }
     this.setState({ buyerNotZero: false })
     dispatch(setRCMPayment(newSecondFormData))
@@ -1133,12 +1133,13 @@ class LeadRCMPayment extends React.Component {
     const copyInstrument = { ...addInstrument };
     if (name === 'instrumentNumber') {
       copyInstrument.instrumentNo = value;
+    }
+    else if (name === 'instrumentNumberPicker') {
       const instrument = instruments.find((item) => item.instrumentNo === value);
-      if (instrument) {
-        copyInstrument.instrumentAmount = instrument.instrumentAmount;
-        copyInstrument.id = instrument.id;
-        copyInstrument.editable = false;
-      }
+      copyInstrument.instrumentNo = instrument.instrumentNo;
+      copyInstrument.instrumentAmount = instrument.instrumentAmount;
+      copyInstrument.id = instrument.id;
+      copyInstrument.editable = false;
     }
     else if (name === 'instrumentAmount')
       copyInstrument.instrumentAmount = value;
@@ -1158,13 +1159,13 @@ class LeadRCMPayment extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
-    if(data && data.paymentInstrument && lead){
+    if (data && data.paymentInstrument && lead) {
       dispatch(getInstrumentDetails(data.paymentInstrument.instrumentType, lead.customer_id))
-      dispatch(setInstrumentInformation({ ...data.paymentInstrument, editable: data.paymentInstrument.id ? false : true}));
+      dispatch(setInstrumentInformation({ ...data.paymentInstrument, editable: data.paymentInstrument.id ? false : true }));
     }
   }
 
@@ -1221,7 +1222,7 @@ class LeadRCMPayment extends React.Component {
         if (rcmPayment.type === 'cheque' || rcmPayment.type === 'pay-Order' || rcmPayment.type === 'bank-Transfer') {
           // for cheque,pay order and bank transfer
           let isValid = this.checkInstrumentValidation();
-          if(isValid){
+          if (isValid) {
             this.addEditRCMInstrumentOnServer();
           }
         }
@@ -1237,16 +1238,16 @@ class LeadRCMPayment extends React.Component {
           this.addRCMPayment(body)
         }
 
-       
+
       } else {
         let body = {};
         // commission update mode
         if (rcmPayment.type === 'cheque' || rcmPayment.type === 'pay-Order' || rcmPayment.type === 'bank-Transfer') {
           // for cheque,pay order and bank transfer
           let isValid = this.checkInstrumentValidation();
-            if(isValid){
-              this.addEditRCMInstrumentOnServer(true);
-            }
+          if (isValid) {
+            this.addEditRCMInstrumentOnServer(true);
+          }
         }
         else { // for all other types
           body = { ...rcmPayment }
@@ -1270,8 +1271,8 @@ class LeadRCMPayment extends React.Component {
     if (body.paymentCategory === 'token') {
       baseUrl = `/api/leads/tokenPayment`
       body.status = 'at_buyer_agent'
-      ;(body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
-        (toastMsg = 'Token Payment Added')
+        ; (body.officeLocationId = user && user.officeLocation ? user.officeLocation.id : null),
+          (toastMsg = 'Token Payment Added')
       errorMsg = 'Error Adding Token Payment'
     }
     axios
@@ -1285,7 +1286,7 @@ class LeadRCMPayment extends React.Component {
               this.uploadAttachment(paymentAttachment, response.data.id)
             )
           } else {
-         
+
             this.fetchLead()
             helper.successToast(toastMsg)
           }
@@ -1293,14 +1294,14 @@ class LeadRCMPayment extends React.Component {
       })
       .catch((error) => {
         helper.errorToast(errorMsg)
-      }).finally(()=>{
+      }).finally(() => {
         this.clearReduxAndStateValues()
         dispatch(clearInstrumentInformation());
       })
   }
 
   updateRCMPayment = (body) => {
-    const {dispatch, rcmPayment} = this.props;
+    const { dispatch, rcmPayment } = this.props;
     let toastMsg = 'Commission Payment Updated'
     let errorMsg = 'Error Updating Commission Payment'
     let baseUrl = `/api/leads/project/payment` // for patch request
@@ -1328,8 +1329,8 @@ class LeadRCMPayment extends React.Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
           ? _.filter(rcmPayment.paymentAttachments, (item) => {
-              return !_.has(item, 'id')
-            })
+            return !_.has(item, 'id')
+          })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1346,13 +1347,13 @@ class LeadRCMPayment extends React.Component {
       .catch((error) => {
         helper.errorToast(errorMsg)
         console.log('ERROR: ', error)
-      }).finally(()=>{
+      }).finally(() => {
         this.clearReduxAndStateValues()
         dispatch(clearInstrumentInformation());
       })
   }
 
-  addEditRCMInstrumentOnServer = (isRCMEdit=false) => {
+  addEditRCMInstrumentOnServer = (isRCMEdit = false) => {
     let body = {};
     const { addInstrument, rcmPayment, dispatch, lead, user } = this.props;
     if (addInstrument.id) { // selected existing instrument // add mode
@@ -1364,10 +1365,10 @@ class LeadRCMPayment extends React.Component {
         active: true,
         instrumentId: addInstrument.id,
       }
-      if(isRCMEdit)
-      this.updateRCMPayment(body)
+      if (isRCMEdit)
+        this.updateRCMPayment(body)
       else
-      this.addRCMPayment(body);
+        this.addRCMPayment(body);
     }
     else { // add mode // new instrument info
       axios.post(`api/leads/instruments`, addInstrument).then(res => {
@@ -1380,10 +1381,10 @@ class LeadRCMPayment extends React.Component {
             active: true,
             instrumentId: res.data.id,
           }
-          if(isRCMEdit)
-          this.updateRCMPayment(body)
+          if (isRCMEdit)
+            this.updateRCMPayment(body)
           else
-          this.addRCMPayment(body); 
+            this.addRCMPayment(body);
         }
       }).catch(error => {
         console.log('Error: ', error)
@@ -1409,8 +1410,8 @@ class LeadRCMPayment extends React.Component {
       })
       return false;
     }
-    else{
-       return true;
+    else {
+      return true;
     }
   }
 
@@ -1435,8 +1436,7 @@ class LeadRCMPayment extends React.Component {
     const selectedProperty = allProperties[0]
     axios
       .post(
-        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${
-          selectedProperty ? selectedProperty.id : null
+        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null
         }`
       )
       .then((response) => {
@@ -1691,7 +1691,7 @@ class LeadRCMPayment extends React.Component {
       comments: status,
       leadId: formData.leadId,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
   }
 
   // ************ Function for Reject modal ************

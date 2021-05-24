@@ -79,6 +79,8 @@ imageStyle: {
     fontSize: AppStyles.fontSize.medium
   },
   propsureIcon: {
+      width:30,
+      height:30,
      marginHorizontal:10,
   }
 

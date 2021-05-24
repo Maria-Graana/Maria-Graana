@@ -1285,17 +1285,17 @@ class LeadRCMPayment extends React.Component {
               this.uploadAttachment(paymentAttachment, response.data.id)
             )
           } else {
-            this.clearReduxAndStateValues()
-            dispatch(clearInstrumentInformation());
+         
             this.fetchLead()
             helper.successToast(toastMsg)
           }
         }
       })
       .catch((error) => {
+        helper.errorToast(errorMsg)
+      }).finally(()=>{
         this.clearReduxAndStateValues()
         dispatch(clearInstrumentInformation());
-        helper.errorToast(errorMsg)
       })
   }
 
@@ -1346,6 +1346,7 @@ class LeadRCMPayment extends React.Component {
       .catch((error) => {
         helper.errorToast(errorMsg)
         console.log('ERROR: ', error)
+      }).finally(()=>{
         this.clearReduxAndStateValues()
         dispatch(clearInstrumentInformation());
       })

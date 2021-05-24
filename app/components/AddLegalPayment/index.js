@@ -3,12 +3,12 @@
 import axios from 'axios'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Modal from 'react-native-modal'
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, Modal, ScrollView, SafeAreaView } from 'react-native'
 import { connect } from 'react-redux'
 import times from '../../../assets/img/times.png'
 import AppStyles from '../../AppStyles'
 import StaticData from '../../StaticData'
+import AddEditInstrument from '../AddEditInstrument'
 import ErrorMessage from '../ErrorMessage'
 import OfficeLocationSelector from '../OfficeLocationSelector'
 import PickerComponent from '../Picker/index'
@@ -30,6 +30,7 @@ const AddLegalPaymentModal = ({
   assignToAccounts,
   officeLocations,
   handleOfficeLocationChange,
+  handleInstrumentInfoChange
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -58,227 +59,238 @@ const AddLegalPaymentModal = ({
     }
   }
   return (
-    <Modal isVisible={legalPayment.visible}>
-      <View style={styles.modalMain}>
-        <View style={styles.topHeader}>
-          <Text style={styles.headingText}>Enter Details</Text>
-          <TouchableOpacity
-            style={styles.timesBtn}
-            onPress={() => {
-              setCollapsed(false)
-              setRemarks([])
-              onModalCloseClick()
-            }}
-          >
-            <Image source={times} style={styles.timesImg} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.moreViewContainer}>
-          {/* **************************************** */}
-          <SimpleInputText
-            name={'installmentAmount'}
-            fromatName={false}
-            placeholder={'Enter Amount'}
-            label={'ENTER AMOUNT'}
-            value={legalPayment.installmentAmount}
-            formatValue={legalPayment.installmentAmount}
-            keyboardType={'numeric'}
-            onChangeHandle={handleCommissionChange}
-            editable={editTextInput && legalPayment.status !== 'pendingAccount'}
-          />
-          {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
-          {modalValidation === true &&
-          (legalPayment.installmentAmount == null || legalPayment.installmentAmount == '') ? (
-            <ErrorMessage errorMessage={'Required'} />
-          ) : null}
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <PickerComponent
-                onValueChange={handleCommissionChange}
-                enabled={legalPayment.status !== 'pendingAccount'}
-                data={StaticData.fullPaymentType}
-                name={'type'}
-                placeholder="Type"
-                selectedItem={legalPayment.type}
-              />
-              {modalValidation === true && legalPayment.type == '' && (
-                <ErrorMessage errorMessage={'Required'} />
-              )}
-            </View>
-          </View>
-
-          <SimpleInputText
-            name={'details'}
-            fromatName={false}
-            placeholder={'Details'}
-            label={'DETAILS'}
-            value={legalPayment.details != '' ? legalPayment.details : ''}
-            editable={legalPayment.status !== 'pendingAccount'}
-            formatValue={''}
-            onChangeHandle={handleCommissionChange}
-          />
-
-          {legalPayment.id && (
+    <Modal visible={legalPayment.visible}>
+      <SafeAreaView style={AppStyles.mb1}>
+        <ScrollView style={styles.modalMain}>
+          <View style={styles.topHeader}>
+            <Text style={styles.headingText}>Enter Details</Text>
             <TouchableOpacity
-              disabled={loading}
-              style={styles.addPaymentBtn}
-              onPress={() => fetchRemarks()}
+              style={styles.timesBtn}
+              onPress={() => {
+                setCollapsed(false)
+                setRemarks([])
+                onModalCloseClick()
+              }}
             >
-              <Image
-                style={[styles.arrowDownImg, isCollapsed === true && styles.rotateImg]}
-                source={require('../../../assets/img/arrowDown.png')}
-              ></Image>
-              <Text style={styles.addPaymentBtnText}>VIEW REMARKS</Text>
+              <Image source={times} style={styles.timesImg} />
             </TouchableOpacity>
-          )}
-
-          {loading === false && isCollapsed ? (
-            remarks.length > 0 ? (
-              <FlatList
-                style={{ minHeight: 20, maxHeight: 150 }}
-                data={remarks}
-                renderItem={({ item, index }) => (
-                  <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
-                    <View>
-                      <Text style={[styles.smallText]}>
-                        {item.armsuser.firstName} {item.armsuser.lastName}{' '}
-                        <Text style={styles.smallestText}>
-                          {' '}
-                          ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
-                        </Text>
-                      </Text>
-                      <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
-                    </View>
-                  </View>
+          </View>
+          <View style={styles.moreViewContainer}>
+            {/* **************************************** */}
+            <SimpleInputText
+              name={'installmentAmount'}
+              fromatName={false}
+              placeholder={'Enter Amount'}
+              label={'ENTER AMOUNT'}
+              value={legalPayment.installmentAmount}
+              formatValue={legalPayment.installmentAmount}
+              keyboardType={'numeric'}
+              onChangeHandle={handleCommissionChange}
+              editable={editTextInput && legalPayment.status !== 'pendingAccount'}
+            />
+            {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+            {modalValidation === true &&
+              (legalPayment.installmentAmount == null || legalPayment.installmentAmount == '') ? (
+              <ErrorMessage errorMessage={'Required'} />
+            ) : null}
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent
+                  onValueChange={handleCommissionChange}
+                  enabled={legalPayment.status !== 'pendingAccount'}
+                  data={StaticData.fullPaymentType}
+                  name={'type'}
+                  placeholder="Type"
+                  selectedItem={legalPayment.type}
+                />
+                {modalValidation === true && legalPayment.type == '' && (
+                  <ErrorMessage errorMessage={'Required'} />
                 )}
-                keyExtractor={(item) => item.id.toString()}
-              />
-            ) : (
-              <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
-            )
-          ) : null}
+              </View>
+            </View>
 
-          {legalPayment.installmentAmount != null &&
-            legalPayment.installmentAmount != '' &&
-            legalPayment.type != '' && (
+            {
+              legalPayment.type === 'cheque' || legalPayment.type === 'pay-Order' || legalPayment.type === 'bank-Transfer' ?
+                <AddEditInstrument
+                  handleInstrumentInfoChange={handleInstrumentInfoChange}
+                />
+                :
+                null
+            }
+
+            <SimpleInputText
+              name={'details'}
+              fromatName={false}
+              placeholder={'Details'}
+              label={'DETAILS'}
+              value={legalPayment.details != '' ? legalPayment.details : ''}
+              editable={legalPayment.status !== 'pendingAccount'}
+              formatValue={''}
+              onChangeHandle={handleCommissionChange}
+            />
+
+            {legalPayment.id && (
               <TouchableOpacity
-                style={[
-                  styles.addPaymentBtn,
-                  {
-                    backgroundColor: legalPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
-                    borderColor:
-                      legalPayment.status === 'pendingAccount'
-                        ? '#8baaef'
-                        : AppStyles.colors.primaryColor,
-                  },
-                ]}
-                disabled={legalPayment.status === 'pendingAccount'}
-                onPress={() => {
-                  goToPayAttachments()
-                }}
+                disabled={loading}
+                style={styles.addPaymentBtn}
+                onPress={() => fetchRemarks()}
               >
-                <Text
-                  style={[
-                    styles.addPaymentBtnText,
-                    {
-                      color:
-                        legalPayment.status === 'pendingAccount'
-                          ? '#f3f5f7'
-                          : AppStyles.colors.primaryColor,
-                    },
-                  ]}
-                >
-                  ADD ATTACHMENTS
-                </Text>
+                <Image
+                  style={[styles.arrowDownImg, isCollapsed === true && styles.rotateImg]}
+                  source={require('../../../assets/img/arrowDown.png')}
+                ></Image>
+                <Text style={styles.addPaymentBtnText}>VIEW REMARKS</Text>
               </TouchableOpacity>
             )}
 
-          {legalPayment.id ? (
-            <OfficeLocationSelector
-              officeLocations={officeLocations}
-              officeLocationId={legalPayment.officeLocationId}
-              handleOfficeLocationChange={handleOfficeLocationChange}
-              disabled={legalPayment.status === 'pendingAccount'}
-            />
-          ) : null}
+            {loading === false && isCollapsed ? (
+              remarks.length > 0 ? (
+                <FlatList
+                  style={{ minHeight: 20, maxHeight: 150 }}
+                  data={remarks}
+                  renderItem={({ item, index }) => (
+                    <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
+                      <View>
+                        <Text style={[styles.smallText]}>
+                          {item.armsuser.firstName} {item.armsuser.lastName}{' '}
+                          <Text style={styles.smallestText}>
+                            {' '}
+                          ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
+                        </Text>
+                        </Text>
+                        <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
+                      </View>
+                    </View>
+                  )}
+                  keyExtractor={(item) => item.id.toString()}
+                />
+              ) : (
+                <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
+              )
+            ) : null}
 
-          <View style={styles.row}>
-            {legalPayment.status && legalPayment.paymentCategory !== 'token' ? (
+            {legalPayment.installmentAmount != null &&
+              legalPayment.installmentAmount != '' &&
+              legalPayment.type != '' && (
+                <TouchableOpacity
+                  style={[
+                    styles.addPaymentBtn,
+                    {
+                      backgroundColor: legalPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                      borderColor:
+                        legalPayment.status === 'pendingAccount'
+                          ? '#8baaef'
+                          : AppStyles.colors.primaryColor,
+                    },
+                  ]}
+                  disabled={legalPayment.status === 'pendingAccount'}
+                  onPress={() => {
+                    goToPayAttachments()
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.addPaymentBtnText,
+                      {
+                        color:
+                          legalPayment.status === 'pendingAccount'
+                            ? '#f3f5f7'
+                            : AppStyles.colors.primaryColor,
+                      },
+                    ]}
+                  >
+                    ADD ATTACHMENTS
+                </Text>
+                </TouchableOpacity>
+              )}
+
+            {legalPayment.id ? (
+              <OfficeLocationSelector
+                officeLocations={officeLocations}
+                officeLocationId={legalPayment.officeLocationId}
+                handleOfficeLocationChange={handleOfficeLocationChange}
+                disabled={legalPayment.status === 'pendingAccount'}
+              />
+            ) : null}
+
+            <View style={styles.row}>
+              {legalPayment.status && legalPayment.paymentCategory !== 'token' ? (
+                <TouchableButton
+                  disabled={
+                    legalPayment.status !== 'open' &&
+                    legalPayment.status !== 'pendingSales' &&
+                    legalPayment.status !== 'notCleared'
+                  }
+                  containerBackgroundColor={
+                    legalPayment.status === 'open' ||
+                      legalPayment.status === 'pendingSales' ||
+                      legalPayment.status === 'notCleared'
+                      ? AppStyles.colors.primaryColor
+                      : '#8baaef'
+                  }
+                  containerStyle={[
+                    styles.bookedBtn,
+                    {
+                      width: '50%',
+                      marginVertical: 15,
+                      marginRight: 10,
+                      borderColor:
+                        legalPayment.status === 'open' ||
+                          legalPayment.status === 'pendingSales' ||
+                          legalPayment.status === 'notCleared'
+                          ? AppStyles.colors.primaryColor
+                          : '#8baaef',
+                    },
+                  ]}
+                  label={'ASSIGN TO ACCOUNTS'}
+                  textColor={
+                    legalPayment.status === 'open' ||
+                      legalPayment.status === 'pendingSales' ||
+                      legalPayment.status === 'notCleared'
+                      ? '#fff'
+                      : '#f3f5f7'
+                  }
+                  fontFamily={AppStyles.fonts.boldFont}
+                  fontSize={16}
+                  loading={assignToAccountsLoading}
+                  onPress={() =>
+                    legalPayment.officeLocationId === null
+                      ? alert('Payment Location cannot be empty!')
+                      : assignToAccounts()
+                  }
+                />
+              ) : null}
+
               <TouchableButton
-                disabled={
-                  legalPayment.status !== 'open' &&
-                  legalPayment.status !== 'pendingSales' &&
-                  legalPayment.status !== 'notCleared'
-                }
-                containerBackgroundColor={
-                  legalPayment.status === 'open' ||
-                  legalPayment.status === 'pendingSales' ||
-                  legalPayment.status === 'notCleared'
-                    ? AppStyles.colors.primaryColor
-                    : '#8baaef'
-                }
                 containerStyle={[
                   styles.bookedBtn,
                   {
-                    width: '50%',
+                    width:
+                      legalPayment.status && legalPayment.paymentCategory !== 'token'
+                        ? '45%'
+                        : '100%',
                     marginVertical: 15,
-                    marginRight: 10,
                     borderColor:
-                      legalPayment.status === 'open' ||
-                      legalPayment.status === 'pendingSales' ||
-                      legalPayment.status === 'notCleared'
+                      legalPayment.status !== 'pendingAccount'
                         ? AppStyles.colors.primaryColor
                         : '#8baaef',
                   },
                 ]}
-                label={'ASSIGN TO ACCOUNTS'}
-                textColor={
-                  legalPayment.status === 'open' ||
-                  legalPayment.status === 'pendingSales' ||
-                  legalPayment.status === 'notCleared'
-                    ? '#fff'
-                    : '#f3f5f7'
+                containerBackgroundColor={
+                  legalPayment.status !== 'pendingAccount' ? AppStyles.colors.primaryColor : '#8baaef'
                 }
+                textColor={legalPayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
+                disabled={legalPayment.status === 'pendingAccount'}
+                label={'OK'}
                 fontFamily={AppStyles.fonts.boldFont}
                 fontSize={16}
-                loading={assignToAccountsLoading}
-                onPress={() =>
-                  legalPayment.officeLocationId === null
-                    ? alert('Payment Location cannot be empty!')
-                    : assignToAccounts()
-                }
+                loading={addPaymentLoading}
+                onPress={() => submitCommissionPayment()}
               />
-            ) : null}
-
-            <TouchableButton
-              containerStyle={[
-                styles.bookedBtn,
-                {
-                  width:
-                    legalPayment.status && legalPayment.paymentCategory !== 'token'
-                      ? '45%'
-                      : '100%',
-                  marginVertical: 15,
-                  borderColor:
-                    legalPayment.status !== 'pendingAccount'
-                      ? AppStyles.colors.primaryColor
-                      : '#8baaef',
-                },
-              ]}
-              containerBackgroundColor={
-                legalPayment.status !== 'pendingAccount' ? AppStyles.colors.primaryColor : '#8baaef'
-              }
-              textColor={legalPayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
-              disabled={legalPayment.status === 'pendingAccount'}
-              label={'OK'}
-              fontFamily={AppStyles.fonts.boldFont}
-              fontSize={16}
-              loading={addPaymentLoading}
-              onPress={() => submitCommissionPayment()}
-            />
+            </View>
           </View>
-        </View>
-      </View>
+        </ScrollView>
+      </SafeAreaView>
     </Modal>
   )
 }
@@ -294,14 +306,6 @@ export default connect(mapStateToProps)(AddLegalPaymentModal)
 const styles = StyleSheet.create({
   modalMain: {
     backgroundColor: '#e7ecf0',
-    borderRadius: 7,
-    overflow: 'hidden',
-    zIndex: 5,
-    position: 'relative',
-    elevation: 5,
-    shadowOffset: { width: 5, height: 5 },
-    shadowColor: '#33333312',
-    shadowOpacity: 1,
   },
   timesBtn: {
     position: 'absolute',

@@ -27,6 +27,7 @@ import { setlead } from '../../actions/lead'
 import CommissionTile from '../../components/CommissionTile'
 import DeleteModal from '../../components/DeleteModal'
 import styles from './style'
+import { clearInstrumentInformation, getInstrumentDetails, setInstrumentInformation } from '../../actions/addInstrument'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -492,23 +493,52 @@ class LegalAttachment extends Component {
   }
 
   handleCommissionChange = (value, name) => {
-    const { legalPayment, dispatch } = this.props
+    const { legalPayment, dispatch, lead, addInstrument } = this.props
     const newSecondFormData = { ...legalPayment, visible: legalPayment.visible }
     newSecondFormData[name] = value
+
+    if (name === 'type' && (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')) {
+      if (lead && lead.customer_id) {
+        dispatch(getInstrumentDetails(value, lead.customer_id))
+        dispatch(setInstrumentInformation({
+          ...addInstrument,
+          customerId: lead && lead.customer_id
+            ? lead.customer_id
+            : null,
+          instrumentType: value,
+          instrumentAmount: null,
+          instrumentNo: null,
+          id: null,
+        }))
+      }
+
+    }
     this.setState({ buyerNotZero: false })
     dispatch(setLegalPayment(newSecondFormData))
   }
 
+  handleInstrumentInfoChange = (value, name) => {
+    const { addInstrument, dispatch, instruments } = this.props
+    const copyInstrument = { ...addInstrument };
+    if (name === 'instrumentNumber') {
+      copyInstrument.instrumentNo = value;
+      const instrument = instruments.find((item) => item.instrumentNo === value);
+      if (instrument) {
+        copyInstrument.instrumentAmount = instrument.instrumentAmount;
+        copyInstrument.id = instrument.id;
+        copyInstrument.editable = false;
+      }
+    }
+    else if (name === 'instrumentAmount')
+      copyInstrument.instrumentAmount = value;
+
+    dispatch(setInstrumentInformation(copyInstrument));
+  }
+
   setCommissionEditData = (data) => {
-    const { dispatch, user } = this.props
+    const { dispatch, user, lead } = this.props
     this.setState({
       editable: true,
-      officeLocationId:
-        data && data.officeLocationId
-          ? data.officeLocationId
-          : user && user.officeLocation
-          ? user.officeLocation.id
-          : null,
     })
     dispatch(
       setLegalPayment({
@@ -518,10 +548,15 @@ class LegalAttachment extends Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
+
+    if (data && data.paymentInstrument && lead) {
+      dispatch(getInstrumentDetails(data.paymentInstrument.instrumentType, lead.customer_id))
+      dispatch(setInstrumentInformation({ ...data.paymentInstrument, editable: data.paymentInstrument.id ? false : true }));
+    }
   }
 
   goToPayAttachments = () => {
@@ -557,7 +592,7 @@ class LegalAttachment extends Component {
   submitLegalPayment = () => {
     const { legalPayment, user, lead } = this.props
     const { editable } = this.state
-    let baseUrl = `/api/leads/project/payments`
+
     if (
       legalPayment.installmentAmount != null &&
       legalPayment.installmentAmount != '' &&
@@ -573,80 +608,181 @@ class LegalAttachment extends Component {
       }
       if (editable === false) {
         // for commission addition
-        let body = {
-          ...legalPayment,
-          rcmLeadId: lead.id,
-          armsUserId: user.id,
-          // paymentCategory: 'commission',
-          addedBy: legalPayment.addedBy,
-          active: true,
+
+        let body = {};
+
+        // for payment addition
+        if (legalPayment.type === 'cheque' || legalPayment.type === 'pay-Order' || legalPayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+          if (isValid) {
+            this.addEditLegalInstrumentOnServer();
+          }
         }
-        delete body.visible
-        let toastMsg = 'Legal Payment Added'
-        let errorMsg = 'Error Adding Legal Payment'
-        console.log('post: ', body)
-        axios
-          .post(baseUrl, body)
-          .then((response) => {
-            if (response.data) {
-              // check if some attachment exists so upload that as well to server with payment id.
-              if (legalPayment.paymentAttachments.length > 0) {
-                legalPayment.paymentAttachments.map((paymentAttachment) =>
-                  // payment attachments
-                  this.uploadLegalPaymentAttachment(paymentAttachment, response.data.id)
-                )
-              } else {
-                this.clearReduxAndStateValues()
-                this.fetchLead()
-                helper.successToast(toastMsg)
-              }
-            }
-          })
-          .catch((error) => {
-            this.clearReduxAndStateValues()
-            helper.errorToast(errorMsg)
-          })
+        else { // for all other types
+          body = {
+            ...legalPayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            addedBy: legalPayment.addedBy,
+            active: true,
+          }
+          delete body.visible
+          this.addLegalPayment(body)
+        }
+
       } else {
-        // commission update mode
-        let toastMsg = 'Legal Payment Updated'
-        let errorMsg = 'Error Updating Legal Payment'
-        baseUrl = `/api/leads/project/payment` // for patch request
-        let body = { ...legalPayment }
-        let paymentID = body.id
-        delete body.visible
-        delete body.remarks
-        delete body.id
-        console.log('patch: ', body)
-        axios
-          .patch(`${baseUrl}?id=${paymentID}`, body)
-          .then((response) => {
-            // upload only the new attachments that do not have id with them in object.
-            const filterAttachmentsWithoutId = legalPayment.paymentAttachments
-              ? _.filter(legalPayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
-              : []
-            if (filterAttachmentsWithoutId.length > 0) {
-              filterAttachmentsWithoutId.map((item, index) => {
-                // payment attachments
-                this.uploadLegalPaymentAttachment(item, paymentID)
-              })
-            } else {
-              this.fetchLead()
-              this.clearReduxAndStateValues()
-              helper.successToast(toastMsg)
-            }
-          })
-          .catch((error) => {
-            helper.errorToast(errorMsg)
-            console.log('ERROR: ', error)
-            this.clearReduxAndStateValues()
-          })
+        let body = {};
+        // payment update mode
+        if (legalPayment.type === 'cheque' || legalPayment.type === 'pay-Order' || legalPayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+          if (isValid) {
+            this.addEditLegalInstrumentOnServer(true);
+          }
+        }
+        else { // for all other types
+          body = { ...legalPayment }
+          this.updateLegalPayment(body)
+        }
       }
     } else {
       // Installment amount or type is missing so validation goes true, show error
       this.setState({
         modalValidation: true,
+      })
+    }
+  }
+
+  addLegalPayment = (body) => {
+    const { legalPayment, dispatch } = this.props
+    let toastMsg = 'Legal Payment Added'
+    let errorMsg = 'Error Adding Legal Payment'
+    let baseUrl = `/api/leads/project/payments`
+    console.log('post: ', body)
+    axios
+      .post(baseUrl, body)
+      .then((response) => {
+        if (response.data) {
+          // check if some attachment exists so upload that as well to server with payment id.
+          if (legalPayment.paymentAttachments.length > 0) {
+            legalPayment.paymentAttachments.map((paymentAttachment) =>
+              // payment attachments
+              this.uploadLegalPaymentAttachment(paymentAttachment, response.data.id)
+            )
+          } else {
+            this.fetchLead()
+            helper.successToast(toastMsg)
+          }
+        }
+      })
+      .catch((error) => {
+        helper.errorToast(errorMsg)
+      }).finally(() => {
+        dispatch(clearInstrumentInformation())
+        this.clearReduxAndStateValues()
+      })
+  }
+
+  updateLegalPayment = (body) => {
+    const { legalPayment, dispatch } = this.props;
+    let toastMsg = 'Legal Payment Updated'
+    let errorMsg = 'Error Updating Legal Payment'
+    let baseUrl = `/api/leads/project/payment` // for patch request
+    let paymentID = body.id
+    delete body.visible
+    delete body.remarks
+    delete body.id
+
+    axios
+      .patch(`${baseUrl}?id=${paymentID}`, body)
+      .then((response) => {
+        // upload only the new attachments that do not have id with them in object.
+        const filterAttachmentsWithoutId = legalPayment.paymentAttachments
+          ? _.filter(legalPayment.paymentAttachments, (item) => {
+            return !_.has(item, 'id')
+          })
+          : []
+        if (filterAttachmentsWithoutId.length > 0) {
+          filterAttachmentsWithoutId.map((item, index) => {
+            // payment attachments
+            this.uploadLegalPaymentAttachment(item, paymentID)
+          })
+        } else {
+          this.fetchLead()
+          helper.successToast(toastMsg)
+        }
+      })
+      .catch((error) => {
+        helper.errorToast(errorMsg)
+        console.log('ERROR: ', error)
+      }).finally(() => {
+        dispatch(clearInstrumentInformation())
+        this.clearReduxAndStateValues()
+      })
+  }
+
+  checkInstrumentValidation = () => {
+    const { addInstrument } = this.props;
+    if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
+      alert('Instrument Number cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;;
+    }
+    else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+      alert('Instrument Amount cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+
+  addEditLegalInstrumentOnServer = (isLegalEdit = false) => {
+    let body = {};
+    const { addInstrument, legalPayment, dispatch, lead, user } = this.props;
+    if (addInstrument.id) { // selected existing instrument // add mode
+      body = {
+        ...legalPayment,
+        rcmLeadId: lead.id,
+        armsUserId: user.id,
+        addedBy: legalPayment.addedBy,
+        active: true,
+        instrumentId: addInstrument.id,
+      }
+      delete body.visible
+      if (isLegalEdit) {
+        this.updateLegalPayment(body)
+      }
+      else {
+        this.addLegalPayment(body);
+      }
+    }
+    else { // add mode // new instrument info
+      axios.post(`api/leads/instruments`, addInstrument).then(res => {
+        if (res && res.data) {
+          body = {
+            ...legalPayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            addedBy: legalPayment.addedBy,
+            active: true,
+            instrumentId: res.data.id,
+          }
+          if (isLegalEdit)
+            this.updateLegalPayment(body)
+          else
+            this.addLegalPayment(body);
+        }
+      }).catch(error => {
+        console.log('Error: ', error)
       })
     }
   }
@@ -799,6 +935,7 @@ class LegalAttachment extends Component {
           }}
           officeLocations={officeLocations}
           handleOfficeLocationChange={this.handleOfficeLocation}
+          handleInstrumentInfoChange={this.handleInstrumentInfoChange}
         />
         <DeleteModal
           isVisible={deletePaymentVisible}
@@ -871,9 +1008,9 @@ class LegalAttachment extends Component {
                     <LegalTile
                       data={checkListDoc}
                       index={null}
-                      submitMenu={() => {}}
-                      getAttachmentFromStorage={() => {}}
-                      downloadLegalDocs={() => {}}
+                      submitMenu={() => { }}
+                      getAttachmentFromStorage={() => { }}
+                      downloadLegalDocs={() => { }}
                       isLeadClosed={isLeadClosed}
                       addBorder={true}
                     />
@@ -909,6 +1046,8 @@ class LegalAttachment extends Component {
 mapStateToProps = (store) => {
   return {
     legalPayment: store.LegalPayment.LegalPayment,
+    addInstrument: store.Instruments.addInstrument,
+    instruments: store.Instruments.instruments,
     lead: store.lead.lead,
     user: store.user.user,
   }

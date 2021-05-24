@@ -55,6 +55,10 @@ const AddEditInstrument = ({
                     }
 
                 </View>
+                {
+                    !instrument.id &&  <Text style={styles.orText}>Or</Text>
+                }
+               
                 <Text onPress={() => {
                     if (instrument && instrument.id)
                         dispatch(setInstrumentInformation({ // clear selection
@@ -66,7 +70,7 @@ const AddEditInstrument = ({
                         }));
                     else
                         setManualInstrumentSelected(!manualInstrumentSelect) // manual selection of instrument
-                }} style={styles.selectText}>{instrument.id ? 'Clear' : 'Or Select'}</Text>
+                }} style={[styles.selectText,{width: instrument.id ? '25%' : '16%'}]}>{instrument.id ? 'Clear' : 'Select'}</Text>
             </View>
 
 
@@ -103,9 +107,15 @@ const styles = StyleSheet.create({
     instrumentNumberContainer: {
         width: '75%'
     },
+    orText:{
+      width:'9%',
+      fontSize: AppStyles.fontSize.medium,
+      fontFamily: AppStyles.fonts.defaultFont,
+      textAlign: 'center',
+      textAlignVertical:'center'
+    },
     selectText: {
-        width: '25%',
-        marginHorizontal: 10,
+        marginRight: 10,
         textDecorationLine: 'underline',
         fontSize: AppStyles.fontSize.medium,
         fontFamily: AppStyles.fonts.defaultFont,

@@ -32,6 +32,20 @@ function isFloat(n) {
   return Number(n) === n && n % 1 !== 0
 }
 
+export const formatNumericPrice = (price) => {
+  if (price / 10000000 >= 1) {
+    const r = price / 10000000
+    return isFloat(r) ? `${r.toFixed(2)} Crore` : `${r} Crore`
+  } else if (price / 100000 >= 1) {
+    const r = price / 100000
+    return isFloat(r) ? `${r.toFixed(2)} Lac` : `${r} Lac`
+  } else if (price === 0) {
+    return 0
+  } else {
+    return `${price}`
+  }
+}
+
 var a = [
   '0',
   '1',

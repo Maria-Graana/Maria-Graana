@@ -15,7 +15,7 @@ import times from '../../../assets/img/times.png'
 import helper from '../../helper'
 import styles from './style'
 import moment from 'moment-timezone'
-import { formatPrice } from '../PriceFormate'
+import { formatNumericPrice } from '../PriceFormate'
 
 class ProductDetailsModal extends React.Component {
   constructor(props) {
@@ -94,6 +94,10 @@ class ProductDetailsModal extends React.Component {
   render() {
     const { active, openProductDetailsModal, data } = this.props
     const { projectProduct } = data
+    let projectValue =
+      projectProduct && projectProduct.reservationAmount === 'fix_amount'
+        ? projectProduct.value
+        : `${projectProduct.value}%`
     return (
       <Modal isVisible={active}>
         <SafeAreaView>
@@ -129,8 +133,8 @@ class ProductDetailsModal extends React.Component {
                 )}%`,
               })}
               {this.detailTile({
-                title: 'Reservation Amount Option',
-                value: helper.capitalize(projectProduct && projectProduct.reservationAmount),
+                title: 'Reservation Amount',
+                value: projectValue,
               })}
               {this.detailTile({
                 title: 'Down Payment',
@@ -146,15 +150,15 @@ class ProductDetailsModal extends React.Component {
               })}
               {this.detailTile({
                 title: 'Rayment Plan',
-                value: `${helper.capitalize(projectProduct && projectProduct.paymentPlan)} (Years)`,
+                value: `${helper.capitalize(projectProduct && projectProduct.paymentPlan)}`,
               })}
               {this.detailTile({
                 title: 'Payment Plan Duration',
-                value: this.setRange(
+                value: `${this.setRange(
                   projectProduct && projectProduct.paymentPlanDuration,
                   '-',
                   true
-                ),
+                )} (Years)`,
               })}
               {this.detailTile({
                 title: 'Installment Frequency',
@@ -166,15 +170,15 @@ class ProductDetailsModal extends React.Component {
               })}
               {this.detailTile({
                 title: 'Annual Profit',
-                value: projectProduct && formatPrice(projectProduct.annualProfit),
+                value: projectProduct && formatNumericPrice(projectProduct.annualProfit),
               })}
               {this.detailTile({
                 title: 'Annual Rent',
-                value: projectProduct && formatPrice(projectProduct.monthlyRent),
+                value: projectProduct && formatNumericPrice(projectProduct.monthlyRent),
               })}
               {this.detailTile({
                 title: 'Investment Duration',
-                value: `${projectProduct && projectProduct.value} (Months)`,
+                value: `${projectProduct && projectProduct.investmentDurationPeriod} (Months)`,
               })}
             </ScrollView>
           </View>

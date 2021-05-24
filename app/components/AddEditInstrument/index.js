@@ -36,7 +36,7 @@ const AddEditInstrument = ({
                                             setManualInstrumentSelected(false);
                                         }}
                                         data={instrumentNumbers}
-                                        name={'instrumentNumber'}
+                                        name={'instrumentNumberPicker'}
                                         enabled={instrumentNumbers && instrumentNumbers.length > 0}
                                         placeholder={instrumentNumbers && instrumentNumbers.length > 0 ? "Select Instrument Number" : 'No Option Available'}
                                         selectedItem={instrument.instrumentNo}

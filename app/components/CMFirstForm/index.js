@@ -327,21 +327,6 @@ class CMFirstForm extends Component {
             ) : null} */}
           </View>
         )}
-        {!checkFirstFormPayment && (
-          <View style={{ paddingVertical: 10 }}>
-            <TouchableOpacity
-              style={styles.bookNowBtn}
-              onPress={() => {
-                checkUnitDetail === true && addPaymentModalToggle(true, 'token')
-              }}
-            >
-              <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
-            </TouchableOpacity>
-            {firstFormValidate === true && !checkFirstFormPayment ? (
-              <ErrorMessage errorMessage={'Token Required'} />
-            ) : null}
-          </View>
-        )}
 
         {/* **************************************** */}
         {cnicEditable != false && (
@@ -374,6 +359,21 @@ class CMFirstForm extends Component {
             <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
           </View>
         </View>
+        {!checkFirstFormPayment && (
+          <View style={{ paddingVertical: 10 }}>
+            <TouchableOpacity
+              style={styles.bookNowBtn}
+              onPress={() => {
+                checkUnitDetail === true && addPaymentModalToggle(true, 'token')
+              }}
+            >
+              <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
+            </TouchableOpacity>
+            {firstFormValidate === true && !checkFirstFormPayment ? (
+              <ErrorMessage errorMessage={'Token Required'} />
+            ) : null}
+          </View>
+        )}
         <View style={{ paddingVertical: 10, paddingBottom: 20 }}>
           <TouchableOpacity
             style={styles.bookNowBtn}

@@ -751,6 +751,8 @@ class CMPayment extends Component {
             if (isCMEdit) this.updatePayment(body)
             else this.addPayment(body)
           }
+          if (isCMEdit) this.updateCMPayment(body)
+          else this.addCMPayment(body)
         })
         .catch((error) => {
           console.log('Error: ', error)

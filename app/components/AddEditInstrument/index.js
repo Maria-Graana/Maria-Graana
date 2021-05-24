@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { connect, useDispatch } from 'react-redux'
 import { setInstrumentInformation } from '../../actions/addInstrument'
 import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index'
 import AppStyles from '../../AppStyles'
 
-const AddEditInstrument = ({ 
+const AddEditInstrument = ({
     instruments,
     handleInstrumentInfoChange,
     instrument,
@@ -37,7 +37,8 @@ const AddEditInstrument = ({
                                         }}
                                         data={instrumentNumbers}
                                         name={'instrumentNumber'}
-                                        placeholder="Select Instrument Number"
+                                        enabled={instrumentNumbers && instrumentNumbers.length > 0}
+                                        placeholder={instrumentNumbers && instrumentNumbers.length > 0 ? "Select Instrument Number" : 'No Option Available'}
                                         selectedItem={instrument.instrumentNo}
                                     />
                                 </View>
@@ -56,21 +57,33 @@ const AddEditInstrument = ({
 
                 </View>
                 {
-                    !instrument.id &&  <Text style={styles.orText}>Or</Text>
+                    manualInstrumentSelect ?
+                        <TouchableOpacity
+                        style={[styles.row,
+                            { width: '25%', justifyContent:'center' }
+                            ]}
+                         onPress={() => {
+                            dispatch(setInstrumentInformation({ // clear selection
+                                ...instrument,
+                                instrumentNo: null,
+                                instrumentAmount: null,
+                                id: null,
+                                editable: true,
+                            }));
+                            setManualInstrumentSelected(!manualInstrumentSelect)
+                        }}>
+                            <Text style={styles.clearText}>Clear</Text>
+                        </TouchableOpacity>
+
+                        : <TouchableOpacity
+                            style={[styles.row,
+                            { width: '25%', justifyContent: 'space-between' }
+                            ]}
+                            onPress={() =>  setManualInstrumentSelected(!manualInstrumentSelect)}>
+                            <Text style={styles.orText}>Or</Text>
+                            <Text style={styles.selectText}>Select</Text>
+                        </TouchableOpacity>
                 }
-               
-                <Text onPress={() => {
-                    if (instrument && instrument.id)
-                        dispatch(setInstrumentInformation({ // clear selection
-                            ...instrument,
-                            instrumentNo: null,
-                            instrumentAmount: null,
-                            id: null,
-                            editable: true,
-                        }));
-                    else
-                        setManualInstrumentSelected(!manualInstrumentSelect) // manual selection of instrument
-                }} style={[styles.selectText,{width: instrument.id ? '25%' : '16%'}]}>{instrument.id ? 'Clear' : 'Select'}</Text>
             </View>
 
 
@@ -107,14 +120,21 @@ const styles = StyleSheet.create({
     instrumentNumberContainer: {
         width: '75%'
     },
-    orText:{
-      width:'9%',
-      fontSize: AppStyles.fontSize.medium,
-      fontFamily: AppStyles.fonts.defaultFont,
-      textAlign: 'center',
-      textAlignVertical:'center'
+    orText: {
+        fontSize: AppStyles.fontSize.medium,
+        fontFamily: AppStyles.fonts.defaultFont,
+        textAlign: 'center',
+        textAlignVertical: 'center',
+        marginLeft: 10,
     },
     selectText: {
+        marginRight: 10,
+        textDecorationLine: 'underline',
+        fontSize: AppStyles.fontSize.medium,
+        fontFamily: AppStyles.fonts.defaultFont,
+        textAlign: 'center',
+    },
+    clearText: {
         marginRight: 10,
         textDecorationLine: 'underline',
         fontSize: AppStyles.fontSize.medium,

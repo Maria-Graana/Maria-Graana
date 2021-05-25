@@ -212,7 +212,7 @@ const PaymentHelper = {
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
           ? null
           : firstFormData.finalPrice,
-      unitStatus: CMPayment.paymentType === 'token' ? 'Token' : 'Sold',
+      unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
       installmentDue: firstFormData.paymentPlan,
       finalPrice:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''

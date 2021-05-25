@@ -114,6 +114,7 @@ const AddPropsurePayment = ({
               propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer' ?
                 <AddEditInstrument
                   handleInstrumentInfoChange={handleInstrumentInfoChange}
+                  enabled={propsurePayment.status !== 'pendingAccount'}
                 />
                 :
                 null

@@ -172,6 +172,7 @@ const CMPaymentModal = ({
               CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer' ?
                 <AddEditInstrument 
                 handleInstrumentInfoChange={handleInstrumentInfoChange}
+                enabled={CMPayment.status !== 'pendingAccount'}
                 />
                 :
                 null

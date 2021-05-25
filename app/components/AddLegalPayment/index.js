@@ -113,6 +113,7 @@ const AddLegalPaymentModal = ({
               legalPayment.type === 'cheque' || legalPayment.type === 'pay-Order' || legalPayment.type === 'bank-Transfer' ?
                 <AddEditInstrument
                   handleInstrumentInfoChange={handleInstrumentInfoChange}
+                  enabled={legalPayment.status !== 'pendingAccount'}
                 />
                 :
                 null

@@ -114,6 +114,7 @@ const AddRCMPaymentModal = ({
               rcmPayment.type === 'cheque' || rcmPayment.type === 'pay-Order' || rcmPayment.type === 'bank-Transfer' ?
                 <AddEditInstrument 
                 handleInstrumentInfoChange={handleInstrumentInfoChange}
+                enabled={rcmPayment.status !== 'pendingAccount'}
                 />
                 :
                 null

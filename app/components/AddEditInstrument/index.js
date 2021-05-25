@@ -10,6 +10,7 @@ const AddEditInstrument = ({
     instruments,
     handleInstrumentInfoChange,
     instrument,
+    enabled
 }) => {
     const dispatch = useDispatch()
     const [manualInstrumentSelect, setManualInstrumentSelected] = useState(false);
@@ -33,18 +34,17 @@ const AddEditInstrument = ({
                                     <PickerComponent
                                         onValueChange={(itemValue, name) => {
                                             handleInstrumentInfoChange(itemValue, name);
-                                            setManualInstrumentSelected(false);
                                         }}
                                         data={instrumentNumbers}
                                         name={'instrumentNumberPicker'}
-                                        enabled={instrumentNumbers && instrumentNumbers.length > 0}
+                                        enabled={instrumentNumbers && instrumentNumbers.length > 0 && enabled}
                                         placeholder={instrumentNumbers && instrumentNumbers.length > 0 ? "Select Instrument Number" : 'No Option Available'}
                                         selectedItem={instrument.instrumentNo}
                                     />
                                 </View>
                             </View> :
                             <SimpleInputText
-                                editable={instrument.editable}
+                                editable={instrument.editable && enabled}
                                 name={'instrumentNumber'}
                                 fromatName={false}
                                 placeholder={'Enter Instrument Number'}
@@ -59,6 +59,7 @@ const AddEditInstrument = ({
                 {
                     manualInstrumentSelect ?
                         <TouchableOpacity
+                        disabled={!enabled}
                         style={[styles.row,
                             { width: '25%', justifyContent:'center' }
                             ]}
@@ -76,6 +77,7 @@ const AddEditInstrument = ({
                         </TouchableOpacity>
 
                         : <TouchableOpacity
+                            disabled={!enabled}
                             style={[styles.row,
                             { width: '25%', justifyContent: 'space-between' }
                             ]}
@@ -88,7 +90,7 @@ const AddEditInstrument = ({
 
 
             <SimpleInputText
-                editable={instrument.editable}
+                editable={instrument.editable && enabled}
                 name={'instrumentAmount'}
                 fromatName={false}
                 placeholder={'Enter Instrument Amount'}

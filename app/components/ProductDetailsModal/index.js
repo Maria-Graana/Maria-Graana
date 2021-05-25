@@ -96,8 +96,8 @@ class ProductDetailsModal extends React.Component {
     const { projectProduct } = data
     let projectValue =
       projectProduct && projectProduct.reservationAmount === 'fix_amount'
-        ? projectProduct.value
-        : `${projectProduct.value}%`
+        ? projectProduct && projectProduct.value
+        : `${projectProduct && projectProduct.value}%`
     return (
       <Modal isVisible={active}>
         <SafeAreaView>

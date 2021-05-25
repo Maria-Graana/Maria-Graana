@@ -16,7 +16,6 @@ import helper from '../../helper'
 import styles from './style'
 import moment from 'moment-timezone'
 import { formatNumericPrice } from '../PriceFormate'
-
 class ProductDetailsModal extends React.Component {
   constructor(props) {
     super(props)
@@ -50,7 +49,6 @@ class ProductDetailsModal extends React.Component {
       let newValues = values
       if (parseBol) newValues = JSON.parse(values)
       let newString = ''
-      let duplicate = false
       for (let i = 0; i < newValues.length; i++) {
         if (i === 0) {
           newString = newString + newValues[i]
@@ -66,29 +64,7 @@ class ProductDetailsModal extends React.Component {
         }
       }
       return newString
-    }
-  }
-
-  setRange = (values, delimeter, parseBol) => {
-    if (values) {
-      let newValues = values
-      if (parseBol) newValues = JSON.parse(values)
-      let newString = ''
-      if (newValues.length === 2) {
-        if (newValues[0] === newValues[1]) return [newValues[1]]
-      }
-      for (let i = 0; i < Number(newValues[newValues.length - 1]); i++) {
-        if (i === 0) {
-          let increment = Number(i) + 1
-          newString = newString + increment.toString()
-        }
-        if (i > 0) {
-          let increment = Number(i) + 1
-          newString = newString + ` ${delimeter} ` + increment.toString()
-        }
-      }
-      return newString
-    }
+    } else return '-'
   }
 
   render() {
@@ -96,8 +72,13 @@ class ProductDetailsModal extends React.Component {
     const { projectProduct } = data
     let projectValue =
       projectProduct && projectProduct.reservationAmount === 'fix_amount'
-        ? projectProduct && projectProduct.value
+        ? projectProduct && helper.currencyConvert(projectProduct.value)
         : `${projectProduct && projectProduct.value}%`
+    let investmentDurationPeriod =
+      projectProduct && projectProduct.investmentDuration === 'unlimited'
+        ? helper.capitalize(projectProduct.investmentDuration)
+        : `${projectProduct && projectProduct.investmentDurationPeriod + ' Month(s)'}`
+
     return (
       <Modal isVisible={active}>
         <SafeAreaView>
@@ -136,49 +117,59 @@ class ProductDetailsModal extends React.Component {
                 title: 'Reservation Amount',
                 value: projectValue,
               })}
+              {projectProduct && projectProduct.paymentPlan !== 'full_payment' ? (
+                <View>
+                  {this.detailTile({
+                    title: 'Down Payment',
+                    value: `${this.handleEmptyValueReturnZero(
+                      projectProduct && projectProduct.downPayment
+                    )}%`,
+                  })}
+                  {this.detailTile({
+                    title: 'Possession Charges',
+                    value: `${this.handleEmptyValueReturnZero(
+                      projectProduct && projectProduct.possessionCharges
+                    )}%`,
+                  })}
+                </View>
+              ) : null}
               {this.detailTile({
-                title: 'Down Payment',
-                value: `${this.handleEmptyValueReturnZero(
-                  projectProduct && projectProduct.downPayment
-                )}%`,
+                title: 'Payment Plan',
+                value: `${helper.capitalize(
+                  projectProduct && projectProduct.paymentPlan.replace(/_/g, ' ')
+                )}`,
               })}
-              {this.detailTile({
-                title: 'Possession Charges',
-                value: `${this.handleEmptyValueReturnZero(
-                  projectProduct && projectProduct.possessionCharges
-                )}%`,
-              })}
-              {this.detailTile({
-                title: 'Rayment Plan',
-                value: `${helper.capitalize(projectProduct && projectProduct.paymentPlan)}`,
-              })}
-              {this.detailTile({
-                title: 'Payment Plan Duration',
-                value: `${this.setRange(
-                  projectProduct && projectProduct.paymentPlanDuration,
-                  '-',
-                  true
-                )} (Years)`,
-              })}
-              {this.detailTile({
-                title: 'Installment Frequency',
-                value: this.setParseArrayValues(
-                  projectProduct && projectProduct.installmentFrequency,
-                  '/',
-                  false
-                ),
-              })}
+              {projectProduct && projectProduct.paymentPlan !== 'full_payment' ? (
+                <View>
+                  {this.detailTile({
+                    title: 'Payment Plan Duration',
+                    value: `${this.setParseArrayValues(
+                      projectProduct && projectProduct.paymentPlanDuration,
+                      '-',
+                      true
+                    )} Year(s)`,
+                  })}
+                  {this.detailTile({
+                    title: 'Installment Frequency',
+                    value: this.setParseArrayValues(
+                      projectProduct && projectProduct.installmentFrequency,
+                      '/',
+                      false
+                    ),
+                  })}
+                </View>
+              ) : null}
               {this.detailTile({
                 title: 'Annual Profit',
-                value: projectProduct && formatNumericPrice(projectProduct.annualProfit),
+                value: `${projectProduct && formatNumericPrice(projectProduct.annualProfit)}%`,
               })}
               {this.detailTile({
                 title: 'Annual Rent',
-                value: projectProduct && formatNumericPrice(projectProduct.monthlyRent),
+                value: `${projectProduct && formatNumericPrice(projectProduct.monthlyRent)}%`,
               })}
               {this.detailTile({
                 title: 'Investment Duration',
-                value: `${projectProduct && projectProduct.investmentDurationPeriod} (Months)`,
+                value: `${investmentDurationPeriod}`,
               })}
             </ScrollView>
           </View>

@@ -970,6 +970,29 @@ const helper = {
       }
     }
   },
+  // This function is not in use but we can use this for setting range like if max = 0 and min = 10
+  // it will return values from 0 to 10
+  setRange(values, delimeter, parseBol) {
+    if (values) {
+      let newValues = values
+      if (parseBol) newValues = JSON.parse(values)
+      let newString = ''
+      if (newValues.length === 2) {
+        if (newValues[0] === newValues[1]) return [newValues[1]]
+      }
+      for (let i = Number(newValues[0]); i < Number(newValues[newValues.length - 1]); i++) {
+        if (i === Number(newValues[0])) {
+          let increment = Number(i)
+          newString = newString + increment.toString()
+        }
+        if (i > 0) {
+          let increment = Number(i) + 1
+          newString = newString + ` ${delimeter} ` + increment.toString()
+        }
+      }
+      return newString + '(Years)'
+    } else return '-'
+  },
 }
 
 module.exports = helper

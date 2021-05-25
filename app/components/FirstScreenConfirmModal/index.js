@@ -44,6 +44,8 @@ class FirstScreenConfirmModal extends React.Component {
       allUnits.find((item) => {
         return data.unit === item.id && item
       })
+    let productName =
+      oneProductData && oneProductData.projectProduct && oneProductData.projectProduct.name
     return (
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
@@ -84,8 +86,7 @@ class FirstScreenConfirmModal extends React.Component {
               </Text>
             ) : (
               <Text style={styles.noramlText}>
-                Product Name:{' '}
-                <Text style={styles.mainTextLarge}>{oneProductData && oneProductData.name}</Text>
+                Product Name: <Text style={styles.mainTextLarge}>{productName && productName}</Text>
               </Text>
             )}
             <Text style={styles.noramlText}>

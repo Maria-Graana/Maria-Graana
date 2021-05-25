@@ -309,15 +309,17 @@ const PaymentHelper = {
           ]
         }
         let newData = []
-        for (
-          let i = Number(paymentPlanDuration[0]);
-          i <= Number(paymentPlanDuration[paymentPlanDuration.length - 1]);
-          i++
-        ) {
-          newData.push({
-            name: i.toString(),
-            value: i.toString(),
-          })
+        if (paymentPlanDuration) {
+          for (
+            let i = Number(paymentPlanDuration[0]);
+            i <= Number(paymentPlanDuration[paymentPlanDuration.length - 1]);
+            i++
+          ) {
+            newData.push({
+              name: i.toString(),
+              value: i.toString(),
+            })
+          }
         }
         return newData
       }

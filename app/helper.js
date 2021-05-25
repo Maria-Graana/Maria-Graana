@@ -150,16 +150,13 @@ const helper = {
     let taskDate = moment(val.date).format('YYYY-MM-DD')
     if (val.taskCategory === 'simpleTask') {
       // simple task is reffered to task added from diary directly or through lead but taskcategory is simpleTask
-      if (taskDate > todayDate && val.status !== 'inProgress' && val.status !== 'completed') {
+      if (taskDate > todayDate && val.status !== 'completed') {
         return 'To-do'
       } else if (
         taskDate < todayDate &&
-        val.status !== 'inProgress' &&
         val.status !== 'completed'
       ) {
         return 'Overdue'
-      } else if (val.status === 'inProgress') {
-        return 'In Progress'
       } else if (val.status === 'completed') {
         return 'Completed'
       } else if (val.status === 'pending') {
@@ -192,13 +189,11 @@ const helper = {
   checkStatusColor(val, todayDate) {
     let taskDate = moment(val.date).format('YYYY-MM-DD')
     if (val.taskCategory === 'simpleTask') {
-      if (taskDate > todayDate && val.status !== 'inProgress' && val.status !== 'completed') {
+      if (taskDate > todayDate && val.status !== 'completed') {
         return 'red'
       }
-      if (taskDate < todayDate && val.status !== 'inProgress' && val.status !== 'completed') {
+      if (taskDate < todayDate && val.status !== 'completed') {
         return AppStyles.colors.subTextColor
-      } else if (val.status === 'inProgress') {
-        return '#FDD835'
       } else if (val.status === 'completed') {
         return 'green'
       } else if (val.status === 'pending') {

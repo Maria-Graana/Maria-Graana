@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     selectText: {
-        marginRight: 10,
+        marginHorizontal: 10,
         textDecorationLine: 'underline',
         fontSize: AppStyles.fontSize.medium,
         fontFamily: AppStyles.fonts.defaultFont,

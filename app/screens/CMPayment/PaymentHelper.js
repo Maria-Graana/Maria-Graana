@@ -308,14 +308,17 @@ const PaymentHelper = {
             },
           ]
         }
-        let newData =
-          paymentPlanDuration &&
-          paymentPlanDuration.map((item) => {
-            return {
-              name: item.toString(),
-              value: item.toString(),
-            }
+        let newData = []
+        for (
+          let i = Number(paymentPlanDuration[0]);
+          i <= Number(paymentPlanDuration[paymentPlanDuration.length - 1]);
+          i++
+        ) {
+          newData.push({
+            name: i.toString(),
+            value: i.toString(),
           })
+        }
         return newData
       }
     }

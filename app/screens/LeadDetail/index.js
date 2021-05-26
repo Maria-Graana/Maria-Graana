@@ -289,9 +289,8 @@ class LeadDetail extends React.Component {
     const { lead } = this.state
     if (lead.origin) {
       if (lead.origin === 'arms') {
-        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${
-          lead.creator ? `(${lead.creator.firstName} ${lead.creator.lastName})` : ''
-        }`
+        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${lead.creator ? `(${lead.creator.firstName} ${lead.creator.lastName})` : ''
+          }`
       } else {
         return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`
       }
@@ -341,238 +340,261 @@ class LeadDetail extends React.Component {
       type = purpose
     }
     return !loading ? (
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={[
-          AppStyles.container,
-          styles.container,
-          { backgroundColor: AppStyles.colors.backgroundColor },
-        ]}
-      >
-        <View style={styles.outerContainer}>
-          <View style={styles.rowContainer}>
-            <View style={AppStyles.mb1}>
-              <Text style={styles.headingText}>Lead Type</Text>
-              <Text style={styles.labelText}>{type} </Text>
-            </View>
-            <View style={styles.statusView}>
-              <Text style={styles.textStyle}>
-                {lead.status && lead.status === 'token' ? (
-                  <Text>DEAL SIGNED - TOKEN</Text>
-                ) : lead.status === 'meeting' ? (
-                  lead.status.split('_').join(' ').toUpperCase() + ' PLANNED'
-                ) : (
-                  lead.status.split('_').join(' ').toUpperCase()
-                )}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.underLine} />
-          <View style={styles.rowContainer}>
-            <View style={AppStyles.mb1}>
-              <Text style={styles.headingText}>Client Name </Text>
-              <Text style={styles.labelText}>
-                {customerName === '' ? lead.customer && lead.customer.customerName : customerName}
-              </Text>
-            </View>
-            {purposeTab !== 'property' && (
-              <TouchableOpacity
-                onPress={() => this.goToClientsDetail()}
-                style={styles.roundButtonView}
-                activeOpacity={0.6}
-              >
-                <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-          <View style={styles.underLine} />
-          <View style={styles.mainDesView}>
-            <View style={styles.viewOne}>
-              <Text style={styles.headingText}>Description </Text>
-              {editDes === true ? (
+      <View style={[AppStyles.container, styles.container]}>
+        <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false} >
+
+          <View style={styles.cardContainer}>
+            <View style={styles.cardItemGrey}>
+              <View style={styles.rowContainer}>
                 <View>
-                  <TextInput
-                    placeholderTextColor={'#a8a8aa'}
-                    style={styles.inputDes}
-                    placeholder={`Edit Description`}
-                    value={description}
-                    onChangeText={(text) => {
-                      this.handleDes(text)
-                    }}
-                  />
-                  <TouchableOpacity
-                    onPress={() => this.submitDes()}
-                    style={styles.roundButtonViewTwo}
-                    activeOpacity={0.6}
-                  >
-                    <Text style={{ textAlign: 'center', color: '#fff' }}>Submit</Text>
-                  </TouchableOpacity>
+                  <Text style={styles.headingText}>Client Name </Text>
+                  <Text style={styles.labelText}>
+                    {customerName === '' ? lead.customer && lead.customer.customerName : customerName}
+                  </Text>
                 </View>
-              ) : (
-                <Text style={styles.labelText}>
-                  {lead.description && lead.description !== ''
-                    ? lead.description.replace(regex, '')
-                    : null}
-                </Text>
-              )}
-            </View>
-            {helper.checkAssignedSharedStatusANDReadOnly(user, lead) ? (
-              <View style={styles.viewTwo}>
-                {editDes === true ? (
+                {purposeTab !== 'property' && (
                   <TouchableOpacity
-                    onPress={() => {
-                      this.editDescription(false)
-                    }}
-                    style={styles.editDesBtn}
+                    onPress={() => this.goToClientsDetail()}
+                    style={styles.roundButtonView}
                     activeOpacity={0.6}
                   >
-                    <Image
-                      source={require('../../../assets/img/times.png')}
-                      style={styles.editImg}
-                    />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.editDescription(true)
-                    }}
-                    style={styles.editDesBtn}
-                    activeOpacity={0.6}
-                  >
-                    <Image
-                      source={require('../../../assets/img/edit.png')}
-                      style={styles.editImg}
-                    />
+                    <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
                   </TouchableOpacity>
                 )}
               </View>
-            ) : null}
+            </View>
+
+            <View style={styles.cardItemWhite}>
+              <Text style={styles.headingText}>Requirement </Text>
+              <Text style={styles.labelText}>
+                {!lead.projectId && leadSize}
+                {!lead.projectId && `${helper.capitalize(lead.subtype)} to ${type}`}
+                {lead.projectId && lead.projectType ? helper.capitalize(lead.projectType) : '-'}
+              </Text>
+            </View>
+
+            <View style={styles.cardItemGrey}>
+              <Text style={styles.headingText}>Price Range </Text>
+              {!lead.projectId && lead.min_price && lead.price ? (
+                <Text style={styles.labelText}>
+                  {helper.convertPriceToString(
+                    lead.min_price,
+                    lead.price,
+                    StaticData.Constants.any_value,
+                  )}
+                </Text>
+              ) : null}
+              {lead.projectId && lead.minPrice && lead.maxPrice ? (
+                <Text style={styles.labelText}>
+                  {helper.convertPriceToString(
+                    lead.minPrice,
+                    lead.maxPrice,
+                    StaticData.Constants.any_value
+                  )}
+                </Text>
+              ) : null}
+            </View>
+
+            <View style={styles.cardItemWhite}>
+              <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
+              {purposeTab === 'invest' ? (
+                <Text style={styles.labelText}>
+                  {projectName != '' ? projectName : 'Project not specified'}
+                </Text>
+              ) : (
+                <Text style={styles.labelText}>
+                  {!lead.projectId &&
+                    lead.armsLeadAreas &&
+                    lead.armsLeadAreas.length &&
+                    lead.armsLeadAreas[0].area
+                    ? lead.armsLeadAreas[0].area &&
+                    // lead.armsLeadAreas[0].area.name
+                    lead.armsLeadAreas.map((item, index) => {
+                      var comma = index > 0 ? ', ' : ''
+                      return comma + item.area.name
+                    })
+                    : 'Area not specified'}
+                  {!lead.projectId && lead.city && ' - ' + lead.city.name}
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.cardItemGrey}>
+             
+              <View style={styles.mainDesView}>
+                <View style={styles.viewOne}>
+                  <Text style={styles.headingText}>Description </Text>
+                  {editDes === true ? (
+                    <View>
+                      <TextInput
+                        placeholderTextColor={'#a8a8aa'}
+                        style={styles.inputDes}
+                        placeholder={`Edit Description`}
+                        value={description}
+                        onChangeText={(text) => {
+                          this.handleDes(text)
+                        }}
+                      />
+                      <TouchableOpacity
+                        onPress={() => this.submitDes()}
+                        style={styles.roundButtonViewTwo}
+                        activeOpacity={0.6}
+                      >
+                        <Text style={{ textAlign: 'center', color: '#fff' }}>Submit</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <Text style={[styles.labelText, { color: AppStyles.colors.textColor }]}>
+                      {lead.description && lead.description !== ''
+                        ? lead.description.replace(regex, '')
+                        : null}
+                    </Text>
+                  )}
+                </View>
+                {helper.checkAssignedSharedStatusANDReadOnly(user, lead) ? (
+                  <View style={styles.viewTwo}>
+                    {editDes === true ? (
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.editDescription(false)
+                        }}
+                        style={styles.editDesBtn}
+                        activeOpacity={0.6}
+                      >
+                        <Image
+                          source={require('../../../assets/img/times.png')}
+                          style={styles.editImg}
+                        />
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.editDescription(true)
+                        }}
+                        style={styles.editDesBtn}
+                        activeOpacity={0.6}
+                      >
+                        <Image
+                          source={require('../../../assets/img/edit.png')}
+                          style={styles.editImg}
+                        />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ) : null}
+              </View>
+            </View>
           </View>
-          <View style={styles.underLine} />
-          <Text style={styles.headingText}>Requirement </Text>
-          <Text style={styles.labelText}>
-            {!lead.projectId && leadSize}
-            {!lead.projectId && `${helper.capitalize(lead.subtype)} to ${type}`}
-            {lead.projectId && lead.projectType && helper.capitalize(lead.projectType)}
-          </Text>
-          <View style={styles.underLine} />
-          <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
-          {purposeTab === 'invest' ? (
-            <Text style={styles.labelText}>
-              {projectName != '' ? projectName : 'Project not specified'}
-            </Text>
-          ) : (
-            <Text style={styles.labelText}>
-              {!lead.projectId &&
-              lead.armsLeadAreas &&
-              lead.armsLeadAreas.length &&
-              lead.armsLeadAreas[0].area
-                ? lead.armsLeadAreas[0].area &&
-                  // lead.armsLeadAreas[0].area.name
-                  lead.armsLeadAreas.map((item, index) => {
-                    var comma = index > 0 ? ', ' : ''
-                    return comma + item.area.name
-                  })
-                : 'Area not specified'}
-              {!lead.projectId && lead.city && ' - ' + lead.city.name}
-            </Text>
-          )}
-          <View style={styles.underLine} />
-          <Text style={styles.headingText}>Price Range </Text>
-          {!lead.projectId && lead.min_price && lead.price ? (
-            <Text style={styles.labelText}>
-              {helper.convertPriceToString(
-                lead.min_price,
-                lead.price,
-                StaticData.Constants.any_value
-              )}
-            </Text>
-          ) : null}
-          {lead.projectId && lead.minPrice && lead.maxPrice ? (
-            <Text style={styles.labelText}>
-              {helper.convertPriceToString(
-                lead.minPrice,
-                lead.maxPrice,
-                StaticData.Constants.any_value
-              )}
-            </Text>
-          ) : null}
-          <View style={styles.underLine} />
-          <Text style={styles.headingText}>Assigned</Text>
-          <Text style={styles.labelText}>
-            {lead.assigned_at ? moment(lead.assigned_at).format('MMM DD YYYY, hh:mm A') : '-'}{' '}
-          </Text>
-          <View style={styles.underLine} />
-          <Text style={styles.headingText}>Created </Text>
-          <Text style={styles.labelText}>
-            {moment(lead.createdAt).format('MMM DD YYYY, hh:mm A')}{' '}
-          </Text>
-          <View style={styles.underLine} />
-          <Text style={styles.headingText}>Modified</Text>
-          <Text style={styles.labelText}>
-            {moment(lead.updatedAt).format('MMM DD YYYY, hh:mm A')}{' '}
-          </Text>
-          <View style={styles.underLine} />
-          {lead.shared_with_armsuser_id &&
-          user.id !== lead.shared_with_armsuser_id &&
-          lead.shareUser ? (
-            <>
-              <Text style={styles.headingText}>Shared with</Text>
-              <Text style={styles.labelText}>
-                {lead.shareUser.firstName +
-                  ' ' +
-                  lead.shareUser.lastName +
-                  ', ' +
-                  lead.shareUser.phoneNumber}{' '}
-              </Text>
-              <View style={styles.underLine} />
-            </>
-          ) : null}
-          {lead.shared_with_armsuser_id &&
-          user.id === lead.shared_with_armsuser_id &&
-          lead.armsuser ? (
-            <>
-              <Text style={styles.headingText}>Shared by</Text>
-              <Text style={styles.labelText}>
-                {lead.armsuser.firstName +
-                  ' ' +
-                  lead.armsuser.lastName +
-                  ', ' +
-                  (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
-              </Text>
-              <View style={styles.underLine} />
-            </>
-          ) : null}
-          {lead.sharedAt ? (
-            <>
-              <Text style={styles.headingText}>Shared at</Text>
-              <Text style={styles.labelText}>
-                {moment(lead.sharedAt).format('MMM DD YYYY, hh:mm A')}{' '}
-              </Text>
-              <View style={styles.underLine} />
-            </>
-          ) : null}
 
-          <Text style={styles.headingText}>Lead Source </Text>
-          <Text numberOfLines={1} style={styles.labelText}>
-            {leadSource} {lead.projectId && lead.bulk && '(Bulk uploaded)'}
-          </Text>
-          <View style={styles.underLine} />
-          <Text style={styles.headingText}>Assigned To </Text>
-          <Text style={styles.labelText}>
-            {lead.armsuser && lead.armsuser.firstName
-              ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName
-              : '-'}
-          </Text>
-          <View style={styles.underLine} />
-          <Text style={styles.headingText}>Lead ID</Text>
-          <Text style={styles.labelText}>{lead.id ? lead.id : ''} </Text>
-          <View style={styles.underLine} />
-          <Text style={styles.headingText}>Additional Information </Text>
-          <Text style={styles.labelText}>{lead.category ? lead.category : 'NA'} </Text>
-        </View>
+          <View style={styles.cardContainer}>
 
-        <View style={[AppStyles.assignButtonView]}>
+            <View style={styles.rowContainerType2}>
+              <Text style={styles.headingTextTypeTwo}>Lead Type</Text>
+              <Text style={[styles.labelTextTypeTwo, { width: '35%' }]}>{type} </Text>
+              <View style={styles.statusView}>
+                <Text style={styles.textStyle}>
+                  {lead.status && lead.status === 'token' ? (
+                    <Text>DEAL SIGNED - TOKEN</Text>
+                  ) : lead.status === 'meeting' ? (
+                    lead.status.split('_').join(' ').toUpperCase() + ' PLANNED'
+                  ) : (
+                    helper.showStatus(lead.status.replace(/_+/g, ' ')).toUpperCase()
+                  )}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.rowContainerType2}>
+              <Text style={styles.headingTextTypeTwo}>Assigned To </Text>
+              <Text style={styles.labelTextTypeTwo}>
+                {lead.armsuser && lead.armsuser.firstName
+                  ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName
+                  : '-'}
+              </Text>
+            </View>
+
+            <View style={styles.rowContainerType2}>
+              <Text style={styles.headingTextTypeTwo}>Assigned</Text>
+              <Text style={styles.labelTextTypeTwo}>
+                {lead.assigned_at ? moment(lead.assigned_at).format('MMM DD YYYY, hh:mm A') : '-'}{' '}
+              </Text>
+            </View>
+
+            <View style={styles.rowContainerType2}>
+              <Text style={styles.headingTextTypeTwo}>Created </Text>
+              <Text style={styles.labelTextTypeTwo}>
+                {moment(lead.createdAt).format('MMM DD YYYY, hh:mm A')}{' '}
+              </Text>
+            </View>
+
+            <View style={styles.rowContainerType2}>
+
+              <Text style={styles.headingTextTypeTwo}>Modified</Text>
+              <Text style={styles.labelTextTypeTwo}>
+                {moment(lead.updatedAt).format('MMM DD YYYY, hh:mm A')}{' '}
+              </Text>
+            </View>
+
+            {lead.shared_with_armsuser_id &&
+              user.id !== lead.shared_with_armsuser_id &&
+              lead.shareUser ? (
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Shared with</Text>
+                <Text style={styles.labelTextTypeTwo}>
+                  {lead.shareUser.firstName +
+                    ' ' +
+                    lead.shareUser.lastName +
+                    ', ' +
+                    lead.shareUser.phoneNumber}{' '}
+                </Text>
+              </View>
+            ) : null}
+
+            {lead.shared_with_armsuser_id &&
+              user.id === lead.shared_with_armsuser_id &&
+              lead.armsuser ? (
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Shared by</Text>
+                <Text style={styles.labelTextTypeTwo}>
+                  {lead.armsuser.firstName +
+                    ' ' +
+                    lead.armsuser.lastName +
+                    ', ' +
+                    (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
+                </Text>
+              </View>
+            ) : null}
+
+            {lead.sharedAt ? (
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Shared at</Text>
+                <Text style={styles.labelTextTypeTwo}>
+                  {moment(lead.sharedAt).format('MMM DD YYYY, hh:mm A')}{' '}
+                </Text>
+              </View>
+            ) : null}
+
+            <View style={styles.rowContainerType2}>
+              <Text style={styles.headingTextTypeTwo}>Lead Source </Text>
+              <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
+                {leadSource} {lead.projectId && lead.bulk && '(Bulk uploaded)'}
+              </Text>
+
+            </View>
+
+            <View style={styles.rowContainerType2}>
+              <Text style={styles.headingTextTypeTwo}>Lead ID</Text>
+              <Text style={styles.labelTextTypeTwo}>{lead.id ? lead.id : ''} </Text>
+            </View>
+            <View style={styles.rowContainerType2}>
+              <Text style={styles.headingTextTypeTwo}>Additional Info</Text>
+              <Text style={styles.labelTextTypeTwo}>{lead.category ? lead.category : 'NA'} </Text>
+            </View>
+          </View>
+
+        </ScrollView>
+
+        <View style={styles.bottom}>
           <Button
             onPress={() => {
               fromScreen ? this.goBack() : this.navigateTo()
@@ -582,10 +604,12 @@ class LeadDetail extends React.Component {
             <Text style={AppStyles.btnText}>{mainButtonText}</Text>
           </Button>
         </View>
-      </ScrollView>
-    ) : (
-      <Loader loading={loading} />
+      </View>
+
     )
+      : (
+        <Loader loading={loading} />
+      )
   }
 }
 

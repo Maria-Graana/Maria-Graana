@@ -6,27 +6,25 @@ export default styles = StyleSheet.create({
         backgroundColor: '#FFFFFF'
     },
     cardContainer: {
-        flex: 1,
+        flex:1,
         borderColor: AppStyles.colors.subTextColor,
         borderWidth: 0.5,
         borderRadius: 4,
-        marginTop: 10,
-        marginBottom: 15,
+        marginVertical: 10,
         padding: 1,
-        elevation: 10,
+        elevation: 5,
         shadowOffset: { width: 3, height: 3 },
         shadowColor: 'lightgrey',
         shadowOpacity: 1,
+        backgroundColor: 'white'
     },
     cardItemGrey: {
         backgroundColor: AppStyles.colors.backgroundColor,
         padding: 10,
-        // borderRadius:4,
     },
     cardItemWhite: {
         backgroundColor: AppStyles.bgcWhite.backgroundColor,
         padding: 10,
-        // borderRadius:4,
     },
     headingText: {
         fontSize: 12,
@@ -133,11 +131,4 @@ export default styles = StyleSheet.create({
         padding: 8,
         borderRadius: 4,
     },
-    bottom: {
-        position: 'absolute',
-        bottom: 0,
-        width:'100%',
-        alignSelf:'center'
-
-    }
 });

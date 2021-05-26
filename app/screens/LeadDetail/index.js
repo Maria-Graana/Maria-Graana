@@ -341,7 +341,7 @@ class LeadDetail extends React.Component {
     }
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
-        <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false} >
+        <ScrollView style={AppStyles.mb1} showsVerticalScrollIndicator={false} >
 
           <View style={styles.cardContainer}>
             <View style={styles.cardItemGrey}>
@@ -585,7 +585,9 @@ class LeadDetail extends React.Component {
             <View style={styles.rowContainerType2}>
               <Text style={styles.headingTextTypeTwo}>Lead ID</Text>
               <Text style={styles.labelTextTypeTwo}>{lead.id ? lead.id : ''} </Text>
+          
             </View>
+           
             <View style={styles.rowContainerType2}>
               <Text style={styles.headingTextTypeTwo}>Additional Info</Text>
               <Text style={styles.labelTextTypeTwo}>{lead.category ? lead.category : 'NA'} </Text>

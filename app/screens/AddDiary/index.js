@@ -206,7 +206,6 @@ class AddDiary extends Component {
         const { data } = route.params
         let endPoint = ``
         endPoint = `/api/diary/update?id=${data.id}`
-        let that = this;
         switch (type) {
             case 'completed':
                 axios.patch(endPoint, {
@@ -216,14 +215,6 @@ class AddDiary extends Component {
                         helper.deleteLocalNotification(data.id)
                         navigation.goBack();
                     }
-                })
-                break;
-            case 'inProgress':
-                axios.patch(endPoint, {
-                    status: type
-                }).then(function (response) {
-                    if (response.status == 200)
-                        navigation.goBack();
                 })
                 break;
             default:

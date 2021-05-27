@@ -270,7 +270,7 @@ class Diary extends React.Component {
     isManager = managerId ? user.id == managerId ? true : false : false;
     if (val.taskCategory === 'simpleTask' &&
       (val.addedBy === 'self' || isManager) &&
-      (val.status === 'pending' || val.status === 'inProgress') &&
+      (val.status === 'pending') &&
       Ability.canEdit(user.subRole, screen)) {
       navigation.navigate('AddDiary', { update: true, data: val, screenName: screen, managerId, agentId })
     }
@@ -299,7 +299,7 @@ class Diary extends React.Component {
     let isManager = false;
     const managerId = val.managerId ? val.managerId : null;
     isManager = managerId ? user.id == managerId ? true : false : false;
-    if ((val.taskType !== 'Daily Task' && val.taskType !== 'Weekly Task') && (val.addedBy === 'self' || isManager) && val.taskCategory === 'simpleTask') {
+    if ((val.addedBy === 'self' || isManager) && val.taskCategory === 'simpleTask') {
       ActionSheet.show(
         {
           options: BUTTONS,

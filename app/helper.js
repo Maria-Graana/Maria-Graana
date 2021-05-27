@@ -540,34 +540,34 @@ const helper = {
     if (!start) start = 0
     if (!end) end = 0
     if (start === 0 && end === 0) {
-      return 'PKR: 0'
+      return 'PKR 0'
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
-      return `PKR: Any`
+      return `PKR Any`
     } else if (start === 0 && end !== maxValue) {
-      return `PKR: Upto ${formatPrice(end)}`
+      return `PKR Upto ${formatPrice(end)}`
     } else if (start !== 0 && end === maxValue) {
-      return `PKR: ${formatPrice(start)} or more`
+      return `PKR ${formatPrice(start)} or more`
     } else if (start === end) {
-      return `PKR: ${formatPrice(start)} to ${formatPrice(end)}`
+      return `PKR ${formatPrice(start)} to ${formatPrice(end)}`
     } else {
-      return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
+      return `PKR ${formatPrice(start)} - ${formatPrice(end)}`
     }
   },
   convertPriceToIntegerString(start, end, maxValue) {
     if (!start) start = 0
     if (!end) end = 0
     if (start === 0 && end === 0) {
-      return 'PKR: 0'
+      return 'PKR 0'
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
-      return `PKR: Any`
+      return `PKR Any`
     } else if (start === 0 && end !== maxValue) {
-      return `PKR: Upto ${intFormatPrice(end)}`
+      return `PKR Upto ${intFormatPrice(end)}`
     } else if (start !== 0 && end === maxValue) {
-      return `PKR: ${intFormatPrice(start)} or more`
+      return `PKR ${intFormatPrice(start)} or more`
     } else if (start === end) {
-      return `PKR: ${intFormatPrice(start)} to ${intFormatPrice(end)}`
+      return `PKR ${intFormatPrice(start)} to ${intFormatPrice(end)}`
     } else {
-      return `PKR: ${intFormatPrice(start)} - ${intFormatPrice(end)}`
+      return `PKR ${intFormatPrice(start)} - ${intFormatPrice(end)}`
     }
   },
   convertSizeToString(start, end, maxValue, unit) {
@@ -578,17 +578,17 @@ const helper = {
       else unitType = this.capitalize(unitType)
     }
     if (start === 0 && end === 0) {
-      return 'Size: 0'
+      return 'Size 0'
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
-      return `Size: Any`
+      return `Size Any`
     } else if (start === 0 && end !== maxValue) {
-      return `Size: Upto ${end} ${this.capitalize(unitType)}`
+      return `Size Upto ${end} ${this.capitalize(unitType)}`
     } else if (start !== 0 && end === maxValue) {
-      return `Size: ${start} or more ${this.capitalize(unitType)}`
+      return `Size ${start} or more ${this.capitalize(unitType)}`
     } else if (start === end) {
-      return `Size: ${start} ${this.capitalize(unitType)}`
+      return `Size ${start} ${this.capitalize(unitType)}`
     } else {
-      return `Size: ${start} - ${end} ${this.capitalize(unitType)}`
+      return `Size ${start} - ${end} ${this.capitalize(unitType)}`
     }
   },
   convertSizeToStringV2(start, end, maxValue, unit) {

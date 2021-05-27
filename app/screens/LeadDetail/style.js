@@ -5,11 +5,43 @@ export default styles = StyleSheet.create({
     container: {
         backgroundColor: '#FFFFFF'
     },
+    cardContainer: {
+        flex:1,
+        borderColor: AppStyles.colors.subTextColor,
+        borderWidth: 0.5,
+        borderRadius: 4,
+        marginVertical: 10,
+        padding: 1,
+        elevation: 5,
+        shadowOffset: { width: 3, height: 3 },
+        shadowColor: 'lightgrey',
+        shadowOpacity: 1,
+        backgroundColor: 'white'
+    },
+    cardItemGrey: {
+        backgroundColor: AppStyles.colors.backgroundColor,
+        padding: 10,
+    },
+    cardItemWhite: {
+        backgroundColor: AppStyles.bgcWhite.backgroundColor,
+        padding: 10,
+    },
     headingText: {
         fontSize: 12,
         paddingLeft: 5,
-        paddingBottom: 0,
         fontFamily: AppStyles.fonts.lightFont
+    },
+    headingTextTypeTwo: {
+        fontSize: 14,
+        paddingLeft: 5,
+        fontFamily: AppStyles.fonts.lightFont,
+        width: '35%'
+    },
+    labelTextTypeTwo: {
+        fontSize: 14,
+        paddingLeft: 5,
+        fontFamily: AppStyles.fonts.defaultFont,
+        width: '65%'
     },
     padLeft: {
         paddingBottom: 2
@@ -17,35 +49,23 @@ export default styles = StyleSheet.create({
     labelText: {
         fontSize: 18,
         paddingLeft: 5,
-        fontFamily: AppStyles.fonts.defaultFont
+        color: AppStyles.colors.primaryColor,
+        fontFamily: AppStyles.fonts.defaultFont,
     },
     btn1: {
         marginBottom: 40,
     },
-    outerContainer: {
-        flex: 1,
-        backgroundColor: 'white',
-        marginTop: 15,
-        marginBottom: 20,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-    },
-    pad: {
-        padding: 10
-    },
-    underLine: {
-        height: 1,
-        width: "100%",
-        backgroundColor: "#ddd",
-        marginVertical: 10,
-        marginHorizontal: 5,
-    },
     rowContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    leadTypeHeading: {
-        flex: 1,
+    rowContainerType2: {
+        flexDirection: 'row',
+        width: '100%',
+        alignItems: 'center',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
     },
     statusView: {
         borderColor: AppStyles.colors.primaryColor,
@@ -54,7 +74,9 @@ export default styles = StyleSheet.create({
         borderRadius: 32,
         justifyContent: "center",
         paddingHorizontal: 10,
-        alignItems: "center"
+        alignItems: 'center',
+        marginRight: 5,
+        width: '30%',
     },
     roundButtonView: {
         backgroundColor: AppStyles.colors.primaryColor,

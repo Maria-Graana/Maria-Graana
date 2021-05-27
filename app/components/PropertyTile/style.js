@@ -15,7 +15,6 @@ export default styles = StyleSheet.create({
     paddingVertical: 10,
     marginTop: 10,
     marginBottom: hp('0.5%%'),
-    // marginHorizontal: wp('2.5%')
   },
 
 imageStyle: { 
@@ -78,6 +77,11 @@ imageStyle: {
     fontFamily: AppStyles.fonts.semiBoldFont,
     paddingLeft: wp('1.5%'),
     fontSize: AppStyles.fontSize.medium
+  },
+  propsureIcon: {
+      width:30,
+      height:30,
+     marginHorizontal:10,
   }
 
 });

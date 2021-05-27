@@ -150,16 +150,13 @@ const helper = {
     let taskDate = moment(val.date).format('YYYY-MM-DD')
     if (val.taskCategory === 'simpleTask') {
       // simple task is reffered to task added from diary directly or through lead but taskcategory is simpleTask
-      if (taskDate > todayDate && val.status !== 'inProgress' && val.status !== 'completed') {
+      if (taskDate > todayDate && val.status !== 'completed') {
         return 'To-do'
       } else if (
         taskDate < todayDate &&
-        val.status !== 'inProgress' &&
         val.status !== 'completed'
       ) {
         return 'Overdue'
-      } else if (val.status === 'inProgress') {
-        return 'In Progress'
       } else if (val.status === 'completed') {
         return 'Completed'
       } else if (val.status === 'pending') {
@@ -192,13 +189,11 @@ const helper = {
   checkStatusColor(val, todayDate) {
     let taskDate = moment(val.date).format('YYYY-MM-DD')
     if (val.taskCategory === 'simpleTask') {
-      if (taskDate > todayDate && val.status !== 'inProgress' && val.status !== 'completed') {
+      if (taskDate > todayDate && val.status !== 'completed') {
         return 'red'
       }
-      if (taskDate < todayDate && val.status !== 'inProgress' && val.status !== 'completed') {
+      if (taskDate < todayDate && val.status !== 'completed') {
         return AppStyles.colors.subTextColor
-      } else if (val.status === 'inProgress') {
-        return '#FDD835'
       } else if (val.status === 'completed') {
         return 'green'
       } else if (val.status === 'pending') {
@@ -969,6 +964,29 @@ const helper = {
         return property.armsuser.organization.isPP
       }
     }
+  },
+  // This function is not in use but we can use this for setting range like if max = 0 and min = 10
+  // it will return values from 0 to 10
+  setRange(values, delimeter, parseBol) {
+    if (values) {
+      let newValues = values
+      if (parseBol) newValues = JSON.parse(values)
+      let newString = ''
+      if (newValues.length === 2) {
+        if (newValues[0] === newValues[1]) return [newValues[1]]
+      }
+      for (let i = Number(newValues[0]); i < Number(newValues[newValues.length - 1]); i++) {
+        if (i === Number(newValues[0])) {
+          let increment = Number(i)
+          newString = newString + increment.toString()
+        }
+        if (i > 0) {
+          let increment = Number(i) + 1
+          newString = newString + ` ${delimeter} ` + increment.toString()
+        }
+      }
+      return newString + '(Years)'
+    } else return '-'
   },
 }
 

@@ -3,11 +3,8 @@
     "name": "ARMS",
     "slug": "arms",
     "privacy": "public",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "version": "1.25.2",
+    "platforms": ["ios", "android"],
+    "version": "1.25.3",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "scheme": "arms",
@@ -20,9 +17,7 @@
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.agency21.arms",
@@ -38,9 +33,7 @@
         "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
         "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
       },
-      "associatedDomains": [
-        "applinks:arms.graana.com"
-      ],
+      "associatedDomains": ["applinks:arms.graana.com"],
       "userInterfaceStyle": "automatic",
       "buildNumber": "17"
     },
@@ -49,7 +42,7 @@
       "googleServicesFile": "./google-services.json",
       "config": {
         "googleMaps": { "apiKey": "AIzaSyAn23x563AgxL5cANBS6wDNVjXeT7QCdJE" }
-        },
+      },
       "userInterfaceStyle": "automatic",
       "permissions": [
         "CAMERA",
@@ -82,10 +75,7 @@
               "pathPrefix": "/cmLead"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
 

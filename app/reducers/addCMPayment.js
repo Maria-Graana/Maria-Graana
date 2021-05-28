@@ -21,6 +21,7 @@ const payment = {
   firstForm: false,
   secondForm: false,
   officeLocationId: null,
+  instrumentId: null,
 }
 
 const CMPayment = (state = payment, action) => {

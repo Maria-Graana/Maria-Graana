@@ -31,6 +31,7 @@ import * as Permissions from 'expo-permissions'
 import * as IntentLauncher from 'expo-intent-launcher'
 import AddPropsurePayment from '../../components/AddPRopsurePayment'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import { clearInstrumentInformation, getInstrumentDetails, setInstrumentInformation } from '../../actions/addInstrument'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -67,8 +68,10 @@ class PropertyPropsure extends React.Component {
       propsureReportTypes: [],
       editable: false,
       deletePaymentVisible: false,
+      assignToAccountsLoading: false,
       previousPayment: 0,
       selectedPayment: {},
+      officeLocations: [],
       active: false,
       isFollowUpMode: false,
     }
@@ -79,12 +82,14 @@ class PropertyPropsure extends React.Component {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
         this.fetchLead(lead)
+        this.fetchOfficeLocations()
         this.fetchProperties(lead)
         this.fetchPropsureReportsList()
       } else {
         const { lead, rcmPayment, dispatch } = this.props
         dispatch(setRCMPayment({ ...rcmPayment, visible: false }))
         this.fetchLead(lead)
+        this.fetchOfficeLocations()
         this.fetchProperties(lead)
         this.fetchPropsureReportsList()
       }
@@ -131,9 +136,30 @@ class PropertyPropsure extends React.Component {
             selectedPropertyId: null,
             selectedProperty: null,
             selectedReports: [],
+            assignToAccountsLoading: false,
           })
         })
     })
+  }
+
+  fetchOfficeLocations = () => {
+    axios
+      .get(`/api/user/locations`)
+      .then((response) => {
+        if (response.data) {
+          this.setState({
+            officeLocations: response.data.map((item) => {
+              return {
+                name: item.name,
+                value: item.id,
+              }
+            }),
+          })
+        }
+      })
+      .catch((error) => {
+        console.log(`/api/user/locations`, error)
+      })
   }
 
   fetchLead = (lead) => {
@@ -141,13 +167,15 @@ class PropertyPropsure extends React.Component {
       .get(`api/leads/byid?id=${lead.id}`)
       .then((res) => {
         this.props.dispatch(setlead(res.data))
+        this.setState({ assignToAccountsLoading: false })
+
       })
       .catch((error) => {
         console.log(error)
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   downloadFile = async (data) => {
     const { pendingPropsures } = this.state
@@ -270,14 +298,14 @@ class PropertyPropsure extends React.Component {
     let installment = property.cmInstallment
       ? property.cmInstallment
       : {
-          installmentAmount: null,
-          type: '',
-          rcmLeadId: null,
-          details: '',
-          visible: false,
-          paymentAttachments: [],
-          selectedPropertyId: property.id,
-        }
+        installmentAmount: null,
+        type: '',
+        rcmLeadId: null,
+        details: '',
+        visible: false,
+        paymentAttachments: [],
+        selectedPropertyId: property.id,
+      }
     dispatch(setPropsurePayment(installment))
     this.setState({
       documentModalVisible: true,
@@ -498,7 +526,7 @@ class PropertyPropsure extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary'
     })
   }
 
@@ -633,24 +661,78 @@ class PropertyPropsure extends React.Component {
   }
 
   setCommissionEditData = (data) => {
-    const { dispatch } = this.props
+    const { dispatch, user, lead } = this.props
     this.setState({
       editable: true,
       documentModalVisible: false,
       previousPayment: data.installmentAmount,
     })
-    dispatch(setPropsurePayment({ ...data, visible: true }))
+
+    dispatch(
+      setPropsurePayment({
+        ...data,
+        visible: true,
+        officeLocationId:
+          data && data.officeLocationId
+            ? data.officeLocationId
+            : user && user.officeLocation
+              ? user.officeLocation.id
+              : null,
+      })
+    )
+
+    if (data && data.paymentInstrument && lead) {
+      dispatch(getInstrumentDetails(data.paymentInstrument.instrumentType, lead.customer_id))
+      dispatch(setInstrumentInformation({ ...data.paymentInstrument, editable: data.paymentInstrument.id ? false : true }));
+    }
+
   }
 
   handleCommissionChange = (value, name) => {
-    const { propsurePayment, dispatch } = this.props
+    const { propsurePayment, dispatch, lead, addInstrument } = this.props
     const newSecondFormData = {
       ...propsurePayment,
       visible: propsurePayment.visible,
     }
     newSecondFormData[name] = value
+    if (name === 'type' && (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')) {
+      if (lead && lead.customer_id) {
+        dispatch(getInstrumentDetails(value, lead.customer_id))
+        dispatch(setInstrumentInformation({
+          ...addInstrument,
+          customerId: lead && lead.customer_id
+            ? lead.customer_id
+            : null,
+          instrumentType: value,
+          instrumentAmount: null,
+          instrumentNo: null,
+          id: null,
+        }))
+      }
+
+    }
+    this.s
     this.setState({ buyerNotZero: false })
     dispatch(setPropsurePayment(newSecondFormData))
+  }
+
+  handleInstrumentInfoChange = (value, name) => {
+    const { addInstrument, dispatch, instruments } = this.props
+    const copyInstrument = { ...addInstrument };
+    if (name === 'instrumentNumber') {
+      copyInstrument.instrumentNo = value;
+    }
+    else if (name === 'instrumentNumberPicker') {
+      const instrument = instruments.find((item) => item.instrumentNo === value);
+      copyInstrument.instrumentNo = instrument.instrumentNo;
+      copyInstrument.instrumentAmount = instrument.instrumentAmount;
+      copyInstrument.id = instrument.id;
+      copyInstrument.editable = false;
+    }
+    else if (name === 'instrumentAmount')
+      copyInstrument.instrumentAmount = value;
+
+    dispatch(setInstrumentInformation(copyInstrument));
   }
 
   clearReduxAndStateValues = () => {
@@ -666,6 +748,7 @@ class PropertyPropsure extends React.Component {
     this.setState({
       modalValidation: false,
       addPaymentLoading: false,
+      assignToAccountsLoading: false,
       editable: false,
       totalReportPrice: 0,
     })
@@ -675,6 +758,7 @@ class PropertyPropsure extends React.Component {
   onModalCloseClick = () => {
     this.clearReduxAndStateValues()
   }
+
 
   submitCommissionPropsurePayment = () => {
     const { propsurePayment, user, lead } = this.props
@@ -689,91 +773,75 @@ class PropertyPropsure extends React.Component {
         addPaymentLoading: true,
       })
       if (Number(propsurePayment.installmentAmount) <= 0) {
-        this.setState({ buyerNotZero: true, addPaymentLoading: false })
+        this.setState({
+          buyerNotZero: true,
+          addPaymentLoading: false,
+          assignToAccountsLoading: false
+        })
         return
       }
       if (editable === false) {
-        // for commission addition
-        let body = {
-          ...propsurePayment,
-          rcmLeadId: lead.id,
-          armsUserId: user.id,
-          outstandingPayment:
-            Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount),
-          addedBy: 'seller',
-          amount: propsurePayment.installmentAmount,
-          shortlistPropertyId: propsurePayment.selectedPropertyId,
+
+        let body = {};
+        let outstandingPaymentCalc = Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount);
+
+        // for payment addition
+        if (propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+          if (isValid) {
+            this.addEditPropsureInstrumentOnServer(false, outstandingPaymentCalc);
+          }
         }
-        delete body.visible
-        delete body.installmentAmount
-        delete body.selectedPropertyId
-        delete body.paymentCategory
-        axios
-          .post(`/api/leads/propsurePayment`, body)
-          .then((response) => {
-            if (response.data) {
-              // check if some attachment exists so upload that as well to server with payment id.
-              if (propsurePayment.paymentAttachments.length > 0) {
-                propsurePayment.paymentAttachments.map((paymentAttachment) =>
-                  // payment attachments
-                  this.uploadPaymentAttachment(paymentAttachment, response.data.id)
-                )
-              } else {
-                this.clearReduxAndStateValues()
-                this.fetchLead(lead)
-                this.fetchProperties(lead)
-                helper.successToast('Propsure Payment Added')
-              }
-            }
-          })
-          .catch((error) => {
-            this.clearReduxAndStateValues()
-            console.log('Error: ', error)
-            helper.errorToast('Error Adding Propsure Payment')
-          })
+        else { // for all other types
+          body = {
+            ...propsurePayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            outstandingPayment: outstandingPaymentCalc,
+            addedBy: 'seller',
+            amount: propsurePayment.installmentAmount,
+            shortlistPropertyId: propsurePayment.selectedPropertyId,
+          }
+          delete body.visible
+          delete body.installmentAmount
+          delete body.selectedPropertyId
+          delete body.paymentCategory
+          this.addPropsurePayment(body)
+        }
+
       } else {
-        // commission update mode
-        let remaingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
-        remaingFee = remaingFee - Number(propsurePayment.installmentAmount)
-        let body = {
-          ...propsurePayment,
-          rcmLeadId: lead.id,
-          armsUserId: user.id,
-          outstandingPayment: remaingFee,
-          addedBy: 'seller',
-          installmentAmount: propsurePayment.installmentAmount,
-          shortlistPropertyId: propsurePayment.selectedPropertyId,
+
+        let remainingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
+        remainingFee = remainingFee - Number(propsurePayment.installmentAmount)
+        let body = {};
+        // payment update mode
+        if (propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+          if (isValid) {
+            this.addEditPropsureInstrumentOnServer(true, remainingFee);
+          }
         }
-        delete body.visible
-        delete body.remarks
-        delete body.selectedPropertyId
-        delete body.paymentCategory
-        axios
-          .patch(`/api/leads/project/payment?id=${body.id}`, body)
-          .then((res) => {
-            // upload only the new attachments that do not have id with them in object.
-            const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
-              ? _.filter(propsurePayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
-              : []
-            if (filterAttachmentsWithoutId.length > 0) {
-              filterAttachmentsWithoutId.map((item, index) => {
-                // payment attachments
-                this.uploadPaymentAttachment(item, body.id)
-              })
-            } else {
-              this.fetchLead(lead)
-              this.fetchProperties(lead)
-              this.clearReduxAndStateValues()
-              helper.successToast('Propsure Payment Updated')
-            }
-          })
-          .catch((error) => {
-            helper.errorToast('Error Updating Propsure Payment')
-            console.log('error: ', error)
-            this.clearReduxAndStateValues()
-          })
+        else { // for all other types
+
+          body = {
+            ...propsurePayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            outstandingPayment: remaingFee,
+            addedBy: 'seller',
+            installmentAmount: propsurePayment.installmentAmount,
+            shortlistPropertyId: propsurePayment.selectedPropertyId,
+          }
+          delete body.visible
+          delete body.remarks
+          delete body.selectedPropertyId
+          delete body.paymentCategory
+          this.updatePropsurePayment(body)
+        }
+
+
       }
     } else {
       // Installment amount or type is missing so validation goes true, show error
@@ -782,6 +850,165 @@ class PropertyPropsure extends React.Component {
       })
     }
   }
+
+  checkInstrumentValidation = () => {
+    const { addInstrument } = this.props;
+    if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
+      alert('Instrument Number cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;;
+    }
+    else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+      alert('Instrument Amount cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+
+  addPropsurePayment = (body) => {
+    const { lead, propsurePayment, dispatch } = this.props;
+    axios
+      .post(`/api/leads/propsurePayment`, body)
+      .then((response) => {
+        if (response.data) {
+          // check if some attachment exists so upload that as well to server with payment id.
+          if (propsurePayment.paymentAttachments.length > 0) {
+            propsurePayment.paymentAttachments.map((paymentAttachment) =>
+              // payment attachments
+              this.uploadPaymentAttachment(paymentAttachment, response.data.id)
+            )
+          } else {
+            this.fetchLead(lead)
+            this.fetchProperties(lead)
+            this.fetchPropsureReportsList()
+            helper.successToast('Propsure Payment Added')
+          }
+        }
+      })
+      .catch((error) => {
+        console.log('Error: ', error)
+        helper.errorToast('Error Adding Propsure Payment')
+      }).finally(() => {
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
+      })
+  }
+
+  updatePropsurePayment = (body) => {
+    const { propsurePayment, lead, dispatch } = this.props;
+    axios
+      .patch(`/api/leads/project/payment?id=${body.id}`, body)
+      .then((res) => {
+        // upload only the new attachments that do not have id with them in object.
+        const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
+          ? _.filter(propsurePayment.paymentAttachments, (item) => {
+            return !_.has(item, 'id')
+          })
+          : []
+        if (filterAttachmentsWithoutId.length > 0) {
+          filterAttachmentsWithoutId.map((item, index) => {
+            // payment attachments
+            this.uploadPaymentAttachment(item, body.id)
+          })
+        } else {
+          this.fetchLead(lead)
+          this.fetchProperties(lead)
+          this.fetchPropsureReportsList()
+          helper.successToast('Propsure Payment Updated')
+        }
+      })
+      .catch((error) => {
+        helper.errorToast('Error Updating Propsure Payment', error)
+      }).finally(() => {
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
+      })
+  }
+
+  addEditPropsureInstrumentOnServer = (isPropsureEdit = false, outstandingPayment) => {
+    let body = {};
+    const { addInstrument, propsurePayment, dispatch, lead, user } = this.props;
+    if (addInstrument.id) { // selected existing instrument // add mode
+      body = {
+        ...propsurePayment,
+        rcmLeadId: lead.id,
+        armsUserId: user.id,
+        outstandingPayment: outstandingPayment,
+        addedBy: 'seller',
+        amount: propsurePayment.installmentAmount,
+        shortlistPropertyId: propsurePayment.selectedPropertyId,
+        instrumentId: addInstrument.id,
+      }
+      delete body.visible
+      delete body.installmentAmount
+      delete body.selectedPropertyId
+      delete body.paymentCategory
+      if (isPropsureEdit)
+        this.updatePropsurePayment(body)
+      else
+        this.addPropsurePayment(body);
+    }
+    else { // add mode // new instrument info
+      axios.post(`api/leads/instruments`, addInstrument).then(res => {
+        if (res && res.data) {
+          body = {
+            ...propsurePayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            outstandingPayment: outstandingPayment,
+            addedBy: 'seller',
+            amount: propsurePayment.installmentAmount,
+            shortlistPropertyId: propsurePayment.selectedPropertyId,
+            instrumentId: res.data.id,
+          }
+          if (isPropsureEdit)
+            this.updatePropsurePayment(body)
+          else
+            this.addPropsurePayment(body);
+        }
+      }).catch(error => {
+        console.log('Error: ', error)
+      })
+    }
+  }
+
+  assignToAccounts = () => {
+    Alert.alert(
+      'Assign to Accounts',
+      'Are you sure you want to assign this payment to accounts?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            const { propsurePayment, dispatch } = this.props
+            await dispatch(
+              setPropsurePayment({ ...propsurePayment, visible: false, status: 'pendingAccount' })
+            )
+            this.setState({ assignToAccountsLoading: true }, () => {
+              this.submitCommissionPropsurePayment()
+            })
+          },
+        },
+      ],
+      { cancelable: false }
+    )
+  }
+
+  handleOfficeLocation = (value) => {
+    const { propsurePayment, dispatch } = this.props
+    dispatch(setPropsurePayment({ ...propsurePayment, officeLocationId: value }))
+  }
+
 
   uploadPaymentAttachment = (paymentAttachment, paymentId) => {
     const { lead } = this.props
@@ -816,9 +1043,9 @@ class PropertyPropsure extends React.Component {
       let pendingPropsures =
         data.propsures && data.propsures.length
           ? _.filter(
-              data.propsures,
-              (item) => item.status === 'pending' && item.addedBy === 'seller'
-            )
+            data.propsures,
+            (item) => item.status === 'pending' && item.addedBy === 'seller'
+          )
           : null
       let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'seller')
       totalFee = Number(propsureOutstandingPayment) - Number(totalFee)
@@ -888,7 +1115,9 @@ class PropertyPropsure extends React.Component {
       propsureReportTypes,
       deletePaymentVisible,
       active,
-      isFollowUpMode
+      isFollowUpMode,
+      officeLocations,
+      assignToAccountsLoading
     } = this.state
     const { lead, navigation, user } = this.props
 
@@ -931,12 +1160,17 @@ class PropertyPropsure extends React.Component {
         <AddPropsurePayment
           onModalCloseClick={this.onModalCloseClick}
           handleCommissionChange={this.handleCommissionChange}
+          handleInstrumentInfoChange={this.handleInstrumentInfoChange}
           modalValidation={modalValidation}
+          officeLocations={officeLocations}
           goToPayAttachments={() => this.goToPayAttachments(selectedProperty)}
           submitCommissionPayment={() => this.submitCommissionPropsurePayment()}
+          assignToAccountsLoading={assignToAccountsLoading}
           addPaymentLoading={addPaymentLoading}
+          assignToAccounts={this.assignToAccounts}
           lead={lead}
           paymentNotZero={buyerNotZero}
+          handleOfficeLocationChange={this.handleOfficeLocation}
         />
         <DeleteModal
           isVisible={deletePaymentVisible}
@@ -1018,9 +1252,9 @@ class PropertyPropsure extends React.Component {
             callButton={true}
             customer={lead.customer}
             lead={lead}
-            goToHistory={()=> null}
-            getCallHistory={()=> null}
-            goToFollowup={()=> this.openModalInFollowupMode()}
+            goToHistory={() => null}
+            getCallHistory={() => null}
+            goToFollowup={() => this.openModalInFollowupMode()}
           />
         </View>
         <LeadRCMPaymentPopup
@@ -1045,6 +1279,8 @@ mapStateToProps = (store) => {
     lead: store.lead.lead,
     propsurePayment: store.PropsurePayment.PropsurePayment,
     rcmPayment: store.RCMPayment.RCMPayment,
+    addInstrument: store.Instruments.addInstrument,
+    instruments: store.Instruments.instruments,
   }
 }
 

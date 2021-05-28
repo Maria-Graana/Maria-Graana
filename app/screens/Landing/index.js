@@ -28,7 +28,6 @@ import Ability from '../../hoc/Ability'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
 
-
 class Landing extends React.Component {
   constructor(props) {
     super(props)
@@ -69,15 +68,15 @@ class Landing extends React.Component {
         const purposeTab = pathArray.includes('cmLead')
           ? 'invest'
           : pathArray.includes('rcmLead') && pathArray.includes('buy')
-            ? 'sale'
-            : pathArray.includes('rcmLead') && pathArray.includes('rent')
-              ? 'rent'
-              : ''
+          ? 'sale'
+          : pathArray.includes('rcmLead') && pathArray.includes('rent')
+          ? 'rent'
+          : ''
         pathArray.includes('cmLead') || pathArray.includes('rcmLead')
           ? navigation.navigate('LeadDetail', {
-            purposeTab,
-            lead: { id: leadId },
-          })
+              purposeTab,
+              lead: { id: leadId },
+            })
           : null
       }
     })
@@ -92,15 +91,15 @@ class Landing extends React.Component {
       const purposeTab = pathArray.includes('cmLead')
         ? 'invest'
         : pathArray.includes('rcmLead') && pathArray.includes('buy')
-          ? 'sale'
-          : pathArray.includes('rcmLead') && pathArray.includes('rent')
-            ? 'rent'
-            : ''
+        ? 'sale'
+        : pathArray.includes('rcmLead') && pathArray.includes('rent')
+        ? 'rent'
+        : ''
       pathArray.includes('cmLead') || pathArray.includes('rcmLead')
         ? navigation.navigate('LeadDetail', {
-          purposeTab,
-          lead: { id: leadId },
-        })
+            purposeTab,
+            lead: { id: leadId },
+          })
         : null
     }
   }
@@ -189,15 +188,16 @@ class Landing extends React.Component {
   }
 
   isBcOrCCRole = () => {
-    const {user} = this.props;
-    if (user.subRole === 'business_centre_manager'
-      || user.subRole === 'business_centre_agent'
-      || user.subRole === 'call_centre_manager'
-      || user.subRole === 'call_centre_warrior'
-      || user.subRole === 'call_centre_agent')
-      return true;
-    else
-      return false;
+    const { user } = this.props
+    if (
+      user.subRole === 'business_centre_manager' ||
+      user.subRole === 'business_centre_agent' ||
+      user.subRole === 'call_centre_manager' ||
+      user.subRole === 'call_centre_warrior' ||
+      user.subRole === 'call_centre_agent'
+    )
+      return true
+    else return false
   }
 
   render() {
@@ -228,9 +228,11 @@ class Landing extends React.Component {
           onPress={() => {
             this.toggleStats()
           }}
-          style={toggleStatsTile ?
-             [styles.kpiContainer, {minHeight: this.isBcOrCCRole() ? null : hp('20%')}] : 
-             [styles.kpiContainerFalse, {minHeight: this.isBcOrCCRole() ? null : hp('20%') }]}
+          style={
+            toggleStatsTile
+              ? [styles.kpiContainer, { minHeight: this.isBcOrCCRole() ? null : hp('20%') }]
+              : [styles.kpiContainerFalse, { minHeight: this.isBcOrCCRole() ? null : hp('20%') }]
+          }
         >
           {toggleStatsTile ? (
             <View style={{ flex: 1 }}>
@@ -241,15 +243,17 @@ class Landing extends React.Component {
               ) : (
                 <>
                   <Text style={styles.kpiText}>KPIs</Text>
-                  <StatisticsTile imagePath={TargetNew} value={userStatistics.avgTime} />
-                  {
-                     this.isBcOrCCRole() ?
-                      null
-                      : <>
-                        <StatisticsTile imagePath={HomeBlue} value={userStatistics.listing} />
-                        <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
-                      </>
-                  }
+                  <StatisticsTile
+                    unit={'min'}
+                    imagePath={TargetNew}
+                    value={userStatistics.avgTime}
+                  />
+                  {this.isBcOrCCRole() ? null : (
+                    <>
+                      <StatisticsTile imagePath={HomeBlue} value={userStatistics.listing} />
+                      <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
+                    </>
+                  )}
                   <StatisticsTile
                     title={'LCR'}
                     value={this.showLeadWonAssignedPercentage(

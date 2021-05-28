@@ -3,7 +3,7 @@
 import axios from 'axios'
 import * as DocumentPicker from 'expo-document-picker'
 import * as React from 'react'
-import { Alert, FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, FlatList, Image, Linking, Text, TouchableNativeFeedbackBase, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
@@ -36,6 +36,7 @@ import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import { clearInstrumentInformation, clearInstrumentsList, getInstrumentDetails, setInstrumentInformation } from '../../actions/addInstrument'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -112,7 +113,10 @@ class LeadPropsure extends React.Component {
   }
 
   componentWillUnmount() {
+    const { dispatch } = this.props;
     this.clearReduxAndStateValues()
+    dispatch(clearInstrumentInformation());
+    dispatch(clearInstrumentsList());
     this._unsubscribe()
   }
 
@@ -247,7 +251,7 @@ class LeadPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => {}
+  displayChecks = () => { }
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -270,14 +274,14 @@ class LeadPropsure extends React.Component {
       let installment = property.cmInstallment
         ? property.cmInstallment
         : {
-            installmentAmount: null,
-            type: '',
-            rcmLeadId: null,
-            details: '',
-            visible: false,
-            paymentAttachments: [],
-            selectedPropertyId: property.id,
-          }
+          installmentAmount: null,
+          type: '',
+          rcmLeadId: null,
+          details: '',
+          visible: false,
+          paymentAttachments: [],
+          selectedPropertyId: property.id,
+        }
       dispatch(setPropsurePayment(installment))
       this.setState({
         documentModalVisible: true,
@@ -757,17 +761,11 @@ class LeadPropsure extends React.Component {
   }
 
   setCommissionEditData = (data) => {
-    const { dispatch, user } = this.props
+    const { dispatch, user, lead } = this.props
     this.setState({
       editable: true,
       documentModalVisible: false,
       previousPayment: data.installmentAmount,
-      officeLocationId:
-        data && data.officeLocationId
-          ? data.officeLocationId
-          : user && user.officeLocation
-          ? user.officeLocation.id
-          : null,
     })
     dispatch(
       setPropsurePayment({
@@ -777,21 +775,62 @@ class LeadPropsure extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
+
+    if (data && data.paymentInstrument && lead) {
+      dispatch(getInstrumentDetails(data.paymentInstrument.instrumentType, lead.customer_id))
+      dispatch(setInstrumentInformation({ ...data.paymentInstrument, editable: data.paymentInstrument.id ? false : true }));
+    }
   }
 
   handleCommissionChange = (value, name) => {
-    const { propsurePayment, dispatch } = this.props
+    const { propsurePayment, dispatch, lead, addInstrument } = this.props
     const newSecondFormData = {
       ...propsurePayment,
       visible: propsurePayment.visible,
     }
     newSecondFormData[name] = value
+
+    if (name === 'type' && (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')) {
+      if (lead && lead.customer_id) {
+        dispatch(getInstrumentDetails(value, lead.customer_id))
+        dispatch(setInstrumentInformation({
+          ...addInstrument,
+          customerId: lead && lead.customer_id
+            ? lead.customer_id
+            : null,
+          instrumentType: value,
+          instrumentAmount: null,
+          instrumentNo: null,
+          id: null,
+        }))
+      }
+
+    }
     this.setState({ buyerNotZero: false })
     dispatch(setPropsurePayment(newSecondFormData))
+  }
+
+  handleInstrumentInfoChange = (value, name) => {
+    const { addInstrument, dispatch, instruments } = this.props
+    const copyInstrument = { ...addInstrument };
+    if (name === 'instrumentNumber') {
+      copyInstrument.instrumentNo = value;
+    }
+    else if (name === 'instrumentNumberPicker') {
+      const instrument = instruments.find((item) => item.instrumentNo === value);
+      copyInstrument.instrumentNo = instrument.instrumentNo;
+      copyInstrument.instrumentAmount = instrument.instrumentAmount;
+      copyInstrument.id = instrument.id;
+      copyInstrument.editable = false;
+    }
+    else if (name === 'instrumentAmount')
+      copyInstrument.instrumentAmount = value;
+
+    dispatch(setInstrumentInformation(copyInstrument));
   }
 
   clearReduxAndStateValues = () => {
@@ -839,95 +878,204 @@ class LeadPropsure extends React.Component {
         return
       }
       if (editable === false) {
-        // for commission addition
-        let body = {
-          ...propsurePayment,
-          rcmLeadId: lead.id,
-          armsUserId: user.id,
-          outstandingPayment:
-            Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount),
-          addedBy: 'buyer',
-          amount: propsurePayment.installmentAmount,
-          shortlistPropertyId: propsurePayment.selectedPropertyId,
+
+        let body = {};
+        let outstandingPaymentCalc = Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount);
+
+        // for payment addition
+        if (propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+          if (isValid) {
+            this.addEditPropsureInstrumentOnServer(false, outstandingPaymentCalc);
+          }
         }
-        delete body.visible
-        delete body.installmentAmount
-        delete body.selectedPropertyId
-        delete body.paymentCategory
-        axios
-          .post(`/api/leads/propsurePayment`, body)
-          .then((response) => {
-            if (response.data) {
-              // check if some attachment exists so upload that as well to server with payment id.
-              if (propsurePayment.paymentAttachments.length > 0) {
-                propsurePayment.paymentAttachments.map((paymentAttachment) =>
-                  // payment attachments
-                  this.uploadPaymentAttachment(paymentAttachment, response.data.id)
-                )
-              } else {
-                this.clearReduxAndStateValues()
-                this.fetchLead(lead)
-                this.getCallHistory()
-                this.fetchProperties(lead)
-                this.fetchPropsureReportsList()
-                helper.successToast('Propsure Payment Added')
-              }
-            }
-          })
-          .catch((error) => {
-            this.clearReduxAndStateValues()
-            console.log('Error: ', error)
-            helper.errorToast('Error Adding Propsure Payment')
-          })
+        else { // for all other types
+          body = {
+            ...propsurePayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            outstandingPayment: outstandingPaymentCalc,
+            addedBy: 'buyer',
+            amount: propsurePayment.installmentAmount,
+            shortlistPropertyId: propsurePayment.selectedPropertyId,
+          }
+          delete body.visible
+          delete body.installmentAmount
+          delete body.selectedPropertyId
+          delete body.paymentCategory
+          this.addPropsurePayment(body)
+        }
+
       } else {
-        // commission update mode
-        let remaingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
-        remaingFee = remaingFee - Number(propsurePayment.installmentAmount)
-        let body = {
-          ...propsurePayment,
-          rcmLeadId: lead.id,
-          armsUserId: user.id,
-          outstandingPayment: remaingFee,
-          addedBy: 'buyer',
-          installmentAmount: propsurePayment.installmentAmount,
-          shortlistPropertyId: propsurePayment.selectedPropertyId,
+
+        let remainingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
+        remainingFee = remainingFee - Number(propsurePayment.installmentAmount)
+        let body = {};
+        // payment update mode
+        if (propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer') {
+          // for cheque,pay order and bank transfer
+          let isValid = this.checkInstrumentValidation();
+          if (isValid) {
+            this.addEditPropsureInstrumentOnServer(true, remainingFee);
+          }
         }
-        delete body.visible
-        delete body.remarks
-        delete body.selectedPropertyId
-        delete body.paymentCategory
-        axios
-          .patch(`/api/leads/project/payment?id=${body.id}`, body)
-          .then((res) => {
-            // upload only the new attachments that do not have id with them in object.
-            const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
-              ? _.filter(propsurePayment.paymentAttachments, (item) => {
-                  return !_.has(item, 'id')
-                })
-              : []
-            if (filterAttachmentsWithoutId.length > 0) {
-              filterAttachmentsWithoutId.map((item, index) => {
-                // payment attachments
-                this.uploadPaymentAttachment(item, body.id)
-              })
-            } else {
-              this.fetchLead(lead)
-              this.getCallHistory()
-              this.fetchProperties(lead)
-              this.fetchPropsureReportsList()
-              this.clearReduxAndStateValues()
-              helper.successToast('Propsure Payment Updated')
-            }
-          })
-          .catch((error) => {
-            helper.errorToast('Error Updating Propsure Payment', error)
-            this.clearReduxAndStateValues()
-          })
+        else { // for all other types
+
+          body = {
+            ...propsurePayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            outstandingPayment: remaingFee,
+            addedBy: 'buyer',
+            installmentAmount: propsurePayment.installmentAmount,
+            shortlistPropertyId: propsurePayment.selectedPropertyId,
+          }
+          delete body.visible
+          delete body.remarks
+          delete body.selectedPropertyId
+          delete body.paymentCategory
+          this.updatePropsurePayment(body)
+        }
+
+
       }
     } else {
       // Installment amount or type is missing so validation goes true, show error
       this.setState({
         modalValidation: true,
+      })
+    }
+  }
+
+  checkInstrumentValidation = () => {
+    const { addInstrument } = this.props;
+    if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
+      alert('Instrument Number cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;;
+    }
+    else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+      alert('Instrument Amount cannot be empty');
+      this.setState({
+        addPaymentLoading: false,
+        assignToAccountsLoading: false
+      })
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+
+  addPropsurePayment = (body) => {
+    const { lead, propsurePayment, dispatch } = this.props;
+    axios
+      .post(`/api/leads/propsurePayment`, body)
+      .then((response) => {
+        if (response.data) {
+          // check if some attachment exists so upload that as well to server with payment id.
+          if (propsurePayment.paymentAttachments.length > 0) {
+            propsurePayment.paymentAttachments.map((paymentAttachment) =>
+              // payment attachments
+              this.uploadPaymentAttachment(paymentAttachment, response.data.id)
+            )
+          } else {
+            this.fetchLead(lead)
+            this.getCallHistory()
+            this.fetchProperties(lead)
+            this.fetchPropsureReportsList()
+            helper.successToast('Propsure Payment Added')
+          }
+        }
+      })
+      .catch((error) => {
+        console.log('Error: ', error)
+        helper.errorToast('Error Adding Propsure Payment')
+      }).finally(() => {
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
+      })
+  }
+
+  updatePropsurePayment = (body) => {
+    const { propsurePayment, lead, dispatch } = this.props;
+    axios
+      .patch(`/api/leads/project/payment?id=${body.id}`, body)
+      .then((res) => {
+        // upload only the new attachments that do not have id with them in object.
+        const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
+          ? _.filter(propsurePayment.paymentAttachments, (item) => {
+            return !_.has(item, 'id')
+          })
+          : []
+        if (filterAttachmentsWithoutId.length > 0) {
+          filterAttachmentsWithoutId.map((item, index) => {
+            // payment attachments
+            this.uploadPaymentAttachment(item, body.id)
+          })
+        } else {
+          this.fetchLead(lead)
+          this.getCallHistory()
+          this.fetchProperties(lead)
+          this.fetchPropsureReportsList()
+          helper.successToast('Propsure Payment Updated')
+        }
+      })
+      .catch((error) => {
+        helper.errorToast('Error Updating Propsure Payment', error)
+      }).finally(() => {
+        this.clearReduxAndStateValues()
+        dispatch(clearInstrumentInformation());
+      })
+  }
+
+  addEditPropsureInstrumentOnServer = (isPropsureEdit = false, outstandingPayment) => {
+    let body = {};
+    const { addInstrument, propsurePayment, dispatch, lead, user } = this.props;
+    if (addInstrument.id) { // selected existing instrument // add mode
+      body = {
+        ...propsurePayment,
+        rcmLeadId: lead.id,
+        armsUserId: user.id,
+        outstandingPayment: outstandingPayment,
+        addedBy: 'buyer',
+        amount: propsurePayment.installmentAmount,
+        shortlistPropertyId: propsurePayment.selectedPropertyId,
+        instrumentId: addInstrument.id,
+      }
+      delete body.visible
+      delete body.installmentAmount
+      delete body.selectedPropertyId
+      delete body.paymentCategory
+      if (isPropsureEdit)
+        this.updatePropsurePayment(body)
+      else
+        this.addPropsurePayment(body);
+    }
+    else { // add mode // new instrument info
+      axios.post(`api/leads/instruments`, addInstrument).then(res => {
+        if (res && res.data) {
+          body = {
+            ...propsurePayment,
+            rcmLeadId: lead.id,
+            armsUserId: user.id,
+            outstandingPayment: outstandingPayment,
+            addedBy: 'buyer',
+            amount: propsurePayment.installmentAmount,
+            shortlistPropertyId: propsurePayment.selectedPropertyId,
+            instrumentId: res.data.id,
+          }
+          if (isPropsureEdit)
+            this.updatePropsurePayment(body)
+          else
+            this.addPropsurePayment(body);
+        }
+      }).catch(error => {
+        console.log('Error: ', error)
       })
     }
   }
@@ -965,9 +1113,9 @@ class LeadPropsure extends React.Component {
       let pendingPropsures =
         data.propsures && data.propsures.length
           ? _.filter(
-              data.propsures,
-              (item) => item.status === 'pending' && item.addedBy === 'buyer'
-            )
+            data.propsures,
+            (item) => item.status === 'pending' && item.addedBy === 'buyer'
+          )
           : null
       let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'buyer')
       totalFee = Number(propsureOutstandingPayment) - Number(totalFee)
@@ -1090,7 +1238,7 @@ class LeadPropsure extends React.Component {
       comments: status,
       leadId: lead.id,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
   }
 
   render() {
@@ -1187,10 +1335,13 @@ class LeadPropsure extends React.Component {
             goToPayAttachments={() => this.goToPayAttachments(selectedProperty)}
             submitCommissionPayment={() => this.submitCommissionPropsurePayment()}
             addPaymentLoading={addPaymentLoading}
+            assignToAccountsLoading={assignToAccountsLoading}
             lead={lead}
             paymentNotZero={buyerNotZero}
             officeLocations={officeLocations}
             assignToAccounts={this.assignToAccounts}
+            handleInstrumentInfoChange={this.handleInstrumentInfoChange}
+            handleOfficeLocationChange={this.handleOfficeLocation}
           />
           <DeleteModal
             isVisible={deletePaymentVisible}
@@ -1329,6 +1480,8 @@ mapStateToProps = (store) => {
     lead: store.lead.lead,
     propsurePayment: store.PropsurePayment.PropsurePayment,
     rcmPayment: store.RCMPayment.RCMPayment,
+    addInstrument: store.Instruments.addInstrument,
+    instruments: store.Instruments.instruments,
   }
 }
 

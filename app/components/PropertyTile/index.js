@@ -107,15 +107,17 @@ class InventoryTile extends React.Component {
         </View>
 
         <View style={{ width: checkForGraanaProperties === true ? wp('50%') : wp('60%') }}>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row', alignItems:'center' }}>
             <Text style={styles.currencyTextStyle}>PKR</Text>
             <Text style={styles.priceTextStyle} numberOfLines={1}>
               {helper.checkPrice(data.price)}
             </Text>
+            {
+              data && data.propsure_id ? <Image style={styles.propsureIcon} source={require('../../../assets/img/pp_logo.png')}/> : null
+            }
             {screen === 'fields' && data.status === 'onhold' ? (
               <View style={{
                 alignSelf: 'flex-end',
-                margin: 8
               }}>
                 <Menu
                   visible={showMenu && data.id === selectedProperty.id}
@@ -196,9 +198,7 @@ class InventoryTile extends React.Component {
 
         {
           checkForGraanaProperties === true ?
-            <View style={{
-              margin: 8
-            }}><Menu
+            <View style={{marginHorizontal: 5, marginVertical: 5}}><Menu
               visible={showGraanaMenu && data.id === selectedProperty.id}
               onDismiss={() => hideGraanaMenu()}
               anchor={

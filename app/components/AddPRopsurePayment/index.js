@@ -1,8 +1,7 @@
 /** @format */
 
 import React, { useState } from 'react'
-import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native'
-import Modal from 'react-native-modal'
+import { View, StyleSheet, Text, Image, TouchableOpacity, Modal, FlatList, ScrollView, SafeAreaView } from 'react-native'
 import { connect } from 'react-redux'
 import times from '../../../assets/img/times.png'
 import SimpleInputText from '../SimpleInputField'
@@ -15,6 +14,7 @@ import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
 import OfficeLocationSelector from '../OfficeLocationSelector'
+import AddEditInstrument from '../AddEditInstrument'
 
 const AddPropsurePayment = ({
   onModalCloseClick,
@@ -31,6 +31,7 @@ const AddPropsurePayment = ({
   assignToAccounts,
   officeLocations,
   handleOfficeLocationChange,
+  handleInstrumentInfoChange,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -59,230 +60,242 @@ const AddPropsurePayment = ({
     }
   }
   return (
-    <Modal isVisible={propsurePayment.visible}>
-      <View style={styles.modalMain}>
-        <View style={styles.topHeader}>
-          <Text style={styles.headingText}>Enter Details</Text>
-          <TouchableOpacity
-            style={styles.timesBtn}
-            onPress={() => {
-              setCollapsed(false)
-              setRemarks([])
-              onModalCloseClick()
-            }}
-          >
-            <Image source={times} style={styles.timesImg} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.moreViewContainer}>
-          {/* **************************************** */}
-          <SimpleInputText
-            name={'installmentAmount'}
-            fromatName={false}
-            placeholder={'Enter Amount'}
-            label={'ENTER AMOUNT'}
-            value={propsurePayment.installmentAmount}
-            formatValue={propsurePayment.installmentAmount}
-            keyboardType={'numeric'}
-            onChangeHandle={handleCommissionChange}
-            editable={editTextInput && propsurePayment.status !== 'pendingAccount'}
-          />
-          {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
-          {modalValidation === true &&
-          (propsurePayment.installmentAmount == null || propsurePayment.installmentAmount == '') ? (
-            <ErrorMessage errorMessage={'Required'} />
-          ) : null}
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <PickerComponent
-                onValueChange={handleCommissionChange}
-                enabled={propsurePayment.status !== 'pendingAccount'}
-                data={StaticData.fullPaymentType}
-                name={'type'}
-                placeholder="Type"
-                selectedItem={propsurePayment.type}
-              />
-              {modalValidation === true && propsurePayment.type == '' && (
-                <ErrorMessage errorMessage={'Required'} />
-              )}
-            </View>
-          </View>
-
-          <SimpleInputText
-            name={'details'}
-            fromatName={false}
-            placeholder={'Details'}
-            label={'DETAILS'}
-            value={propsurePayment.details != '' ? propsurePayment.details : ''}
-            editable={propsurePayment.status !== 'pendingAccount'}
-            formatValue={''}
-            onChangeHandle={handleCommissionChange}
-          />
-
-          {propsurePayment.id && (
+    <Modal visible={propsurePayment.visible}>
+      <SafeAreaView style={AppStyles.mb1}>
+        <ScrollView style={styles.modalMain}>
+          <View style={styles.topHeader}>
+            <Text style={styles.headingText}>Enter Details</Text>
             <TouchableOpacity
-              disabled={loading}
-              style={styles.addPaymentBtn}
-              onPress={() => fetchRemarks()}
+              style={styles.timesBtn}
+              onPress={() => {
+                setCollapsed(false)
+                setRemarks([])
+                onModalCloseClick()
+              }}
             >
-              <Image
-                style={[styles.arrowDownImg, isCollapsed === true && styles.rotateImg]}
-                source={require('../../../assets/img/arrowDown.png')}
-              ></Image>
-              <Text style={styles.addPaymentBtnText}>VIEW REMARKS</Text>
+              <Image source={times} style={styles.timesImg} />
             </TouchableOpacity>
-          )}
-
-          {loading === false && isCollapsed ? (
-            remarks.length > 0 ? (
-              <FlatList
-                style={{ minHeight: 20, maxHeight: 150 }}
-                data={remarks}
-                renderItem={({ item, index }) => (
-                  <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
-                    <View>
-                      <Text style={[styles.smallText]}>
-                        {item.armsuser.firstName} {item.armsuser.lastName}{' '}
-                        <Text style={styles.smallestText}>
-                          {' '}
-                          ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
-                        </Text>
-                      </Text>
-                      <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
-                    </View>
-                  </View>
+          </View>
+          <View style={styles.moreViewContainer}>
+            {/* **************************************** */}
+            <SimpleInputText
+              name={'installmentAmount'}
+              fromatName={false}
+              placeholder={'Enter Amount'}
+              label={'ENTER AMOUNT'}
+              value={propsurePayment.installmentAmount}
+              formatValue={propsurePayment.installmentAmount}
+              keyboardType={'numeric'}
+              onChangeHandle={handleCommissionChange}
+              editable={editTextInput && propsurePayment.status !== 'pendingAccount'}
+            />
+            {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+            {modalValidation === true &&
+              (propsurePayment.installmentAmount == null || propsurePayment.installmentAmount == '') ? (
+              <ErrorMessage errorMessage={'Required'} />
+            ) : null}
+            <View style={[AppStyles.mainInputWrap]}>
+              <View style={[AppStyles.inputWrap]}>
+                <PickerComponent
+                  onValueChange={handleCommissionChange}
+                  enabled={propsurePayment.status !== 'pendingAccount'}
+                  data={StaticData.fullPaymentType}
+                  name={'type'}
+                  placeholder="Type"
+                  selectedItem={propsurePayment.type}
+                />
+                {modalValidation === true && propsurePayment.type == '' && (
+                  <ErrorMessage errorMessage={'Required'} />
                 )}
-                keyExtractor={(item) => item.id.toString()}
-              />
-            ) : (
-              <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
-            )
-          ) : null}
+              </View>
+            </View>
 
-          {propsurePayment.installmentAmount != null &&
-            propsurePayment.installmentAmount != '' &&
-            propsurePayment.type != '' && (
+            {
+              propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer' ?
+                <AddEditInstrument
+                  handleInstrumentInfoChange={handleInstrumentInfoChange}
+                  enabled={propsurePayment.status !== 'pendingAccount'}
+                />
+                :
+                null
+            }
+
+            <SimpleInputText
+              name={'details'}
+              fromatName={false}
+              placeholder={'Details'}
+              label={'DETAILS'}
+              value={propsurePayment.details != '' ? propsurePayment.details : ''}
+              editable={propsurePayment.status !== 'pendingAccount'}
+              formatValue={''}
+              onChangeHandle={handleCommissionChange}
+            />
+
+            {propsurePayment.id && (
               <TouchableOpacity
-                style={[
-                  styles.addPaymentBtn,
-                  {
-                    backgroundColor:
-                      propsurePayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
-                    borderColor:
-                      propsurePayment.status === 'pendingAccount'
-                        ? '#8baaef'
-                        : AppStyles.colors.primaryColor,
-                  },
-                ]}
-                disabled={propsurePayment.status === 'pendingAccount'}
-                onPress={() => {
-                  goToPayAttachments()
-                }}
+                disabled={loading}
+                style={styles.addPaymentBtn}
+                onPress={() => fetchRemarks()}
               >
-                <Text
-                  style={[
-                    styles.addPaymentBtnText,
-                    {
-                      color:
-                        propsurePayment.status === 'pendingAccount'
-                          ? '#f3f5f7'
-                          : AppStyles.colors.primaryColor,
-                    },
-                  ]}
-                >
-                  ADD ATTACHMENTS
-                </Text>
+                <Image
+                  style={[styles.arrowDownImg, isCollapsed === true && styles.rotateImg]}
+                  source={require('../../../assets/img/arrowDown.png')}
+                ></Image>
+                <Text style={styles.addPaymentBtnText}>VIEW REMARKS</Text>
               </TouchableOpacity>
             )}
 
-          {propsurePayment.id ? (
-            <OfficeLocationSelector
-              officeLocations={officeLocations}
-              officeLocationId={propsurePayment.officeLocationId}
-              handleOfficeLocationChange={handleOfficeLocationChange}
-              disabled={propsurePayment.status === 'pendingAccount'}
-            />
-          ) : null}
+            {loading === false && isCollapsed ? (
+              remarks.length > 0 ? (
+                <FlatList
+                  style={{ minHeight: 20, maxHeight: 150 }}
+                  data={remarks}
+                  renderItem={({ item, index }) => (
+                    <View style={[styles.MainTileView, index === 0 ? styles.noBorder : null]}>
+                      <View>
+                        <Text style={[styles.smallText]}>
+                          {item.armsuser.firstName} {item.armsuser.lastName}{' '}
+                          <Text style={styles.smallestText}>
+                            {' '}
+                          ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
+                        </Text>
+                        </Text>
+                        <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
+                      </View>
+                    </View>
+                  )}
+                  keyExtractor={(item) => item.id.toString()}
+                />
+              ) : (
+                <ErrorMessage color={'gray'} errorMessage={'No Payment Remarks Exists'} />
+              )
+            ) : null}
 
-          <View style={styles.row}>
-            {propsurePayment.status && propsurePayment.paymentCategory !== 'token' ? (
+            {propsurePayment.installmentAmount != null &&
+              propsurePayment.installmentAmount != '' &&
+              propsurePayment.type != '' && (
+                <TouchableOpacity
+                  style={[
+                    styles.addPaymentBtn,
+                    {
+                      backgroundColor:
+                        propsurePayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                      borderColor:
+                        propsurePayment.status === 'pendingAccount'
+                          ? '#8baaef'
+                          : AppStyles.colors.primaryColor,
+                    },
+                  ]}
+                  disabled={propsurePayment.status === 'pendingAccount'}
+                  onPress={() => {
+                    goToPayAttachments()
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.addPaymentBtnText,
+                      {
+                        color:
+                          propsurePayment.status === 'pendingAccount'
+                            ? '#f3f5f7'
+                            : AppStyles.colors.primaryColor,
+                      },
+                    ]}
+                  >
+                    ADD ATTACHMENTS
+                </Text>
+                </TouchableOpacity>
+              )}
+
+            {propsurePayment.id ? (
+              <OfficeLocationSelector
+                officeLocations={officeLocations}
+                officeLocationId={propsurePayment.officeLocationId}
+                handleOfficeLocationChange={handleOfficeLocationChange}
+                disabled={propsurePayment.status === 'pendingAccount'}
+              />
+            ) : null}
+
+            <View style={styles.row}>
+              {propsurePayment.status && propsurePayment.paymentCategory !== 'token' ? (
+                <TouchableButton
+                  disabled={
+                    propsurePayment.status !== 'open' &&
+                    propsurePayment.status !== 'pendingSales' &&
+                    propsurePayment.status !== 'notCleared'
+                  }
+                  containerBackgroundColor={
+                    propsurePayment.status === 'open' ||
+                      propsurePayment.status === 'pendingSales' ||
+                      propsurePayment.status === 'notCleared'
+                      ? AppStyles.colors.primaryColor
+                      : '#8baaef'
+                  }
+                  containerStyle={[
+                    styles.bookedBtn,
+                    {
+                      width: '50%',
+                      marginVertical: 15,
+                      marginRight: 10,
+                      borderColor:
+                        propsurePayment.status === 'open' ||
+                          propsurePayment.status === 'pendingSales' ||
+                          propsurePayment.status === 'notCleared'
+                          ? AppStyles.colors.primaryColor
+                          : '#8baaef',
+                    },
+                  ]}
+                  label={'ASSIGN TO ACCOUNTS'}
+                  textColor={
+                    propsurePayment.status === 'open' ||
+                      propsurePayment.status === 'pendingSales' ||
+                      propsurePayment.status === 'notCleared'
+                      ? '#fff'
+                      : '#f3f5f7'
+                  }
+                  fontFamily={AppStyles.fonts.boldFont}
+                  fontSize={16}
+                  loading={assignToAccountsLoading}
+                  onPress={() =>
+                    propsurePayment.officeLocationId === null
+                      ? alert('Payment Location cannot be empty!')
+                      : assignToAccounts()
+                  }
+                />
+              ) : null}
+
               <TouchableButton
-                disabled={
-                  propsurePayment.status !== 'open' &&
-                  propsurePayment.status !== 'pendingSales' &&
-                  propsurePayment.status !== 'notCleared'
-                }
-                containerBackgroundColor={
-                  propsurePayment.status === 'open' ||
-                  propsurePayment.status === 'pendingSales' ||
-                  propsurePayment.status === 'notCleared'
-                    ? AppStyles.colors.primaryColor
-                    : '#8baaef'
-                }
                 containerStyle={[
                   styles.bookedBtn,
                   {
-                    width: '50%',
+                    width:
+                      propsurePayment.status && propsurePayment.paymentCategory !== 'token'
+                        ? '45%'
+                        : '100%',
                     marginVertical: 15,
-                    marginRight: 10,
                     borderColor:
-                      propsurePayment.status === 'open' ||
-                      propsurePayment.status === 'pendingSales' ||
-                      propsurePayment.status === 'notCleared'
+                      propsurePayment.status !== 'pendingAccount'
                         ? AppStyles.colors.primaryColor
                         : '#8baaef',
                   },
                 ]}
-                label={'ASSIGN TO ACCOUNTS'}
-                textColor={
-                  propsurePayment.status === 'open' ||
-                  propsurePayment.status === 'pendingSales' ||
-                  propsurePayment.status === 'notCleared'
-                    ? '#fff'
-                    : '#f3f5f7'
+                containerBackgroundColor={
+                  propsurePayment.status !== 'pendingAccount'
+                    ? AppStyles.colors.primaryColor
+                    : '#8baaef'
                 }
+                textColor={propsurePayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
+                disabled={propsurePayment.status === 'pendingAccount'}
+                label={'OK'}
                 fontFamily={AppStyles.fonts.boldFont}
                 fontSize={16}
-                loading={assignToAccountsLoading}
-                onPress={() =>
-                  propsurePayment.officeLocationId === null
-                    ? alert('Payment Location cannot be empty!')
-                    : assignToAccounts()
-                }
+                loading={addPaymentLoading}
+                onPress={() => submitCommissionPayment()}
               />
-            ) : null}
-
-            <TouchableButton
-              containerStyle={[
-                styles.bookedBtn,
-                {
-                  width:
-                    propsurePayment.status && propsurePayment.paymentCategory !== 'token'
-                      ? '45%'
-                      : '100%',
-                  marginVertical: 15,
-                  borderColor:
-                    propsurePayment.status !== 'pendingAccount'
-                      ? AppStyles.colors.primaryColor
-                      : '#8baaef',
-                },
-              ]}
-              containerBackgroundColor={
-                propsurePayment.status !== 'pendingAccount'
-                  ? AppStyles.colors.primaryColor
-                  : '#8baaef'
-              }
-              textColor={propsurePayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
-              disabled={propsurePayment.status === 'pendingAccount'}
-              label={'OK'}
-              fontFamily={AppStyles.fonts.boldFont}
-              fontSize={16}
-              loading={addPaymentLoading}
-              onPress={() => submitCommissionPayment()}
-            />
+            </View>
           </View>
-        </View>
-      </View>
+        </ScrollView>
+      </SafeAreaView>
     </Modal>
   )
 }
@@ -298,14 +311,6 @@ export default connect(mapStateToProps)(AddPropsurePayment)
 const styles = StyleSheet.create({
   modalMain: {
     backgroundColor: '#e7ecf0',
-    borderRadius: 7,
-    overflow: 'hidden',
-    zIndex: 5,
-    position: 'relative',
-    elevation: 5,
-    shadowOffset: { width: 5, height: 5 },
-    shadowColor: '#33333312',
-    shadowOpacity: 1,
   },
   timesBtn: {
     position: 'absolute',

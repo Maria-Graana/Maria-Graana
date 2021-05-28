@@ -295,16 +295,9 @@ class Diary extends React.Component {
     if (
       val.taskCategory === 'simpleTask' &&
       (val.addedBy === 'self' || isManager) &&
-      (val.status === 'pending' || val.status === 'inProgress') &&
-      Ability.canEdit(user.subRole, screen)
-    ) {
-      navigation.navigate('AddDiary', {
-        update: true,
-        data: val,
-        screenName: screen,
-        managerId,
-        agentId,
-      })
+      (val.status === 'pending') &&
+      Ability.canEdit(user.subRole, screen)) {
+      navigation.navigate('AddDiary', { update: true, data: val, screenName: screen, managerId, agentId })
     }
   }
 
@@ -327,16 +320,11 @@ class Diary extends React.Component {
   }
 
   handleLongPress = (val) => {
-    const { user } = this.props
-    let isManager = false
-    const managerId = val.managerId ? val.managerId : null
-    isManager = managerId ? (user.id == managerId ? true : false) : false
-    if (
-      val.taskType !== 'Daily Task' &&
-      val.taskType !== 'Weekly Task' &&
-      (val.addedBy === 'self' || isManager) &&
-      val.taskCategory === 'simpleTask'
-    ) {
+    const { user } = this.props;
+    let isManager = false;
+    const managerId = val.managerId ? val.managerId : null;
+    isManager = managerId ? user.id == managerId ? true : false : false;
+    if ((val.addedBy === 'self' || isManager) && val.taskCategory === 'simpleTask') {
       ActionSheet.show(
         {
           options: BUTTONS,

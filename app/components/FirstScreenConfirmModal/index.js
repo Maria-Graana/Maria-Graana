@@ -8,6 +8,7 @@ import Modal from 'react-native-modal'
 import times from '../../../assets/img/times.png'
 import styles from './style'
 import { formatPrice } from '../../PriceFormate'
+import { connect } from 'react-redux'
 import Loader from '../loader'
 
 class FirstScreenConfirmModal extends React.Component {
@@ -25,7 +26,8 @@ class FirstScreenConfirmModal extends React.Component {
       allUnits,
       submitFirstScreen,
       firstScreenConfirmLoading,
-      pearlUnitPrice,
+      oneProductData,
+      lead,
     } = this.props
     var project =
       getAllProject &&
@@ -42,6 +44,8 @@ class FirstScreenConfirmModal extends React.Component {
       allUnits.find((item) => {
         return data.unit === item.id && item
       })
+    let productName =
+      oneProductData && oneProductData.projectProduct && oneProductData.projectProduct.name
     return (
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
@@ -76,9 +80,15 @@ class FirstScreenConfirmModal extends React.Component {
                 {data.approvedDiscount ? data.approvedDiscount + '%' : 'N/A'}
               </Text>
             </Text>
-            <Text style={styles.noramlText}>
-              Payment Plan: <Text style={styles.mainTextLarge}>{data.paymentPlan}</Text>
-            </Text>
+            {lead.noProduct ? (
+              <Text style={styles.noramlText}>
+                Payment Plan: <Text style={styles.mainTextLarge}>{data.paymentPlan}</Text>
+              </Text>
+            ) : (
+              <Text style={styles.noramlText}>
+                Product Name: <Text style={styles.mainTextLarge}>{productName && productName}</Text>
+              </Text>
+            )}
             <Text style={styles.noramlText}>
               Final Price:{' '}
               <Text style={styles.mainTextLarge}>
@@ -123,4 +133,10 @@ class FirstScreenConfirmModal extends React.Component {
   }
 }
 
-export default FirstScreenConfirmModal
+mapStateToProps = (store) => {
+  return {
+    lead: store.lead.lead,
+  }
+}
+
+export default connect(mapStateToProps)(FirstScreenConfirmModal)

@@ -77,10 +77,17 @@ class CMFirstForm extends Component {
       currencyConvert,
       editTokenPayment,
       cnicEditable,
+      productsPickerData,
+      openProductDetailsModal,
+      showInstallmentFields,
+      installmentFrequency,
+      paymentPlanDuration,
+      lead,
     } = this.props
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
+    const { noProduct } = lead
     return (
       <View style={styles.mainFormWrap}>
         <View style={{ paddingVertical: 10 }}>
@@ -197,8 +204,6 @@ class CMFirstForm extends Component {
             </View>
           </View>
         ) : null}
-
-        {/* **************************************** */}
         <SimpleInputText
           name={'unitPrice'}
           fromatName={'unitPrice'}
@@ -209,21 +214,83 @@ class CMFirstForm extends Component {
           editable={false}
           keyboardType={'numeric'}
         />
+        {!noProduct ? (
+          <View style={{ paddingVertical: 10, flexDirection: 'row' }}>
+            <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
+              <PickerComponent
+                onValueChange={handleFirstForm}
+                data={productsPickerData}
+                name={'productId'}
+                placeholder="Investment Product"
+                selectedItem={firstFormData.productId}
+                // enabled={checkLeadClosedOrNot}
+                customStyle={styles.equalHeight}
+              />
+              {firstFormValidate === true &&
+                !firstFormData.productId &&
+                firstFormData.productId === '' && <ErrorMessage errorMessage={'Required'} />}
+            </View>
+            <View style={styles.mainDetailViewBtn}>
+              <TouchableOpacity
+                style={[styles.unitDetailBtn]}
+                onPress={() => {
+                  firstFormData.productId != null &&
+                    firstFormData.productId != '' &&
+                    openProductDetailsModal()
+                }}
+              >
+                <Text style={styles.detailBtnText}>Details</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
 
-        <View style={{ paddingVertical: 10 }}>
-          <PickerComponent
-            onValueChange={handleFirstForm}
-            data={paymentPlan}
-            name={'paymentPlan'}
-            placeholder="Payment Plan"
-            selectedItem={firstFormData.paymentPlan}
-            // enabled={checkLeadClosedOrNot}
-          />
-          {firstFormValidate === true && firstFormData.paymentPlan === 'no' && (
-            <ErrorMessage errorMessage={'Required'} />
-          )}
-        </View>
-
+        {/* **************************************** */}
+        {noProduct ? (
+          <View style={{ paddingVertical: 10 }}>
+            <PickerComponent
+              onValueChange={handleFirstForm}
+              data={paymentPlan}
+              name={'paymentPlan'}
+              placeholder="Payment Plan"
+              selectedItem={firstFormData.paymentPlan}
+              // enabled={checkLeadClosedOrNot}
+            />
+            {firstFormValidate === true && firstFormData.paymentPlan === 'no' && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
+        ) : null}
+        {showInstallmentFields ? (
+          <View>
+            <View style={{ paddingVertical: 10 }}>
+              <PickerComponent
+                onValueChange={handleFirstForm}
+                data={paymentPlanDuration}
+                name={'paymentPlanDuration'}
+                placeholder="Payment Plan Duration"
+                selectedItem={firstFormData.paymentPlanDuration}
+                enabled={paymentPlanDuration && paymentPlanDuration.length === 1 ? false : true}
+              />
+              {firstFormValidate === true && firstFormData.paymentPlanDuration === 'no' && (
+                <ErrorMessage errorMessage={'Required'} />
+              )}
+            </View>
+            <View style={{ paddingVertical: 10 }}>
+              <PickerComponent
+                onValueChange={handleFirstForm}
+                data={installmentFrequency}
+                name={'installmentFrequency'}
+                placeholder="Installment Frequency"
+                selectedItem={firstFormData.installmentFrequency}
+                enabled={installmentFrequency && installmentFrequency.length === 1 ? false : true}
+              />
+              {firstFormValidate === true && firstFormData.installmentFrequency === 'no' && (
+                <ErrorMessage errorMessage={'Required'} />
+              )}
+            </View>
+          </View>
+        ) : null}
         {/* **************************************** */}
         <SimpleInputText
           name={'approvedDiscount'}
@@ -238,9 +305,9 @@ class CMFirstForm extends Component {
         />
         <SimpleInputText
           name={'approvedDiscountPrice'}
-          fromatName={''}
-          placeholder={'APPROVED DISCOUNT PRICE'}
-          label={'APPROVED DISCOUNT PRICE'}
+          fromatName={'approvedDiscountPrice'}
+          placeholder={'APPROVED DISCOUNT AMOUNT'}
+          label={'APPROVED DISCOUNT AMOUNT'}
           value={firstFormData.approvedDiscountPrice}
           onChangeHandle={handleFirstForm}
           formatValue={''}
@@ -258,21 +325,6 @@ class CMFirstForm extends Component {
             {/* {firstFormValidate === true && checkFirstFormPayment ? (
               <ErrorMessage errorMessage={'Token Required'} />
             ) : null} */}
-          </View>
-        )}
-        {!checkFirstFormPayment && (
-          <View style={{ paddingVertical: 10 }}>
-            <TouchableOpacity
-              style={styles.bookNowBtn}
-              onPress={() => {
-                checkUnitDetail === true && addPaymentModalToggle(true, 'token')
-              }}
-            >
-              <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
-            </TouchableOpacity>
-            {firstFormValidate === true && !checkFirstFormPayment ? (
-              <ErrorMessage errorMessage={'Token Required'} />
-            ) : null}
           </View>
         )}
 
@@ -307,6 +359,21 @@ class CMFirstForm extends Component {
             <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
           </View>
         </View>
+        {!checkFirstFormPayment && (
+          <View style={{ paddingVertical: 10 }}>
+            <TouchableOpacity
+              style={styles.bookNowBtn}
+              onPress={() => {
+                checkUnitDetail === true && addPaymentModalToggle(true, 'token')
+              }}
+            >
+              <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
+            </TouchableOpacity>
+            {firstFormValidate === true && !checkFirstFormPayment ? (
+              <ErrorMessage errorMessage={'Token Required'} />
+            ) : null}
+          </View>
+        )}
         <View style={{ paddingVertical: 10, paddingBottom: 20 }}>
           <TouchableOpacity
             style={styles.bookNowBtn}

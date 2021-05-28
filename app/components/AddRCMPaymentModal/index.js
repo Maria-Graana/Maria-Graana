@@ -14,6 +14,7 @@ import AppStyles from '../../AppStyles'
 import axios from 'axios'
 import moment from 'moment'
 import OfficeLocationSelector from '../OfficeLocationSelector'
+import AddEditInstrument from '../AddEditInstrument'
 
 const AddRCMPaymentModal = ({
   onModalCloseClick,
@@ -30,6 +31,7 @@ const AddRCMPaymentModal = ({
   assignToAccounts,
   officeLocations,
   handleOfficeLocationChange,
+  handleInstrumentInfoChange
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -107,6 +109,16 @@ const AddRCMPaymentModal = ({
                 )}
               </View>
             </View>
+
+            {
+              rcmPayment.type === 'cheque' || rcmPayment.type === 'pay-Order' || rcmPayment.type === 'bank-Transfer' ?
+                <AddEditInstrument 
+                handleInstrumentInfoChange={handleInstrumentInfoChange}
+                enabled={rcmPayment.status !== 'pendingAccount'}
+                />
+                :
+                null
+            }
 
             <SimpleInputText
               name={'details'}

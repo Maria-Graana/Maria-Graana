@@ -497,7 +497,7 @@ class LeadDetail extends React.Component {
               <Text style={styles.headingTextTypeTwo}>Lead Type</Text>
               <Text style={[styles.labelTextTypeTwo, { width: '35%' }]}>{type} </Text>
               <View style={styles.statusView}>
-                <Text style={styles.textStyle}>
+                <Text style={styles.textStyle} numberOfLines={1}>
                   {lead.status && lead.status === 'token' ? (
                     <Text>TOKEN</Text>
                   ) : lead.status === 'meeting' ? (

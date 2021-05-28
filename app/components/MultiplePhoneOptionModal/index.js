@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     backgroundColor: '#fff',
     borderRadius: 50,
+    padding: 5,
     width: '10%',
   },
   closeImg: {

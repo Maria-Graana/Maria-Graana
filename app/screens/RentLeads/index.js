@@ -2,7 +2,7 @@
 
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
-import moment from 'moment';
+import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
@@ -18,6 +18,7 @@ import AppStyles from '../../AppStyles'
 import LeadTile from '../../components/LeadTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import PickerComponent from '../../components/Picker/index'
 import PPLeadTile from '../../components/PPLeadTile'
@@ -66,6 +67,8 @@ class RentLeads extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       active: false,
+      isMultiPhoneModalVisible: false,
+      selectedClientContacts: [],
     }
   }
 
@@ -184,7 +187,7 @@ class RentLeads extends React.Component {
   navigateTo = (data) => {
     this.props.dispatch(setlead(data))
     let page = ''
-    console.log(data.status)
+    //console.log(data.status)
     if (data.readAt === null) {
       this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
     } else {
@@ -267,10 +270,9 @@ class RentLeads extends React.Component {
     }
   }
 
-
   sendCallStatus = () => {
     const start = moment().format()
-    const { selectedLead } = this.state;
+    const { selectedLead } = this.state
     let body = {
       start: start,
       end: start,
@@ -283,7 +285,7 @@ class RentLeads extends React.Component {
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.setCurrentCall(res.data);
+      this.setCurrentCall(res.data)
     })
   }
 
@@ -298,14 +300,41 @@ class RentLeads extends React.Component {
     const { contacts } = this.props
     this.setState({ selectedLead: data }, () => {
       if (data && data.customer) {
-        let newContact = helper.createContactPayload(data.customer)
-        this.showStatusFeedbackModal(true);
-        this.sendCallStatus();
-        helper.callNumber(newContact, contacts)
+        let selectedClientContacts = helper.createContactPayload(data.customer)
+        this.setState({ selectedClientContacts }, () => {
+          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+            // multiple numbers to select
+            this.showMultiPhoneModal(true)
+          } else {
+            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
+            this.sendCallStatus()
+            helper.callNumber(selectedClientContacts, contacts)
+          }
+        })
       }
     })
   }
 
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts } = this.props
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          this.showStatusFeedbackModal(true)
+          this.sendCallStatus()
+          helper.callNumber(copySelectedClientContacts, contacts)
+        }
+      )
+    }
+  }
 
   openStatus = () => {
     this.setState({ activeSortModal: !this.state.activeSortModal })
@@ -483,7 +512,7 @@ class RentLeads extends React.Component {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: false,
-    });
+    })
   }
 
   // ************ Function for Reject modal ************
@@ -491,13 +520,13 @@ class RentLeads extends React.Component {
     const { statusfeedbackModalVisible } = this.state
     this.setState({
       statusfeedbackModalVisible: !statusfeedbackModalVisible,
-      modalMode: 'reject'
+      modalMode: 'reject',
     })
   }
 
   rejectLead = (body) => {
-    const { navigation, lead } = this.props;
-    const { selectedLead } = this.state;
+    const { navigation, lead } = this.props
+    const { selectedLead } = this.state
     if (selectedLead) {
       var leadId = []
       leadId.push(selectedLead.id)
@@ -511,7 +540,6 @@ class RentLeads extends React.Component {
           console.log(error)
         })
     }
-
   }
 
   showStatusFeedbackModal = (value) => {
@@ -519,24 +547,23 @@ class RentLeads extends React.Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' });
+    this.setState({ currentCall: call, modalMode: 'call' })
   }
 
   sendStatusCall = (status, id) => {
-    const { selectedLead } = this.state;
+    const { selectedLead } = this.state
     let body = {
       response: status,
       comments: status,
       leadId: selectedLead.id,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
 
   goToViewingScreen = () => {
-    const { navigation } = this.props;
-    navigation.navigate('RCMLeadTabs', { screen: 'Viewing', })
+    const { navigation } = this.props
+    navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
-
 
   render() {
     const {
@@ -560,6 +587,8 @@ class RentLeads extends React.Component {
       isFollowUpMode,
       modalMode,
       selectedLead,
+      selectedClientContacts,
+      isMultiPhoneModalVisible,
     } = this.state
     const { user, navigation } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -636,7 +665,7 @@ class RentLeads extends React.Component {
             renderItem={({ item }) => (
               <View>
                 {(!user.organization && user.subRole === 'group_management') ||
-                  (user.organization && !user.organization.isPP) ? (
+                (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     dispatch={this.props.dispatch}
                     purposeTab={'rent'}
@@ -718,6 +747,13 @@ class RentLeads extends React.Component {
             onStateChange={({ open }) => this.setState({ open })}
           />
         )}
+
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={selectedClientContacts.payload}
+          showMultiPhoneModal={this.showMultiPhoneModal}
+          handlePhoneSelectDone={this.handlePhoneSelectDone}
+        />
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
@@ -730,7 +766,11 @@ class RentLeads extends React.Component {
           visible={statusfeedbackModalVisible}
           showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
           modalMode={modalMode}
-          commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
           showAction={modalMode === 'call'}
           showFollowup={modalMode === 'call'}
           rejectLead={(body) => this.rejectLead(body)}

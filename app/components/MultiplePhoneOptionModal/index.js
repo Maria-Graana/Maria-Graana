@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
   closeBtn: {
     alignSelf: 'flex-end',
     backgroundColor: '#fff',
-    padding: 5,
     borderRadius: 50,
     width: '10%',
   },
@@ -72,8 +71,8 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    width: '100%',
     alignItems: 'center',
+    marginBottom: 10,
   },
   title: {
     width: '90%',

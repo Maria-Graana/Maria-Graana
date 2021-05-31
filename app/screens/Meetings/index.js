@@ -13,6 +13,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import MeetingTile from '../../components/MeetingTile'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
@@ -46,6 +47,8 @@ class Meetings extends Component {
       isFollowUpMode: false,
       editMeeting: false,
       closedWon: false,
+      isMultiPhoneModalVisible: false,
+      selectedClientContacts: [],
     }
   }
 
@@ -170,12 +173,40 @@ class Meetings extends Component {
     const { contacts } = this.props
     this.setState({ selectedLead: data }, () => {
       if (data && data.customer) {
-        let newContact = helper.createContactPayload(data.customer)
-        this.showStatusFeedbackModal(true)
-        this.sendCallStatus()
-        helper.callNumber(newContact, contacts)
+        let selectedClientContacts = helper.createContactPayload(data.customer)
+        this.setState({ selectedClientContacts }, () => {
+          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+            // multiple numbers to select
+            this.showMultiPhoneModal(true)
+          } else {
+            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
+            this.sendCallStatus()
+            helper.callNumber(selectedClientContacts, contacts)
+          }
+        })
       }
     })
+  }
+
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts } = this.props
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          this.showStatusFeedbackModal(true)
+          this.sendCallStatus()
+          helper.callNumber(copySelectedClientContacts, contacts)
+        }
+      )
+    }
   }
 
   editMeeting = (id) => {
@@ -467,6 +498,8 @@ class Meetings extends Component {
       isFollowUpMode,
       currentMeeting,
       closedWon,
+      selectedClientContacts,
+      isMultiPhoneModalVisible,
     } = this.state
 
     const { navigation, lead } = this.props
@@ -542,6 +575,7 @@ class Meetings extends Component {
             goToFollowUp={this.openModalInFollowupMode}
             goToRejectForm={this.goToRejectForm}
             showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            showMultiPhoneModal={this.showMultiPhoneModal}
             setCurrentCall={(call) => this.setCurrentCall(call)}
             leadType={'CM'}
             navigation={navigation}
@@ -562,6 +596,13 @@ class Meetings extends Component {
           getMeetingLead={() => this.getMeetingLead()}
           currentMeeting={currentMeeting}
           editMeeting={editMeeting}
+        />
+
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={selectedClientContacts.payload}
+          showMultiPhoneModal={this.showMultiPhoneModal}
+          handlePhoneSelectDone={this.handlePhoneSelectDone}
         />
 
         <CallFeedbackActionMeeting

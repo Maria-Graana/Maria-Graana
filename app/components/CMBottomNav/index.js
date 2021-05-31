@@ -104,12 +104,18 @@ class CMBottomNav extends React.Component {
   }
 
   call = () => {
-    const { contacts, customer, showStatusFeedbackModal } = this.props
+    const { contacts, customer, showStatusFeedbackModal, showMultiPhoneModal } = this.props
     if (customer) {
       let newContact = helper.createContactPayload(customer)
-      this.sendCallStatus()
-      helper.callNumber(newContact, contacts)
-      showStatusFeedbackModal(true)
+      console.log('newContact=>', newContact)
+      if (newContact && newContact.payload && newContact.payload.length > 1) {
+        console.log('hello')
+        showMultiPhoneModal && showMultiPhoneModal(true)
+      } else {
+        this.sendCallStatus()
+        helper.callNumber(newContact, contacts)
+        showStatusFeedbackModal(true)
+      }
     } else {
       helper.errorToast('No Phone Number')
     }

@@ -183,7 +183,11 @@ class CMBottomNav extends React.Component {
           helper.errorToast('lead is already shared')
         } else {
           const { navigation } = this.props
-          navigation.navigate('AssignLead', { leadId: data.id, type: 'Buy', screen: 'BuyLead' })
+          navigation.navigate('AssignLead', {
+            leadId: data.id,
+            type: data.projectId ? 'Investment' : 'Buy',
+            screen: data.projectId ? 'InvestmentLead' : 'BuyLead',
+          })
         }
       } else {
         helper.errorToast('Only the leads assigned to you can be shared')

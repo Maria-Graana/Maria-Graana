@@ -69,6 +69,7 @@ class RentLeads extends React.Component {
       active: false,
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
+      statusFilterType: 'id',
     }
   }
 
@@ -133,11 +134,22 @@ class RentLeads extends React.Component {
   }
 
   fetchLeads = () => {
-    const { sort, pageSize, page, leadsData, showSearchBar, searchText, statusFilter } = this.state
+    const {
+      sort,
+      pageSize,
+      page,
+      leadsData,
+      showSearchBar,
+      searchText,
+      statusFilter,
+      statusFilterType,
+    } = this.state
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar && searchText !== '') {
-      query = `/api/leads?purpose=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      if (statusFilterType === 'name')
+        query = `/api/leads?purpose=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      else query = `/api/leads?purpose=rent&id=${searchText}&pageSize=${pageSize}&page=${page}`
     } else {
       query = `/api/leads?purpose=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -187,7 +199,6 @@ class RentLeads extends React.Component {
   navigateTo = (data) => {
     this.props.dispatch(setlead(data))
     let page = ''
-    //console.log(data.status)
     if (data.readAt === null) {
       this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
     } else {
@@ -565,6 +576,10 @@ class RentLeads extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
+  changeStatusType = (status) => {
+    this.setState({ statusFilterType: status })
+  }
+
   render() {
     const {
       leadsData,
@@ -589,9 +604,11 @@ class RentLeads extends React.Component {
       selectedLead,
       selectedClientContacts,
       isMultiPhoneModalVisible,
+      statusFilterType,
     } = this.state
     const { user, navigation } = this.props
     let leadStatus = StaticData.buyRentFilter
+    let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
     return (
@@ -609,8 +626,18 @@ class RentLeads extends React.Component {
         <View style={{ marginBottom: 15 }}>
           {showSearchBar ? (
             <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
+              <View style={styles.idPicker}>
+                <PickerComponent
+                  placeholder={'NAME'}
+                  data={buyRentFilterType}
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatusType}
+                  selectedItem={statusFilterType}
+                />
+              </View>
               <Search
-                containerWidth="100%"
+                containerWidth="75%"
                 placeholder="Search leads here"
                 searchText={searchText}
                 setSearchText={(value) => this.setState({ searchText: value })}

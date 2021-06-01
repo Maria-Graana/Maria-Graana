@@ -63,6 +63,7 @@ class InvestLeads extends React.Component {
       selectedLead: null,
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
+      statusFilterType: 'id',
     }
   }
 
@@ -127,11 +128,22 @@ class InvestLeads extends React.Component {
   }
 
   fetchLeads = async () => {
-    const { sort, pageSize, page, leadsData, showSearchBar, searchText, statusFilter } = this.state
+    const {
+      sort,
+      pageSize,
+      page,
+      leadsData,
+      showSearchBar,
+      searchText,
+      statusFilter,
+      statusFilterType,
+    } = this.state
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar && searchText !== '') {
-      query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      if (statusFilterType === 'name')
+        query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      else query = `/api/leads/projects?&id=${searchText}&pageSize=${pageSize}&page=${page}`
     } else {
       query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -429,6 +441,10 @@ class InvestLeads extends React.Component {
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
 
+  changeStatusType = (status) => {
+    this.setState({ statusFilterType: status })
+  }
+
   render() {
     const {
       leadsData,
@@ -450,16 +466,28 @@ class InvestLeads extends React.Component {
       selectedLead,
       selectedClientContacts,
       isMultiPhoneModalVisible,
+      statusFilterType,
     } = this.state
     const { user, lead } = this.props
+    let buyRentFilterType = StaticData.buyRentFilterType
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
           {showSearchBar ? (
             <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
+              <View style={styles.idPicker}>
+                <PickerComponent
+                  placeholder={'NAME'}
+                  data={buyRentFilterType}
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatusType}
+                  selectedItem={statusFilterType}
+                />
+              </View>
               <Search
-                containerWidth="100%"
+                containerWidth="75%"
                 placeholder="Search leads here"
                 searchText={searchText}
                 setSearchText={(value) => this.setState({ searchText: value })}

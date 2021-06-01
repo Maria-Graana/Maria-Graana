@@ -55,4 +55,15 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     width: '20%',
   },
+  idPicker: {
+    width: '25%',
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    height: 40,
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: '#ebebeb',
+    overflow: 'hidden',
+  },
 })

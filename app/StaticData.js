@@ -16,10 +16,6 @@ export default StaticData = {
       name: 'Task',
       value: 'task',
     },
-    {
-      name: 'Follow Up',
-      value: 'follow up',
-    },
   ],
   oneToTen: [
     { value: '1', name: '1' },

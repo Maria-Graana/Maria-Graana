@@ -2,7 +2,7 @@
 
 import React from 'react'
 import styles from './style'
-import moment from 'moment';
+import moment from 'moment'
 import { View, Text, TouchableOpacity, Image, SafeAreaView, Linking, FlatList } from 'react-native'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
@@ -26,6 +26,7 @@ import { getItem, storeItem } from '../../actions/user'
 import { getListingsCount } from '../../actions/listings'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 
 var BUTTONS = [
   'Assign to team member',
@@ -60,14 +61,17 @@ class InvestLeads extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       selectedLead: null,
+      isMultiPhoneModalVisible: false,
+      selectedClientContacts: [],
+      statusFilterType: 'id',
     }
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       dispatch(getListingsCount())
-      this.getServerTime();
+      this.getServerTime()
       this.onFocus()
     })
   }
@@ -92,16 +96,18 @@ class InvestLeads extends React.Component {
   }
 
   getServerTime = () => {
-    axios.get(`/api/user/serverTime?fullTime=true`).then(res => {
-      if (res) {
-        this.setState({ serverTime: res.data })
-      }
-      else {
-        console.log('Something went wrong while getting server time');
-      }
-    }).catch(error => {
-      console.log('error getting server time', error);
-    })
+    axios
+      .get(`/api/user/serverTime?fullTime=true`)
+      .then((res) => {
+        if (res) {
+          this.setState({ serverTime: res.data })
+        } else {
+          console.log('Something went wrong while getting server time')
+        }
+      })
+      .catch((error) => {
+        console.log('error getting server time', error)
+      })
   }
 
   getSortOrderFromStorage = async () => {
@@ -122,11 +128,22 @@ class InvestLeads extends React.Component {
   }
 
   fetchLeads = async () => {
-    const { sort, pageSize, page, leadsData, showSearchBar, searchText, statusFilter } = this.state
+    const {
+      sort,
+      pageSize,
+      page,
+      leadsData,
+      showSearchBar,
+      searchText,
+      statusFilter,
+      statusFilterType,
+    } = this.state
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar && searchText !== '') {
-      query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      if (statusFilterType === 'name')
+        query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      else query = `/api/leads/projects?&id=${searchText}&pageSize=${pageSize}&page=${page}`
     } else {
       query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -244,17 +261,45 @@ class InvestLeads extends React.Component {
     const { contacts } = this.props
     this.setState({ selectedLead: data }, () => {
       if (data && data.customer) {
-        let newContact = helper.createContactPayload(data.customer)
-        this.showStatusFeedbackModal(true);
-        this.sendCallStatus()
-        helper.callNumber(newContact, contacts)
+        let selectedClientContacts = helper.createContactPayload(data.customer)
+        this.setState({ selectedClientContacts }, () => {
+          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+            // multiple numbers to select
+            this.showMultiPhoneModal(true)
+          } else {
+            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
+            this.sendCallStatus()
+            helper.callNumber(selectedClientContacts, contacts)
+          }
+        })
       }
     })
   }
 
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts } = this.props
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          this.showStatusFeedbackModal(true)
+          this.sendCallStatus()
+          helper.callNumber(copySelectedClientContacts, contacts)
+        }
+      )
+    }
+  }
+
   sendCallStatus = () => {
     const start = moment().format()
-    const { selectedLead } = this.state;
+    const { selectedLead } = this.state
     let body = {
       start: start,
       end: start,
@@ -267,7 +312,7 @@ class InvestLeads extends React.Component {
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.setCurrentCall(res.data);
+      this.setCurrentCall(res.data)
     })
   }
 
@@ -348,7 +393,7 @@ class InvestLeads extends React.Component {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: false,
-    });
+    })
   }
 
   // ************ Function for Reject modal ************
@@ -356,13 +401,13 @@ class InvestLeads extends React.Component {
     const { statusfeedbackModalVisible } = this.state
     this.setState({
       statusfeedbackModalVisible: !statusfeedbackModalVisible,
-      modalMode: 'reject'
+      modalMode: 'reject',
     })
   }
 
   rejectLead = (body) => {
-    const { navigation, lead } = this.props;
-    const { selectedLead } = this.state;
+    const { navigation, lead } = this.props
+    const { selectedLead } = this.state
     if (selectedLead) {
       var leadId = []
       leadId.push(selectedLead.id)
@@ -376,7 +421,6 @@ class InvestLeads extends React.Component {
           console.log(error)
         })
     }
-
   }
 
   showStatusFeedbackModal = (value) => {
@@ -384,17 +428,21 @@ class InvestLeads extends React.Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' });
+    this.setState({ currentCall: call, modalMode: 'call' })
   }
 
   sendStatusCall = (status, id) => {
-    const { selectedLead } = this.state;
+    const { selectedLead } = this.state
     let body = {
       response: status,
       comments: status,
       leadId: selectedLead.id,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  }
+
+  changeStatusType = (status) => {
+    this.setState({ statusFilterType: status })
   }
 
   render() {
@@ -416,16 +464,30 @@ class InvestLeads extends React.Component {
       isFollowUpMode,
       modalMode,
       selectedLead,
+      selectedClientContacts,
+      isMultiPhoneModalVisible,
+      statusFilterType,
     } = this.state
     const { user, lead } = this.props
+    let buyRentFilterType = StaticData.buyRentFilterType
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
           {showSearchBar ? (
             <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
+              <View style={styles.idPicker}>
+                <PickerComponent
+                  placeholder={'NAME'}
+                  data={buyRentFilterType}
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatusType}
+                  selectedItem={statusFilterType}
+                />
+              </View>
               <Search
-                containerWidth="100%"
+                containerWidth="75%"
                 placeholder="Search leads here"
                 searchText={searchText}
                 setSearchText={(value) => this.setState({ searchText: value })}
@@ -539,6 +601,13 @@ class InvestLeads extends React.Component {
           sort={sort}
         />
 
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={selectedClientContacts.payload}
+          showMultiPhoneModal={this.showMultiPhoneModal}
+          handlePhoneSelectDone={this.handlePhoneSelectDone}
+        />
+
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
@@ -551,7 +620,11 @@ class InvestLeads extends React.Component {
           visible={statusfeedbackModalVisible}
           showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
           modalMode={modalMode}
-          commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
           showAction={modalMode === 'call'}
           showFollowup={modalMode === 'call'}
           rejectLead={(body) => this.rejectLead(body)}

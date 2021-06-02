@@ -13,6 +13,7 @@ import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
 import Ability from '../../hoc/Ability'
+import MultiplePhoneOptionModal from '../MultiplePhoneOptionModal'
 
 var BUTTONS = [
   'Assign to team member',
@@ -70,24 +71,8 @@ class CMBottomNav extends React.Component {
     this.state = {
       visible: false,
       actionVisible: false,
-    }
-  }
-
-  callNumber = (url) => {
-    console.log(url)
-    if (url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            console.log("Can't handle url: " + url)
-          } else {
-            this.sendCallStatus()
-            return Linking.openURL(url)
-          }
-        })
-        .catch((err) => console.error('An error occurred', err))
-    } else {
-      helper.errorToast(`No Phone Number`)
+      isMultiPhoneModalVisible: false,
+      selectedClientContacts: [],
     }
   }
 
@@ -106,12 +91,38 @@ class CMBottomNav extends React.Component {
   call = () => {
     const { contacts, customer, showStatusFeedbackModal } = this.props
     if (customer) {
-      let newContact = helper.createContactPayload(customer)
-      this.sendCallStatus()
-      helper.callNumber(newContact, contacts)
-      showStatusFeedbackModal(true)
-    } else {
-      helper.errorToast('No Phone Number')
+      let selectedClientContacts = helper.createContactPayload(customer)
+      this.setState({ selectedClientContacts }, () => {
+        if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+          // multiple numbers to select
+          this.showMultiPhoneModal(true)
+        } else {
+          this.sendCallStatus()
+          helper.callNumber(newContact, contacts)
+          showStatusFeedbackModal(true)
+        }
+      })
+    }
+  }
+
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts, showStatusFeedbackModal } = this.props
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          showStatusFeedbackModal(true)
+          this.sendCallStatus()
+          helper.callNumber(copySelectedClientContacts, contacts)
+        }
+      )
     }
   }
 
@@ -183,7 +194,11 @@ class CMBottomNav extends React.Component {
           helper.errorToast('lead is already shared')
         } else {
           const { navigation } = this.props
-          navigation.navigate('AssignLead', { leadId: data.id, type: 'Buy', screen: 'BuyLead' })
+          navigation.navigate('AssignLead', {
+            leadId: data.id,
+            type: data.projectId ? 'Investment' : 'Buy',
+            screen: data.projectId ? 'InvestmentLead' : 'BuyLead',
+          })
         }
       } else {
         helper.errorToast('Only the leads assigned to you can be shared')
@@ -290,7 +305,7 @@ class CMBottomNav extends React.Component {
       goToRejectForm,
       closedLeadEdit,
     } = this.props
-    const { visible } = this.state
+    const { visible, isMultiPhoneModalVisible, selectedClientContacts } = this.state
 
     return (
       <View style={styles.bottomNavMain}>
@@ -366,6 +381,12 @@ class CMBottomNav extends React.Component {
             {!callButton ? <Menu.Item title="No Option" /> : null}
           </Menu>
         </View>
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={selectedClientContacts.payload}
+          showMultiPhoneModal={this.showMultiPhoneModal}
+          handlePhoneSelectDone={this.handlePhoneSelectDone}
+        />
       </View>
     )
   }

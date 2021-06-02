@@ -1,22 +1,16 @@
 /** @format */
 
-import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Image } from 'react-native'
-import styles from './style'
-import PickerComponent from '../../components/Picker/index'
-import AppStyles from '../../AppStyles'
-import { connect } from 'react-redux'
-import moment from 'moment'
-import SimpleInputText from '../../components/SimpleInputField'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { formatPrice } from '../../PriceFormate'
-import ErrorMessage from '../../components/ErrorMessage'
-import PaymentTile from '../../components/PaymentTile'
+import React from 'react'
+import { Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
-import CMBTN from '../../components/CMBTN'
-import CheckWhite from '../../../assets/img/checkWhite.png'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { connect } from 'react-redux'
 import RoundPlus from '../../../assets/img/roundPlus.png'
-import PaymentMethods from '../../PaymentMethods'
+import AppStyles from '../../AppStyles'
+import CMBTN from '../../components/CMBTN'
+import PaymentTile from '../../components/PaymentTile'
+import SimpleInputText from '../../components/SimpleInputField'
+import styles from './style'
 
 class CMSecondForm extends React.Component {
   constructor(props) {
@@ -25,31 +19,55 @@ class CMSecondForm extends React.Component {
   render() {
     const {
       addPaymentModalToggle,
-      toggleBookingDetailsModal,
       onPaymentLongPress,
       currencyConvert,
       editTile,
       checkLeadClosedOrNot,
       paymentPreviewLoading = false,
-      data,
       lead,
       remainingPayment,
       outStandingTax,
+      toggleSchedulePayment,
     } = this.props
-    const { payment, unit } = lead
+    const { payment, projectProduct } = lead
 
     return (
       <SafeAreaView style={styles.removePad}>
         <View style={styles.mainFormWrap}>
-          <CMBTN
-            extraStyle={{ marginHorizontal: 10 }}
-            onClick={() => {
-              this.props.toggleBookingDetailsModal(true)
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              marginHorizontal: 10,
+              justifyContent: 'space-between',
             }}
-            btnImage={CheckWhite}
-            btnText={'BOOKING DETAILS'}
-            checkLeadClosedOrNot={checkLeadClosedOrNot}
-          />
+          >
+            <CMBTN
+              extraStyle={[
+                styles.bookExtraStyle,
+                projectProduct && projectProduct.paymentPlan !== 'installments'
+                  ? { flex: 1 }
+                  : null,
+              ]}
+              extraTextStyle={styles.bookExtraTextStyle}
+              onClick={() => {
+                this.props.toggleBookingDetailsModal(true)
+              }}
+              btnText={'BOOKING DETAILS'}
+              checkLeadClosedOrNot={checkLeadClosedOrNot}
+            />
+            {projectProduct && projectProduct.paymentPlan === 'installments' ? (
+              <CMBTN
+                extraStyle={styles.scheduleExtraStyle}
+                extraTextStyle={styles.scheduleExtraTextStyle}
+                onClick={() => {
+                  toggleSchedulePayment()
+                }}
+                btnText={'SCHEDULE OF PAYMENTS'}
+                checkLeadClosedOrNot={checkLeadClosedOrNot}
+              />
+            ) : null}
+          </View>
           <View style={{ padding: 5 }} />
           <Text style={styles.paymentsHeading}>PAYMENTS</Text>
           <View style={styles.mainPaymentWrap}>

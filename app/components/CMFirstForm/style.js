@@ -1,6 +1,7 @@
 /** @format */
 
 import { StyleSheet } from 'react-native'
+import AppStyles from '../../AppStyles'
 export default styles = StyleSheet.create({
   mainFormWrap: {
     flex: 1,
@@ -18,7 +19,7 @@ export default styles = StyleSheet.create({
   },
   bookNowBtnText: {
     color: '#006ff1',
-    fontWeight: 'bold',
+    fontFamily: AppStyles.fonts.boldFont,
     letterSpacing: 2,
     paddingTop: 18,
     paddingBottom: 18,
@@ -76,4 +77,5 @@ export default styles = StyleSheet.create({
   unitDetailInput: {
     width: '70%',
   },
+  btnView: { paddingVertical: 10, flex: 1 },
 })

@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import AppStyles from '../../AppStyles'
 
 export default class CMBTN extends React.Component {
   constructor(props) {
@@ -9,7 +10,14 @@ export default class CMBTN extends React.Component {
   }
 
   render() {
-    const { extraStyle, onClick, btnImage, btnText, checkLeadClosedOrNot } = this.props
+    const {
+      extraStyle,
+      onClick,
+      btnImage,
+      btnText,
+      checkLeadClosedOrNot,
+      extraTextStyle,
+    } = this.props
     return (
       <TouchableOpacity
         style={[styles.addPaymentBtn, styles.noMargTop, extraStyle]}
@@ -17,8 +25,8 @@ export default class CMBTN extends React.Component {
           if (checkLeadClosedOrNot) onClick()
         }}
       >
-        <Image style={styles.addPaymentBtnImg} source={btnImage} />
-        <Text style={styles.addPaymentBtnText}>{btnText}</Text>
+        {btnImage ? <Image style={styles.addPaymentBtnImg} source={btnImage} /> : null}
+        <Text style={[styles.addPaymentBtnText, extraTextStyle]}>{btnText}</Text>
       </TouchableOpacity>
     )
   }
@@ -28,7 +36,7 @@ const styles = StyleSheet.create({
   addPaymentBtnText: {
     color: '#006ff1',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: AppStyles.fonts.semiBoldFont,
     letterSpacing: 2,
   },
   addPaymentBtnImg: {
@@ -65,6 +73,5 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     justifyContent: 'center',
     marginTop: 15,
-    backgroundColor: '#fff',
   },
 })

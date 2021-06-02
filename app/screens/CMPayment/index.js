@@ -17,6 +17,7 @@ import {
 import { setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import BookingDetailsModal from '../../components/BookingDetailsModal'
+import SchedulePayment from '../../components/SchedulePayment'
 import CMBottomNav from '../../components/CMBottomNav'
 import CMFirstForm from '../../components/CMFirstForm'
 import CMPaymentModal from '../../components/CMPaymentModal'
@@ -127,6 +128,10 @@ class CMPayment extends Component {
       showInstallmentFields: false,
       paymentPlanDuration: [],
       installmentFrequency: [],
+      showSchedule: false,
+      SchedulePaymentData: [],
+      downPayment: 0,
+      possessionCharges: 0,
     }
   }
 
@@ -1088,50 +1093,30 @@ class CMPayment extends Component {
     const { lead } = this.props
     const { noProduct } = lead
     if (!noProduct && firstFormData.paymentPlan === 'no') firstFormData.paymentPlan = null
-    if (firstFormData.pearl != null) {
-      if (
-        firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
-        firstFormData.pearl >= 50 &&
-        firstFormData.cnic != null &&
-        firstFormData.cnic != '' &&
-        cnicValidate === false &&
-        firstFormData.paymentPlan != 'no' &&
-        checkFirstFormPayment
-      ) {
-        if (leftPearlSqft < 50 && leftPearlSqft > 0) {
-          this.setState({
-            firstFormValidate: true,
-          })
-        } else {
-          this.setState({
-            openFirstScreenModal: status,
-          })
+    const validationValues = PaymentHelper.firstFormValidation(
+      lead,
+      firstFormData,
+      cnicValidate,
+      leftPearlSqft,
+      unitPearlDetailsData,
+      checkFirstFormPayment
+    )
+    if (status === 'confirmation') {
+      this.setState({
+        firstFormValidate: validationValues.firstFormValidate,
+        openFirstScreenModal: validationValues.openFirstScreenModal,
+      })
+    }
+    if (status === 'schedulePayment') {
+      this.setState(
+        {
+          firstFormValidate: validationValues.firstFormValidate,
+          openFirstScreenModal: false,
+        },
+        () => {
+          if (validationValues.openFirstScreenModal) this.toggleSchedulePayment()
         }
-      } else {
-        this.setState({
-          firstFormValidate: true,
-        })
-      }
-    } else {
-      if (
-        firstFormData.project != null &&
-        firstFormData.floor != null &&
-        firstFormData.unit != null &&
-        firstFormData.paymentPlan != 'no' &&
-        checkFirstFormPayment &&
-        firstFormData.type != '' &&
-        firstFormData.cnic != null &&
-        firstFormData.cnic != '' &&
-        cnicValidate === false
-      ) {
-        this.setState({
-          openFirstScreenModal: status,
-        })
-      } else {
-        this.setState({
-          firstFormValidate: true,
-        })
-      }
+      )
     }
   }
 
@@ -1201,6 +1186,7 @@ class CMPayment extends Component {
         )
     let leadId = []
     leadId.push(lead.id)
+    console.log('body: ', body)
     axios
       .patch(`/api/leads/project`, body, { params: { id: leadId } })
       .then((res) => {
@@ -1351,6 +1337,71 @@ class CMPayment extends Component {
     })
   }
 
+  //  ************ SCHEDULE OF PAYMENT WORKFLOW **************
+  toggleSchedulePayment = () => {
+    const { showSchedule } = this.state
+    if (!showSchedule) this.fetchScheduleData()
+    this.setState({
+      showSchedule: !showSchedule,
+    })
+  }
+
+  fetchScheduleData = () => {
+    const { lead, CMPayment, addInstrument } = this.props
+    const { firstFormData, oneProductData, secondForm } = this.state
+    if (secondForm) {
+      axios
+        .get(`/api/leads/paymentSchedule?leadId=${lead.id}`)
+        .then((res) => {
+          this.setState({
+            SchedulePaymentData: res.data,
+            downPayment: lead.downPayment,
+            possessionCharges: lead.possessionCharges,
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    } else {
+      let unitId =
+        firstFormData.unit === null || firstFormData.unit === '' || firstFormData.unit === 'no'
+          ? null
+          : firstFormData.unit
+      let body = PaymentHelper.generateProductApiPayload(
+        firstFormData,
+        lead,
+        unitId,
+        CMPayment,
+        oneProductData,
+        addInstrument
+      )
+      let leadId = []
+      leadId.push(lead.id)
+      console.log('body: ', body)
+      axios
+        .post(`/api/leads/diplaySchedule?leadId=${lead.id}`, body)
+        .then((res) => {
+          this.setState({
+            SchedulePaymentData: helper.addID(res.data),
+            downPayment: PaymentMethods.calculateDownPayment(
+              oneProductData,
+              firstFormData.finalPrice,
+              CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+            ),
+            possessionCharges: PaymentMethods.calculatePossessionCharges(
+              oneProductData,
+              firstFormData.finalPrice,
+              CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+            ),
+          })
+        })
+        .catch((error) => {
+          console.log(`/api/leads/diplaySchedule?leadId=${lead.id} - Error`, error)
+          helper.errorToast('Something went wrong!!')
+        })
+    }
+  }
+
   render() {
     const {
       checkLeadClosedOrNot,
@@ -1368,11 +1419,9 @@ class CMPayment extends Component {
       oneUnitData,
       pearlUnit,
       paymentPlan,
-      firstFormModal,
       allProjects,
       allFloors,
       allUnits,
-      firstFormConfirmLoading,
       finalPrice,
       cnicValidate,
       firstFormValidate,
@@ -1406,6 +1455,10 @@ class CMPayment extends Component {
       showInstallmentFields,
       paymentPlanDuration,
       installmentFrequency,
+      showSchedule,
+      SchedulePaymentData,
+      downPayment,
+      possessionCharges,
     } = this.state
     const { lead, navigation } = this.props
     return (
@@ -1425,6 +1478,14 @@ class CMPayment extends Component {
             openUnitDetailsModal={this.openUnitDetailsModal}
             finalPrice={finalPrice}
           />
+          <SchedulePayment
+            active={showSchedule}
+            data={SchedulePaymentData}
+            toggleSchedulePayment={this.toggleSchedulePayment}
+            loading={false}
+            downPayment={downPayment}
+            possessionCharges={possessionCharges}
+          />
           {allFloors != '' && allFloors.length && allProjects != '' && allProjects.length ? (
             <FirstScreenConfirmModal
               active={openFirstScreenModal}
@@ -1437,6 +1498,7 @@ class CMPayment extends Component {
               submitFirstScreen={this.submitFirstForm}
               pearlUnitPrice={pearlUnitPrice}
               oneProductData={oneProductData}
+              submitFirstForm={this.firstFormValidateModal}
             />
           ) : null}
           <LeadRCMPaymentPopup
@@ -1532,6 +1594,7 @@ class CMPayment extends Component {
                     checkLeadClosedOrNot={checkLeadClosedOrNot}
                     remainingPayment={remainingPayment}
                     outStandingTax={outStandingTax}
+                    toggleSchedulePayment={this.toggleSchedulePayment}
                   />
                 )}
               </View>

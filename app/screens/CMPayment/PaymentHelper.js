@@ -1,6 +1,7 @@
 /** @format */
 import PaymentMethods from '../../PaymentMethods'
 import helper from '../../helper'
+import { cos } from 'react-native-reanimated'
 
 const PaymentHelper = {
   createPearlObject(floor, area) {
@@ -313,8 +314,8 @@ const PaymentHelper = {
         ) {
           return [
             {
-              name: paymentPlanDuration[0],
-              value: paymentPlanDuration[0],
+              name: paymentPlanDuration[0].toString(),
+              value: paymentPlanDuration[0].toString(),
             },
           ]
         }
@@ -471,6 +472,48 @@ const PaymentHelper = {
         }
       }
     }
+  },
+  createPearlSchedule(
+    lead,
+    user,
+    firstFormData,
+    pearlUnitPrice,
+    unitPearlDetailsData,
+    oneProductData,
+    CMPayment
+  ) {
+    const { projectProduct } = oneProductData
+    let body = PaymentHelper.createPearl({
+      firstFormData,
+      pearlUnitPrice,
+      unitPearlDetailsData,
+      lead,
+      user,
+    })
+    body = {
+      ...body,
+      finalPrice:
+        firstFormData.finalPrice === null || firstFormData.finalPrice === ''
+          ? null
+          : firstFormData.finalPrice,
+      possessionChargesPercentage: projectProduct.possessionCharges,
+      downPaymentPercentage: projectProduct.downPayment,
+      noOfInstallment:
+        firstFormData.paymentPlan === 'installments'
+          ? PaymentMethods.calculateNoOfInstallments(oneProductData, firstFormData)
+          : null,
+      productId: firstFormData.productId,
+      installmentFrequency: firstFormData.installmentFrequency,
+      paymentPlan: firstFormData.paymentPlan,
+      remainingPayment:
+        firstFormData.finalPrice === null || firstFormData.finalPrice === ''
+          ? null
+          : firstFormData.finalPrice - CMPayment.installmentAmount,
+      paymentPlanDuration: firstFormData.paymentPlanDuration
+        ? Number(firstFormData.paymentPlanDuration)
+        : null,
+    }
+    return body
   },
 }
 module.exports = PaymentHelper

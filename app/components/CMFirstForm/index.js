@@ -394,7 +394,9 @@ class CMFirstForm extends Component {
                   submitFirstForm('schedulePayment')
                 }}
               >
-                <Text style={[styles.bookNowBtnText, { fontSize: 12 }]}>SCHEDULE OF PAYMENT</Text>
+                <Text numberOfLines={1} style={[styles.bookNowBtnText, { fontSize: 12 }]}>
+                  SCHEDULE OF PAYMENT
+                </Text>
               </TouchableOpacity>
             </View>
           ) : null}

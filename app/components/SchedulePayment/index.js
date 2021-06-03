@@ -20,17 +20,19 @@ class SchedulePayment extends React.Component {
 
   addNewRecords = () => {
     let { data, downPayment, possessionCharges } = this.props
-    data.unshift({
-      amountDue: downPayment,
-      paymentDueDate: moment().format('DD MMM, YYYY'),
-      paymentType: 'down Payment',
-    })
-    data.unshift({
-      amountDue: possessionCharges,
-      paymentDueDate: moment().format('DD MMM, YYYY'),
-      paymentType: 'Possession Charges',
-    })
-    return data
+    if (data && data.length) {
+      data.unshift({
+        amountDue: downPayment,
+        paymentDueDate: moment().format('DD MMM, YYYY'),
+        paymentType: 'down Payment',
+      })
+      data.unshift({
+        amountDue: possessionCharges,
+        paymentDueDate: moment().format('DD MMM, YYYY'),
+        paymentType: 'Possession Charges',
+      })
+      return data
+    } else []
   }
 
   render() {
@@ -67,13 +69,13 @@ class SchedulePayment extends React.Component {
                   <View style={styles.tableMainBar}>
                     <Text style={styles.mainBarText}>Payment Type</Text>
                     <Text style={styles.mainBarAmountText}>Amount</Text>
-                    <Text style={[styles.mainBarAmountText, { textAlign: 'left' }]}>Due Date</Text>
+                    <Text style={[styles.mainBarAmountText, {}]}>Due Date</Text>
                   </View>
                   <FlatList
                     data={data}
                     renderItem={(item, index) => (
                       <View style={styles.tableTile}>
-                        <View style={{ justifyContent: 'center', alignItems: 'left', flex: 1 }}>
+                        <View style={{ justifyContent: 'center', flex: 1 }}>
                           <Text numberOfLines={1} style={styles.paymentText}>
                             {item.item.paymentType === 'installment'
                               ? `Installment ${item.item.id}`
@@ -85,7 +87,7 @@ class SchedulePayment extends React.Component {
                             {Number(item.item.amountDue)}
                           </Text>
                         </View>
-                        <View style={{ justifyContent: 'center', alignItems: 'cente', flex: 1 }}>
+                        <View style={{ justifyContent: 'center', flex: 1 }}>
                           <Text numberOfLines={1} style={styles.tileText}>
                             {moment(item.item.paymentDueDate).format('DD MMM, YYYY')}
                           </Text>

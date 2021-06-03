@@ -1186,7 +1186,6 @@ class CMPayment extends Component {
         )
     let leadId = []
     leadId.push(lead.id)
-    console.log('body: ', body)
     axios
       .patch(`/api/leads/project`, body, { params: { id: leadId } })
       .then((res) => {
@@ -1347,8 +1346,14 @@ class CMPayment extends Component {
   }
 
   fetchScheduleData = () => {
-    const { lead, CMPayment, addInstrument } = this.props
-    const { firstFormData, oneProductData, secondForm } = this.state
+    const { lead, CMPayment, addInstrument, user } = this.props
+    const {
+      firstFormData,
+      oneProductData,
+      secondForm,
+      pearlUnitPrice,
+      unitPearlDetailsData,
+    } = this.state
     if (secondForm) {
       axios
         .get(`/api/leads/paymentSchedule?leadId=${lead.id}`)
@@ -1363,36 +1368,54 @@ class CMPayment extends Component {
           console.log(error)
         })
     } else {
-      let unitId =
-        firstFormData.unit === null || firstFormData.unit === '' || firstFormData.unit === 'no'
-          ? null
-          : firstFormData.unit
-      let body = PaymentHelper.generateProductApiPayload(
-        firstFormData,
-        lead,
-        unitId,
-        CMPayment,
-        oneProductData,
-        addInstrument
-      )
+      let body = {}
+      let downPayment = 0
+      let possessionCharges = 0
+      if (firstFormData.unitType === 'pearl') {
+        body = PaymentHelper.createPearlSchedule(
+          lead,
+          user,
+          firstFormData,
+          pearlUnitPrice,
+          unitPearlDetailsData,
+          oneProductData,
+          CMPayment
+        )
+        downPayment = body.down_payment
+        possessionCharges = body.possession_charges
+      } else {
+        let unitId =
+          firstFormData.unit === null || firstFormData.unit === '' || firstFormData.unit === 'no'
+            ? null
+            : firstFormData.unit
+        body = PaymentHelper.generateProductApiPayload(
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          oneProductData,
+          addInstrument
+        )
+        downPayment = PaymentMethods.calculateDownPayment(
+          oneProductData,
+          firstFormData.finalPrice,
+          CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+        )
+        possessionCharges = PaymentMethods.calculatePossessionCharges(
+          oneProductData,
+          firstFormData.finalPrice,
+          CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+        )
+      }
       let leadId = []
       leadId.push(lead.id)
-      console.log('body: ', body)
       axios
         .post(`/api/leads/diplaySchedule?leadId=${lead.id}`, body)
         .then((res) => {
           this.setState({
             SchedulePaymentData: helper.addID(res.data),
-            downPayment: PaymentMethods.calculateDownPayment(
-              oneProductData,
-              firstFormData.finalPrice,
-              CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
-            ),
-            possessionCharges: PaymentMethods.calculatePossessionCharges(
-              oneProductData,
-              firstFormData.finalPrice,
-              CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
-            ),
+            downPayment: downPayment,
+            possessionCharges: possessionCharges,
           })
         })
         .catch((error) => {

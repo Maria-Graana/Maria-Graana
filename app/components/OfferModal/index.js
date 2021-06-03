@@ -48,6 +48,9 @@ class OfferModal extends React.Component {
       sellerNotZero,
       agreedNotZero,
       offerReadOnly,
+      customerNotNumeric,
+      sellerNotNumeric,
+      agreedNotNumeric,
     } = this.props
     let subRole =
       property &&
@@ -112,6 +115,9 @@ class OfferModal extends React.Component {
                     <Image source={addImg} style={[styles.addImg]} />
                   </TouchableOpacity>
                 </View>
+                {customerNotNumeric ? (
+                  <ErrorMessage errorMessage={'Enter Only digits 0 to 9'} />
+                ) : null}
                 {customerNotZero ? (
                   <ErrorMessage errorMessage={'Amount must be greater than 0'} />
                 ) : null}
@@ -165,6 +171,9 @@ class OfferModal extends React.Component {
                     <Image source={addImg} style={[styles.addImg]} />
                   </TouchableOpacity>
                 </View>
+                {sellerNotNumeric ? (
+                  <ErrorMessage errorMessage={'Enter Only digits 0 to 9'} />
+                ) : null}
                 {sellerNotZero ? (
                   <ErrorMessage errorMessage={'Amount must be greater than 0'} />
                 ) : null}
@@ -274,6 +283,7 @@ class OfferModal extends React.Component {
               />
             </View>
           )}
+          {agreedNotNumeric ? <ErrorMessage errorMessage={'Enter Only digits 0 to 9'} /> : null}
           {agreedNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
           {showWarning ? (
             <View style={{ paddingHorizontal: 10 }}>

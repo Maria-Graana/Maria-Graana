@@ -107,5 +107,5 @@ export default styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'left',
   },
-  TextView: { justifyContent: 'center', alignItems: 'left', flex: 1 },
+  TextView: { justifyContent: 'center', flex: 1 },
 })

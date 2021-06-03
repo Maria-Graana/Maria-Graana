@@ -2,7 +2,7 @@
 
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
-import moment from 'moment';
+import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
@@ -17,6 +17,7 @@ import AppStyles from '../../AppStyles'
 import LeadTile from '../../components/LeadTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import PickerComponent from '../../components/Picker/index'
 import PPLeadTile from '../../components/PPLeadTile'
@@ -66,6 +67,9 @@ class BuyLeads extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       active: false,
+      isMultiPhoneModalVisible: false,
+      selectedClientContacts: [],
+      statusFilterType: 'id',
     }
   }
 
@@ -135,11 +139,22 @@ class BuyLeads extends React.Component {
   }
 
   fetchLeads = () => {
-    const { sort, pageSize, page, leadsData, showSearchBar, searchText, statusFilter } = this.state
+    const {
+      sort,
+      pageSize,
+      page,
+      leadsData,
+      showSearchBar,
+      searchText,
+      statusFilter,
+      statusFilterType,
+    } = this.state
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar && searchText !== '') {
-      query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      if (statusFilterType === 'name')
+        query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      else query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}`
     } else {
       query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -233,7 +248,7 @@ class BuyLeads extends React.Component {
           //Share
           this.navigateToShareScreen(val)
         } else if (buttonIndex === 2) {
-          this.goToFormPage('AddRCMLead','RCM', val && val.customer ? val.customer : null)
+          this.goToFormPage('AddRCMLead', 'RCM', val && val.customer ? val.customer : null)
         } else if (buttonIndex === 0) {
           this.checkAssignedLead(val)
         }
@@ -270,17 +285,45 @@ class BuyLeads extends React.Component {
     const { contacts } = this.props
     this.setState({ selectedLead: data }, () => {
       if (data && data.customer) {
-        let newContact = helper.createContactPayload(data.customer)
-        this.showStatusFeedbackModal(true);
-        this.sendCallStatus()
-        helper.callNumber(newContact, contacts)
+        let selectedClientContacts = helper.createContactPayload(data.customer)
+        this.setState({ selectedClientContacts }, () => {
+          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+            // multiple numbers to select
+            this.showMultiPhoneModal(true)
+          } else {
+            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
+            this.sendCallStatus()
+            helper.callNumber(selectedClientContacts, contacts)
+          }
+        })
       }
     })
   }
 
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts } = this.props
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          this.showStatusFeedbackModal(true)
+          this.sendCallStatus()
+          helper.callNumber(copySelectedClientContacts, contacts)
+        }
+      )
+    }
+  }
+
   sendCallStatus = () => {
     const start = moment().format()
-    const { selectedLead } = this.state;
+    const { selectedLead } = this.state
     let body = {
       start: start,
       end: start,
@@ -293,10 +336,9 @@ class BuyLeads extends React.Component {
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.setCurrentCall(res.data);
+      this.setCurrentCall(res.data)
     })
   }
-
 
   sendStatus = (status) => {
     this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
@@ -462,7 +504,6 @@ class BuyLeads extends React.Component {
     })
   }
 
-
   closeMeetingFollowupModal = () => {
     this.setState({
       active: !this.state.active,
@@ -481,7 +522,7 @@ class BuyLeads extends React.Component {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: false,
-    });
+    })
   }
 
   // ************ Function for Reject modal ************
@@ -489,13 +530,13 @@ class BuyLeads extends React.Component {
     const { statusfeedbackModalVisible } = this.state
     this.setState({
       statusfeedbackModalVisible: !statusfeedbackModalVisible,
-      modalMode: 'reject'
+      modalMode: 'reject',
     })
   }
 
   rejectLead = (body) => {
-    const { navigation, lead } = this.props;
-    const { selectedLead } = this.state;
+    const { navigation, lead } = this.props
+    const { selectedLead } = this.state
     if (selectedLead) {
       var leadId = []
       leadId.push(selectedLead.id)
@@ -509,7 +550,6 @@ class BuyLeads extends React.Component {
           console.log(error)
         })
     }
-
   }
 
   showStatusFeedbackModal = (value) => {
@@ -517,24 +557,27 @@ class BuyLeads extends React.Component {
   }
 
   setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' });
+    this.setState({ currentCall: call, modalMode: 'call' })
   }
 
   sendStatusCall = (status, id) => {
-    const { selectedLead } = this.state;
+    const { selectedLead } = this.state
     let body = {
       response: status,
       comments: status,
       leadId: selectedLead.id,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
 
   goToViewingScreen = () => {
-    const { navigation } = this.props;
-    navigation.navigate('RCMLeadTabs', { screen: 'Viewing', })
+    const { navigation } = this.props
+    navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
+  changeStatusType = (status) => {
+    this.setState({ statusFilterType: status })
+  }
 
   render() {
     const {
@@ -558,9 +601,13 @@ class BuyLeads extends React.Component {
       isFollowUpMode,
       modalMode,
       selectedLead,
+      selectedClientContacts,
+      isMultiPhoneModalVisible,
+      statusFilterType,
     } = this.state
     const { user } = this.props
     let leadStatus = StaticData.buyRentFilter
+    let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
     return (
@@ -575,8 +622,18 @@ class BuyLeads extends React.Component {
           />
           {showSearchBar ? (
             <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
+              <View style={styles.idPicker}>
+                <PickerComponent
+                  placeholder={'NAME'}
+                  data={buyRentFilterType}
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatusType}
+                  selectedItem={statusFilterType}
+                />
+              </View>
               <Search
-                containerWidth="100%"
+                containerWidth="75%"
                 placeholder="Search leads here"
                 searchText={searchText}
                 setSearchText={(value) => this.setState({ searchText: value })}
@@ -715,7 +772,14 @@ class BuyLeads extends React.Component {
             onStateChange={({ open }) => this.setState({ open })}
           />
         )}
-         <MeetingFollowupModal
+
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={selectedClientContacts.payload}
+          showMultiPhoneModal={this.showMultiPhoneModal}
+          handlePhoneSelectDone={this.handlePhoneSelectDone}
+        />
+        <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
           isFollowUpMode={isFollowUpMode}
@@ -726,7 +790,11 @@ class BuyLeads extends React.Component {
           visible={statusfeedbackModalVisible}
           showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
           modalMode={modalMode}
-          commentsList={modalMode === 'call' ? StaticData.commentsFeedbackCall : StaticData.leadClosedCommentsFeedback}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
           showAction={modalMode === 'call'}
           showFollowup={modalMode === 'call'}
           rejectLead={(body) => this.rejectLead(body)}

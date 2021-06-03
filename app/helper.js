@@ -76,7 +76,8 @@ const helper = {
     return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5, 11)}`
   },
   validateEmail(email) {
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    var re =
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(email)
   },
   capitalize(str) {
@@ -150,16 +151,13 @@ const helper = {
     let taskDate = moment(val.date).format('YYYY-MM-DD')
     if (val.taskCategory === 'simpleTask') {
       // simple task is reffered to task added from diary directly or through lead but taskcategory is simpleTask
-      if (taskDate > todayDate && val.status !== 'inProgress' && val.status !== 'completed') {
+      if (taskDate > todayDate && val.status !== 'completed') {
         return 'To-do'
       } else if (
         taskDate < todayDate &&
-        val.status !== 'inProgress' &&
         val.status !== 'completed'
       ) {
         return 'Overdue'
-      } else if (val.status === 'inProgress') {
-        return 'In Progress'
       } else if (val.status === 'completed') {
         return 'Completed'
       } else if (val.status === 'pending') {
@@ -192,13 +190,11 @@ const helper = {
   checkStatusColor(val, todayDate) {
     let taskDate = moment(val.date).format('YYYY-MM-DD')
     if (val.taskCategory === 'simpleTask') {
-      if (taskDate > todayDate && val.status !== 'inProgress' && val.status !== 'completed') {
+      if (taskDate > todayDate && val.status !== 'completed') {
         return 'red'
       }
-      if (taskDate < todayDate && val.status !== 'inProgress' && val.status !== 'completed') {
+      if (taskDate < todayDate && val.status !== 'completed') {
         return AppStyles.colors.subTextColor
-      } else if (val.status === 'inProgress') {
-        return '#FDD835'
       } else if (val.status === 'completed') {
         return 'green'
       } else if (val.status === 'pending') {
@@ -545,34 +541,34 @@ const helper = {
     if (!start) start = 0
     if (!end) end = 0
     if (start === 0 && end === 0) {
-      return 'PKR: 0'
+      return 'PKR 0'
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
-      return `PKR: Any`
+      return `PKR Any`
     } else if (start === 0 && end !== maxValue) {
-      return `PKR: Upto ${formatPrice(end)}`
+      return `PKR Upto ${formatPrice(end)}`
     } else if (start !== 0 && end === maxValue) {
-      return `PKR: ${formatPrice(start)} or more`
+      return `PKR ${formatPrice(start)} or more`
     } else if (start === end) {
-      return `PKR: ${formatPrice(start)} to ${formatPrice(end)}`
+      return `PKR ${formatPrice(start)} to ${formatPrice(end)}`
     } else {
-      return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
+      return `PKR ${formatPrice(start)} - ${formatPrice(end)}`
     }
   },
   convertPriceToIntegerString(start, end, maxValue) {
     if (!start) start = 0
     if (!end) end = 0
     if (start === 0 && end === 0) {
-      return 'PKR: 0'
+      return 'PKR 0'
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
-      return `PKR: Any`
+      return `PKR Any`
     } else if (start === 0 && end !== maxValue) {
-      return `PKR: Upto ${intFormatPrice(end)}`
+      return `PKR Upto ${intFormatPrice(end)}`
     } else if (start !== 0 && end === maxValue) {
-      return `PKR: ${intFormatPrice(start)} or more`
+      return `PKR ${intFormatPrice(start)} or more`
     } else if (start === end) {
-      return `PKR: ${intFormatPrice(start)} to ${intFormatPrice(end)}`
+      return `PKR ${intFormatPrice(start)} to ${intFormatPrice(end)}`
     } else {
-      return `PKR: ${intFormatPrice(start)} - ${intFormatPrice(end)}`
+      return `PKR ${intFormatPrice(start)} - ${intFormatPrice(end)}`
     }
   },
   convertSizeToString(start, end, maxValue, unit) {
@@ -583,17 +579,17 @@ const helper = {
       else unitType = this.capitalize(unitType)
     }
     if (start === 0 && end === 0) {
-      return 'Size: 0'
+      return 'Size 0'
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
-      return `Size: Any`
+      return `Size Any`
     } else if (start === 0 && end !== maxValue) {
-      return `Size: Upto ${end} ${this.capitalize(unitType)}`
+      return `Size Upto ${end} ${this.capitalize(unitType)}`
     } else if (start !== 0 && end === maxValue) {
-      return `Size: ${start} or more ${this.capitalize(unitType)}`
+      return `Size ${start} or more ${this.capitalize(unitType)}`
     } else if (start === end) {
-      return `Size: ${start} ${this.capitalize(unitType)}`
+      return `Size ${start} ${this.capitalize(unitType)}`
     } else {
-      return `Size: ${start} - ${end} ${this.capitalize(unitType)}`
+      return `Size ${start} - ${end} ${this.capitalize(unitType)}`
     }
   },
   convertSizeToStringV2(start, end, maxValue, unit) {

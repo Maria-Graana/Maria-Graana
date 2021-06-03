@@ -10,23 +10,11 @@ export default StaticData = {
       name: 'Meeting',
       value: 'meeting',
     },
-    {
-      name: 'Follow Up',
-      value: 'follow_up',
-    },
-    {
-      name: 'Other',
-      value: 'other',
-    },
   ],
   taskValuesCMLead: [
     {
-      name: 'Follow Up',
-      value: 'follow up',
-    },
-    {
-      name: 'Other',
-      value: 'other',
+      name: 'Task',
+      value: 'task',
     },
   ],
   oneToTen: [
@@ -208,39 +196,12 @@ export default StaticData = {
       name: 'Payment Done',
       value: 'payment_done',
     },
-    // {
-    //     name: 'Client not responding',
-    //     value: 'client_not_responding'
-    // },
-    // {
-    //     name: 'Client withdrew requirements',
-    //     value: 'client_withdrew_requirements'
-    // },
-    // {
-    //     name: 'No property found',
-    //     value: 'no_property_found'
-    // },
-    // {
-    //     name: 'Client got property from some other source',
-    //     value: 'property_other_source'
-    // }, {
-    //     name: 'Client not satisfied with options',
-    //     value: 'client_not_satisfied'
-    // }
   ],
   paymentPopupDone: [
     {
       name: 'Payment Done',
       value: 'payment_done',
     },
-    // {
-    //     name: 'Client not responding',
-    //     value: 'client_not_responding'
-    // },
-    // {
-    //     name: 'Client not satisfied with options',
-    //     value: 'client_not_satisfied'
-    // }
   ],
   paymentPopup: [
     {
@@ -1181,5 +1142,9 @@ export default StaticData = {
       title: 'Closed Won',
       image: require('../assets/img/Close.png'),
     },
+  ],
+  buyRentFilterType: [
+    { value: 'id', name: 'ID' },
+    { value: 'name', name: 'NAME' },
   ],
 }

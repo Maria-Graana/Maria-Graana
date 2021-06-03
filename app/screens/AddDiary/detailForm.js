@@ -132,21 +132,6 @@ class DetailForm extends Component {
                     />
                 </View>
 
-                {Ability.canEdit(user.subRole, screenName) && editableData && (formData.status === 'pending' || formData.status === 'inProgress') ?
-                    <View style={{ marginVertical: 10 }}>
-                        <TouchableButton
-                            containerStyle={AppStyles.formBtn}
-                            label={'IN PROGRESS'}
-                            containerBackgroundColor={formData.status == 'inProgress' ? '#8baaef' : AppStyles.colors.primaryColor}
-                            onPress={() => { performTaskActions('inProgress') }}
-                            disabled={formData.status == 'inProgress'}
-
-                        />
-                    </View>
-                    :
-                    null
-                }
-
                 {
                     Ability.canEdit(user.subRole, screenName) && editableData && formData.status !== 'completed' ?
                         <View style={{ marginVertical: 10 }}>

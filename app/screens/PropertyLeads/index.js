@@ -40,6 +40,7 @@ class PropertyLead extends React.Component {
       onEndReachedLoader: false,
       showSearchBar: false,
       searchText: '',
+      statusFilterType: 'id',
     }
   }
 
@@ -87,11 +88,23 @@ class PropertyLead extends React.Component {
   }
 
   fetchLeads = () => {
-    const { sort, pageSize, page, leadsData, showSearchBar, searchText, statusFilter } = this.state
+    const {
+      sort,
+      pageSize,
+      page,
+      leadsData,
+      showSearchBar,
+      searchText,
+      statusFilter,
+      statusFilterType,
+    } = this.state
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar && searchText !== '') {
-      query = `/api/leads?leadWithCurrentAgentProps=true&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      if (statusFilterType === 'name')
+        query = `/api/leads?leadWithCurrentAgentProps=true&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+      else
+        query = `/api/leads?leadWithCurrentAgentProps=true&id=${searchText}&pageSize=${pageSize}&page=${page}`
     } else {
       query = `/api/leads?leadWithCurrentAgentProps=true&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -256,6 +269,10 @@ class PropertyLead extends React.Component {
     }
   }
 
+  changeStatusType = (status) => {
+    this.setState({ statusFilterType: status })
+  }
+
   render() {
     const {
       leadsData,
@@ -268,17 +285,29 @@ class PropertyLead extends React.Component {
       onEndReachedLoader,
       searchText,
       showSearchBar,
+      statusFilterType,
     } = this.state
     const { user } = this.props
     let leadStatus = StaticData.buyRentFilter
+    let buyRentFilterType = StaticData.buyRentFilterType
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
           {showSearchBar ? (
             <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
+              <View style={styles.idPicker}>
+                <PickerComponent
+                  placeholder={'NAME'}
+                  data={buyRentFilterType}
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatusType}
+                  selectedItem={statusFilterType}
+                />
+              </View>
               <Search
-                containerWidth="100%"
+                containerWidth="75%"
                 placeholder="Search leads here"
                 searchText={searchText}
                 setSearchText={(value) => this.setState({ searchText: value })}

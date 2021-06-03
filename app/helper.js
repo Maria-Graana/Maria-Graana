@@ -989,6 +989,15 @@ const helper = {
       return newString + '(Years)'
     } else return '-'
   },
+  addID(data) {
+    if (data && data.length) {
+      let newData = data.map((item, index) => {
+        item.id = index + 1
+        return item
+      })
+      return newData
+    }
+  },
 }
 
 module.exports = helper

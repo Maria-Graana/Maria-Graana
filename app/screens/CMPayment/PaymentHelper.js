@@ -196,6 +196,7 @@ const PaymentHelper = {
     }
   },
   generateProductApiPayload(firstFormData, lead, unitId, CMPayment, oneProduct, instrument) {
+    const { projectProduct } = oneProduct
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -241,7 +242,7 @@ const PaymentHelper = {
           : null,
       noOfInstallment:
         firstFormData.paymentPlan === 'installments'
-          ? PaymentMethods.calculateNoOfInstallments(oneProduct, firstFormData.installmentFrequency)
+          ? PaymentMethods.calculateNoOfInstallments(oneProduct, firstFormData)
           : null,
       paymentPlanDuration: firstFormData.paymentPlanDuration
         ? Number(firstFormData.paymentPlanDuration)
@@ -251,6 +252,16 @@ const PaymentHelper = {
           ? null
           : firstFormData.finalPrice - CMPayment.installmentAmount,
       instrumentId: instrument.id,
+      possessionCharges:
+        firstFormData.paymentPlan === 'installments'
+          ? PaymentMethods.calculatePossessionCharges(
+              oneProduct,
+              firstFormData.finalPrice,
+              CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+            )
+          : null,
+      possessionChargesPercentage: projectProduct.possessionCharges,
+      downPaymentPercentage: projectProduct.downPayment,
     }
   },
   normalizeProjectProducts(products) {
@@ -321,6 +332,143 @@ const PaymentHelper = {
           }
         }
         return newData
+      }
+    }
+  },
+  firstFormValidation(
+    lead,
+    firstFormData,
+    cnicValidate,
+    leftPearlSqft,
+    unitPearlDetailsData,
+    checkFirstFormPayment
+  ) {
+    const { noProduct } = lead
+    if (!noProduct) {
+      if (firstFormData.pearl != null) {
+        if (
+          (firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
+            firstFormData.pearl >= 50 &&
+            firstFormData.cnic != null &&
+            firstFormData.cnic != '' &&
+            cnicValidate === false &&
+            firstFormData.paymentPlan === 'full_payment' &&
+            checkFirstFormPayment &&
+            firstFormData.productId) ||
+          (firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
+            firstFormData.pearl >= 50 &&
+            firstFormData.cnic != null &&
+            firstFormData.cnic != '' &&
+            cnicValidate === false &&
+            firstFormData.paymentPlan != 'no' &&
+            checkFirstFormPayment &&
+            firstFormData.productId &&
+            firstFormData.installmentFrequency &&
+            firstFormData.paymentPlanDuration)
+        ) {
+          if (leftPearlSqft < 50 && leftPearlSqft > 0) {
+            return {
+              firstFormValidate: true,
+              openFirstScreenModal: false,
+            }
+          } else {
+            return {
+              firstFormValidate: false,
+              openFirstScreenModal: true,
+            }
+          }
+        } else {
+          return {
+            firstFormValidate: true,
+            openFirstScreenModal: false,
+          }
+        }
+      } else {
+        if (
+          (firstFormData.project != null &&
+            firstFormData.floor != null &&
+            firstFormData.unit != null &&
+            firstFormData.paymentPlan != 'no' &&
+            checkFirstFormPayment &&
+            firstFormData.type != '' &&
+            firstFormData.cnic != null &&
+            firstFormData.cnic != '' &&
+            cnicValidate === false &&
+            firstFormData.productId &&
+            firstFormData.installmentFrequency &&
+            firstFormData.paymentPlanDuration) ||
+          (firstFormData.project != null &&
+            firstFormData.floor != null &&
+            firstFormData.unit != null &&
+            firstFormData.paymentPlan === 'full_payment' &&
+            checkFirstFormPayment &&
+            firstFormData.type != '' &&
+            firstFormData.cnic != null &&
+            firstFormData.cnic != '' &&
+            cnicValidate === false &&
+            firstFormData.productId)
+        ) {
+          return {
+            firstFormValidate: false,
+            openFirstScreenModal: true,
+          }
+        } else {
+          return {
+            firstFormValidate: true,
+            openFirstScreenModal: false,
+          }
+        }
+      }
+    } else {
+      if (firstFormData.pearl != null) {
+        if (
+          firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
+          firstFormData.pearl >= 50 &&
+          firstFormData.cnic != null &&
+          firstFormData.cnic != '' &&
+          cnicValidate === false &&
+          firstFormData.paymentPlan != 'no' &&
+          checkFirstFormPayment
+        ) {
+          if (leftPearlSqft < 50 && leftPearlSqft > 0) {
+            return {
+              firstFormValidate: true,
+              openFirstScreenModal: false,
+            }
+          } else {
+            return {
+              firstFormValidate: false,
+              openFirstScreenModal: true,
+            }
+          }
+        } else {
+          return {
+            firstFormValidate: true,
+            openFirstScreenModal: false,
+          }
+        }
+      } else {
+        if (
+          firstFormData.project != null &&
+          firstFormData.floor != null &&
+          firstFormData.unit != null &&
+          firstFormData.paymentPlan != 'no' &&
+          checkFirstFormPayment &&
+          firstFormData.type != '' &&
+          firstFormData.cnic != null &&
+          firstFormData.cnic != '' &&
+          cnicValidate === false
+        ) {
+          return {
+            firstFormValidate: false,
+            openFirstScreenModal: true,
+          }
+        } else {
+          return {
+            firstFormValidate: true,
+            openFirstScreenModal: false,
+          }
+        }
       }
     }
   },

@@ -65,5 +65,29 @@ export default styles = StyleSheet.create({
   },
   removePad: {
     padding: 0,
-  }
+  },
+  scheduleExtraStyle: {
+    marginHorizontal: 0,
+    flex: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scheduleExtraTextStyle: {
+    fontSize: 12,
+    paddingHorizontal: 2,
+    fontFamily: AppStyles.fonts.semiBoldFont,
+    alignSelf: 'center',
+  },
+  bookExtraTextStyle: {
+    fontSize: 12,
+    paddingHorizontal: 5,
+    fontFamily: AppStyles.fonts.semiBoldFont,
+    alignSelf: 'center',
+  },
+  bookExtraStyle: {
+    marginHorizontal: 0,
+    flex: 0.49,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 })

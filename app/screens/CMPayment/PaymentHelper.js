@@ -512,6 +512,7 @@ const PaymentHelper = {
       paymentPlanDuration: firstFormData.paymentPlanDuration
         ? Number(firstFormData.paymentPlanDuration)
         : null,
+      unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
     }
     return body
   },

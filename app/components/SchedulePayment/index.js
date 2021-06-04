@@ -19,16 +19,16 @@ class SchedulePayment extends React.Component {
   }
 
   addNewRecords = () => {
-    let { data, downPayment, possessionCharges } = this.props
+    let { data, downPayment, possessionCharges, downPaymenTime } = this.props
     if (data && data.length) {
       data.unshift({
         amountDue: downPayment,
-        paymentDueDate: moment().format('DD MMM, YYYY'),
+        paymentDueDate: downPaymenTime,
         paymentType: 'down Payment',
       })
       data.unshift({
         amountDue: possessionCharges,
-        paymentDueDate: moment().format('DD MMM, YYYY'),
+        paymentDueDate: downPaymenTime,
         paymentType: 'Possession Charges',
       })
       return data
@@ -39,7 +39,7 @@ class SchedulePayment extends React.Component {
     let { active, data, toggleSchedulePayment, lead, loading } = this.props
     let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
     if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
-    data = this.addNewRecords()
+    console.log('data: ', data)
     return (
       <Modal visible={active} animationType="slide" onRequestClose={toggleSchedulePayment}>
         <SafeAreaView style={styles.flexView}>
@@ -77,9 +77,14 @@ class SchedulePayment extends React.Component {
                       <View style={styles.tableTile}>
                         <View style={{ justifyContent: 'center', flex: 1 }}>
                           <Text numberOfLines={1} style={styles.paymentText}>
+                            {item.item.paymentType === 'fullPayment' ? `Full Payment` : null}
                             {item.item.paymentType === 'installment'
                               ? `Installment ${item.item.id}`
-                              : `${item.item.paymentType}`}
+                              : null}
+                            {item.item.paymentType === 'possessionCharges'
+                              ? `Possession Charges ${item.item.id}`
+                              : null}
+                            {item.item.paymentType === 'downPayment' ? `Down Payment` : null}
                           </Text>
                         </View>
                         <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>

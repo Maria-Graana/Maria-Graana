@@ -3,7 +3,16 @@
 import axios from 'axios'
 import * as DocumentPicker from 'expo-document-picker'
 import * as React from 'react'
-import { Alert, FlatList, Image, Linking, Text, TouchableNativeFeedbackBase, TouchableOpacity, View } from 'react-native'
+import {
+  Alert,
+  FlatList,
+  Image,
+  Linking,
+  Text,
+  TouchableNativeFeedbackBase,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
@@ -36,7 +45,12 @@ import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import { clearInstrumentInformation, clearInstrumentsList, getInstrumentDetails, setInstrumentInformation } from '../../actions/addInstrument'
+import {
+  clearInstrumentInformation,
+  clearInstrumentsList,
+  getInstrumentDetails,
+  setInstrumentInformation,
+} from '../../actions/addInstrument'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -113,10 +127,10 @@ class LeadPropsure extends React.Component {
   }
 
   componentWillUnmount() {
-    const { dispatch } = this.props;
+    const { dispatch } = this.props
     this.clearReduxAndStateValues()
-    dispatch(clearInstrumentInformation());
-    dispatch(clearInstrumentsList());
+    dispatch(clearInstrumentInformation())
+    dispatch(clearInstrumentsList())
     this._unsubscribe()
   }
 
@@ -251,7 +265,7 @@ class LeadPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -274,14 +288,14 @@ class LeadPropsure extends React.Component {
       let installment = property.cmInstallment
         ? property.cmInstallment
         : {
-          installmentAmount: null,
-          type: '',
-          rcmLeadId: null,
-          details: '',
-          visible: false,
-          paymentAttachments: [],
-          selectedPropertyId: property.id,
-        }
+            installmentAmount: null,
+            type: '',
+            rcmLeadId: null,
+            details: '',
+            visible: false,
+            paymentAttachments: [],
+            selectedPropertyId: property.id,
+          }
       dispatch(setPropsurePayment(installment))
       this.setState({
         documentModalVisible: true,
@@ -775,14 +789,19 @@ class LeadPropsure extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-              ? user.officeLocation.id
-              : null,
+            ? user.officeLocation.id
+            : null,
       })
     )
 
     if (data && data.paymentInstrument && lead) {
       dispatch(getInstrumentDetails(data.paymentInstrument.instrumentType, lead.customer_id))
-      dispatch(setInstrumentInformation({ ...data.paymentInstrument, editable: data.paymentInstrument.id ? false : true }));
+      dispatch(
+        setInstrumentInformation({
+          ...data.paymentInstrument,
+          editable: data.paymentInstrument.id ? false : true,
+        })
+      )
     }
   }
 
@@ -794,21 +813,23 @@ class LeadPropsure extends React.Component {
     }
     newSecondFormData[name] = value
 
-    if (name === 'type' && (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')) {
+    if (
+      name === 'type' &&
+      (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')
+    ) {
       if (lead && lead.customer_id) {
         dispatch(getInstrumentDetails(value, lead.customer_id))
-        dispatch(setInstrumentInformation({
-          ...addInstrument,
-          customerId: lead && lead.customer_id
-            ? lead.customer_id
-            : null,
-          instrumentType: value,
-          instrumentAmount: null,
-          instrumentNo: null,
-          id: null,
-        }))
+        dispatch(
+          setInstrumentInformation({
+            ...addInstrument,
+            customerId: lead && lead.customer_id ? lead.customer_id : null,
+            instrumentType: value,
+            instrumentAmount: null,
+            instrumentNo: null,
+            id: null,
+          })
+        )
       }
-
     }
     this.setState({ buyerNotZero: false })
     dispatch(setPropsurePayment(newSecondFormData))
@@ -816,21 +837,18 @@ class LeadPropsure extends React.Component {
 
   handleInstrumentInfoChange = (value, name) => {
     const { addInstrument, dispatch, instruments } = this.props
-    const copyInstrument = { ...addInstrument };
+    const copyInstrument = { ...addInstrument }
     if (name === 'instrumentNumber') {
-      copyInstrument.instrumentNo = value;
-    }
-    else if (name === 'instrumentNumberPicker') {
-      const instrument = instruments.find((item) => item.instrumentNo === value);
-      copyInstrument.instrumentNo = instrument.instrumentNo;
-      copyInstrument.instrumentAmount = instrument.instrumentAmount;
-      copyInstrument.id = instrument.id;
-      copyInstrument.editable = false;
-    }
-    else if (name === 'instrumentAmount')
-      copyInstrument.instrumentAmount = value;
+      copyInstrument.instrumentNo = value
+    } else if (name === 'instrumentNumberPicker') {
+      const instrument = instruments.find((item) => item.instrumentNo === value)
+      copyInstrument.instrumentNo = instrument.instrumentNo
+      copyInstrument.instrumentAmount = instrument.instrumentAmount
+      copyInstrument.id = instrument.id
+      copyInstrument.editable = false
+    } else if (name === 'instrumentAmount') copyInstrument.instrumentAmount = value
 
-    dispatch(setInstrumentInformation(copyInstrument));
+    dispatch(setInstrumentInformation(copyInstrument))
   }
 
   clearReduxAndStateValues = () => {
@@ -878,19 +896,23 @@ class LeadPropsure extends React.Component {
         return
       }
       if (editable === false) {
-
-        let body = {};
-        let outstandingPaymentCalc = Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount);
+        let body = {}
+        let outstandingPaymentCalc =
+          Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount)
 
         // for payment addition
-        if (propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer') {
+        if (
+          propsurePayment.type === 'cheque' ||
+          propsurePayment.type === 'pay-Order' ||
+          propsurePayment.type === 'bank-Transfer'
+        ) {
           // for cheque,pay order and bank transfer
-          let isValid = this.checkInstrumentValidation();
+          let isValid = this.checkInstrumentValidation()
           if (isValid) {
-            this.addEditPropsureInstrumentOnServer(false, outstandingPaymentCalc);
+            this.addEditPropsureInstrumentOnServer(false, outstandingPaymentCalc)
           }
-        }
-        else { // for all other types
+        } else {
+          // for all other types
           body = {
             ...propsurePayment,
             rcmLeadId: lead.id,
@@ -906,21 +928,23 @@ class LeadPropsure extends React.Component {
           delete body.paymentCategory
           this.addPropsurePayment(body)
         }
-
       } else {
-
         let remainingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
         remainingFee = remainingFee - Number(propsurePayment.installmentAmount)
-        let body = {};
+        let body = {}
         // payment update mode
-        if (propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer') {
+        if (
+          propsurePayment.type === 'cheque' ||
+          propsurePayment.type === 'pay-Order' ||
+          propsurePayment.type === 'bank-Transfer'
+        ) {
           // for cheque,pay order and bank transfer
-          let isValid = this.checkInstrumentValidation();
+          let isValid = this.checkInstrumentValidation()
           if (isValid) {
-            this.addEditPropsureInstrumentOnServer(true, remainingFee);
+            this.addEditPropsureInstrumentOnServer(true, remainingFee)
           }
-        }
-        else { // for all other types
+        } else {
+          // for all other types
 
           body = {
             ...propsurePayment,
@@ -937,8 +961,6 @@ class LeadPropsure extends React.Component {
           delete body.paymentCategory
           this.updatePropsurePayment(body)
         }
-
-
       }
     } else {
       // Installment amount or type is missing so validation goes true, show error
@@ -949,30 +971,28 @@ class LeadPropsure extends React.Component {
   }
 
   checkInstrumentValidation = () => {
-    const { addInstrument } = this.props;
+    const { addInstrument } = this.props
     if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
-      alert('Instrument Number cannot be empty');
+      alert('Instrument Number cannot be empty')
       this.setState({
         addPaymentLoading: false,
-        assignToAccountsLoading: false
+        assignToAccountsLoading: false,
       })
-      return false;;
-    }
-    else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
-      alert('Instrument Amount cannot be empty');
+      return false
+    } else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+      alert('Instrument Amount cannot be empty')
       this.setState({
         addPaymentLoading: false,
-        assignToAccountsLoading: false
+        assignToAccountsLoading: false,
       })
-      return false;
-    }
-    else {
-      return true;
+      return false
+    } else {
+      return true
     }
   }
 
   addPropsurePayment = (body) => {
-    const { lead, propsurePayment, dispatch } = this.props;
+    const { lead, propsurePayment, dispatch } = this.props
     axios
       .post(`/api/leads/propsurePayment`, body)
       .then((response) => {
@@ -995,22 +1015,23 @@ class LeadPropsure extends React.Component {
       .catch((error) => {
         console.log('Error: ', error)
         helper.errorToast('Error Adding Propsure Payment')
-      }).finally(() => {
+      })
+      .finally(() => {
         this.clearReduxAndStateValues()
-        dispatch(clearInstrumentInformation());
+        dispatch(clearInstrumentInformation())
       })
   }
 
   updatePropsurePayment = (body) => {
-    const { propsurePayment, lead, dispatch } = this.props;
+    const { propsurePayment, lead, dispatch } = this.props
     axios
       .patch(`/api/leads/project/payment?id=${body.id}`, body)
       .then((res) => {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
           ? _.filter(propsurePayment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1027,16 +1048,18 @@ class LeadPropsure extends React.Component {
       })
       .catch((error) => {
         helper.errorToast('Error Updating Propsure Payment', error)
-      }).finally(() => {
+      })
+      .finally(() => {
         this.clearReduxAndStateValues()
-        dispatch(clearInstrumentInformation());
+        dispatch(clearInstrumentInformation())
       })
   }
 
   addEditPropsureInstrumentOnServer = (isPropsureEdit = false, outstandingPayment) => {
-    let body = {};
-    const { addInstrument, propsurePayment, dispatch, lead, user } = this.props;
-    if (addInstrument.id) { // selected existing instrument // add mode
+    let body = {}
+    const { addInstrument, propsurePayment, dispatch, lead, user } = this.props
+    if (addInstrument.id) {
+      // selected existing instrument // add mode
       body = {
         ...propsurePayment,
         rcmLeadId: lead.id,
@@ -1051,32 +1074,31 @@ class LeadPropsure extends React.Component {
       delete body.installmentAmount
       delete body.selectedPropertyId
       delete body.paymentCategory
-      if (isPropsureEdit)
-        this.updatePropsurePayment(body)
-      else
-        this.addPropsurePayment(body);
-    }
-    else { // add mode // new instrument info
-      axios.post(`api/leads/instruments`, addInstrument).then(res => {
-        if (res && res.data) {
-          body = {
-            ...propsurePayment,
-            rcmLeadId: lead.id,
-            armsUserId: user.id,
-            outstandingPayment: outstandingPayment,
-            addedBy: 'buyer',
-            amount: propsurePayment.installmentAmount,
-            shortlistPropertyId: propsurePayment.selectedPropertyId,
-            instrumentId: res.data.id,
+      if (isPropsureEdit) this.updatePropsurePayment(body)
+      else this.addPropsurePayment(body)
+    } else {
+      // add mode // new instrument info
+      axios
+        .post(`api/leads/instruments`, addInstrument)
+        .then((res) => {
+          if (res && res.data) {
+            body = {
+              ...propsurePayment,
+              rcmLeadId: lead.id,
+              armsUserId: user.id,
+              outstandingPayment: outstandingPayment,
+              addedBy: 'buyer',
+              amount: propsurePayment.installmentAmount,
+              shortlistPropertyId: propsurePayment.selectedPropertyId,
+              instrumentId: res.data.id,
+            }
+            if (isPropsureEdit) this.updatePropsurePayment(body)
+            else this.addPropsurePayment(body)
           }
-          if (isPropsureEdit)
-            this.updatePropsurePayment(body)
-          else
-            this.addPropsurePayment(body);
-        }
-      }).catch(error => {
-        console.log('Error: ', error)
-      })
+        })
+        .catch((error) => {
+          console.log('Error: ', error)
+        })
     }
   }
 
@@ -1113,9 +1135,9 @@ class LeadPropsure extends React.Component {
       let pendingPropsures =
         data.propsures && data.propsures.length
           ? _.filter(
-            data.propsures,
-            (item) => item.status === 'pending' && item.addedBy === 'buyer'
-          )
+              data.propsures,
+              (item) => item.status === 'pending' && item.addedBy === 'buyer'
+            )
           : null
       let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'buyer')
       totalFee = Number(propsureOutstandingPayment) - Number(totalFee)
@@ -1179,18 +1201,12 @@ class LeadPropsure extends React.Component {
     })
   }
 
-  closeMeetingFollowupModal = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  //  ************ Function for open modal ************
-  openModal = () => {
+  //  ************ Function for open Follow up modal ************
+  openModalInFollowupMode = (value) => {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
+      comment: value,
     })
   }
 
@@ -1238,7 +1254,7 @@ class LeadPropsure extends React.Component {
       comments: status,
       leadId: lead.id,
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => { })
+    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
 
   render() {
@@ -1276,6 +1292,7 @@ class LeadPropsure extends React.Component {
       isFollowUpMode,
       modalMode,
       closedWon,
+      comment,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1418,7 +1435,7 @@ class LeadPropsure extends React.Component {
             showFollowup={modalMode === 'call'}
             rejectLead={(body) => this.rejectLead(body)}
             sendStatus={(comment, id) => this.sendStatus(comment, id)}
-            addFollowup={() => this.openModalInFollowupMode()}
+            addFollowup={(value) => this.openModalInFollowupMode(value)}
             leadType={'RCM'}
             currentCall={currentCall}
             goToViewingScreen={this.goToViewingScreen}
@@ -1431,6 +1448,7 @@ class LeadPropsure extends React.Component {
             lead={lead}
             leadType={'RCM'}
             getMeetingLead={this.getCallHistory}
+            comment={comment}
           />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
@@ -1446,7 +1464,7 @@ class LeadPropsure extends React.Component {
               lead={lead}
               goToHistory={this.goToHistory}
               getCallHistory={this.getCallHistory}
-              goToFollowUp={this.openModalInFollowupMode}
+              goToFollowUp={(value) => this.openModalInFollowupMode(value)}
               navigation={navigation}
               goToRejectForm={this.goToRejectForm}
               showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}

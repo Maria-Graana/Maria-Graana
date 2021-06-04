@@ -33,6 +33,7 @@ import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import PaymentHelper from './PaymentHelper'
+import moment from 'moment-timezone'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -132,6 +133,7 @@ class CMPayment extends Component {
       SchedulePaymentData: [],
       downPayment: 0,
       possessionCharges: 0,
+      downPaymenTime: moment().format('DD MMM, YYYY'),
     }
   }
 
@@ -151,7 +153,7 @@ class CMPayment extends Component {
           lead && lead.unit && lead.unit.type && lead.unit.type === 'regular' ? false : true,
       })
     }
-    this.fetchProducts()
+    this.fetchProducts(lead)
     this.fetchOfficeLocations()
     this.fetchLead()
     this.getAllProjects()
@@ -166,10 +168,10 @@ class CMPayment extends Component {
     dispatch(clearInstrumentsList())
   }
 
-  fetchProducts = () => {
-    const { lead } = this.props
+  fetchProducts = (lead) => {
     const { paidProject, project } = lead
-    let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
+    let projectID =
+      paidProject && paidProject.id ? paidProject.id : project && project.id ? project.id : null
     axios
       .get(`/api/project/products?projectId=${projectID}`)
       .then((res) => {
@@ -179,7 +181,7 @@ class CMPayment extends Component {
         })
       })
       .catch((error) => {
-        console.log(`/api/user/locations`, error)
+        console.log(`/api/project/products?projectId=${projectID}`, error)
       })
   }
 
@@ -215,7 +217,7 @@ class CMPayment extends Component {
         let responseData = res.data
         if (!responseData.paidProject) responseData.paidProject = responseData.project
         this.props.dispatch(setlead(responseData))
-        this.fetchProducts()
+        this.fetchProducts(responseData)
         this.setdefaultFields(responseData)
         if (secondForm) {
           this.calculatePayments(responseData, functionCallingFor)
@@ -992,6 +994,7 @@ class CMPayment extends Component {
       newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(
         oneProduct.projectProduct.discount
       )
+      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['approvedDiscountPrice'] = PaymentMethods.findProductDiscountAmount(
         oneUnit,
         oneProduct
@@ -1361,7 +1364,8 @@ class CMPayment extends Component {
           this.setState({
             SchedulePaymentData: res.data,
             downPayment: lead.downPayment,
-            possessionCharges: lead.possessionCharges,
+            possessionCharges: lead.possession_charges,
+            downPaymenTime: lead.downPaymenTime,
           })
         })
         .catch((error) => {
@@ -1409,6 +1413,7 @@ class CMPayment extends Component {
       }
       let leadId = []
       leadId.push(lead.id)
+      console.log('body: ', body)
       axios
         .post(`/api/leads/diplaySchedule?leadId=${lead.id}`, body)
         .then((res) => {
@@ -1482,6 +1487,7 @@ class CMPayment extends Component {
       SchedulePaymentData,
       downPayment,
       possessionCharges,
+      downPaymenTime,
     } = this.state
     const { lead, navigation } = this.props
     return (
@@ -1508,6 +1514,7 @@ class CMPayment extends Component {
             loading={false}
             downPayment={downPayment}
             possessionCharges={possessionCharges}
+            downPaymenTime={downPaymenTime}
           />
           {allFloors != '' && allFloors.length && allProjects != '' && allProjects.length ? (
             <FirstScreenConfirmModal

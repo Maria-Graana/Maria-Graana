@@ -30,7 +30,6 @@ class CMSecondForm extends React.Component {
       toggleSchedulePayment,
     } = this.props
     const { payment, projectProduct } = lead
-
     return (
       <SafeAreaView style={styles.removePad}>
         <View style={styles.mainFormWrap}>
@@ -45,11 +44,16 @@ class CMSecondForm extends React.Component {
             <CMBTN
               extraStyle={[
                 styles.bookExtraStyle,
-                projectProduct && projectProduct.paymentPlan !== 'installments'
+                (projectProduct && projectProduct.paymentPlan !== 'installments') || !projectProduct
                   ? { flex: 1 }
                   : null,
               ]}
-              extraTextStyle={styles.bookExtraTextStyle}
+              extraTextStyle={[
+                styles.bookExtraTextStyle,
+                (projectProduct && projectProduct.paymentPlan !== 'installments') || !projectProduct
+                  ? { fontSize: 14, fontFamily: AppStyles.fonts.boldFont }
+                  : null,
+              ]}
               onClick={() => {
                 this.props.toggleBookingDetailsModal(true)
               }}

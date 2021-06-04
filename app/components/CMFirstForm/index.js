@@ -301,10 +301,11 @@ class CMFirstForm extends Component {
           onChangeHandle={handleFirstForm}
           formatValue={''}
           editable={
-            firstFormData.unit != null &&
-            firstFormData.unit != '' &&
-            firstFormData.productId != null &&
-            firstFormData.productId != ''
+            (firstFormData.unit != null &&
+              firstFormData.unit != '' &&
+              firstFormData.productId != null &&
+              firstFormData.productId != '') ||
+            (pearlUnit && firstFormData.productId != null && firstFormData.productId != '')
           }
           fromatName={false}
         />
@@ -318,10 +319,11 @@ class CMFirstForm extends Component {
           formatValue={''}
           keyboardType={'numeric'}
           editable={
-            firstFormData.unit != null &&
-            firstFormData.unit != '' &&
-            firstFormData.productId != null &&
-            firstFormData.productId != ''
+            (firstFormData.unit != null &&
+              firstFormData.unit != '' &&
+              firstFormData.productId != null &&
+              firstFormData.productId != '') ||
+            (pearlUnit && firstFormData.productId != null && firstFormData.productId != '')
           }
         />
         {checkFirstFormPayment && (
@@ -387,7 +389,12 @@ class CMFirstForm extends Component {
                 }}
               >
                 <Text
-                  style={[styles.bookNowBtnText, showInstallmentFields ? { fontSize: 12 } : null]}
+                  style={[
+                    styles.bookNowBtnText,
+                    showInstallmentFields
+                      ? { fontSize: 12, fontFamily: AppStyles.fonts.boldFont }
+                      : { fontSize: 12, fontFamily: AppStyles.fonts.boldFont },
+                  ]}
                 >
                   ADD TOKEN
                 </Text>
@@ -397,20 +404,26 @@ class CMFirstForm extends Component {
               ) : null}
             </View>
           )}
-          {showInstallmentFields ? (
-            <View style={[styles.btnView, !checkFirstFormPayment ? { paddingLeft: 10 } : null]}>
-              <TouchableOpacity
-                style={styles.bookNowBtn}
-                onPress={() => {
-                  submitFirstForm('schedulePayment')
-                }}
+          <View style={[styles.btnView, !checkFirstFormPayment ? { paddingLeft: 10 } : null]}>
+            <TouchableOpacity
+              style={styles.bookNowBtn}
+              onPress={() => {
+                submitFirstForm('schedulePayment')
+              }}
+            >
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.bookNowBtnText,
+                  checkFirstFormPayment
+                    ? { fontSize: 14, fontFamily: AppStyles.fonts.boldFont }
+                    : { fontSize: 12, fontFamily: AppStyles.fonts.boldFont },
+                ]}
               >
-                <Text numberOfLines={1} style={[styles.bookNowBtnText, { fontSize: 12 }]}>
-                  SCHEDULE OF PAYMENT
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ) : null}
+                SCHEDULE OF PAYMENT
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={{ paddingVertical: 10, paddingBottom: 20 }}>
           <TouchableOpacity

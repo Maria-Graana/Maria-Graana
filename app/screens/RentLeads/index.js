@@ -70,6 +70,7 @@ class RentLeads extends React.Component {
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
       statusFilterType: 'id',
+      comment: null,
     }
   }
 
@@ -512,14 +513,15 @@ class RentLeads extends React.Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
+  openModalInFollowupMode = (value) => {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
+      comment: value,
     })
   }
 
-  openModalInMeetingMode = (edit = false, id = null) => {
+  openModalInMeetingMode = () => {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: false,
@@ -605,6 +607,7 @@ class RentLeads extends React.Component {
       selectedClientContacts,
       isMultiPhoneModalVisible,
       statusFilterType,
+      comment,
     } = this.state
     const { user, navigation } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -787,6 +790,7 @@ class RentLeads extends React.Component {
           isFollowUpMode={isFollowUpMode}
           lead={selectedLead}
           leadType={'RCM'}
+          comment={comment}
         />
 
         <StatusFeedbackModal
@@ -802,7 +806,7 @@ class RentLeads extends React.Component {
           showFollowup={modalMode === 'call'}
           rejectLead={(body) => this.rejectLead(body)}
           sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
-          addFollowup={() => this.openModalInFollowupMode()}
+          addFollowup={(value) => this.openModalInFollowupMode(value)}
           addMeeting={() => this.openModalInMeetingMode()}
           leadType={'RCM'}
           goToViewingScreen={this.goToViewingScreen}

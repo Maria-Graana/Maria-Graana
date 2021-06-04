@@ -300,7 +300,12 @@ class CMFirstForm extends Component {
           keyboardType={'numeric'}
           onChangeHandle={handleFirstForm}
           formatValue={''}
-          // editable={checkForPaymentPlan}
+          editable={
+            firstFormData.unit != null &&
+            firstFormData.unit != '' &&
+            firstFormData.productId != null &&
+            firstFormData.productId != ''
+          }
           fromatName={false}
         />
         <SimpleInputText
@@ -312,6 +317,12 @@ class CMFirstForm extends Component {
           onChangeHandle={handleFirstForm}
           formatValue={''}
           keyboardType={'numeric'}
+          editable={
+            firstFormData.unit != null &&
+            firstFormData.unit != '' &&
+            firstFormData.productId != null &&
+            firstFormData.productId != ''
+          }
         />
         {checkFirstFormPayment && (
           <View>

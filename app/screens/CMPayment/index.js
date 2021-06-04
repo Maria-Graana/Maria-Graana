@@ -127,6 +127,7 @@ class CMPayment extends Component {
       showInstallmentFields: false,
       paymentPlanDuration: [],
       installmentFrequency: [],
+      comment: null,
     }
   }
 
@@ -1344,10 +1345,11 @@ class CMPayment extends Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
+  openModalInFollowupMode = (value) => {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
+      comment: value,
     })
   }
 
@@ -1406,6 +1408,7 @@ class CMPayment extends Component {
       showInstallmentFields,
       paymentPlanDuration,
       installmentFrequency,
+      comment,
     } = this.state
     const { lead, navigation } = this.props
     return (
@@ -1562,6 +1565,7 @@ class CMPayment extends Component {
             isFollowUpMode={isFollowUpMode}
             lead={lead}
             leadType={'CM'}
+            comment={comment}
           />
 
           <View style={AppStyles.mainCMBottomNav}>

@@ -179,17 +179,11 @@ const MeetingFollowupModal = ({
       start: null,
       taskType: followUpData.taskType,
       time: null,
-      notes: '',
+      notes: followUpData.notes,
       status: 'pending',
       notes: null,
       addedBy: 'self',
       taskCategory: 'leadTask',
-    }
-    if (followUpData.notes === '' || followUpData.notes === null) {
-      alert('Please enter description to continue!')
-      return
-    } else {
-      payload.notes = followUpData.notes
     }
 
     switch (selectedOption) {

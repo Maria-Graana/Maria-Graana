@@ -64,6 +64,7 @@ class InvestLeads extends React.Component {
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
       statusFilterType: 'id',
+      comment: null,
     }
   }
 
@@ -382,10 +383,11 @@ class InvestLeads extends React.Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
+  openModalInFollowupMode = (value) => {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
+      comment: value,
     })
   }
 
@@ -467,6 +469,7 @@ class InvestLeads extends React.Component {
       selectedClientContacts,
       isMultiPhoneModalVisible,
       statusFilterType,
+      comment,
     } = this.state
     const { user, lead } = this.props
     let buyRentFilterType = StaticData.buyRentFilterType
@@ -614,6 +617,7 @@ class InvestLeads extends React.Component {
           isFollowUpMode={isFollowUpMode}
           lead={selectedLead}
           leadType={'CM'}
+          comment={comment}
         />
 
         <StatusFeedbackModal
@@ -629,7 +633,7 @@ class InvestLeads extends React.Component {
           showFollowup={modalMode === 'call'}
           rejectLead={(body) => this.rejectLead(body)}
           sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
-          addFollowup={() => this.openModalInFollowupMode()}
+          addFollowup={(value) => this.openModalInFollowupMode(value)}
           addMeeting={() => this.openModalInMeetingMode()}
           leadType={'CM'}
           currentCall={currentCall}

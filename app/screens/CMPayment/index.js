@@ -1554,7 +1554,7 @@ class CMPayment extends Component {
             rejectLead={(body) => this.rejectLead(body)}
             sendStatus={(comment, id) => this.sendStatus(comment, id)}
             addMeeting={() => this.openModalInMeetingMode()}
-            addFollowup={() => this.openModalInFollowupMode()}
+            addFollowup={(value) => this.openModalInFollowupMode(value)}
             leadType={'CM'}
             currentCall={currentCall}
           />
@@ -1578,7 +1578,7 @@ class CMPayment extends Component {
               alreadyClosedLead={this.closedLead}
               closeLead={this.fetchLead}
               closeLeadFor={'leadClose'}
-              goToFollowUp={this.openModalInFollowupMode}
+              goToFollowUp={(value) => this.openModalInFollowupMode(value)}
               goToRejectForm={this.goToRejectForm}
               closedWon={closedWon}
               showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}

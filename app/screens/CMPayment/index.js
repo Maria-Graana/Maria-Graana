@@ -243,7 +243,7 @@ class CMPayment extends Component {
     this.setState({
       remainingPayment: remainingPayment,
       outStandingTax: outStandingTax,
-      finalPrice: finalPrice,
+      finalPrice: Math.ceil(finalPrice),
     })
   }
 
@@ -259,7 +259,10 @@ class CMPayment extends Component {
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(payment, finalPrice)
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(
+      payment,
+      Math.ceil(finalPrice)
+    )
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
     if (outStandingTax <= 0 && remainingPayment <= 0) {
       this.setState({
@@ -1010,11 +1013,13 @@ class CMPayment extends Component {
     }
     if (oneUnit) {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      newData['finalPrice'] = PaymentMethods.findFinalPrice(
-        oneUnit,
-        newData['approvedDiscountPrice'],
-        newData['fullPaymentDiscountPrice'],
-        copyPearlUnit ? true : false
+      newData['finalPrice'] = Math.ceil(
+        PaymentMethods.findFinalPrice(
+          oneUnit,
+          newData['approvedDiscountPrice'],
+          newData['fullPaymentDiscountPrice'],
+          copyPearlUnit ? true : false
+        )
       )
     }
     this.setState({

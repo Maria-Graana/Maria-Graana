@@ -75,7 +75,7 @@ export default styles = StyleSheet.create({
   scheduleExtraTextStyle: {
     fontSize: 12,
     paddingHorizontal: 2,
-    fontFamily: AppStyles.fonts.semiBoldFont,
+    fontFamily: AppStyles.fonts.boldFont,
     alignSelf: 'center',
   },
   bookExtraTextStyle: {

@@ -42,17 +42,10 @@ class CMSecondForm extends React.Component {
             }}
           >
             <CMBTN
-              extraStyle={[
-                styles.bookExtraStyle,
-                (projectProduct && projectProduct.paymentPlan !== 'installments') || !projectProduct
-                  ? { flex: 1 }
-                  : null,
-              ]}
+              extraStyle={[styles.bookExtraStyle]}
               extraTextStyle={[
                 styles.bookExtraTextStyle,
-                (projectProduct && projectProduct.paymentPlan !== 'installments') || !projectProduct
-                  ? { fontSize: 14, fontFamily: AppStyles.fonts.boldFont }
-                  : null,
+                { fontSize: 12, fontFamily: AppStyles.fonts.boldFont },
               ]}
               onClick={() => {
                 this.props.toggleBookingDetailsModal(true)

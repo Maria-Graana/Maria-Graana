@@ -503,7 +503,9 @@ const PaymentHelper = {
           ? PaymentMethods.calculateNoOfInstallments(oneProductData, firstFormData)
           : null,
       productId: firstFormData.productId,
-      installmentFrequency: firstFormData.installmentFrequency,
+      installmentFrequency: firstFormData.installmentFrequency
+        ? firstFormData.installmentFrequency
+        : null,
       paymentPlan: firstFormData.paymentPlan,
       remainingPayment:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
@@ -513,6 +515,7 @@ const PaymentHelper = {
         ? Number(firstFormData.paymentPlanDuration)
         : null,
       unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
+      installmentAmount: CMPayment.installmentAmount,
     }
     return body
   },

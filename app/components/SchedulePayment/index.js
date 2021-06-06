@@ -39,7 +39,6 @@ class SchedulePayment extends React.Component {
     let { active, data, toggleSchedulePayment, lead, loading } = this.props
     let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
     if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
-    console.log('data: ', data)
     return (
       <Modal visible={active} animationType="slide" onRequestClose={toggleSchedulePayment}>
         <SafeAreaView style={styles.flexView}>

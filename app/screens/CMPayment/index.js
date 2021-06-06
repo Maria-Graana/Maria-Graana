@@ -1413,7 +1413,6 @@ class CMPayment extends Component {
       }
       let leadId = []
       leadId.push(lead.id)
-      console.log('body: ', body)
       axios
         .post(`/api/leads/diplaySchedule?leadId=${lead.id}`, body)
         .then((res) => {

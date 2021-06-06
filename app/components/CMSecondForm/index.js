@@ -60,17 +60,15 @@ class CMSecondForm extends React.Component {
               btnText={'BOOKING DETAILS'}
               checkLeadClosedOrNot={checkLeadClosedOrNot}
             />
-            {projectProduct && projectProduct.paymentPlan === 'installments' ? (
-              <CMBTN
-                extraStyle={styles.scheduleExtraStyle}
-                extraTextStyle={styles.scheduleExtraTextStyle}
-                onClick={() => {
-                  toggleSchedulePayment()
-                }}
-                btnText={'SCHEDULE OF PAYMENTS'}
-                checkLeadClosedOrNot={checkLeadClosedOrNot}
-              />
-            ) : null}
+            <CMBTN
+              extraStyle={styles.scheduleExtraStyle}
+              extraTextStyle={styles.scheduleExtraTextStyle}
+              onClick={() => {
+                toggleSchedulePayment()
+              }}
+              btnText={'SCHEDULE OF PAYMENTS'}
+              checkLeadClosedOrNot={checkLeadClosedOrNot}
+            />
           </View>
           <View style={{ padding: 5 }} />
           <Text style={styles.paymentsHeading}>PAYMENTS</Text>

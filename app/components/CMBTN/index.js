@@ -26,7 +26,9 @@ export default class CMBTN extends React.Component {
         }}
       >
         {btnImage ? <Image style={styles.addPaymentBtnImg} source={btnImage} /> : null}
-        <Text style={[styles.addPaymentBtnText, extraTextStyle]}>{btnText}</Text>
+        <Text numberOfLines={1} style={[styles.addPaymentBtnText, extraTextStyle]}>
+          {btnText}
+        </Text>
       </TouchableOpacity>
     )
   }

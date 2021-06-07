@@ -98,7 +98,7 @@ class CMBottomNav extends React.Component {
         // this.showMultiPhoneModal(true)
         // } else {
         this.sendCallStatus()
-        helper.callNumber(newContact, contacts)
+        helper.callNumber(selectedClientContacts, contacts)
         showStatusFeedbackModal(true)
         // }
       })

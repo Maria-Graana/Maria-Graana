@@ -187,6 +187,10 @@ class Meetings extends Component {
     })
   }
 
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
   editMeeting = (id) => {
     this.openModalInMeetingMode(true, id)
   }

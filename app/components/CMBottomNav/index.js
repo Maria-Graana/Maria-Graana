@@ -94,7 +94,7 @@ class CMBottomNav extends React.Component {
       let selectedClientContacts = helper.createContactPayload(customer)
       this.setState({ selectedClientContacts }, () => {
         if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-          // multiple numbers to select
+          //  multiple numbers to select
           this.showMultiPhoneModal(true)
         } else {
           this.sendCallStatus()

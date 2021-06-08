@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
+import {
+  Alert,
+  Image,
+  Keyboard,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView,
+} from 'react-native'
 import Modal from 'react-native-modal'
 import times from '../../../assets/img/times.png'
 import AppStyles from '../../AppStyles'
@@ -10,31 +18,33 @@ import TouchableButton from '../TouchableButton'
 import moment from 'moment'
 import helper from '../../helper'
 import DateTimePicker from '../DatePicker'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
+import { Textarea } from 'native-base'
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 
-const MeetingFollowupModal = ({ active,
+const MeetingFollowupModal = ({
+  active,
   isFollowUpMode,
   leadType,
   editMeeting = false,
   lead,
   closeModal,
   getMeetingLead,
-  currentMeeting
+  currentMeeting,
+  comment,
 }) => {
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState('')
   const [formData, setFormData] = useState({
     time: '',
     date: '',
     addedBy: '',
-    taskCategory: '',
+    taskCategory: 'leadTask',
     leadId: null,
     armsLeadId: null,
     start: '',
     end: '',
-    subject: lead && lead.customer
-      ? `Meeting with ${lead.customer.customerName}`
-      : null,
-  });
+    subject: '',
+  })
   const [followUpData, setFollowUpData] = useState({
     subject: '',
     taskType: 'follow_up',
@@ -43,57 +53,66 @@ const MeetingFollowupModal = ({ active,
     date: '',
     notes: '',
     status: 'pending',
-    leadId:  null,
+    leadId: null,
     armsLeadId: null,
-  });
-  const [checkValidation, setValidation] = useState(false);
-  const [loading, setLoading] = useState(false);
+    notes: null,
+    taskCategory: 'leadTask',
+  })
+  const [checkValidation, setValidation] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const clearFormData = () => {
-    const newFormData = { ...formData };
-    newFormData.date = '';
-    newFormData.time = '';
+    const newFormData = { ...formData }
+    newFormData.date = ''
+    newFormData.time = ''
     setFormData(newFormData)
   }
 
   const clearFollowupData = () => {
-    const newFollowupData = { ...followUpData };
-    newFollowupData.subject = '';
-    newFollowupData.taskCategory = 'follow_up';
-    newFollowupData.start = '';
-    newFollowupData.end = '';
-    newFollowupData.date = '';
-    newFollowupData.notes = '';
-    newFollowupData.status = 'pending';
-    newFollowupData.leadId = null;
-    newFollowupData.armsLeadId = null;
-    setFormData(newFollowupData)
+    const newFollowupData = { ...followUpData }
+    newFollowupData.subject = ''
+    newFollowupData.taskCategory = 'follow_up'
+    newFollowupData.start = ''
+    newFollowupData.end = ''
+    newFollowupData.date = ''
+    newFollowupData.notes = ''
+    newFollowupData.status = 'pending'
+    newFollowupData.leadId = null
+    newFollowupData.armsLeadId = null
+    newFollowupData.notes = null
+    ;(newFollowupData.taskCategory = null), setFollowUpData(newFollowupData)
   }
 
-  useEffect(()=>{
-    const newFormData = { ...formData };
-    newFormData.leadId = lead ? lead.id : null;  //cm lead
-    setFormData(newFormData); // update meeting form data on lead prop change
-
-    const newFormDataFollowup = { ...followUpData }; 
-    newFormDataFollowup.leadId = lead ? lead.id : null; // cm lead
-    setFollowUpData(newFormDataFollowup); // update meeting form data for followup
-
-  },[lead])
+  useEffect(() => {
+    const newFormData = { ...formData }
+    newFormData.leadId = lead ? lead.id : null //cm lead
+    newFormData.subject =
+      lead && lead.customer ? `Meeting with ${lead.customer.customerName}` : null
+    setFormData(newFormData) // update meeting form data on lead prop change
+  }, [lead])
 
   useEffect(() => {
-    const newFormData = { ...formData };
+    const newFormDataFollowup = { ...followUpData }
+    newFormDataFollowup.leadId = lead ? lead.id : null // cm lead
+    newFormDataFollowup.notes = comment ? comment : null
+    newFormDataFollowup.subject =
+      lead && lead.customer ? `Follow up with ${lead.customer.customerName}` : null
+    setFollowUpData(newFormDataFollowup) // update meeting form data for followup
+  }, [lead, comment])
+
+  useEffect(() => {
+    const newFormData = { ...formData }
     if (editMeeting && currentMeeting) {
-      newFormData.date = currentMeeting.date;
-      newFormData.time = currentMeeting.time;
-      setFormData(newFormData);
+      newFormData.date = currentMeeting.date
+      newFormData.time = currentMeeting.time
+      setFormData(newFormData)
     }
   }, [editMeeting])
 
   //  ************ Form submit Function  ************
   const formSubmit = () => {
     if (!formData.time || !formData.date) {
-      setValidation(true);
+      setValidation(true)
     } else {
       setLoading(true)
       let formattedDate = helper.formatDate(formData.date)
@@ -115,14 +134,14 @@ const MeetingFollowupModal = ({ active,
           .then((res) => {
             helper.successToast(`Meeting Updated`)
             getMeetingLead && getMeetingLead()
-            closeModal();
-            clearFormData();
+            closeModal()
+            clearFormData()
           })
           .catch((error) => {
             helper.errorToast(`Some thing went wrong!!!`, error)
           })
           .finally(() => {
-            setLoading(false);
+            setLoading(false)
           })
       } else {
         formData.addedBy = 'self'
@@ -137,14 +156,14 @@ const MeetingFollowupModal = ({ active,
           .then((res) => {
             helper.successToast(`Meeting Added`)
             getMeetingLead && getMeetingLead()
-            closeModal();
-            clearFormData();
+            closeModal()
+            clearFormData()
           })
           .catch(() => {
             helper.errorToast(`Some thing went wrong!!!`)
           })
           .finally(() => {
-            setLoading(false);
+            setLoading(false)
           })
       }
     }
@@ -152,7 +171,7 @@ const MeetingFollowupModal = ({ active,
 
   const addFollowUpTask = (selectedOption) => {
     let payload = {
-      subject: 'Follow up with client',
+      subject: followUpData.subject,
       date: null,
       end: null,
       leadId: leadType === 'CM' ? followUpData.leadId : null,
@@ -162,8 +181,11 @@ const MeetingFollowupModal = ({ active,
       time: null,
       notes: '',
       status: 'pending',
+      notes: null,
+      addedBy: 'self',
+      taskCategory: 'leadTask',
     }
-
+    payload.notes = followUpData.notes
     switch (selectedOption) {
       case 'today':
         let todayPayload = { ...payload }
@@ -224,9 +246,10 @@ const MeetingFollowupModal = ({ active,
       default:
         break
     }
+
     // close Modal here
-    addFollowUpForCall(payload);
-    closeModal();
+    addFollowUpForCall(payload)
+    closeModal()
   }
 
   const addFollowUpForCall = (data) => {
@@ -234,8 +257,8 @@ const MeetingFollowupModal = ({ active,
       .post(`api/leads/project/meeting`, data)
       .then((res) => {
         if (res && res.data) {
-          setSelectedOption('');
-          clearFollowupData();
+          setSelectedOption('')
+          clearFollowupData()
           getMeetingLead && getMeetingLead()
           helper.successToast(
             `Follow up task added for ${moment(res.data.start).format('hh:mm a')}, ${moment(
@@ -253,7 +276,7 @@ const MeetingFollowupModal = ({ active,
 
   //  ************ Form Handle Function For Meeting  ************
   const handleForm = (value, name) => {
-    let newformData = { ...formData };
+    let newformData = { ...formData }
     newformData[name] = value
     setFormData(newformData)
   }
@@ -262,7 +285,6 @@ const MeetingFollowupModal = ({ active,
     const startTime = moment()
     const start = startTime.add(1, 'hours')
     const newformData = { ...followUpData }
-    newformData['subject'] = 'Follow up with client'
     newformData['status'] = 'pending'
     newformData['taskType'] = 'follow_up'
     newformData['start'] = start
@@ -270,7 +292,6 @@ const MeetingFollowupModal = ({ active,
     newformData['date'] = start
     setFollowUpData(newformData)
   }
-
 
   const handleFormDiary = (value, name) => {
     let newdiaryTask = { ...followUpData }
@@ -280,118 +301,134 @@ const MeetingFollowupModal = ({ active,
 
   return (
     // Follow up Modal
-    isFollowUpMode ?
-      <Modal isVisible={active}>
-        < View style={[styles.modalMain]} >
-          <TouchableOpacity
-            style={styles.timesBtn}
-            onPress={() => {
-              setSelectedOption('')
-              closeModal()
-            }}
-          >
-            <Image source={times} style={styles.timesImg} />
-          </TouchableOpacity>
+    isFollowUpMode ? (
+      <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+        <Modal isVisible={active}>
+          <KeyboardAvoidingView behavior={'padding'} style={styles.safeAreaView}>
+            <View style={[styles.modalMain]}>
+              <TouchableOpacity
+                style={styles.timesBtn}
+                onPress={() => {
+                  setSelectedOption('')
+                  closeModal()
+                }}
+              >
+                <Image source={times} style={styles.timesImg} />
+              </TouchableOpacity>
 
-          <View style={styles.rowVertical}>
-            <TouchableButton
-              label={'Today'}
-              loading={false}
-              onPress={() => {
-                setSelectedOption('today')
-                addFollowUpTask('today')
-              }}
-              containerStyle={styles.button}
-            />
-
-            <TouchableButton
-              label={'Tomorrow'}
-              loading={false}
-              onPress={() => {
-                setSelectedOption('tomorrow')
-                addFollowUpTask('tomorrow')
-              }}
-              containerStyle={styles.button}
-            />
-
-            <TouchableButton
-              label={'In 3 Days'}
-              loading={false}
-              onPress={() => {
-                setSelectedOption('in_3_days')
-                addFollowUpTask('in_3_days')
-              }}
-              containerStyle={styles.button}
-            />
-            <TouchableButton
-              label={'Next Week'}
-              loading={false}
-              onPress={() => {
-                setSelectedOption('next_week')
-                addFollowUpTask('next_week')
-              }}
-              containerStyle={styles.button}
-            />
-
-            <TouchableButton
-              label={'Custom'}
-              loading={false}
-              onPress={() => {
-                setInitialDateTimeCustom();
-                setSelectedOption('custom')
-              }}
-              containerStyle={styles.button}
-            />
-          </View>
-          {
-            selectedOption === 'custom' && (
-              <View style={[styles.formMain]}>
-                <DateTimePicker
-                  placeholderLabel={'Select Date'}
-                  name={'date'}
-                  mode={'date'}
-                  disabled={selectedOption != 'custom'}
-                  showError={checkValidation === true && followUpData.date === ''}
-                  errorMessage={'Required'}
-                  iconSource={require('../../../assets/img/calendar.png')}
-                  date={followUpData.date ? new Date(followUpData.date) : new Date()}
-                  selectedValue={followUpData.date ? helper.formatDate(followUpData.date) : ''}
-                  handleForm={(value, name) => handleFormDiary(value, name)}
+              <View style={styles.rowVertical}>
+                <TouchableButton
+                  label={'Today'}
+                  loading={false}
+                  onPress={() => {
+                    setSelectedOption('today')
+                    addFollowUpTask('today')
+                  }}
+                  containerStyle={styles.button}
                 />
 
-                <DateTimePicker
-                  placeholderLabel={'Select Time'}
-                  name={'start'}
-                  mode={'time'}
-                  disabled={selectedOption != 'custom'}
-                  showError={checkValidation === true && followUpData.start === ''}
-                  errorMessage={'Required'}
-                  iconSource={require('../../../assets/img/clock.png')}
-                  date={followUpData.start ? new Date(followUpData.start) : new Date()}
-                  selectedValue={followUpData.start ? helper.formatTime(followUpData.start) : ''}
-                  handleForm={(value, name) => handleFormDiary(value, name)}
+                <TouchableButton
+                  label={'Tomorrow'}
+                  loading={false}
+                  onPress={() => {
+                    setSelectedOption('tomorrow')
+                    addFollowUpTask('tomorrow')
+                  }}
+                  containerStyle={styles.button}
                 />
-                {/* **************************************** */}
-                <View style={[AppStyles.mainInputWrap]}>
-                  <TouchableButton
-                    containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-                    label={'Done'}
-                    onPress={() => addFollowUpTask('custom')}
-                  />
-                </View>
+
+                <TouchableButton
+                  label={'In 3 Days'}
+                  loading={false}
+                  onPress={() => {
+                    setSelectedOption('in_3_days')
+                    addFollowUpTask('in_3_days')
+                  }}
+                  containerStyle={styles.button}
+                />
+                <TouchableButton
+                  label={'Next Week'}
+                  loading={false}
+                  onPress={() => {
+                    setSelectedOption('next_week')
+                    addFollowUpTask('next_week')
+                  }}
+                  containerStyle={styles.button}
+                />
+
+                <TouchableButton
+                  label={'Custom'}
+                  loading={false}
+                  onPress={() => {
+                    setInitialDateTimeCustom()
+                    setSelectedOption('custom')
+                  }}
+                  containerStyle={styles.button}
+                />
               </View>
-            )
-          }
-        </View >
-      </Modal >
-      :
+              {selectedOption === 'custom' && (
+                <View style={[styles.formMain]}>
+                  <DateTimePicker
+                    placeholderLabel={'Select Date'}
+                    name={'date'}
+                    mode={'date'}
+                    disabled={selectedOption != 'custom'}
+                    showError={checkValidation === true && followUpData.date === ''}
+                    errorMessage={'Required'}
+                    iconSource={require('../../../assets/img/calendar.png')}
+                    date={followUpData.date ? new Date(followUpData.date) : new Date()}
+                    selectedValue={followUpData.date ? helper.formatDate(followUpData.date) : ''}
+                    handleForm={(value, name) => handleFormDiary(value, name)}
+                  />
+
+                  <DateTimePicker
+                    placeholderLabel={'Select Time'}
+                    name={'start'}
+                    mode={'time'}
+                    disabled={selectedOption != 'custom'}
+                    showError={checkValidation === true && followUpData.start === ''}
+                    errorMessage={'Required'}
+                    iconSource={require('../../../assets/img/clock.png')}
+                    date={followUpData.start ? new Date(followUpData.start) : new Date()}
+                    selectedValue={followUpData.start ? helper.formatTime(followUpData.start) : ''}
+                    handleForm={(value, name) => handleFormDiary(value, name)}
+                  />
+                  {/* **************************************** */}
+                  <View style={[AppStyles.mainInputWrap]}>
+                    <TouchableButton
+                      containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+                      label={'Done'}
+                      onPress={() => addFollowUpTask('custom')}
+                    />
+                  </View>
+                </View>
+              )}
+
+              <Textarea
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                  { height: 100, paddingTop: 10 },
+                ]}
+                rowSpan={5}
+                returnKeyType="done"
+                placeholder="Description"
+                onChangeText={(text) => handleFormDiary(text, 'notes')}
+                onSubmitEditing={() => Keyboard.dismiss()}
+                blurOnSubmit={true}
+                value={followUpData.notes}
+              />
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
+      </TouchableWithoutFeedback>
+    ) : (
       // Meeting Modal
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
-          <TouchableOpacity
-            style={styles.timesBtn}
-            onPress={() => closeModal()}
-          >
+          <TouchableOpacity style={styles.timesBtn} onPress={() => closeModal()}>
             <Image source={times} style={styles.timesImg} />
           </TouchableOpacity>
 
@@ -434,7 +471,7 @@ const MeetingFollowupModal = ({ active,
           </View>
         </View>
       </Modal>
-
+    )
   )
 }
 

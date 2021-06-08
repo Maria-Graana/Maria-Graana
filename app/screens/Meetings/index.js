@@ -13,6 +13,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import MeetingTile from '../../components/MeetingTile'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
@@ -47,6 +48,8 @@ class Meetings extends Component {
       editMeeting: false,
       closedWon: false,
       comment: null,
+      selectedClientContacts: [],
+      isMultiPhoneModalVisible: false,
     }
   }
 
@@ -193,6 +196,23 @@ class Meetings extends Component {
 
   editMeeting = (id) => {
     this.openModalInMeetingMode(true, id)
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts } = this.props
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          this.showStatusFeedbackModal(true)
+          this.sendCallStatus()
+          helper.callNumber(copySelectedClientContacts, contacts)
+        }
+      )
+    }
   }
 
   goToComments = () => {
@@ -481,6 +501,8 @@ class Meetings extends Component {
       currentMeeting,
       closedWon,
       comment,
+      selectedClientContacts,
+      isMultiPhoneModalVisible,
     } = this.state
 
     const { navigation, lead } = this.props
@@ -594,6 +616,13 @@ class Meetings extends Component {
           closeModal={() => this.closeModal()}
           onPress={this.onHandleCloseLead}
           CMlead={true}
+        />
+
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={selectedClientContacts.payload}
+          showMultiPhoneModal={this.showMultiPhoneModal}
+          handlePhoneSelectDone={this.handlePhoneSelectDone}
         />
 
         <StatusFeedbackModal

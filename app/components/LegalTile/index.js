@@ -70,7 +70,7 @@ class LegalTile extends React.Component {
           </Text>
         </View>
         <View style={{ justifyContent: 'center' }}>
-          <Text style={[styles.tileStatus, styles.statusYellow]}>PENDING</Text>
+          <Text style={[styles.tileStatus, styles.statusYellow]}>PENDING UPLOAD</Text>
         </View>
       </TouchableOpacity>
     )
@@ -124,6 +124,9 @@ class LegalTile extends React.Component {
                 </Text>
               </Text>
               {data.status === 'rejected' && (
+                <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+              )}
+              {data.status === 'uploaded' && (
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
               )}
             </View>

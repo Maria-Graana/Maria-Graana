@@ -207,16 +207,25 @@ const PaymentMethods = {
       downPayment = PaymentMethods.handleEmptyValue(downPayment)
       finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
       token = PaymentMethods.handleEmptyValue(token)
-      return (finalPrice * downPayment) / 100 - token
+      return (finalPrice * downPayment) / 100
     } else return null
   },
-  calculateNoOfInstallments(oneProduct, frequency) {
-    if (oneProduct && frequency) {
-      let { investmentDurationPeriod } = oneProduct.projectProduct
+  calculateNoOfInstallments(oneProduct, firstFormData) {
+    if (oneProduct && firstFormData) {
+      let { installmentFrequency, paymentPlanDuration } = firstFormData
       let value = 4
-      investmentDurationPeriod = PaymentMethods.handleEmptyValue(investmentDurationPeriod)
-      if (frequency === 'monthly') value = 12
-      return investmentDurationPeriod * value
+      paymentPlanDuration = PaymentMethods.handleEmptyValue(paymentPlanDuration)
+      if (installmentFrequency === 'monthly') value = 12
+      return paymentPlanDuration * value
+    } else return null
+  },
+  calculatePossessionCharges(oneProduct, finalPrice, token) {
+    if (oneProduct && finalPrice && token) {
+      let { possessionCharges } = oneProduct.projectProduct
+      possessionCharges = PaymentMethods.handleEmptyValue(possessionCharges)
+      finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
+      token = PaymentMethods.handleEmptyValue(token)
+      return (finalPrice * possessionCharges) / 100 - token
     } else return null
   },
 }

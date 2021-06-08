@@ -61,6 +61,9 @@ class LeadOffer extends React.Component {
       isFollowUpMode: false,
       closedWon: false,
       comment: null,
+      sellerNotNumeric: false,
+      customerNotNumeric: false,
+      agreedNotNumeric: false,
     }
   }
 
@@ -150,8 +153,22 @@ class LeadOffer extends React.Component {
 
   handleForm = (value, name) => {
     const { leadData } = this.state
+    let copySellerNotNumeric = false
+    let copycustomerNotNumeric = false
+    let copyAgreedNotNumeric = false
     leadData[name] = value
-    this.setState({ leadData, agreedNotZero: false, sellerNotZero: false, customerNotZero: false })
+    if (name === 'seller' && /^\d+$/.test(value) == false) copySellerNotNumeric = true
+    if (name === 'customer' && /^\d+$/.test(value) == false) copycustomerNotNumeric = true
+    if (name === 'agreed' && /^\d+$/.test(value) == false) copyAgreedNotNumeric = true
+    this.setState({
+      leadData,
+      agreedNotZero: false,
+      sellerNotZero: false,
+      customerNotZero: false,
+      sellerNotNumeric: copySellerNotNumeric,
+      customerNotNumeric: copycustomerNotNumeric,
+      agreedNotNumeric: copyAgreedNotNumeric,
+    })
   }
 
   fetchOffers = () => {
@@ -173,9 +190,9 @@ class LeadOffer extends React.Component {
   }
 
   placeCustomerOffer = () => {
-    const { leadData, currentProperty } = this.state
+    const { leadData, currentProperty, customerNotNumeric } = this.state
     const { lead } = this.props
-    if (leadData.customer && leadData.customer !== '') {
+    if (leadData.customer && leadData.customer !== '' && !customerNotNumeric) {
       if (Number(leadData.customer) <= 0) {
         this.setState({
           customerNotZero: true,
@@ -199,9 +216,9 @@ class LeadOffer extends React.Component {
   }
 
   placeSellerOffer = () => {
-    const { leadData, currentProperty } = this.state
+    const { leadData, currentProperty, sellerNotNumeric } = this.state
     const { lead } = this.props
-    if (leadData.seller && leadData.seller !== '') {
+    if (leadData.seller && leadData.seller !== '' && !sellerNotNumeric) {
       if (Number(leadData.seller) <= 0) {
         this.setState({
           sellerNotZero: true,
@@ -426,8 +443,8 @@ class LeadOffer extends React.Component {
   }
 
   placeAgreedOffer = () => {
-    const { leadData, currentProperty } = this.state
-    if (leadData.agreed && leadData.agreed !== '') {
+    const { leadData, currentProperty, agreedNotNumeric } = this.state
+    if (leadData.agreed && leadData.agreed !== '' && !agreedNotNumeric) {
       if (Number(leadData.agreed) <= 0) {
         this.setState({
           agreedNotZero: true,
@@ -659,6 +676,9 @@ class LeadOffer extends React.Component {
       modalMode,
       closedWon,
       comment,
+      sellerNotNumeric,
+      customerNotNumeric,
+      agreedNotNumeric,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -753,6 +773,9 @@ class LeadOffer extends React.Component {
           sellerNotZero={sellerNotZero}
           customerNotZero={customerNotZero}
           offerReadOnly={offerReadOnly}
+          sellerNotNumeric={sellerNotNumeric}
+          customerNotNumeric={customerNotNumeric}
+          agreedNotNumeric={agreedNotNumeric}
         />
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}

@@ -76,8 +76,7 @@ const helper = {
     return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5, 11)}`
   },
   validateEmail(email) {
-    var re =
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(email)
   },
   capitalize(str) {
@@ -153,10 +152,7 @@ const helper = {
       // simple task is reffered to task added from diary directly or through lead but taskcategory is simpleTask
       if (taskDate > todayDate && val.status !== 'completed') {
         return 'To-do'
-      } else if (
-        taskDate < todayDate &&
-        val.status !== 'completed'
-      ) {
+      } else if (taskDate < todayDate && val.status !== 'completed') {
         return 'Overdue'
       } else if (val.status === 'completed') {
         return 'Completed'
@@ -988,6 +984,19 @@ const helper = {
       }
       return newString + '(Years)'
     } else return '-'
+  },
+  addID(data) {
+    if (data && data.length) {
+      let count = 0
+      let newData = data.map((item, index) => {
+        if (item.paymentType === 'installment') {
+          count = count + 1
+          item.id = count
+        }
+        return item
+      })
+      return newData
+    }
   },
 }
 

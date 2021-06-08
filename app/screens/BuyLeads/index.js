@@ -288,14 +288,14 @@ class BuyLeads extends React.Component {
       if (data && data.customer) {
         let selectedClientContacts = helper.createContactPayload(data.customer)
         this.setState({ selectedClientContacts }, () => {
-          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            // multiple numbers to select
-            this.showMultiPhoneModal(true)
-          } else {
-            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
-            this.sendCallStatus()
-            helper.callNumber(selectedClientContacts, contacts)
-          }
+          // if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+          //   // multiple numbers to select
+          //   this.showMultiPhoneModal(true)
+          // } else {
+          this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
+          this.sendCallStatus()
+          helper.callNumber(selectedClientContacts, contacts)
+          //  }
         })
       }
     })

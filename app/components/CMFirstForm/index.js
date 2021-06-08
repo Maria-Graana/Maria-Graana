@@ -226,9 +226,9 @@ class CMFirstForm extends Component {
                 // enabled={checkLeadClosedOrNot}
                 customStyle={styles.equalHeight}
               />
-              {firstFormValidate === true &&
-                !firstFormData.productId &&
-                firstFormData.productId === '' && <ErrorMessage errorMessage={'Required'} />}
+              {firstFormValidate === true && !firstFormData.productId && (
+                <ErrorMessage errorMessage={'Required'} />
+              )}
             </View>
             <View style={styles.mainDetailViewBtn}>
               <TouchableOpacity
@@ -272,7 +272,7 @@ class CMFirstForm extends Component {
                 selectedItem={firstFormData.paymentPlanDuration}
                 enabled={paymentPlanDuration && paymentPlanDuration.length === 1 ? false : true}
               />
-              {firstFormValidate === true && firstFormData.paymentPlanDuration === 'no' && (
+              {firstFormValidate === true && !firstFormData.paymentPlanDuration && (
                 <ErrorMessage errorMessage={'Required'} />
               )}
             </View>
@@ -285,7 +285,7 @@ class CMFirstForm extends Component {
                 selectedItem={firstFormData.installmentFrequency}
                 enabled={installmentFrequency && installmentFrequency.length === 1 ? false : true}
               />
-              {firstFormValidate === true && firstFormData.installmentFrequency === 'no' && (
+              {firstFormValidate === true && !firstFormData.installmentFrequency && (
                 <ErrorMessage errorMessage={'Required'} />
               )}
             </View>
@@ -300,7 +300,13 @@ class CMFirstForm extends Component {
           keyboardType={'numeric'}
           onChangeHandle={handleFirstForm}
           formatValue={''}
-          // editable={checkForPaymentPlan}
+          editable={
+            (firstFormData.unit != null &&
+              firstFormData.unit != '' &&
+              firstFormData.productId != null &&
+              firstFormData.productId != '') ||
+            (pearlUnit && firstFormData.productId != null && firstFormData.productId != '')
+          }
           fromatName={false}
         />
         <SimpleInputText
@@ -312,6 +318,13 @@ class CMFirstForm extends Component {
           onChangeHandle={handleFirstForm}
           formatValue={''}
           keyboardType={'numeric'}
+          editable={
+            (firstFormData.unit != null &&
+              firstFormData.unit != '' &&
+              firstFormData.productId != null &&
+              firstFormData.productId != '') ||
+            (pearlUnit && firstFormData.productId != null && firstFormData.productId != '')
+          }
         />
         {checkFirstFormPayment && (
           <View>
@@ -359,26 +372,64 @@ class CMFirstForm extends Component {
             <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
           </View>
         </View>
-        {!checkFirstFormPayment && (
-          <View style={{ paddingVertical: 10 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            flex: 1,
+            // marginHorizontal: 10,
+            justifyContent: 'space-between',
+          }}
+        >
+          {!checkFirstFormPayment && (
+            <View style={[styles.btnView, showInstallmentFields ? { flex: 0.9 } : null]}>
+              <TouchableOpacity
+                style={[styles.bookNowBtn]}
+                onPress={() => {
+                  checkUnitDetail === true && addPaymentModalToggle(true, 'token')
+                }}
+              >
+                <Text
+                  style={[
+                    styles.bookNowBtnText,
+                    showInstallmentFields
+                      ? { fontSize: 12, fontFamily: AppStyles.fonts.boldFont }
+                      : { fontSize: 12, fontFamily: AppStyles.fonts.boldFont },
+                  ]}
+                >
+                  ADD TOKEN
+                </Text>
+              </TouchableOpacity>
+              {firstFormValidate === true && !checkFirstFormPayment ? (
+                <ErrorMessage errorMessage={'Token Required'} />
+              ) : null}
+            </View>
+          )}
+          <View style={[styles.btnView, !checkFirstFormPayment ? { paddingLeft: 10 } : null]}>
             <TouchableOpacity
               style={styles.bookNowBtn}
               onPress={() => {
-                checkUnitDetail === true && addPaymentModalToggle(true, 'token')
+                submitFirstForm('schedulePayment')
               }}
             >
-              <Text style={styles.bookNowBtnText}>ADD TOKEN</Text>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.bookNowBtnText,
+                  checkFirstFormPayment
+                    ? { fontSize: 14, fontFamily: AppStyles.fonts.boldFont }
+                    : { fontSize: 12, fontFamily: AppStyles.fonts.boldFont },
+                ]}
+              >
+                SCHEDULE OF PAYMENT
+              </Text>
             </TouchableOpacity>
-            {firstFormValidate === true && !checkFirstFormPayment ? (
-              <ErrorMessage errorMessage={'Token Required'} />
-            ) : null}
           </View>
-        )}
+        </View>
         <View style={{ paddingVertical: 10, paddingBottom: 20 }}>
           <TouchableOpacity
             style={styles.bookNowBtn}
             onPress={() => {
-              checkLeadClosedOrNot === true && submitFirstForm(true)
+              checkLeadClosedOrNot === true && submitFirstForm('confirmation')
             }}
           >
             <Text style={styles.bookNowBtnText}>BOOK NOW</Text>

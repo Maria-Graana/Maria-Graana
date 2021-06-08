@@ -78,7 +78,6 @@ class ProductDetailsModal extends React.Component {
       projectProduct && projectProduct.investmentDuration === 'unlimited'
         ? helper.capitalize(projectProduct.investmentDuration)
         : `${projectProduct && projectProduct.investmentDurationPeriod + ' Month(s)'}`
-
     return (
       <Modal isVisible={active}>
         <SafeAreaView>

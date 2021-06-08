@@ -955,8 +955,9 @@ export default StaticData = {
     id: 5,
   },
   legalStatuses: [
-    { value: 'pending', name: 'pending' },
-    { value: 'pending_legal', name: 'pending legal' },
+    { value: 'pending', name: 'pending Upload' },
+    { value: 'uploaded', name: 'Uploaded' },
+    { value: 'pending_legal', name: 'pending Approval' },
     { value: 'rejected', name: 'Rejected' },
     { value: 'approved', name: 'Approved' },
   ],

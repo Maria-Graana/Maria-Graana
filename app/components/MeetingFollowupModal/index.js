@@ -179,13 +179,13 @@ const MeetingFollowupModal = ({
       start: null,
       taskType: followUpData.taskType,
       time: null,
-      notes: followUpData.notes,
+      notes: '',
       status: 'pending',
       notes: null,
       addedBy: 'self',
       taskCategory: 'leadTask',
     }
-
+    payload.notes = followUpData.notes
     switch (selectedOption) {
       case 'today':
         let todayPayload = { ...payload }
@@ -253,7 +253,6 @@ const MeetingFollowupModal = ({
   }
 
   const addFollowUpForCall = (data) => {
-    console.log(data)
     axios
       .post(`api/leads/project/meeting`, data)
       .then((res) => {

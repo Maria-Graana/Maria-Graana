@@ -14,6 +14,7 @@ import { setPropsurePayment } from '../../actions/propsurePayment'
 import AppStyles from '../../AppStyles'
 import AddAttachmentPopup from '../../components/AddAttachmentPopup'
 import AttachmentTile from '../../components/AttachmentTile'
+import UploadAttachment from '../../components/UploadAttachment'
 import ViewDocs from '../../components/ViewDocs'
 import helper from '../../helper'
 import AddAttachment from './addAttachment'
@@ -29,6 +30,7 @@ class PropsureAttachment extends Component {
       formData: { ...this.props.propsurePayment },
       showDoc: false,
       docUrl: '',
+      showAction: false,
     }
   }
 
@@ -76,33 +78,17 @@ class PropsureAttachment extends Component {
     dispatch(setPropsurePayment({ ...propsurePayment, visible: true }))
   }
 
-  getAttachmentFromStorage = () => {
-    const { title, formData } = this.state
-    var newFormData = { ...formData }
+  handleForm = (formData) => {
+    this.setState({
+      formData: formData,
+      showAction: false,
+    })
+  }
 
-    let options = {
-      type: '*/*',
-      copyToCacheDirectory: true,
-    }
-    DocumentPicker.getDocumentAsync(options)
-      .then((item) => {
-        if (item.type === 'cancel' && newFormData.fileName === '') {
-          // App should prompt a pop message in-case file is already selected
-          Alert.alert('Pick File', 'Please pick a file from documents!')
-        } else {
-          if (item.name && item.name !== '') {
-            newFormData.fileName = item.name
-            newFormData.size = item.size
-            newFormData.uri = item.uri
-            this.setState({
-              formData: newFormData,
-            })
-          }
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+  toggleActionSheet = () => {
+    this.setState({
+      showAction: true,
+    })
   }
 
   deleteAttachmentLocally = (item) => {
@@ -231,10 +217,11 @@ class PropsureAttachment extends Component {
   }
 
   render() {
-    const { isVisible, formData, checkValidation, title, loading, showDoc, docUrl } = this.state
+    const { isVisible, formData, checkValidation, title, showAction, showDoc, docUrl } = this.state
     const { propsurePayment } = this.props
     return (
       <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
+        <UploadAttachment showAction={showAction} submitUploadedAttachment={this.handleForm} />
         <AddAttachmentPopup
           isVisible={isVisible}
           formData={formData}
@@ -242,7 +229,7 @@ class PropsureAttachment extends Component {
           setTitle={(title) => this.setState({ title: title })}
           formSubmit={this.formSubmit}
           checkValidation={checkValidation}
-          getAttachmentFromStorage={this.getAttachmentFromStorage}
+          getAttachmentFromStorage={this.toggleActionSheet}
           closeModal={() => this.closeModal()}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />

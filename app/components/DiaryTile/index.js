@@ -105,6 +105,11 @@ class DiaryTile extends React.Component {
                             </Text>
                           </View>
                           <Text style={styles.meetingText}>{val.subject}</Text>
+                          {val && val.notes ? (
+                            <Text numberOfLines={1} style={styles.meetingText}>
+                              {val.notes}
+                            </Text>
+                          ) : null}
                           <View style={styles.innerTile}>
                             <Text style={styles.meetingText}>
                               {val.taskType.charAt(0).toUpperCase() + val.taskType.slice(1)}

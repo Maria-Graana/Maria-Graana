@@ -50,9 +50,7 @@ class DetailForm extends Component {
     newObject.taskType = data.taskType
     newObject.status = data.status
     newObject.taskCategory = data.taskCategory
-    this.setState({ formData: newObject, buttonText: 'UPDATE' }, () => {
-      console.log(this.state.formData)
-    })
+    this.setState({ formData: newObject, buttonText: 'UPDATE' })
   }
 
   handleForm = (value, name) => {

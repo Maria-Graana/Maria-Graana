@@ -16,11 +16,11 @@ import addImg from '../../../assets/img/add.png'
 import backArrow from '../../../assets/img/backArrow.png'
 import checkImg from '../../../assets/img/check.png'
 import AppStyles from '../../AppStyles'
-import { formatPrice } from '../../PriceFormate'
-import styles from './style'
+import ErrorMessage from '../../components/ErrorMessage'
 import TouchableButton from '../../components/TouchableButton'
 import Ability from '../../hoc/Ability'
-import ErrorMessage from '../../components/ErrorMessage'
+import { formatNumericPrice } from '../PriceFormate'
+import styles from './style'
 
 class OfferModal extends React.Component {
   constructor(props) {
@@ -225,7 +225,7 @@ class OfferModal extends React.Component {
                     <View style={[styles.mainChatWrap]}>
                       <View style={[styles.caret, styles.caretRight]}></View>
                       <Text style={[styles.priceStyle, styles.priceBlue]}>
-                        {formatPrice(item.item.offer)}
+                        {formatNumericPrice(item.item.offer)}
                       </Text>
                       <Text style={[styles.dataTime]}>
                         {moment(item.item.createdAt).format('YYYY-MM-DD hh:mm a')}
@@ -236,7 +236,7 @@ class OfferModal extends React.Component {
                       <View style={[styles.mainChatWrap]}>
                         <View style={[styles.caret, styles.caretLeft]}></View>
                         <Text style={[styles.priceStyle, styles.priceBlack, styles.textRight]}>
-                          {formatPrice(item.item.offer)}
+                          {formatNumericPrice(item.item.offer)}
                         </Text>
                         <Text style={[styles.dataTime, styles.textRight]}>
                           {moment(item.item.createdAt).format('YYYY-MM-DD hh:mm a')}

@@ -9,6 +9,7 @@ import * as Permissions from 'expo-permissions'
 import { ActionSheet } from 'native-base'
 import React, { Component } from 'react'
 import { Alert, FlatList, Text, View, TouchableOpacity } from 'react-native'
+import UploadAttachment from '../../components/UploadAttachment'
 import { AntDesign } from '@expo/vector-icons'
 import { connect } from 'react-redux'
 import { Buffer } from 'buffer'
@@ -27,7 +28,11 @@ import { setlead } from '../../actions/lead'
 import CommissionTile from '../../components/CommissionTile'
 import DeleteModal from '../../components/DeleteModal'
 import styles from './style'
-import { clearInstrumentInformation, getInstrumentDetails, setInstrumentInformation } from '../../actions/addInstrument'
+import {
+  clearInstrumentInformation,
+  getInstrumentDetails,
+  setInstrumentInformation,
+} from '../../actions/addInstrument'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -56,6 +61,8 @@ class LegalAttachment extends Component {
       editable: false,
       legalServicesFee: null,
       officeLocations: [],
+      showAction: false,
+      currentItem: {},
     }
   }
 
@@ -137,6 +144,7 @@ class LegalAttachment extends Component {
                 checkListDoc: newcheckListDoc,
                 legalPaymentObj: newlegalPayment,
                 assignToAccountsLoading: false,
+                showAction: false,
               })
             }
           }
@@ -171,6 +179,28 @@ class LegalAttachment extends Component {
         .finally(() => {
           this.setState({ loading: false })
         })
+    })
+  }
+
+  handleForm = (formData) => {
+    const { currentItem } = this.state
+    formData.category = currentItem.category
+    console.log('handleForm: ', formData)
+    this.setState(
+      {
+        formData: formData,
+        showAction: false,
+      },
+      () => {
+        this.uploadAttachment(this.state.formData)
+      }
+    )
+  }
+
+  toggleActionSheet = (data) => {
+    this.setState({
+      showAction: true,
+      currentItem: data,
     })
   }
 
@@ -318,7 +348,7 @@ class LegalAttachment extends Component {
   submitMenu = (value, data) => {
     if (value === 'edit') {
       data.value = data.category
-      this.getAttachmentFromStorage(data)
+      this.toggleActionSheet(data)
     }
     if (value === 'remove') {
       this.showDeleteDialog(data)
@@ -497,21 +527,23 @@ class LegalAttachment extends Component {
     const newSecondFormData = { ...legalPayment, visible: legalPayment.visible }
     newSecondFormData[name] = value
 
-    if (name === 'type' && (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')) {
+    if (
+      name === 'type' &&
+      (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')
+    ) {
       if (lead && lead.customer_id) {
         dispatch(getInstrumentDetails(value, lead.customer_id))
-        dispatch(setInstrumentInformation({
-          ...addInstrument,
-          customerId: lead && lead.customer_id
-            ? lead.customer_id
-            : null,
-          instrumentType: value,
-          instrumentAmount: null,
-          instrumentNo: null,
-          id: null,
-        }))
+        dispatch(
+          setInstrumentInformation({
+            ...addInstrument,
+            customerId: lead && lead.customer_id ? lead.customer_id : null,
+            instrumentType: value,
+            instrumentAmount: null,
+            instrumentNo: null,
+            id: null,
+          })
+        )
       }
-
     }
     this.setState({ buyerNotZero: false })
     dispatch(setLegalPayment(newSecondFormData))
@@ -519,21 +551,18 @@ class LegalAttachment extends Component {
 
   handleInstrumentInfoChange = (value, name) => {
     const { addInstrument, dispatch, instruments } = this.props
-    const copyInstrument = { ...addInstrument };
+    const copyInstrument = { ...addInstrument }
     if (name === 'instrumentNumber') {
-      copyInstrument.instrumentNo = value;
-    }
-    else if (name === 'instrumentNumberPicker') {
-      const instrument = instruments.find((item) => item.instrumentNo === value);
-      copyInstrument.instrumentNo = instrument.instrumentNo;
-      copyInstrument.instrumentAmount = instrument.instrumentAmount;
-      copyInstrument.id = instrument.id;
-      copyInstrument.editable = false;
-    }
-    else if (name === 'instrumentAmount')
-      copyInstrument.instrumentAmount = value;
+      copyInstrument.instrumentNo = value
+    } else if (name === 'instrumentNumberPicker') {
+      const instrument = instruments.find((item) => item.instrumentNo === value)
+      copyInstrument.instrumentNo = instrument.instrumentNo
+      copyInstrument.instrumentAmount = instrument.instrumentAmount
+      copyInstrument.id = instrument.id
+      copyInstrument.editable = false
+    } else if (name === 'instrumentAmount') copyInstrument.instrumentAmount = value
 
-    dispatch(setInstrumentInformation(copyInstrument));
+    dispatch(setInstrumentInformation(copyInstrument))
   }
 
   setCommissionEditData = (data) => {
@@ -549,14 +578,19 @@ class LegalAttachment extends Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-              ? user.officeLocation.id
-              : null,
+            ? user.officeLocation.id
+            : null,
       })
     )
 
     if (data && data.paymentInstrument && lead) {
       dispatch(getInstrumentDetails(data.paymentInstrument.instrumentType, lead.customer_id))
-      dispatch(setInstrumentInformation({ ...data.paymentInstrument, editable: data.paymentInstrument.id ? false : true }));
+      dispatch(
+        setInstrumentInformation({
+          ...data.paymentInstrument,
+          editable: data.paymentInstrument.id ? false : true,
+        })
+      )
     }
   }
 
@@ -610,17 +644,21 @@ class LegalAttachment extends Component {
       if (editable === false) {
         // for commission addition
 
-        let body = {};
+        let body = {}
 
         // for payment addition
-        if (legalPayment.type === 'cheque' || legalPayment.type === 'pay-Order' || legalPayment.type === 'bank-Transfer') {
+        if (
+          legalPayment.type === 'cheque' ||
+          legalPayment.type === 'pay-Order' ||
+          legalPayment.type === 'bank-Transfer'
+        ) {
           // for cheque,pay order and bank transfer
-          let isValid = this.checkInstrumentValidation();
+          let isValid = this.checkInstrumentValidation()
           if (isValid) {
-            this.addEditLegalInstrumentOnServer();
+            this.addEditLegalInstrumentOnServer()
           }
-        }
-        else { // for all other types
+        } else {
+          // for all other types
           body = {
             ...legalPayment,
             rcmLeadId: lead.id,
@@ -631,18 +669,21 @@ class LegalAttachment extends Component {
           delete body.visible
           this.addLegalPayment(body)
         }
-
       } else {
-        let body = {};
+        let body = {}
         // payment update mode
-        if (legalPayment.type === 'cheque' || legalPayment.type === 'pay-Order' || legalPayment.type === 'bank-Transfer') {
+        if (
+          legalPayment.type === 'cheque' ||
+          legalPayment.type === 'pay-Order' ||
+          legalPayment.type === 'bank-Transfer'
+        ) {
           // for cheque,pay order and bank transfer
-          let isValid = this.checkInstrumentValidation();
+          let isValid = this.checkInstrumentValidation()
           if (isValid) {
-            this.addEditLegalInstrumentOnServer(true);
+            this.addEditLegalInstrumentOnServer(true)
           }
-        }
-        else { // for all other types
+        } else {
+          // for all other types
           body = { ...legalPayment }
           this.updateLegalPayment(body)
         }
@@ -660,7 +701,6 @@ class LegalAttachment extends Component {
     let toastMsg = 'Legal Payment Added'
     let errorMsg = 'Error Adding Legal Payment'
     let baseUrl = `/api/leads/project/payments`
-    console.log('post: ', body)
     axios
       .post(baseUrl, body)
       .then((response) => {
@@ -679,14 +719,15 @@ class LegalAttachment extends Component {
       })
       .catch((error) => {
         helper.errorToast(errorMsg)
-      }).finally(() => {
+      })
+      .finally(() => {
         dispatch(clearInstrumentInformation())
         this.clearReduxAndStateValues()
       })
   }
 
   updateLegalPayment = (body) => {
-    const { legalPayment, dispatch } = this.props;
+    const { legalPayment, dispatch } = this.props
     let toastMsg = 'Legal Payment Updated'
     let errorMsg = 'Error Updating Legal Payment'
     let baseUrl = `/api/leads/project/payment` // for patch request
@@ -701,8 +742,8 @@ class LegalAttachment extends Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = legalPayment.paymentAttachments
           ? _.filter(legalPayment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -717,39 +758,39 @@ class LegalAttachment extends Component {
       .catch((error) => {
         helper.errorToast(errorMsg)
         console.log('ERROR: ', error)
-      }).finally(() => {
+      })
+      .finally(() => {
         dispatch(clearInstrumentInformation())
         this.clearReduxAndStateValues()
       })
   }
 
   checkInstrumentValidation = () => {
-    const { addInstrument } = this.props;
+    const { addInstrument } = this.props
     if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
-      alert('Instrument Number cannot be empty');
+      alert('Instrument Number cannot be empty')
       this.setState({
         addPaymentLoading: false,
-        assignToAccountsLoading: false
+        assignToAccountsLoading: false,
       })
-      return false;;
-    }
-    else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
-      alert('Instrument Amount cannot be empty');
+      return false
+    } else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+      alert('Instrument Amount cannot be empty')
       this.setState({
         addPaymentLoading: false,
-        assignToAccountsLoading: false
+        assignToAccountsLoading: false,
       })
-      return false;
-    }
-    else {
-      return true;
+      return false
+    } else {
+      return true
     }
   }
 
   addEditLegalInstrumentOnServer = (isLegalEdit = false) => {
-    let body = {};
-    const { addInstrument, legalPayment, dispatch, lead, user } = this.props;
-    if (addInstrument.id) { // selected existing instrument // add mode
+    let body = {}
+    const { addInstrument, legalPayment, dispatch, lead, user } = this.props
+    if (addInstrument.id) {
+      // selected existing instrument // add mode
       body = {
         ...legalPayment,
         rcmLeadId: lead.id,
@@ -761,30 +802,30 @@ class LegalAttachment extends Component {
       delete body.visible
       if (isLegalEdit) {
         this.updateLegalPayment(body)
+      } else {
+        this.addLegalPayment(body)
       }
-      else {
-        this.addLegalPayment(body);
-      }
-    }
-    else { // add mode // new instrument info
-      axios.post(`api/leads/instruments`, addInstrument).then(res => {
-        if (res && res.data) {
-          body = {
-            ...legalPayment,
-            rcmLeadId: lead.id,
-            armsUserId: user.id,
-            addedBy: legalPayment.addedBy,
-            active: true,
-            instrumentId: res.data.id,
+    } else {
+      // add mode // new instrument info
+      axios
+        .post(`api/leads/instruments`, addInstrument)
+        .then((res) => {
+          if (res && res.data) {
+            body = {
+              ...legalPayment,
+              rcmLeadId: lead.id,
+              armsUserId: user.id,
+              addedBy: legalPayment.addedBy,
+              active: true,
+              instrumentId: res.data.id,
+            }
+            if (isLegalEdit) this.updateLegalPayment(body)
+            else this.addLegalPayment(body)
           }
-          if (isLegalEdit)
-            this.updateLegalPayment(body)
-          else
-            this.addLegalPayment(body);
-        }
-      }).catch(error => {
-        console.log('Error: ', error)
-      })
+        })
+        .catch((error) => {
+          console.log('Error: ', error)
+        })
     }
   }
 
@@ -907,6 +948,7 @@ class LegalAttachment extends Component {
       deletePaymentVisible,
       legalServicesFee,
       officeLocations,
+      showAction,
     } = this.state
     const { lead, route } = this.props
     let mailCheck = this.mailSentCheck()
@@ -917,6 +959,7 @@ class LegalAttachment extends Component {
 
     return (
       <View style={[AppStyles.mb1]}>
+        <UploadAttachment showAction={showAction} submitUploadedAttachment={this.handleForm} />
         <AddLegalPaymentModal
           onModalCloseClick={this.onModalCloseClick}
           handleCommissionChange={this.handleCommissionChange}
@@ -1009,9 +1052,9 @@ class LegalAttachment extends Component {
                     <LegalTile
                       data={checkListDoc}
                       index={null}
-                      submitMenu={() => { }}
-                      getAttachmentFromStorage={() => { }}
-                      downloadLegalDocs={() => { }}
+                      submitMenu={() => {}}
+                      getAttachmentFromStorage={() => {}}
+                      downloadLegalDocs={() => {}}
                       isLeadClosed={isLeadClosed}
                       addBorder={true}
                     />
@@ -1027,7 +1070,7 @@ class LegalAttachment extends Component {
                   data={item}
                   index={index + 1}
                   submitMenu={this.submitMenu}
-                  getAttachmentFromStorage={this.getAttachmentFromStorage}
+                  getAttachmentFromStorage={this.toggleActionSheet}
                   downloadLegalDocs={this.downloadLegalDocs}
                   isLeadClosed={isLeadClosed}
                 />

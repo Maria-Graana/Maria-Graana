@@ -12,6 +12,7 @@ import { connect } from 'react-redux'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import AddAttachmentPopup from '../../components/AddAttachmentPopup'
+import UploadAttachment from '../../components/UploadAttachment'
 import AttachmentTile from '../../components/AttachmentTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import ViewDocs from '../../components/ViewDocs'
@@ -33,6 +34,7 @@ class LeadAttachments extends Component {
       attachmentsData: [],
       attachmentType: '',
       signedServiceFile: null,
+      showAction: false,
     }
   }
 
@@ -103,35 +105,6 @@ class LeadAttachments extends Component {
 
   reopenPaymentModal = () => {}
 
-  getAttachmentFromStorage = () => {
-    const { title, formData } = this.state
-    var newFormData = { ...formData }
-
-    let options = {
-      type: '*/*',
-      copyToCacheDirectory: true,
-    }
-    DocumentPicker.getDocumentAsync(options)
-      .then((item) => {
-        if (item.type === 'cancel' && newFormData.fileName === '') {
-          // App should prompt a pop message in-case file is already selected
-          Alert.alert('Pick File', 'Please pick a file from documents!')
-        } else {
-          if (item.name && item.name !== '') {
-            newFormData.fileName = item.name
-            newFormData.size = item.size
-            newFormData.uri = item.uri
-            this.setState({
-              formData: newFormData,
-            })
-          }
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
   deleteAttachmentFromServer = (item) => {
     axios
       .delete(`api/leads/comments/remove?id=${item.id}`)
@@ -161,10 +134,21 @@ class LeadAttachments extends Component {
     )
   }
 
+  handleForm = (formData) => {
+    this.setState(
+      {
+        formData: formData,
+        showAction: false,
+      },
+      () => {
+        this.formSubmit()
+      }
+    )
+  }
+
   // ********* On form Submit Function
   formSubmit = () => {
-    const { formData, title } = this.state
-
+    const { title, formData } = this.state
     // ********* Form Validation Check
     if (!title || !formData.fileName) {
       this.setState({
@@ -173,16 +157,6 @@ class LeadAttachments extends Component {
     } else {
       // ********* Call Add Attachment API here :)
       this.uploadAttachment()
-      var objectForAttachment = {
-        fileName: '',
-        uri: '',
-        size: null,
-        title: '',
-      }
-      objectForAttachment.fileName = formData.fileName
-      objectForAttachment.size = formData.size
-      objectForAttachment.uri = formData.uri
-      objectForAttachment.title = title
     }
   }
 
@@ -276,6 +250,13 @@ class LeadAttachments extends Component {
     })
   }
 
+  toggleActionSheet = () => {
+    const { showAction } = this.state
+    this.setState({
+      showAction: true,
+    })
+  }
+
   render() {
     const {
       isVisible,
@@ -287,11 +268,13 @@ class LeadAttachments extends Component {
       loading,
       attachmentsData,
       signedServiceFile,
+      showAction,
     } = this.state
     const { route } = this.props
     const { workflow } = route.params
     return (
       <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
+        <UploadAttachment showAction={showAction} submitUploadedAttachment={this.handleForm} />
         <AddAttachmentPopup
           isVisible={isVisible}
           formData={formData}
@@ -299,7 +282,7 @@ class LeadAttachments extends Component {
           setTitle={(title) => this.setState({ title: title })}
           formSubmit={this.formSubmit}
           checkValidation={checkValidation}
-          getAttachmentFromStorage={this.getAttachmentFromStorage}
+          getAttachmentFromStorage={this.toggleActionSheet}
           closeModal={() => this.closeModal()}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />

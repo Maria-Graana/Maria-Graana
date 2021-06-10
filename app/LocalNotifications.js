@@ -8,8 +8,7 @@ import { Keyboard } from 'react-native'
 
 const submitNotification = (body, date) => {
   Keyboard.dismiss()
-  let duration = moment.duration({ minutes: 15 })
-  const trigger = new Date(moment(date).subtract(duration).format())
+  const trigger = convertTimeZone(date)
   let localNotification = {
     title: body.title,
     body: body.body,
@@ -22,8 +21,18 @@ const submitNotification = (body, date) => {
   }
   Notifications.scheduleNotificationAsync({
     content: localNotification,
-    trigger,
+    trigger: {
+      date: trigger,
+    },
   })
+}
+
+const convertTimeZone = (date) => {
+  let _format = 'YYYY-MM-DDTHH:mmZ'
+  let paktz = moment(date).format(_format)
+  var duration = moment.duration({ minutes: 15 })
+  var sub = moment(paktz, _format).subtract(duration).format()
+  return new Date(sub)
 }
 
 const handleNotification = () => {

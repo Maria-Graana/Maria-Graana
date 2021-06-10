@@ -17,6 +17,7 @@ import styles from './styles'
 import Ability from '../../hoc/Ability'
 import { connect } from 'react-redux'
 import helper from '../../helper'
+import TimerNotification from '../../LocalNotifications'
 
 const _format = 'YYYY-MM-DD'
 const startOfMonth = moment().startOf('month').format(_format)
@@ -295,9 +296,16 @@ class Diary extends React.Component {
     if (
       val.taskCategory === 'simpleTask' &&
       (val.addedBy === 'self' || isManager) &&
-      (val.status === 'pending') &&
-      Ability.canEdit(user.subRole, screen)) {
-      navigation.navigate('AddDiary', { update: true, data: val, screenName: screen, managerId, agentId })
+      val.status === 'pending' &&
+      Ability.canEdit(user.subRole, screen)
+    ) {
+      navigation.navigate('AddDiary', {
+        update: true,
+        data: val,
+        screenName: screen,
+        managerId,
+        agentId,
+      })
     }
   }
 
@@ -320,10 +328,10 @@ class Diary extends React.Component {
   }
 
   handleLongPress = (val) => {
-    const { user } = this.props;
-    let isManager = false;
-    const managerId = val.managerId ? val.managerId : null;
-    isManager = managerId ? user.id == managerId ? true : false : false;
+    const { user } = this.props
+    let isManager = false
+    const managerId = val.managerId ? val.managerId : null
+    isManager = managerId ? (user.id == managerId ? true : false) : false
     if ((val.addedBy === 'self' || isManager) && val.taskCategory === 'simpleTask') {
       ActionSheet.show(
         {
@@ -402,7 +410,16 @@ class Diary extends React.Component {
         .then((res) => {
           if (res.status === 200) {
             helper.successToast('TASK ADDED SUCCESSFULLY!')
+            let start = new Date(res.data.start)
+            let end = new Date(res.data.end)
             this.diaryMain()
+            let data = {
+              id: res.data.id,
+              title: res.data.subject,
+              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
+            }
+
+            TimerNotification(data, start)
           } else {
             helper.errorToast('ERROR: SOMETHING WENT WRONG')
           }

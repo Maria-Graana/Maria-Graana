@@ -128,6 +128,7 @@ class CMBottomNav extends React.Component {
 
   sendCallStatus = () => {
     const { leadType } = this.props
+    const { selectedClientContacts } = this.state
     const start = moment().format()
     let body = {
       start: start,
@@ -140,6 +141,7 @@ class CMBottomNav extends React.Component {
       cutomerId: this.props.lead.customer.id,
       armsLeadId: leadType === 'RCM' ? this.props.lead.id : null, // For RCM Call
       leadId: leadType === 'CM' ? this.props.lead.id : null, // For CM Call
+      calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {

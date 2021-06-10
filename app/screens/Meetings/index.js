@@ -47,8 +47,9 @@ class Meetings extends Component {
       isFollowUpMode: false,
       editMeeting: false,
       closedWon: false,
-      isMultiPhoneModalVisible: false,
+      comment: null,
       selectedClientContacts: [],
+      isMultiPhoneModalVisible: false,
     }
   }
 
@@ -101,12 +102,13 @@ class Meetings extends Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
+  openModalInFollowupMode = (value) => {
     this.setState({
       active: !this.state.active,
       editMeeting: false,
       isFollowUpMode: true,
       currentMeeting: null,
+      comment: value,
     })
   }
 
@@ -175,14 +177,14 @@ class Meetings extends Component {
       if (data && data.customer) {
         let selectedClientContacts = helper.createContactPayload(data.customer)
         this.setState({ selectedClientContacts }, () => {
-          // if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-          //   // multiple numbers to select
-          //   this.showMultiPhoneModal(true)
-          // } else {
-          this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
-          this.sendCallStatus()
-          helper.callNumber(selectedClientContacts, contacts)
-          //}
+          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+            // multiple numbers to select
+            this.showMultiPhoneModal(true)
+          } else {
+            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
+            this.sendCallStatus()
+            helper.callNumber(selectedClientContacts, contacts)
+          }
         })
       }
     })
@@ -190,6 +192,10 @@ class Meetings extends Component {
 
   showMultiPhoneModal = (value) => {
     this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  editMeeting = (id) => {
+    this.openModalInMeetingMode(true, id)
   }
 
   handlePhoneSelectDone = (phone) => {
@@ -207,10 +213,6 @@ class Meetings extends Component {
         }
       )
     }
-  }
-
-  editMeeting = (id) => {
-    this.openModalInMeetingMode(true, id)
   }
 
   goToComments = () => {
@@ -498,6 +500,7 @@ class Meetings extends Component {
       isFollowUpMode,
       currentMeeting,
       closedWon,
+      comment,
       selectedClientContacts,
       isMultiPhoneModalVisible,
     } = this.state
@@ -595,13 +598,7 @@ class Meetings extends Component {
           getMeetingLead={() => this.getMeetingLead()}
           currentMeeting={currentMeeting}
           editMeeting={editMeeting}
-        />
-
-        <MultiplePhoneOptionModal
-          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
-          contacts={selectedClientContacts.payload}
-          showMultiPhoneModal={this.showMultiPhoneModal}
-          handlePhoneSelectDone={this.handlePhoneSelectDone}
+          comment={comment}
         />
 
         <CallFeedbackActionMeeting
@@ -621,6 +618,13 @@ class Meetings extends Component {
           CMlead={true}
         />
 
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={selectedClientContacts.payload}
+          showMultiPhoneModal={this.showMultiPhoneModal}
+          handlePhoneSelectDone={this.handlePhoneSelectDone}
+        />
+
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
           showAction={modalMode === 'call' || modalMode === 'meeting'}
@@ -636,7 +640,7 @@ class Meetings extends Component {
           modalMode={modalMode}
           sendStatus={(comment, id) => this.sendStatus(comment, id)}
           addMeeting={() => this.openModalInMeetingMode()}
-          addFollowup={() => this.openModalInFollowupMode()}
+          addFollowup={(comment) => this.openModalInFollowupMode(comment)}
           showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
           currentCall={currentCall}
           rejectLead={(body) => this.rejectLead(body)}

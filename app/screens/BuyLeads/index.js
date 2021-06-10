@@ -70,6 +70,7 @@ class BuyLeads extends React.Component {
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
       statusFilterType: 'id',
+      comment: null,
     }
   }
 
@@ -287,14 +288,14 @@ class BuyLeads extends React.Component {
       if (data && data.customer) {
         let selectedClientContacts = helper.createContactPayload(data.customer)
         this.setState({ selectedClientContacts }, () => {
-          // if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-          //   // multiple numbers to select
-          //   this.showMultiPhoneModal(true)
-          // } else {
-          this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
-          this.sendCallStatus()
-          helper.callNumber(selectedClientContacts, contacts)
-          //  }
+          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+            // multiple numbers to select
+            this.showMultiPhoneModal(true)
+          } else {
+            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
+            this.sendCallStatus()
+            helper.callNumber(selectedClientContacts, contacts)
+          }
         })
       }
     })
@@ -511,10 +512,11 @@ class BuyLeads extends React.Component {
     })
   }
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
+  openModalInFollowupMode = (value) => {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
+      comment: value,
     })
   }
 
@@ -604,6 +606,7 @@ class BuyLeads extends React.Component {
       selectedClientContacts,
       isMultiPhoneModalVisible,
       statusFilterType,
+      comment,
     } = this.state
     const { user } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -785,6 +788,7 @@ class BuyLeads extends React.Component {
           isFollowUpMode={isFollowUpMode}
           lead={selectedLead}
           leadType={'RCM'}
+          comment={comment}
         />
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
@@ -799,7 +803,7 @@ class BuyLeads extends React.Component {
           showFollowup={modalMode === 'call'}
           rejectLead={(body) => this.rejectLead(body)}
           sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
-          addFollowup={() => this.openModalInFollowupMode()}
+          addFollowup={(value) => this.openModalInFollowupMode(value)}
           addMeeting={() => this.openModalInMeetingMode()}
           leadType={'RCM'}
           goToViewingScreen={this.goToViewingScreen}

@@ -57,10 +57,17 @@ class AddCMLead extends Component {
       if (client && name) this.setClient()
       if (selectedCity) {
         copyObject.cityId = selectedCity.value
-        this.setState({ formData: copyObject, selectedCity })
+        this.setState({ formData: copyObject, selectedCity }, () => {
+          this.clearParmas()
+        })
       }
     })
     this.getAllProjects()
+  }
+
+  clearParmas = () => {
+    const { navigation } = this.props
+    navigation.setParams({ selectedCity: null, client: null, name: null })
   }
 
   setClient = () => {
@@ -79,7 +86,12 @@ class AddCMLead extends Component {
     }
     copyObject.customerId = client.id
     copyObject.phones = phones
-    this.setState({ formData: copyObject, clientName: name, selectedClient: client })
+    this.setState(
+      { formData: _.clone(copyObject), clientName: name, selectedClient: client },
+      () => {
+        this.clearParmas()
+      }
+    )
   }
 
   getAllProjects = () => {

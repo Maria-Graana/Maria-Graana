@@ -93,14 +93,14 @@ class CMBottomNav extends React.Component {
     if (customer) {
       let selectedClientContacts = helper.createContactPayload(customer)
       this.setState({ selectedClientContacts }, () => {
-        // if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-        // multiple numbers to select
-        // this.showMultiPhoneModal(true)
-        // } else {
-        this.sendCallStatus()
-        helper.callNumber(selectedClientContacts, contacts)
-        showStatusFeedbackModal(true)
-        // }
+        if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+          //  multiple numbers to select
+          this.showMultiPhoneModal(true)
+        } else {
+          this.sendCallStatus()
+          helper.callNumber(selectedClientContacts, contacts)
+          showStatusFeedbackModal(true)
+        }
       })
     }
   }

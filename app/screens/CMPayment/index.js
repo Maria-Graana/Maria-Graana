@@ -129,6 +129,7 @@ class CMPayment extends Component {
       showInstallmentFields: false,
       paymentPlanDuration: [],
       installmentFrequency: [],
+      comment: null,
       showSchedule: false,
       SchedulePaymentData: [],
       downPayment: 0,
@@ -1337,10 +1338,11 @@ class CMPayment extends Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
+  openModalInFollowupMode = (value) => {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
+      comment: value,
     })
   }
 
@@ -1487,6 +1489,7 @@ class CMPayment extends Component {
       showInstallmentFields,
       paymentPlanDuration,
       installmentFrequency,
+      comment,
       showSchedule,
       SchedulePaymentData,
       downPayment,
@@ -1648,7 +1651,7 @@ class CMPayment extends Component {
             rejectLead={(body) => this.rejectLead(body)}
             sendStatus={(comment, id) => this.sendStatus(comment, id)}
             addMeeting={() => this.openModalInMeetingMode()}
-            addFollowup={() => this.openModalInFollowupMode()}
+            addFollowup={(value) => this.openModalInFollowupMode(value)}
             leadType={'CM'}
             currentCall={currentCall}
           />
@@ -1659,6 +1662,7 @@ class CMPayment extends Component {
             isFollowUpMode={isFollowUpMode}
             lead={lead}
             leadType={'CM'}
+            comment={comment}
           />
 
           <View style={AppStyles.mainCMBottomNav}>
@@ -1671,7 +1675,7 @@ class CMPayment extends Component {
               alreadyClosedLead={this.closedLead}
               closeLead={this.fetchLead}
               closeLeadFor={'leadClose'}
-              goToFollowUp={this.openModalInFollowupMode}
+              goToFollowUp={(value) => this.openModalInFollowupMode(value)}
               goToRejectForm={this.goToRejectForm}
               closedWon={closedWon}
               showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}

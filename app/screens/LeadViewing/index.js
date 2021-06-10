@@ -74,6 +74,7 @@ class LeadViewing extends React.Component {
       modalMode: 'call',
       currentCall: null,
       isFollowUpMode: false,
+      comment: null,
     }
   }
 
@@ -782,10 +783,11 @@ class LeadViewing extends React.Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
+  openModalInFollowupMode = (value) => {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
+      comment: value,
     })
   }
 
@@ -872,6 +874,7 @@ class LeadViewing extends React.Component {
       closedWon,
       currentCall,
       isFollowUpMode,
+      comment,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1016,7 +1019,7 @@ class LeadViewing extends React.Component {
           showFollowup={modalMode === 'call'}
           rejectLead={(body) => this.rejectLead(body)}
           sendStatus={(comment, id) => this.sendStatus(comment, id)}
-          addFollowup={() => this.openModalInFollowupMode()}
+          addFollowup={(value) => this.openModalInFollowupMode(value)}
           leadType={'RCM'}
           currentCall={currentCall}
           goToViewingScreen={this.goToViewingScreen}
@@ -1029,6 +1032,7 @@ class LeadViewing extends React.Component {
           lead={lead}
           leadType={'RCM'}
           getMeetingLead={this.getCallHistory}
+          comment={comment}
         />
 
         <StatusFeedbackModal
@@ -1044,7 +1048,7 @@ class LeadViewing extends React.Component {
           showFollowup={modalMode === 'call'}
           rejectLead={(body) => this.rejectLead(body)}
           sendStatus={(comment, id) => this.sendStatus(comment, id)}
-          addFollowup={() => this.openModalInFollowupMode()}
+          addFollowup={(value) => this.openModalInFollowupMode(value)}
           leadType={'RCM'}
           currentCall={currentCall}
           goToViewingScreen={this.goToViewingScreen}
@@ -1065,7 +1069,7 @@ class LeadViewing extends React.Component {
             goToPropertyScreen={this.goToPropertyScreen}
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
-            goToFollowUp={this.openModalInFollowupMode}
+            goToFollowUp={(value) => this.openModalInFollowupMode(value)}
             showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
             setCurrentCall={(call) => this.setCurrentCall(call)}
             leadType={'RCM'}

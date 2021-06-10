@@ -18,6 +18,7 @@ import Ability from '../../hoc/Ability'
 import { connect } from 'react-redux'
 import helper from '../../helper'
 import TimerNotification from '../../LocalNotifications'
+import StaticData from '../../StaticData'
 
 const _format = 'YYYY-MM-DD'
 const startOfMonth = moment().startOf('month').format(_format)
@@ -275,36 +276,20 @@ class Diary extends React.Component {
     )
   }
 
-  goToDiaryForm = () => {
-    const { navigation, route } = this.props
-    const { agentId } = this.state
-    const { screen, managerId } = route.params
-    navigation.navigate('AddDiary', {
-      agentId: agentId,
-      addedBy: screen === 'TeamDiary' ? 'manager' : 'self',
-      managerId: managerId ? managerId : null,
-      screenName: screen,
-    })
-  }
-
   editTask = (val) => {
     const { navigation, route, user } = this.props
     const { screen, managerId } = route.params
     const { agentId } = this.state
     let isManager = false
     isManager = managerId ? (user.id == managerId ? true : false) : false
-    if (
-      val.taskCategory === 'simpleTask' &&
-      (val.addedBy === 'self' || isManager) &&
-      val.status === 'pending' &&
-      Ability.canEdit(user.subRole, screen)
-    ) {
+    if ((val.addedBy === 'self' || isManager) && Ability.canEdit(user.subRole, screen)) {
       navigation.navigate('AddDiary', {
         update: true,
         data: val,
         screenName: screen,
         managerId,
         agentId,
+        tasksList: StaticData.allTaskValues,
       })
     }
   }
@@ -448,30 +433,6 @@ class Diary extends React.Component {
     const { name } = route.params
     return !loading ? (
       <View style={styles.container}>
-        {/* <DairyPopup
-              screenName={route.params.screen}
-              data={selectedDiary}
-              updateDiary={this.updateDiary}
-              // openPopup={this.state.openPopup}
-              // closePopup={this.closePopup}
-              onLeadLinkClicked={this.handleLeadLinkPress}
-              popupAction={(val, type) => this.popupAction(val, type)}
-            /> */}
-        {/* 
-            {
-              Ability.canAdd(user.subRole, route.params.screen) ?
-                <Fab
-                  active='true'
-                  containerStyle={{ zIndex: 20 }}
-                  style={{ backgroundColor: AppStyles.colors.primaryColor }}
-                  position="bottomRight"
-                  onPress={this.goToDiaryForm}
-                >
-                  <Ionicons name="md-add" color="#ffffff" />
-                </Fab> :
-                null
-            } */}
-
         {
           // Show view with team member name if coming from team member screen
           route.params.screen === 'TeamDiary' ? (

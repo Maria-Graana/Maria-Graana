@@ -60,6 +60,7 @@ class LeadOffer extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       closedWon: false,
+      comment: null,
       sellerNotNumeric: false,
       customerNotNumeric: false,
       agreedNotNumeric: false,
@@ -586,10 +587,11 @@ class LeadOffer extends React.Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
+  openModalInFollowupMode = (value) => {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
+      comment: value,
     })
   }
 
@@ -673,6 +675,7 @@ class LeadOffer extends React.Component {
       isFollowUpMode,
       modalMode,
       closedWon,
+      comment,
       sellerNotNumeric,
       customerNotNumeric,
       agreedNotNumeric,
@@ -781,6 +784,7 @@ class LeadOffer extends React.Component {
           lead={lead}
           leadType={'RCM'}
           getMeetingLead={this.getCallHistory}
+          comment={comment}
         />
 
         <StatusFeedbackModal
@@ -796,7 +800,7 @@ class LeadOffer extends React.Component {
           showFollowup={modalMode === 'call'}
           rejectLead={(body) => this.rejectLead(body)}
           sendStatus={(comment, id) => this.sendStatus(comment, id)}
-          addFollowup={() => this.openModalInFollowupMode()}
+          addFollowup={(value) => this.openModalInFollowupMode(value)}
           leadType={'RCM'}
           currentCall={currentCall}
           goToViewingScreen={this.goToViewingScreen}
@@ -815,7 +819,7 @@ class LeadOffer extends React.Component {
             lead={lead}
             goToHistory={this.goToHistory}
             getCallHistory={this.getCallHistory}
-            goToFollowUp={this.openModalInFollowupMode}
+            goToFollowUp={(value) => this.openModalInFollowupMode(value)}
             navigation={navigation}
             showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
             setCurrentCall={(call) => this.setCurrentCall(call)}

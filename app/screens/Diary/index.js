@@ -17,6 +17,7 @@ import styles from './styles'
 import Ability from '../../hoc/Ability'
 import { connect } from 'react-redux'
 import helper from '../../helper'
+import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 
 const _format = 'YYYY-MM-DD'
@@ -394,7 +395,16 @@ class Diary extends React.Component {
         .then((res) => {
           if (res.status === 200) {
             helper.successToast('TASK ADDED SUCCESSFULLY!')
+            let start = new Date(res.data.start)
+            let end = new Date(res.data.end)
             this.diaryMain()
+            let data = {
+              id: res.data.id,
+              title: res.data.subject,
+              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
+            }
+
+            TimerNotification(data, start)
           } else {
             helper.errorToast('ERROR: SOMETHING WENT WRONG')
           }

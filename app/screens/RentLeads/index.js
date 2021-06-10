@@ -284,7 +284,7 @@ class RentLeads extends React.Component {
 
   sendCallStatus = () => {
     const start = moment().format()
-    const { selectedLead } = this.state
+    const { selectedLead, selectedClientContacts } = this.state
     let body = {
       start: start,
       end: start,
@@ -295,6 +295,7 @@ class RentLeads extends React.Component {
       customerId: selectedLead.customer.id,
       armsLeadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
       taskCategory: 'leadTask',
+      calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
       this.setCurrentCall(res.data)

@@ -300,7 +300,7 @@ class InvestLeads extends React.Component {
 
   sendCallStatus = () => {
     const start = moment().format()
-    const { selectedLead } = this.state
+    const { selectedLead, selectedClientContacts } = this.state
     let body = {
       start: start,
       end: start,
@@ -310,6 +310,7 @@ class InvestLeads extends React.Component {
       subject: 'Call to client ' + selectedLead.customer.customerName,
       customerId: selectedLead.customer.id,
       leadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
+      calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       taskCategory: 'leadTask',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {

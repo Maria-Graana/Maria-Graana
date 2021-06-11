@@ -72,6 +72,7 @@ class DetailForm extends Component {
       screenName,
       editableData,
     } = this.props
+    console.log(formData)
     return (
       <View>
         <View style={[AppStyles.mainInputWrap]}>
@@ -95,7 +96,8 @@ class DetailForm extends Component {
           <View style={[AppStyles.inputWrap]}>
             <PickerComponent
               enabled={
-                formData.taskCategory === 'simpleTask' && formData.status === 'pending'
+                formData.status === 'pending' &&
+                (formData.taskCategory === 'simpleTask' || formData.taskCategory === null)
                   ? true
                   : false
               }

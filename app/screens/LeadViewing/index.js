@@ -372,7 +372,7 @@ class LeadViewing extends React.Component {
         let data = {
           id: res.data.id,
           title: res.data.subject,
-          body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
+          body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
         }
         TimerNotification(data, start)
         this.fetchLead()

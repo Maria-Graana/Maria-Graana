@@ -401,9 +401,9 @@ class Diary extends React.Component {
             let data = {
               id: res.data.id,
               title: res.data.subject,
-              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
             }
-
+            console.log(data)
             TimerNotification(data, start)
           } else {
             helper.errorToast('ERROR: SOMETHING WENT WRONG')

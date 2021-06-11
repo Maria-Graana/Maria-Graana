@@ -210,7 +210,7 @@ class PropertyViewing extends React.Component {
       agentId: user.id,
       rcmLeadId: lead.id,
       addedBy: 'self',
-      screenName : 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -345,7 +345,7 @@ class PropertyViewing extends React.Component {
         let data = {
           id: res.data.id,
           title: res.data.subject,
-          body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
+          body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
         }
         TimerNotification(data, start)
         this.fetchLead()
@@ -779,7 +779,7 @@ class PropertyViewing extends React.Component {
       longitude,
       propsure_id,
       active,
-      isFollowUpMode
+      isFollowUpMode,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = true
@@ -924,9 +924,9 @@ class PropertyViewing extends React.Component {
             callButton={true}
             customer={lead.customer}
             lead={lead}
-            goToHistory={()=> null}
-            getCallHistory={()=> null}
-            goToFollowup={()=> this.openModalInFollowupMode()}
+            goToHistory={() => null}
+            getCallHistory={() => null}
+            goToFollowup={() => this.openModalInFollowupMode()}
           />
         </View>
         <LeadRCMPaymentPopup

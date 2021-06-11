@@ -261,18 +261,26 @@ class InvestLeads extends React.Component {
   callNumber = (data) => {
     const { contacts } = this.props
     this.setState({ selectedLead: data }, () => {
+      // call api here
       if (data && data.customer) {
-        let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts }, () => {
-          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            // multiple numbers to select
-            this.showMultiPhoneModal(true)
-          } else {
-            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
-            this.sendCallStatus()
-            helper.callNumber(selectedClientContacts, contacts)
-          }
-        })
+        axios
+          .get(`/api/customer/getNumbers?customerId=${data.customer.id}`)
+          .then((res) => {
+            let selectedClientContacts = helper.createContactPayload(res.data)
+            this.setState({ selectedClientContacts }, () => {
+              if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+                // multiple numbers to select
+                this.showMultiPhoneModal(true)
+              } else {
+                this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
+                this.sendCallStatus()
+                helper.callNumber(selectedClientContacts, contacts)
+              }
+            })
+          })
+          .catch((error) => {
+            console.log(error)
+          })
       }
     })
   }

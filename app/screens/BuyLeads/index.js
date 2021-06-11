@@ -324,7 +324,7 @@ class BuyLeads extends React.Component {
 
   sendCallStatus = () => {
     const start = moment().format()
-    const { selectedLead } = this.state
+    const { selectedLead, selectedClientContacts } = this.state
     let body = {
       start: start,
       end: start,
@@ -333,6 +333,7 @@ class BuyLeads extends React.Component {
       taskType: 'called',
       subject: 'Call to client ' + selectedLead.customer.customerName,
       customerId: selectedLead.customer.id,
+      calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       armsLeadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
       taskCategory: 'leadTask',
     }

@@ -153,6 +153,7 @@ class Meetings extends Component {
   }
 
   sendCallStatus = () => {
+    const { selectedClientContacts } = this.state
     const start = moment().format()
     let body = {
       start: start,
@@ -161,6 +162,7 @@ class Meetings extends Component {
       date: start,
       taskType: 'called',
       subject: 'Call to client ' + this.props.lead.customer.customerName,
+      calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       customerId: this.props.lead.customer.id,
       leadId: this.props.lead.id, // For CM send leadID and armsLeadID for RCM
       taskCategory: 'leadTask',

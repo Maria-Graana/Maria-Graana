@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+/** @format */
+
+import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
@@ -26,11 +28,11 @@ export default styles = StyleSheet.create({
   meetingCon: {
     fontSize: 14,
     color: '#0D73EE',
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
   },
   border: {
     width: '99%',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   dotsWrap: {
     zIndex: 20,
@@ -42,7 +44,7 @@ export default styles = StyleSheet.create({
   dotsImg: {
     width: 14,
     height: 24,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   doneBtn: {
     position: 'relative',
@@ -54,10 +56,10 @@ export default styles = StyleSheet.create({
     color: AppStyles.colors.subTextColor,
     position: 'relative',
     fontSize: 14,
-    marginTop:5,
+    marginTop: 5,
   },
   uperCase: {
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
   },
   dropDownMain: {
     zIndex: 10,
@@ -80,4 +82,4 @@ export default styles = StyleSheet.create({
   blueColor: {
     color: '#333',
   },
-});
+})

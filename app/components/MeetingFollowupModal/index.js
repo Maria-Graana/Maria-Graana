@@ -21,6 +21,7 @@ import DateTimePicker from '../DatePicker'
 import PropTypes from 'prop-types'
 import { Textarea } from 'native-base'
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
+import TimerNotification from '../../LocalNotifications'
 
 const MeetingFollowupModal = ({
   active,
@@ -155,6 +156,14 @@ const MeetingFollowupModal = ({
           .post(`api/leads/project/meeting`, formData)
           .then((res) => {
             helper.successToast(`Meeting Added`)
+            let start = new Date(res.data.start)
+            let end = new Date(res.data.end)
+            let data = {
+              id: res.data.id,
+              title: res.data.subject,
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+            TimerNotification(data, start)
             getMeetingLead && getMeetingLead()
             closeModal()
             clearFormData()

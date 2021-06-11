@@ -13,6 +13,7 @@ import addIcon from '../../../assets/img/add-icon-l.png'
 import MapBlue from '../../../assets/img/geotag.png'
 import HomeBlue from '../../../assets/img/home-icon.png'
 import TargetNew from '../../../assets/img/target-icon.png'
+import MonthlyTarget from '../../../assets/img/monthly-responsetime.png'
 import RightArrow from '../../../assets/img/white-.png'
 import LeftArrow from '../../../assets/img/white.png'
 import { setContacts } from '../../actions/contacts'
@@ -248,6 +249,11 @@ class Landing extends React.Component {
                     unit={'min'}
                     imagePath={TargetNew}
                     value={userStatistics.avgTime}
+                  />
+                  <StatisticsTile
+                    unit={'min'}
+                    imagePath={MonthlyTarget}
+                    value={userStatistics.monthlyRate}
                   />
                   {this.isBcOrCCRole() ? null : (
                     <>

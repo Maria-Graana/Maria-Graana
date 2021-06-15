@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Image } from 'react-native'
 import AppStyles from '../../AppStyles'
 
 const displayValue = (value) => {
-  if (value === 0) return '0'
+  if (value === 0) return 'N/A'
   else if (value === null || value === undefined) return '-'
   else return value
 }
@@ -23,8 +23,9 @@ const StatisticsTile = ({ value, title, imagePath, unit = '' }) => {
       </View>
       <View style={styles.flexView}>
         <Text numberOfLines={1} style={styles.value}>
-          {displayValue(value)} {unit}
+          {displayValue(value)}
         </Text>
+        <Text style={[styles.value, { marginLeft: 2 }]}>{unit}</Text>
       </View>
     </View>
   )
@@ -35,6 +36,7 @@ export default StatisticsTile
 const styles = StyleSheet.create({
   flexView: {
     flex: 0.5,
+    flexDirection: 'row',
   },
   mainContainer: {
     flexDirection: 'row',

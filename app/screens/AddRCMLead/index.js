@@ -108,9 +108,7 @@ class AddRCMLead extends Component {
       setTimeout(() => {
         const { selectedAreasIds } = this.props
         copyObject.leadAreas = selectedAreasIds
-        this.setState({ RCMFormData: copyObject, selectedCity }, () => {
-          this.clearParmas()
-        })
+        this.setState({ RCMFormData: copyObject, selectedCity })
       }, 500)
     }
   }

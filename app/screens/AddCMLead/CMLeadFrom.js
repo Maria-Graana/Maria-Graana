@@ -37,7 +37,6 @@ class CMLeadFrom extends Component {
       onModalPriceDonePressed,
       onModalCancelPressed,
     } = this.props
-    console.log('formData: ', formData)
     return (
       <View>
         <PriceSliderModal

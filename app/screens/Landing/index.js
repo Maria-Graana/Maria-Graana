@@ -258,24 +258,33 @@ class Landing extends React.Component {
                       <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
                     </>
                   )}
-                  <StatisticsTile
-                    imagePath={MonthlyProjectRevenue}
-                    value={userStatistics.monthlyProjectRevenue}
-                    double={true}
-                    secondValue={userStatistics.monthlyProjectTarget}
-                  />
-                  <StatisticsTile
-                    imagePath={MonthlyCreatedCount}
-                    value={userStatistics.monthlyCifCreated}
-                    double={true}
-                    secondValue={userStatistics.cifTarget}
-                  />
-                  <StatisticsTile
-                    imagePath={MonthlyMeetingDone}
-                    value={userStatistics.meetingDone}
-                    double={true}
-                    secondValue={userStatistics.meetingTarget}
-                  />
+                  {user.subRole === 'business_centre_agent' ||
+                  user.subRole === 'call_centre_agent' ? (
+                    <StatisticsTile
+                      imagePath={MonthlyProjectRevenue}
+                      value={userStatistics.monthlyProjectRevenue}
+                      double={true}
+                      secondValue={userStatistics.monthlyProjectTarget}
+                    />
+                  ) : null}
+                  {user.subRole === 'business_centre_agent' ||
+                  user.subRole === 'call_centre_agent' ? (
+                    <StatisticsTile
+                      imagePath={MonthlyCreatedCount}
+                      value={userStatistics.monthlyCifCreated}
+                      double={true}
+                      secondValue={userStatistics.cifTarget}
+                    />
+                  ) : null}
+                  {user.subRole === 'business_centre_agent' ||
+                  user.subRole === 'call_centre_agent' ? (
+                    <StatisticsTile
+                      imagePath={MonthlyMeetingDone}
+                      value={userStatistics.meetingDone}
+                      double={true}
+                      secondValue={userStatistics.meetingTarget}
+                    />
+                  ) : null}
                   <StatisticsTile
                     title={'LCR'}
                     value={this.showLeadWonAssignedPercentage(

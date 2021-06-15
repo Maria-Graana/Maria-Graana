@@ -70,8 +70,7 @@ const CMPaymentModal = ({
       setCollapsed(!isCollapsed)
     }
   }
- 
-    
+
   return (
     <Modal visible={CMPayment.visible}>
       <SafeAreaView style={AppStyles.mb1}>
@@ -149,7 +148,7 @@ const CMPaymentModal = ({
               <ErrorMessage errorMessage={'Amount must be greater than 0'} />
             ) : null}
             {modalValidation === true &&
-              (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
+            (CMPayment.installmentAmount == null || CMPayment.installmentAmount == '') ? (
               <ErrorMessage errorMessage={'Required'} />
             ) : null}
             <View style={[AppStyles.mainInputWrap]}>
@@ -168,15 +167,14 @@ const CMPaymentModal = ({
               </View>
             </View>
 
-            {
-              CMPayment.type === 'cheque' || CMPayment.type === 'pay-Order' || CMPayment.type === 'bank-Transfer' ?
-                <AddEditInstrument 
+            {CMPayment.type === 'cheque' ||
+            CMPayment.type === 'pay-Order' ||
+            CMPayment.type === 'bank-Transfer' ? (
+              <AddEditInstrument
                 handleInstrumentInfoChange={handleInstrumentInfoChange}
                 enabled={CMPayment.status !== 'pendingAccount'}
-                />
-                :
-                null
-            }
+              />
+            ) : null}
 
             <SimpleInputText
               editable={CMPayment.status !== 'pendingAccount'}
@@ -260,7 +258,7 @@ const CMPaymentModal = ({
                       },
                     ]}
                   >
-                    ADD ATTACHMENTS
+                    ATTACHMENTS
                   </Text>
                 </TouchableOpacity>
               )}
@@ -284,8 +282,8 @@ const CMPaymentModal = ({
                   }
                   containerBackgroundColor={
                     CMPayment.status === 'open' ||
-                      CMPayment.status === 'pendingSales' ||
-                      CMPayment.status === 'notCleared'
+                    CMPayment.status === 'pendingSales' ||
+                    CMPayment.status === 'notCleared'
                       ? AppStyles.colors.primaryColor
                       : '#8baaef'
                   }
@@ -297,8 +295,8 @@ const CMPaymentModal = ({
                       marginRight: 10,
                       borderColor:
                         CMPayment.status === 'open' ||
-                          CMPayment.status === 'pendingSales' ||
-                          CMPayment.status === 'notCleared'
+                        CMPayment.status === 'pendingSales' ||
+                        CMPayment.status === 'notCleared'
                           ? AppStyles.colors.primaryColor
                           : '#8baaef',
                     },
@@ -306,8 +304,8 @@ const CMPaymentModal = ({
                   label={'ASSIGN TO ACCOUNTS'}
                   textColor={
                     CMPayment.status === 'open' ||
-                      CMPayment.status === 'pendingSales' ||
-                      CMPayment.status === 'notCleared'
+                    CMPayment.status === 'pendingSales' ||
+                    CMPayment.status === 'notCleared'
                       ? '#fff'
                       : '#f3f5f7'
                   }
@@ -513,6 +511,5 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-},
-  
+  },
 })

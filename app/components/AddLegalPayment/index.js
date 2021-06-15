@@ -3,7 +3,17 @@
 import axios from 'axios'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, Modal, ScrollView, SafeAreaView } from 'react-native'
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native'
 import { connect } from 'react-redux'
 import times from '../../../assets/img/times.png'
 import AppStyles from '../../AppStyles'
@@ -30,7 +40,7 @@ const AddLegalPaymentModal = ({
   assignToAccounts,
   officeLocations,
   handleOfficeLocationChange,
-  handleInstrumentInfoChange
+  handleInstrumentInfoChange,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -88,9 +98,11 @@ const AddLegalPaymentModal = ({
               onChangeHandle={handleCommissionChange}
               editable={editTextInput && legalPayment.status !== 'pendingAccount'}
             />
-            {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+            {paymentNotZero ? (
+              <ErrorMessage errorMessage={'Amount must be greater than 0'} />
+            ) : null}
             {modalValidation === true &&
-              (legalPayment.installmentAmount == null || legalPayment.installmentAmount == '') ? (
+            (legalPayment.installmentAmount == null || legalPayment.installmentAmount == '') ? (
               <ErrorMessage errorMessage={'Required'} />
             ) : null}
             <View style={[AppStyles.mainInputWrap]}>
@@ -109,15 +121,14 @@ const AddLegalPaymentModal = ({
               </View>
             </View>
 
-            {
-              legalPayment.type === 'cheque' || legalPayment.type === 'pay-Order' || legalPayment.type === 'bank-Transfer' ?
-                <AddEditInstrument
-                  handleInstrumentInfoChange={handleInstrumentInfoChange}
-                  enabled={legalPayment.status !== 'pendingAccount'}
-                />
-                :
-                null
-            }
+            {legalPayment.type === 'cheque' ||
+            legalPayment.type === 'pay-Order' ||
+            legalPayment.type === 'bank-Transfer' ? (
+              <AddEditInstrument
+                handleInstrumentInfoChange={handleInstrumentInfoChange}
+                enabled={legalPayment.status !== 'pendingAccount'}
+              />
+            ) : null}
 
             <SimpleInputText
               name={'details'}
@@ -156,8 +167,8 @@ const AddLegalPaymentModal = ({
                           {item.armsuser.firstName} {item.armsuser.lastName}{' '}
                           <Text style={styles.smallestText}>
                             {' '}
-                          ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
-                        </Text>
+                            ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
+                          </Text>
                         </Text>
                         <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
                       </View>
@@ -177,7 +188,8 @@ const AddLegalPaymentModal = ({
                   style={[
                     styles.addPaymentBtn,
                     {
-                      backgroundColor: legalPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                      backgroundColor:
+                        legalPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
                       borderColor:
                         legalPayment.status === 'pendingAccount'
                           ? '#8baaef'
@@ -200,8 +212,8 @@ const AddLegalPaymentModal = ({
                       },
                     ]}
                   >
-                    ADD ATTACHMENTS
-                </Text>
+                    ATTACHMENTS
+                  </Text>
                 </TouchableOpacity>
               )}
 
@@ -224,8 +236,8 @@ const AddLegalPaymentModal = ({
                   }
                   containerBackgroundColor={
                     legalPayment.status === 'open' ||
-                      legalPayment.status === 'pendingSales' ||
-                      legalPayment.status === 'notCleared'
+                    legalPayment.status === 'pendingSales' ||
+                    legalPayment.status === 'notCleared'
                       ? AppStyles.colors.primaryColor
                       : '#8baaef'
                   }
@@ -237,8 +249,8 @@ const AddLegalPaymentModal = ({
                       marginRight: 10,
                       borderColor:
                         legalPayment.status === 'open' ||
-                          legalPayment.status === 'pendingSales' ||
-                          legalPayment.status === 'notCleared'
+                        legalPayment.status === 'pendingSales' ||
+                        legalPayment.status === 'notCleared'
                           ? AppStyles.colors.primaryColor
                           : '#8baaef',
                     },
@@ -246,8 +258,8 @@ const AddLegalPaymentModal = ({
                   label={'ASSIGN TO ACCOUNTS'}
                   textColor={
                     legalPayment.status === 'open' ||
-                      legalPayment.status === 'pendingSales' ||
-                      legalPayment.status === 'notCleared'
+                    legalPayment.status === 'pendingSales' ||
+                    legalPayment.status === 'notCleared'
                       ? '#fff'
                       : '#f3f5f7'
                   }
@@ -278,7 +290,9 @@ const AddLegalPaymentModal = ({
                   },
                 ]}
                 containerBackgroundColor={
-                  legalPayment.status !== 'pendingAccount' ? AppStyles.colors.primaryColor : '#8baaef'
+                  legalPayment.status !== 'pendingAccount'
+                    ? AppStyles.colors.primaryColor
+                    : '#8baaef'
                 }
                 textColor={legalPayment.status !== 'pendingAccount' ? '#fff' : '#f3f5f7'}
                 disabled={legalPayment.status === 'pendingAccount'}

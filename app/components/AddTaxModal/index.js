@@ -171,7 +171,7 @@ class AddTaxModal extends React.Component {
                         style={styles.addPaymentBtnImg}
                         source={require('../../../assets/img/roundPlus.png')}
                       ></Image>
-                      <Text style={styles.addPaymentBtnText}>ADD ATTACHMENT</Text>
+                      <Text style={styles.addPaymentBtnText}>ATTACHMENTS</Text>
                     </TouchableOpacity>
                   )}
 

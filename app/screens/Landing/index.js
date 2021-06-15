@@ -4,18 +4,16 @@ import axios from 'axios'
 import * as Linking from 'expo-linking'
 import React from 'react'
 import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen'
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
+import TargetNew from '../../../assets/img/daily-responsetime.png'
 import MapBlue from '../../../assets/img/geotag.png'
 import HomeBlue from '../../../assets/img/home-icon.png'
-import TargetNew from '../../../assets/img/daily-responsetime.png'
 import MonthlyTarget from '../../../assets/img/monthly-responsetime.png'
-import RightArrow from '../../../assets/img/white-.png'
-import LeftArrow from '../../../assets/img/white.png'
+import MonthlyCreatedCount from '../../../assets/img/monthlycreatedcount.png'
+import MonthlyMeetingDone from '../../../assets/img/monthlymeeting.png'
+import MonthlyProjectRevenue from '../../../assets/img/monthlyprojectrevenue.png'
 import { setContacts } from '../../actions/contacts'
 import { getListingsCount } from '../../actions/listings'
 import { getCurrentUser } from '../../actions/user'
@@ -260,6 +258,24 @@ class Landing extends React.Component {
                       <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
                     </>
                   )}
+                  <StatisticsTile
+                    imagePath={MonthlyProjectRevenue}
+                    value={userStatistics.monthlyProjectRevenue}
+                    double={true}
+                    secondValue={userStatistics.monthlyProjectTarget}
+                  />
+                  <StatisticsTile
+                    imagePath={MonthlyCreatedCount}
+                    value={userStatistics.monthlyCifCreated}
+                    double={true}
+                    secondValue={userStatistics.cifTarget}
+                  />
+                  <StatisticsTile
+                    imagePath={MonthlyMeetingDone}
+                    value={userStatistics.meetingDone}
+                    double={true}
+                    secondValue={userStatistics.meetingTarget}
+                  />
                   <StatisticsTile
                     title={'LCR'}
                     value={this.showLeadWonAssignedPercentage(

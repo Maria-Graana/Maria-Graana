@@ -10,7 +10,7 @@ const displayValue = (value) => {
   else return value
 }
 
-const StatisticsTile = ({ value, title, imagePath, unit = '' }) => {
+const StatisticsTile = ({ value, title, imagePath, unit = '', double = false, secondValue }) => {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.flexView}>
@@ -21,12 +21,25 @@ const StatisticsTile = ({ value, title, imagePath, unit = '' }) => {
         )}
         {imagePath && <Image source={imagePath} style={styles.containerImg} />}
       </View>
-      <View style={styles.flexView}>
-        <Text numberOfLines={1} style={styles.value}>
-          {displayValue(value)}
-        </Text>
-        <Text style={[styles.value, { marginLeft: 2 }]}>{unit}</Text>
-      </View>
+      {!double ? (
+        <View style={styles.flexView}>
+          <Text numberOfLines={1} style={styles.value}>
+            {displayValue(value)}
+          </Text>
+          <Text style={[styles.value, { marginLeft: 2 }]}>{unit}</Text>
+        </View>
+      ) : (
+        <View style={styles.flexView}>
+          <Text numberOfLines={1} style={styles.value}>
+            {value}
+          </Text>
+          {secondValue && secondValue !== 0 ? (
+            <Text numberOfLines={1} style={styles.value}>
+              / {secondValue}
+            </Text>
+          ) : null}
+        </View>
+      )}
     </View>
   )
 }

@@ -1,7 +1,17 @@
 /** @format */
 
 import React, { useState } from 'react'
-import { View, StyleSheet, Text, Image, TouchableOpacity, Modal, FlatList, ScrollView, SafeAreaView } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  Modal,
+  FlatList,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native'
 import { connect } from 'react-redux'
 import times from '../../../assets/img/times.png'
 import SimpleInputText from '../SimpleInputField'
@@ -89,9 +99,12 @@ const AddPropsurePayment = ({
               onChangeHandle={handleCommissionChange}
               editable={editTextInput && propsurePayment.status !== 'pendingAccount'}
             />
-            {paymentNotZero ? <ErrorMessage errorMessage={'Amount must be greater than 0'} /> : null}
+            {paymentNotZero ? (
+              <ErrorMessage errorMessage={'Amount must be greater than 0'} />
+            ) : null}
             {modalValidation === true &&
-              (propsurePayment.installmentAmount == null || propsurePayment.installmentAmount == '') ? (
+            (propsurePayment.installmentAmount == null ||
+              propsurePayment.installmentAmount == '') ? (
               <ErrorMessage errorMessage={'Required'} />
             ) : null}
             <View style={[AppStyles.mainInputWrap]}>
@@ -110,15 +123,14 @@ const AddPropsurePayment = ({
               </View>
             </View>
 
-            {
-              propsurePayment.type === 'cheque' || propsurePayment.type === 'pay-Order' || propsurePayment.type === 'bank-Transfer' ?
-                <AddEditInstrument
-                  handleInstrumentInfoChange={handleInstrumentInfoChange}
-                  enabled={propsurePayment.status !== 'pendingAccount'}
-                />
-                :
-                null
-            }
+            {propsurePayment.type === 'cheque' ||
+            propsurePayment.type === 'pay-Order' ||
+            propsurePayment.type === 'bank-Transfer' ? (
+              <AddEditInstrument
+                handleInstrumentInfoChange={handleInstrumentInfoChange}
+                enabled={propsurePayment.status !== 'pendingAccount'}
+              />
+            ) : null}
 
             <SimpleInputText
               name={'details'}
@@ -157,8 +169,8 @@ const AddPropsurePayment = ({
                           {item.armsuser.firstName} {item.armsuser.lastName}{' '}
                           <Text style={styles.smallestText}>
                             {' '}
-                          ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
-                        </Text>
+                            ({moment(item.createdAt).format('hh:mm A, MMM DD YY')})
+                          </Text>
                         </Text>
                         <Text style={styles.largeText}>{handleEmptyValue(item.remarks)}</Text>
                       </View>
@@ -202,8 +214,8 @@ const AddPropsurePayment = ({
                       },
                     ]}
                   >
-                    ADD ATTACHMENTS
-                </Text>
+                    ATTACHMENTS
+                  </Text>
                 </TouchableOpacity>
               )}
 
@@ -226,8 +238,8 @@ const AddPropsurePayment = ({
                   }
                   containerBackgroundColor={
                     propsurePayment.status === 'open' ||
-                      propsurePayment.status === 'pendingSales' ||
-                      propsurePayment.status === 'notCleared'
+                    propsurePayment.status === 'pendingSales' ||
+                    propsurePayment.status === 'notCleared'
                       ? AppStyles.colors.primaryColor
                       : '#8baaef'
                   }
@@ -239,8 +251,8 @@ const AddPropsurePayment = ({
                       marginRight: 10,
                       borderColor:
                         propsurePayment.status === 'open' ||
-                          propsurePayment.status === 'pendingSales' ||
-                          propsurePayment.status === 'notCleared'
+                        propsurePayment.status === 'pendingSales' ||
+                        propsurePayment.status === 'notCleared'
                           ? AppStyles.colors.primaryColor
                           : '#8baaef',
                     },
@@ -248,8 +260,8 @@ const AddPropsurePayment = ({
                   label={'ASSIGN TO ACCOUNTS'}
                   textColor={
                     propsurePayment.status === 'open' ||
-                      propsurePayment.status === 'pendingSales' ||
-                      propsurePayment.status === 'notCleared'
+                    propsurePayment.status === 'pendingSales' ||
+                    propsurePayment.status === 'notCleared'
                       ? '#fff'
                       : '#f3f5f7'
                   }

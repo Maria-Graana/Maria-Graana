@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
 import MapBlue from '../../../assets/img/geotag.png'
 import HomeBlue from '../../../assets/img/home-icon.png'
-import TargetNew from '../../../assets/img/target-icon.png'
+import TargetNew from '../../../assets/img/daily-responsetime.png'
 import MonthlyTarget from '../../../assets/img/monthly-responsetime.png'
 import RightArrow from '../../../assets/img/white-.png'
 import LeftArrow from '../../../assets/img/white.png'
@@ -245,12 +245,12 @@ class Landing extends React.Component {
                 <>
                   <Text style={styles.kpiText}>KPIs</Text>
                   <StatisticsTile
-                    unit={'min'}
+                    unit={userStatistics.avgTime ? 'min' : ''}
                     imagePath={TargetNew}
                     value={userStatistics.avgTime}
                   />
                   <StatisticsTile
-                    unit={'min'}
+                    unit={userStatistics.monthlyRate ? 'min' : ''}
                     imagePath={MonthlyTarget}
                     value={userStatistics.monthlyRate}
                   />

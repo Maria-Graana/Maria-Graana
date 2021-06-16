@@ -61,6 +61,7 @@ class RCMAttachment extends Component {
     this.setState(
       {
         isVisible: !isVisible,
+        showAction: false,
       },
       () => {
         this.setValues({ ...CMPayment, copyFormData })
@@ -133,6 +134,7 @@ class RCMAttachment extends Component {
     if (!title || !formData.fileName) {
       this.setState({
         checkValidation: true,
+        showAction: false,
       })
     } else {
       // ********* Call Add Attachment API here :)
@@ -155,7 +157,7 @@ class RCMAttachment extends Component {
       var payload = {
         ...CMPayment,
       }
-      this.setState({ isVisible: false }, () => {
+      this.setState({ isVisible: false, showAction: false }, () => {
         this.setValues(payload)
       })
     }

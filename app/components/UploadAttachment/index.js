@@ -111,7 +111,7 @@ export default class UploadAttachment extends React.Component {
   }
 
   render() {
-    const { showAction } = this.props
+    const { showAction = false } = this.props
     if (showAction) this.openActionSheet()
     return <View></View>
   }

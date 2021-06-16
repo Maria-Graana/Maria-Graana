@@ -96,6 +96,7 @@ class LeadAttachments extends Component {
     copyFormData.title = ''
     this.setState({
       isVisible: !isVisible,
+      showAction: false,
     })
   }
 
@@ -153,6 +154,7 @@ class LeadAttachments extends Component {
     if (!title || !formData.fileName) {
       this.setState({
         checkValidation: true,
+        showAction: false,
       })
     } else {
       // ********* Call Add Attachment API here :)

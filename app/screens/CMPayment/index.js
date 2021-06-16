@@ -260,7 +260,7 @@ class CMPayment extends Component {
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
       payment,
       Math.ceil(finalPrice)
     )
@@ -1357,13 +1357,8 @@ class CMPayment extends Component {
 
   fetchScheduleData = () => {
     const { lead, CMPayment, addInstrument, user } = this.props
-    const {
-      firstFormData,
-      oneProductData,
-      secondForm,
-      pearlUnitPrice,
-      unitPearlDetailsData,
-    } = this.state
+    const { firstFormData, oneProductData, secondForm, pearlUnitPrice, unitPearlDetailsData } =
+      this.state
     if (secondForm) {
       axios
         .get(`/api/leads/paymentSchedule?leadId=${lead.id}`)

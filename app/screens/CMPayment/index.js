@@ -139,27 +139,29 @@ class CMPayment extends Component {
   }
 
   componentDidMount = () => {
-    const { firstForm, secondForm } = this.state
-    const { lead } = this.props
-    const { paidProject, project } = lead
-    if (firstForm) {
-      let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
-      if ((paidProject && paidProject.id) || (project && project.id)) {
-        this.getFloors(projectID)
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      const { firstForm, secondForm } = this.state
+      const { lead } = this.props
+      const { paidProject, project } = lead
+      if (firstForm) {
+        let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
+        if ((paidProject && paidProject.id) || (project && project.id)) {
+          this.getFloors(projectID)
+        }
       }
-    }
-    if (secondForm) {
-      this.setState({
-        pearlUnit:
-          lead && lead.unit && lead.unit.type && lead.unit.type === 'regular' ? false : true,
-      })
-    }
-    this.fetchProducts(lead)
-    this.fetchOfficeLocations()
-    this.fetchLead()
-    this.getAllProjects()
-    this.setdefaultFields(this.props.lead)
-    this.validateCnic(lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null)
+      if (secondForm) {
+        this.setState({
+          pearlUnit:
+            lead && lead.unit && lead.unit.type && lead.unit.type === 'regular' ? false : true,
+        })
+      }
+      this.fetchProducts(lead)
+      this.fetchOfficeLocations()
+      this.fetchLead()
+      this.getAllProjects()
+      this.setdefaultFields(this.props.lead)
+      this.validateCnic(lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null)
+    })
   }
 
   componentWillUnmount = () => {
@@ -268,6 +270,10 @@ class CMPayment extends Component {
     if (outStandingTax <= 0 && remainingPayment <= 0) {
       this.setState({
         closedWon: true,
+      })
+    } else {
+      this.setState({
+        closedWon: false,
       })
     }
   }

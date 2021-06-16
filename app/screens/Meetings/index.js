@@ -297,11 +297,18 @@ class Meetings extends Component {
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(payment, finalPrice)
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
+      payment,
+      finalPrice
+    )
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
     if (outStandingTax <= 0 && remainingPayment <= 0) {
       this.setState({
         closedWon: true,
+      })
+    } else {
+      this.setState({
+        closedWon: false,
       })
     }
   }

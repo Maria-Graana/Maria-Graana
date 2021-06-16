@@ -101,33 +101,25 @@ class AddRCMLead extends Component {
     const { client, name, selectedCity } = this.props.route.params
     const { RCMFormData } = this.state
     let copyObject = Object.assign({}, RCMFormData)
-    if (client && name) this.setClient()
-    if (selectedCity) {
-      copyObject.city_id = selectedCity.value
-      this.setState({ formData: copyObject, selectedCity })
-      setTimeout(() => {
-        const { selectedAreasIds } = this.props
-        copyObject.leadAreas = selectedAreasIds
-        this.setState({ RCMFormData: copyObject, selectedCity })
-      }, 500)
-    }
-  }
-
-  setClient = () => {
-    const { RCMFormData } = this.state
-    const { client, name } = this.props.route.params
-    let copyObject = Object.assign({}, RCMFormData)
     let phones = []
-    if (client.customerContacts && client.customerContacts.length) {
+    if (client && client.customerContacts && client.customerContacts.length) {
       client.customerContacts.map((item) => {
         phones.push(item.phone)
       })
+      copyObject.customerId = client.id
+      copyObject.phones = phones
     }
-    copyObject.customerId = client.id
-    copyObject.phones = phones
-    this.setState({ RCMFormData: copyObject, clientName: name, selectedClient: client }, () => {
-      this.clearParmas()
-    })
+    copyObject.city_id = selectedCity ? selectedCity.value : null
+    setTimeout(() => {
+      const { selectedAreasIds } = this.props
+      copyObject.leadAreas = selectedCity && selectedAreasIds
+      this.setState({
+        RCMFormData: copyObject,
+        selectedCity,
+        selectedClient: client,
+        clientName: name,
+      })
+    }, 500)
   }
 
   fetchOrganizations = () => {

@@ -1032,20 +1032,21 @@ export default StaticData = {
       title: 'Attach',
       image: require('../assets/img/Path-20.png'),
     },
+
     {
       id: 4,
-      title: 'Add Meeting',
-      image: require('../assets/img/add_meeting.png'),
-    },
-    {
-      id: 5,
       title: 'Diary Task',
       image: require('../assets/img/diary-task.png'),
     },
     {
-      id: 6,
+      id: 5,
       title: 'Comment',
       image: require('../assets/img/comment.png'),
+    },
+    {
+      id: 6,
+      title: 'Add Meeting',
+      image: require('../assets/img/add_meeting.png'),
     },
     {
       id: 7,
@@ -1116,20 +1117,21 @@ export default StaticData = {
       title: 'Attach',
       image: require('../assets/img/Path-20.png'),
     },
+
     {
       id: 4,
-      title: 'Add Meeting',
-      image: require('../assets/img/add_meeting.png'),
-    },
-    {
-      id: 5,
       title: 'Diary Task',
       image: require('../assets/img/diary-task.png'),
     },
     {
-      id: 6,
+      id: 5,
       title: 'Comment',
       image: require('../assets/img/comment.png'),
+    },
+    {
+      id: 6,
+      title: 'Add Meeting',
+      image: require('../assets/img/add_meeting.png'),
     },
     {
       id: 7,

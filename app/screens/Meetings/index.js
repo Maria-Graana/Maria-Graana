@@ -587,6 +587,8 @@ class Meetings extends Component {
             goToFollowUp={this.openModalInFollowupMode}
             goToRejectForm={this.goToRejectForm}
             showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+            showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
+            addMeeting={() => this.openModalInMeetingMode()}
             setCurrentCall={(call) => this.setCurrentCall(call)}
             leadType={'CM'}
             navigation={navigation}

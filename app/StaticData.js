@@ -1015,6 +1015,49 @@ export default StaticData = {
       image: require('../assets/img/call.png'),
     },
   ],
+
+  actionListItemsCM: [
+    {
+      id: 1,
+      title: 'ReAssign',
+      image: require('../assets/img/reassign.png'),
+    },
+    {
+      id: 2,
+      title: 'Share',
+      image: require('../assets/img/share-lead-with-agent.png'),
+    },
+    {
+      id: 3,
+      title: 'Attach',
+      image: require('../assets/img/Path-20.png'),
+    },
+    {
+      id: 4,
+      title: 'Add Meeting',
+      image: require('../assets/img/calendar.png'),
+    },
+    {
+      id: 5,
+      title: 'Diary Task',
+      image: require('../assets/img/diary-task.png'),
+    },
+    {
+      id: 6,
+      title: 'Comment',
+      image: require('../assets/img/comment.png'),
+    },
+    {
+      id: 7,
+      title: 'Whatsapp',
+      image: require('../assets/img/whatsapp.png'),
+    },
+    {
+      id: 8,
+      title: 'Call',
+      image: require('../assets/img/call.png'),
+    },
+  ],
   actionClosedWonListItems: [
     {
       id: 1,
@@ -1053,6 +1096,53 @@ export default StaticData = {
     },
     {
       id: 8,
+      title: 'Closed Won',
+      image: require('../assets/img/Close.png'),
+    },
+  ],
+  ctionClosedWonListItems: [
+    {
+      id: 1,
+      title: 'ReAssign',
+      image: require('../assets/img/reassign.png'),
+    },
+    {
+      id: 2,
+      title: 'Share',
+      image: require('../assets/img/share-lead-with-agent.png'),
+    },
+    {
+      id: 3,
+      title: 'Attach',
+      image: require('../assets/img/Path-20.png'),
+    },
+    {
+      id: 4,
+      title: 'Add Meeting',
+      image: require('../assets/img/calendar.png'),
+    },
+    {
+      id: 5,
+      title: 'Diary Task',
+      image: require('../assets/img/diary-task.png'),
+    },
+    {
+      id: 6,
+      title: 'Comment',
+      image: require('../assets/img/comment.png'),
+    },
+    {
+      id: 7,
+      title: 'Whatsapp',
+      image: require('../assets/img/whatsapp.png'),
+    },
+    {
+      id: 8,
+      title: 'Call',
+      image: require('../assets/img/call.png'),
+    },
+    {
+      id: 9,
       title: 'Closed Won',
       image: require('../assets/img/Close.png'),
     },

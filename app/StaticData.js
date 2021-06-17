@@ -1035,7 +1035,7 @@ export default StaticData = {
     {
       id: 4,
       title: 'Add Meeting',
-      image: require('../assets/img/calendar.png'),
+      image: require('../assets/img/add_meeting.png'),
     },
     {
       id: 5,
@@ -1119,7 +1119,7 @@ export default StaticData = {
     {
       id: 4,
       title: 'Add Meeting',
-      image: require('../assets/img/calendar.png'),
+      image: require('../assets/img/add_meeting.png'),
     },
     {
       id: 5,

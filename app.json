@@ -4,7 +4,7 @@
     "slug": "arms",
     "privacy": "public",
     "platforms": ["ios", "android"],
-    "version": "1.27.0",
+    "version": "1.27.1",
     "orientation": "portrait",
     "icon": "./assets/img/ICON1024PNG.png",
     "scheme": "arms",
@@ -99,6 +99,12 @@
           }
         }
       ]
+    },
+    "extra": {
+      "graanaMap": {
+        "dev": "https://maps.graana.rocks/api/map/",
+        "prod": "https://www.graana.com/api/map/"
+      }
     }
   }
 }

@@ -14,6 +14,7 @@ import StaticData from '../../StaticData'
 import styles from './style'
 import Ability from '../../hoc/Ability'
 import MultiplePhoneOptionModal from '../MultiplePhoneOptionModal'
+import { Status } from '@sentry/types'
 
 var BUTTONS = [
   'Assign to team member',
@@ -150,8 +151,10 @@ class CMBottomNav extends React.Component {
   }
 
   performListActions = (title) => {
-    const { goToComments, goToDiaryForm, goToAttachments, lead, onHandleCloseLead } = this.props
+    const { goToComments, goToDiaryForm, goToAttachments, lead, onHandleCloseLead, addMeeting } =
+      this.props
     if (title === 'Comment') goToComments()
+    if (title === 'Add Meeting') addMeeting()
     if (title === 'Diary Task') goToDiaryForm()
     if (title === 'Whatsapp') this.openWhatsapp()
     if (title === 'Attach') goToAttachments()
@@ -275,9 +278,14 @@ class CMBottomNav extends React.Component {
   }
 
   listActionMenuItems = () => {
-    const { closedWon = false, closedLeadEdit } = this.props
-    let actionData = StaticData.actionListItems
-    if (closedWon) actionData = StaticData.actionClosedWonListItems
+    const { closedWon = false, closedLeadEdit, lead } = this.props
+    let actionData =
+      lead && lead.projectId ? StaticData.actionListItemsCM : StaticData.actionListItems
+    if (closedWon)
+      actionData =
+        lead && lead.projectId
+          ? StaticData.actionClosedWonListItemsCM
+          : StaticData.actionClosedWonListItems
     return actionData.map((item, index) => {
       return (
         <MenuOption

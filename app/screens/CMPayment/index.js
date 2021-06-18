@@ -1680,6 +1680,7 @@ class CMPayment extends Component {
               goToRejectForm={this.goToRejectForm}
               closedWon={closedWon}
               showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+              addMeeting={() => this.openModalInMeetingMode()}
               setCurrentCall={(call) => this.setCurrentCall(call)}
               leadType={'CM'}
               navigation={navigation}

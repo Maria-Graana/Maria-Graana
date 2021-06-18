@@ -127,7 +127,6 @@ class Meetings extends Component {
   }
 
   sendStatus = (status, id) => {
-    console.log('status=>', status)
     const { formData, meetings } = this.state
     const { lead } = this.props
     let body = {}

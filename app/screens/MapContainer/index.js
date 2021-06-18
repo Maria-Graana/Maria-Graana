@@ -2,7 +2,6 @@
 
 import React, { Component } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { connect } from 'react-redux'
 import PropMap from '@graana/react-native-graana-maps'
 
 class MapContainer extends Component {
@@ -11,7 +10,6 @@ class MapContainer extends Component {
   }
 
   onMarkThisProperty = (item) => {
-    console.log(item)
     const { mapValues, screenName } = this.props.route.params
     mapValues.lat = item.latitude
     mapValues.lng = item.longitude

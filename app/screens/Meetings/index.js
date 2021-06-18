@@ -127,18 +127,19 @@ class Meetings extends Component {
   }
 
   sendStatus = (status, id) => {
+    console.log('status=>', status)
     const { formData, meetings } = this.state
     const { lead } = this.props
-    let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
-    }
+    let body = {}
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${id}&cmLeadId=${lead.id}`).then((res) => {
         this.getMeetingLead()
       })
     } else if (status === 'meeting_done') {
+      body = { response: status, comments: status, leadId: lead.id, status: 'completed' }
+      axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
+        this.getMeetingLead()
+      })
       this.setState({
         statusfeedbackModalVisible: true,
         modalMode: 'meeting',
@@ -146,6 +147,7 @@ class Meetings extends Component {
           meetings && meetings.rows ? meetings.rows.find((item) => item.id === id) : null,
       })
     } else {
+      body = { response: status, comments: status, leadId: lead.id }
       axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
         this.getMeetingLead()
       })
@@ -554,7 +556,7 @@ class Meetings extends Component {
                   platform == 'ios' ? styles.boxShadowForIos : styles.boxShadowForandroid,
                 ]}
                 onPress={() => {
-                  this.openModalInMeetingMode()
+                  this.openModalInMeetingMode(false, null)
                 }}
               >
                 <Text style={styles.alignCenter}>Add Meeting</Text>

@@ -42,7 +42,7 @@ class MeetingTile extends React.Component {
               </Text>
             </View>
             <View style={[styles.dotsWrap]}>
-              {leadClosedCheck && data.taskType === 'meeting' ? (
+              {leadClosedCheck && data.taskType === 'meeting' && data.status === 'pending' ? (
                 <Menu
                   visible={data.showMenu}
                   onDismiss={() => toggleMenu(false, data.id)}

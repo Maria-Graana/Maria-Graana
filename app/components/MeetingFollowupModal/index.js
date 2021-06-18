@@ -103,12 +103,10 @@ const MeetingFollowupModal = ({
 
   useEffect(() => {
     const newFormData = { ...formData }
-    if (editMeeting && currentMeeting) {
-      newFormData.date = currentMeeting.date
-      newFormData.time = currentMeeting.time
-      setFormData(newFormData)
-    }
-  }, [editMeeting])
+    newFormData.date = currentMeeting && currentMeeting.date ? currentMeeting.date : null
+    newFormData.time = currentMeeting && currentMeeting.time ? currentMeeting.time : null
+    setFormData(newFormData)
+  }, [editMeeting, currentMeeting])
 
   //  ************ Form submit Function  ************
   const formSubmit = () => {
@@ -453,6 +451,7 @@ const MeetingFollowupModal = ({
               date={formData.date ? new Date(formData.date) : new Date()}
               selectedValue={formData.date ? helper.formatDate(formData.date) : ''}
               handleForm={(value, name) => handleForm(value, name)}
+              disabled={currentMeeting && currentMeeting.status === 'completed'}
             />
 
             {/* **************************************** */}
@@ -466,6 +465,7 @@ const MeetingFollowupModal = ({
               date={formData.time ? new Date(formData.time) : new Date()}
               selectedValue={formData.time ? helper.formatTime(formData.time) : ''}
               handleForm={(value, name) => handleForm(value, name)}
+              disabled={currentMeeting && currentMeeting.status === 'completed'}
             />
 
             {/* **************************************** */}
@@ -475,6 +475,7 @@ const MeetingFollowupModal = ({
                 label={editMeeting ? 'UPDATE MEETING' : 'ADD MEETING'}
                 onPress={() => formSubmit()}
                 loading={loading}
+                disabled={currentMeeting && currentMeeting.status === 'completed'}
               />
             </View>
           </View>

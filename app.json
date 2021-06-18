@@ -99,6 +99,12 @@
           }
         }
       ]
+    },
+    "extra": {
+      "graanaMap": {
+        "dev": "https://maps.graana.rocks/api/map/",
+        "prod": "https://www.graana.com/api/map/"
+      }
     }
   }
 }

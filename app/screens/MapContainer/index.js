@@ -3,6 +3,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import PropMap from '@graana/react-native-graana-maps'
+import config from '../../config'
 
 class MapContainer extends Component {
   constructor() {
@@ -29,7 +30,7 @@ class MapContainer extends Component {
     return (
       <View style={styles.map}>
         <PropMap
-          production={false}
+          production={config.channel === 'production' ? true : false}
           mapValues={mapValues.propsure_id ? mapValues : null}
           onMark={this.onMarkThisProperty}
         />

@@ -175,6 +175,20 @@ class DetailForm extends Component {
           </View>
         </View>
         <View style={[AppStyles.mainInputWrap]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput
+              placeholderTextColor={'#a8a8aa'}
+              value={formData.familyMember}
+              onChangeText={(text) => {
+                handleForm(text, 'familyMember')
+              }}
+              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+              name={'familyMember'}
+              placeholder={'Son / Spouse of'}
+            />
+          </View>
+        </View>
+        <View style={[AppStyles.mainInputWrap]}>
           <Textarea
             placeholderTextColor={AppStyles.colors.subTextColor}
             style={[

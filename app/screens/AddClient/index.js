@@ -35,6 +35,7 @@ class AddClient extends Component {
         lastName: '',
         email: '',
         cnic: '',
+        familyMember: '',
         contactNumber: '',
         address: '',
         secondaryAddress: '',
@@ -83,11 +84,20 @@ class AddClient extends Component {
     let contactBool = false
     let contact1Bool = false
     let contact2Bool = false
-      for (let i = 0; i < client.customerContacts.length; i++) {
-        if (i === 0) phone = client.customerContacts[i].phone ? client.customerContacts[i].phone.substring(1) : null
-        if (i === 1) contact1 =  client.customerContacts[i].phone ? client.customerContacts[i].phone.substring(1) : null
-        if (i === 2) contact2 =  client.customerContacts[i].phone ? client.customerContacts[i].phone.substring(1) : null
-      }
+    for (let i = 0; i < client.customerContacts.length; i++) {
+      if (i === 0)
+        phone = client.customerContacts[i].phone
+          ? client.customerContacts[i].phone.substring(1)
+          : null
+      if (i === 1)
+        contact1 = client.customerContacts[i].phone
+          ? client.customerContacts[i].phone.substring(1)
+          : null
+      if (i === 2)
+        contact2 = client.customerContacts[i].phone
+          ? client.customerContacts[i].phone.substring(1)
+          : null
+    }
     let result = _.map(_.where(countries), function (country) {
       return { callingCode: country.callingCode, cca2: country.cca2 }
     })
@@ -165,7 +175,7 @@ class AddClient extends Component {
     let number = ''
     let withoutPlus = dialCode.replace('+', '')
     if (phone && phone.startsWith('+')) {
-      if ( phone && phone.startsWith(dialCode)) number = phone.replace(dialCode, '')
+      if (phone && phone.startsWith(dialCode)) number = phone.replace(dialCode, '')
       else number = phone
     } else {
       if (phone && phone.startsWith(withoutPlus)) number = number.replace(withoutPlus, '')
@@ -198,6 +208,7 @@ class AddClient extends Component {
       cnic: client.cnic ? String(client.cnic) : '',
       contactNumber: number,
       address: client.address,
+      familyMember: client.familyMember,
       contact1: number1,
       contact2: number2,
     }
@@ -303,6 +314,7 @@ class AddClient extends Component {
         contact2: phone3 ? phone3.replace(/\s+/g, '') : null,
         dialCode: callingCode2,
       },
+      familyMember: formData.familyMember,
     }
     if (!body.contact1.contact1) delete body.contact1
     if (!body.contact2.contact2) delete body.contact2
@@ -363,6 +375,7 @@ class AddClient extends Component {
             : null,
         dialCode: newCallingCode2,
       },
+      familyMember: formData.familyMember,
     }
     body.customersContacts = []
     body.customersContacts.push(body.phone)
@@ -465,7 +478,7 @@ class AddClient extends Component {
     if (number.startsWith('03')) {
       number = number.substring(1)
     }
-    return number;
+    return number
   }
 
   validate(text, type) {

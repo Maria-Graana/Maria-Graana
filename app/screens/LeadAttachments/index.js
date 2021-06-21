@@ -35,6 +35,7 @@ class LeadAttachments extends Component {
       attachmentType: '',
       signedServiceFile: null,
       showAction: false,
+      doneLoading: false,
     }
   }
 
@@ -78,6 +79,7 @@ class LeadAttachments extends Component {
           isVisible: false,
           attachmentsData: res.data,
           signedServiceFile: signedFile,
+          doneLoading: false,
         })
       })
       .catch((error) => {
@@ -150,11 +152,15 @@ class LeadAttachments extends Component {
   // ********* On form Submit Function
   formSubmit = () => {
     const { title, formData } = this.state
+    this.setState({
+      doneLoading: true,
+    })
     // ********* Form Validation Check
     if (!title || !formData.fileName) {
       this.setState({
         checkValidation: true,
         showAction: false,
+        doneLoading: false,
       })
     } else {
       // ********* Call Add Attachment API here :)
@@ -271,6 +277,7 @@ class LeadAttachments extends Component {
       attachmentsData,
       signedServiceFile,
       showAction,
+      doneLoading,
     } = this.state
     const { route } = this.props
     const { workflow } = route.params
@@ -286,6 +293,7 @@ class LeadAttachments extends Component {
           checkValidation={checkValidation}
           getAttachmentFromStorage={this.toggleActionSheet}
           closeModal={() => this.closeModal()}
+          doneLoading={doneLoading}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
         {!loading ? (

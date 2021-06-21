@@ -127,7 +127,7 @@ class CMBottomNav extends React.Component {
     }
   }
 
-  sendCallStatus = () => {
+  sendCallStatus = (isWhatsappCall = false) => {
     const { leadType } = this.props
     const { selectedClientContacts } = this.state
     const start = moment().format()
@@ -144,6 +144,7 @@ class CMBottomNav extends React.Component {
       leadId: leadType === 'CM' ? this.props.lead.id : null, // For CM Call
       calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       taskCategory: 'leadTask',
+      calledOn: isWhatsappCall ? 'whatsapp' : 'phone',
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
       this.props.setCurrentCall(res.data)
@@ -260,18 +261,22 @@ class CMBottomNav extends React.Component {
   }
 
   openWhatsapp = () => {
-    const { customer } = this.props
+    const { customer, showStatusFeedbackModal } = this.props
     if (customer) {
-      let newContact = helper.createContactPayload(customer)
-      let url = 'whatsapp://send?phone=' + newContact.phone
-      Linking.openURL(url)
-        .then((data) => {
-          console.log('WhatsApp Opened successfully ' + data)
-        })
-        .catch((error) => {
-          console.log('ERROR: Opening Whatsapp ' + error)
-          helper.errorToast('No APP Found OR Error Opening APP')
-        })
+      let selectedClientContacts = helper.createContactPayload(customer)
+      this.setState({ selectedClientContacts }, () => {
+        let url = 'whatsapp://send?phone=' + selectedClientContacts.phone
+        Linking.openURL(url)
+          .then((data) => {
+            this.sendCallStatus(true)
+            showStatusFeedbackModal(true)
+            console.log('WhatsApp Opened successfully ' + data)
+          })
+          .catch((error) => {
+            console.log('ERROR: Opening Whatsapp ' + error)
+            helper.errorToast('No APP Found OR Error Opening APP')
+          })
+      })
     } else {
       helper.errorToast('No Phone Number')
     }

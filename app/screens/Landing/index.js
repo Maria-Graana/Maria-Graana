@@ -258,7 +258,9 @@ class Landing extends React.Component {
                       <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
                     </>
                   )}
-                  {user.subRole === 'business_centre_agent' ||
+                  {user.subRole === 'business_centre_manager' ||
+                  user.subRole === 'call_centre_manager' ||
+                  user.subRole === 'business_centre_agent' ||
                   user.subRole === 'call_centre_agent' ? (
                     <StatisticsTile
                       imagePath={MonthlyProjectRevenue}
@@ -267,7 +269,9 @@ class Landing extends React.Component {
                       secondValue={userStatistics.monthlyProjectTarget}
                     />
                   ) : null}
-                  {user.subRole === 'business_centre_agent' ||
+                  {user.subRole === 'business_centre_manager' ||
+                  user.subRole === 'call_centre_manager' ||
+                  user.subRole === 'business_centre_agent' ||
                   user.subRole === 'call_centre_agent' ? (
                     <StatisticsTile
                       imagePath={MonthlyCreatedCount}
@@ -276,7 +280,9 @@ class Landing extends React.Component {
                       secondValue={userStatistics.cifTarget}
                     />
                   ) : null}
-                  {user.subRole === 'business_centre_agent' ||
+                  {user.subRole === 'business_centre_manager' ||
+                  user.subRole === 'call_centre_manager' ||
+                  user.subRole === 'business_centre_agent' ||
                   user.subRole === 'call_centre_agent' ? (
                     <StatisticsTile
                       imagePath={MonthlyMeetingDone}

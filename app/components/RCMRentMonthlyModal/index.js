@@ -48,6 +48,7 @@ const RCMRentMonthlyModal = (props) => {
           ]}
         >
           <View>
+            <Text style={styles.labelStyle}>MONTHLY RENT</Text>
             <SimpleInputText
               name={'monthlyRent'}
               fromatName={false}
@@ -58,8 +59,10 @@ const RCMRentMonthlyModal = (props) => {
               keyboardType={'numeric'}
               onChangeHandle={handleForm}
               editable={monthlyRentReadOnly}
+              showLable={false}
             />
             <View style={{ paddingVertical: 10 }}>
+              <Text style={styles.labelStyle}>Contract duration (No of months)</Text>
               <PickerComponent
                 onValueChange={handleForm}
                 name={'contract_months'}
@@ -70,6 +73,7 @@ const RCMRentMonthlyModal = (props) => {
               />
             </View>
             <View style={{ paddingVertical: 10 }}>
+              <Text style={styles.labelStyle}>Advance (No of months)</Text>
               <PickerComponent
                 onValueChange={handleForm}
                 name={'advance'}
@@ -80,6 +84,7 @@ const RCMRentMonthlyModal = (props) => {
               />
             </View>
             <View style={{ paddingVertical: 10 }}>
+              <Text style={styles.labelStyle}>Security (No of months)</Text>
               <PickerComponent
                 onValueChange={handleForm}
                 name={'security'}

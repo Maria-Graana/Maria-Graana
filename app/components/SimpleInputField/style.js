@@ -1,3 +1,5 @@
+/** @format */
+
 import { StyleSheet } from 'react-native'
 
 export default styles = StyleSheet.create({
@@ -27,7 +29,7 @@ export default styles = StyleSheet.create({
     width: '65%',
   },
   mainInputWrap: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   mainInputView: {
     width: '100%',
@@ -87,8 +89,8 @@ export default styles = StyleSheet.create({
   dateStyle: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#424249'
+    color: '#424249',
   },
   dummy: {},
   dummy: {},
-});
+})

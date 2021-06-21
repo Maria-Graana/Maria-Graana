@@ -38,4 +38,10 @@ export default styles = StyleSheet.create({
     fontFamily: AppStyles.fonts.boldFont,
     fontSize: 18,
   },
+  labelStyle: {
+    color: '#23232C',
+    fontSize: 14,
+    fontFamily: AppStyles.fonts.boldFont,
+    letterSpacing: 1,
+  },
 })

@@ -54,21 +54,26 @@ class SimpleInputField extends React.Component {
       fromatName,
       onChangeHandle,
       noMargin,
+      showLable = true,
     } = this.props
     const val = value != null || '' ? value.toString() : ''
     return (
       <View
-        style={[styles.mainInputParent, noMargin === true && { marginBottom: 0, marginTop: 0 }]}
+        style={[
+          styles.mainInputParent,
+          noMargin === true && { marginBottom: 0, marginTop: 0 },
+          !showLable ? { marginTop: 0 } : null,
+        ]}
       >
+        {showLable ? <Text style={[styles.labelStyle]}>{label}</Text> : null}
         {/* label */}
-        <Text style={[styles.labelStyle]}>{label}</Text>
 
         {/* Input Wrap */}
         <View style={[styles.mainInputWrap]}>
           {/* Main Input */}
           <View style={[styles.mainInputView]}>
             <TextInput
-              style={[styles.inputTextStyle]}
+              style={[styles.inputTextStyle, !showLable ? { height: 30 } : null]}
               placeholder={placeholder}
               name={name}
               keyboardType={keyboardType}

@@ -23,7 +23,6 @@ class MeetingTile extends React.Component {
       : (taskTypeData = StaticData.callStatus)
 
     let response = data && data.response != null && data.response.replace(/_+/g, ' ')
-
     return (
       <TouchableOpacity
         onPress={() => {
@@ -34,7 +33,11 @@ class MeetingTile extends React.Component {
           <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
             <View style={styles.border}>
               <Text style={[AppStyles.mrTen, styles.meetingCon]}>
-                {`${data.taskType}`}
+                {data.taskType === 'called' && data.calledOn === 'whatsapp' ? 'Whatsapp Call' : ''}
+                {data.taskType === 'called' && (data.calledOn === 'phone' || data.calledOn === null)
+                  ? 'Called'
+                  : ''}
+                {data.taskType !== 'called' ? data.taskType : ''}
                 {data.calledNumber ? ` (${data.calledNumber})` : null}
               </Text>
               <Text style={[styles.fontBold]}>

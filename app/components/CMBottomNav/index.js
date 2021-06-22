@@ -98,7 +98,7 @@ class CMBottomNav extends React.Component {
           //  multiple numbers to select
           this.showMultiPhoneModal(true)
         } else {
-          this.sendCallStatus()
+          this.sendCallStatus(false)
           helper.callNumber(selectedClientContacts, contacts)
           showStatusFeedbackModal(true)
         }
@@ -268,9 +268,9 @@ class CMBottomNav extends React.Component {
         let url = 'whatsapp://send?phone=' + selectedClientContacts.phone
         Linking.openURL(url)
           .then((data) => {
-            this.sendCallStatus(true)
             showStatusFeedbackModal(true)
             console.log('WhatsApp Opened successfully ' + data)
+            this.sendCallStatus(true)
           })
           .catch((error) => {
             console.log('ERROR: Opening Whatsapp ' + error)

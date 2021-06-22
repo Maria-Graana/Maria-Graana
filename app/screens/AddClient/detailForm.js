@@ -178,7 +178,6 @@ class DetailForm extends Component {
           <View style={[AppStyles.inputWrap]}>
             <TextInput
               placeholderTextColor={'#a8a8aa'}
-              maxLength={15}
               value={formData.familyMember}
               onChangeText={(text) => {
                 handleForm(text, 'familyMember')

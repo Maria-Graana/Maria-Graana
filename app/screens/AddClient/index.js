@@ -208,6 +208,7 @@ class AddClient extends Component {
       cnic: client.cnic ? String(client.cnic) : '',
       contactNumber: number,
       address: client.address,
+      familyMember: client.familyMember,
       contact1: number1,
       contact2: number2,
     }

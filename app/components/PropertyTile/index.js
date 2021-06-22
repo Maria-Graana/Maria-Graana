@@ -238,7 +238,19 @@ class InventoryTile extends React.Component {
 
 
 
-        {(data.customer && data.customer.phone !== '') || screen === 'fields' ? (
+        {(data.customer && data.customer.phone !== '') || screen === 'fields' ? ( // for arms & field app properties
+          <View style={{ position: 'absolute', bottom: 5, left: wp('88%') }}>
+            <Foundation
+              name={'telephone'}
+              onPress={() => onCall(data)}
+              color={AppStyles.colors.subTextColor}
+              size={30}
+              style={styles.phoneButton}
+            />
+          </View>
+        ) : null}
+
+          { data && checkForGraanaProperties ? ( 
           <View style={{ position: 'absolute', bottom: 5, left: wp('88%') }}>
             <Foundation
               name={'telephone'}

@@ -76,7 +76,8 @@ const helper = {
     return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5, 11)}`
   },
   validateEmail(email) {
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    var re =
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(email)
   },
   capitalize(str) {
@@ -148,7 +149,7 @@ const helper = {
   },
   setStatusText(val, todayDate) {
     let taskDate = moment(val.date).format('YYYY-MM-DD')
-    if (val.taskCategory === 'simpleTask') {
+    if (val.taskCategory === 'simpleTask' || val.taskCategory === 'leadTask') {
       // simple task is reffered to task added from diary directly or through lead but taskcategory is simpleTask
       if (taskDate > todayDate && val.status !== 'completed') {
         return 'To-do'
@@ -185,7 +186,7 @@ const helper = {
   },
   checkStatusColor(val, todayDate) {
     let taskDate = moment(val.date).format('YYYY-MM-DD')
-    if (val.taskCategory === 'simpleTask') {
+    if (val.taskCategory === 'simpleTask' || val.taskCategory === 'leadTask') {
       if (taskDate > todayDate && val.status !== 'completed') {
         return 'red'
       }

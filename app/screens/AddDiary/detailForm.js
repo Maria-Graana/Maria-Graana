@@ -72,7 +72,6 @@ class DetailForm extends Component {
       screenName,
       editableData,
     } = this.props
-    console.log(formData)
     return (
       <View>
         <View style={[AppStyles.mainInputWrap]}>

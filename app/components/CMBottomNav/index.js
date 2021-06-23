@@ -3,7 +3,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import React from 'react'
-import { ActionSheet } from 'native-base'
+import { ActionSheet, InputGroup } from 'native-base'
 import { Image, Linking, Text, TouchableOpacity, View, TouchableHighlight } from 'react-native'
 import { Menu as PopupMenu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu'
 import { Menu, Divider } from 'react-native-paper'
@@ -74,6 +74,7 @@ class CMBottomNav extends React.Component {
       actionVisible: false,
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
+      calledOn: 'phone',
     }
   }
 
@@ -93,7 +94,7 @@ class CMBottomNav extends React.Component {
     const { contacts, customer, showStatusFeedbackModal } = this.props
     if (customer) {
       let selectedClientContacts = helper.createContactPayload(customer)
-      this.setState({ selectedClientContacts }, () => {
+      this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
         if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
           //  multiple numbers to select
           this.showMultiPhoneModal(true)
@@ -112,24 +113,34 @@ class CMBottomNav extends React.Component {
 
   handlePhoneSelectDone = (phone) => {
     const { contacts, showStatusFeedbackModal } = this.props
+    const { calledOn } = this.state
     const copySelectedClientContacts = { ...this.state.selectedClientContacts }
-    if (phone) {
-      copySelectedClientContacts.phone = phone.number
-      copySelectedClientContacts.url = 'tel:' + phone.number
-      this.setState(
-        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
-        () => {
-          showStatusFeedbackModal(true)
-          this.sendCallStatus()
-          helper.callNumber(copySelectedClientContacts, contacts)
-        }
-      )
+    if (calledOn === 'whatsapp') {
+      // for whatsapp call
+      if (phone && phone.number) {
+        this.makeWhatsappCall(phone.number)
+        this.showMultiPhoneModal(false)
+      }
+    } else {
+      // for phone call
+      if (phone) {
+        copySelectedClientContacts.phone = phone.number
+        copySelectedClientContacts.url = 'tel:' + phone.number
+        this.setState(
+          { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+          () => {
+            showStatusFeedbackModal(true)
+            this.sendCallStatus()
+            helper.callNumber(copySelectedClientContacts, contacts)
+          }
+        )
+      }
     }
   }
 
-  sendCallStatus = (isWhatsappCall = false) => {
+  sendCallStatus = () => {
     const { leadType } = this.props
-    const { selectedClientContacts } = this.state
+    const { selectedClientContacts, calledOn } = this.state
     const start = moment().format()
     let body = {
       start: start,
@@ -144,7 +155,7 @@ class CMBottomNav extends React.Component {
       leadId: leadType === 'CM' ? this.props.lead.id : null, // For CM Call
       calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       taskCategory: 'leadTask',
-      calledOn: isWhatsappCall ? 'whatsapp' : 'phone',
+      calledOn,
     }
     axios.post(`api/leads/project/meeting`, body).then((res) => {
       this.props.setCurrentCall(res.data)
@@ -260,22 +271,32 @@ class CMBottomNav extends React.Component {
     })
   }
 
+  makeWhatsappCall = (phone) => {
+    const { showStatusFeedbackModal } = this.props
+    let url = 'whatsapp://send?phone=' + phone
+    Linking.openURL(url)
+      .then((data) => {
+        showStatusFeedbackModal(true)
+        console.log('WhatsApp Opened successfully ' + data)
+        this.sendCallStatus()
+      })
+      .catch((error) => {
+        console.log('ERROR: Opening Whatsapp ' + error)
+        helper.errorToast('No APP Found OR Error Opening APP')
+      })
+  }
+
   openWhatsapp = () => {
-    const { customer, showStatusFeedbackModal } = this.props
+    const { customer } = this.props
     if (customer) {
       let selectedClientContacts = helper.createContactPayload(customer)
-      this.setState({ selectedClientContacts }, () => {
-        let url = 'whatsapp://send?phone=' + selectedClientContacts.phone
-        Linking.openURL(url)
-          .then((data) => {
-            showStatusFeedbackModal(true)
-            console.log('WhatsApp Opened successfully ' + data)
-            this.sendCallStatus(true)
-          })
-          .catch((error) => {
-            console.log('ERROR: Opening Whatsapp ' + error)
-            helper.errorToast('No APP Found OR Error Opening APP')
-          })
+      this.setState({ selectedClientContacts, calledOn: 'whatsapp' }, () => {
+        if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+          //  multiple numbers to select
+          this.showMultiPhoneModal(true)
+        } else {
+          this.makeWhatsappCall(selectedClientContacts.phone)
+        }
       })
     } else {
       helper.errorToast('No Phone Number')

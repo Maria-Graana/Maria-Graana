@@ -33,7 +33,7 @@ class MeetingTile extends React.Component {
           <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
             <View style={styles.border}>
               <Text style={[AppStyles.mrTen, styles.meetingCon]}>
-                {data.taskType === 'called' && data.calledOn === 'whatsapp' ? 'Whatsapp Call' : ''}
+                {data.taskType === 'called' && data.calledOn === 'whatsapp' ? 'Whatsapp' : ''}
                 {data.taskType === 'called' && (data.calledOn === 'phone' || data.calledOn === null)
                   ? 'Called'
                   : ''}

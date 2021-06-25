@@ -546,7 +546,7 @@ class Meetings extends Component {
           )}
           keyExtractor={(item, index) => index.toString()}
         />
-        {leadClosedCheck == true && (
+        {/* {leadClosedCheck == true && (
           <View style={[styles.callMeetingBtn]}>
             <View style={[styles.btnsMainWrap]}>
               <TouchableOpacity
@@ -575,7 +575,7 @@ class Meetings extends Component {
               </TouchableOpacity>
             </View>
           </View>
-        )}
+        )} */}
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
             goToAttachments={this.goToAttachments}

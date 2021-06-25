@@ -92,6 +92,7 @@ class CMBottomNav extends React.Component {
 
   call = () => {
     const { contacts, customer, showStatusFeedbackModal } = this.props
+    const { calledOn } = this.state
     if (customer) {
       let selectedClientContacts = helper.createContactPayload(customer)
       this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
@@ -99,7 +100,7 @@ class CMBottomNav extends React.Component {
           //  multiple numbers to select
           this.showMultiPhoneModal(true)
         } else {
-          this.sendCallStatus(false)
+          this.sendCallStatus(selectedClientContacts ? selectedClientContacts.phone : null)
           helper.callNumber(selectedClientContacts, contacts)
           showStatusFeedbackModal(true)
         }
@@ -130,7 +131,9 @@ class CMBottomNav extends React.Component {
           { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
           () => {
             showStatusFeedbackModal(true)
-            this.sendCallStatus()
+            this.sendCallStatus(
+              copySelectedClientContacts ? copySelectedClientContacts.phone : null
+            )
             helper.callNumber(copySelectedClientContacts, contacts)
           }
         )
@@ -138,9 +141,9 @@ class CMBottomNav extends React.Component {
     }
   }
 
-  sendCallStatus = () => {
+  sendCallStatus = (phone) => {
     const { leadType } = this.props
-    const { selectedClientContacts, calledOn } = this.state
+    const { calledOn } = this.state
     const start = moment().format()
     let body = {
       start: start,
@@ -153,7 +156,7 @@ class CMBottomNav extends React.Component {
       cutomerId: this.props.lead.customer.id,
       armsLeadId: leadType === 'RCM' ? this.props.lead.id : null, // For RCM Call
       leadId: leadType === 'CM' ? this.props.lead.id : null, // For CM Call
-      calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
+      calledNumber: phone ? phone : null,
       taskCategory: 'leadTask',
       calledOn,
     }
@@ -273,12 +276,13 @@ class CMBottomNav extends React.Component {
 
   makeWhatsappCall = (phone) => {
     const { showStatusFeedbackModal } = this.props
+    const { calledOn } = this.state
     let url = 'whatsapp://send?phone=' + phone
     Linking.openURL(url)
       .then((data) => {
         showStatusFeedbackModal(true)
         console.log('WhatsApp Opened successfully ' + data)
-        this.sendCallStatus()
+        this.sendCallStatus(phone)
       })
       .catch((error) => {
         console.log('ERROR: Opening Whatsapp ' + error)
@@ -341,7 +345,7 @@ class CMBottomNav extends React.Component {
       goToRejectForm,
       closedLeadEdit,
     } = this.props
-    const { visible, isMultiPhoneModalVisible, selectedClientContacts } = this.state
+    const { visible, isMultiPhoneModalVisible, selectedClientContacts, calledOn } = this.state
 
     return (
       <View style={styles.bottomNavMain}>
@@ -422,6 +426,7 @@ class CMBottomNav extends React.Component {
           contacts={selectedClientContacts.payload}
           showMultiPhoneModal={this.showMultiPhoneModal}
           handlePhoneSelectDone={this.handlePhoneSelectDone}
+          mode={calledOn}
         />
       </View>
     )

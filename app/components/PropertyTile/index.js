@@ -65,19 +65,32 @@ class InventoryTile extends React.Component {
       hideGraanaMenu,
       propertyGeoTagging,
     } = this.props
-    const imagesList = data.armsuser ? data.armsPropertyImages : data.property_images;
-    const imagesCount = data.armsuser && data.armsPropertyImages ? data.armsPropertyImages.length : data.user && data.property_images ? data.property_images.length : null;
+    const imagesList = data.armsuser ? data.armsPropertyImages : data.property_images
+    const imagesCount =
+      data.armsuser && data.armsPropertyImages
+        ? data.armsPropertyImages.length
+        : data.user && data.property_images
+        ? data.property_images.length
+        : null
     const ownerName = this.checkCustomerName(data)
     const checkForGraanaProperties = whichProperties === 'graanaProperties'
     return (
       <TouchableOpacity
-        style={[styles.mainContainer, { backgroundColor: checkForGraanaProperties && data.verifiedStatus && data.verifiedStatus != 'verified' ? '#ddd' : screen === 'fields' && data.status === 'rejected' ? '#ddd' : '#fff' }]}
+        style={[
+          styles.mainContainer,
+          {
+            backgroundColor:
+              checkForGraanaProperties && data.verifiedStatus && data.verifiedStatus != 'verified'
+                ? '#ddd'
+                : screen === 'fields' && data.status === 'rejected'
+                ? '#ddd'
+                : '#fff',
+          },
+        ]}
         onPress={() => this.onPress(data)}
         onLongPress={() => checkForArmsProperty === true && this.onLongPress(data.id)}
         activeOpacity={0.7}
       >
-
-
         <View>
           {imagesList && imagesList.length ? (
             <Carousel
@@ -95,11 +108,11 @@ class InventoryTile extends React.Component {
               containerCustomStyle={{ position: 'relative' }}
             />
           ) : (
-              <Image
-                source={require('../../../assets/images/no-image-found.png')}
-                style={styles.imageStyle}
-              />
-            )}
+            <Image
+              source={require('../../../assets/images/no-image-found.png')}
+              style={styles.imageStyle}
+            />
+          )}
         </View>
         <View style={styles.imageCountViewStyle}>
           <Feather name={'camera'} color={'#fff'} size={16} />
@@ -107,18 +120,23 @@ class InventoryTile extends React.Component {
         </View>
 
         <View style={{ width: checkForGraanaProperties === true ? wp('50%') : wp('60%') }}>
-          <View style={{ flexDirection: 'row', alignItems:'center' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.currencyTextStyle}>PKR</Text>
             <Text style={styles.priceTextStyle} numberOfLines={1}>
               {helper.checkPrice(data.price)}
             </Text>
-            {
-              data && data.propsure_id ? <Image style={styles.propsureIcon} source={require('../../../assets/img/pp_logo.png')}/> : null
-            }
+            {data && data.propsure_id ? (
+              <Image
+                style={styles.propsureIcon}
+                source={require('../../../assets/img/pp_logo.png')}
+              />
+            ) : null}
             {screen === 'fields' && data.status === 'onhold' ? (
-              <View style={{
-                alignSelf: 'flex-end',
-              }}>
+              <View
+                style={{
+                  alignSelf: 'flex-end',
+                }}
+              >
                 <Menu
                   visible={showMenu && data.id === selectedProperty.id}
                   onDismiss={() => hideMenu()}
@@ -150,10 +168,6 @@ class InventoryTile extends React.Component {
             ) : null}
           </View>
 
-
-
-
-
           <Text style={styles.textControlStyle} numberOfLines={1}>
             {data.custom_title === null || data.custom_title === ''
               ? data.title
@@ -167,10 +181,10 @@ class InventoryTile extends React.Component {
               {data.poc_name && data.poc_name}
             </Text>
           ) : (
-              <Text style={[styles.textControlStyle, { paddingTop: 2 }]} numberOfLines={1}>
-                {ownerName}
-              </Text>
-            )}
+            <Text style={[styles.textControlStyle, { paddingTop: 2 }]} numberOfLines={1}>
+              {ownerName}
+            </Text>
+          )}
 
           <Text
             style={[styles.textControlStyle, { fontFamily: AppStyles.fonts.lightFont }]}
@@ -196,9 +210,9 @@ class InventoryTile extends React.Component {
           )}
         </View>
 
-        {
-          checkForGraanaProperties === true ?
-            <View style={{marginHorizontal: 5, marginVertical: 5}}><Menu
+        {checkForGraanaProperties === true ? (
+          <View style={{ marginHorizontal: 5, marginVertical: 5 }}>
+            <Menu
               visible={showGraanaMenu && data.id === selectedProperty.id}
               onDismiss={() => hideGraanaMenu()}
               anchor={
@@ -209,34 +223,21 @@ class InventoryTile extends React.Component {
                 />
               }
             >
-                <View>
-                  {
-                    data.verifiedStatus &&
-                      data.verifiedStatus != 'verified' ? <Menu.Item
-                        onPress={() => {
-                          graanaVerifeyModal(true, data.id)
-                        }}
-                        title="Verify Property"
-                      /> : null
-                  }
-
+              <View>
+                {data.verifiedStatus && data.verifiedStatus != 'verified' ? (
                   <Menu.Item
-                    onPress={() =>
-                      propertyGeoTagging(data)
-                    }
-                    title="GeoTag"
+                    onPress={() => {
+                      graanaVerifeyModal(true, data.id)
+                    }}
+                    title="Verify Property"
                   />
+                ) : null}
 
-
-                </View>
-              </Menu>
-            </View>
-            : null
-        }
-
-
-
-
+                <Menu.Item onPress={() => propertyGeoTagging(data)} title="GeoTag" />
+              </View>
+            </Menu>
+          </View>
+        ) : null}
 
         {(data.customer && data.customer.phone !== '') || screen === 'fields' ? ( // for arms & field app properties
           <View style={{ position: 'absolute', bottom: 5, left: wp('88%') }}>
@@ -250,7 +251,7 @@ class InventoryTile extends React.Component {
           </View>
         ) : null}
 
-          { data && checkForGraanaProperties ? ( 
+        {data && checkForGraanaProperties ? (
           <View style={{ position: 'absolute', bottom: 5, left: wp('88%') }}>
             <Foundation
               name={'telephone'}
@@ -261,8 +262,6 @@ class InventoryTile extends React.Component {
             />
           </View>
         ) : null}
-
-
       </TouchableOpacity>
     )
   }

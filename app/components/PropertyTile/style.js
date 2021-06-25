@@ -1,7 +1,12 @@
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+/** @format */
+
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen'
 
 import AppStyles from '../../AppStyles'
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'
 
 export default styles = StyleSheet.create({
   mainContainer: {
@@ -17,7 +22,7 @@ export default styles = StyleSheet.create({
     marginBottom: hp('0.5%%'),
   },
 
-imageStyle: { 
+  imageStyle: {
     width: wp('32%'),
     height: wp('32%'),
     marginRight: wp('2%'),
@@ -36,11 +41,11 @@ imageStyle: {
     opacity: 0.7,
     borderRadius: 4,
     width: wp('12%'),
-    height: 20
+    height: 20,
   },
   imageCount: {
     color: 'white',
-    paddingLeft: wp('1%')
+    paddingLeft: wp('1%'),
   },
   currencyTextStyle: {
     fontFamily: AppStyles.fonts.semiBoldFont,
@@ -49,13 +54,13 @@ imageStyle: {
     letterSpacing: 0.6,
   },
   priceTextStyle: {
-    flex:1,
+    flex: 1,
     fontFamily: AppStyles.fonts.boldFont,
     fontSize: 22,
     color: AppStyles.colors.primaryColor,
     paddingLeft: wp('1%'),
     letterSpacing: 0.6,
-    marginRight:5,
+    marginRight: 5,
   },
   textControlStyle: {
     paddingTop: hp('0.3%'),
@@ -65,23 +70,22 @@ imageStyle: {
   },
   phoneButton: {
     alignSelf: 'flex-end',
-    marginRight:wp('1%'),
+    marginRight: wp('1%'),
   },
   bedBathViewStyle: {
-    flex:1,
     flexDirection: 'row',
     paddingLeft: wp('0.5%'),
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    marginVertical: 5,
   },
   bedTextStyle: {
     fontFamily: AppStyles.fonts.semiBoldFont,
     paddingLeft: wp('1.5%'),
-    fontSize: AppStyles.fontSize.medium
+    fontSize: AppStyles.fontSize.medium,
   },
   propsureIcon: {
-      width:30,
-      height:30,
-     marginHorizontal:10,
-  }
-
-});
+    width: 30,
+    height: 30,
+    marginHorizontal: 10,
+  },
+})

@@ -326,7 +326,10 @@ class CMPayment extends Component {
         let array = []
         res &&
           res.data.rows.map((item, index) => {
-            return array.push({ value: item.id, name: item.name })
+            return array.push({
+              value: item.id,
+              name: item.saleType === 'Resale' ? item.name + ' - Resale' : item.name,
+            })
           })
         this.setState({
           pickerUnits: array,

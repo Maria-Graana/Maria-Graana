@@ -15,7 +15,7 @@ const MultiplePhoneOptionModal = ({
   showMultiPhoneModal,
   contacts,
   handlePhoneSelectDone,
-  mode = 'call',
+  mode = 'phone',
 }) => {
   return (
     <Modal isVisible={isMultiPhoneModalVisible}>

@@ -320,7 +320,7 @@ class CMPayment extends Component {
     const { lead } = this.props
     axios
       .get(
-        `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available&type=regular`
+        `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available&type=regular&mobile=true`
       )
       .then((res) => {
         let array = []
@@ -328,7 +328,7 @@ class CMPayment extends Component {
           res.data.rows.map((item, index) => {
             return array.push({
               value: item.id,
-              name: item.saleType === 'Resale' ? item.name + ' - Resale' : item.name,
+              name: item.saleType === 'resale' ? item.name + ' - Resale' : item.name,
             })
           })
         this.setState({

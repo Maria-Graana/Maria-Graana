@@ -340,6 +340,15 @@ class LeadDetail extends React.Component {
       let purpose = lead.purpose === 'sale' ? 'Buy' : 'Rent'
       type = purpose
     }
+    let additionalInformation = []
+
+    if (lead && lead.fbAdditionalDetails) {
+      let parseAdditonalInfo = JSON.parse(lead.fbAdditionalDetails)
+      additionalInformation = Object.keys(parseAdditonalInfo).map((item, index) =>
+        parseAdditonalInfo[item].map((internalItem, index) => internalItem)
+      )
+    }
+
     //console.log(lead)
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
@@ -425,6 +434,13 @@ class LeadDetail extends React.Component {
                 </Text>
               )}
             </View>
+
+            {additionalInformation.length > 0 ? (
+              <View style={styles.cardItemWhite}>
+                <Text style={styles.headingText}>Additional Information </Text>
+                <Text style={styles.labelText}>{additionalInformation}</Text>
+              </View>
+            ) : null}
 
             <View style={styles.cardItemGrey}>
               <View style={styles.mainDesView}>

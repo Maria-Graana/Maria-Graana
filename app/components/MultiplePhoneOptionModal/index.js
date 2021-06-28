@@ -8,12 +8,14 @@ import TouchableButton from '../TouchableButton'
 import close from '../../../assets/img/times.png'
 import { Divider } from 'react-native-paper'
 import phone from '../../../assets/img/phone2.png'
+import whatsapp from '../../../assets/img/whatsapp.png'
 
 const MultiplePhoneOptionModal = ({
   isMultiPhoneModalVisible,
   showMultiPhoneModal,
   contacts,
   handlePhoneSelectDone,
+  mode = 'call',
 }) => {
   return (
     <Modal isVisible={isMultiPhoneModalVisible}>
@@ -30,7 +32,7 @@ const MultiplePhoneOptionModal = ({
           renderItem={({ item, index }) => (
             <TouchableOpacity onPress={() => handlePhoneSelectDone(item)} style={styles.itemRow}>
               <View style={styles.row}>
-                <Image style={[styles.closeImg]} source={phone} />
+                <Image style={[styles.closeImg]} source={mode === 'phone' ? phone : whatsapp} />
                 <Text style={[styles.number]}>{item.number}</Text>
               </View>
               {contacts.length - 1 !== index && <Divider />}

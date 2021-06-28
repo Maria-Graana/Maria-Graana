@@ -8,7 +8,7 @@ import TouchableButton from '../TouchableButton'
 import close from '../../../assets/img/times.png'
 import { Divider } from 'react-native-paper'
 import phone from '../../../assets/img/phone2.png'
-import whatsapp from '../../../assets/img/whatsapp.png'
+import whatsapp from '../../../assets/img/whatsapp-02.png'
 
 const MultiplePhoneOptionModal = ({
   isMultiPhoneModalVisible,

@@ -555,7 +555,7 @@ class LegalAttachment extends Component {
     if (name === 'instrumentNumber') {
       copyInstrument.instrumentNo = value
     } else if (name === 'instrumentNumberPicker') {
-      const instrument = instruments.find((item) => item.instrumentNo === value)
+      const instrument = instruments.find((item) => item.id === value)
       copyInstrument.instrumentNo = instrument.instrumentNo
       copyInstrument.instrumentAmount = instrument.instrumentAmount
       copyInstrument.id = instrument.id

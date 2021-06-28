@@ -7,7 +7,12 @@ import { Alert, FlatList, KeyboardAvoidingView, Linking, Platform, Text, View } 
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
-import { clearInstrumentInformation, clearInstrumentsList, getInstrumentDetails, setInstrumentInformation } from '../../actions/addInstrument'
+import {
+  clearInstrumentInformation,
+  clearInstrumentsList,
+  getInstrumentDetails,
+  setInstrumentInformation,
+} from '../../actions/addInstrument'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import AppStyles from '../../AppStyles'
@@ -124,10 +129,10 @@ class PropertyRCMPayment extends React.Component {
   }
 
   componentWillUnmount() {
-    const { dispatch } = this.props;
+    const { dispatch } = this.props
     this.clearReduxAndStateValues()
-    dispatch(clearInstrumentInformation());
-    dispatch(clearInstrumentsList());
+    dispatch(clearInstrumentInformation())
+    dispatch(clearInstrumentsList())
     this._unsubscribe()
   }
 
@@ -258,7 +263,7 @@ class PropertyRCMPayment extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -433,7 +438,7 @@ class PropertyRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
-    this.setState({ formData }, () => { })
+    this.setState({ formData }, () => {})
     if (formData.monthlyRent !== '' && name === 'monthlyRent') {
       this.setState({ showMonthlyRentArrow: true })
     }
@@ -486,7 +491,7 @@ class PropertyRCMPayment extends React.Component {
       rcmLeadId: lead.id,
       agentId: user.id,
       addedBy: 'self',
-      screenName: 'Diary'
+      screenName: 'Diary',
     })
   }
 
@@ -551,7 +556,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   formatStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenPriceFromat: status })
     }
@@ -564,7 +569,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   dateStatusChange = (name, status, arrayName) => {
-    const { } = this.state
+    const {} = this.state
     if (name === 'token') {
       this.setState({ tokenDateStatus: status })
     }
@@ -633,21 +638,23 @@ class PropertyRCMPayment extends React.Component {
     const { rcmPayment, dispatch, lead, addInstrument } = this.props
     const newSecondFormData = { ...rcmPayment, visible: rcmPayment.visible }
     newSecondFormData[name] = value
-    if (name === 'type' && (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')) {
+    if (
+      name === 'type' &&
+      (value === 'cheque' || value === 'pay-Order' || value === 'bank-Transfer')
+    ) {
       if (lead && lead.customer_id) {
         dispatch(getInstrumentDetails(value, lead.customer_id))
-        dispatch(setInstrumentInformation({
-          ...addInstrument,
-          customerId: lead && lead.customer_id
-            ? lead.customer_id
-            : null,
-          instrumentType: value,
-          instrumentAmount: null,
-          instrumentNo: null,
-          id: null,
-        }))
+        dispatch(
+          setInstrumentInformation({
+            ...addInstrument,
+            customerId: lead && lead.customer_id ? lead.customer_id : null,
+            instrumentType: value,
+            instrumentAmount: null,
+            instrumentNo: null,
+            id: null,
+          })
+        )
       }
-
     }
     this.setState({ buyerNotZero: false })
     dispatch(setRCMPayment(newSecondFormData))
@@ -655,21 +662,18 @@ class PropertyRCMPayment extends React.Component {
 
   handleInstrumentInfoChange = (value, name) => {
     const { addInstrument, dispatch, instruments } = this.props
-    const copyInstrument = { ...addInstrument };
+    const copyInstrument = { ...addInstrument }
     if (name === 'instrumentNumber') {
-      copyInstrument.instrumentNo = value;
-    }
-    else if (name === 'instrumentNumberPicker') {
-      const instrument = instruments.find((item) => item.instrumentNo === value);
-      copyInstrument.instrumentNo = instrument.instrumentNo;
-      copyInstrument.instrumentAmount = instrument.instrumentAmount;
-      copyInstrument.id = instrument.id;
-      copyInstrument.editable = false;
-    }
-    else if (name === 'instrumentAmount')
-      copyInstrument.instrumentAmount = value;
+      copyInstrument.instrumentNo = value
+    } else if (name === 'instrumentNumberPicker') {
+      const instrument = instruments.find((item) => item.id === value)
+      copyInstrument.instrumentNo = instrument.instrumentNo
+      copyInstrument.instrumentAmount = instrument.instrumentAmount
+      copyInstrument.id = instrument.id
+      copyInstrument.editable = false
+    } else if (name === 'instrumentAmount') copyInstrument.instrumentAmount = value
 
-    dispatch(setInstrumentInformation(copyInstrument));
+    dispatch(setInstrumentInformation(copyInstrument))
   }
 
   setCommissionEditData = (data) => {
@@ -690,13 +694,18 @@ class PropertyRCMPayment extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-              ? user.officeLocation.id
-              : null,
+            ? user.officeLocation.id
+            : null,
       })
     )
     if (data && data.paymentInstrument && lead) {
       dispatch(getInstrumentDetails(data.paymentInstrument.instrumentType, lead.customer_id))
-      dispatch(setInstrumentInformation({ ...data.paymentInstrument, editable: data.paymentInstrument.id ? false : true }));
+      dispatch(
+        setInstrumentInformation({
+          ...data.paymentInstrument,
+          editable: data.paymentInstrument.id ? false : true,
+        })
+      )
     }
   }
 
@@ -750,17 +759,20 @@ class PropertyRCMPayment extends React.Component {
         return
       }
       if (editable === false) {
-
-        let body = {};
+        let body = {}
         // for payment addition
-        if (rcmPayment.type === 'cheque' || rcmPayment.type === 'pay-Order' || rcmPayment.type === 'bank-Transfer') {
+        if (
+          rcmPayment.type === 'cheque' ||
+          rcmPayment.type === 'pay-Order' ||
+          rcmPayment.type === 'bank-Transfer'
+        ) {
           // for cheque,pay order and bank transfer
-          let isValid = this.checkInstrumentValidation();
+          let isValid = this.checkInstrumentValidation()
           if (isValid) {
-            this.addEditRCMInstrumentOnServer();
+            this.addEditRCMInstrumentOnServer()
           }
-        }
-        else { // for all other types
+        } else {
+          // for all other types
           body = {
             ...rcmPayment,
             rcmLeadId: lead.id,
@@ -769,18 +781,21 @@ class PropertyRCMPayment extends React.Component {
           delete body.visible
           this.addRCMPayment(body)
         }
-
       } else {
-        let body = {};
+        let body = {}
         // commission update mode
-        if (rcmPayment.type === 'cheque' || rcmPayment.type === 'pay-Order' || rcmPayment.type === 'bank-Transfer') {
+        if (
+          rcmPayment.type === 'cheque' ||
+          rcmPayment.type === 'pay-Order' ||
+          rcmPayment.type === 'bank-Transfer'
+        ) {
           // for cheque,pay order and bank transfer
-          let isValid = this.checkInstrumentValidation();
+          let isValid = this.checkInstrumentValidation()
           if (isValid) {
-            this.addEditRCMInstrumentOnServer(true);
+            this.addEditRCMInstrumentOnServer(true)
           }
-        }
-        else { // for all other types
+        } else {
+          // for all other types
           body = { ...rcmPayment }
           this.updateRCMPayment(body)
         }
@@ -794,7 +809,7 @@ class PropertyRCMPayment extends React.Component {
   }
 
   addRCMPayment = (body) => {
-    const { dispatch, rcmPayment } = this.props;
+    const { dispatch, rcmPayment } = this.props
     axios
       .post(`/api/leads/project/payments`, body)
       .then((response) => {
@@ -819,14 +834,15 @@ class PropertyRCMPayment extends React.Component {
       .catch((error) => {
         helper.errorToast('Error Adding Commission Payment', error)
         this.clearReduxAndStateValues()
-      }).finally(() => {
+      })
+      .finally(() => {
         this.clearReduxAndStateValues()
-        dispatch(clearInstrumentInformation());
+        dispatch(clearInstrumentInformation())
       })
   }
 
   updateRCMPayment = (body) => {
-    const { dispatch, rcmPayment } = this.props;
+    const { dispatch, rcmPayment } = this.props
     // commission update mode
     let baseUrl = `/api/leads/project/payment`
     let paymentID = body.id
@@ -843,8 +859,8 @@ class PropertyRCMPayment extends React.Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = rcmPayment.paymentAttachments
           ? _.filter(rcmPayment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -858,17 +874,18 @@ class PropertyRCMPayment extends React.Component {
       })
       .catch((error) => {
         helper.errorToast('Error Updating Commission Payment', error)
-      }).finally(() => {
+      })
+      .finally(() => {
         this.clearReduxAndStateValues()
-        dispatch(clearInstrumentInformation());
+        dispatch(clearInstrumentInformation())
       })
   }
 
-
   addEditRCMInstrumentOnServer = (isRCMEdit = false) => {
-    let body = {};
-    const { addInstrument, rcmPayment, dispatch, lead, user } = this.props;
-    if (addInstrument.id) { // selected existing instrument // add mode
+    let body = {}
+    const { addInstrument, rcmPayment, dispatch, lead, user } = this.props
+    if (addInstrument.id) {
+      // selected existing instrument // add mode
       body = {
         ...rcmPayment,
         rcmLeadId: lead.id,
@@ -877,53 +894,50 @@ class PropertyRCMPayment extends React.Component {
         active: true,
         instrumentId: addInstrument.id,
       }
-      if (isRCMEdit)
-        this.updateRCMPayment(body)
-      else
-        this.addRCMPayment(body);
-    }
-    else { // add mode // new instrument info
-      axios.post(`api/leads/instruments`, addInstrument).then(res => {
-        if (res && res.data) {
-          body = {
-            ...rcmPayment,
-            rcmLeadId: lead.id,
-            armsUserId: user.id,
-            addedBy: rcmPayment.addedBy,
-            active: true,
-            instrumentId: res.data.id,
+      if (isRCMEdit) this.updateRCMPayment(body)
+      else this.addRCMPayment(body)
+    } else {
+      // add mode // new instrument info
+      axios
+        .post(`api/leads/instruments`, addInstrument)
+        .then((res) => {
+          if (res && res.data) {
+            body = {
+              ...rcmPayment,
+              rcmLeadId: lead.id,
+              armsUserId: user.id,
+              addedBy: rcmPayment.addedBy,
+              active: true,
+              instrumentId: res.data.id,
+            }
+            if (isRCMEdit) this.updateRCMPayment(body)
+            else this.addRCMPayment(body)
           }
-          if (isRCMEdit)
-            this.updateRCMPayment(body)
-          else
-            this.addRCMPayment(body);
-        }
-      }).catch(error => {
-        console.log('Error: ', error)
-      })
+        })
+        .catch((error) => {
+          console.log('Error: ', error)
+        })
     }
   }
 
   checkInstrumentValidation = () => {
-    const { addInstrument } = this.props;
+    const { addInstrument } = this.props
     if (addInstrument.instrumentNo === null || addInstrument.instrumentNo === '') {
-      alert('Instrument Number cannot be empty');
+      alert('Instrument Number cannot be empty')
       this.setState({
         addPaymentLoading: false,
-        assignToAccountsLoading: false
+        assignToAccountsLoading: false,
       })
-      return false;;
-    }
-    else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
-      alert('Instrument Amount cannot be empty');
+      return false
+    } else if (addInstrument.instrumentAmount === null || addInstrument.instrumentAmount === '') {
+      alert('Instrument Amount cannot be empty')
       this.setState({
         addPaymentLoading: false,
-        assignToAccountsLoading: false
+        assignToAccountsLoading: false,
       })
-      return false;
-    }
-    else {
-      return true;
+      return false
+    } else {
+      return true
     }
   }
 
@@ -993,7 +1007,8 @@ class PropertyRCMPayment extends React.Component {
     const selectedProperty = allProperties[0]
     axios
       .post(
-        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${selectedProperty ? selectedProperty.id : null
+        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${
+          selectedProperty ? selectedProperty.id : null
         }`
       )
       .then((response) => {
@@ -1104,8 +1119,8 @@ class PropertyRCMPayment extends React.Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = payment.paymentAttachments
           ? _.filter(payment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1229,7 +1244,7 @@ class PropertyRCMPayment extends React.Component {
       officeLocations,
       rentMonthlyToggle,
       active,
-      isFollowUpMode
+      isFollowUpMode,
     } = this.state
     const { user } = this.props
     return !loading ? (
@@ -1434,7 +1449,6 @@ class PropertyRCMPayment extends React.Component {
               goToFollowup={() => this.openModalInFollowupMode()}
             />
           </View>
-
         </View>
       </KeyboardAvoidingView>
     ) : (

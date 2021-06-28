@@ -1150,7 +1150,6 @@ class LeadRCMPayment extends React.Component {
       copyInstrument.editable = false
     } else if (name === 'instrumentAmount') copyInstrument.instrumentAmount = value
 
-    console.log(copyInstrument)
     dispatch(setInstrumentInformation(copyInstrument))
   }
 

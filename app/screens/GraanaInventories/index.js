@@ -227,21 +227,21 @@ class GraanaInventories extends React.Component {
       payload.push({
         name: data.user.first_name ? data.user.first_name + ' ' + data.user.last_name : '',
         number: data.user.phone ? data.user.phone : null,
-        label: 'Agent Phone',
+        label: 'Agent',
       })
     }
     if (data && data.owner_phone) {
       payload.push({
         name: data.owner_name,
         number: data.owner_phone,
-        label: 'Owner Phone',
+        label: 'Owner',
       })
     }
     if (data && data.poc_phone) {
       payload.push({
         name: data.poc_name,
         number: data.poc_phone,
-        label: 'Point of Contact Phone',
+        label: 'Point of Contact',
       })
     }
     if (payload.length > 0) {

@@ -30,7 +30,10 @@ const GraanaPhoneOptionModal = ({
           renderItem={({ item, index }) => (
             <TouchableOpacity onPress={() => handlePhoneSelectDone(item)} style={styles.itemRow}>
               <Text style={styles.label}>
-                {item.label} {item.name ? `(${item.name})` : ''}
+                {item.label}
+                {item.name !== '' && item.name !== null && item.name !== undefined
+                  ? ` (${item.name}):`
+                  : ':'}
               </Text>
               <View style={styles.row}>
                 <Image style={[styles.closeImg]} source={phone} />

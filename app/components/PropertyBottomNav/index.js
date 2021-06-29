@@ -160,9 +160,9 @@ class PropertyBottomNav extends React.Component {
 
   performListActions = (title) => {
     const { goToComments, goToDiaryForm, goToAttachments } = this.props
-    if (title === 'Comment') goToComments()
-    if (title === 'Diary Task') goToDiaryForm()
-    if (title === 'Attach') goToAttachments()
+    if (title === 'Add Comment') goToComments()
+    if (title === 'Add Diary Task') goToDiaryForm()
+    if (title === 'Add Attachment') goToAttachments()
   }
 
   render() {

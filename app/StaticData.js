@@ -1100,11 +1100,60 @@ export default StaticData = {
       image: require('../assets/img/reassign.png'),
     },
     {
-      id: 8,
+      id: 9,
       title: 'Closed Won',
       image: require('../assets/img/Close.png'),
     },
   ],
+
+  actionClosedWonListItemsCM: [
+    {
+      id: 1,
+      title: 'Call',
+      image: require('../assets/img/call.png'),
+    },
+    {
+      id: 2,
+      title: 'Whatsapp',
+      image: require('../assets/img/whatsapp.png'),
+    },
+    {
+      id: 3,
+      title: 'Add Meeting',
+      image: require('../assets/img/add_meeting.png'),
+    },
+    {
+      id: 4,
+      title: 'Add Diary Task',
+      image: require('../assets/img/diary-task.png'),
+    },
+    {
+      id: 5,
+      title: 'Add Comment',
+      image: require('../assets/img/comment.png'),
+    },
+    {
+      id: 6,
+      title: 'Add Attachment',
+      image: require('../assets/img/Path-20.png'),
+    },
+    {
+      id: 7,
+      title: 'Share',
+      image: require('../assets/img/share-lead-with-agent.png'),
+    },
+    {
+      id: 8,
+      title: 'ReAssign',
+      image: require('../assets/img/reassign.png'),
+    },
+    {
+      id: 9,
+      title: 'Closed Won',
+      image: require('../assets/img/Close.png'),
+    },
+  ],
+
   buyRentFilterType: [
     { value: 'id', name: 'ID' },
     { value: 'name', name: 'NAME' },

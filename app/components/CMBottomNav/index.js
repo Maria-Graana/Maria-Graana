@@ -168,11 +168,11 @@ class CMBottomNav extends React.Component {
   performListActions = (title) => {
     const { goToComments, goToDiaryForm, goToAttachments, lead, onHandleCloseLead, addMeeting } =
       this.props
-    if (title === 'Comment') goToComments()
+    if (title === 'Add Comment') goToComments()
     if (title === 'Add Meeting') addMeeting()
-    if (title === 'Diary Task') goToDiaryForm()
+    if (title === 'Add Diary Task') goToDiaryForm()
     if (title === 'Whatsapp') this.openWhatsapp()
-    if (title === 'Attach') goToAttachments()
+    if (title === 'Add Attachment') goToAttachments()
     if (title === 'Call') this.call()
     if (title === 'ReAssign') this.checkAssignedLead(lead)
     if (title === 'Share') this.navigateToShareScreen(lead)

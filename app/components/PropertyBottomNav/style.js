@@ -91,17 +91,17 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flex: 1,
-    marginVertical: 5,
+    paddingVertical: 5,
   },
   menuText: {
     color: AppStyles.colors.primaryColor,
     fontFamily: AppStyles.fonts.semiBoldFont,
-    fontSize: 16,
+    fontSize: 14,
     flex: 1,
     paddingHorizontal: 10,
   },
   popMenu: {
     marginHorizontal: 1,
-    width: '20%',
+    width: '23%',
   },
 })

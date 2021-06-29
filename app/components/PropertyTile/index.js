@@ -244,7 +244,7 @@ class InventoryTile extends React.Component {
             <Foundation
               name={'telephone'}
               onPress={() => onCall(data)}
-              color={AppStyles.colors.subTextColor}
+              color={AppStyles.colors.primaryColor}
               size={30}
               style={styles.phoneButton}
             />
@@ -256,7 +256,7 @@ class InventoryTile extends React.Component {
             <Foundation
               name={'telephone'}
               onPress={() => onCall(data)}
-              color={AppStyles.colors.subTextColor}
+              color={AppStyles.colors.primaryColor}
               size={30}
               style={styles.phoneButton}
             />

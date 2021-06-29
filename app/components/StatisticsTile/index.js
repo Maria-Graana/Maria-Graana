@@ -35,7 +35,7 @@ const StatisticsTile = ({ value, title, imagePath, unit = '', double = false, se
           </Text>
           {secondValue && secondValue !== 0 ? (
             <Text numberOfLines={1} style={styles.value}>
-              / {secondValue}
+              /{secondValue}
             </Text>
           ) : null}
         </View>
@@ -50,13 +50,14 @@ const styles = StyleSheet.create({
   flexView: {
     flex: 0.5,
     flexDirection: 'row',
+    marginRight: 20,
   },
   mainContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 5,
-    paddingHorizontal: 15,
+    marginHorizontal: 15,
     flex: 1,
   },
   value: {

@@ -1,13 +1,13 @@
 /** @format */
 
+import moment from 'moment-timezone'
 import React from 'react'
-import { Image, Modal, SafeAreaView, FlatList, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Modal, SafeAreaView, Text, View } from 'react-native'
 import { connect } from 'react-redux'
-import backArrow from '../../../assets/img/backArrow.png'
+import BackButton from '../../components/BackButton'
 import helper from '../../helper'
 import Loader from '../loader'
 import styles from './style'
-import moment from 'moment-timezone'
 
 class SchedulePayment extends React.Component {
   constructor(props) {
@@ -44,9 +44,7 @@ class SchedulePayment extends React.Component {
         <SafeAreaView style={styles.flexView}>
           <View style={styles.flexView}>
             <View style={styles.topHeader}>
-              <TouchableOpacity onPress={toggleSchedulePayment}>
-                <Image source={backArrow} style={[styles.backImg]} />
-              </TouchableOpacity>
+              <BackButton onClick={toggleSchedulePayment} />
               <View style={styles.header}>
                 <Text numberOfLines={1} style={styles.headerText}>
                   {headerName}

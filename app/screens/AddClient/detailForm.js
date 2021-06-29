@@ -184,7 +184,7 @@ class DetailForm extends Component {
               }}
               style={[AppStyles.formControl, AppStyles.inputPadLeft]}
               name={'familyMember'}
-              placeholder={'Son / Spouse of'}
+              placeholder={'Son / Daughter/ Spouse of'}
             />
           </View>
         </View>

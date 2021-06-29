@@ -1095,7 +1095,7 @@ export default StaticData = {
       image: require('../assets/img/reassign.png'),
     },
     {
-      id: 9,
+      id: 8,
       title: 'Closed Won',
       image: require('../assets/img/Close.png'),
     },

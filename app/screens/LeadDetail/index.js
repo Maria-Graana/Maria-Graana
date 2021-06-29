@@ -345,7 +345,7 @@ class LeadDetail extends React.Component {
     if (lead && lead.fbAdditionalDetails) {
       let parseAdditonalInfo = JSON.parse(lead.fbAdditionalDetails)
       additionalInformation = Object.keys(parseAdditonalInfo).map((item, index) =>
-        parseAdditonalInfo[item].map((internalItem, index) => internalItem)
+        parseAdditonalInfo[item].map((internalItem, index) => internalItem + ', ')
       )
     }
 
@@ -437,7 +437,7 @@ class LeadDetail extends React.Component {
 
             {additionalInformation.length > 0 ? (
               <View style={styles.cardItemWhite}>
-                <Text style={styles.headingText}>Additional Information </Text>
+                <Text style={styles.headingText}>Additional Details </Text>
                 <Text style={styles.labelText}>{additionalInformation}</Text>
               </View>
             ) : null}

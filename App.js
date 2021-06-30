@@ -32,6 +32,7 @@ import {
 } from 'react-native-global-props'
 import { setPPBuyNotification } from './app/actions/notification'
 import * as Updates from 'expo-updates'
+import helper from './app/helper'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -68,7 +69,25 @@ export default class App extends React.Component {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + JSON.parse(token)
       }
     })
-    axios.defaults.headers['version'] = '1.27.16'
+    axios.defaults.headers['version'] = '1.27.21'
+    axios.interceptors.request.use(
+      (config) =>
+        new Promise((resolve) => {
+          const retrievedItem = AsyncStorage.getItem('token').then((token) => {
+            if (token) {
+              config.headers.Authorization = 'Bearer ' + JSON.parse(token)
+            }
+          })
+          resolve(config)
+        })
+    )
+    axios.interceptors.response.use(undefined, function (error) {
+      if (error && error.response && error.response.data.msg === 'update version') {
+        helper.errorToast(
+          `Please upgrade ARMS application to latest version (${error.response.data.version})`
+        )
+      }
+    })
     axios.interceptors.request.use(
       (config) =>
         new Promise((resolve) => {

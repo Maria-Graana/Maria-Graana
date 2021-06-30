@@ -60,36 +60,36 @@ const RCMRentMonthlyModal = (props) => {
               showLable={false}
             />
             <View style={{ paddingVertical: 10 }}>
-              <Text style={styles.labelStyle}>Contract duration (No of months)</Text>
+              <Text style={styles.labelStyle}>Contract duration (No. of months)</Text>
               <PickerComponent
                 onValueChange={handleForm}
                 name={'contract_months'}
                 data={pickerData}
                 selectedItem={formData.contract_months}
                 enabled={readOnlyMode}
-                placeholder="Contract duration (No of months)"
+                placeholder="Contract duration (No. of months)"
               />
             </View>
             <View style={{ paddingVertical: 10 }}>
-              <Text style={styles.labelStyle}>Advance (No of months)</Text>
+              <Text style={styles.labelStyle}>Advance (No. of months)</Text>
               <PickerComponent
                 onValueChange={handleForm}
                 name={'advance'}
                 data={pickerData}
                 selectedItem={formData.advance}
                 enabled={readOnlyMode}
-                placeholder="Advance (No of months)"
+                placeholder="Advance (No. of months)"
               />
             </View>
             <View style={{ paddingVertical: 10 }}>
-              <Text style={styles.labelStyle}>Security (No of months)</Text>
+              <Text style={styles.labelStyle}>Security (No. of months)</Text>
               <PickerComponent
                 onValueChange={handleForm}
                 name={'security'}
                 data={pickerData}
                 selectedItem={formData.security}
                 enabled={readOnlyMode}
-                placeholder="Security (No of months)"
+                placeholder="Security (No. of months)"
               />
             </View>
           </View>

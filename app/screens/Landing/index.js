@@ -229,8 +229,11 @@ class Landing extends React.Component {
           }}
           style={
             toggleStatsTile
-              ? [styles.kpiContainer, { minHeight: this.isBcOrCCRole() ? null : hp('20%') }]
-              : [styles.kpiContainerFalse, { minHeight: this.isBcOrCCRole() ? null : hp('20%') }]
+              ? [styles.kpiContainer, { minHeight: this.isBcOrCCRole() ? hp('20%') : hp('20%') }]
+              : [
+                  styles.kpiContainerFalse,
+                  { minHeight: this.isBcOrCCRole() ? hp('20%') : hp('20%') },
+                ]
           }
         >
           {toggleStatsTile ? (

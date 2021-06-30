@@ -68,15 +68,8 @@ class DetailForm extends Component {
   }
 
   _renderAdditionalView = () => {
-    const {
-      formData,
-      handleForm,
-      features,
-      utilities,
-      facing,
-      selectedFeatures,
-      handleFeatures,
-    } = this.props
+    const { formData, handleForm, features, utilities, facing, selectedFeatures, handleFeatures } =
+      this.props
     let _renderFeatures = () => {
       return features.map((item) => {
         return (
@@ -85,13 +78,16 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <CheckBox color={AppStyles.colors.primaryColor}
+            <CheckBox
+              color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
               checked={selectedFeatures.includes(item) ? true : false}
               style={styles.checkBox}
             />
             <Body style={{ alignItems: 'flex-start' }}>
-              <Text numberOfLines={1} style={{ marginLeft: 10 }}>{item}</Text>
+              <Text numberOfLines={1} style={{ marginLeft: 10 }}>
+                {item}
+              </Text>
             </Body>
           </TouchableOpacity>
         )
@@ -146,12 +142,13 @@ class DetailForm extends Component {
             key={item.toString()}
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
-
           >
-            <CheckBox color={AppStyles.colors.primaryColor}
+            <CheckBox
+              color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
               style={styles.checkBox}
-              checked={selectedFeatures.includes(item) ? true : false} />
+              checked={selectedFeatures.includes(item) ? true : false}
+            />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
             </Body>
@@ -168,10 +165,12 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <CheckBox color={AppStyles.colors.primaryColor}
+            <CheckBox
+              color={AppStyles.colors.primaryColor}
               onPress={() => handleFeatures(item)}
               style={styles.checkBox}
-              checked={selectedFeatures.includes(item) ? true : false} />
+              checked={selectedFeatures.includes(item) ? true : false}
+            />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
             </Body>
@@ -360,8 +359,6 @@ class DetailForm extends Component {
           errorMessage="Required"
         />
 
-
-
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
             <TextInput
@@ -390,14 +387,14 @@ class DetailForm extends Component {
         </TouchableOpacity>
         {/* **************************************** */}
 
-        {
-          formData.locate_manually ? <View style={AppStyles.latLngMain}>
+        {formData.locate_manually ? (
+          <View style={AppStyles.latLngMain}>
             <View
               style={[
                 AppStyles.mainInputWrap,
                 AppStyles.noMargin,
                 AppStyles.borderrightLat,
-                { width: '50%' }
+                { width: '50%' },
               ]}
             >
               <View style={[AppStyles.inputWrap]}>
@@ -410,6 +407,7 @@ class DetailForm extends Component {
                   style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                   keyboardType="numeric"
                   placeholder={'Latitude'}
+                  editable={false}
                 />
               </View>
             </View>
@@ -426,6 +424,7 @@ class DetailForm extends Component {
                   style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                   keyboardType="numeric"
                   placeholder={'Longitude'}
+                  editable={false}
                 />
               </View>
             </View>
@@ -433,24 +432,28 @@ class DetailForm extends Component {
               <Image source={LocationImg} style={AppStyles.locationIcon} />
             </TouchableOpacity>
           </View>
-            :
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableButton
-                containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
-                containerBackgroundColor={'white'}
-                textColor={AppStyles.colors.primaryColor}
-                label={formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
-                iconName="ios-checkmark-circle-outline"
-                showIcon={formData.propsure_id ? true : false}
-                onPress={() => {
-                  this.props.navigation.navigate('MapContainer', {
-                    mapValues: { lat: formData.lat, lng: formData.lng, propsure_id: formData.propsure_id },
-                    screenName: 'AddInventory',
-                  })
-                }}
-              />
-            </View>
-        }
+        ) : (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableButton
+              containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
+              containerBackgroundColor={'white'}
+              textColor={AppStyles.colors.primaryColor}
+              label={formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
+              iconName="ios-checkmark-circle-outline"
+              showIcon={formData.propsure_id ? true : false}
+              onPress={() => {
+                this.props.navigation.navigate('MapContainer', {
+                  mapValues: {
+                    lat: formData.lat,
+                    lng: formData.lng,
+                    propsure_id: formData.propsure_id,
+                  },
+                  screenName: 'AddInventory',
+                })
+              }}
+            />
+          </View>
+        )}
 
         {/* **************************************** */}
         <View style={AppStyles.multiFormInput}>
@@ -613,19 +616,19 @@ class DetailForm extends Component {
               }
             </View>
           ) : (
-              <View style={styles.uploadImg}>
-                <Button
-                  style={[AppStyles.formBtn, styles.buttonWidth]}
-                  onPress={getImagesFromGallery}
-                >
-                  <Text style={AppStyles.btnText}>Upload From Gallery</Text>
-                </Button>
-                <Text style={{ marginVertical: 15 }}>OR</Text>
-                <Button style={[AppStyles.formBtn, styles.buttonWidth]} onPress={takePhotos}>
-                  <Text style={AppStyles.btnText}>Take Photos</Text>
-                </Button>
-              </View>
-            )}
+            <View style={styles.uploadImg}>
+              <Button
+                style={[AppStyles.formBtn, styles.buttonWidth]}
+                onPress={getImagesFromGallery}
+              >
+                <Text style={AppStyles.btnText}>Upload From Gallery</Text>
+              </Button>
+              <Text style={{ marginVertical: 15 }}>OR</Text>
+              <Button style={[AppStyles.formBtn, styles.buttonWidth]} onPress={takePhotos}>
+                <Text style={AppStyles.btnText}>Take Photos</Text>
+              </Button>
+            </View>
+          )}
         </View>
 
         {/* **************************************** */}

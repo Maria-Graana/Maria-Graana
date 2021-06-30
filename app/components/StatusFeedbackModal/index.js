@@ -121,14 +121,20 @@ const StatusFeedbackModal = ({
   }
 
   const showTitle = () => {
-    if (modalMode === 'call') return 'Call Feedback'
-    else if (modalMode === 'meeting') return 'Meeting Outcome'
+    if (currentCall && modalMode === 'call' && currentCall.calledOn === 'phone') {
+      return 'Call Feedback'
+    } else if (currentCall && modalMode === 'call' && currentCall.calledOn === 'whatsapp') {
+      return 'Whatsapp Feedback'
+    } else if (modalMode === 'meeting') return 'Meeting Outcome'
     else if (modalMode === 'reject') return 'Reject with Reason'
   }
 
   const showTextBoxPlaceholder = () => {
-    if (modalMode === 'call') return 'Enter call feedback'
-    else if (modalMode === 'meeting') return 'Enter meeting outcome'
+    if (currentCall && modalMode === 'call' && currentCall.calledOn === 'phone') {
+      return 'Enter call feedback'
+    } else if (currentCall && modalMode === 'call' && currentCall.calledOn === 'whatsapp') {
+      return 'Enter whatsapp call feedback'
+    } else if (modalMode === 'meeting') return 'Enter meeting outcome'
     else if (modalMode === 'reject') return 'Enter reason of rejection'
     else return 'comments'
   }

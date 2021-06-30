@@ -13,9 +13,9 @@ import {
   View,
 } from 'react-native'
 import addImg from '../../../assets/img/add.png'
-import backArrow from '../../../assets/img/backArrow.png'
 import checkImg from '../../../assets/img/check.png'
 import AppStyles from '../../AppStyles'
+import BackButton from '../../components/BackButton'
 import ErrorMessage from '../../components/ErrorMessage'
 import TouchableButton from '../../components/TouchableButton'
 import Ability from '../../hoc/Ability'
@@ -81,13 +81,11 @@ class OfferModal extends React.Component {
         <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
           <View style={{ flexDirection: 'row-reverse', marginHorizontal: 10 }}>
             <View style={{ flex: 1 }} />
-            <TouchableOpacity
-              onPress={() => {
+            <BackButton
+              onClick={() => {
                 this.props.openModal()
               }}
-            >
-              <Image source={backArrow} style={[styles.backImg]} />
-            </TouchableOpacity>
+            />
           </View>
 
           {/* **************************************** */}

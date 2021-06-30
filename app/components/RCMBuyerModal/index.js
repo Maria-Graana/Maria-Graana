@@ -1,11 +1,11 @@
 /** @format */
 
-import backArrow from '../../../assets/img/backArrow.png'
 import React from 'react'
-import { Modal, SafeAreaView, Image, Text, View, TouchableOpacity } from 'react-native'
+import { Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 import AppStyles from '../../AppStyles'
-import SimpleInputText from '../SimpleInputField'
+import BackButton from '../../components/BackButton'
 import ErrorMessage from '../ErrorMessage'
+import SimpleInputText from '../SimpleInputField'
 import styles from './style'
 
 const RCMBuyerModal = (props) => {
@@ -28,15 +28,13 @@ const RCMBuyerModal = (props) => {
     advanceNotZero,
     isLeadClosed,
   } = props
-  let readOnlyMode = checkReadOnlyMode()
+  let readOnlyMode = this.checkReadOnlyMode()
 
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView style={{ flex: 0, backgroundColor: 'white' }} />
       <View style={styles.headerView}>
-        <TouchableOpacity onPress={closeModal}>
-          <Image source={backArrow} style={[styles.backImg]} />
-        </TouchableOpacity>
+        <BackButton onClick={closeModal} />
         <View style={styles.headerStyle}>
           <Text style={styles.headerText}>BUY DETAILS</Text>
         </View>

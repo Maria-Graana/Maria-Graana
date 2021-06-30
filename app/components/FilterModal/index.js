@@ -1,31 +1,22 @@
 /** @format */
 
-import React from 'react'
-import {
-  View,
-  Modal,
-  SafeAreaView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-} from 'react-native'
-import backArrow from '../../../assets/img/backArrow.png'
-import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import PickerComponent from '../Picker/index'
-import styles from './style'
 import { Button } from 'native-base'
-import StaticData from '../../StaticData'
-import AreaPicker from '../AreaPicker/index'
-import TouchableInput from '../TouchableInput'
-import SingleSelectionPickerComp from '../SingleSelectionPickerComp/index'
-import PriceSliderModal from '../PriceSliderModal'
+import React from 'react'
+import { Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { connect } from 'react-redux'
+import _ from 'underscore'
+import AppStyles from '../../AppStyles'
+import BackButton from '../../components/BackButton'
 import BedBathSliderModal from '../../components/BedBathSliderModal'
 import SizeSliderModal from '../../components/SizeSliderModal'
 import helper from '../../helper'
-import _ from 'underscore'
+import StaticData from '../../StaticData'
+import AreaPicker from '../AreaPicker/index'
+import PickerComponent from '../Picker/index'
+import PriceSliderModal from '../PriceSliderModal'
+import SingleSelectionPickerComp from '../SingleSelectionPickerComp/index'
+import TouchableInput from '../TouchableInput'
+import styles from './style'
 
 class FilterModal extends React.Component {
   constructor(props) {
@@ -153,13 +144,11 @@ class FilterModal extends React.Component {
         <SafeAreaView style={[AppStyles.mb1, styles.container]}>
           <ScrollView>
             <View style={styles.topHeader}>
-              <TouchableOpacity
-                onPress={() => {
+              <BackButton
+                onClick={() => {
                   this.props.filterModal()
                 }}
-              >
-                <Image source={backArrow} style={[styles.backImg]} />
-              </TouchableOpacity>
+              />
               <View style={styles.header}>
                 <Text style={styles.headerText}>SEARCH FILTERS</Text>
               </View>

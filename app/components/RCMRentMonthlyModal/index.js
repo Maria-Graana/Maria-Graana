@@ -1,9 +1,9 @@
 /** @format */
 
-import backArrow from '../../../assets/img/backArrow.png'
 import React from 'react'
-import { Modal, SafeAreaView, Image, Text, View, TouchableOpacity } from 'react-native'
+import { Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 import AppStyles from '../../AppStyles'
+import BackButton from '../../components/BackButton'
 import PickerComponent from '../Picker'
 import SimpleInputText from '../SimpleInputField'
 import styles from './style'
@@ -26,16 +26,14 @@ const RCMRentMonthlyModal = (props) => {
   }
 
   const { isVisible, closeModal, handleForm, formData, pickerData, updateRentLead } = props
-  let readOnlyMode = checkReadOnlyMode()
+  let readOnlyMode = this.checkReadOnlyMode()
   let monthlyRentReadOnly = checkMonthlyRentReadOnlyMode()
 
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView style={{ flex: 0, backgroundColor: 'white' }} />
       <View style={styles.headerView}>
-        <TouchableOpacity onPress={closeModal}>
-          <Image source={backArrow} style={[styles.backImg]} />
-        </TouchableOpacity>
+        <BackButton onClick={closeModal} />
         <View style={styles.headerStyle}>
           <Text style={styles.headerText}>RENT DETAILS</Text>
         </View>

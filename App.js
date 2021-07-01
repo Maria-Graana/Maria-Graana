@@ -33,6 +33,7 @@ import {
 import { setPPBuyNotification } from './app/actions/notification'
 import * as Updates from 'expo-updates'
 import helper from './app/helper'
+import AppJson from './app.json'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -69,7 +70,7 @@ export default class App extends React.Component {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + JSON.parse(token)
       }
     })
-    axios.defaults.headers['version'] = '1.27.21'
+    axios.defaults.headers['version'] = AppJson.expo.version
     axios.interceptors.request.use(
       (config) =>
         new Promise((resolve) => {

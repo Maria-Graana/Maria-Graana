@@ -22,7 +22,6 @@ class MapContainer extends Component {
 
   render() {
     const { mapValues } = this.props.route.params
-    console.log(mapValues)
     return (
       <View style={styles.map}>
         <PropMap

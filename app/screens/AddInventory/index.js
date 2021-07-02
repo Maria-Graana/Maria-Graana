@@ -384,7 +384,6 @@ class AddInventory extends Component {
     delete formData.floors
     delete formData.year_built
     delete formData.downpayment
-    console.log(formData)
     if (route.params.update) {
       axios
         .patch(`/api/inventory/${property.id}`, formData)

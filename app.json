@@ -35,7 +35,7 @@
       },
       "associatedDomains": ["applinks:arms.graana.com"],
       "userInterfaceStyle": "automatic",
-      "buildNumber": "17"
+      "buildNumber": "18"
     },
     "android": {
       "package": "com.agency21.arms",
@@ -79,7 +79,7 @@
         }
       ],
 
-      "versionCode": 9,
+      "versionCode": 10,
       "useNextNotificationsApi": true
     },
     "notification": {

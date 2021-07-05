@@ -5,19 +5,16 @@ import Constants from 'expo-constants'
 const config = {
   development: {
     apiPath: 'https://api.realtor.agency21.rocks',
-    mapUrl: 'https://maps.graana.rocks/api/map/',
     graanaUrl: 'https://dev.graana.rocks',
     channel: 'development',
   },
   staging: {
     apiPath: 'https://api.stage.realtor.agency21.rocks',
-    mapUrl: 'https://maps.graana.rocks/api/map/',
     graanaUrl: 'https://ssr.staging.graana.rocks',
     channel: 'staging',
   },
   production: {
     apiPath: 'https://apiarmsm.graana.com',
-    mapUrl: 'https://www.graana.com/api/map/',
     graanaUrl: 'https://www.graana.com',
     channel: 'production',
   },

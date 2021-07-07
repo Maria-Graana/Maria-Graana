@@ -57,6 +57,9 @@ class AndroidNotifications extends React.Component {
     } else {
       console.log('Must use physical device for Push Notifications')
     }
+    Notifications.setNotificationCategoryAsync('call', [
+      { identifier: 'call', buttonTitle: 'Call' },
+    ])
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('default', {
         name: 'Default',
@@ -80,6 +83,24 @@ class AndroidNotifications extends React.Component {
         color: '#2A7EF0',
       })
     }
+  }
+
+  notify = () => {
+    fetch('https://exp.host/--/api/v2/push/send', {
+      body: JSON.stringify({
+        to: 'ExponentPushToken[UQtndmHz3RHP-2xmmjB6Sx]',
+        title: 'Test Title',
+        body: 'Test Body',
+        data: { random: Math.random() },
+        // categoryIdentifier: 'basic',
+        // _category: 'basic',
+        categoryId: 'call',
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+    })
   }
 
   sendPushNotification = async () => {

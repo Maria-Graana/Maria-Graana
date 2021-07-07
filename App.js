@@ -1,39 +1,38 @@
 /** @format */
 
-import * as Font from 'expo-font'
-import * as Sentry from 'sentry-expo'
-import { persistor, store } from './app/store'
-import AppLoading from 'expo-app-loading'
-import Constants from 'expo-constants'
 import { Ionicons } from '@expo/vector-icons'
-import { Provider as PaperProvider } from 'react-native-paper'
-import { MenuProvider } from 'react-native-popup-menu'
-import { PersistGate } from 'redux-persist/integration/react'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { Root } from 'native-base'
-import RootStack from './app/navigation/AppNavigation'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
-import * as SplashScreen from 'expo-splash-screen'
-import config from './app/config'
-import axios from 'axios'
-import { AsyncStorage, LogBox } from 'react-native'
-import * as RootNavigation from './app/navigation/RootNavigation'
-import * as Notifications from 'expo-notifications'
-import { NavigationContainer } from '@react-navigation/native'
 import NetInfo from '@react-native-community/netinfo'
-import { navigationRef } from './app/navigation/RootNavigation'
-import { setInternetConnection } from './app/actions/user'
+import { NavigationContainer } from '@react-navigation/native'
+import axios from 'axios'
+import AppLoading from 'expo-app-loading'
+import { Linking } from 'react-native'
+import Constants from 'expo-constants'
+import * as Font from 'expo-font'
+import * as Notifications from 'expo-notifications'
+import * as SplashScreen from 'expo-splash-screen'
+import { Root } from 'native-base'
+import React from 'react'
+import { AsyncStorage, LogBox } from 'react-native'
 import {
-  setCustomImage,
   setCustomText,
   setCustomTextInput,
   setCustomTouchableOpacity,
 } from 'react-native-global-props'
-import { setPPBuyNotification } from './app/actions/notification'
-import * as Updates from 'expo-updates'
-import helper from './app/helper'
+import { Provider as PaperProvider } from 'react-native-paper'
+import { MenuProvider } from 'react-native-popup-menu'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react'
+import * as Sentry from 'sentry-expo'
 import AppJson from './app.json'
+import { setPPBuyNotification } from './app/actions/notification'
+import { setInternetConnection } from './app/actions/user'
+import config from './app/config'
+import helper from './app/helper'
+import RootStack from './app/navigation/AppNavigation'
+import * as RootNavigation from './app/navigation/RootNavigation'
+import { navigationRef } from './app/navigation/RootNavigation'
+import { persistor, store } from './app/store'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -70,7 +69,8 @@ export default class App extends React.Component {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + JSON.parse(token)
       }
     })
-    axios.defaults.headers['version'] = AppJson.expo.version
+    // axios.defaults.headers['version'] = AppJson.expo.version
+    axios.defaults.headers['version'] = '1.28.1'
     axios.interceptors.request.use(
       (config) =>
         new Promise((resolve) => {
@@ -152,14 +152,35 @@ export default class App extends React.Component {
       response.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER &&
       notification.request
     ) {
-      let content = notification.request && notification.request.content
       setTimeout(() => {
-        this.navigateRoutes(content)
+        this.navigateRoutes(notification)
       }, 300)
+    } else {
+      if (response.actionIdentifier === 'call') {
+        this.callAgent(notification)
+      }
     }
   }
 
-  navigateRoutes = (content) => {
+  callAgent = (notification) => {
+    let content = notification.request && notification.request.content
+    let data = content.data
+    let url = `tel:${data.number}`
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          helper.errorToast(`No application available to dial phone number`)
+          console.log("Can't handle url: " + url)
+        } else {
+          Notifications.dismissNotificationAsync(notification.request.identifier).then((res) => {})
+          return Linking.openURL(url)
+        }
+      })
+      .catch((err) => console.error('An error occurred', err))
+  }
+
+  navigateRoutes = (notification) => {
+    let content = notification.request && notification.request.content
     if (content) {
       let data = content.data
       let leadId = data && data.leadId && data.leadId
@@ -175,6 +196,7 @@ export default class App extends React.Component {
           })
         }
       }
+      if (data.type === 'call') this.callAgent(notification)
       // data.isPP = true
       if (data.type === 'buyLead') {
         if (!data.isPP) {

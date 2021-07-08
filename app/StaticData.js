@@ -925,8 +925,8 @@ export default StaticData = {
   ],
   SellerLegalDocumentsList: [
     {
-      category: 'sole_multi_agency_agreement',
-      name: 'SOLE/MULTI AGENCY AGREEMENT',
+      category: 'service_charge_agreement',
+      name: 'SERVICE CHARGE AGREEMENT',
       status: 'pending',
       fileKey: null,
       id: 1,

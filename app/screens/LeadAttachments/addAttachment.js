@@ -19,7 +19,7 @@ const AddAttachment = (props) => {
           signedServiceFile={signedServiceFile}
         />
       )}
-      {!props.signedServiceFile && workflow === 'rcm' && (
+      {/* {!props.signedServiceFile && workflow === 'rcm' && (
         <Button
           style={[AppStyles.formBtn, { marginTop: 10, marginHorizontal: 15 }]}
           onPress={() => {
@@ -28,7 +28,7 @@ const AddAttachment = (props) => {
         >
           <Text style={AppStyles.btnText}>ADD SIGNED SERVICES AGREEMENT</Text>
         </Button>
-      )}
+      )} */}
       <Button
         style={[AppStyles.formBtn, { marginTop: 10, marginHorizontal: 15 }]}
         onPress={() => {

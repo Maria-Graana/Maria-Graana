@@ -1,11 +1,9 @@
+/** @format */
+
 import React, { useState } from 'react'
-import {
-  Image,
-  Platform,
-  View
-} from 'react-native'
-import moment from 'moment';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Image, Platform, View } from 'react-native'
+import moment from 'moment'
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import TouchableInput from '../TouchableInput'
 
 const DateTimePicker = ({
@@ -18,24 +16,23 @@ const DateTimePicker = ({
   showError,
   errorMessage,
   iconSource,
-  disabled= false, }) => {
-  const [visible, setVisible] = useState(false);
+  disabled = false,
+}) => {
+  const [visible, setVisible] = useState(false)
   const handleOnConfirm = (date) => {
-    setVisible(false);
-    handleForm(date, name);
+    setVisible(false)
+    handleForm(date, name)
   }
   return (
     <View>
       <DateTimePickerModal
         date={date}
         isVisible={visible}
-        
         // minimumDate={mode == 'date' ? new Date() : null}
         headerTextIOS={mode === 'date' ? 'Pick date' : 'Pick Time'}
         mode={mode}
         onConfirm={(date) => handleOnConfirm(date)}
         onCancel={() => setVisible(false)}
-        
       />
       <TouchableInput
         disabled={disabled}

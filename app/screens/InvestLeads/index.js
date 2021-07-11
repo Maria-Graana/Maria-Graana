@@ -27,6 +27,7 @@ import { getListingsCount } from '../../actions/listings'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import DateSearchFilter from '../../components/DateSearchFilter'
 
 var BUTTONS = [
   'Assign to team member',
@@ -128,7 +129,7 @@ class InvestLeads extends React.Component {
     })
   }
 
-  fetchLeads = async () => {
+  fetchLeads = async (fromDate = null, toDate = null) => {
     const {
       sort,
       pageSize,
@@ -141,10 +142,14 @@ class InvestLeads extends React.Component {
     } = this.state
     this.setState({ loading: true })
     let query = ``
-    if (showSearchBar && searchText !== '') {
-      if (statusFilterType === 'name')
+    if (showSearchBar) {
+      if (statusFilterType === 'name' && searchText !== '') {
         query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
-      else query = `/api/leads/projects?&id=${searchText}&pageSize=${pageSize}&page=${page}`
+      } else if (statusFilterType === 'id' && searchText !== '') {
+        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}`
+      } else {
+        query = `/api/leads/projects?fromDate=${fromDate}&toDate=${toDate}&pageSize=${pageSize}&page=${page}`
+      }
     } else {
       query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -498,18 +503,22 @@ class InvestLeads extends React.Component {
                   selectedItem={statusFilterType}
                 />
               </View>
-              <Search
-                containerWidth="75%"
-                placeholder="Search leads here"
-                searchText={searchText}
-                setSearchText={(value) => this.setState({ searchText: value })}
-                showShadow={false}
-                showClearButton={true}
-                returnKeyType={'search'}
-                onSubmitEditing={() => this.fetchLeads()}
-                autoFocus={true}
-                closeSearchBar={() => this.clearAndCloseSearch()}
-              />
+              {statusFilterType === 'name' || statusFilterType === 'id' ? (
+                <Search
+                  containerWidth="75%"
+                  placeholder="Search leads here"
+                  searchText={searchText}
+                  setSearchText={(value) => this.setState({ searchText: value })}
+                  showShadow={false}
+                  showClearButton={true}
+                  returnKeyType={'search'}
+                  onSubmitEditing={() => this.fetchLeads()}
+                  autoFocus={true}
+                  closeSearchBar={() => this.clearAndCloseSearch()}
+                />
+              ) : (
+                <DateSearchFilter applyFilter={this.fetchLeads} />
+              )}
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>

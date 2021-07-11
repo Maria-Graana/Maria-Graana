@@ -28,6 +28,7 @@ class CMSecondForm extends React.Component {
       remainingPayment,
       outStandingTax,
       toggleSchedulePayment,
+      call,
     } = this.props
     const { payment, projectProduct } = lead
     return (
@@ -83,6 +84,7 @@ class CMSecondForm extends React.Component {
                           data={item}
                           editTile={editTile}
                           checkLeadClosedOrNot={checkLeadClosedOrNot}
+                          call={call}
                         />
                       )
                     })

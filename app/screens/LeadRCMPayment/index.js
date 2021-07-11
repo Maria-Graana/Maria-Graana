@@ -32,6 +32,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 import DeleteModal from '../../components/DeleteModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import Loader from '../../components/loader'
 import MatchTile from '../../components/MatchTile/index'
 import ViewDocs from '../../components/ViewDocs'
@@ -136,6 +137,9 @@ class LeadRCMPayment extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       comment: null,
+      accountPhoneNumbers: [],
+      accountsLoading: false,
+      isMultiPhoneModalVisible: false,
     }
   }
 
@@ -1748,6 +1752,40 @@ class LeadRCMPayment extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
+  fetchPhoneNumbers = (data) => {
+    this.setState({
+      accountsLoading: true,
+      isMultiPhoneModalVisible: true,
+    })
+    if (data) {
+      axios
+        .get(`/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`)
+        .then((res) => {
+          this.setState({
+            accountPhoneNumbers: res.data,
+            accountsLoading: false,
+          })
+        })
+        .catch((error) => {
+          console.log(
+            `/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`,
+            error
+          )
+          this.setState({
+            accountsLoading: false,
+            isMultiPhoneModalVisible: false,
+          })
+        })
+    }
+  }
+
+  toggleAccountPhone = () => {
+    const { isMultiPhoneModalVisible } = this.state
+    this.setState({
+      isMultiPhoneModalVisible: !isMultiPhoneModalVisible,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1793,6 +1831,9 @@ class LeadRCMPayment extends React.Component {
       currentCall,
       isFollowUpMode,
       comment,
+      accountPhoneNumbers,
+      accountsLoading,
+      isMultiPhoneModalVisible,
     } = this.state
     const { navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1825,6 +1866,12 @@ class LeadRCMPayment extends React.Component {
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
           legalDocLoader={legalDocLoader}
+        />
+        <AccountsPhoneNumbers
+          toggleAccountPhone={this.toggleAccountPhone}
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={accountPhoneNumbers}
+          loading={accountsLoading}
         />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}
@@ -1942,6 +1989,7 @@ class LeadRCMPayment extends React.Component {
                         formData={buyerDetailForm}
                         handleForm={this.handleBuyerForm}
                         advanceNotZero={advanceNotZero}
+                        call={this.fetchPhoneNumbers}
                       />
                     ) : (
                       <RentPaymentView
@@ -1966,6 +2014,7 @@ class LeadRCMPayment extends React.Component {
                         confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
                         buyerSellerCounts={buyerSellerCounts}
+                        call={this.fetchPhoneNumbers}
                       />
                     )
                   ) : null}

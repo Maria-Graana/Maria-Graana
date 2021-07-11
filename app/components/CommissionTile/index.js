@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, Image } from 'react-native'
 import { formatPrice } from '../../PriceFormate'
 import StaticData from '../../StaticData'
 import moment from 'moment'
@@ -16,7 +16,15 @@ class CommissionTile extends Component {
     return res
   }
   render() {
-    const { data, editTile, title, commissionEdit, onPaymentLongPress } = this.props
+    const {
+      data,
+      editTile,
+      title,
+      commissionEdit,
+      onPaymentLongPress,
+      showAccountPhone = false,
+      call,
+    } = this.props
     var showStatus =
       data && data.status != ''
         ? StaticData.statusOptions.find((item) => {
@@ -32,9 +40,7 @@ class CommissionTile extends Component {
     return data ? (
       <TouchableOpacity
         onLongPress={
-          data.status === 'pendingSales' ||
-          data.status === 'notCleared' ||
-          data.status === 'open'
+          data.status === 'pendingSales' || data.status === 'notCleared' || data.status === 'open'
             ? onPaymentLongPress
             : null
         }
@@ -59,6 +65,20 @@ class CommissionTile extends Component {
               <Text style={styles.priceDate}>
                 {moment(data.createdAt).format('hh:mm A, MMM DD')}
               </Text>
+            ) : null}
+            {showAccountPhone ? (
+              <TouchableHighlight
+                onPress={() => {
+                  call(data)
+                }}
+                style={[styles.phoneView]}
+                underlayColor={AppStyles.colors.backgroundColor}
+              >
+                <Image
+                  source={require('../../../assets/img/call.png')}
+                  style={[styles.callImage, data.checkBox ? { tintColor: '#fff' } : null]}
+                />
+              </TouchableHighlight>
             ) : null}
           </View>
         </View>
@@ -139,23 +159,37 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   formatPrice: {
-    width: '40%',
+    // width: '40%',
+    flex: 0.9,
     color: '#0070f2',
     fontWeight: 'bold',
     fontSize: 20,
   },
   totalPrice: {
-    width: '30%',
+    // width: '30%',
+    flex: 0.9,
     color: '#0070f2',
     fontWeight: 'bold',
     paddingTop: 2,
     fontSize: 16,
   },
   priceDate: {
-    width: '30%',
+    // width: '30%',
+    flex: 1,
     color: '#1d1d27',
     fontSize: 12,
     textAlign: 'right',
     paddingTop: 4,
+  },
+  phoneView: {
+    // flex: 1,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    width: 40,
+  },
+  callImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
 })

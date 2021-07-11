@@ -46,6 +46,7 @@ class BuyPaymentView extends React.Component {
       formData,
       handleForm,
       advanceNotZero,
+      call,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -155,6 +156,7 @@ class BuyPaymentView extends React.Component {
           commissionTitle={'Buyer Commission Payment'}
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
           buyerSellerCounts={buyerSellerCounts}
+          call={call}
         />
         <BuyerSellerTile
           singleCommission={singleCommission}
@@ -175,6 +177,7 @@ class BuyPaymentView extends React.Component {
           commissionTitle={'Seller Commission Payment'}
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
           buyerSellerCounts={buyerSellerCounts}
+          call={call}
         />
       </View>
     )

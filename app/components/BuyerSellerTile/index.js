@@ -48,6 +48,7 @@ class BuyerSellerTile extends React.Component {
       commissionTitle,
       RCMBTNTitle,
       setComissionApplicable,
+      call,
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
     let disabledSwitch = this.switchToggle()
@@ -88,6 +89,8 @@ class BuyerSellerTile extends React.Component {
                   onPaymentLongPress={() => onPaymentLongPress(payment)}
                   commissionEdit={onReadOnly}
                   title={payment ? commissionTitle : ''}
+                  call={call}
+                  showAccountPhone={true}
                 />
               ) : (
                 <View style={{ paddingTop: 10 }}>

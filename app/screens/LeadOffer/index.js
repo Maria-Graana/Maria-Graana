@@ -21,6 +21,7 @@ import StaticData from '../../StaticData'
 import styles from './styles'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import { formatPrice } from '../../components/PriceFormate'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
@@ -363,7 +364,9 @@ class LeadOffer extends React.Component {
         >
           <Text style={styles.agreedText}>
             Agreed Amount:{' '}
-            <Text style={styles.offerText}>{property && property.agreedOffer[0].offer}</Text>
+            <Text style={styles.offerText}>
+              {property && helper.currencyConvert(property.agreedOffer[0].offer)}
+            </Text>
           </Text>
         </TouchableOpacity>
       )

@@ -35,6 +35,7 @@ class BuyPaymentView extends React.Component {
       tokenMenu,
       confirmTokenAction,
       closeLegalDocument,
+      call,
     } = this.props
     let property = currentProperty[0]
     const isLeadClosed =
@@ -136,6 +137,7 @@ class BuyPaymentView extends React.Component {
           lead={lead}
           commissionTitle={'Buyer Commission Payment'}
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
+          call={call}
         />
         <BuyerSellerTile
           singleCommission={false}
@@ -153,6 +155,7 @@ class BuyPaymentView extends React.Component {
           lead={lead}
           commissionTitle={'Seller Commission Payment'}
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
+          call={call}
         />
       </View>
     )

@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+/** @format */
+
+import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
@@ -8,7 +10,7 @@ export default styles = StyleSheet.create({
     borderRadius: 6,
     padding: 5,
     marginBottom: 5,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   upperLayer: {
     position: 'relative',
@@ -19,7 +21,7 @@ export default styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: 'bold',
     letterSpacing: 2,
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
   },
   tileStatus: {
     position: 'absolute',
@@ -33,7 +35,7 @@ export default styles = StyleSheet.create({
     paddingRight: 10,
     textTransform: 'uppercase',
     letterSpacing: 1,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   statusRed: {
     borderColor: '#b38f8d',
@@ -52,26 +54,43 @@ export default styles = StyleSheet.create({
   },
   bottomLayer: {
     flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'space-between',
     marginTop: 1,
+    paddingTop: 10,
   },
   formatPrice: {
-    width: '40%',
+    // width: '40%',
+    flex: 0.9,
     color: '#0070f2',
     fontWeight: 'bold',
     fontSize: 20,
   },
   totalPrice: {
-    width: '30%',
+    // width: '30%',
+    flex: 0.9,
     color: '#0070f2',
     fontWeight: 'bold',
     paddingTop: 2,
     fontSize: 16,
   },
   priceDate: {
-    width: '30%',
+    // width: '30%',
+    flex: 1,
     color: '#1d1d27',
     fontSize: 12,
     textAlign: 'right',
     paddingTop: 4,
   },
-});
+  phoneView: {
+    // flex: 1,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    width: 40,
+  },
+  callImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+})

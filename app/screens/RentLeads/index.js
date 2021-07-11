@@ -31,6 +31,7 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
+import DateSearchFilter from '../../components/DateSearchFilter'
 
 var BUTTONS = [
   'Assign to team member',
@@ -134,7 +135,7 @@ class RentLeads extends React.Component {
     })
   }
 
-  fetchLeads = () => {
+  fetchLeads = (fromDate = null, toDate = null) => {
     const {
       sort,
       pageSize,
@@ -147,10 +148,14 @@ class RentLeads extends React.Component {
     } = this.state
     this.setState({ loading: true })
     let query = ``
-    if (showSearchBar && searchText !== '') {
-      if (statusFilterType === 'name')
+    if (showSearchBar) {
+      if (statusFilterType === 'name' && searchText !== '') {
         query = `/api/leads?purpose=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
-      else query = `/api/leads?purpose=rent&id=${searchText}&pageSize=${pageSize}&page=${page}`
+      } else if (statusFilterType === 'id' && searchText !== '') {
+        query = `/api/leads?purpose=rent&id=${searchText}&pageSize=${pageSize}&page=${page}`
+      } else {
+        query = `/api/leads?purpose=rent&fromDate=${fromDate}&toDate=${toDate}&pageSize=${pageSize}&page=${page}`
+      }
     } else {
       query = `/api/leads?purpose=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -358,7 +363,7 @@ class RentLeads extends React.Component {
   }
 
   clearAndCloseSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false }, () => {
+    this.setState({ searchText: '', showSearchBar: false, selectedDate: null }, () => {
       this.clearStateValues()
       this.fetchLeads()
     })
@@ -640,18 +645,22 @@ class RentLeads extends React.Component {
                   selectedItem={statusFilterType}
                 />
               </View>
-              <Search
-                containerWidth="75%"
-                placeholder="Search leads here"
-                searchText={searchText}
-                setSearchText={(value) => this.setState({ searchText: value })}
-                showShadow={false}
-                showClearButton={true}
-                returnKeyType={'search'}
-                onSubmitEditing={() => this.fetchLeads()}
-                autoFocus={true}
-                closeSearchBar={() => this.clearAndCloseSearch()}
-              />
+              {statusFilterType === 'name' || statusFilterType === 'id' ? (
+                <Search
+                  containerWidth="75%"
+                  placeholder="Search leads here"
+                  searchText={searchText}
+                  setSearchText={(value) => this.setState({ searchText: value })}
+                  showShadow={false}
+                  showClearButton={true}
+                  returnKeyType={'search'}
+                  onSubmitEditing={() => this.fetchLeads()}
+                  autoFocus={true}
+                  closeSearchBar={() => this.clearAndCloseSearch()}
+                />
+              ) : (
+                <DateSearchFilter applyFilter={this.fetchLeads} />
+              )}
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>

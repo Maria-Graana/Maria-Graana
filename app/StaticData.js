@@ -1152,5 +1152,6 @@ export default StaticData = {
   buyRentFilterType: [
     { value: 'id', name: 'ID' },
     { value: 'name', name: 'NAME' },
+    { value: 'date', name: 'DATE' },
   ],
 }

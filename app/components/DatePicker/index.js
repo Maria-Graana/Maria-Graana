@@ -17,6 +17,7 @@ const DateTimePicker = ({
   errorMessage,
   iconSource,
   disabled = false,
+  isFromDateFilter = false,
 }) => {
   const [visible, setVisible] = useState(false)
   const handleOnConfirm = (date) => {
@@ -43,6 +44,7 @@ const DateTimePicker = ({
         errorMessage={errorMessage}
         showDropDownIcon={false}
         iconSource={iconSource}
+        isFromDateFilter={isFromDateFilter}
       />
     </View>
   )

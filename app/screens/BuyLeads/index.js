@@ -363,7 +363,7 @@ class BuyLeads extends React.Component {
   }
 
   clearAndCloseSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false }, () => {
+    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' }, () => {
       this.clearStateValues()
       this.fetchLeads()
     })
@@ -655,7 +655,10 @@ class BuyLeads extends React.Component {
                   closeSearchBar={() => this.clearAndCloseSearch()}
                 />
               ) : (
-                <DateSearchFilter applyFilter={this.fetchLeads} />
+                <DateSearchFilter
+                  applyFilter={this.fetchLeads}
+                  clearFilter={() => this.clearAndCloseSearch()}
+                />
               )}
             </View>
           ) : (

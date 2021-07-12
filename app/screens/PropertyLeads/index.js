@@ -324,7 +324,10 @@ class PropertyLead extends React.Component {
                   closeSearchBar={() => this.clearAndCloseSearch()}
                 />
               ) : (
-                <DateSearchFilter applyFilter={this.fetchLeads} />
+                <DateSearchFilter
+                  applyFilter={this.fetchLeads}
+                  clearFilter={() => this.clearAndCloseSearch()}
+                />
               )}
             </View>
           ) : (

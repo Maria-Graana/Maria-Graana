@@ -363,7 +363,7 @@ class RentLeads extends React.Component {
   }
 
   clearAndCloseSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false, selectedDate: null }, () => {
+    this.setState({ searchText: '', showSearchBar: false }, () => {
       this.clearStateValues()
       this.fetchLeads()
     })
@@ -659,7 +659,10 @@ class RentLeads extends React.Component {
                   closeSearchBar={() => this.clearAndCloseSearch()}
                 />
               ) : (
-                <DateSearchFilter applyFilter={this.fetchLeads} />
+                <DateSearchFilter
+                  applyFilter={this.fetchLeads}
+                  clearFilter={() => this.clearAndCloseSearch()}
+                />
               )}
             </View>
           ) : (

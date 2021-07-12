@@ -120,6 +120,18 @@ class PaymentTile extends React.Component {
                 <Text style={styles.priceDate}>
                   {moment(data.createdAt).format('DD MMM YY - h:mm a')}
                 </Text>
+                <TouchableHighlight
+                  onPress={() => {
+                    call(data)
+                  }}
+                  style={[styles.phoneView]}
+                  underlayColor={AppStyles.colors.backgroundColor}
+                >
+                  <Image
+                    source={require('../../../assets/img/call.png')}
+                    style={[styles.callImage, data.checkBox ? { tintColor: '#fff' } : null]}
+                  />
+                </TouchableHighlight>
               </View>
             </View>
           )}

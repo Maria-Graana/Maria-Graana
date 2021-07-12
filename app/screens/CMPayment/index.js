@@ -617,9 +617,8 @@ class CMPayment extends Component {
         })
         return
       }
-
+      let body = {}
       if (editable === false) {
-        let body = {}
         // for payment addition
         if (
           CMPayment.type === 'cheque' ||

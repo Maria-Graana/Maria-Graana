@@ -18,6 +18,7 @@ const TouchableInput = ({
   iconSource = '',
   showIconOrImage = true,
   disabled = false,
+  isFromDateFilter = false,
 }) => {
   return (
     <View>
@@ -25,15 +26,18 @@ const TouchableInput = ({
         <View
           style={[
             AppStyles.mainInputWrap,
-            AppStyles.inputPadLeft,
-            AppStyles.formControl,
+            !isFromDateFilter && AppStyles.formControl,
             styles.rowStyle,
             { backgroundColor: disabled ? '#ddd' : '#fff' },
           ]}
         >
+          {isFromDateFilter && (
+            <Image style={{ width: 26, height: 26, marginHorizontal: 10 }} source={iconSource} />
+          )}
           <Text
             style={[
               AppStyles.formFontSettings,
+              isFromDateFilter === false && AppStyles.inputPadLeft,
               {
                 color: isEmpty(value) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor,
               },
@@ -41,7 +45,7 @@ const TouchableInput = ({
           >
             {isEmpty(value) ? placeholder : value}
           </Text>
-          {showIconOrImage ? (
+          {showIconOrImage && !isFromDateFilter ? (
             showDropDownIcon ? (
               <Ionicons
                 style={styles.iconStyle}
@@ -69,6 +73,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   iconStyle: {
-    paddingRight: 15,
+    // paddingRight: 20,
   },
 })

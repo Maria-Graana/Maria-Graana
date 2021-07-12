@@ -157,7 +157,9 @@ export default class App extends React.Component {
       }, 300)
     } else {
       if (response.actionIdentifier === 'call') {
-        this.callAgent(notification)
+        setTimeout(() => {
+          this.callAgent(notification)
+        }, 300)
       }
     }
   }

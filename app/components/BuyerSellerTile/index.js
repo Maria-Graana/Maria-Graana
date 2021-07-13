@@ -21,19 +21,37 @@ class BuyerSellerTile extends React.Component {
   }
 
   switchToggle = () => {
-    const { buyerSellerCounts = 0, tileType, lead } = this.props
-    let legalCount =
-      tileType === 'seller' ? buyerSellerCounts.selerCount : buyerSellerCounts.buyerCount
-    if (helper.checkSwitchChange(lead, tileType, legalCount)) {
+    const { payment } = this.props
+    if (
+      (payment && payment.status === 'open') ||
+      (payment && payment.status === 'pendingSales') ||
+      (payment && payment.status === 'notCleared')
+    )
       return false
-    } else {
+    else if (!payment) return false
+    else return true
+  }
+
+  checkSwitchVisibility = () => {
+    const { payment, singleCommission, isLeadClosed, commissionNotApplicableBuyerSeller } =
+      this.props
+    if (
+      (payment && payment.status === 'open') ||
+      (payment && payment.status === 'pendingSales') ||
+      (payment && payment.status === 'notCleared')
+    ) {
+      if (singleCommission && !isLeadClosed) return true
+      else return false
+    } else if (
+      (!payment && singleCommission && !isLeadClosed) ||
+      !commissionNotApplicableBuyerSeller
+    )
       return true
-    }
+    else return false
   }
 
   render() {
     const {
-      isLeadClosed,
       singleCommission,
       onPaymentLongPress,
       commissionNotApplicableBuyerSeller,
@@ -52,11 +70,13 @@ class BuyerSellerTile extends React.Component {
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
     let disabledSwitch = this.switchToggle()
+    let showSwitch = this.checkSwitchVisibility()
+
     return (
       <View style={styles.tileView}>
         <View style={[styles.titleView, { paddingVertical: 0, paddingBottom: 10 }]}>
           <Text style={styles.titleText}>{tileTitle}</Text>
-          {singleCommission && !payment && !isLeadClosed && (
+          {showSwitch && (
             <Switch
               disabled={disabledSwitch}
               trackColor={{ false: '#81b0ff', true: AppStyles.colors.primaryColor }}
@@ -64,7 +84,7 @@ class BuyerSellerTile extends React.Component {
               ios_backgroundColor="#81b0ff"
               onValueChange={() => {
                 if (!this.switchToggle())
-                  setComissionApplicable(!commissionNotApplicableBuyerSeller)
+                  setComissionApplicable(!commissionNotApplicableBuyerSeller, tileType)
               }}
               value={commissionNotApplicableBuyerSeller ? false : true}
               style={styles.switchView}

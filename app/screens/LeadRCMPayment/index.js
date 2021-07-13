@@ -51,6 +51,7 @@ import {
   getInstrumentDetails,
   setInstrumentInformation,
 } from '../../actions/addInstrument'
+import { useValue } from 'react-native-reanimated'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -1549,6 +1550,48 @@ class LeadRCMPayment extends React.Component {
     }
   }
 
+  showConfirmationDialogClosePayment = (value, addedBy) => {
+    if (!value) {
+      if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
+      else this.setSellerCommissionApplicable(value)
+      return
+    }
+    ActionSheet.show(
+      {
+        options: TOKENBUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title: 'Do you really want to close?',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          this.disableLegalDocs(value, addedBy)
+        }
+      }
+    )
+  }
+
+  disableLegalDocs = (value, addedBy) => {
+    const { lead } = this.state
+    this.setState({ loading: true }, () => {
+      axios.get(`api/leads/disablelegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
+        if (res.data.disableLegaldocuments) {
+          this.deleteLegalDocs(value, addedBy)
+        }
+      })
+    })
+  }
+
+  deleteLegalDocs = (value, addedBy) => {
+    const { lead } = this.state
+    this.setState({ loading: true }, () => {
+      axios.delete(`api/leads/deleteLegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
+        this.setState({ loading: false })
+        if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
+        else this.setSellerCommissionApplicable(value)
+      })
+    })
+  }
+
   setBuyerCommissionApplicable = (value) => {
     this.setState({ commissionNotApplicableBuyer: value }, () => {
       const { lead } = this.state
@@ -1975,8 +2018,8 @@ class LeadRCMPayment extends React.Component {
                         currentProperty={allProperties}
                         commissionNotApplicableBuyer={commissionNotApplicableBuyer}
                         commissionNotApplicableSeller={commissionNotApplicableSeller}
-                        setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
-                        setSellerCommissionApplicable={this.setSellerCommissionApplicable}
+                        setBuyerCommissionApplicable={this.showConfirmationDialogClosePayment}
+                        setSellerCommissionApplicable={this.showConfirmationDialogClosePayment}
                         onPaymentLongPress={this.onPaymentLongPress}
                         agreedNotZero={agreedNotZero}
                         toggleTokenMenu={this.toggleTokenMenu}
@@ -2003,8 +2046,8 @@ class LeadRCMPayment extends React.Component {
                         currentProperty={allProperties}
                         commissionNotApplicableBuyer={commissionNotApplicableBuyer}
                         commissionNotApplicableSeller={commissionNotApplicableSeller}
-                        setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
-                        setSellerCommissionApplicable={this.setSellerCommissionApplicable}
+                        setBuyerCommissionApplicable={this.showConfirmationDialogClosePayment}
+                        setSellerCommissionApplicable={this.showConfirmationDialogClosePayment}
                         onPaymentLongPress={this.onPaymentLongPress}
                         toggleTokenMenu={this.toggleTokenMenu}
                         tokenMenu={tokenMenu}

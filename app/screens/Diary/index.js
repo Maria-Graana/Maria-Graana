@@ -289,6 +289,8 @@ class Diary extends React.Component {
         screenName: screen,
         managerId,
         agentId,
+        rcmLeadId: val.armsLeadId,
+        cmLeadId: val.armsProjectLeadId,
         tasksList: StaticData.allTaskValues,
       })
     }

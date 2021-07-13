@@ -10,27 +10,11 @@ export default StaticData = {
       name: 'Meeting',
       value: 'meeting',
     },
-    {
-      name: 'Meeting with PP',
-      value: 'meeting_with_pp',
-    },
-    {
-      name: 'Morning Meeting',
-      value: 'morning_meeting',
-    },
   ],
   taskValuesCMLead: [
     {
       name: 'Task',
       value: 'task',
-    },
-    {
-      name: 'Meeting with PP',
-      value: 'meeting_with_pp',
-    },
-    {
-      name: 'Morning Meeting',
-      value: 'morning_meeting',
     },
   ],
   allTaskValues: [

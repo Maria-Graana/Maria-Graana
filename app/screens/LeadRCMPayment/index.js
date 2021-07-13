@@ -838,14 +838,14 @@ class LeadRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     let copy = formData
-    copy[name] = value
+    copy[name] = value.replace(/,/g, '')
     this.setState({ formData: copy, rentNotZero: false })
   }
 
   handleBuyerForm = (value, name) => {
     const { buyerDetailForm } = this.state
     let copy = buyerDetailForm
-    copy[name] = value
+    copy[name] = value.replace(/,/g, '')
     this.setState({ buyerDetailForm: copy, agreedNotZero: false, advanceNotZero: false })
   }
 

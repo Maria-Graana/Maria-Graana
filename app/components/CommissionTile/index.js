@@ -66,7 +66,7 @@ class CommissionTile extends Component {
                 {moment(data.createdAt).format('hh:mm A, MMM DD')}
               </Text>
             ) : null}
-            {showAccountPhone ? (
+            {showAccountPhone && data.status !== 'open' ? (
               <TouchableHighlight
                 onPress={() => {
                   call(data)

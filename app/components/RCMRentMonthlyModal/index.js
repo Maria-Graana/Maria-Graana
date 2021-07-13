@@ -49,7 +49,7 @@ const RCMRentMonthlyModal = (props) => {
             <Text style={styles.labelStyle}>MONTHLY RENT</Text>
             <SimpleInputText
               name={'monthlyRent'}
-              fromatName={false}
+              fromatName={'monthlyRent'}
               placeholder={'Enter Monthly Rent'}
               label={'MONTHLY RENT'}
               value={formData.monthlyRent}

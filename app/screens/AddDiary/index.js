@@ -72,7 +72,6 @@ class AddDiary extends Component {
       delete payload.startTime
       delete payload.endTime
       delete payload.hour
-      console.log(payload)
       return payload
     } else {
       // add payload contain these keys below

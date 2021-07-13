@@ -302,7 +302,6 @@ class DetailForm extends Component {
       showCustomTitleField,
       getCurrentLocation,
     } = this.props
-
     const { size_unit } = this.props.formData
     return (
       <View>
@@ -403,7 +402,7 @@ class DetailForm extends Component {
                   onChangeText={(text) => {
                     handleForm(text, 'lat')
                   }}
-                  value={latitude === null ? '' : String(latitude)}
+                  value={latitude === null ? '' : latitude ? Number(latitude).toFixed(7) : ''}
                   style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                   keyboardType="numeric"
                   placeholder={'Latitude'}
@@ -420,7 +419,7 @@ class DetailForm extends Component {
                   onChangeText={(text) => {
                     handleForm(text, 'lng')
                   }}
-                  value={longitude === null ? '' : String(longitude)}
+                  value={longitude === null ? '' : longitude ? Number(longitude).toFixed(7) : ''}
                   style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                   keyboardType="numeric"
                   placeholder={'Longitude'}

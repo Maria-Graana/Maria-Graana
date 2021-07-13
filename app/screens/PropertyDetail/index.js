@@ -86,7 +86,7 @@ class PropertyDetail extends React.Component {
   }
 
   approveProperty = (id) => {
-    const {navigation} = this.props;
+    const { navigation } = this.props
     let url = `/api/inventory/fieldProperty?id=${id}`
     this.setState({ loading: true }, () => {
       axios
@@ -100,8 +100,9 @@ class PropertyDetail extends React.Component {
         })
         .catch((error) => {
           console.log('ERROR API: /api/inventory/fieldProperty', error)
-        }).finally(()=>{
-          this.setState({loading:false})
+        })
+        .finally(() => {
+          this.setState({ loading: false })
         })
     })
   }
@@ -157,15 +158,16 @@ class PropertyDetail extends React.Component {
         (property && property.grade === '')
           ? ''
           : property && property.grade
-      lattitude = property && property.lat === null ? '' : property.lat + '/'
+      lattitude = property && property.lat === null ? '' : property.lat.toFixed(7) + '/'
       longitude =
         property && (property.lng === null || property.lon === null)
           ? ''
-          : property.lng
-          ? property.lng
-          : property.lon
+          : property.lng.toFixed(7)
+          ? property.lng.toFixed(7)
+          : property.lon.toFixed(7)
       ownerName = this.checkUserName(property)
-      ownerPhoneNumber = property && property.customer && property.customer.phone && property.customer.phone.trim()
+      ownerPhoneNumber =
+        property && property.customer && property.customer.phone && property.customer.phone.trim()
       address =
         property && property.customer && property.customer.address && property.customer.address
       pocName = property && property.poc_name ? property.poc_name : ''
@@ -312,7 +314,10 @@ class PropertyDetail extends React.Component {
             {lattitude || longitude ? (
               <View>
                 <Text style={styles.headingText}> Lattitude/Longitude </Text>
-                <Text style={styles.labelText} numberOfLines={1}> {lattitude + longitude} </Text>
+                <Text style={styles.labelText} numberOfLines={1}>
+                  {' '}
+                  {lattitude + longitude}{' '}
+                </Text>
               </View>
             ) : null}
             {ownerName ? (

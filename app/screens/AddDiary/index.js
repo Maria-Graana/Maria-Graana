@@ -56,7 +56,7 @@ class AddDiary extends Component {
       // payload for update contains id of diary from existing api call and other user data
       payload = Object.assign({}, data)
       payload.date = start
-      payload.time = helper.formatTime(data.startTime)
+      payload.time = rcmLeadId || cmLeadId ? data.startTime : helper.formatTime(data.startTime)
       payload.userId = route.params.agentId
       payload.diaryTime = start
       payload.start = start
@@ -72,6 +72,7 @@ class AddDiary extends Component {
       delete payload.startTime
       delete payload.endTime
       delete payload.hour
+      console.log(payload)
       return payload
     } else {
       // add payload contain these keys below

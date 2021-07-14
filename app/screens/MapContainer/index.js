@@ -14,6 +14,7 @@ class MapContainer extends Component {
     if (screenName === 'Graana.com') {
       this.props.navigation.navigate('InventoryTabs', {
         screen: screenName,
+        params: { mapValues, fromScreen: 'mapContainer' },
       })
     } else {
       this.props.navigation.navigate(screenName, { mapValues, fromScreen: 'mapContainer' })

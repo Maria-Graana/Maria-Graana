@@ -10,6 +10,7 @@ import {
   View,
   SafeAreaView,
   Linking,
+  TouchableHighlight,
 } from 'react-native'
 import Modal from 'react-native-modal'
 import { Divider } from 'react-native-paper'
@@ -28,7 +29,7 @@ const AccountsPhoneNumbers = ({
   mode = 'phone',
   loading,
 }) => {
-  call = (data) => {
+  const call = (data) => {
     let url = `tel:${data.phoneNumber}`
     if (url && url != 'tel:null') {
       Linking.canOpenURL(url)
@@ -52,7 +53,7 @@ const AccountsPhoneNumbers = ({
         {contacts && contacts.length ? (
           <View style={[styles.modalMain]}>
             <View style={styles.row}>
-              <Text style={styles.title}>Select Phone Number</Text>
+              <Text style={styles.title}>Contact Accounts Team</Text>
               <TouchableOpacity style={styles.closeBtn} onPress={() => toggleAccountPhone(false)}>
                 <Image source={close} style={styles.closeImg} />
               </TouchableOpacity>
@@ -61,16 +62,25 @@ const AccountsPhoneNumbers = ({
               data={contacts}
               keyExtractor={(item, index) => String(index)}
               renderItem={({ item, index }) => (
-                <TouchableOpacity onPress={() => call(item)} style={styles.itemRow}>
-                  <Text style={[styles.number]}>
-                    {item.firstName} {item.lastName}
-                  </Text>
-                  <View style={styles.row}>
-                    <Image style={[styles.closeImg]} source={mode === 'phone' ? phone : whatsapp} />
-                    <Text style={[styles.number]}>{item.phoneNumber}</Text>
+                <TouchableHighlight
+                  underlayColor={AppStyles.colors.backgroundColor}
+                  onPress={() => call(item)}
+                  style={styles.itemRow}
+                >
+                  <View>
+                    <Text style={[styles.number]}>
+                      {item.firstName} {item.lastName}
+                    </Text>
+                    <View style={styles.row}>
+                      <Image
+                        style={[styles.closeImg]}
+                        source={mode === 'phone' ? phone : whatsapp}
+                      />
+                      <Text style={[styles.number]}>{item.phoneNumber}</Text>
+                    </View>
+                    {contacts.length - 1 !== index && <Divider />}
                   </View>
-                  {contacts.length - 1 !== index && <Divider />}
-                </TouchableOpacity>
+                </TouchableHighlight>
               )}
             />
           </View>

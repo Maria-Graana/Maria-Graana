@@ -66,7 +66,7 @@ class CommissionTile extends Component {
                 {moment(data.createdAt).format('hh:mm A, MMM DD')}
               </Text>
             ) : null}
-            {showAccountPhone ? (
+            {showAccountPhone && data.status !== 'open' ? (
               <TouchableHighlight
                 onPress={() => {
                   call(data)
@@ -159,33 +159,32 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   formatPrice: {
-    // width: '40%',
     flex: 0.9,
     color: '#0070f2',
     fontWeight: 'bold',
     fontSize: 20,
+    paddingTop: 10,
   },
   totalPrice: {
-    // width: '30%',
     flex: 0.9,
     color: '#0070f2',
     fontWeight: 'bold',
-    paddingTop: 2,
     fontSize: 16,
+    paddingTop: 12,
   },
   priceDate: {
-    // width: '30%',
     flex: 1,
     color: '#1d1d27',
     fontSize: 12,
     textAlign: 'right',
-    paddingTop: 4,
+    paddingTop: 14,
   },
   phoneView: {
-    // flex: 1,
     borderRadius: 20,
-    paddingHorizontal: 10,
-    width: 40,
+    padding: 10,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   callImage: {
     width: 20,

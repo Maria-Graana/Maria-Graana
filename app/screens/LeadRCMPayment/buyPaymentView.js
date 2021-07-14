@@ -166,7 +166,9 @@ class BuyPaymentView extends React.Component {
             sellerCommission ? commissionNotApplicableSeller : true
           }
           tileType={'seller'}
-          tileTitle={commissionNotApplicableSeller ? 'Seller Side Not Applicable' : 'Seller Side'}
+          tileTitle={
+            false && commissionNotApplicableSeller ? 'Seller Side Not Applicable' : 'Seller Side'
+          }
           closeLegalDocument={closeLegalDocument}
           onPaymentLongPress={onPaymentLongPress}
           payment={seller}

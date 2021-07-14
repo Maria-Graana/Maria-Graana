@@ -107,7 +107,7 @@ class PropertyLead extends React.Component {
       } else if (statusFilterType === 'id' && searchText !== '') {
         query = `/api/leads?leadWithCurrentAgentProps=true&id=${searchText}&pageSize=${pageSize}&page=${page}`
       } else {
-        query = `/api/leads?leadWithCurrentAgentProps=true&fromDate=${fromDate}&toDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?leadWithCurrentAgentProps=true&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
       }
     } else {
       query = `/api/leads?leadWithCurrentAgentProps=true&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`

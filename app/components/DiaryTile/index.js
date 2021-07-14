@@ -73,6 +73,15 @@ class DiaryTile extends React.Component {
     const { todayDate, selectedTime, showTask, description, active } = this.state
     return (
       <View style={AppStyles.mb1}>
+        <AddTaskModal
+          active={active}
+          closeModal={() => this.closeModal()}
+          handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
+          description={description}
+          addTask={(description) => {
+            addTask(description, selectedTime)
+          }}
+        />
         <TouchableWithoutFeedback
           style={AppStyles.mb1}
           onPress={() => this.showAddTask(false, null, null)}
@@ -81,15 +90,6 @@ class DiaryTile extends React.Component {
             data={data}
             renderItem={(item, index) => (
               <View>
-                <AddTaskModal
-                  active={active}
-                  closeModal={() => this.closeModal()}
-                  handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
-                  description={description}
-                  addTask={(description) => {
-                    addTask(description, selectedTime)
-                  }}
-                />
                 {item.item.task && item.item.task.length ? (
                   <View style={styles.container}>
                     <TouchableOpacity

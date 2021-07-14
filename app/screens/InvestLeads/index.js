@@ -148,7 +148,7 @@ class InvestLeads extends React.Component {
       } else if (statusFilterType === 'id' && searchText !== '') {
         query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}`
       } else {
-        query = `/api/leads/projects?fromDate=${fromDate}&toDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
       }
     } else {
       query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`

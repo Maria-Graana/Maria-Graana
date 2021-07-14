@@ -14,6 +14,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import MeetingTile from '../../components/MeetingTile'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import ReferenceGuideModal from '../../components/ReferenceGuideModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
@@ -50,6 +51,7 @@ class Meetings extends Component {
       comment: null,
       selectedClientContacts: [],
       isMultiPhoneModalVisible: false,
+      isReferenceModalVisible: false,
     }
   }
 
@@ -135,16 +137,17 @@ class Meetings extends Component {
         this.getMeetingLead()
       })
     } else if (status === 'meeting_done') {
-      body = { response: status, comments: status, leadId: lead.id, status: 'completed' }
-      axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
-        this.getMeetingLead()
-      })
-      this.setState({
-        statusfeedbackModalVisible: true,
-        modalMode: 'meeting',
-        currentCall:
-          meetings && meetings.rows ? meetings.rows.find((item) => item.id === id) : null,
-      })
+      // body = { response: status, comments: status, leadId: lead.id, status: 'completed' }
+      // axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
+      //   this.getMeetingLead()
+      // })
+      this.setState({ isReferenceModalVisible: true })
+      // this.setState({
+      //   statusfeedbackModalVisible: true,
+      //   modalMode: 'meeting',
+      //   currentCall:
+      //     meetings && meetings.rows ? meetings.rows.find((item) => item.id === id) : null,
+      // })
     } else {
       body = { response: status, comments: status, leadId: lead.id }
       axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
@@ -491,6 +494,22 @@ class Meetings extends Component {
     this.setState({ statusfeedbackModalVisible: value })
   }
 
+  addInvestmentGuide = (guideNo, attachments) => {
+    console.log(guideNo, attachments)
+    const { lead } = this.props
+    // let attachment = {
+    //   name: paymentAttachment.fileName,
+    //   type: 'file/' + paymentAttachment.fileName.split('.').pop(),
+    //   uri: paymentAttachment.uri,
+    // }
+    // let fd = new FormData()
+    // fd.append('file', attachment)
+    // fd.append('title', paymentAttachment.title)
+    // fd.append('type', 'file/' + paymentAttachment.fileName.split('.').pop())
+    //diary/addGuideAttachment?cmLeadId=45893&guideReference=12345&attachment='test' &title='test'&fileName='test'
+    // axios.post()
+  }
+
   render() {
     const {
       active,
@@ -513,6 +532,7 @@ class Meetings extends Component {
       comment,
       selectedClientContacts,
       isMultiPhoneModalVisible,
+      isReferenceModalVisible,
     } = this.state
 
     const { navigation, lead } = this.props
@@ -600,6 +620,14 @@ class Meetings extends Component {
             closedWon={closedWon}
           />
         </View>
+
+        <ReferenceGuideModal
+          isReferenceModalVisible={isReferenceModalVisible}
+          hideReferenceGuideModal={() => this.setState({ isReferenceModalVisible: false })}
+          addInvestmentGuide={(guideNo, attachments) =>
+            this.addInvestmentGuide(guideNo, attachments)
+          }
+        />
 
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}

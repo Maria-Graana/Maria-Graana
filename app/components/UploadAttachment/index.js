@@ -20,6 +20,7 @@ export default class UploadAttachment extends React.Component {
   }
 
   openActionSheet = () => {
+    const { onCancelPressed } = this.props
     ActionSheet.show(
       {
         options: BUTTONS,
@@ -30,6 +31,7 @@ export default class UploadAttachment extends React.Component {
         if (buttonIndex === 1) {
           this.takePhotos()
         } else if (buttonIndex === 2) {
+          onCancelPressed ? onCancelPressed() : null
         } else if (buttonIndex === 0) {
           this.getAttachmentFromStorage()
         }

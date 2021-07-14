@@ -1560,7 +1560,8 @@ class LeadRCMPayment extends React.Component {
       {
         options: TOKENBUTTONS,
         cancelButtonIndex: CANCEL_INDEX,
-        title: 'Do you really want to close?',
+        title:
+          'Uploaded legal documents will be deleted with disable action. Are you sure you want to continue?',
       },
       (buttonIndex) => {
         if (buttonIndex === 0) {
@@ -1572,23 +1573,19 @@ class LeadRCMPayment extends React.Component {
 
   disableLegalDocs = (value, addedBy) => {
     const { lead } = this.state
-    this.setState({ loading: true }, () => {
-      axios.get(`api/leads/disablelegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
-        if (res.data.disableLegaldocuments) {
-          this.deleteLegalDocs(value, addedBy)
-        }
-      })
+    axios.get(`api/leads/disablelegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
+      if (res.data.disableLegaldocuments) {
+        this.deleteLegalDocs(value, addedBy)
+      }
     })
   }
 
   deleteLegalDocs = (value, addedBy) => {
     const { lead } = this.state
-    this.setState({ loading: true }, () => {
-      axios.delete(`api/leads/deleteLegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
-        this.setState({ loading: false })
-        if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
-        else this.setSellerCommissionApplicable(value)
-      })
+    axios.delete(`api/leads/deleteLegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
+      this.setState({ loading: false })
+      if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
+      else this.setSellerCommissionApplicable(value)
     })
   }
 

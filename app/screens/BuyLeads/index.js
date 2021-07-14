@@ -159,7 +159,7 @@ class BuyLeads extends React.Component {
       } else if (statusFilterType === 'id' && searchText !== '') {
         query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}`
       } else {
-        query = `/api/leads?purpose=sale&fromDate=${fromDate}&toDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
       }
     } else {
       query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`

@@ -7,6 +7,7 @@ import DateTimePicker from '../../components/DatePicker'
 import helper from '../../helper'
 import { Ionicons } from '@expo/vector-icons'
 import AppStyles from '../../AppStyles'
+import moment from 'moment'
 
 const DateSearchFilter = ({ applyFilter, clearFilter }) => {
   const [fromDate, setFromDate] = useState(null)
@@ -17,6 +18,7 @@ const DateSearchFilter = ({ applyFilter, clearFilter }) => {
       alert('Date is required for search!')
       return
     } else {
+      value = moment(value).format('YYYY-MM-DD')
       applyFilter(value, value) // using from date as to date in this case
       // let fromDateFromString = new Date(fromDate).setHours(0, 0, 0, 0)
       // let toDateFromString = new Date(toDate).setHours(0, 0, 0, 0)

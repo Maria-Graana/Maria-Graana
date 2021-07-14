@@ -9,7 +9,7 @@ import SimpleInputText from '../SimpleInputField'
 import styles from './style'
 
 const RCMRentMonthlyModal = (props) => {
-  checkReadOnlyMode = () => {
+  const checkReadOnlyMode = () => {
     const { leadAgentType, isLeadClosed } = props
     if (leadAgentType === 'seller') return false
     else {
@@ -18,7 +18,7 @@ const RCMRentMonthlyModal = (props) => {
     }
   }
 
-  checkMonthlyRentReadOnlyMode = () => {
+  const checkMonthlyRentReadOnlyMode = () => {
     const { lead, leadAgentType, isLeadClosed } = props
     if (leadAgentType === 'seller') return false
     else if (isLeadClosed) return false
@@ -26,7 +26,7 @@ const RCMRentMonthlyModal = (props) => {
   }
 
   const { isVisible, closeModal, handleForm, formData, pickerData, updateRentLead } = props
-  let readOnlyMode = this.checkReadOnlyMode()
+  let readOnlyMode = checkReadOnlyMode()
   let monthlyRentReadOnly = checkMonthlyRentReadOnlyMode()
 
   return (

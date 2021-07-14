@@ -154,7 +154,7 @@ class RentLeads extends React.Component {
       } else if (statusFilterType === 'id' && searchText !== '') {
         query = `/api/leads?purpose=rent&id=${searchText}&pageSize=${pageSize}&page=${page}`
       } else {
-        query = `/api/leads?purpose=rent&fromDate=${fromDate}&toDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
       }
     } else {
       query = `/api/leads?purpose=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`

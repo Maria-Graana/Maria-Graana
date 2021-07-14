@@ -34,7 +34,7 @@ const DateSearchFilter = ({ applyFilter, clearFilter }) => {
   return (
     <View style={styles.container}>
       <DateTimePicker
-        placeholderLabel={'Date'}
+        placeholderLabel={'Modified Date'}
         name={'fromDate'}
         mode={'date'}
         iconSource={require('../../../assets/img/calendar.png')}

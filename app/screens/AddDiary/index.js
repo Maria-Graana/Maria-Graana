@@ -32,7 +32,7 @@ class AddDiary extends Component {
   }
 
   formSubmit = (data) => {
-    if (!data.taskType || !data.date || !data.startTime) {
+    if (!data.taskType || !data.date || !data.startTime || !data.subject) {
       this.setState({
         checkValidation: true,
       })
@@ -72,7 +72,7 @@ class AddDiary extends Component {
       delete payload.startTime
       delete payload.endTime
       delete payload.hour
-      console.log(payload)
+      //console.log(payload)
       return payload
     } else {
       // add payload contain these keys below

@@ -89,6 +89,9 @@ class DetailForm extends Component {
               onChangeText={(text) => this.handleForm(text, 'subject')}
             />
           </View>
+          {checkValidation === true && formData.subject === '' && (
+            <ErrorMessage errorMessage={'Required'} />
+          )}
         </View>
 
         <View style={[AppStyles.mainInputWrap]}>

@@ -157,6 +157,7 @@ class BuyPaymentView extends React.Component {
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
           buyerSellerCounts={buyerSellerCounts}
           call={call}
+          leadType={'rcm'}
         />
         <BuyerSellerTile
           singleCommission={singleCommission}
@@ -167,7 +168,9 @@ class BuyPaymentView extends React.Component {
           }
           tileType={'seller'}
           tileTitle={
-            false && commissionNotApplicableSeller ? 'Seller Side Not Applicable' : 'Seller Side'
+            sellerCommission && commissionNotApplicableSeller
+              ? 'Seller Side Not Applicable'
+              : 'Seller Side'
           }
           closeLegalDocument={closeLegalDocument}
           onPaymentLongPress={onPaymentLongPress}
@@ -180,6 +183,7 @@ class BuyPaymentView extends React.Component {
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
           buyerSellerCounts={buyerSellerCounts}
           call={call}
+          leadType={'rcm'}
         />
       </View>
     )

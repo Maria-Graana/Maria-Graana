@@ -136,13 +136,14 @@ const RentPaymentView = (props) => {
         closeLegalDocument={closeLegalDocument}
         onPaymentLongPress={onPaymentLongPress}
         payment={buyer}
-        paymentCommission={true}
+        paymentCommission={false}
         onAddCommissionPayment={onAddCommissionPayment}
         editTile={editTile}
         lead={lead}
         commissionTitle={'Buyer Commission Payment'}
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
         call={call}
+        leadType={'sellRentout'}
       />
       <BuyerSellerTile
         singleCommission={false}
@@ -161,6 +162,7 @@ const RentPaymentView = (props) => {
         commissionTitle={'Seller Commission Payment'}
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
         call={call}
+        leadType={'sellRentout'}
       />
     </View>
   )

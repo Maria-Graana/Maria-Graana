@@ -179,7 +179,7 @@ class PropAgentTile extends React.Component {
                   </View>
                 </Menu>
               ) : null}
-              {showDone ? (
+              {screen === 'viewing' && showDone ? (
                 <Menu
                   visible={data.checkBox}
                   onDismiss={() => this.props.toggleMenu(false, data.id)}
@@ -203,6 +203,30 @@ class PropAgentTile extends React.Component {
                         this.props.doneViewing(data)
                       }}
                       title="Viewing done"
+                    />
+                  </View>
+                </Menu>
+              ) : null}
+              {screen === 'payment' ||
+              screen === 'offer' ||
+              (screen === 'propsure' && !helper.checkPropsureDocs(data.propsures, 'seller')) ? (
+                <Menu
+                  visible={data.checkBox}
+                  onDismiss={() => this.props.toggleMenu(false, data.id)}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      name="dots-three-vertical"
+                      size={20}
+                    />
+                  }
+                >
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        this.props.goToPropertyComments(data)
+                      }}
+                      title="Comments"
                     />
                   </View>
                 </Menu>

@@ -67,6 +67,7 @@ class BuyerSellerTile extends React.Component {
       RCMBTNTitle,
       setComissionApplicable,
       call,
+      leadType,
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
     let disabledSwitch = this.switchToggle()
@@ -76,7 +77,7 @@ class BuyerSellerTile extends React.Component {
       <View style={styles.tileView}>
         <View style={[styles.titleView, { paddingVertical: 0, paddingBottom: 10 }]}>
           <Text style={styles.titleText}>{tileTitle}</Text>
-          {showSwitch && (
+          {showSwitch && leadType === 'rcm' && (
             <Switch
               disabled={disabledSwitch}
               trackColor={{ false: '#81b0ff', true: AppStyles.colors.primaryColor }}
@@ -93,14 +94,16 @@ class BuyerSellerTile extends React.Component {
         </View>
         {!commissionNotApplicableBuyerSeller || !singleCommission ? (
           <View>
-            <RCMBTN
-              onClick={() => closeLegalDocument(tileType)}
-              btnImage={null}
-              btnText={'LEGAL SERVICES'}
-              checkLeadClosedOrNot={false}
-              hiddenBtn={commissionNotApplicableBuyerSeller}
-              addBorder={true}
-            />
+            {leadType !== 'sellRentout' && paymentCommission ? (
+              <RCMBTN
+                onClick={() => closeLegalDocument(tileType)}
+                btnImage={null}
+                btnText={'LEGAL SERVICES'}
+                checkLeadClosedOrNot={false}
+                hiddenBtn={commissionNotApplicableBuyerSeller}
+                addBorder={true}
+              />
+            ) : null}
             {lead.commissions ? (
               payment ? (
                 <CommissionTile

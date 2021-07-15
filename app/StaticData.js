@@ -23,6 +23,10 @@ export default StaticData = {
       value: 'task',
     },
     {
+      name: 'Follow Up',
+      value: 'follow_up',
+    },
+    {
       name: 'Meeting',
       value: 'meeting',
     },
@@ -33,10 +37,6 @@ export default StaticData = {
     {
       name: 'Morning Meeting',
       value: 'morning_meeting',
-    },
-    {
-      name: 'Follow Up',
-      value: 'follow_up',
     },
   ],
   oneToTen: [

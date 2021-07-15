@@ -9,11 +9,14 @@ import TouchableButton from '../TouchableButton'
 import UploadAttachment from '../UploadAttachment'
 import AttachmentTile from '../AttachmentTile'
 import _ from 'underscore'
+import ErrorMessage from '../ErrorMessage'
 
 const ReferenceGuideModal = ({
   isReferenceModalVisible,
   hideReferenceGuideModal,
   addInvestmentGuide,
+  referenceGuideLoading,
+  referenceErrorMessage,
 }) => {
   const [investmentGuideNo, setInvestmentGuideNo] = useState(null)
   const [showAction, setShowAction] = useState(false)
@@ -55,6 +58,7 @@ const ReferenceGuideModal = ({
               placeholder={'Enter Investment Guide Reference'}
             />
           </View>
+          <ErrorMessage errorMessage={referenceErrorMessage} />
         </View>
 
         {investmentGuideAttachments && investmentGuideAttachments.length > 0 && (
@@ -92,6 +96,7 @@ const ReferenceGuideModal = ({
           <TouchableButton
             containerStyle={AppStyles.formBtn}
             label="Save"
+            loading={referenceGuideLoading}
             onPress={() =>
               investmentGuideNo === null || investmentGuideNo === ''
                 ? alert('Please enter investment guide no')

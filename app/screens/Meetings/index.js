@@ -14,6 +14,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import MeetingTile from '../../components/MeetingTile'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import ReferenceGuideModal from '../../components/ReferenceGuideModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
@@ -50,6 +51,10 @@ class Meetings extends Component {
       comment: null,
       selectedClientContacts: [],
       isMultiPhoneModalVisible: false,
+      isReferenceModalVisible: false,
+      referenceGuideLoading: false,
+      selectedMeetingId: null,
+      referenceErrorMessage: null,
     }
   }
 
@@ -135,16 +140,22 @@ class Meetings extends Component {
         this.getMeetingLead()
       })
     } else if (status === 'meeting_done') {
-      body = { response: status, comments: status, leadId: lead.id, status: 'completed' }
-      axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
-        this.getMeetingLead()
-      })
-      this.setState({
-        statusfeedbackModalVisible: true,
-        modalMode: 'meeting',
-        currentCall:
-          meetings && meetings.rows ? meetings.rows.find((item) => item.id === id) : null,
-      })
+      if (lead && lead.guideReference) {
+        //console.log(id)
+        body = { response: status, comments: status, leadId: lead.id, status: 'completed' }
+        axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
+          this.getMeetingLead()
+        })
+        this.setState({
+          statusfeedbackModalVisible: true,
+          modalMode: 'meeting',
+          selectedMeetingId: id,
+          currentCall:
+            meetings && meetings.rows ? meetings.rows.find((item) => item.id === id) : null,
+        })
+      } else {
+        this.setState({ isReferenceModalVisible: true, selectedMeetingId: id }) // show reference guide modal for first meeting if reference number is null
+      }
     } else {
       body = { response: status, comments: status, leadId: lead.id }
       axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
@@ -491,6 +502,77 @@ class Meetings extends Component {
     this.setState({ statusfeedbackModalVisible: value })
   }
 
+  addInvestmentGuide = (guideNo, attachments) => {
+    const { lead } = this.props
+    const { selectedMeetingId, meetings } = this.state
+    let body = {}
+    const referenceNumberUrl = `/api/diary/addGuideReference?cmLeadId=${lead.id}&guideReference=${guideNo}`
+    this.setState({ referenceGuideLoading: true }, () => {
+      axios
+        .post(referenceNumberUrl)
+        .then((response) => {
+          if (response && response.data.status) {
+            //helper.successToast(response.data.message)
+            this.setState(
+              {
+                isReferenceModalVisible: false,
+                referenceGuideLoading: false,
+                referenceErrorMessage: null,
+              },
+              () => {
+                setTimeout(() => {
+                  this.setState({ statusfeedbackModalVisible: true }, () => {
+                    body = {
+                      response: 'meeting_done',
+                      comments: 'meeting_done',
+                      leadId: lead.id,
+                      status: 'completed',
+                    }
+                    axios.patch(`/api/diary/update?id=${selectedMeetingId}`, body).then((res) => {
+                      this.getMeetingLead()
+                    })
+                    this.setState({
+                      statusfeedbackModalVisible: true,
+                      modalMode: 'meeting',
+                      currentCall:
+                        meetings && meetings.rows
+                          ? meetings.rows.find((item) => item.id === selectedMeetingId)
+                          : null,
+                    })
+                  })
+                }, 1000)
+              }
+            )
+            this.fetchLead()
+            attachments.map((item) => {
+              // upload attachments after reference number is added successfully
+              let attachment = {
+                name: item.fileName,
+                type: 'file/' + item.fileName.split('.').pop(),
+                uri: item.uri,
+              }
+              let fd = new FormData()
+              fd.append('file', attachment)
+              let attachmentUrl = `/api/diary/addGuideAttachment?cmLeadId=${lead.id}&guideReference=${guideNo}&title=${attachment.name}&fileName=${attachment.name}`
+              axios.post(attachmentUrl, fd).then((response) => {
+                if (!response.status) {
+                  helper.errorToast('Failed to upload attachment!')
+                }
+              })
+            })
+          } else {
+            this.setState({
+              referenceGuideLoading: false,
+              referenceErrorMessage: response.data.message,
+            })
+          }
+        })
+        .catch((error) => {
+          console.log('error', error)
+        })
+    })
+  }
+
   render() {
     const {
       active,
@@ -513,6 +595,9 @@ class Meetings extends Component {
       comment,
       selectedClientContacts,
       isMultiPhoneModalVisible,
+      isReferenceModalVisible,
+      referenceGuideLoading,
+      referenceErrorMessage,
     } = this.state
 
     const { navigation, lead } = this.props
@@ -600,6 +685,16 @@ class Meetings extends Component {
             closedWon={closedWon}
           />
         </View>
+
+        <ReferenceGuideModal
+          isReferenceModalVisible={isReferenceModalVisible}
+          hideReferenceGuideModal={() => this.setState({ isReferenceModalVisible: false })}
+          addInvestmentGuide={(guideNo, attachments) =>
+            this.addInvestmentGuide(guideNo, attachments)
+          }
+          referenceGuideLoading={referenceGuideLoading}
+          referenceErrorMessage={referenceErrorMessage}
+        />
 
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}

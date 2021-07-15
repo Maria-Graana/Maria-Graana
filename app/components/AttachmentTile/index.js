@@ -8,9 +8,9 @@ import styles from './styles'
 import moment from 'moment'
 
 const AttachmentTile = (props) => {
-  const { data, deleteAttachment, viewAttachments, docType } = props
+  const { data, deleteAttachment, viewAttachments, docType, applyBorder = false } = props
   return (
-    <TouchableOpacity onPress={() => viewAttachments(data)} style={styles.mainContainer}>
+    <TouchableOpacity onPress={() => viewAttachments(data)} style={[styles.mainContainer]}>
       {/*   First Row    */}
       {docType ? (
         <View style={[styles.horizontalContainer, { paddingTop: 10 }]}>

@@ -442,6 +442,13 @@ class LeadDetail extends React.Component {
               </View>
             ) : null}
 
+            {lead.projectId && lead.guideReference ? (
+              <View style={styles.cardItemWhite}>
+                <Text style={styles.headingText}>Reference Guide#</Text>
+                <Text style={styles.labelText}>{lead.guideReference}</Text>
+              </View>
+            ) : null}
+
             <View style={styles.cardItemGrey}>
               <View style={styles.mainDesView}>
                 <View style={styles.viewOne}>

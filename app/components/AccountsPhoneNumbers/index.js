@@ -46,7 +46,6 @@ const AccountsPhoneNumbers = ({
       helper.errorToast(`No Phone Number`)
     }
   }
-
   return (
     <Modal isVisible={isMultiPhoneModalVisible}>
       <SafeAreaView>
@@ -69,7 +68,8 @@ const AccountsPhoneNumbers = ({
                 >
                   <View>
                     <Text style={[styles.number]}>
-                      {item.firstName} {item.lastName}
+                      {item.firstName} {item.lastName} (
+                      {helper.capitalize(item.role).replace('_', ' ')})
                     </Text>
                     <View style={styles.row}>
                       <Image

@@ -416,7 +416,7 @@ class PropertyOffer extends React.Component {
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
-    navigation.navigate('Comments', { propertyId: data.id, screenName: 'offer' })
+    navigation.navigate('Comments', { propertyId: data.id, screenName: 'offer', leadId: lead.id })
   }
 
   toggleMenu = (val, id) => {
@@ -585,7 +585,6 @@ class PropertyOffer extends React.Component {
     })
   }
 
-
   render() {
     const {
       menuShow,
@@ -714,13 +713,13 @@ class PropertyOffer extends React.Component {
           </View>
         </View>
         <View style={AppStyles.mainCMBottomNav}>
-        <MeetingFollowupModal
-          closeModal={() => this.closeMeetingFollowupModal()}
-          active={active}
-          isFollowUpMode={isFollowUpMode}
-          lead={lead}
-          leadType={'RCM'}
-        />
+          <MeetingFollowupModal
+            closeModal={() => this.closeMeetingFollowupModal()}
+            active={active}
+            isFollowUpMode={isFollowUpMode}
+            lead={lead}
+            leadType={'RCM'}
+          />
           <PropertyBottomNav
             goToAttachments={this.goToAttachments}
             navigateTo={this.navigateToDetails}
@@ -732,9 +731,9 @@ class PropertyOffer extends React.Component {
             callButton={true}
             customer={lead.customer}
             lead={lead}
-            goToHistory={()=> null}
-            getCallHistory={()=> null}
-            goToFollowup={()=> this.openModalInFollowupMode()}
+            goToHistory={() => null}
+            getCallHistory={() => null}
+            goToFollowup={() => this.openModalInFollowupMode()}
           />
         </View>
 

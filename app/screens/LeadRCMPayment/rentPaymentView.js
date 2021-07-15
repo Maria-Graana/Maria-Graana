@@ -155,6 +155,7 @@ const RentPaymentView = (props) => {
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
         buyerSellerCounts={buyerSellerCounts}
         call={call}
+        leadType={'rcm'}
       />
       <BuyerSellerTile
         singleCommission={singleCommission}
@@ -178,6 +179,7 @@ const RentPaymentView = (props) => {
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
         buyerSellerCounts={buyerSellerCounts}
         call={call}
+        leadType={'rcm'}
       />
     </View>
   )

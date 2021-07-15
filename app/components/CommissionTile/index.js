@@ -46,7 +46,9 @@ class CommissionTile extends Component {
         }
         disabled={commissionEdit}
         onPress={() => {
-          data.status != StaticData.leadClearedStatus ? editTile(data) : null
+          data.status !== StaticData.leadClearedStatus && data.status !== 'notCleared'
+            ? editTile(data)
+            : null
         }}
       >
         <View style={[styles.tileTopWrap, { backgroundColor: commissionEdit ? '#ddd' : '#fff' }]}>

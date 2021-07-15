@@ -94,16 +94,14 @@ class BuyerSellerTile extends React.Component {
         </View>
         {!commissionNotApplicableBuyerSeller || !singleCommission ? (
           <View>
-            {leadType !== 'sellRentout' && paymentCommission ? (
-              <RCMBTN
-                onClick={() => closeLegalDocument(tileType)}
-                btnImage={null}
-                btnText={'LEGAL SERVICES'}
-                checkLeadClosedOrNot={false}
-                hiddenBtn={commissionNotApplicableBuyerSeller}
-                addBorder={true}
-              />
-            ) : null}
+            <RCMBTN
+              onClick={() => closeLegalDocument(tileType)}
+              btnImage={null}
+              btnText={'LEGAL SERVICES'}
+              checkLeadClosedOrNot={false}
+              hiddenBtn={commissionNotApplicableBuyerSeller}
+              addBorder={true}
+            />
             {lead.commissions ? (
               payment ? (
                 <CommissionTile

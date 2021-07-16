@@ -349,7 +349,7 @@ class LeadDetail extends React.Component {
       )
     }
 
-    console.log(lead)
+    //console.log(lead)
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <ScrollView showsVerticalScrollIndicator={false}>

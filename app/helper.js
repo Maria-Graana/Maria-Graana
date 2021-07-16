@@ -551,6 +551,23 @@ const helper = {
       return `PKR ${formatPrice(start)} - ${formatPrice(end)}`
     }
   },
+  convertPriceToStringLead(start, end, maxValue) {
+    if (!start) start = 0
+    if (!end) end = 0
+    if (start === 0 && end === 0) {
+      return 'PKR Any'
+    } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
+      return `PKR Any`
+    } else if (start === 0 && end !== maxValue) {
+      return `PKR Upto ${formatPrice(end)}`
+    } else if (start !== 0 && end === maxValue) {
+      return `PKR ${formatPrice(start)} or more`
+    } else if (start === end) {
+      return `PKR ${formatPrice(start)} to ${formatPrice(end)}`
+    } else {
+      return `PKR ${formatPrice(start)} - ${formatPrice(end)}`
+    }
+  },
   convertPriceToIntegerString(start, end, maxValue) {
     if (!start) start = 0
     if (!end) end = 0

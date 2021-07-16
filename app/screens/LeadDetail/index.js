@@ -391,7 +391,7 @@ class LeadDetail extends React.Component {
               (lead.min_price !== null || lead.min_price !== undefined) &&
               (lead.price !== null || lead.price !== undefined) ? (
                 <Text style={styles.labelText}>
-                  {helper.convertPriceToString(
+                  {helper.convertPriceToStringLead(
                     lead.min_price,
                     lead.price,
                     StaticData.Constants.any_value
@@ -402,7 +402,7 @@ class LeadDetail extends React.Component {
               (lead.minPrice !== null || lead.minPrice !== undefined) &&
               (lead.maxPrice !== null || lead.maxPrice !== undefined) ? (
                 <Text style={styles.labelText}>
-                  {helper.convertPriceToString(
+                  {helper.convertPriceToStringLead(
                     lead.minPrice,
                     lead.maxPrice,
                     StaticData.Constants.any_value

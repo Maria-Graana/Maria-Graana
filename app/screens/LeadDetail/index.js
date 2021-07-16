@@ -349,7 +349,7 @@ class LeadDetail extends React.Component {
       )
     }
 
-    //console.log(lead)
+    console.log(lead)
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -607,6 +607,15 @@ class LeadDetail extends React.Component {
                 {leadSource} {lead.projectId && lead.bulk && '(Bulk uploaded)'}
               </Text>
             </View>
+
+            {lead && lead.city ? (
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Lead City </Text>
+                <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
+                  {lead.city.name}
+                </Text>
+              </View>
+            ) : null}
 
             <View style={styles.rowContainerType2}>
               <Text style={styles.headingTextTypeTwo}>Lead ID</Text>

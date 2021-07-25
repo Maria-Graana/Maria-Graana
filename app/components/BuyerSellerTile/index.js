@@ -33,21 +33,39 @@ class BuyerSellerTile extends React.Component {
   }
 
   checkSwitchVisibility = () => {
-    const { payment, singleCommission, isLeadClosed, commissionNotApplicableBuyerSeller } =
-      this.props
-    if (
-      (payment && payment.status === 'open') ||
-      (payment && payment.status === 'pendingSales') ||
-      (payment && payment.status === 'notCleared')
-    ) {
-      if (singleCommission && !isLeadClosed) return true
-      else return false
-    } else if (
-      (!payment && singleCommission && !isLeadClosed) ||
-      !commissionNotApplicableBuyerSeller
-    )
-      return true
-    else return false
+    const { payment, singleCommission, isLeadClosed, tileType, leadType } = this.props
+    let toggleVisibility = false
+    if (!isLeadClosed && singleCommission) {
+      if (
+        (payment && payment.status === 'open') ||
+        (payment && payment.status === 'pendingSales') ||
+        (payment && payment.status === 'notCleared')
+      )
+        toggleVisibility = true
+      if (!payment) toggleVisibility = true
+    } else if (!isLeadClosed && !singleCommission) {
+      // if (leadType === 'rcm' && tileType === 'buyer') toggleVisibility = true
+      // if (leadType === 'sellRentOut' && tileType === 'seller') toggleVisibility = true
+    }
+    return toggleVisibility
+  }
+
+  checkTileVisibility = () => {
+    const { singleCommission, tileType, leadType, commissionNotApplicableBuyerSeller } = this.props
+    let tileVisibility = true
+    if (!singleCommission) {
+      if (leadType === 'rcm' && tileType === 'buyer' && commissionNotApplicableBuyerSeller)
+        tileVisibility = false
+      if (leadType === 'sellRentOut' && tileType === 'seller' && commissionNotApplicableBuyerSeller)
+        tileVisibility = false
+    }
+    if (singleCommission) {
+      if (leadType === 'rcm' && tileType === 'buyer' && commissionNotApplicableBuyerSeller)
+        tileVisibility = false
+      if (leadType === 'rcm' && tileType === 'seller' && commissionNotApplicableBuyerSeller)
+        tileVisibility = false
+    }
+    return tileVisibility
   }
 
   render() {
@@ -70,8 +88,9 @@ class BuyerSellerTile extends React.Component {
       leadType,
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
-    let disabledSwitch = this.switchToggle()
+    let disabledSwitch = this.checkSwitchVisibility() ? false : true
     let showSwitch = this.checkSwitchVisibility()
+    let tileVisibility = this.checkTileVisibility()
 
     return (
       <View style={styles.tileView}>
@@ -92,7 +111,7 @@ class BuyerSellerTile extends React.Component {
             />
           )}
         </View>
-        {!commissionNotApplicableBuyerSeller || !singleCommission ? (
+        {tileVisibility ? (
           <View>
             <RCMBTN
               onClick={() => closeLegalDocument(tileType)}

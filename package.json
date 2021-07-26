@@ -79,7 +79,8 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
     "sentry-expo": "^2.1.2",
-    "underscore": "^1.9.2"
+    "underscore": "^1.9.2",
+    "expo-device": "~2.4.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",

@@ -754,6 +754,7 @@ class CMPayment extends Component {
         armsUserId: user.id,
         installmentAmount: CMPayment.installmentAmount,
         instrumentId: addInstrument.id,
+        isPrimary: false,
       }
       if (isCMEdit) this.updateCMPayment(body)
       else this.addCMPayment(body)
@@ -770,6 +771,7 @@ class CMPayment extends Component {
               addedBy: 'buyer',
               installmentAmount: CMPayment.installmentAmount,
               instrumentId: res.data.id,
+              isPrimary: true,
             }
             if (isCMEdit) this.updateCMPayment(body)
             else this.addCMPayment(body)

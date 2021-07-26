@@ -608,6 +608,15 @@ class LeadDetail extends React.Component {
               </Text>
             </View>
 
+            {lead && lead.city ? (
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Lead City </Text>
+                <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
+                  {lead.city.name}
+                </Text>
+              </View>
+            ) : null}
+
             <View style={styles.rowContainerType2}>
               <Text style={styles.headingTextTypeTwo}>Lead ID</Text>
               <Text style={styles.labelTextTypeTwo}>{lead.id ? lead.id : ''} </Text>

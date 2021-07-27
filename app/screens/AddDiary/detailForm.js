@@ -166,7 +166,7 @@ class DetailForm extends Component {
             rowSpan={5}
             placeholder="Description"
             onChangeText={(text) => this.handleForm(text, 'notes')}
-            editable={formData.status === 'pending' ? true : false}
+            disabled={formData.status === 'pending' ? false : true}
             value={notes}
           />
         </View>

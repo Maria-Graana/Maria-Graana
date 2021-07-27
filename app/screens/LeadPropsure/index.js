@@ -32,7 +32,6 @@ import StaticData from '../../StaticData'
 import styles from './styles'
 import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
-import * as Permissions from 'expo-permissions'
 import * as IntentLauncher from 'expo-intent-launcher'
 import ViewDocs from '../../components/ViewDocs'
 import PaymentMethods from '../../PaymentMethods'
@@ -199,7 +198,7 @@ class LeadPropsure extends React.Component {
   }
 
   saveFile = async (fileUri, doc) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {

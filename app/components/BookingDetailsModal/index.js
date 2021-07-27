@@ -10,7 +10,6 @@ import PaymentMethods from '../../PaymentMethods'
 import helper from '../../helper'
 import ViewDocs from '../ViewDocs'
 import * as MediaLibrary from 'expo-media-library'
-import * as Permissions from 'expo-permissions'
 import * as FileSystem from 'expo-file-system'
 
 class BookingDetailsModal extends React.Component {
@@ -44,7 +43,7 @@ class BookingDetailsModal extends React.Component {
   }
 
   saveFile = async (fileUri) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {

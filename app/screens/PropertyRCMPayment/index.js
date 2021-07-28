@@ -1287,7 +1287,7 @@ class PropertyRCMPayment extends React.Component {
       accountsLoading,
       isMultiPhoneModalVisible,
     } = this.state
-    const { user } = this.props
+    const { user, contacts } = this.props
     return !loading ? (
       <KeyboardAvoidingView
         style={[
@@ -1321,6 +1321,7 @@ class PropertyRCMPayment extends React.Component {
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={accountPhoneNumbers}
           loading={accountsLoading}
+          phoneContacts={contacts}
         />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}
@@ -1512,6 +1513,7 @@ mapStateToProps = (store) => {
     rcmPayment: store.RCMPayment.RCMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    contacts: store.contacts.contacts,
   }
 }
 

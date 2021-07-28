@@ -25,26 +25,35 @@ const AccountsPhoneNumbers = ({
   isMultiPhoneModalVisible,
   toggleAccountPhone,
   contacts,
-  handlePhoneSelectDone,
   mode = 'phone',
   loading,
+  phoneContacts,
 }) => {
-  const call = (data) => {
-    let url = `tel:${data.phoneNumber}`
-    if (url && url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            helper.errorToast(`No application available to dial phone number`)
-            console.log("Can't handle url: " + url)
-          } else {
-            return Linking.openURL(url)
-          }
-        })
-        .catch((err) => console.error('An error occurred', err))
+  const displayName = (data) => {
+    if (data) {
+      return data.firstName + ' ' + data.lastName
     } else {
-      helper.errorToast(`No Phone Number`)
+      return '- - -'
     }
+  }
+  const callPayload = (data) => {
+    let name = displayName(data)
+    let newContact = {
+      phone: data.phoneNumber,
+      name: name !== '- - -' ? name : '',
+      url: `tel:${data.phoneNumber}`,
+      payload: [
+        {
+          label: 'mobile',
+          number: data.phoneNumber,
+        },
+      ],
+    }
+    helper.callNumber(
+      newContact,
+      phoneContacts,
+      data.role === 'accounts_hq' ? 'Accounts HQ' : 'Accounts'
+    )
   }
   return (
     <Modal isVisible={isMultiPhoneModalVisible}>
@@ -63,7 +72,7 @@ const AccountsPhoneNumbers = ({
               renderItem={({ item, index }) => (
                 <TouchableHighlight
                   underlayColor={AppStyles.colors.backgroundColor}
-                  onPress={() => call(item)}
+                  onPress={() => callPayload(item)}
                   style={styles.itemRow}
                 >
                   <View>

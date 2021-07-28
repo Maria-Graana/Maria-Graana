@@ -268,7 +268,7 @@ const helper = {
       return (showPkr ? 'PKR ' : '') + formatPrice(price)
     }
   },
-  callNumber(body, contacts) {
+  callNumber(body, contacts, title = 'ARMS') {
     let url = body.url
     if (url && url != 'tel:null') {
       Linking.canOpenURL(url)
@@ -286,7 +286,7 @@ const helper = {
                 body.phone &&
                 body.phone !== ''
               )
-                if (!result) helper.addContact(body)
+                if (!result) helper.addContact(body, title)
             }
             return Linking.openURL(url)
           }
@@ -330,10 +330,10 @@ const helper = {
       return resultNum
     } else return resultNum
   },
-  addContact(data) {
+  addContact(data, title) {
     if (data && data.name && data.name !== '' && data.name !== ' ') {
       const contact = {
-        [Contacts.Fields.FirstName]: data.name + ' - ARMS',
+        [Contacts.Fields.FirstName]: data.name + ` - ${title}`,
         [Contacts.Fields.PhoneNumbers]: data.payload,
       }
       Contacts.addContactAsync(contact)

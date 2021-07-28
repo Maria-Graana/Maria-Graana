@@ -624,7 +624,7 @@ class LeadDetail extends React.Component {
 
             {assignedByName ? (
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Lead Assigned/Re-assigned By</Text>
+                <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
                 <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
                   {assignedByName}
                 </Text>

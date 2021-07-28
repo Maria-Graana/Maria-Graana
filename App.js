@@ -179,7 +179,7 @@ export default class App extends React.Component {
         },
       ],
     }
-    helper.callNumber(newContact, contacts, data.role === 'accounts' ? 'Accounts' : 'Client')
+    helper.callNumber(newContact, contacts, data.role === 'Accounts' ? 'Accounts' : 'Client')
   }
 
   callAgent = async (notification) => {

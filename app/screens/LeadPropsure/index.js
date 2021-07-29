@@ -138,8 +138,9 @@ class LeadPropsure extends React.Component {
     axios
       .get(`/api/inventory/listpropsureReports`)
       .then((res) => {
+        let reports = helper.addFalse(res.data)
         this.setState({
-          propsureReportTypes: res.data,
+          propsureReportTypes: reports,
         })
       })
       .catch((error) => {
@@ -590,15 +591,19 @@ class LeadPropsure extends React.Component {
   }
 
   addRemoveReport = (report) => {
-    const { selectedReports, propsureReportTypes } = this.state
+    const { selectedReports, propsureReportTypes, pendingPropsures } = this.state
     let reports = [...selectedReports]
     let totalReportPrice = 0
+    if (report.addItem) return
     if (reports.some((item) => item.title === report.title)) {
       if (reports && reports.length > 1 && report.title === 'Basic Property Survey Report') return
       reports = _.without(reports, report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
     } else {
-      if (!_.findWhere(reports, { title: 'Basic Property Survey Report' })) {
+      if (
+        !_.findWhere(reports, { title: 'Basic Property Survey Report' }) &&
+        pendingPropsures.length <= 0
+      ) {
         let basicReport = _.find(
           propsureReportTypes,
           (item) => item.title === 'Basic Property Survey Report'
@@ -652,7 +657,9 @@ class LeadPropsure extends React.Component {
 
   // <<<<<<<<<<<<<<<<<< Requent Propsure Documents >>>>>>>>>>>>>>>>>>
   closeModal = () => {
-    this.setState({ isVisible: false })
+    const { propsureReportTypes } = this.state
+    let reports = helper.addFalse(propsureReportTypes)
+    this.setState({ isVisible: false, pendingPropsures: [], propsureReportTypes: reports })
   }
 
   showReportsModal = (property) => {
@@ -675,6 +682,7 @@ class LeadPropsure extends React.Component {
       selectedProperty,
       totalReportPrice,
       propsureReportTypes,
+      pendingPropsures,
     } = this.state
     if (selectedReports.length === 0) {
       alert('Please select at least one report!')
@@ -688,7 +696,7 @@ class LeadPropsure extends React.Component {
         }
       })
       let packageNames = _.pluck(selectedReports, 'title')
-      if (!packageNames.includes('Basic Property Survey Report')) {
+      if (!packageNames.includes('Basic Property Survey Report') && pendingPropsures.length <= 0) {
         let basicReport = _.find(
           propsureReportTypes,
           (item) => item.title === 'Basic Property Survey Report'
@@ -1257,6 +1265,17 @@ class LeadPropsure extends React.Component {
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
 
+  additionalRequest = () => {
+    const { propsureReportTypes, pendingPropsures } = this.state
+    let newReports = helper.checkPropsureAdditionalReports(propsureReportTypes, pendingPropsures)
+    this.setState({
+      documentModalVisible: false,
+      file: null,
+      isVisible: true,
+      propsureReportTypes: newReports,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1343,6 +1362,7 @@ class LeadPropsure extends React.Component {
             editable={this.setCommissionEditData}
             onPaymentLongPress={this.onPaymentLongPress}
             type={'buyer'}
+            additionalRequest={this.additionalRequest}
           />
           <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
           <AddPropsurePayment

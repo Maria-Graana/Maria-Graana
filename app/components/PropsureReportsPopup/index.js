@@ -20,7 +20,6 @@ const PropsureReportsPopup = (props) => {
     totalReportPrice,
     checkValidation,
   } = props
-
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView style={[AppStyles.mb1, { backgroundColor: '#e7ecf0' }]}>
@@ -40,16 +39,27 @@ const PropsureReportsPopup = (props) => {
               <View style={styles.reportRow}>
                 <View style={[styles.listView]}>
                   <CheckBox
-                    checked={selectedReports.some((report) => item.title === report.title)}
+                    checked={
+                      !item.addItem
+                        ? selectedReports.some((report) => item.title === report.title)
+                        : true
+                    }
                     style={
                       selectedReports.some((report) => item.title === report.title)
                         ? styles.checkBox
                         : styles.notCheckBox
                     }
-                    onPress={() => addRemoveReport(item)}
+                    onPress={() => {
+                      if (!item.addItem) addRemoveReport(item)
+                    }}
                     color={AppStyles.colors.primaryColor}
                   />
-                  <Text onPress={() => addRemoveReport(item)} style={styles.reportName}>
+                  <Text
+                    onPress={() => {
+                      if (!item.addItem) addRemoveReport(item)
+                    }}
+                    style={styles.reportName}
+                  >
                     {item.title}
                   </Text>
                 </View>

@@ -1016,6 +1016,30 @@ const helper = {
       return newData
     }
   },
+  addFalse(data) {
+    if (data && data.length) {
+      let newData = data.map((item, index) => {
+        item.addItem = false
+        return item
+      })
+      return newData
+    }
+  },
+  checkPropsureAdditionalReports(reports, additionalReports) {
+    if (additionalReports && additionalReports.length) {
+      let propsureReport = _.pluck(additionalReports, 'propsureReport')
+      let newReports = reports.map((item) => {
+        let result = _.find(propsureReport, function (num) {
+          return num.id === item.id
+        })
+        if (result) {
+          item.addItem = true
+          return item
+        } else return item
+      })
+      return newReports
+    } else return reports
+  },
 }
 
 module.exports = helper

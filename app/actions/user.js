@@ -252,9 +252,11 @@ export function setInternetConnection(value) {
   }
 }
 
-export function getGoogleAuth(user) {
+export function getGoogleAuth() {
   return (dispatch, getsState) => {
+    let user = getsState().user.user
     if (user && user.googleAuth) {
+      //console.log('auth exists')
       return Promise.resolve(true)
     } else {
       return axios
@@ -262,6 +264,7 @@ export function getGoogleAuth(user) {
         .then((result) => {
           return WebBrowser.openBrowserAsync(result.data).then((browserResult) => {
             if (browserResult.type === 'cancel' || browserResult.type === 'dismiss') {
+              dispatch(getCurrentUser())
               return true
             }
           })

@@ -1875,7 +1875,7 @@ class LeadRCMPayment extends React.Component {
       accountsLoading,
       isMultiPhoneModalVisible,
     } = this.state
-    const { navigation, user } = this.props
+    const { navigation, user, contacts } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
 
     return !loading ? (
@@ -1912,6 +1912,7 @@ class LeadRCMPayment extends React.Component {
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={accountPhoneNumbers}
           loading={accountsLoading}
+          phoneContacts={contacts}
         />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}
@@ -2139,6 +2140,7 @@ mapStateToProps = (store) => {
     rcmPayment: store.RCMPayment.RCMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    contacts: store.contacts.contacts,
   }
 }
 

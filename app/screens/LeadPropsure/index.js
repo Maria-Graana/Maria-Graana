@@ -69,7 +69,7 @@ class LeadPropsure extends React.Component {
       selectedPropertyId: null,
       selectedProperty: null,
       selectedPropsureId: null,
-      pendingPropsures: null,
+      pendingPropsures: [],
       matchData: [],
       progressValue: 0,
       // for the lead close dialog

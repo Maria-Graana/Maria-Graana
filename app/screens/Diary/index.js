@@ -391,8 +391,8 @@ class Diary extends React.Component {
   }
 
   addGoogleCalendarTask = async (description, time) => {
-    const { user } = this.props
-    this.props.dispatch(getGoogleAuth(user)).then((res) => {
+    const { user, dispatch } = this.props
+    dispatch(getGoogleAuth(user)).then((res) => {
       this.addTask(description, time)
     })
   }

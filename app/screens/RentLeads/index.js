@@ -409,6 +409,9 @@ class RentLeads extends React.Component {
           this.navigateToAssignLead(lead)
         })
       }
+    } else {
+      // not allowed to assign lead as per the role
+      helper.errorToast('Sorry you are not authorized to assign lead')
     }
   }
 

@@ -27,6 +27,7 @@ const PropsureDocumentPopup = (props) => {
     editable,
     onPaymentLongPress,
     type,
+    additionalRequest,
   } = props
   let totalReportsFree = helper.AddPropsureReportsFee(pendingPropsures, type)
   let singlePayment = helper.propsurePaymentType(selectedProperty, type)
@@ -200,6 +201,13 @@ const PropsureDocumentPopup = (props) => {
               )}
             </View>
           )}
+          {totalReportsFree <= 0 || !singlePayment ? (
+            <View style={{ margin: 10 }}>
+              <Button style={[AppStyles.formBtn, { marginTop: 10 }]} onPress={additionalRequest}>
+                <Text style={AppStyles.btnText}>ADD MORE REPORTS</Text>
+              </Button>
+            </View>
+          ) : null}
         </View>
       </SafeAreaView>
     </Modal>

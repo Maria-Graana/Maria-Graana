@@ -11,6 +11,7 @@ import helper from '../../helper'
 import AppStyles from '../../AppStyles'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
+import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
 
 class AddDiary extends Component {
@@ -101,11 +102,15 @@ class AddDiary extends Component {
   }
 
   createDiary = (diary) => {
-    const { route } = this.props
+    const { route, dispatch } = this.props
     if (route.params.update) {
-      this.updateDiary(diary)
+      dispatch(getGoogleAuth()).then((res) => {
+        this.updateDiary(diary)
+      })
     } else {
-      this.addDiary(diary)
+      dispatch(getGoogleAuth()).then((res) => {
+        this.addDiary(diary)
+      })
     }
   }
 

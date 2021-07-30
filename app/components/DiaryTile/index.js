@@ -61,10 +61,16 @@ class DiaryTile extends React.Component {
   }
 
   showTaskType = (val) => {
+    let finalValue = ''
     if (val && val.taskType) {
-      return this.removeUnderscore(val.taskType)
+      finalValue = this.removeUnderscore(val.taskType)
+      if (finalValue === 'Meeting With Pp') {
+        return 'Meeting With PP'
+      } else {
+        return finalValue
+      }
     } else {
-      return ''
+      return finalValue
     }
   }
 

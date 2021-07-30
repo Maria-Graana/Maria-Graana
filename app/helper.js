@@ -268,7 +268,7 @@ const helper = {
       return (showPkr ? 'PKR ' : '') + formatPrice(price)
     }
   },
-  callNumber(body, contacts) {
+  callNumber(body, contacts, title = 'ARMS') {
     let url = body.url
     if (url && url != 'tel:null') {
       Linking.canOpenURL(url)
@@ -286,7 +286,7 @@ const helper = {
                 body.phone &&
                 body.phone !== ''
               )
-                if (!result) helper.addContact(body)
+                if (!result) helper.addContact(body, title)
             }
             return Linking.openURL(url)
           }
@@ -330,10 +330,10 @@ const helper = {
       return resultNum
     } else return resultNum
   },
-  addContact(data) {
+  addContact(data, title) {
     if (data && data.name && data.name !== '' && data.name !== ' ') {
       const contact = {
-        [Contacts.Fields.FirstName]: data.name + ' - ARMS',
+        [Contacts.Fields.FirstName]: data.name + ` - ${title}`,
         [Contacts.Fields.PhoneNumbers]: data.payload,
       }
       Contacts.addContactAsync(contact)
@@ -1015,6 +1015,30 @@ const helper = {
       })
       return newData
     }
+  },
+  addFalse(data) {
+    if (data && data.length) {
+      let newData = data.map((item, index) => {
+        item.addItem = false
+        return item
+      })
+      return newData
+    }
+  },
+  checkPropsureAdditionalReports(reports, additionalReports) {
+    if (additionalReports && additionalReports.length) {
+      let propsureReport = _.pluck(additionalReports, 'propsureReport')
+      let newReports = reports.map((item) => {
+        let result = _.find(propsureReport, function (num) {
+          return num.id === item.id
+        })
+        if (result) {
+          item.addItem = true
+          return item
+        } else return item
+      })
+      return newReports
+    } else return reports
   },
 }
 

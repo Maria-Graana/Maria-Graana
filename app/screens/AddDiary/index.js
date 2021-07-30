@@ -12,6 +12,7 @@ import AppStyles from '../../AppStyles'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import { getGoogleAuth } from '../../actions/user'
+import AppRatingModalPP from '../../components/AppRatingModalPP'
 
 class AddDiary extends Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class AddDiary extends Component {
       checkValidation: false,
       taskValues: [],
       loading: false,
+      isAppRatingModalVisible: false,
     }
   }
 
@@ -203,6 +205,17 @@ class AddDiary extends Component {
   }
 
   performTaskActions = (type) => {
+    const { route } = this.props
+    const { data } = route.params
+    console.log('data', data)
+    if (data && data.taskType === 'meeting_with_pp') {
+      this.setState({ isAppRatingModalVisible: true })
+    } else {
+      this.performTask(type)
+    }
+  }
+
+  performTask = (type, isRated = null, ratingComment = null) => {
     const { route, navigation } = this.props
     const { data } = route.params
     let endPoint = ``
@@ -212,6 +225,8 @@ class AddDiary extends Component {
         axios
           .patch(endPoint, {
             status: type,
+            isRated,
+            ratingComment,
           })
           .then(function (response) {
             if (response.status == 200) {
@@ -225,8 +240,15 @@ class AddDiary extends Component {
     }
   }
 
+  submitRating = (isRated, ratingComment) => {
+    console.log(isRated, ratingComment)
+    this.setState({ isAppRatingModalVisible: false }, () => {
+      this.performTask('completed', isRated, ratingComment)
+    })
+  }
+
   render() {
-    const { checkValidation, taskValues, loading } = this.state
+    const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
     const { route } = this.props
 
     return (
@@ -236,18 +258,24 @@ class AddDiary extends Component {
         enableOnAndroid
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} onLongPress={Keyboard.dismiss}>
-          <SafeAreaView style={AppStyles.mb1}>
-            <DetailForm
-              formSubmit={this.formSubmit}
-              props={this.props}
-              editableData={route.params.update ? route.params.data : null}
-              screenName={route.params.screenName ? route.params.screenName : null}
-              taskValues={taskValues}
-              checkValidation={checkValidation}
-              loading={loading}
-              performTaskActions={(type) => this.performTaskActions(type)}
+          <>
+            <AppRatingModalPP
+              isVisible={isAppRatingModalVisible}
+              submitRating={this.submitRating}
             />
-          </SafeAreaView>
+            <SafeAreaView style={AppStyles.mb1}>
+              <DetailForm
+                formSubmit={this.formSubmit}
+                props={this.props}
+                editableData={route.params.update ? route.params.data : null}
+                screenName={route.params.screenName ? route.params.screenName : null}
+                taskValues={taskValues}
+                checkValidation={checkValidation}
+                loading={loading}
+                performTaskActions={(type) => this.performTaskActions(type)}
+              />
+            </SafeAreaView>
+          </>
         </TouchableWithoutFeedback>
       </KeyboardAwareScrollView>
     )

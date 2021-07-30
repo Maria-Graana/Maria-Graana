@@ -1542,7 +1542,7 @@ class CMPayment extends Component {
       accountsLoading,
       isMultiPhoneModalVisible,
     } = this.state
-    const { lead, navigation } = this.props
+    const { lead, navigation, contacts } = this.props
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -1556,6 +1556,7 @@ class CMPayment extends Component {
             isMultiPhoneModalVisible={isMultiPhoneModalVisible}
             contacts={accountPhoneNumbers}
             loading={accountsLoading}
+            phoneContacts={contacts}
           />
           <BookingDetailsModal
             active={bookingModal}
@@ -1755,6 +1756,7 @@ mapStateToProps = (store) => {
     CMPayment: store.CMPayment.CMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    contacts: store.contacts.contacts,
   }
 }
 

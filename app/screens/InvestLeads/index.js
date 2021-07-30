@@ -372,6 +372,8 @@ class InvestLeads extends React.Component {
           this.navigateToAssignLead(lead)
         })
       }
+    } else {
+      helper.errorToast('Sorry you are not authorized to assign lead')
     }
   }
 

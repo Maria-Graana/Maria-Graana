@@ -290,7 +290,11 @@ class LeadDetail extends React.Component {
     if (lead.origin) {
       if (lead.origin === 'arms') {
         return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${
-          lead.creator ? `(${lead.creator.firstName} ${lead.creator.lastName})` : ''
+          lead.creator
+            ? `(${helper.capitalize(lead.creator.firstName)} ${helper.capitalize(
+                lead.creator.lastName
+              )})`
+            : ''
         }`
       } else {
         return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`
@@ -318,18 +322,27 @@ class LeadDetail extends React.Component {
     return size
   }
 
+  getAssignedByName = (lead) => {
+    if (lead && lead.cmAssignedBy) {
+      return (
+        helper.capitalize(lead.cmAssignedBy.firstName) +
+        ' ' +
+        helper.capitalize(lead.cmAssignedBy.lastName)
+      )
+    } else if (lead && lead.rcmAssignedBy) {
+      return (
+        helper.capitalize(lead.rcmAssignedBy.firstName) +
+        ' ' +
+        helper.capitalize(lead.rcmAssignedBy.lastName)
+      )
+    } else {
+      return null
+    }
+  }
+
   render() {
-    let {
-      type,
-      lead,
-      customerName,
-      showAssignToButton,
-      mainButtonText,
-      fromScreen,
-      loading,
-      editDes,
-      description,
-    } = this.state
+    let { type, lead, customerName, mainButtonText, fromScreen, loading, editDes, description } =
+      this.state
     const { user, route } = this.props
     const { purposeTab } = route.params
     let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
@@ -349,7 +362,8 @@ class LeadDetail extends React.Component {
       )
     }
 
-    //console.log(lead)
+    let assignedByName = this.getAssignedByName(lead)
+
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -607,6 +621,15 @@ class LeadDetail extends React.Component {
                 {leadSource} {lead.projectId && lead.bulk && '(Bulk uploaded)'}
               </Text>
             </View>
+
+            {assignedByName ? (
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
+                <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
+                  {assignedByName}
+                </Text>
+              </View>
+            ) : null}
 
             {lead && lead.city ? (
               <View style={styles.rowContainerType2}>

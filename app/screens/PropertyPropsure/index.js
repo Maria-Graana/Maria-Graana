@@ -534,15 +534,15 @@ class PropertyPropsure extends React.Component {
   }
 
   addRemoveReport = (report) => {
-    const { selectedReports } = this.state
+    const { selectedReports, pendingPropsures } = this.state
     let reports = [...selectedReports]
     let totalReportPrice = 0
     if (reports.some((item) => item.title === report.title)) {
       reports = _.without(reports, report)
-      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports, pendingPropsures)
     } else {
       reports.push(report)
-      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports, pendingPropsures)
     }
     this.setState({ selectedReports: reports, totalReportPrice: totalReportPrice })
   }
@@ -1096,6 +1096,19 @@ class PropertyPropsure extends React.Component {
     this.setState({
       active: !this.state.active,
       isFollowUpMode: true,
+    })
+  }
+
+  additionalRequest = () => {
+    const { propsureReportTypes, pendingPropsures } = this.state
+    let totalReportPrice = PaymentMethods.addPropsureReportPrices([], pendingPropsures)
+    let newReports = helper.checkPropsureAdditionalReports(propsureReportTypes, pendingPropsures)
+    this.setState({
+      documentModalVisible: false,
+      file: null,
+      isVisible: true,
+      propsureReportTypes: newReports,
+      totalReportPrice: totalReportPrice,
     })
   }
 

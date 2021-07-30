@@ -22,6 +22,8 @@ import PropTypes from 'prop-types'
 import { Textarea } from 'native-base'
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import TimerNotification from '../../LocalNotifications'
+import { getGoogleAuth } from '../../actions/user'
+import { useDispatch } from 'react-redux'
 
 const MeetingFollowupModal = ({
   active,
@@ -35,6 +37,7 @@ const MeetingFollowupModal = ({
   comment,
 }) => {
   const [selectedOption, setSelectedOption] = useState('')
+  const dispatch = useDispatch()
   const [formData, setFormData] = useState({
     time: '',
     date: '',
@@ -127,21 +130,22 @@ const MeetingFollowupModal = ({
           start: start,
           end: end,
         }
-
-        axios
-          .patch(`/api/diary/update?id=${currentMeeting.id}`, body)
-          .then((res) => {
-            helper.successToast(`Meeting Updated`)
-            getMeetingLead && getMeetingLead()
-            closeModal()
-            clearFormData()
-          })
-          .catch((error) => {
-            helper.errorToast(`Some thing went wrong!!!`, error)
-          })
-          .finally(() => {
-            setLoading(false)
-          })
+        dispatch(getGoogleAuth()).then((res) => {
+          axios
+            .patch(`/api/diary/update?id=${currentMeeting.id}`, body)
+            .then((res) => {
+              helper.successToast(`Meeting Updated`)
+              getMeetingLead && getMeetingLead()
+              closeModal()
+              clearFormData()
+            })
+            .catch((error) => {
+              helper.errorToast(`Some thing went wrong!!!`, error)
+            })
+            .finally(() => {
+              setLoading(false)
+            })
+        })
       } else {
         formData.addedBy = 'self'
         formData.taskCategory = 'leadTask'
@@ -150,28 +154,31 @@ const MeetingFollowupModal = ({
         formData.start = start
         formData.end = end
         // Add meeting
-        axios
-          .post(`api/leads/project/meeting`, formData)
-          .then((res) => {
-            helper.successToast(`Meeting Added`)
-            let start = new Date(res.data.start)
-            let end = new Date(res.data.end)
-            let data = {
-              id: res.data.id,
-              title: res.data.subject,
-              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
-            }
-            TimerNotification(data, start)
-            getMeetingLead && getMeetingLead()
-            closeModal()
-            clearFormData()
-          })
-          .catch(() => {
-            helper.errorToast(`Some thing went wrong!!!`)
-          })
-          .finally(() => {
-            setLoading(false)
-          })
+
+        dispatch(getGoogleAuth()).then((res) => {
+          axios
+            .post(`api/leads/project/meeting`, formData)
+            .then((res) => {
+              helper.successToast(`Meeting Added`)
+              let start = new Date(res.data.start)
+              let end = new Date(res.data.end)
+              let data = {
+                id: res.data.id,
+                title: res.data.subject,
+                body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+              }
+              TimerNotification(data, start)
+              getMeetingLead && getMeetingLead()
+              closeModal()
+              clearFormData()
+            })
+            .catch(() => {
+              helper.errorToast(`Some thing went wrong!!!`)
+            })
+            .finally(() => {
+              setLoading(false)
+            })
+        })
       }
     }
   }
@@ -255,7 +262,9 @@ const MeetingFollowupModal = ({
     }
 
     // close Modal here
-    addFollowUpForCall(payload)
+    dispatch(getGoogleAuth()).then((res) => {
+      addFollowUpForCall(payload)
+    })
     closeModal()
   }
 

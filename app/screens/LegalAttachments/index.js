@@ -991,7 +991,7 @@ class LegalAttachment extends Component {
       accountsLoading,
       isMultiPhoneModalVisible,
     } = this.state
-    const { lead, route } = this.props
+    const { lead, route, contacts } = this.props
     let mailCheck = this.mailSentCheck()
     let onReadOnly = this.checkReadOnlyMode()
     const isLeadClosed =
@@ -1027,6 +1027,7 @@ class LegalAttachment extends Component {
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={accountPhoneNumbers}
           loading={accountsLoading}
+          phoneContacts={contacts}
         />
         <DeleteModal
           isVisible={deletePaymentVisible}
@@ -1141,6 +1142,7 @@ mapStateToProps = (store) => {
     legalPayment: store.LegalPayment.LegalPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    contacts: store.contacts.contacts,
     lead: store.lead.lead,
     user: store.user.user,
   }

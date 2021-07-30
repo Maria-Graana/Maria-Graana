@@ -1,15 +1,21 @@
 /** @format */
+import _ from 'underscore'
 const PaymentMethods = {
-  addPropsureReportPrices(reports) {
+  addPropsureReportPrices(reports, pendingPropsures) {
     let total = 0
+    let pendingPropsuresTotal = 0
+    if (pendingPropsures && pendingPropsures.length) {
+      let propsureReport = _.pluck(pendingPropsures, 'propsureReport')
+      propsureReport.map((item, index) => {
+        pendingPropsuresTotal = Number(pendingPropsuresTotal) + Number(item.fee)
+      })
+    }
     if (reports && reports.length) {
       reports.map((item, index) => {
         total = Number(total) + Number(item.fee)
       })
-      return total
-    } else {
-      return total
     }
+    return total + pendingPropsuresTotal
   },
   handleEmptyValue(value) {
     return value != null && value != '' ? Number(value) : 0

@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
 import config from '../config'
 import * as Sentry from 'sentry-expo'
+import * as WebBrowser from 'expo-web-browser'
 
 const CancelToken = axios.CancelToken
 const source = CancelToken.source()
@@ -15,7 +16,7 @@ export const storeItem = async (key, item) => {
   try {
     let jsonOfItem = await AsyncStorage.setItem(key, JSON.stringify(item))
     return jsonOfItem
-  } catch (error) { }
+  } catch (error) {}
 }
 
 export const getItem = async (key) => {
@@ -32,7 +33,7 @@ export const removeItem = async (key) => {
   try {
     var jsonOfItem = await AsyncStorage.removeItem(key)
     return jsonOfItem
-  } catch (error) { }
+  } catch (error) {}
 }
 
 setAuthorizationToken = (token) => {
@@ -144,7 +145,8 @@ export function setuser(data) {
           )
         }
         return error
-      }).finally(() => {
+      })
+      .finally(() => {
         dispatch({
           type: types.USER_LOADED,
         })
@@ -229,10 +231,8 @@ export function checkToken() {
 export function getCurrentUser() {
   return (dispatch, getsState) => {
     getItem('token').then((token) => {
-    const url = `${config.apiPath}/api/user/me`;
-    axios
-      .get(url, { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => {
+      const url = `${config.apiPath}/api/user/me`
+      axios.get(url, { headers: { Authorization: `Bearer ${token}` } }).then((response) => {
         // store in async storage
         dispatch({
           type: types.SET_USER,
@@ -249,5 +249,30 @@ export function setInternetConnection(value) {
       type: types.SET_INTERNET_CONNECTION,
       payload: value,
     })
+  }
+}
+
+export function getGoogleAuth() {
+  return (dispatch, getsState) => {
+    let user = getsState().user.user
+    if (user && user.googleAuth) {
+      //console.log('auth exists')
+      return Promise.resolve(true)
+    } else {
+      return axios
+        .get(`/api/user/auth/googleCalendar`)
+        .then((result) => {
+          return WebBrowser.openBrowserAsync(result.data).then((browserResult) => {
+            if (browserResult.type === 'cancel' || browserResult.type === 'dismiss') {
+              dispatch(getCurrentUser())
+              return true
+            }
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+          return Promise.reject('Error auth')
+        })
+    }
   }
 }

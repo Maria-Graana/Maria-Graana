@@ -75,7 +75,6 @@ class AddDiary extends Component {
       delete payload.startTime
       delete payload.endTime
       delete payload.hour
-      //console.log(payload)
       return payload
     } else {
       // add payload contain these keys below
@@ -207,7 +206,6 @@ class AddDiary extends Component {
   performTaskActions = (type) => {
     const { route } = this.props
     const { data } = route.params
-    console.log('data', data)
     if (data && data.taskType === 'meeting_with_pp') {
       this.setState({ isAppRatingModalVisible: true })
     } else {
@@ -215,7 +213,7 @@ class AddDiary extends Component {
     }
   }
 
-  performTask = (type, isRated = null, ratingComment = null) => {
+  performTask = (type, isRated = null, ratingComments = null) => {
     const { route, navigation } = this.props
     const { data } = route.params
     let endPoint = ``
@@ -226,7 +224,8 @@ class AddDiary extends Component {
           .patch(endPoint, {
             status: type,
             isRated,
-            ratingComment,
+            ratingComments,
+            taskType: data && data.taskType ? data.taskType : '',
           })
           .then(function (response) {
             if (response.status == 200) {
@@ -240,10 +239,9 @@ class AddDiary extends Component {
     }
   }
 
-  submitRating = (isRated, ratingComment) => {
-    console.log(isRated, ratingComment)
+  submitRating = (isRated, ratingComments) => {
     this.setState({ isAppRatingModalVisible: false }, () => {
-      this.performTask('completed', isRated, ratingComment)
+      this.performTask('completed', isRated, ratingComments)
     })
   }
 

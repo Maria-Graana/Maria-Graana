@@ -10,11 +10,11 @@ import TouchableButton from '../TouchableButton'
 
 const AppRatingModalPP = ({ isVisible, submitRating }) => {
   const [isRated, setIsRated] = useState(false)
-  const [ratingComment, setRatingComment] = useState(null)
+  const [ratingComments, setRatingComment] = useState(null)
   return (
     <Modal isVisible={isVisible}>
       <View style={styles.modalMain}>
-        <Text style={styles.title}>Rating Feedback</Text>
+        <Text style={styles.title}>Graana App Feedback</Text>
         <TouchableOpacity onPress={() => setIsRated(!isRated)} style={styles.checkBoxRow}>
           <CheckBox
             color={AppStyles.colors.primaryColor}
@@ -22,7 +22,7 @@ const AppRatingModalPP = ({ isVisible, submitRating }) => {
             style={styles.checkBox}
             onPress={() => setIsRated(!isRated)}
           />
-          <Text style={styles.checkBoxText}>App Rating is done by PP</Text>
+          <Text style={styles.checkBoxText}>Has PP downloaded and rated Graana App?</Text>
         </TouchableOpacity>
         <View style={[AppStyles.mainInputWrap]}>
           <Textarea
@@ -36,7 +36,7 @@ const AppRatingModalPP = ({ isVisible, submitRating }) => {
             rowSpan={5}
             placeholder="Comments"
             onChangeText={(text) => setRatingComment(text)}
-            value={ratingComment}
+            value={ratingComments}
           />
         </View>
         <View style={[AppStyles.mainInputWrap]}>
@@ -44,8 +44,8 @@ const AppRatingModalPP = ({ isVisible, submitRating }) => {
             containerStyle={[AppStyles.formBtn]}
             label="Submit"
             onPress={() => {
-              submitRating(isRated, ratingComment)
-              isRated(false)
+              submitRating(isRated, ratingComments)
+              setIsRated(false)
               setRatingComment(null)
             }}
           />
@@ -79,13 +79,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     color: AppStyles.colors.textColor,
     fontFamily: AppStyles.fonts.defaultFont,
-    fontSize: AppStyles.fontSize.medium,
+    fontSize: 14,
   },
   title: {
     width: '90%',
     color: AppStyles.colors.textColor,
     fontFamily: AppStyles.fonts.semiBoldFont,
     fontSize: AppStyles.fontSize.large,
+    marginBottom: 5,
   },
   checkBox: {
     width: 22,

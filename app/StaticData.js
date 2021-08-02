@@ -1023,7 +1023,6 @@ export default StaticData = {
       image: require('../assets/img/reassign.png'),
     },
   ],
-
   actionListItemsCM: [
     {
       id: 1,
@@ -1156,10 +1155,112 @@ export default StaticData = {
       image: require('../assets/img/Close.png'),
     },
   ],
-
   buyRentFilterType: [
     { value: 'id', name: 'ID' },
     { value: 'name', name: 'NAME' },
     { value: 'date', name: 'DATE' },
+  ],
+  areaManagerKPIS: [
+    {
+      id: 1,
+      value: '0',
+      image: require('../assets/img/monthlymeeting.png'),
+    },
+    {
+      id: 2,
+      value: '0',
+      image: require('../assets/img/viewingandmeeting.png'),
+    },
+    {
+      id: 3,
+      value: '0',
+      image: require('../assets/img/monthlycreatedcount.png'),
+    },
+    {
+      id: 4,
+      value: '0',
+      image: require('../assets/img/Deals.png'),
+    },
+    {
+      id: 5,
+      value: '0',
+      image: require('../assets/img/App_pp_rating.png'),
+    },
+    {
+      id: 6,
+      value: '0',
+      image: require('../assets/img/target-icon.png'),
+    },
+  ],
+  reAdvisorKPIS: [
+    {
+      id: 1,
+      value: '0',
+      image: require('../assets/img/monthlycreatedcount.png'),
+    },
+    {
+      id: 2,
+      value: '0',
+      image: require('../assets/img/viewingandmeeting.png'),
+    },
+    {
+      id: 3,
+      value: '0',
+      image: require('../assets/img/Deals.png'),
+    },
+    {
+      id: 4,
+      value: '0',
+      image: require('../assets/img/target-icon.png'),
+    },
+  ],
+  businessCenterKPIS: [
+    {
+      id: 1,
+      value: '0',
+      image: require('../assets/img/Calls.png'),
+    },
+    {
+      id: 2,
+      value: '0',
+      image: require('../assets/img/Avg_response_time.png'),
+    },
+    {
+      id: 3,
+      value: '0',
+      image: require('../assets/img/Investment_Guides.png'),
+    },
+    {
+      id: 4,
+      value: '0',
+      image: require('../assets/img/target-icon.png'),
+    },
+    {
+      id: 5,
+      value: '0',
+      image: require('../assets/img/CIF.png'),
+    },
+  ],
+  callCenterKPIS: [
+    {
+      id: 1,
+      value: '0',
+      image: require('../assets/img/Calls.png'),
+    },
+    {
+      id: 2,
+      value: '0',
+      image: require('../assets/img/Avg_response_time.png'),
+    },
+    {
+      id: 3,
+      value: '0',
+      image: require('../assets/img/Investment_Guides.png'),
+    },
+    {
+      id: 4,
+      value: '0',
+      image: require('../assets/img/monthlyprojectrevenue.png'),
+    },
   ],
 }

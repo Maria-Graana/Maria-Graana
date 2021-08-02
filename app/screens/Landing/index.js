@@ -7,13 +7,6 @@ import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'rea
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
-import TargetNew from '../../../assets/img/daily-responsetime.png'
-import MapBlue from '../../../assets/img/geotag.png'
-import HomeBlue from '../../../assets/img/home-icon.png'
-import MonthlyTarget from '../../../assets/img/monthly-responsetime.png'
-import MonthlyCreatedCount from '../../../assets/img/monthlycreatedcount.png'
-import MonthlyMeetingDone from '../../../assets/img/monthlymeeting.png'
-import MonthlyProjectRevenue from '../../../assets/img/monthlyprojectrevenue.png'
 import { setContacts } from '../../actions/contacts'
 import { getListingsCount } from '../../actions/listings'
 import { getCurrentUser } from '../../actions/user'
@@ -36,6 +29,7 @@ class Landing extends React.Component {
       loading: true,
       userStatistics: null,
       toggleStatsTile: true,
+      kpisData: [],
     }
   }
 
@@ -45,6 +39,7 @@ class Landing extends React.Component {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
       this.getUserStatistics()
+      this.getUserStatistics2()
     })
     await dispatch(getCurrentUser()) // always get updated information of user from /api/user/me
     this._handleDeepLink()
@@ -104,6 +99,7 @@ class Landing extends React.Component {
   }
 
   getUserStatistics = () => {
+    const { kpisData } = this.state
     axios
       .get(`/api/user/stats`)
       .then((response) => {
@@ -114,6 +110,20 @@ class Landing extends React.Component {
       })
       .finally(() => {
         this.setState({ loading: false })
+      })
+  }
+
+  getUserStatistics2 = () => {
+    const { kpisData } = this.state
+    const { user } = this.props
+    axios
+      .get(`/api/user/kpis`)
+      .then((res) => {
+        let kpis = helper.setKPIsData(user.subRole, res.data)
+        this.setState({ kpisData: kpis })
+      })
+      .catch((error) => {
+        console.log('error getting statistic at /api/user/stats', error)
       })
   }
 
@@ -200,7 +210,7 @@ class Landing extends React.Component {
   }
 
   render() {
-    const { tiles, userStatistics, loading, toggleStatsTile } = this.state
+    const { tiles, userStatistics, loading, toggleStatsTile, kpisData } = this.state
     const { user, navigation } = this.props
     return (
       <SafeAreaView style={[AppStyles.container, styles.mainContainer]}>
@@ -245,61 +255,13 @@ class Landing extends React.Component {
               ) : (
                 <>
                   <Text style={styles.kpiText}>KPIs</Text>
-                  <StatisticsTile
-                    unit={userStatistics.avgTime ? 'min' : ''}
-                    imagePath={TargetNew}
-                    value={userStatistics.avgTime}
-                  />
-                  <StatisticsTile
-                    unit={userStatistics.monthlyRate ? 'min' : ''}
-                    imagePath={MonthlyTarget}
-                    value={userStatistics.monthlyRate}
-                  />
-                  {this.isBcOrCCRole() ? null : (
-                    <>
-                      <StatisticsTile imagePath={HomeBlue} value={userStatistics.listing} />
-                      <StatisticsTile imagePath={MapBlue} value={userStatistics.geoTaggedListing} />
-                    </>
-                  )}
-                  {user.subRole === 'business_centre_manager' ||
-                  user.subRole === 'call_centre_manager' ||
-                  user.subRole === 'business_centre_agent' ||
-                  user.subRole === 'call_centre_agent' ? (
-                    <StatisticsTile
-                      imagePath={MonthlyProjectRevenue}
-                      value={userStatistics.monthlyProjectRevenue}
-                      double={true}
-                      secondValue={userStatistics.monthlyProjectTarget}
-                    />
-                  ) : null}
-                  {user.subRole === 'business_centre_manager' ||
-                  user.subRole === 'call_centre_manager' ||
-                  user.subRole === 'business_centre_agent' ||
-                  user.subRole === 'call_centre_agent' ? (
-                    <StatisticsTile
-                      imagePath={MonthlyCreatedCount}
-                      value={userStatistics.monthlyCifCreated}
-                      double={true}
-                      secondValue={userStatistics.cifTarget}
-                    />
-                  ) : null}
-                  {user.subRole === 'business_centre_manager' ||
-                  user.subRole === 'call_centre_manager' ||
-                  user.subRole === 'business_centre_agent' ||
-                  user.subRole === 'call_centre_agent' ? (
-                    <StatisticsTile
-                      imagePath={MonthlyMeetingDone}
-                      value={userStatistics.meetingDone}
-                      double={true}
-                      secondValue={userStatistics.meetingTarget}
-                    />
-                  ) : null}
-                  <StatisticsTile
-                    title={'LCR'}
-                    value={this.showLeadWonAssignedPercentage(
-                      userStatistics.won,
-                      userStatistics.totalLeads
+                  <FlatList
+                    style={styles.scrollContainer}
+                    data={kpisData}
+                    renderItem={({ item }) => (
+                      <StatisticsTile unit={''} imagePath={item.image} value={item.value} />
                     )}
+                    keyExtractor={(item, index) => item.id.toString()}
                   />
                 </>
               )}

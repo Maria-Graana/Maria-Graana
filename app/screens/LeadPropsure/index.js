@@ -598,7 +598,7 @@ class LeadPropsure extends React.Component {
     if (reports.some((item) => item.title === report.title)) {
       if (reports && reports.length > 1 && report.title === 'Basic Property Survey Report') return
       reports = _.without(reports, report)
-      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports, pendingPropsures)
     } else {
       if (
         !_.findWhere(reports, { title: 'Basic Property Survey Report' }) &&
@@ -611,7 +611,7 @@ class LeadPropsure extends React.Component {
         reports.push(basicReport)
       }
       if (report.title !== 'Basic Property Survey Report') reports.push(report)
-      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports, pendingPropsures)
     }
     this.setState({ selectedReports: reports, totalReportPrice: totalReportPrice })
   }
@@ -1268,11 +1268,13 @@ class LeadPropsure extends React.Component {
   additionalRequest = () => {
     const { propsureReportTypes, pendingPropsures } = this.state
     let newReports = helper.checkPropsureAdditionalReports(propsureReportTypes, pendingPropsures)
+    let totalReportPrice = PaymentMethods.addPropsureReportPrices([], pendingPropsures)
     this.setState({
       documentModalVisible: false,
       file: null,
       isVisible: true,
       propsureReportTypes: newReports,
+      totalReportPrice: totalReportPrice,
     })
   }
 

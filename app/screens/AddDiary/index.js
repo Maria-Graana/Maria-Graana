@@ -11,6 +11,8 @@ import helper from '../../helper'
 import AppStyles from '../../AppStyles'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
+import { getGoogleAuth } from '../../actions/user'
+import AppRatingModalPP from '../../components/AppRatingModalPP'
 
 class AddDiary extends Component {
   constructor(props) {
@@ -19,6 +21,7 @@ class AddDiary extends Component {
       checkValidation: false,
       taskValues: [],
       loading: false,
+      isAppRatingModalVisible: false,
     }
   }
 
@@ -72,7 +75,6 @@ class AddDiary extends Component {
       delete payload.startTime
       delete payload.endTime
       delete payload.hour
-      //console.log(payload)
       return payload
     } else {
       // add payload contain these keys below
@@ -99,11 +101,15 @@ class AddDiary extends Component {
   }
 
   createDiary = (diary) => {
-    const { route } = this.props
+    const { route, dispatch } = this.props
     if (route.params.update) {
-      this.updateDiary(diary)
+      dispatch(getGoogleAuth()).then((res) => {
+        this.updateDiary(diary)
+      })
     } else {
-      this.addDiary(diary)
+      dispatch(getGoogleAuth()).then((res) => {
+        this.addDiary(diary)
+      })
     }
   }
 
@@ -198,6 +204,16 @@ class AddDiary extends Component {
   }
 
   performTaskActions = (type) => {
+    const { route } = this.props
+    const { data } = route.params
+    if (data && data.taskType === 'meeting_with_pp') {
+      this.setState({ isAppRatingModalVisible: true })
+    } else {
+      this.performTask(type)
+    }
+  }
+
+  performTask = (type, isRated = null, ratingComments = null) => {
     const { route, navigation } = this.props
     const { data } = route.params
     let endPoint = ``
@@ -207,6 +223,9 @@ class AddDiary extends Component {
         axios
           .patch(endPoint, {
             status: type,
+            isRated,
+            ratingComments,
+            taskType: data && data.taskType ? data.taskType : '',
           })
           .then(function (response) {
             if (response.status == 200) {
@@ -220,8 +239,14 @@ class AddDiary extends Component {
     }
   }
 
+  submitRating = (isRated, ratingComments) => {
+    this.setState({ isAppRatingModalVisible: false }, () => {
+      this.performTask('completed', isRated, ratingComments)
+    })
+  }
+
   render() {
-    const { checkValidation, taskValues, loading } = this.state
+    const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
     const { route } = this.props
 
     return (
@@ -231,18 +256,24 @@ class AddDiary extends Component {
         enableOnAndroid
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} onLongPress={Keyboard.dismiss}>
-          <SafeAreaView style={AppStyles.mb1}>
-            <DetailForm
-              formSubmit={this.formSubmit}
-              props={this.props}
-              editableData={route.params.update ? route.params.data : null}
-              screenName={route.params.screenName ? route.params.screenName : null}
-              taskValues={taskValues}
-              checkValidation={checkValidation}
-              loading={loading}
-              performTaskActions={(type) => this.performTaskActions(type)}
+          <>
+            <AppRatingModalPP
+              isVisible={isAppRatingModalVisible}
+              submitRating={this.submitRating}
             />
-          </SafeAreaView>
+            <SafeAreaView style={AppStyles.mb1}>
+              <DetailForm
+                formSubmit={this.formSubmit}
+                props={this.props}
+                editableData={route.params.update ? route.params.data : null}
+                screenName={route.params.screenName ? route.params.screenName : null}
+                taskValues={taskValues}
+                checkValidation={checkValidation}
+                loading={loading}
+                performTaskActions={(type) => this.performTaskActions(type)}
+              />
+            </SafeAreaView>
+          </>
         </TouchableWithoutFeedback>
       </KeyboardAwareScrollView>
     )

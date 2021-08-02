@@ -168,7 +168,6 @@ export function logoutUser() {
     let body = {
       deviceId: Constants.deviceId,
     }
-    console.log(body)
     axios.patch(`/api/user/logoutDevice`, body).then((res) => {
       deleteAuthorizationToken()
       removeItem('token')

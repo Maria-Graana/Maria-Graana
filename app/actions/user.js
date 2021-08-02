@@ -8,6 +8,7 @@ import axios from 'axios'
 import config from '../config'
 import * as Sentry from 'sentry-expo'
 import * as WebBrowser from 'expo-web-browser'
+import Constants from 'expo-constants'
 
 const CancelToken = axios.CancelToken
 const source = CancelToken.source()
@@ -164,9 +165,14 @@ export function setuser(data) {
 
 export function logoutUser() {
   return (dispatch, getsState) => {
-    deleteAuthorizationToken()
+    let body = {
+      deviceId: Constants.deviceId,
+    }
+    axios.patch(`/api/user/logoutDevice`, body).then((res) => {
+      deleteAuthorizationToken()
+      removeItem('token')
+    })
     // removeBaseUrl()
-    removeItem('token')
     dispatch({
       type: types.LOGOUT_USER,
     })

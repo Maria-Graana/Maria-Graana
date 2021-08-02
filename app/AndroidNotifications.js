@@ -3,12 +3,12 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Permissions from 'expo-permissions'
-import Constants from 'expo-constants'
 import { View, Alert, Platform } from 'react-native'
 import axios from 'axios'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import * as Sentry from 'sentry-expo'
+import Constants from 'expo-constants'
 
 class AndroidNotifications extends React.Component {
   constructor(props) {
@@ -96,6 +96,7 @@ class AndroidNotifications extends React.Component {
         modelId: Device.modelId,
         modelName: Device.modelName,
       },
+      deviceId: Constants.deviceId,
     }
     return body
   }

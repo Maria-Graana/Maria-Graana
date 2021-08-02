@@ -204,7 +204,7 @@ const PropsureDocumentPopup = (props) => {
           {totalReportsFree <= 0 || !singlePayment ? (
             <View style={{ margin: 10 }}>
               <Button style={[AppStyles.formBtn, { marginTop: 10 }]} onPress={additionalRequest}>
-                <Text style={AppStyles.btnText}>ADD MORE REPORTS</Text>
+                <Text style={AppStyles.btnText}>REQUEST MORE REPORTS</Text>
               </Button>
             </View>
           ) : null}

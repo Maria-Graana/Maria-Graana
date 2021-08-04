@@ -162,9 +162,9 @@ class PropertyDetail extends React.Component {
       longitude =
         property && (property.lng === null || property.lon === null)
           ? ''
-          : property.lng.toFixed(7)
-          ? property.lng.toFixed(7)
-          : property.lon.toFixed(7)
+          : property && property.lng && property.lng.toFixed(7)
+          ? property && property.lng && property.lng.toFixed(7)
+          : property && property.lon && property.lon.toFixed(7)
       ownerName = this.checkUserName(property)
       ownerPhoneNumber =
         property && property.customer && property.customer.phone && property.customer.phone.trim()

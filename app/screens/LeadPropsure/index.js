@@ -954,11 +954,14 @@ class LeadPropsure extends React.Component {
         } else {
           // for all other types
 
+          let remainingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
+          remainingFee = remainingFee - Number(propsurePayment.installmentAmount)
+
           body = {
             ...propsurePayment,
             rcmLeadId: lead.id,
             armsUserId: user.id,
-            outstandingPayment: remaingFee,
+            outstandingPayment: remainingFee,
             addedBy: 'buyer',
             installmentAmount: propsurePayment.installmentAmount,
             shortlistPropertyId: propsurePayment.selectedPropertyId,

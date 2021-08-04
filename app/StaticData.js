@@ -1164,76 +1164,76 @@ export default StaticData = {
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/monthlymeeting.png'),
+      image: require('../assets/img/money.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/viewingandmeeting.png'),
+      image: require('../assets/img/Deals.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/monthlycreatedcount.png'),
+      image: require('../assets/img/Group_50.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/Deals.png'),
+      image: require('../assets/img/home-icon.png'),
     },
     {
       id: 5,
       value: '0',
-      image: require('../assets/img/App_pp_rating.png'),
+      image: require('../assets/img/Group_46.png'),
     },
     {
       id: 6,
       value: '0',
-      image: require('../assets/img/target-icon.png'),
+      image: require('../assets/img/Group_41.png'),
     },
   ],
   reAdvisorKPIS: [
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/monthlycreatedcount.png'),
+      image: require('../assets/img/money.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/viewingandmeeting.png'),
+      image: require('../assets/img/Deals.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/Deals.png'),
+      image: require('../assets/img/Group_50.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/target-icon.png'),
+      image: require('../assets/img/home-icon.png'),
     },
   ],
   businessCenterKPIS: [
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/Calls.png'),
+      image: require('../assets/img/money.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Avg_response_time.png'),
+      image: require('../assets/img/Group_51.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/Investment_Guides.png'),
+      image: require('../assets/img/daily-responsetime.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/target-icon.png'),
+      image: require('../assets/img/Calls.png'),
     },
     {
       id: 5,
@@ -1245,22 +1245,22 @@ export default StaticData = {
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/Calls.png'),
+      image: require('../assets/img/money.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Avg_response_time.png'),
+      image: require('../assets/img/Group_51.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/Investment_Guides.png'),
+      image: require('../assets/img/daily-responsetime.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/monthlyprojectrevenue.png'),
+      image: require('../assets/img/Calls.png'),
     },
   ],
 }

@@ -209,9 +209,26 @@ class Landing extends React.Component {
     else return false
   }
 
+  isShowKPIsView = () => {
+    const { user } = this.props
+    if (
+      user.subRole === 'area_manager' ||
+      user.subRole === 'zonal_manager' ||
+      user.subRole === 'business_centre_manager' ||
+      user.subRole === 'business_centre_agent' ||
+      user.subRole === 'branch_manager' ||
+      user.subRole === 'sales_agent' ||
+      user.subRole === 'call_centre_manager' ||
+      user.subRole === 'call_centre_warrior'
+    )
+      return true
+    else return false
+  }
+
   render() {
-    const { tiles, userStatistics, loading, toggleStatsTile, kpisData } = this.state
+    const { tiles, loading, toggleStatsTile, kpisData } = this.state
     const { user, navigation } = this.props
+    let isShowKPIs = this.isShowKPIsView()
     return (
       <SafeAreaView style={[AppStyles.container, styles.mainContainer]}>
         <AndroidNotifications navigation={navigation} />
@@ -233,41 +250,44 @@ class Landing extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
           />
         ) : null}
-        <TouchableOpacity
-          onPress={() => {
-            this.toggleStats()
-          }}
-          style={
-            toggleStatsTile
-              ? [styles.kpiContainer, { minHeight: this.isBcOrCCRole() ? hp('20%') : hp('20%') }]
-              : [
-                  styles.kpiContainerFalse,
-                  { minHeight: this.isBcOrCCRole() ? hp('20%') : hp('20%') },
-                ]
-          }
-        >
-          {toggleStatsTile ? (
-            <View style={{ flex: 1 }}>
-              {loading ? (
-                <View style={styles.loaderView}>
-                  <Loader loading={loading} />
-                </View>
-              ) : (
-                <>
-                  <Text style={styles.kpiText}>KPIs</Text>
-                  <FlatList
-                    style={styles.scrollContainer}
-                    data={kpisData}
-                    renderItem={({ item }) => (
-                      <StatisticsTile unit={''} imagePath={item.image} value={item.value} />
-                    )}
-                    keyExtractor={(item, index) => item.id.toString()}
-                  />
-                </>
-              )}
-            </View>
-          ) : null}
-        </TouchableOpacity>
+        {isShowKPIs ? (
+          <TouchableOpacity
+            onPress={() => {
+              this.toggleStats()
+            }}
+            style={
+              toggleStatsTile
+                ? [styles.kpiContainer, { minHeight: this.isBcOrCCRole() ? hp('20%') : hp('20%') }]
+                : [
+                    styles.kpiContainerFalse,
+                    { minHeight: this.isBcOrCCRole() ? hp('20%') : hp('20%') },
+                  ]
+            }
+          >
+            {toggleStatsTile ? (
+              <View style={{ flex: 1 }}>
+                {loading ? (
+                  <View style={styles.loaderView}>
+                    <Loader loading={loading} />
+                  </View>
+                ) : (
+                  <>
+                    <Text style={styles.kpiText}>KPIs</Text>
+                    <FlatList
+                      style={styles.scrollContainer}
+                      data={kpisData}
+                      renderItem={({ item }) => (
+                        <StatisticsTile unit={''} imagePath={item.image} value={item.value} />
+                      )}
+                      keyExtractor={(item, index) => item.id.toString()}
+                    />
+                  </>
+                )}
+              </View>
+            ) : null}
+          </TouchableOpacity>
+        ) : null}
+
         <View style={styles.btnView}>
           {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
             <TouchableOpacity

@@ -1043,35 +1043,35 @@ const helper = {
   setKPIsData(role, data) {
     let { calculatedKpis } = data
     if (role === 'area_manager' || role === 'zonal_manager') {
-      StaticData.areaManagerKPIS[0].value = calculatedKpis.meetingWithPP.toString()
-      StaticData.areaManagerKPIS[1].value = calculatedKpis.viewingAndMeeting.toString()
-      StaticData.areaManagerKPIS[2].value = calculatedKpis.listing.toString()
-      StaticData.areaManagerKPIS[3].value = calculatedKpis.deals.toString()
-      StaticData.areaManagerKPIS[4].value = calculatedKpis.ppAppRating.toString()
-      StaticData.areaManagerKPIS[5].value = calculatedKpis.revenueTarget.toString()
+      StaticData.areaManagerKPIS[0].value = calculatedKpis.revenueTarget.toString()
+      StaticData.areaManagerKPIS[1].value = calculatedKpis.deals.toString()
+      StaticData.areaManagerKPIS[2].value = calculatedKpis.viewingAndMeeting.toString()
+      StaticData.areaManagerKPIS[3].value = calculatedKpis.listing.toString()
+      StaticData.areaManagerKPIS[4].value = calculatedKpis.meetingWithPP.toString()
+      StaticData.areaManagerKPIS[5].value = calculatedKpis.ppAppRating.toString()
       return StaticData.areaManagerKPIS
     }
     if (role === 'business_centre_manager' || role === 'business_centre_agent') {
-      StaticData.businessCenterKPIS[0].value = calculatedKpis.calls.toString()
-      StaticData.businessCenterKPIS[1].value = calculatedKpis.avgResponseTime.toString()
-      StaticData.businessCenterKPIS[2].value =
+      StaticData.businessCenterKPIS[0].value = calculatedKpis.revenueTarget.toString()
+      StaticData.businessCenterKPIS[1].value =
         calculatedKpis.meetingsWithInvestmentGuides.toString()
-      StaticData.businessCenterKPIS[3].value = calculatedKpis.revenueTarget.toString()
+      StaticData.businessCenterKPIS[2].value = calculatedKpis.avgResponseTime.toString()
+      StaticData.businessCenterKPIS[3].value = calculatedKpis.calls.toString()
       StaticData.businessCenterKPIS[4].value = calculatedKpis.CIF.toString()
       return StaticData.businessCenterKPIS
     }
     if (role === 'branch_manager' || role === 'sales_agent') {
-      StaticData.reAdvisorKPIS[0].value = calculatedKpis.listing.toString()
-      StaticData.reAdvisorKPIS[1].value = calculatedKpis.viewingAndMeeting.toString()
-      StaticData.reAdvisorKPIS[2].value = calculatedKpis.deals.toString()
-      StaticData.reAdvisorKPIS[3].value = calculatedKpis.revenueTarget.toString()
+      StaticData.reAdvisorKPIS[0].value = calculatedKpis.revenueTarget.toString()
+      StaticData.reAdvisorKPIS[1].value = calculatedKpis.deals.toString()
+      StaticData.reAdvisorKPIS[2].value = calculatedKpis.viewingAndMeeting.toString()
+      StaticData.reAdvisorKPIS[3].value = calculatedKpis.listing.toString()
       return StaticData.reAdvisorKPIS
     }
     if (role === 'call_centre_manager' || role === 'call_centre_warrior') {
-      StaticData.callCenterKPIS[0].value = calculatedKpis.calls.toString()
-      StaticData.callCenterKPIS[1].value = calculatedKpis.avgResponseTime.toString()
-      StaticData.callCenterKPIS[2].value = calculatedKpis.meetingsWithInvestmentGuides.toString()
-      StaticData.callCenterKPIS[3].value = calculatedKpis.revenueTarget.toString()
+      StaticData.callCenterKPIS[0].value = calculatedKpis.revenueTarget.toString()
+      StaticData.callCenterKPIS[1].value = calculatedKpis.meetingsWithInvestmentGuides.toString()
+      StaticData.callCenterKPIS[2].value = calculatedKpis.avgResponseTime.toString()
+      StaticData.callCenterKPIS[3].value = calculatedKpis.calls.toString()
       return StaticData.callCenterKPIS
     }
   },

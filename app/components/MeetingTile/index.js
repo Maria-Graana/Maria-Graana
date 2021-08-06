@@ -60,7 +60,7 @@ class MeetingTile extends React.Component {
                   <Menu.Item
                     onPress={() => {
                       toggleMenu(false, data.id)
-                      sendStatus('meeting_done', data.id)
+                      sendStatus('meeting_done', data.id, 'meeting')
                     }}
                     title="Meeting Done"
                   />
@@ -68,7 +68,7 @@ class MeetingTile extends React.Component {
                   <Menu.Item
                     onPress={() => {
                       toggleMenu(false, data.id)
-                      sendStatus('cancel_meeting', data.id)
+                      sendStatus('cancel_meeting', data.id, 'meeting')
                     }}
                     title="Cancel Meeting"
                   />

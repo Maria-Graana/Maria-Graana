@@ -131,9 +131,11 @@ class Meetings extends Component {
     })
   }
 
-  sendStatus = (status, id) => {
+  sendStatus = (status, id, title = null) => {
     const { formData, meetings } = this.state
     const { lead } = this.props
+    console.log('title=>', title)
+
     let body = {}
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${id}&cmLeadId=${lead.id}`).then((res) => {
@@ -142,7 +144,13 @@ class Meetings extends Component {
     } else if (status === 'meeting_done') {
       if (lead && lead.guideReference) {
         //console.log(id)
-        body = { response: status, comments: status, leadId: lead.id, status: 'completed' }
+        body = {
+          response: status,
+          comments: status,
+          leadId: lead.id,
+          status: 'completed',
+          title,
+        }
         axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
           this.getMeetingLead()
         })
@@ -157,7 +165,12 @@ class Meetings extends Component {
         this.setState({ isReferenceModalVisible: true, selectedMeetingId: id }) // show reference guide modal for first meeting if reference number is null
       }
     } else {
-      body = { response: status, comments: status, leadId: lead.id }
+      body = {
+        response: status,
+        comments: status,
+        leadId: lead.id,
+        title,
+      }
       axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
         this.getMeetingLead()
       })
@@ -173,7 +186,7 @@ class Meetings extends Component {
       time: start,
       date: start,
       taskType: 'called',
-      subject: 'Call to client ' + this.props.lead.customer.customerName,
+      subject: 'called ' + this.props.lead.customer.customerName,
       calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       customerId: this.props.lead.customer.id,
       leadId: this.props.lead.id, // For CM send leadID and armsLeadID for RCM
@@ -406,12 +419,17 @@ class Meetings extends Component {
     this.setState({ statusfeedbackModalVisible: false }, () => {
       if (currentCall) {
         if (modalMode === 'call') {
-          this.sendStatus(comment, currentCall.id)
+          console.log('hello')
+          this.sendStatus(
+            comment,
+            currentCall.id,
+            currentCall.calledOn === 'phone' ? 'call' : 'whatsapp'
+          )
           this.openModal()
         } else {
           // Meeting Mode & actions for book unit and set up another meeting
           this.setState({ isFeedbackMeetingModalVisible: true }, () => {
-            this.sendStatus(comment, currentCall.id)
+            this.sendStatus(comment, currentCall.id, 'meeting')
           })
         }
       }
@@ -467,7 +485,15 @@ class Meetings extends Component {
     }
     if ((currentCall && modalMode === 'call') || modalMode === 'meeting') {
       this.setState({ statusfeedbackModalVisible: false }, () => {
-        this.sendStatus(comment, currentCall.id)
+        this.sendStatus(
+          comment,
+          currentCall.id,
+          currentCall && currentCall.calledOn === 'phone'
+            ? 'phone'
+            : currentCall && currentCall.calledOn === 'phone'
+            ? 'whatsapp'
+            : 'meeting'
+        )
         this.closeLeadOnReject(body)
       })
     } else {
@@ -527,6 +553,7 @@ class Meetings extends Component {
                       comments: 'meeting_done',
                       leadId: lead.id,
                       status: 'completed',
+                      title: 'meeting',
                     }
                     axios.patch(`/api/diary/update?id=${selectedMeetingId}`, body).then((res) => {
                       this.getMeetingLead()
@@ -745,7 +772,7 @@ class Meetings extends Component {
               : StaticData.leadClosedCommentsFeedback
           }
           modalMode={modalMode}
-          sendStatus={(comment, id) => this.sendStatus(comment, id)}
+          sendStatus={(comment, id, title) => this.sendStatus(comment, id, title)}
           addMeeting={() => this.openModalInMeetingMode()}
           addFollowup={(comment) => this.openModalInFollowupMode(comment)}
           showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}

@@ -336,7 +336,7 @@ class BuyLeads extends React.Component {
       time: start,
       date: start,
       taskType: 'called',
-      subject: 'Call to client ' + selectedLead.customer.customerName,
+      subject: 'called ' + selectedLead.customer.customerName,
       customerId: selectedLead.customer.id,
       calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       armsLeadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
@@ -571,11 +571,12 @@ class BuyLeads extends React.Component {
   }
 
   sendStatusCall = (status, id) => {
-    const { selectedLead } = this.state
+    const { selectedLead, currentCall } = this.state
     let body = {
       response: status,
       comments: status,
       leadId: selectedLead.id,
+      title: 'call',
     }
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }

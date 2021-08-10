@@ -46,6 +46,7 @@ class BuyPaymentView extends React.Component {
       formData,
       handleForm,
       advanceNotZero,
+      call,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -155,6 +156,8 @@ class BuyPaymentView extends React.Component {
           commissionTitle={'Buyer Commission Payment'}
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
           buyerSellerCounts={buyerSellerCounts}
+          call={call}
+          leadType={'rcm'}
         />
         <BuyerSellerTile
           singleCommission={singleCommission}
@@ -164,7 +167,11 @@ class BuyPaymentView extends React.Component {
             sellerCommission ? commissionNotApplicableSeller : true
           }
           tileType={'seller'}
-          tileTitle={commissionNotApplicableSeller ? 'Seller Side Not Applicable' : 'Seller Side'}
+          tileTitle={
+            sellerCommission && commissionNotApplicableSeller
+              ? 'Seller Side Not Applicable'
+              : 'Seller Side'
+          }
           closeLegalDocument={closeLegalDocument}
           onPaymentLongPress={onPaymentLongPress}
           payment={seller}
@@ -175,6 +182,8 @@ class BuyPaymentView extends React.Component {
           commissionTitle={'Seller Commission Payment'}
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
           buyerSellerCounts={buyerSellerCounts}
+          call={call}
+          leadType={'rcm'}
         />
       </View>
     )

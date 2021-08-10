@@ -570,7 +570,7 @@ class PropertyViewing extends React.Component {
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
-    navigation.navigate('Comments', { propertyId: data.id, screenName: 'viewing' })
+    navigation.navigate('Comments', { propertyId: data.id, screenName: 'viewing', leadId: lead.id })
   }
 
   toggleMenu = (val, id) => {

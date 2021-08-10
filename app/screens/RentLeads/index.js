@@ -31,6 +31,7 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
+import DateSearchFilter from '../../components/DateSearchFilter'
 
 var BUTTONS = [
   'Assign to team member',
@@ -134,7 +135,7 @@ class RentLeads extends React.Component {
     })
   }
 
-  fetchLeads = () => {
+  fetchLeads = (fromDate = null, toDate = null) => {
     const {
       sort,
       pageSize,
@@ -147,10 +148,14 @@ class RentLeads extends React.Component {
     } = this.state
     this.setState({ loading: true })
     let query = ``
-    if (showSearchBar && searchText !== '') {
-      if (statusFilterType === 'name')
+    if (showSearchBar) {
+      if (statusFilterType === 'name' && searchText !== '') {
         query = `/api/leads?purpose=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
-      else query = `/api/leads?purpose=rent&id=${searchText}&pageSize=${pageSize}&page=${page}`
+      } else if (statusFilterType === 'id' && searchText !== '') {
+        query = `/api/leads?purpose=rent&id=${searchText}&pageSize=${pageSize}&page=${page}`
+      } else {
+        query = `/api/leads?purpose=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+      }
     } else {
       query = `/api/leads?purpose=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -291,7 +296,7 @@ class RentLeads extends React.Component {
       time: start,
       date: start,
       taskType: 'called',
-      subject: 'Call to client ' + selectedLead.customer.customerName,
+      subject: 'called ' + selectedLead.customer.customerName,
       customerId: selectedLead.customer.id,
       armsLeadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
       taskCategory: 'leadTask',
@@ -404,6 +409,9 @@ class RentLeads extends React.Component {
           this.navigateToAssignLead(lead)
         })
       }
+    } else {
+      // not allowed to assign lead as per the role
+      helper.errorToast('Sorry you are not authorized to assign lead')
     }
   }
 
@@ -565,11 +573,12 @@ class RentLeads extends React.Component {
   }
 
   sendStatusCall = (status, id) => {
-    const { selectedLead } = this.state
+    const { selectedLead, currentCall } = this.state
     let body = {
       response: status,
       comments: status,
       leadId: selectedLead.id,
+      title: 'call',
     }
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
@@ -640,18 +649,25 @@ class RentLeads extends React.Component {
                   selectedItem={statusFilterType}
                 />
               </View>
-              <Search
-                containerWidth="75%"
-                placeholder="Search leads here"
-                searchText={searchText}
-                setSearchText={(value) => this.setState({ searchText: value })}
-                showShadow={false}
-                showClearButton={true}
-                returnKeyType={'search'}
-                onSubmitEditing={() => this.fetchLeads()}
-                autoFocus={true}
-                closeSearchBar={() => this.clearAndCloseSearch()}
-              />
+              {statusFilterType === 'name' || statusFilterType === 'id' ? (
+                <Search
+                  containerWidth="75%"
+                  placeholder="Search leads here"
+                  searchText={searchText}
+                  setSearchText={(value) => this.setState({ searchText: value })}
+                  showShadow={false}
+                  showClearButton={true}
+                  returnKeyType={'search'}
+                  onSubmitEditing={() => this.fetchLeads()}
+                  autoFocus={true}
+                  closeSearchBar={() => this.clearAndCloseSearch()}
+                />
+              ) : (
+                <DateSearchFilter
+                  applyFilter={this.fetchLeads}
+                  clearFilter={() => this.clearAndCloseSearch()}
+                />
+              )}
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>

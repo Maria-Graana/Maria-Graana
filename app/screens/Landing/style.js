@@ -78,7 +78,7 @@ export default styles = StyleSheet.create({
   },
   kpiContainer: {
     backgroundColor: 'white',
-    minWidth: wp('45%'),
+    minWidth: wp('50%'),
     position: 'absolute',
     // minHeight: hp('20%'),
     bottom: hp('15%'),

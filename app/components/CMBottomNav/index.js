@@ -152,8 +152,11 @@ class CMBottomNav extends React.Component {
       date: start,
       taskType: 'called',
       response: 'Called',
-      subject: 'Call to client ' + this.props.lead.customer.customerName,
-      cutomerId: this.props.lead.customer.id,
+      subject:
+        calledOn === 'phone'
+          ? 'called ' + this.props.lead.customer.customerName
+          : 'contacted ' + this.props.lead.customer.customerName,
+      customerId: this.props.lead.customer.id,
       armsLeadId: leadType === 'RCM' ? this.props.lead.id : null, // For RCM Call
       leadId: leadType === 'CM' ? this.props.lead.id : null, // For CM Call
       calledNumber: phone ? phone : null,

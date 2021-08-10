@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, Image } from 'react-native'
 import { formatPrice } from '../../PriceFormate'
 import StaticData from '../../StaticData'
 import moment from 'moment'
@@ -16,7 +16,15 @@ class CommissionTile extends Component {
     return res
   }
   render() {
-    const { data, editTile, title, commissionEdit, onPaymentLongPress } = this.props
+    const {
+      data,
+      editTile,
+      title,
+      commissionEdit,
+      onPaymentLongPress,
+      showAccountPhone = false,
+      call,
+    } = this.props
     var showStatus =
       data && data.status != ''
         ? StaticData.statusOptions.find((item) => {
@@ -32,15 +40,15 @@ class CommissionTile extends Component {
     return data ? (
       <TouchableOpacity
         onLongPress={
-          data.status === 'pendingSales' ||
-          data.status === 'notCleared' ||
-          data.status === 'open'
+          data.status === 'pendingSales' || data.status === 'notCleared' || data.status === 'open'
             ? onPaymentLongPress
             : null
         }
         disabled={commissionEdit}
         onPress={() => {
-          data.status != StaticData.leadClearedStatus ? editTile(data) : null
+          data.status !== StaticData.leadClearedStatus && data.status !== 'notCleared'
+            ? editTile(data)
+            : null
         }}
       >
         <View style={[styles.tileTopWrap, { backgroundColor: commissionEdit ? '#ddd' : '#fff' }]}>
@@ -59,6 +67,20 @@ class CommissionTile extends Component {
               <Text style={styles.priceDate}>
                 {moment(data.createdAt).format('hh:mm A, MMM DD')}
               </Text>
+            ) : null}
+            {showAccountPhone && data.status !== 'open' ? (
+              <TouchableHighlight
+                onPress={() => {
+                  call(data)
+                }}
+                style={[styles.phoneView]}
+                underlayColor={AppStyles.colors.backgroundColor}
+              >
+                <Image
+                  source={require('../../../assets/img/call.png')}
+                  style={[styles.callImage, data.checkBox ? { tintColor: '#fff' } : null]}
+                />
+              </TouchableHighlight>
             ) : null}
           </View>
         </View>
@@ -139,23 +161,36 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   formatPrice: {
-    width: '40%',
+    flex: 0.9,
     color: '#0070f2',
     fontWeight: 'bold',
     fontSize: 20,
+    paddingTop: 10,
   },
   totalPrice: {
-    width: '30%',
+    flex: 0.9,
     color: '#0070f2',
     fontWeight: 'bold',
-    paddingTop: 2,
     fontSize: 16,
+    paddingTop: 12,
   },
   priceDate: {
-    width: '30%',
+    flex: 1,
     color: '#1d1d27',
     fontSize: 12,
     textAlign: 'right',
-    paddingTop: 4,
+    paddingTop: 14,
+  },
+  phoneView: {
+    borderRadius: 20,
+    padding: 10,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  callImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
 })

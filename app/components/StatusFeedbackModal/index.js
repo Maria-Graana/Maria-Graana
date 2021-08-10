@@ -65,19 +65,27 @@ const StatusFeedbackModal = ({
     if (leadType === 'CM') {
       if (currentCall) {
         if (modalMode === 'call') {
-          sendStatus(selectedComment, currentCall.id)
+          sendStatus(
+            selectedComment,
+            currentCall.id,
+            currentCall.calledOn === 'phone' ? 'call' : 'whatsapp'
+          )
           addMeeting()
           clearFormData()
         } else {
           // Meeting Mode & actions for book unit and set up another meeting
           showFeedbackMeetingModal(true)
-          sendStatus(selectedComment, currentCall.id)
+          sendStatus(selectedComment, currentCall.id, 'meeting')
           clearFormData()
         }
       }
     } else {
       if (currentCall) {
-        sendStatus(selectedComment, currentCall.id)
+        sendStatus(
+          selectedComment,
+          currentCall.id,
+          currentCall.calledOn === 'phone' ? 'call' : 'whatsapp'
+        )
         clearFormData()
         goToViewingScreen()
       }
@@ -87,7 +95,15 @@ const StatusFeedbackModal = ({
   const performFollowup = () => {
     if (currentCall) {
       showFeedbackModal(false)
-      sendStatus(selectedComment, currentCall.id)
+      sendStatus(
+        selectedComment,
+        currentCall.id,
+        currentCall && modalMode === 'call' && currentCall.calledOn === 'whatsapp'
+          ? ' whatsapp'
+          : currentCall && modalMode === 'call' && currentCall.calledOn === 'phone'
+          ? 'call'
+          : 'meeting'
+      )
       addFollowup(selectedComment)
       clearFormData()
     }
@@ -99,7 +115,15 @@ const StatusFeedbackModal = ({
     }
     showFeedbackModal(false)
     if ((currentCall && modalMode === 'call') || modalMode === 'meeting') {
-      sendStatus(selectedComment, currentCall.id)
+      sendStatus(
+        selectedComment,
+        currentCall.id,
+        currentCall && modalMode === 'call' && currentCall.calledOn === 'whatsapp'
+          ? ' whatsapp'
+          : currentCall && modalMode === 'call' && currentCall.calledOn === 'phone'
+          ? 'call'
+          : 'meeting'
+      )
       rejectLead(body)
       clearFormData()
     } else {

@@ -10,6 +10,7 @@ import SortImg from '../../../assets/img/sort.png'
 import { setlead } from '../../actions/lead'
 import { getItem, storeItem } from '../../actions/user'
 import AppStyles from '../../AppStyles'
+import DateSearchFilter from '../../components/DateSearchFilter'
 import LeadTile from '../../components/LeadTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
@@ -87,7 +88,7 @@ class PropertyLead extends React.Component {
     })
   }
 
-  fetchLeads = () => {
+  fetchLeads = (fromDate = null, toDate = null) => {
     const {
       sort,
       pageSize,
@@ -100,11 +101,14 @@ class PropertyLead extends React.Component {
     } = this.state
     this.setState({ loading: true })
     let query = ``
-    if (showSearchBar && searchText !== '') {
-      if (statusFilterType === 'name')
+    if (showSearchBar) {
+      if (statusFilterType === 'name' && searchText !== '') {
         query = `/api/leads?leadWithCurrentAgentProps=true&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
-      else
+      } else if (statusFilterType === 'id' && searchText !== '') {
         query = `/api/leads?leadWithCurrentAgentProps=true&id=${searchText}&pageSize=${pageSize}&page=${page}`
+      } else {
+        query = `/api/leads?leadWithCurrentAgentProps=true&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+      }
     } else {
       query = `/api/leads?leadWithCurrentAgentProps=true&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -306,18 +310,25 @@ class PropertyLead extends React.Component {
                   selectedItem={statusFilterType}
                 />
               </View>
-              <Search
-                containerWidth="75%"
-                placeholder="Search leads here"
-                searchText={searchText}
-                setSearchText={(value) => this.setState({ searchText: value })}
-                showShadow={false}
-                showClearButton={true}
-                returnKeyType={'search'}
-                onSubmitEditing={() => this.fetchLeads()}
-                autoFocus={true}
-                closeSearchBar={() => this.clearAndCloseSearch()}
-              />
+              {statusFilterType === 'name' || statusFilterType === 'id' ? (
+                <Search
+                  containerWidth="75%"
+                  placeholder="Search leads here"
+                  searchText={searchText}
+                  setSearchText={(value) => this.setState({ searchText: value })}
+                  showShadow={false}
+                  showClearButton={true}
+                  returnKeyType={'search'}
+                  onSubmitEditing={() => this.fetchLeads()}
+                  autoFocus={true}
+                  closeSearchBar={() => this.clearAndCloseSearch()}
+                />
+              ) : (
+                <DateSearchFilter
+                  applyFilter={this.fetchLeads}
+                  clearFilter={() => this.clearAndCloseSearch()}
+                />
+              )}
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>

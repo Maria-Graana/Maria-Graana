@@ -14,6 +14,7 @@ import { getListingsCount } from '../../actions/listings'
 import { setPPBuyNotification } from '../../actions/notification'
 import { getItem, storeItem } from '../../actions/user'
 import AppStyles from '../../AppStyles'
+import DateSearchFilter from '../../components/DateSearchFilter'
 import LeadTile from '../../components/LeadTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
@@ -139,7 +140,7 @@ class BuyLeads extends React.Component {
     })
   }
 
-  fetchLeads = () => {
+  fetchLeads = (fromDate = null, toDate = null) => {
     const {
       sort,
       pageSize,
@@ -152,10 +153,14 @@ class BuyLeads extends React.Component {
     } = this.state
     this.setState({ loading: true })
     let query = ``
-    if (showSearchBar && searchText !== '') {
-      if (statusFilterType === 'name')
+    if (showSearchBar) {
+      if (statusFilterType === 'name' && searchText !== '') {
         query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
-      else query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}`
+      } else if (statusFilterType === 'id' && searchText !== '') {
+        query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}`
+      } else {
+        query = `/api/leads?purpose=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+      }
     } else {
       query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
     }
@@ -331,7 +336,7 @@ class BuyLeads extends React.Component {
       time: start,
       date: start,
       taskType: 'called',
-      subject: 'Call to client ' + selectedLead.customer.customerName,
+      subject: 'called ' + selectedLead.customer.customerName,
       customerId: selectedLead.customer.id,
       calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       armsLeadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
@@ -358,7 +363,7 @@ class BuyLeads extends React.Component {
   }
 
   clearAndCloseSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false }, () => {
+    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' }, () => {
       this.clearStateValues()
       this.fetchLeads()
     })
@@ -404,6 +409,8 @@ class BuyLeads extends React.Component {
           this.navigateToAssignLead(lead)
         })
       }
+    } else {
+      helper.errorToast('Sorry you are not authorized to assign lead')
     }
   }
 
@@ -564,11 +571,12 @@ class BuyLeads extends React.Component {
   }
 
   sendStatusCall = (status, id) => {
-    const { selectedLead } = this.state
+    const { selectedLead, currentCall } = this.state
     let body = {
       response: status,
       comments: status,
       leadId: selectedLead.id,
+      title: 'call',
     }
     axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
   }
@@ -636,18 +644,25 @@ class BuyLeads extends React.Component {
                   selectedItem={statusFilterType}
                 />
               </View>
-              <Search
-                containerWidth="75%"
-                placeholder="Search leads here"
-                searchText={searchText}
-                setSearchText={(value) => this.setState({ searchText: value })}
-                showShadow={false}
-                showClearButton={true}
-                returnKeyType={'search'}
-                onSubmitEditing={() => this.fetchLeads()}
-                autoFocus={true}
-                closeSearchBar={() => this.clearAndCloseSearch()}
-              />
+              {statusFilterType === 'name' || statusFilterType === 'id' ? (
+                <Search
+                  containerWidth="75%"
+                  placeholder="Search leads here"
+                  searchText={searchText}
+                  setSearchText={(value) => this.setState({ searchText: value })}
+                  showShadow={false}
+                  showClearButton={true}
+                  returnKeyType={'search'}
+                  onSubmitEditing={() => this.fetchLeads()}
+                  autoFocus={true}
+                  closeSearchBar={() => this.clearAndCloseSearch()}
+                />
+              ) : (
+                <DateSearchFilter
+                  applyFilter={this.fetchLeads}
+                  clearFilter={() => this.clearAndCloseSearch()}
+                />
+              )}
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>

@@ -44,6 +44,7 @@ const RentPaymentView = (props) => {
     closeLegalDocument,
     toggleMonthlyDetails,
     rentMonthlyToggle,
+    call,
   } = props
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
@@ -135,12 +136,14 @@ const RentPaymentView = (props) => {
         closeLegalDocument={closeLegalDocument}
         onPaymentLongPress={onPaymentLongPress}
         payment={buyer}
-        paymentCommission={true}
+        paymentCommission={false}
         onAddCommissionPayment={onAddCommissionPayment}
         editTile={editTile}
         lead={lead}
         commissionTitle={'Buyer Commission Payment'}
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
+        call={call}
+        leadType={'sellRentout'}
       />
       <BuyerSellerTile
         singleCommission={false}
@@ -158,6 +161,8 @@ const RentPaymentView = (props) => {
         lead={lead}
         commissionTitle={'Seller Commission Payment'}
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
+        call={call}
+        leadType={'sellRentout'}
       />
     </View>
   )

@@ -23,12 +23,20 @@ export default StaticData = {
       value: 'task',
     },
     {
+      name: 'Follow Up',
+      value: 'follow_up',
+    },
+    {
       name: 'Meeting',
       value: 'meeting',
     },
     {
-      name: 'Follow Up',
-      value: 'follow_up',
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
     },
   ],
   oneToTen: [
@@ -925,8 +933,8 @@ export default StaticData = {
   ],
   SellerLegalDocumentsList: [
     {
-      category: 'sole_multi_agency_agreement',
-      name: 'SOLE/MULTI AGENCY AGREEMENT',
+      category: 'service_charge_agreement',
+      name: 'SERVICE CHARGE AGREEMENT',
       status: 'pending',
       fileKey: null,
       id: 1,
@@ -1015,7 +1023,6 @@ export default StaticData = {
       image: require('../assets/img/reassign.png'),
     },
   ],
-
   actionListItemsCM: [
     {
       id: 1,
@@ -1148,9 +1155,112 @@ export default StaticData = {
       image: require('../assets/img/Close.png'),
     },
   ],
-
   buyRentFilterType: [
     { value: 'id', name: 'ID' },
     { value: 'name', name: 'NAME' },
+    { value: 'date', name: 'DATE' },
+  ],
+  areaManagerKPIS: [
+    {
+      id: 1,
+      value: '0',
+      image: require('../assets/img/money.png'),
+    },
+    {
+      id: 2,
+      value: '0',
+      image: require('../assets/img/Deals.png'),
+    },
+    {
+      id: 3,
+      value: '0',
+      image: require('../assets/img/Group_50.png'),
+    },
+    {
+      id: 4,
+      value: '0',
+      image: require('../assets/img/home-icon.png'),
+    },
+    {
+      id: 5,
+      value: '0',
+      image: require('../assets/img/Group_46.png'),
+    },
+    {
+      id: 6,
+      value: '0',
+      image: require('../assets/img/Group_41.png'),
+    },
+  ],
+  reAdvisorKPIS: [
+    {
+      id: 1,
+      value: '0',
+      image: require('../assets/img/money.png'),
+    },
+    {
+      id: 2,
+      value: '0',
+      image: require('../assets/img/Deals.png'),
+    },
+    {
+      id: 3,
+      value: '0',
+      image: require('../assets/img/Group_50.png'),
+    },
+    {
+      id: 4,
+      value: '0',
+      image: require('../assets/img/home-icon.png'),
+    },
+  ],
+  businessCenterKPIS: [
+    {
+      id: 1,
+      value: '0',
+      image: require('../assets/img/money.png'),
+    },
+    {
+      id: 2,
+      value: '0',
+      image: require('../assets/img/Group_51.png'),
+    },
+    {
+      id: 3,
+      value: '0',
+      image: require('../assets/img/daily-responsetime.png'),
+    },
+    {
+      id: 4,
+      value: '0',
+      image: require('../assets/img/Calls.png'),
+    },
+    {
+      id: 5,
+      value: '0',
+      image: require('../assets/img/CIF.png'),
+    },
+  ],
+  callCenterKPIS: [
+    {
+      id: 1,
+      value: '0',
+      image: require('../assets/img/money.png'),
+    },
+    {
+      id: 2,
+      value: '0',
+      image: require('../assets/img/Group_51.png'),
+    },
+    {
+      id: 3,
+      value: '0',
+      image: require('../assets/img/daily-responsetime.png'),
+    },
+    {
+      id: 4,
+      value: '0',
+      image: require('../assets/img/Calls.png'),
+    },
   ],
 }

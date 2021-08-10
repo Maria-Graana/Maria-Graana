@@ -80,6 +80,7 @@ class DetailForm extends Component {
               placeholderTextColor={'#a8a8aa'}
               style={[
                 AppStyles.formControl,
+                { backgroundColor: formData.status === 'pending' ? '#fff' : '#ddd' },
                 Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
                 AppStyles.formFontSettings,
               ]}
@@ -89,6 +90,9 @@ class DetailForm extends Component {
               onChangeText={(text) => this.handleForm(text, 'subject')}
             />
           </View>
+          {checkValidation === true && formData.subject === '' && (
+            <ErrorMessage errorMessage={'Required'} />
+          )}
         </View>
 
         <View style={[AppStyles.mainInputWrap]}>
@@ -138,11 +142,11 @@ class DetailForm extends Component {
         <DateTimePicker
           placeholderLabel={'Select End Time'}
           name={'endTime'}
+          disabled={formData.status !== 'pending' || startTime === '' ? true : false}
           mode={'time'}
           iconSource={require('../../../assets/img/clock.png')}
           date={endTime ? new Date(endTime) : new Date()}
           selectedValue={endTime ? moment(endTime).format('hh:mm a') : ''}
-          disabled={startTime === '' ? true : false}
           handleForm={(value, name) => this.handleForm(value, name)}
         />
 
@@ -153,12 +157,16 @@ class DetailForm extends Component {
               AppStyles.formControl,
               Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
               AppStyles.formFontSettings,
-              { height: 100, paddingTop: 10 },
+              {
+                height: 100,
+                paddingTop: 10,
+                backgroundColor: formData.status === 'pending' ? '#fff' : '#ddd',
+              },
             ]}
             rowSpan={5}
             placeholder="Description"
             onChangeText={(text) => this.handleForm(text, 'notes')}
-            editable={formData.status === 'pending'}
+            disabled={formData.status === 'pending' ? false : true}
             value={notes}
           />
         </View>

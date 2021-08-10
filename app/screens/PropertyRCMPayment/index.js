@@ -29,6 +29,7 @@ import helper from '../../helper'
 import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
+import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -91,6 +92,9 @@ class PropertyRCMPayment extends React.Component {
       rentMonthlyToggle: false,
       active: false,
       isFollowUpMode: false,
+      accountPhoneNumbers: [],
+      accountsLoading: false,
+      isMultiPhoneModalVisible: false,
     }
   }
 
@@ -968,7 +972,7 @@ class PropertyRCMPayment extends React.Component {
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
-    navigation.navigate('Comments', { propertyId: data.id, screenName: 'payment' })
+    navigation.navigate('Comments', { propertyId: data.id, screenName: 'payment', leadId: lead.id })
   }
 
   toggleMenu = (val, id) => {
@@ -1207,6 +1211,40 @@ class PropertyRCMPayment extends React.Component {
     })
   }
 
+  fetchPhoneNumbers = (data) => {
+    this.setState({
+      accountsLoading: true,
+      isMultiPhoneModalVisible: true,
+    })
+    if (data) {
+      axios
+        .get(`/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`)
+        .then((res) => {
+          this.setState({
+            accountPhoneNumbers: res.data,
+            accountsLoading: false,
+          })
+        })
+        .catch((error) => {
+          console.log(
+            `/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`,
+            error
+          )
+          this.setState({
+            accountsLoading: false,
+            isMultiPhoneModalVisible: false,
+          })
+        })
+    }
+  }
+
+  toggleAccountPhone = () => {
+    const { isMultiPhoneModalVisible } = this.state
+    this.setState({
+      isMultiPhoneModalVisible: !isMultiPhoneModalVisible,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1245,8 +1283,11 @@ class PropertyRCMPayment extends React.Component {
       rentMonthlyToggle,
       active,
       isFollowUpMode,
+      accountPhoneNumbers,
+      accountsLoading,
+      isMultiPhoneModalVisible,
     } = this.state
-    const { user } = this.props
+    const { user, contacts } = this.props
     return !loading ? (
       <KeyboardAvoidingView
         style={[
@@ -1275,7 +1316,13 @@ class PropertyRCMPayment extends React.Component {
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
         />
-
+        <AccountsPhoneNumbers
+          toggleAccountPhone={this.toggleAccountPhone}
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={accountPhoneNumbers}
+          loading={accountsLoading}
+          phoneContacts={contacts}
+        />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}
           handleCommissionChange={this.handleCommissionChange}
@@ -1370,6 +1417,7 @@ class PropertyRCMPayment extends React.Component {
                         tokenMenu={tokenMenu}
                         confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
+                        call={this.fetchPhoneNumbers}
                       />
                     ) : (
                       <RentPaymentView
@@ -1404,6 +1452,7 @@ class PropertyRCMPayment extends React.Component {
                         closeLegalDocument={this.closeLegalDocument}
                         toggleMonthlyDetails={this.toggleMonthlyDetails}
                         rentMonthlyToggle={rentMonthlyToggle}
+                        call={this.fetchPhoneNumbers}
                       />
                     )
                   ) : null}
@@ -1464,6 +1513,7 @@ mapStateToProps = (store) => {
     rcmPayment: store.RCMPayment.RCMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    contacts: store.contacts.contacts,
   }
 }
 

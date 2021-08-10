@@ -19,6 +19,7 @@ import { connect } from 'react-redux'
 import helper from '../../helper'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
+import { getGoogleAuth } from '../../actions/user'
 
 const _format = 'YYYY-MM-DD'
 const startOfMonth = moment().startOf('month').format(_format)
@@ -289,6 +290,8 @@ class Diary extends React.Component {
         screenName: screen,
         managerId,
         agentId,
+        rcmLeadId: val.armsLeadId,
+        cmLeadId: val.armsProjectLeadId,
         tasksList: StaticData.allTaskValues,
       })
     }
@@ -387,7 +390,14 @@ class Diary extends React.Component {
     return payload
   }
 
-  addTask = (description, time) => {
+  addGoogleCalendarTask = async (description, time) => {
+    const { dispatch } = this.props
+    dispatch(getGoogleAuth()).then((res) => {
+      this.addTask(description, time)
+    })
+  }
+
+  addTask = async (description, time) => {
     let payload = this.createTaskPayLoad(description, time)
     this.setState({ loading: true }, () => {
       axios
@@ -403,7 +413,6 @@ class Diary extends React.Component {
               title: res.data.subject,
               body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
             }
-            console.log(data)
             TimerNotification(data, start)
           } else {
             helper.errorToast('ERROR: SOMETHING WENT WRONG')
@@ -477,7 +486,9 @@ class Diary extends React.Component {
             // showPopup={this.showPopup}
             onLeadLinkPressed={this.handleLeadLinkPress}
             onLongPress={(val) => this.handleLongPress(val)}
-            addTask={(description, selectedTime) => this.addTask(description, selectedTime)}
+            addTask={(description, selectedTime) =>
+              this.addGoogleCalendarTask(description, selectedTime)
+            }
           />
         ) : null}
       </View>

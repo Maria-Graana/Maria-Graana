@@ -21,19 +21,55 @@ class BuyerSellerTile extends React.Component {
   }
 
   switchToggle = () => {
-    const { buyerSellerCounts = 0, tileType, lead } = this.props
-    let legalCount =
-      tileType === 'seller' ? buyerSellerCounts.selerCount : buyerSellerCounts.buyerCount
-    if (helper.checkSwitchChange(lead, tileType, legalCount)) {
+    const { payment } = this.props
+    if (
+      (payment && payment.status === 'open') ||
+      (payment && payment.status === 'pendingSales') ||
+      (payment && payment.status === 'notCleared')
+    )
       return false
-    } else {
-      return true
+    else if (!payment) return false
+    else return true
+  }
+
+  checkSwitchVisibility = () => {
+    const { payment, singleCommission, isLeadClosed, tileType, leadType } = this.props
+    let toggleVisibility = false
+    if (!isLeadClosed && singleCommission) {
+      if (
+        (payment && payment.status === 'open') ||
+        (payment && payment.status === 'pendingSales') ||
+        (payment && payment.status === 'notCleared')
+      )
+        toggleVisibility = true
+      if (!payment) toggleVisibility = true
+    } else if (!isLeadClosed && !singleCommission) {
+      // if (leadType === 'rcm' && tileType === 'buyer') toggleVisibility = true
+      // if (leadType === 'sellRentOut' && tileType === 'seller') toggleVisibility = true
     }
+    return toggleVisibility
+  }
+
+  checkTileVisibility = () => {
+    const { singleCommission, tileType, leadType, commissionNotApplicableBuyerSeller } = this.props
+    let tileVisibility = true
+    if (!singleCommission) {
+      if (leadType === 'rcm' && tileType === 'buyer' && commissionNotApplicableBuyerSeller)
+        tileVisibility = false
+      if (leadType === 'sellRentOut' && tileType === 'seller' && commissionNotApplicableBuyerSeller)
+        tileVisibility = false
+    }
+    if (singleCommission) {
+      if (leadType === 'rcm' && tileType === 'buyer' && commissionNotApplicableBuyerSeller)
+        tileVisibility = false
+      if (leadType === 'rcm' && tileType === 'seller' && commissionNotApplicableBuyerSeller)
+        tileVisibility = false
+    }
+    return tileVisibility
   }
 
   render() {
     const {
-      isLeadClosed,
       singleCommission,
       onPaymentLongPress,
       commissionNotApplicableBuyerSeller,
@@ -48,14 +84,19 @@ class BuyerSellerTile extends React.Component {
       commissionTitle,
       RCMBTNTitle,
       setComissionApplicable,
+      call,
+      leadType,
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
-    let disabledSwitch = this.switchToggle()
+    let disabledSwitch = this.checkSwitchVisibility() ? false : true
+    let showSwitch = this.checkSwitchVisibility()
+    let tileVisibility = this.checkTileVisibility()
+
     return (
       <View style={styles.tileView}>
         <View style={[styles.titleView, { paddingVertical: 0, paddingBottom: 10 }]}>
           <Text style={styles.titleText}>{tileTitle}</Text>
-          {singleCommission && !payment && !isLeadClosed && (
+          {showSwitch && leadType === 'rcm' && (
             <Switch
               disabled={disabledSwitch}
               trackColor={{ false: '#81b0ff', true: AppStyles.colors.primaryColor }}
@@ -63,14 +104,14 @@ class BuyerSellerTile extends React.Component {
               ios_backgroundColor="#81b0ff"
               onValueChange={() => {
                 if (!this.switchToggle())
-                  setComissionApplicable(!commissionNotApplicableBuyerSeller)
+                  setComissionApplicable(!commissionNotApplicableBuyerSeller, tileType)
               }}
               value={commissionNotApplicableBuyerSeller ? false : true}
               style={styles.switchView}
             />
           )}
         </View>
-        {!commissionNotApplicableBuyerSeller || !singleCommission ? (
+        {tileVisibility ? (
           <View>
             <RCMBTN
               onClick={() => closeLegalDocument(tileType)}
@@ -88,6 +129,8 @@ class BuyerSellerTile extends React.Component {
                   onPaymentLongPress={() => onPaymentLongPress(payment)}
                   commissionEdit={onReadOnly}
                   title={payment ? commissionTitle : ''}
+                  call={call}
+                  showAccountPhone={true}
                 />
               ) : (
                 <View style={{ paddingTop: 10 }}>

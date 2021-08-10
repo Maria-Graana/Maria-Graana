@@ -31,6 +31,7 @@ import CMBottomNav from '../../components/CMBottomNav'
 import DeleteModal from '../../components/DeleteModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
+import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import Loader from '../../components/loader'
 import MatchTile from '../../components/MatchTile/index'
 import ViewDocs from '../../components/ViewDocs'
@@ -49,6 +50,7 @@ import {
   getInstrumentDetails,
   setInstrumentInformation,
 } from '../../actions/addInstrument'
+import { useValue } from 'react-native-reanimated'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -135,6 +137,9 @@ class LeadRCMPayment extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       comment: null,
+      accountPhoneNumbers: [],
+      accountsLoading: false,
+      isMultiPhoneModalVisible: false,
     }
   }
 
@@ -832,14 +837,14 @@ class LeadRCMPayment extends React.Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     let copy = formData
-    copy[name] = value
+    copy[name] = value.replace(/,/g, '')
     this.setState({ formData: copy, rentNotZero: false })
   }
 
   handleBuyerForm = (value, name) => {
     const { buyerDetailForm } = this.state
     let copy = buyerDetailForm
-    copy[name] = value
+    copy[name] = value.replace(/,/g, '')
     this.setState({ buyerDetailForm: copy, agreedNotZero: false, advanceNotZero: false })
   }
 
@@ -1544,6 +1549,45 @@ class LeadRCMPayment extends React.Component {
     }
   }
 
+  showConfirmationDialogClosePayment = (value, addedBy) => {
+    if (!value) {
+      if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
+      else this.setSellerCommissionApplicable(value)
+      return
+    }
+    ActionSheet.show(
+      {
+        options: TOKENBUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        title:
+          'Uploaded legal documents will be deleted with disable action. Are you sure you want to continue?',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          this.disableLegalDocs(value, addedBy)
+        }
+      }
+    )
+  }
+
+  disableLegalDocs = (value, addedBy) => {
+    const { lead } = this.state
+    axios.get(`api/leads/disablelegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
+      if (res.data.disableLegaldocuments) {
+        this.deleteLegalDocs(value, addedBy)
+      }
+    })
+  }
+
+  deleteLegalDocs = (value, addedBy) => {
+    const { lead } = this.state
+    axios.delete(`api/leads/deleteLegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
+      this.setState({ loading: false })
+      if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
+      else this.setSellerCommissionApplicable(value)
+    })
+  }
+
   setBuyerCommissionApplicable = (value) => {
     this.setState({ commissionNotApplicableBuyer: value }, () => {
       const { lead } = this.state
@@ -1747,6 +1791,40 @@ class LeadRCMPayment extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
+  fetchPhoneNumbers = (data) => {
+    this.setState({
+      accountsLoading: true,
+      isMultiPhoneModalVisible: true,
+    })
+    if (data) {
+      axios
+        .get(`/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`)
+        .then((res) => {
+          this.setState({
+            accountPhoneNumbers: res.data,
+            accountsLoading: false,
+          })
+        })
+        .catch((error) => {
+          console.log(
+            `/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`,
+            error
+          )
+          this.setState({
+            accountsLoading: false,
+            isMultiPhoneModalVisible: false,
+          })
+        })
+    }
+  }
+
+  toggleAccountPhone = () => {
+    const { isMultiPhoneModalVisible } = this.state
+    this.setState({
+      isMultiPhoneModalVisible: !isMultiPhoneModalVisible,
+    })
+  }
+
   render() {
     const {
       menuShow,
@@ -1792,8 +1870,11 @@ class LeadRCMPayment extends React.Component {
       currentCall,
       isFollowUpMode,
       comment,
+      accountPhoneNumbers,
+      accountsLoading,
+      isMultiPhoneModalVisible,
     } = this.state
-    const { navigation, user } = this.props
+    const { navigation, user, contacts } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
 
     return !loading ? (
@@ -1824,6 +1905,13 @@ class LeadRCMPayment extends React.Component {
           closeModal={() => this.closeModal()}
           onPress={() => this.onHandleCloseLead()}
           legalDocLoader={legalDocLoader}
+        />
+        <AccountsPhoneNumbers
+          toggleAccountPhone={this.toggleAccountPhone}
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={accountPhoneNumbers}
+          loading={accountsLoading}
+          phoneContacts={contacts}
         />
         <AddRCMPaymentModal
           onModalCloseClick={this.onModalCloseClick}
@@ -1927,8 +2015,8 @@ class LeadRCMPayment extends React.Component {
                         currentProperty={allProperties}
                         commissionNotApplicableBuyer={commissionNotApplicableBuyer}
                         commissionNotApplicableSeller={commissionNotApplicableSeller}
-                        setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
-                        setSellerCommissionApplicable={this.setSellerCommissionApplicable}
+                        setBuyerCommissionApplicable={this.showConfirmationDialogClosePayment}
+                        setSellerCommissionApplicable={this.showConfirmationDialogClosePayment}
                         onPaymentLongPress={this.onPaymentLongPress}
                         agreedNotZero={agreedNotZero}
                         toggleTokenMenu={this.toggleTokenMenu}
@@ -1941,6 +2029,7 @@ class LeadRCMPayment extends React.Component {
                         formData={buyerDetailForm}
                         handleForm={this.handleBuyerForm}
                         advanceNotZero={advanceNotZero}
+                        call={this.fetchPhoneNumbers}
                       />
                     ) : (
                       <RentPaymentView
@@ -1954,8 +2043,8 @@ class LeadRCMPayment extends React.Component {
                         currentProperty={allProperties}
                         commissionNotApplicableBuyer={commissionNotApplicableBuyer}
                         commissionNotApplicableSeller={commissionNotApplicableSeller}
-                        setBuyerCommissionApplicable={this.setBuyerCommissionApplicable}
-                        setSellerCommissionApplicable={this.setSellerCommissionApplicable}
+                        setBuyerCommissionApplicable={this.showConfirmationDialogClosePayment}
+                        setSellerCommissionApplicable={this.showConfirmationDialogClosePayment}
                         onPaymentLongPress={this.onPaymentLongPress}
                         toggleTokenMenu={this.toggleTokenMenu}
                         tokenMenu={tokenMenu}
@@ -1965,6 +2054,7 @@ class LeadRCMPayment extends React.Component {
                         confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
                         buyerSellerCounts={buyerSellerCounts}
+                        call={this.fetchPhoneNumbers}
                       />
                     )
                   ) : null}
@@ -2049,6 +2139,7 @@ mapStateToProps = (store) => {
     rcmPayment: store.RCMPayment.RCMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    contacts: store.contacts.contacts,
   }
 }
 

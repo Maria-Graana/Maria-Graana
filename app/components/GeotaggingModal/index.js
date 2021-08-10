@@ -65,7 +65,7 @@ const GeoTaggingModal = ({
                   onChangeText={(text) => {
                     handleLatLngChange(text, 'lat')
                   }}
-                  value={latitude === null ? '' : String(latitude)}
+                  value={latitude === null ? '' : latitude ? Number(latitude).toFixed(7) : ''}
                   style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                   keyboardType="numeric"
                   placeholder={'Latitude'}
@@ -82,7 +82,7 @@ const GeoTaggingModal = ({
                   onChangeText={(text) => {
                     handleLatLngChange(text, 'lng')
                   }}
-                  value={longitude === null ? '' : String(longitude)}
+                  value={longitude === null ? '' : longitude ? Number(longitude).toFixed(7) : ''}
                   style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                   keyboardType="numeric"
                   placeholder={'Longitude'}

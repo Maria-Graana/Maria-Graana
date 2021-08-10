@@ -268,7 +268,7 @@ const helper = {
       return (showPkr ? 'PKR ' : '') + formatPrice(price)
     }
   },
-  callNumber(body, contacts) {
+  callNumber(body, contacts, title = 'ARMS') {
     let url = body.url
     if (url && url != 'tel:null') {
       Linking.canOpenURL(url)
@@ -286,7 +286,7 @@ const helper = {
                 body.phone &&
                 body.phone !== ''
               )
-                if (!result) helper.addContact(body)
+                if (!result) helper.addContact(body, title)
             }
             return Linking.openURL(url)
           }
@@ -330,10 +330,10 @@ const helper = {
       return resultNum
     } else return resultNum
   },
-  addContact(data) {
+  addContact(data, title) {
     if (data && data.name && data.name !== '' && data.name !== ' ') {
       const contact = {
-        [Contacts.Fields.FirstName]: data.name + ' - ARMS',
+        [Contacts.Fields.FirstName]: data.name + ` - ${title}`,
         [Contacts.Fields.PhoneNumbers]: data.payload,
       }
       Contacts.addContactAsync(contact)
@@ -551,6 +551,23 @@ const helper = {
       return `PKR ${formatPrice(start)} - ${formatPrice(end)}`
     }
   },
+  convertPriceToStringLead(start, end, maxValue) {
+    if (!start) start = 0
+    if (!end) end = 0
+    if (start === 0 && end === 0) {
+      return 'PKR Any'
+    } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
+      return `PKR Any`
+    } else if (start === 0 && end !== maxValue) {
+      return `PKR Upto ${formatPrice(end)}`
+    } else if (start !== 0 && end === maxValue) {
+      return `PKR ${formatPrice(start)} or more`
+    } else if (start === end) {
+      return `PKR ${formatPrice(start)} to ${formatPrice(end)}`
+    } else {
+      return `PKR ${formatPrice(start)} - ${formatPrice(end)}`
+    }
+  },
   convertPriceToIntegerString(start, end, maxValue) {
     if (!start) start = 0
     if (!end) end = 0
@@ -738,8 +755,10 @@ const helper = {
       legalCount = 4
     }
     const { commissions, propsureOutstandingPayment, sellerLegalMail, legalMailSent } = lead
-    if (!sellerLegalMail) legalServicesCount = legalServicesCount - 1
-    if (!legalMailSent) legalServicesCount = legalServicesCount - 1
+    if (!lead.commissionNotApplicableSeller && !sellerLegalMail)
+      legalServicesCount = legalServicesCount - 1
+    if (!lead.commissionNotApplicableBuyer && !legalMailSent)
+      legalServicesCount = legalServicesCount - 1
     if (legalServicesFee && legalServicesFee.fee <= 0) legalServicesCount = 0
     if (commissions && commissions.length) {
       commissions.map((item) => {
@@ -752,6 +771,7 @@ const helper = {
         if (item.status !== 'cleared' && item.paymentCategory === 'legal_payment')
           legalServicesCheck = false
       })
+
       if (
         paymentCheck &&
         propsureCheck &&
@@ -997,6 +1017,65 @@ const helper = {
         return item
       })
       return newData
+    }
+  },
+  addFalse(data) {
+    if (data && data.length) {
+      let newData = data.map((item, index) => {
+        item.addItem = false
+        return item
+      })
+      return newData
+    }
+  },
+  checkPropsureAdditionalReports(reports, additionalReports) {
+    if (additionalReports && additionalReports.length) {
+      let propsureReport = _.pluck(additionalReports, 'propsureReport')
+      let newReports = reports.map((item) => {
+        let result = _.find(propsureReport, function (num) {
+          return num.id === item.id
+        })
+        if (result) {
+          item.addItem = true
+          return item
+        } else return item
+      })
+      return newReports
+    } else return reports
+  },
+  setKPIsData(role, data) {
+    let { calculatedKpis } = data
+    if (role === 'area_manager' || role === 'zonal_manager') {
+      StaticData.areaManagerKPIS[0].value = calculatedKpis.revenueTarget.toString()
+      StaticData.areaManagerKPIS[1].value = calculatedKpis.deals.toString()
+      StaticData.areaManagerKPIS[2].value = calculatedKpis.viewingAndMeeting.toString()
+      StaticData.areaManagerKPIS[3].value = calculatedKpis.listing.toString()
+      StaticData.areaManagerKPIS[4].value = calculatedKpis.meetingWithPP.toString()
+      StaticData.areaManagerKPIS[5].value = calculatedKpis.ppAppRating.toString()
+      return StaticData.areaManagerKPIS
+    }
+    if (role === 'business_centre_manager' || role === 'business_centre_agent') {
+      StaticData.businessCenterKPIS[0].value = calculatedKpis.revenueTarget.toString()
+      StaticData.businessCenterKPIS[1].value =
+        calculatedKpis.meetingsWithInvestmentGuides.toString()
+      StaticData.businessCenterKPIS[2].value = calculatedKpis.avgResponseTime.toString()
+      StaticData.businessCenterKPIS[3].value = calculatedKpis.calls.toString()
+      StaticData.businessCenterKPIS[4].value = calculatedKpis.CIF.toString()
+      return StaticData.businessCenterKPIS
+    }
+    if (role === 'branch_manager' || role === 'sales_agent') {
+      StaticData.reAdvisorKPIS[0].value = calculatedKpis.revenueTarget.toString()
+      StaticData.reAdvisorKPIS[1].value = calculatedKpis.deals.toString()
+      StaticData.reAdvisorKPIS[2].value = calculatedKpis.viewingAndMeeting.toString()
+      StaticData.reAdvisorKPIS[3].value = calculatedKpis.listing.toString()
+      return StaticData.reAdvisorKPIS
+    }
+    if (role === 'call_centre_manager' || role === 'call_centre_warrior') {
+      StaticData.callCenterKPIS[0].value = calculatedKpis.revenueTarget.toString()
+      StaticData.callCenterKPIS[1].value = calculatedKpis.meetingsWithInvestmentGuides.toString()
+      StaticData.callCenterKPIS[2].value = calculatedKpis.avgResponseTime.toString()
+      StaticData.callCenterKPIS[3].value = calculatedKpis.calls.toString()
+      return StaticData.callCenterKPIS
     }
   },
 }

@@ -53,7 +53,7 @@ class PropertyPropsure extends React.Component {
       selectedPropertyId: null,
       selectedProperty: null,
       selectedPropsureId: null,
-      pendingPropsures: null,
+      pendingPropsures: [],
       matchData: [],
       progressValue: 0,
       // for the lead close dialog
@@ -108,8 +108,9 @@ class PropertyPropsure extends React.Component {
     axios
       .get(`/api/inventory/listpropsureReports`)
       .then((res) => {
+        let reports = helper.addFalse(res.data)
         this.setState({
-          propsureReportTypes: res.data,
+          propsureReportTypes: reports,
         })
       })
       .catch((error) => {
@@ -245,7 +246,9 @@ class PropertyPropsure extends React.Component {
   }
 
   closeModal = () => {
-    this.setState({ isVisible: false })
+    const { propsureReportTypes } = this.state
+    let reports = helper.addFalse(propsureReportTypes)
+    this.setState({ isVisible: false, pendingPropsures: [], propsureReportTypes: reports })
   }
 
   showReportsModal = (property) => {
@@ -533,15 +536,16 @@ class PropertyPropsure extends React.Component {
   }
 
   addRemoveReport = (report) => {
-    const { selectedReports } = this.state
+    const { selectedReports, pendingPropsures } = this.state
     let reports = [...selectedReports]
     let totalReportPrice = 0
+    if (report.addItem) return
     if (reports.some((item) => item.title === report.title)) {
       reports = _.without(reports, report)
-      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports, pendingPropsures)
     } else {
       reports.push(report)
-      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports)
+      totalReportPrice = PaymentMethods.addPropsureReportPrices(reports, pendingPropsures)
     }
     this.setState({ selectedReports: reports, totalReportPrice: totalReportPrice })
   }
@@ -568,7 +572,11 @@ class PropertyPropsure extends React.Component {
   goToPropertyComments = (data) => {
     const { lead, navigation } = this.props
     this.toggleMenu(false, data.id)
-    navigation.navigate('Comments', { propertyId: data.id, screenName: 'propsure' })
+    navigation.navigate('Comments', {
+      propertyId: data.id,
+      screenName: 'propsure',
+      leadId: lead.id,
+    })
   }
 
   toggleMenu = (val, id) => {
@@ -1094,6 +1102,19 @@ class PropertyPropsure extends React.Component {
     })
   }
 
+  additionalRequest = () => {
+    const { propsureReportTypes, pendingPropsures } = this.state
+    let totalReportPrice = PaymentMethods.addPropsureReportPrices([], pendingPropsures)
+    let newReports = helper.checkPropsureAdditionalReports(propsureReportTypes, pendingPropsures)
+    this.setState({
+      documentModalVisible: false,
+      file: null,
+      isVisible: true,
+      propsureReportTypes: newReports,
+      totalReportPrice: totalReportPrice,
+    })
+  }
+
   // <<<<<<<<<<<<<<<<<< Payment & Attachment Workflow End >>>>>>>>>>>>>>>>>>
 
   render() {
@@ -1163,6 +1184,7 @@ class PropertyPropsure extends React.Component {
           editable={this.setCommissionEditData}
           onPaymentLongPress={this.onPaymentLongPress}
           type={'seller'}
+          additionalRequest={this.additionalRequest}
         />
         <AddPropsurePayment
           onModalCloseClick={this.onModalCloseClick}

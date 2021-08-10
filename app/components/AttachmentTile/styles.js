@@ -20,6 +20,8 @@ export default styles = StyleSheet.create({
     paddingHorizontal: wp('2%'),
     paddingBottom: wp('3%'),
     marginHorizontal: wp('2.5%'),
+    borderWidth: 0.5,
+    borderColor: '#ebebeb',
   },
   closeButtonStyle: {
     paddingVertical: 5,

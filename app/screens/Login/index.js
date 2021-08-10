@@ -22,6 +22,7 @@ import types from '../../types'
 import config from '../../config'
 import helper from '../../helper'
 import * as Sentry from 'sentry-expo'
+import Constants from 'expo-constants'
 
 class Login extends Component {
   constructor(props) {
@@ -40,7 +41,8 @@ class Login extends Component {
   }
 
   validateEmail = (email) => {
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    var re =
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(email)
   }
 
@@ -64,6 +66,7 @@ class Login extends Component {
         let creds = {
           email: formData.email.toLocaleLowerCase(),
           password: formData.password,
+          deviceId: Constants.deviceId,
         }
         if (config.channel === 'production') {
           Sentry.captureException(`Before Calling Login Action! ${JSON.stringify(creds.email)}`)
@@ -119,14 +122,8 @@ class Login extends Component {
   }
 
   render() {
-    const {
-      checkValidation,
-      formData,
-      checkLogin,
-      showError,
-      isInternetConnected,
-      validEmail,
-    } = this.state
+    const { checkValidation, formData, checkLogin, showError, isInternetConnected, validEmail } =
+      this.state
     let label = helper.checkChannel(config.channel)
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

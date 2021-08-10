@@ -51,11 +51,43 @@ class DiaryTile extends React.Component {
     this.setState({ active: false })
   }
 
+  removeUnderscore(str) {
+    var i,
+      frags = str.split('_')
+    for (i = 0; i < frags.length; i++) {
+      frags[i] = frags[i].charAt(0).toUpperCase() + frags[i].slice(1)
+    }
+    return frags.join(' ')
+  }
+
+  showTaskType = (val) => {
+    let finalValue = ''
+    if (val && val.taskType) {
+      finalValue = this.removeUnderscore(val.taskType)
+      if (finalValue === 'Meeting With Pp') {
+        return 'Meeting With PP'
+      } else {
+        return finalValue
+      }
+    } else {
+      return finalValue
+    }
+  }
+
   render() {
     const { data, onLeadLinkPressed, addTask, editTask } = this.props
     const { todayDate, selectedTime, showTask, description, active } = this.state
     return (
       <View style={AppStyles.mb1}>
+        <AddTaskModal
+          active={active}
+          closeModal={() => this.closeModal()}
+          handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
+          description={description}
+          addTask={(description) => {
+            addTask(description, selectedTime)
+          }}
+        />
         <TouchableWithoutFeedback
           style={AppStyles.mb1}
           onPress={() => this.showAddTask(false, null, null)}
@@ -64,15 +96,6 @@ class DiaryTile extends React.Component {
             data={data}
             renderItem={(item, index) => (
               <View>
-                <AddTaskModal
-                  active={active}
-                  closeModal={() => this.closeModal()}
-                  handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
-                  description={description}
-                  addTask={(description) => {
-                    addTask(description, selectedTime)
-                  }}
-                />
                 {item.item.task && item.item.task.length ? (
                   <View style={styles.container}>
                     <TouchableOpacity
@@ -111,9 +134,7 @@ class DiaryTile extends React.Component {
                             </Text>
                           ) : null}
                           <View style={styles.innerTile}>
-                            <Text style={styles.meetingText}>
-                              {val.taskType.charAt(0).toUpperCase() + val.taskType.slice(1)}
-                            </Text>
+                            <Text style={styles.meetingText}>{this.showTaskType(val)}</Text>
                             {val.armsLeadId !== null || val.armsProjectLeadId !== null ? (
                               <TouchableOpacity
                                 style={styles.lead}

@@ -14,6 +14,7 @@ import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import MeetingTile from '../../components/MeetingTile'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import ReferenceGuideModal from '../../components/ReferenceGuideModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
@@ -50,6 +51,10 @@ class Meetings extends Component {
       comment: null,
       selectedClientContacts: [],
       isMultiPhoneModalVisible: false,
+      isReferenceModalVisible: false,
+      referenceGuideLoading: false,
+      selectedMeetingId: null,
+      referenceErrorMessage: null,
     }
   }
 
@@ -126,27 +131,46 @@ class Meetings extends Component {
     })
   }
 
-  sendStatus = (status, id) => {
+  sendStatus = (status, id, title = null) => {
     const { formData, meetings } = this.state
     const { lead } = this.props
+    console.log('title=>', title)
+
     let body = {}
     if (status === 'cancel_meeting') {
       axios.delete(`/api/diary/delete?id=${id}&cmLeadId=${lead.id}`).then((res) => {
         this.getMeetingLead()
       })
     } else if (status === 'meeting_done') {
-      body = { response: status, comments: status, leadId: lead.id, status: 'completed' }
-      axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
-        this.getMeetingLead()
-      })
-      this.setState({
-        statusfeedbackModalVisible: true,
-        modalMode: 'meeting',
-        currentCall:
-          meetings && meetings.rows ? meetings.rows.find((item) => item.id === id) : null,
-      })
+      if (lead && lead.guideReference) {
+        //console.log(id)
+        body = {
+          response: status,
+          comments: status,
+          leadId: lead.id,
+          status: 'completed',
+          title,
+        }
+        axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
+          this.getMeetingLead()
+        })
+        this.setState({
+          statusfeedbackModalVisible: true,
+          modalMode: 'meeting',
+          selectedMeetingId: id,
+          currentCall:
+            meetings && meetings.rows ? meetings.rows.find((item) => item.id === id) : null,
+        })
+      } else {
+        this.setState({ isReferenceModalVisible: true, selectedMeetingId: id }) // show reference guide modal for first meeting if reference number is null
+      }
     } else {
-      body = { response: status, comments: status, leadId: lead.id }
+      body = {
+        response: status,
+        comments: status,
+        leadId: lead.id,
+        title,
+      }
       axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {
         this.getMeetingLead()
       })
@@ -162,7 +186,7 @@ class Meetings extends Component {
       time: start,
       date: start,
       taskType: 'called',
-      subject: 'Call to client ' + this.props.lead.customer.customerName,
+      subject: 'called ' + this.props.lead.customer.customerName,
       calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
       customerId: this.props.lead.customer.id,
       leadId: this.props.lead.id, // For CM send leadID and armsLeadID for RCM
@@ -395,12 +419,17 @@ class Meetings extends Component {
     this.setState({ statusfeedbackModalVisible: false }, () => {
       if (currentCall) {
         if (modalMode === 'call') {
-          this.sendStatus(comment, currentCall.id)
+          console.log('hello')
+          this.sendStatus(
+            comment,
+            currentCall.id,
+            currentCall.calledOn === 'phone' ? 'call' : 'whatsapp'
+          )
           this.openModal()
         } else {
           // Meeting Mode & actions for book unit and set up another meeting
           this.setState({ isFeedbackMeetingModalVisible: true }, () => {
-            this.sendStatus(comment, currentCall.id)
+            this.sendStatus(comment, currentCall.id, 'meeting')
           })
         }
       }
@@ -456,7 +485,15 @@ class Meetings extends Component {
     }
     if ((currentCall && modalMode === 'call') || modalMode === 'meeting') {
       this.setState({ statusfeedbackModalVisible: false }, () => {
-        this.sendStatus(comment, currentCall.id)
+        this.sendStatus(
+          comment,
+          currentCall.id,
+          currentCall && currentCall.calledOn === 'phone'
+            ? 'phone'
+            : currentCall && currentCall.calledOn === 'phone'
+            ? 'whatsapp'
+            : 'meeting'
+        )
         this.closeLeadOnReject(body)
       })
     } else {
@@ -491,6 +528,78 @@ class Meetings extends Component {
     this.setState({ statusfeedbackModalVisible: value })
   }
 
+  addInvestmentGuide = (guideNo, attachments) => {
+    const { lead } = this.props
+    const { selectedMeetingId, meetings } = this.state
+    let body = {}
+    const referenceNumberUrl = `/api/diary/addGuideReference?cmLeadId=${lead.id}&guideReference=${guideNo}`
+    this.setState({ referenceGuideLoading: true }, () => {
+      axios
+        .post(referenceNumberUrl)
+        .then((response) => {
+          if (response && response.data.status) {
+            //helper.successToast(response.data.message)
+            this.setState(
+              {
+                isReferenceModalVisible: false,
+                referenceGuideLoading: false,
+                referenceErrorMessage: null,
+              },
+              () => {
+                setTimeout(() => {
+                  this.setState({ statusfeedbackModalVisible: true }, () => {
+                    body = {
+                      response: 'meeting_done',
+                      comments: 'meeting_done',
+                      leadId: lead.id,
+                      status: 'completed',
+                      title: 'meeting',
+                    }
+                    axios.patch(`/api/diary/update?id=${selectedMeetingId}`, body).then((res) => {
+                      this.getMeetingLead()
+                    })
+                    this.setState({
+                      statusfeedbackModalVisible: true,
+                      modalMode: 'meeting',
+                      currentCall:
+                        meetings && meetings.rows
+                          ? meetings.rows.find((item) => item.id === selectedMeetingId)
+                          : null,
+                    })
+                  })
+                }, 1000)
+              }
+            )
+            this.fetchLead()
+            attachments.map((item) => {
+              // upload attachments after reference number is added successfully
+              let attachment = {
+                name: item.fileName,
+                type: 'file/' + item.fileName.split('.').pop(),
+                uri: item.uri,
+              }
+              let fd = new FormData()
+              fd.append('file', attachment)
+              let attachmentUrl = `/api/diary/addGuideAttachment?cmLeadId=${lead.id}&guideReference=${guideNo}&title=${attachment.name}&fileName=${attachment.name}`
+              axios.post(attachmentUrl, fd).then((response) => {
+                if (!response.status) {
+                  helper.errorToast('Failed to upload attachment!')
+                }
+              })
+            })
+          } else {
+            this.setState({
+              referenceGuideLoading: false,
+              referenceErrorMessage: response.data.message,
+            })
+          }
+        })
+        .catch((error) => {
+          console.log('error', error)
+        })
+    })
+  }
+
   render() {
     const {
       active,
@@ -513,6 +622,9 @@ class Meetings extends Component {
       comment,
       selectedClientContacts,
       isMultiPhoneModalVisible,
+      isReferenceModalVisible,
+      referenceGuideLoading,
+      referenceErrorMessage,
     } = this.state
 
     const { navigation, lead } = this.props
@@ -601,6 +713,16 @@ class Meetings extends Component {
           />
         </View>
 
+        <ReferenceGuideModal
+          isReferenceModalVisible={isReferenceModalVisible}
+          hideReferenceGuideModal={() => this.setState({ isReferenceModalVisible: false })}
+          addInvestmentGuide={(guideNo, attachments) =>
+            this.addInvestmentGuide(guideNo, attachments)
+          }
+          referenceGuideLoading={referenceGuideLoading}
+          referenceErrorMessage={referenceErrorMessage}
+        />
+
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
@@ -650,7 +772,7 @@ class Meetings extends Component {
               : StaticData.leadClosedCommentsFeedback
           }
           modalMode={modalMode}
-          sendStatus={(comment, id) => this.sendStatus(comment, id)}
+          sendStatus={(comment, id, title) => this.sendStatus(comment, id, title)}
           addMeeting={() => this.openModalInMeetingMode()}
           addFollowup={(comment) => this.openModalInFollowupMode(comment)}
           showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}

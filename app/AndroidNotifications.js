@@ -6,7 +6,9 @@ import Constants from 'expo-constants'
 import { View, Alert, Platform } from 'react-native'
 import axios from 'axios'
 import * as Notifications from 'expo-notifications'
+import * as Device from 'expo-device'
 import * as Sentry from 'sentry-expo'
+import Constants from 'expo-constants'
 
 class AndroidNotifications extends React.Component {
   constructor(props) {
@@ -36,10 +38,9 @@ class AndroidNotifications extends React.Component {
       // let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
       let expoPushToken = (await Notifications.getExpoPushTokenAsync()).data
       if (expoPushToken) {
-        let body = {
-          token: expoPushToken,
-          armsuserId: user.id,
-        }
+        let body = this.generatePayload()
+        body.token = expoPushToken
+        body.armsuserId = user.id
         axios
           .post('/api/notifications/add-token', body)
           .then((res) => {
@@ -82,6 +83,22 @@ class AndroidNotifications extends React.Component {
         color: '#2A7EF0',
       })
     }
+  }
+
+  generatePayload = () => {
+    let body = {
+      deviceDetails: {
+        osName: Device.osName,
+        osVersion: Device.osVersion,
+        deviceName: Device.deviceName,
+        brand: Device.brand,
+        deviceYearClass: Device.deviceYearClass,
+        modelId: Device.modelId,
+        modelName: Device.modelName,
+      },
+      deviceId: Constants.deviceId,
+    }
+    return body
   }
 
   notify = () => {

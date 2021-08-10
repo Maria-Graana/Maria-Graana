@@ -145,7 +145,7 @@ export default class App extends React.Component {
     axios.defaults.baseURL = config.apiPath
   }
 
-  _handleNotification = (response) => {
+  _handleNotification = async (response) => {
     const { navigation } = this.props
     let notification = response.notification
     if (
@@ -157,12 +157,32 @@ export default class App extends React.Component {
       }, 300)
     } else {
       if (response.actionIdentifier === 'call') {
-        this.callAgent(notification)
+        setTimeout(() => {
+          this.callPayload(notification)
+        }, 300)
       }
     }
   }
 
-  callAgent = (notification) => {
+  callPayload = async (notification) => {
+    let content = notification.request && notification.request.content
+    let { contacts } = await store.getState()
+    let data = content.data
+    let newContact = {
+      phone: data.number,
+      name: data.name !== '- - -' ? data.name : '',
+      url: `tel:${data.number}`,
+      payload: [
+        {
+          label: 'mobile',
+          number: data.number,
+        },
+      ],
+    }
+    helper.callNumber(newContact, contacts, data.role === 'Accounts' ? 'Accounts' : 'ARMS')
+  }
+
+  callAgent = async (notification) => {
     let content = notification.request && notification.request.content
     let data = content.data
     let url = `tel:${data.number}`
@@ -196,7 +216,7 @@ export default class App extends React.Component {
           })
         }
       }
-      if (data.type === 'call') this.callAgent(notification)
+      if (data.type === 'call') this.callPayload(notification)
       // data.isPP = true
       if (data.type === 'buyLead') {
         if (!data.isPP) {

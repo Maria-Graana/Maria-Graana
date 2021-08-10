@@ -1,7 +1,7 @@
 /** @format */
 
 import React from 'react'
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TouchableOpacity, TouchableHighlight } from 'react-native'
 import styles from './style'
 import { connect } from 'react-redux'
 import { formatPrice } from '../../PriceFormate'
@@ -27,6 +27,7 @@ class PaymentTile extends React.Component {
       editTileForscreenOne,
       checkLeadClosedOrNot,
       onPaymentLongPress,
+      call,
     } = this.props
     let price = data.installmentAmount
     let taxIncludedAmount = 0
@@ -50,9 +51,7 @@ class PaymentTile extends React.Component {
     return (
       <TouchableOpacity
         onLongPress={
-          data.status === 'pendingSales' ||
-          data.status === 'notCleared' ||
-          data.status === 'open'
+          data.status === 'pendingSales' || data.status === 'notCleared' || data.status === 'open'
             ? onPaymentLongPress
             : null
         }
@@ -85,6 +84,20 @@ class PaymentTile extends React.Component {
               <Text style={styles.priceDate}>
                 {moment(data.createdAt).format('DD MMM YY - h:mm a')}
               </Text>
+              {data.status !== 'open' ? (
+                <TouchableHighlight
+                  onPress={() => {
+                    call(data)
+                  }}
+                  style={[styles.phoneView]}
+                  underlayColor={AppStyles.colors.backgroundColor}
+                >
+                  <Image
+                    source={require('../../../assets/img/call.png')}
+                    style={[styles.callImage, data.checkBox ? { tintColor: '#fff' } : null]}
+                  />
+                </TouchableHighlight>
+              ) : null}
             </View>
           )}
           {data.taxIncluded && (
@@ -109,6 +122,20 @@ class PaymentTile extends React.Component {
                 <Text style={styles.priceDate}>
                   {moment(data.createdAt).format('DD MMM YY - h:mm a')}
                 </Text>
+                {data.status !== 'open' ? (
+                  <TouchableHighlight
+                    onPress={() => {
+                      call(data)
+                    }}
+                    style={[styles.phoneView]}
+                    underlayColor={AppStyles.colors.backgroundColor}
+                  >
+                    <Image
+                      source={require('../../../assets/img/call.png')}
+                      style={[styles.callImage, data.checkBox ? { tintColor: '#fff' } : null]}
+                    />
+                  </TouchableHighlight>
+                ) : null}
               </View>
             </View>
           )}

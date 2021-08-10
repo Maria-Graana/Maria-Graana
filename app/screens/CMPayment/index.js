@@ -34,6 +34,7 @@ import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import PaymentHelper from './PaymentHelper'
 import moment from 'moment-timezone'
+import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -135,6 +136,9 @@ class CMPayment extends Component {
       downPayment: 0,
       possessionCharges: 0,
       downPaymenTime: moment().format('DD MMM, YYYY'),
+      accountPhoneNumbers: [],
+      accountsLoading: false,
+      isMultiPhoneModalVisible: false,
     }
   }
 
@@ -613,9 +617,8 @@ class CMPayment extends Component {
         })
         return
       }
-
+      let body = {}
       if (editable === false) {
-        let body = {}
         // for payment addition
         if (
           CMPayment.type === 'cheque' ||
@@ -751,6 +754,7 @@ class CMPayment extends Component {
         armsUserId: user.id,
         installmentAmount: CMPayment.installmentAmount,
         instrumentId: addInstrument.id,
+        isPrimary: false,
       }
       if (isCMEdit) this.updateCMPayment(body)
       else this.addCMPayment(body)
@@ -767,6 +771,7 @@ class CMPayment extends Component {
               addedBy: 'buyer',
               installmentAmount: CMPayment.installmentAmount,
               instrumentId: res.data.id,
+              isPrimary: true,
             }
             if (isCMEdit) this.updateCMPayment(body)
             else this.addCMPayment(body)
@@ -1440,6 +1445,40 @@ class CMPayment extends Component {
     }
   }
 
+  fetchPhoneNumbers = (data) => {
+    this.setState({
+      accountsLoading: true,
+      isMultiPhoneModalVisible: true,
+    })
+    if (data) {
+      axios
+        .get(`/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`)
+        .then((res) => {
+          this.setState({
+            accountPhoneNumbers: res.data,
+            accountsLoading: false,
+          })
+        })
+        .catch((error) => {
+          console.log(
+            `/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`,
+            error
+          )
+          this.setState({
+            accountsLoading: false,
+            isMultiPhoneModalVisible: false,
+          })
+        })
+    }
+  }
+
+  toggleAccountPhone = () => {
+    const { isMultiPhoneModalVisible } = this.state
+    this.setState({
+      isMultiPhoneModalVisible: !isMultiPhoneModalVisible,
+    })
+  }
+
   render() {
     const {
       checkLeadClosedOrNot,
@@ -1499,8 +1538,11 @@ class CMPayment extends Component {
       downPayment,
       possessionCharges,
       downPaymenTime,
+      accountPhoneNumbers,
+      accountsLoading,
+      isMultiPhoneModalVisible,
     } = this.state
-    const { lead, navigation } = this.props
+    const { lead, navigation, contacts } = this.props
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -1509,6 +1551,13 @@ class CMPayment extends Component {
           color={'#0277FD'}
         />
         <View style={{ flex: 1 }}>
+          <AccountsPhoneNumbers
+            toggleAccountPhone={this.toggleAccountPhone}
+            isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+            contacts={accountPhoneNumbers}
+            loading={accountsLoading}
+            phoneContacts={contacts}
+          />
           <BookingDetailsModal
             active={bookingModal}
             data={lead}
@@ -1636,6 +1685,7 @@ class CMPayment extends Component {
                     remainingPayment={remainingPayment}
                     outStandingTax={outStandingTax}
                     toggleSchedulePayment={this.toggleSchedulePayment}
+                    call={this.fetchPhoneNumbers}
                   />
                 )}
               </View>
@@ -1706,6 +1756,7 @@ mapStateToProps = (store) => {
     CMPayment: store.CMPayment.CMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    contacts: store.contacts.contacts,
   }
 }
 

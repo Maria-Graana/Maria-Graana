@@ -17,6 +17,7 @@ import AppStyles from '../../AppStyles'
 import LegalTile from '../../components/LegalTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import { setLegalPayment } from '../../actions/legalPayment'
+import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import ViewDocs from '../../components/ViewDocs'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
@@ -62,6 +63,9 @@ class LegalAttachment extends Component {
       officeLocations: [],
       showAction: false,
       currentItem: {},
+      accountPhoneNumbers: [],
+      accountsLoading: false,
+      isMultiPhoneModalVisible: false,
     }
   }
 
@@ -931,6 +935,40 @@ class LegalAttachment extends Component {
     )
   }
 
+  fetchPhoneNumbers = (data) => {
+    this.setState({
+      accountsLoading: true,
+      isMultiPhoneModalVisible: true,
+    })
+    if (data) {
+      axios
+        .get(`/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`)
+        .then((res) => {
+          this.setState({
+            accountPhoneNumbers: res.data,
+            accountsLoading: false,
+          })
+        })
+        .catch((error) => {
+          console.log(
+            `/api/user/accountsTeamContactDetails?officeLocationId=${data.officeLocationId}`,
+            error
+          )
+          this.setState({
+            accountsLoading: false,
+            isMultiPhoneModalVisible: false,
+          })
+        })
+    }
+  }
+
+  toggleAccountPhone = () => {
+    const { isMultiPhoneModalVisible } = this.state
+    this.setState({
+      isMultiPhoneModalVisible: !isMultiPhoneModalVisible,
+    })
+  }
+
   render() {
     const {
       legalListing,
@@ -948,8 +986,11 @@ class LegalAttachment extends Component {
       legalServicesFee,
       officeLocations,
       showAction,
+      accountPhoneNumbers,
+      accountsLoading,
+      isMultiPhoneModalVisible,
     } = this.state
-    const { lead, route } = this.props
+    const { lead, route, contacts } = this.props
     let mailCheck = this.mailSentCheck()
     let onReadOnly = this.checkReadOnlyMode()
     const isLeadClosed =
@@ -979,6 +1020,13 @@ class LegalAttachment extends Component {
           officeLocations={officeLocations}
           handleOfficeLocationChange={this.handleOfficeLocation}
           handleInstrumentInfoChange={this.handleInstrumentInfoChange}
+        />
+        <AccountsPhoneNumbers
+          toggleAccountPhone={this.toggleAccountPhone}
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          contacts={accountPhoneNumbers}
+          loading={accountsLoading}
+          phoneContacts={contacts}
         />
         <DeleteModal
           isVisible={deletePaymentVisible}
@@ -1042,6 +1090,8 @@ class LegalAttachment extends Component {
                         onPaymentLongPress={() => this.onPaymentLongPress(legalPaymentObj)}
                         commissionEdit={onReadOnly}
                         title={legalPaymentObj ? 'LEGAL PAYMENT' : ''}
+                        call={this.fetchPhoneNumbers}
+                        showAccountPhone={true}
                       />
                     ) : null}
                   </View>
@@ -1091,6 +1141,7 @@ mapStateToProps = (store) => {
     legalPayment: store.LegalPayment.LegalPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    contacts: store.contacts.contacts,
     lead: store.lead.lead,
     user: store.user.user,
   }

@@ -76,7 +76,11 @@ class PickerComponent extends React.Component {
           textStyle={[AppStyles.formFontSettings]}
           mode="dropdown"
           enabled={enabled}
-          style={[AppStyles.formControlForPicker, customStyle]}
+          style={[
+            AppStyles.formControlForPicker,
+            { backgroundColor: enabled ? '#fff' : '#ddd' },
+            customStyle,
+          ]}
           placeholder={placeholderLabel}
           selectedValue={selectedValue}
           onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}

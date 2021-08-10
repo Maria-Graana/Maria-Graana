@@ -41,9 +41,7 @@ class CustomDrawerContent extends React.Component {
     let label = helper.checkChannel(config.channel)
     return (
       <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
-        <ScrollView
-          style={[styles.scrollContainer, { width: '100%' }]}
-        >
+        <ScrollView style={[styles.scrollContainer, { width: '100%' }]}>
           <View style={AppStyles.flexDirectionRow}>
             <View>
               <Avatar data={user} />
@@ -149,9 +147,7 @@ class CustomDrawerContent extends React.Component {
             }}
           />
           <View style={{ alignSelf: 'center', justifyContent: 'flex-end', flex: 1 }}>
-            <Text style={AppStyles.blackInputText}>
-              {label}v{AppJson.expo.version}
-            </Text>
+            <Text style={AppStyles.blackInputText}>SDK 41 v{AppJson.expo.version}</Text>
           </View>
         </ScrollView>
       </SafeAreaView>

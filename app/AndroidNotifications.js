@@ -8,7 +8,6 @@ import axios from 'axios'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import * as Sentry from 'sentry-expo'
-import Constants from 'expo-constants'
 
 class AndroidNotifications extends React.Component {
   constructor(props) {

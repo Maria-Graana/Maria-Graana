@@ -83,7 +83,8 @@
     "expo-linking": "~2.2.3",
     "expo-linear-gradient": "~9.1.0",
     "expo-camera": "~11.0.2",
-    "expo-tracking-transparency": "~1.0.1"
+    "expo-tracking-transparency": "~1.0.1",
+    "expo-web-browser": "~9.1.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",

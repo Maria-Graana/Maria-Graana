@@ -163,6 +163,7 @@ class CMBottomNav extends React.Component {
       taskCategory: 'leadTask',
       calledOn,
     }
+    console.log(body)
     axios.post(`api/leads/project/meeting`, body).then((res) => {
       this.props.setCurrentCall(res.data)
     })

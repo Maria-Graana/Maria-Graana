@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 import fuzzy from 'fuzzy'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Alert,
   Image,
@@ -18,6 +18,7 @@ import {
 } from 'react-native'
 import times from '../../../assets/img/times.png'
 import AppStyles from '../../AppStyles'
+import SubmitFeedbackOptionsModal from '../SubmitFeedbackOptionsModal'
 import TouchableButton from '../TouchableButton'
 
 const CommentChip = ({ comment, setSelectedComment }) => {
@@ -169,15 +170,6 @@ const StatusFeedbackModal = ({
         <View style={styles.modalMain}>
           <View style={styles.row}>
             <Text style={styles.title}>{showTitle()}</Text>
-            <TouchableOpacity
-              style={styles.closeBtn}
-              onPress={() => {
-                showFeedbackModal(false)
-                clearFormData()
-              }}
-            >
-              <Image source={times} style={styles.closeImg} />
-            </TouchableOpacity>
           </View>
 
           <View style={[AppStyles.mainInputWrap]}>
@@ -213,46 +205,27 @@ const StatusFeedbackModal = ({
             ))}
           </ScrollView>
           <View style={styles.buttonsContainer}>
-            {showAction && (
-              <TouchableButton
-                containerStyle={styles.button}
-                fontFamily={AppStyles.fonts.boldFont}
-                fontSize={16}
-                containerBackgroundColor={AppStyles.colors.actionBg}
-                onPress={() =>
-                  selectedComment ? performAction() : alert('Please select a comment to continue')
-                }
-                label={
-                  modalMode === 'call'
-                    ? leadType === 'RCM'
-                      ? 'Book Viewing'
-                      : 'Meeting Setup'
-                    : 'Action'
-                }
-              />
-            )}
-            {showFollowup && (
-              <TouchableButton
-                containerStyle={styles.button}
-                containerBackgroundColor={AppStyles.colors.yellowBg}
-                fontFamily={AppStyles.fonts.boldFont}
-                fontSize={16}
-                textColor={AppStyles.colors.textColor}
-                onPress={() =>
-                  selectedComment ? performFollowup() : alert('Please select a comment to continue')
-                }
-                label={'Follow up'}
-              />
-            )}
             <TouchableButton
-              containerStyle={[styles.button, { width: showAction ? '32%' : '100%' }]}
+              containerStyle={styles.button}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={16}
-              containerBackgroundColor={AppStyles.colors.redBg}
-              onPress={() =>
-                selectedComment ? showRejectModal() : alert('Please select a comment to continue')
-              }
-              label={'Reject'}
+              containerBackgroundColor={AppStyles.colors.actionBg}
+              onPress={() => {
+                showFeedbackModal(false)
+                clearFormData()
+              }}
+              label={'Cancel'}
+            />
+            <TouchableButton
+              containerStyle={styles.button}
+              fontFamily={AppStyles.fonts.boldFont}
+              fontSize={16}
+              onPress={() => {
+                console.log('submit')
+                showFeedbackModal(false)
+                clearFormData()
+              }}
+              label={'Submit'}
             />
           </View>
         </View>
@@ -301,7 +274,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     marginVertical: 10,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
   },
   button: {
     justifyContent: 'center',
@@ -309,6 +282,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     width: '32%',
+    marginHorizontal: 10,
   },
   closeBtn: {
     alignSelf: 'flex-end',

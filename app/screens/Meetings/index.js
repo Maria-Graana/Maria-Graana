@@ -16,6 +16,7 @@ import MeetingTile from '../../components/MeetingTile'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
@@ -55,6 +56,7 @@ class Meetings extends Component {
       referenceGuideLoading: false,
       selectedMeetingId: null,
       referenceErrorMessage: null,
+      showSubmitFeedbackModal: false,
     }
   }
 
@@ -134,7 +136,6 @@ class Meetings extends Component {
   sendStatus = (status, id, title = null) => {
     const { formData, meetings } = this.state
     const { lead } = this.props
-    console.log('title=>', title)
 
     let body = {}
     if (status === 'cancel_meeting') {
@@ -419,7 +420,6 @@ class Meetings extends Component {
     this.setState({ statusfeedbackModalVisible: false }, () => {
       if (currentCall) {
         if (modalMode === 'call') {
-          console.log('hello')
           this.sendStatus(
             comment,
             currentCall.id,
@@ -524,10 +524,6 @@ class Meetings extends Component {
     this.setState({ currentCall: call, modalMode: 'call' })
   }
 
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
   addInvestmentGuide = (guideNo, attachments) => {
     const { lead } = this.props
     const { selectedMeetingId, meetings } = this.state
@@ -600,6 +596,10 @@ class Meetings extends Component {
     })
   }
 
+  showSubmitFeedbackModal = (value) => {
+    this.setState({ showSubmitFeedbackModal: value })
+  }
+
   render() {
     const {
       active,
@@ -625,6 +625,7 @@ class Meetings extends Component {
       isReferenceModalVisible,
       referenceGuideLoading,
       referenceErrorMessage,
+      showSubmitFeedbackModal,
     } = this.state
 
     const { navigation, lead } = this.props
@@ -633,6 +634,10 @@ class Meetings extends Component {
       closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
     return (
       <View style={styles.mainWrapCon}>
+        <SubmitFeedbackOptionsModal
+          showModal={showSubmitFeedbackModal}
+          setShowModal={(value) => this.showSubmitFeedbackModal(value)}
+        />
         <ProgressBar
           style={{ backgroundColor: 'ffffff' }}
           progress={progressValue}

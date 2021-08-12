@@ -954,6 +954,27 @@ export default StaticData = {
       fileKey: null,
       id: 5,
     },
+    {
+      category: 'initial_payment_receipt',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 5,
+    },
+    {
+      category: 'initial_payment_receipt',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 5,
+    },
+    {
+      category: 'initial_payment_receipt',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 5,
+    },
   ],
   checkListData: {
     category: 'legal_checklist',

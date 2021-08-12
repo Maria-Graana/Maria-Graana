@@ -83,6 +83,7 @@ class CMFirstForm extends Component {
       installmentFrequency,
       paymentPlanDuration,
       lead,
+      openUnitsTable,
     } = this.props
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
@@ -178,21 +179,39 @@ class CMFirstForm extends Component {
         ) : null}
         {!pearlUnit ? (
           <View style={{ paddingVertical: 10, flexDirection: 'row' }}>
-            <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
-              <PickerComponent
-                onValueChange={handleFirstForm}
-                data={pickerUnits}
-                name={'unit'}
-                placeholder="Unit"
-                selectedItem={firstFormData.unit}
-                // enabled={checkLeadClosedOrNot}
-                customStyle={styles.equalHeight}
-              />
-              {firstFormValidate === true && !firstFormData.unit && firstFormData.unit === '' && (
-                <ErrorMessage errorMessage={'Required'} />
-              )}
-            </View>
-            <View style={styles.mainDetailViewBtn}>
+            {firstFormData.unit === '' || !firstFormData.unit ? (
+              <View style={styles.unitSubmitView}>
+                <TouchableOpacity
+                  disabled={firstFormData.unitType === '' || !firstFormData.unitType ? true : false}
+                  style={[styles.unitDetailBtn]}
+                  onPress={openUnitsTable}
+                >
+                  <Text style={styles.detailBtnText}>Select Unit</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.unitDetailInput}>
+                <SimpleInputText
+                  name={'Selected Unit'}
+                  fromatName={''}
+                  placeholder={'Selected Unit'}
+                  label={'UNIT'}
+                  value={firstFormData.unitName}
+                  formatValue={''}
+                  editable={true}
+                  keyboardType={'numeric'}
+                  onClicked={openUnitsTable}
+                  onPress={true}
+                  onChangeHandle={() => {}}
+                />
+              </View>
+            )}
+            <View
+              style={[
+                [styles.mainDetailViewBtn, { paddingTop: 10 }],
+                firstFormData.unit === '' || !firstFormData.unit ? { width: '50%' } : null,
+              ]}
+            >
               <TouchableOpacity
                 style={[styles.unitDetailBtn]}
                 onPress={() => {

@@ -180,7 +180,7 @@ class CMFirstForm extends Component {
         {!pearlUnit ? (
           <View style={{ paddingVertical: 10, flexDirection: 'row' }}>
             {firstFormData.unit === '' || !firstFormData.unit ? (
-              <View style={styles.unitSubmitView}>
+              <View style={[styles.unitSubmitView, { paddingTop: 10 }]}>
                 <TouchableOpacity
                   disabled={firstFormData.unitType === '' || !firstFormData.unitType ? true : false}
                   style={[styles.unitDetailBtn]}

@@ -14,6 +14,7 @@ import LegalPayment from './legalPayment'
 import PropsurePayment from './propsurePayment'
 import Notification from './notification'
 import Instruments from './addInstrument'
+import callMeetingStatus from './callMeetingFeedback'
 
 export default combineReducers({
   lead,
@@ -29,4 +30,5 @@ export default combineReducers({
   LegalPayment,
   Notification,
   Instruments,
+  callMeetingStatus,
 })

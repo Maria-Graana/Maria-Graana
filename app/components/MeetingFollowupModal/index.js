@@ -24,6 +24,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import TimerNotification from '../../LocalNotifications'
 import { getGoogleAuth } from '../../actions/user'
 import { useDispatch } from 'react-redux'
+import { setMeetingPayload } from '../../actions/callMeetingFeedback'
 
 const MeetingFollowupModal = ({
   active,
@@ -75,7 +76,7 @@ const MeetingFollowupModal = ({
   const clearFollowupData = () => {
     const newFollowupData = { ...followUpData }
     newFollowupData.subject = ''
-    newFollowupData.taskCategory = 'follow_up'
+    newFollowupData.taskType = 'follow_up'
     newFollowupData.start = ''
     newFollowupData.end = ''
     newFollowupData.date = ''

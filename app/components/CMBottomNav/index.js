@@ -15,6 +15,7 @@ import styles from './style'
 import Ability from '../../hoc/Ability'
 import MultiplePhoneOptionModal from '../MultiplePhoneOptionModal'
 import { Status } from '@sentry/types'
+import { sendCallStatus, setCallPayload } from '../../actions/callMeetingFeedback'
 
 var BUTTONS = [
   'Assign to team member',
@@ -91,7 +92,7 @@ class CMBottomNav extends React.Component {
   }
 
   call = () => {
-    const { contacts, customer, showStatusFeedbackModal } = this.props
+    const { contacts, customer, showStatusFeedbackModal, lead, dispatch } = this.props
     const { calledOn } = this.state
     if (customer) {
       let selectedClientContacts = helper.createContactPayload(customer)
@@ -100,9 +101,15 @@ class CMBottomNav extends React.Component {
           //  multiple numbers to select
           this.showMultiPhoneModal(true)
         } else {
-          this.sendCallStatus(selectedClientContacts ? selectedClientContacts.phone : null)
+          dispatch(
+            setCallPayload(
+              selectedClientContacts ? selectedClientContacts.phone : null,
+              calledOn,
+              lead
+            )
+          )
           helper.callNumber(selectedClientContacts, contacts)
-          showStatusFeedbackModal(true)
+          showStatusFeedbackModal(true, 'call')
         }
       })
     }
@@ -113,7 +120,7 @@ class CMBottomNav extends React.Component {
   }
 
   handlePhoneSelectDone = (phone) => {
-    const { contacts, showStatusFeedbackModal } = this.props
+    const { contacts, showStatusFeedbackModal, navigateToAssignLead, dispatch, lead } = this.props
     const { calledOn } = this.state
     const copySelectedClientContacts = { ...this.state.selectedClientContacts }
     if (calledOn === 'whatsapp') {
@@ -130,43 +137,19 @@ class CMBottomNav extends React.Component {
         this.setState(
           { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
           () => {
-            showStatusFeedbackModal(true)
-            this.sendCallStatus(
-              copySelectedClientContacts ? copySelectedClientContacts.phone : null
+            showStatusFeedbackModal(true, 'call')
+            dispatch(
+              setCallPayload(
+                copySelectedClientContacts ? copySelectedClientContacts.phone : null,
+                calledOn,
+                lead
+              )
             )
             helper.callNumber(copySelectedClientContacts, contacts)
           }
         )
       }
     }
-  }
-
-  sendCallStatus = (phone) => {
-    const { leadType } = this.props
-    const { calledOn } = this.state
-    const start = moment().format()
-    let body = {
-      start: start,
-      end: start,
-      time: start,
-      date: start,
-      taskType: 'called',
-      response: 'Called',
-      subject:
-        calledOn === 'phone'
-          ? 'called ' + this.props.lead.customer.customerName
-          : 'contacted ' + this.props.lead.customer.customerName,
-      customerId: this.props.lead.customer.id,
-      armsLeadId: leadType === 'RCM' ? this.props.lead.id : null, // For RCM Call
-      leadId: leadType === 'CM' ? this.props.lead.id : null, // For CM Call
-      calledNumber: phone ? phone : null,
-      taskCategory: 'leadTask',
-      calledOn,
-    }
-    console.log(body)
-    axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.props.setCurrentCall(res.data)
-    })
   }
 
   performListActions = (title) => {
@@ -279,14 +262,14 @@ class CMBottomNav extends React.Component {
   }
 
   makeWhatsappCall = (phone) => {
-    const { showStatusFeedbackModal } = this.props
+    const { showStatusFeedbackModal, lead, dispatch } = this.props
     const { calledOn } = this.state
     let url = 'whatsapp://send?phone=' + phone
     Linking.openURL(url)
       .then((data) => {
-        showStatusFeedbackModal(true)
+        showStatusFeedbackModal(true, 'call')
         console.log('WhatsApp Opened successfully ' + data)
-        this.sendCallStatus(phone)
+        dispatch(setCallPayload(phone, calledOn, lead))
       })
       .catch((error) => {
         console.log('ERROR: Opening Whatsapp ' + error)

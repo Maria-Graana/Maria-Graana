@@ -139,6 +139,7 @@ class CMPayment extends Component {
       accountPhoneNumbers: [],
       accountsLoading: false,
       isMultiPhoneModalVisible: false,
+      externalProject: false,
     }
   }
 
@@ -147,6 +148,7 @@ class CMPayment extends Component {
       const { firstForm, secondForm } = this.state
       const { lead } = this.props
       const { paidProject, project } = lead
+      console.log('lead: ', lead)
       if (firstForm) {
         let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
         if ((paidProject && paidProject.id) || (project && project.id)) {
@@ -255,7 +257,9 @@ class CMPayment extends Component {
   }
 
   checkLeadClosureReasons = (lead) => {
-    const { payment, unit } = lead
+    const { payment, unit, paidProject, downPayment } = lead
+    const { externalProject } = paidProject
+    console.log('lead: ', lead)
     if (!unit) {
       return
     }
@@ -271,7 +275,17 @@ class CMPayment extends Component {
       Math.ceil(finalPrice)
     )
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
-    if (outStandingTax <= 0 && remainingPayment <= 0) {
+    if (
+      (!externalProject && outStandingTax <= 0 && remainingPayment <= 0) ||
+      (externalProject &&
+        installmentDue !== 'full_payment' &&
+        outStandingTax <= 0 &&
+        remainingPayment >= Number(downPayment)) ||
+      (externalProject &&
+        installmentDue === 'full_payment' &&
+        outStandingTax <= 0 &&
+        remainingPayment <= 0)
+    ) {
       this.setState({
         closedWon: true,
       })

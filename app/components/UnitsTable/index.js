@@ -26,7 +26,7 @@ class UnitsTable extends React.Component {
   }
 
   render() {
-    let { active, data, toggleSchedulePayment, lead, tableHeaderTitle, handleFirstForm } =
+    let { active, data, toggleSchedulePayment, lead, tableHeaderTitle, handleFirstForm, formData } =
       this.props
     let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
     if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
@@ -50,7 +50,9 @@ class UnitsTable extends React.Component {
               </View>
             </View>
             <View style={styles.barView}>
-              <Text style={styles.barText}>UNITS</Text>
+              <Text style={styles.barText}>
+                {formData.projectName} {'>>'} {formData.floorName}
+              </Text>
             </View>
             <View style={styles.container}>
               <ScrollView horizontal={true}>

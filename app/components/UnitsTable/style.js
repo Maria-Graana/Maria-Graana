@@ -7,7 +7,7 @@ export default styles = StyleSheet.create({
   flexView: { backgroundColor: 'white', flex: 1 },
   topHeader: {
     flexDirection: 'row',
-    // marginHorizontal: 15,
+    marginHorizontal: 15,
     marginBottom: 10,
   },
   backImg: {
@@ -97,7 +97,6 @@ export default styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    paddingTop: 30,
     backgroundColor: '#fff',
     borderColor: AppStyles.colors.primaryColor,
   },

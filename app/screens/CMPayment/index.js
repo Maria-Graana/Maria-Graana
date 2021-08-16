@@ -77,6 +77,8 @@ class CMPayment extends Component {
         installmentFrequency: null,
         paymentPlanDuration: null,
         unitName: '',
+        projectName: '',
+        floorName: '',
       },
       unitPearlDetailsData: {},
       oneUnitData: {},
@@ -360,7 +362,8 @@ class CMPayment extends Component {
 
   generateUnitsTableData = (project) => {
     const { allUnits } = this.state
-    let headerTitle = ['Unit', 'Size(Sqft)', 'Rate/Sqft', 'Unit Price', 'Image']
+    let headerTitle = ['Unit']
+    let otherTitles = ['Size(Sqft)', 'Rate/Sqft', 'Unit Price', 'Image']
     let projectKeys = []
     let tableData = []
     let projectOptionalFields = JSON.parse(project && project.optional_fields) || []
@@ -371,11 +374,6 @@ class CMPayment extends Component {
     allUnits &&
       allUnits.map((item) => {
         let oneRow = []
-        oneRow.push(item.name)
-        oneRow.push(item.area)
-        oneRow.push(item.rate_per_sqft)
-        oneRow.push(PaymentMethods.findUnitPrice(item))
-        oneRow.push('---')
         const { optional_fields } = item
         let unitOptionalFields = JSON.parse(optional_fields)
         projectKeys &&
@@ -383,8 +381,16 @@ class CMPayment extends Component {
           projectKeys.map((key) => {
             oneRow.push(unitOptionalFields[key].data)
           })
+        oneRow.push(item.name)
+        oneRow.push(item.area)
+        oneRow.push(item.rate_per_sqft)
+        oneRow.push(PaymentMethods.findUnitPrice(item))
+        oneRow.push('---')
         tableData.push(oneRow)
       })
+    otherTitles.map((item) => {
+      headerTitle.push(item)
+    })
     this.setState({
       tableHeaderTitle: headerTitle,
       tableData: tableData,
@@ -969,10 +975,8 @@ class CMPayment extends Component {
       firstFormData,
       allFloors,
       unitPearlDetailsData,
-      allUnits,
       oneUnitData,
       pearlUnit,
-      allProjects,
       finalPrice,
       pearlUnitPrice,
       oneProductData,
@@ -980,6 +984,7 @@ class CMPayment extends Component {
       showInstallmentFields,
       paymentPlanDuration,
       installmentFrequency,
+      pickerProjects,
     } = this.state
     const { lead } = this.props
     const { noProduct } = lead
@@ -1007,6 +1012,10 @@ class CMPayment extends Component {
     if (name === 'floor') {
       oneFloor = PaymentHelper.findFloor(allFloors, value)
       newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
+      newData['projectName'] = _.find(pickerProjects, (item) => {
+        return item.value === newData.project
+      }).name
+      newData['floorName'] = oneFloor.name
       copyPearlUnit = false
       copyPearlUnitPrice = 0
     }
@@ -1647,6 +1656,7 @@ class CMPayment extends Component {
             downPaymenTime={downPaymenTime}
             selectUnit={this.selectUnitTable}
             handleFirstForm={this.handleFirstForm}
+            formData={firstFormData}
           />
           {allFloors != '' && allFloors.length && allProjects != '' && allProjects.length ? (
             <FirstScreenConfirmModal

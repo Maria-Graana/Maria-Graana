@@ -1,7 +1,6 @@
 /** @format */
 import PaymentMethods from '../../PaymentMethods'
 import helper from '../../helper'
-import { cos } from 'react-native-reanimated'
 
 const PaymentHelper = {
   createPearlObject(floor, area) {
@@ -26,6 +25,9 @@ const PaymentHelper = {
       approvedDiscountPrice: 0,
       finalPrice: 0,
       fullPaymentDiscountPrice: 0,
+      nitName: '',
+      projectName: '',
+      floorName: '',
     }
   },
   refreshFirstFormData(firstForm, value, lead) {

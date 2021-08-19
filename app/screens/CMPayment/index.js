@@ -205,13 +205,9 @@ class CMPayment extends Component {
       .get(`/api/user/locations`)
       .then((response) => {
         if (response.data) {
+          let locations = PaymentHelper.setOfficeLocation(response.data)
           this.setState({
-            officeLocations: response.data.map((item) => {
-              return {
-                name: item.name,
-                value: item.id,
-              }
-            }),
+            officeLocations: locations,
           })
         }
       })
@@ -628,16 +624,21 @@ class CMPayment extends Component {
 
   editTile = (payment) => {
     const { dispatch, user, lead } = this.props
+    const { officeLocations } = this.state
+    let locationId =
+      payment && payment.officeLocationId
+        ? payment.officeLocationId
+        : user && user.officeLocation
+        ? user.officeLocation.id
+        : null
+    if (officeLocations && officeLocations.length === 1) {
+      locationId = officeLocations[0].value
+    }
     dispatch(
       setCMPayment({
         ...payment,
         visible: true,
-        officeLocationId:
-          payment && payment.officeLocationId
-            ? payment.officeLocationId
-            : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+        officeLocationId: locationId,
       })
     )
     if (payment && payment.paymentInstrument && lead) {

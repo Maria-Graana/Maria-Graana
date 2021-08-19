@@ -1,7 +1,15 @@
 /** @format */
 
 import React from 'react'
-import { Modal, SafeAreaView, ScrollView, Text, TouchableHighlight, View } from 'react-native'
+import {
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableHighlight,
+  View,
+  Image,
+} from 'react-native'
 import { Row, Table } from 'react-native-table-component'
 import { connect } from 'react-redux'
 import BackButton from '../../components/BackButton'
@@ -54,39 +62,46 @@ class UnitsTable extends React.Component {
                 {formData.projectName} {'>>'} {formData.floorName}
               </Text>
             </View>
-            <View style={styles.container}>
-              <ScrollView horizontal={true}>
-                <View>
-                  <Table borderStyle={styles.tableBorder}>
-                    <Row
-                      data={tableHeaderTitle}
-                      widthArr={widthArr}
-                      style={styles.headerTable}
-                      textStyle={styles.headerTextStyle}
-                    />
-                  </Table>
-                  <ScrollView style={styles.dataWrapper}>
+            {data && data.length ? (
+              <View style={styles.container}>
+                <ScrollView horizontal={true}>
+                  <View>
                     <Table borderStyle={styles.tableBorder}>
-                      {data.map((rowData, index) => (
-                        <TouchableHighlight
-                          onPress={() => {
-                            handleFirstForm(rowData, 'unit')
-                          }}
-                        >
-                          <Row
-                            key={index}
-                            data={rowData}
-                            widthArr={widthArr}
-                            style={[styles.row]}
-                            textStyle={styles.text}
-                          />
-                        </TouchableHighlight>
-                      ))}
+                      <Row
+                        data={tableHeaderTitle}
+                        widthArr={widthArr}
+                        style={styles.headerTable}
+                        textStyle={styles.headerTextStyle}
+                      />
                     </Table>
-                  </ScrollView>
-                </View>
-              </ScrollView>
-            </View>
+                    <ScrollView style={styles.dataWrapper}>
+                      <Table borderStyle={styles.tableBorder}>
+                        {data.map((rowData, index) => (
+                          <TouchableHighlight
+                            onPress={() => {
+                              handleFirstForm(rowData, 'unit')
+                            }}
+                          >
+                            <Row
+                              key={index}
+                              data={rowData}
+                              widthArr={widthArr}
+                              style={[styles.row]}
+                              textStyle={styles.text}
+                            />
+                          </TouchableHighlight>
+                        ))}
+                      </Table>
+                    </ScrollView>
+                  </View>
+                </ScrollView>
+              </View>
+            ) : (
+              <Image
+                source={require('../../../assets/img/no-result-found.png')}
+                style={styles.imageStyle}
+              />
+            )}
           </View>
         </SafeAreaView>
         <SafeAreaView style={styles.safeView} />

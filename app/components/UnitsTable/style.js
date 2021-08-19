@@ -124,4 +124,5 @@ export default styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: AppStyles.colors.primaryColor,
   },
+  imageStyle: { width: 200, height: 200, alignSelf: 'center', margin: 10 },
 })

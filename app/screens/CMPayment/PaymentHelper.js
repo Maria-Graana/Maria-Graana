@@ -171,13 +171,13 @@ const PaymentHelper = {
           ? null
           : firstFormData.approvedDiscount,
       discounted_price:
-        firstFormData.approvedDiscountPrice === null || firstFormData.approvedDiscountPrice === ''
-          ? null
-          : firstFormData.approvedDiscountPrice,
-      discount_amount:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
           ? null
           : firstFormData.finalPrice,
+      discount_amount:
+        firstFormData.approvedDiscountPrice === null || firstFormData.approvedDiscountPrice === ''
+          ? null
+          : firstFormData.approvedDiscountPrice,
       unitStatus:
         CMPayment.paymentType === 'token' ? CMPayment.paymentCategory : firstFormData.paymentPlan,
       installmentDue: firstFormData.paymentPlan,
@@ -209,13 +209,13 @@ const PaymentHelper = {
           ? null
           : firstFormData.approvedDiscount,
       discounted_price:
-        firstFormData.approvedDiscountPrice === null || firstFormData.approvedDiscountPrice === ''
-          ? null
-          : firstFormData.approvedDiscountPrice,
-      discount_amount:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
           ? null
           : firstFormData.finalPrice,
+      discount_amount:
+        firstFormData.approvedDiscountPrice === null || firstFormData.approvedDiscountPrice === ''
+          ? null
+          : firstFormData.approvedDiscountPrice,
       unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
       installmentDue: firstFormData.paymentPlan,
       finalPrice:

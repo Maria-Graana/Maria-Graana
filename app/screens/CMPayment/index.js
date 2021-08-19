@@ -155,7 +155,6 @@ class CMPayment extends Component {
       const { firstForm, secondForm } = this.state
       const { lead } = this.props
       const { paidProject, project } = lead
-      console.log('lead: ', lead)
       if (firstForm) {
         let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
         if ((paidProject && paidProject.id) || (project && project.id)) {
@@ -248,9 +247,10 @@ class CMPayment extends Component {
   calculatePayments = (lead, functionCallingFor) => {
     const { payment, unit, paidProject } = lead
     let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
+    let discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
     let finalPrice = PaymentMethods.findFinalPrice(
       unit,
-      unit.discounted_price,
+      discountAmount,
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
@@ -264,16 +264,16 @@ class CMPayment extends Component {
   }
 
   checkLeadClosureReasons = (lead) => {
-    const { payment, unit, paidProject, downPayment } = lead
+    const { payment, unit, paidProject, downPayment, installmentDue } = lead
     const { externalProject } = paidProject
-    console.log('lead: ', lead)
     if (!unit) {
       return
     }
     let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
+    let discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
     let finalPrice = PaymentMethods.findFinalPrice(
       unit,
-      unit.discounted_price,
+      discountAmount,
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
@@ -388,6 +388,7 @@ class CMPayment extends Component {
     allUnits &&
       allUnits.map((item) => {
         let oneRow = []
+        oneRow.push(item.name)
         const { optional_fields } = item
         let unitOptionalFields = JSON.parse(optional_fields)
         projectKeys &&
@@ -395,7 +396,6 @@ class CMPayment extends Component {
           projectKeys.map((key) => {
             oneRow.push(unitOptionalFields[key].data)
           })
-        oneRow.push(item.name)
         oneRow.push(item.area)
         oneRow.push(item.rate_per_sqft)
         oneRow.push(PaymentMethods.findUnitPrice(item))

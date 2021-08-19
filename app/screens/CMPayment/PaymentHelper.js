@@ -2,6 +2,7 @@
 import PaymentMethods from '../../PaymentMethods'
 import helper from '../../helper'
 import { cos } from 'react-native-reanimated'
+import _ from 'underscore'
 
 const PaymentHelper = {
   createPearlObject(floor, area) {
@@ -518,6 +519,25 @@ const PaymentHelper = {
       installmentAmount: CMPayment.installmentAmount,
     }
     return body
+  },
+  setOfficeLocation(locations) {
+    if (locations) {
+      let allLocations = []
+      let oneLocation = _.find(locations, (item) => {
+        return item.externalProject === true
+      })
+      if (oneLocation) {
+        allLocations.push({ name: oneLocation.name, value: oneLocation.id })
+      } else {
+        allLocations = locations.map((item) => {
+          return {
+            name: item.name,
+            value: item.id,
+          }
+        })
+      }
+      return allLocations
+    }
   },
 }
 module.exports = PaymentHelper

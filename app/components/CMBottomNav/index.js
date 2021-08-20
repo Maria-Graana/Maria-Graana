@@ -93,7 +93,6 @@ class CMBottomNav extends React.Component {
 
   call = () => {
     const { contacts, customer, showStatusFeedbackModal, lead, dispatch } = this.props
-    console.log('call')
     if (customer) {
       let selectedClientContacts = helper.createContactPayload(customer)
       this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
@@ -101,7 +100,6 @@ class CMBottomNav extends React.Component {
           //  multiple numbers to select
           this.showMultiPhoneModal(true)
         } else {
-          console.log('calledOn', this.state.calledOn)
           dispatch(
             setCallPayload(
               selectedClientContacts ? selectedClientContacts.phone : null,

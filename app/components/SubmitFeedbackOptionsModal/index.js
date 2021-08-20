@@ -2,8 +2,10 @@
 
 import React from 'react'
 import { StyleSheet, Text, View, Modal, TouchableOpacity, Image, SafeAreaView } from 'react-native'
+import { connect, useDispatch } from 'react-redux'
 import close from '../../../assets/img/times.png'
 import WhatToDoImg from '../../../assets/img/what_to_do.png'
+import { clearCallPayload, sendCallStatus } from '../../actions/callMeetingFeedback'
 import AppStyles from '../../AppStyles'
 import TouchableButton from '../TouchableButton'
 
@@ -15,6 +17,7 @@ const SubmitFeedbackOptionsModal = ({
   performFollowUp,
   performReject,
 }) => {
+  const dispatch = useDispatch()
   return (
     <Modal visible={showModal}>
       <SafeAreaView style={AppStyles.mb1}>
@@ -22,7 +25,13 @@ const SubmitFeedbackOptionsModal = ({
           <View style={{ flex: 0.1 }}>
             <View style={styles.row}>
               <Text style={styles.title}>What would you like to do next?</Text>
-              <TouchableOpacity style={styles.closeBtn} onPress={() => setShowModal(false)}>
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => {
+                  setShowModal(false)
+                  dispatch(clearCallPayload())
+                }}
+              >
                 <Image source={close} style={styles.closeImg} />
               </TouchableOpacity>
             </View>
@@ -35,7 +44,10 @@ const SubmitFeedbackOptionsModal = ({
           <View style={styles.buttonsContainer}>
             <TouchableButton
               label="Call again"
-              onPress={() => console.log('Call again')}
+              onPress={() => {
+                call()
+                setShowModal(false)
+              }}
               fontFamily={AppStyles.fonts.boldFont}
               containerStyle={styles.button}
               fontSize={16}
@@ -43,7 +55,11 @@ const SubmitFeedbackOptionsModal = ({
             />
             <TouchableButton
               label="Meeting"
-              onPress={() => performMeeting()}
+              onPress={() => {
+                performMeeting()
+                setShowModal(false)
+                dispatch(clearCallPayload())
+              }}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={16}
               containerStyle={styles.button}
@@ -51,7 +67,11 @@ const SubmitFeedbackOptionsModal = ({
             />
             <TouchableButton
               label="Follow Up"
-              onPress={() => performFollowUp()}
+              onPress={() => {
+                performFollowUp()
+                setShowModal(false)
+                dispatch(clearCallPayload())
+              }}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={16}
               containerStyle={styles.button}
@@ -60,7 +80,11 @@ const SubmitFeedbackOptionsModal = ({
             />
             <TouchableButton
               label="Reject With Reason"
-              onPress={() => performReject()}
+              onPress={() => {
+                performReject()
+                setShowModal(false)
+                dispatch(clearCallPayload())
+              }}
               fontFamily={AppStyles.fonts.boldFont}
               containerStyle={styles.button}
               fontSize={16}
@@ -73,7 +97,13 @@ const SubmitFeedbackOptionsModal = ({
   )
 }
 
-export default SubmitFeedbackOptionsModal
+mapStateToProps = (store) => {
+  return {
+    callMeetingStatus: store.callMeetingStatus.callMeetingStatus,
+  }
+}
+
+export default connect(mapStateToProps)(SubmitFeedbackOptionsModal)
 
 const styles = StyleSheet.create({
   modalMain: {

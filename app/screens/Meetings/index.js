@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import { FlatList, Linking, Platform, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
+import { clearCallPayload } from '../../actions/callMeetingFeedback'
 import { setContacts } from '../../actions/contacts'
 import { setLeadRes } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
@@ -105,7 +106,6 @@ class Meetings extends Component {
       editMeeting: false,
       isFollowUpMode: false,
       currentMeeting: null,
-      newActionModal: false,
     })
   }
 
@@ -117,7 +117,6 @@ class Meetings extends Component {
       isFollowUpMode: true,
       currentMeeting: null,
       comment: value,
-      newActionModal: false,
     })
   }
 
@@ -392,7 +391,7 @@ class Meetings extends Component {
   }
 
   goToRejectForm = () => {
-    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: true, newActionModal: false })
+    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: true })
   }
 
   addInvestmentGuide = (guideNo, attachments) => {
@@ -471,6 +470,42 @@ class Meetings extends Component {
     this.setState({ newActionModal: value })
   }
 
+  callAgain = () => {
+    const { lead, contacts } = this.props
+    if (lead && lead.customer) {
+      let selectedClientContacts = helper.createContactPayload(lead.customer)
+      this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
+        if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+          //  multiple numbers to select
+          this.showMultiPhoneModal(true)
+        } else {
+          helper.callNumber(selectedClientContacts, contacts)
+          this.showStatusFeedbackModal(true, 'call')
+        }
+      })
+    }
+  }
+
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts } = this.props
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          helper.callNumber(copySelectedClientContacts, contacts)
+          this.showStatusFeedbackModal(true, 'call')
+        }
+      )
+    }
+  }
+
   render() {
     const {
       active,
@@ -509,6 +544,7 @@ class Meetings extends Component {
           performMeeting={() => this.openModalInMeetingMode()}
           performFollowUp={this.openModalInFollowupMode}
           performReject={this.goToRejectForm}
+          call={this.callAgain}
         />
         <ProgressBar
           style={{ backgroundColor: 'ffffff' }}

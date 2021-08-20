@@ -99,7 +99,7 @@ const StatusFeedbackModal = ({
       // handle call action
       dispatch(sendCallStatus(selectedComment)).then((res) => {
         showFeedbackModal(false)
-        getMeetingLead()
+        getMeetingLead && getMeetingLead()
         setTimeout(() => {
           setNewActionModal(true)
         }, 1000)

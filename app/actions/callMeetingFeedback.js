@@ -21,9 +21,7 @@ export function sendCallStatus(comment) {
       response: comment,
       status: 'completed',
     }
-    return axios.post(`api/leads/project/meeting`, copyCallResponse).then((res) => {
-      dispatch(clearCallPayload())
-    })
+    return axios.post(`api/leads/project/meeting`, copyCallResponse).then((res) => {})
   }
 }
 

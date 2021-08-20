@@ -50,6 +50,7 @@ const StatusFeedbackModal = ({
   // leadType,
   // goToViewingScreen,
   callMeetingStatus,
+  setNewActionModal,
 }) => {
   const [selectedComment, setSelectedComment] = useState(null)
   const dispatch = useDispatch()
@@ -97,11 +98,19 @@ const StatusFeedbackModal = ({
     if (modalMode === 'call') {
       // handle call action
       dispatch(sendCallStatus(selectedComment)).then((res) => {
+        showFeedbackModal(false)
         getMeetingLead()
+        setTimeout(() => {
+          setNewActionModal(true)
+        }, 1000)
       })
     } else if (modalMode === 'meeting') {
       // handle meeting action
       sendMeetingStatus(selectedComment, currentMeeting.id)
+      showFeedbackModal(false)
+      setTimeout(() => {
+        setNewActionModal(true)
+      }, 1000)
     } else {
       // handle reject action
       let body = {

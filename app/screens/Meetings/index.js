@@ -55,7 +55,7 @@ class Meetings extends Component {
       referenceGuideLoading: false,
       selectedMeetingId: null,
       referenceErrorMessage: null,
-      showSubmitFeedbackModal: false,
+      newActionModal: false,
     }
   }
 
@@ -95,6 +95,7 @@ class Meetings extends Component {
       editMeeting: edit,
       isFollowUpMode: false,
       currentMeeting: edit ? meetings.rows.find((item) => item.id === id) : null,
+      newActionModal: false,
     })
   }
 
@@ -104,6 +105,7 @@ class Meetings extends Component {
       editMeeting: false,
       isFollowUpMode: false,
       currentMeeting: null,
+      newActionModal: false,
     })
   }
 
@@ -115,6 +117,7 @@ class Meetings extends Component {
       isFollowUpMode: true,
       currentMeeting: null,
       comment: value,
+      newActionModal: false,
     })
   }
 
@@ -389,7 +392,7 @@ class Meetings extends Component {
   }
 
   goToRejectForm = () => {
-    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: true })
+    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: true, newActionModal: false })
   }
 
   addInvestmentGuide = (guideNo, attachments) => {
@@ -464,9 +467,9 @@ class Meetings extends Component {
     })
   }
 
-  // showSubmitFeedbackModal = (value) => {
-  //   this.setState({ showSubmitFeedbackModal: value })
-  // }
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
+  }
 
   render() {
     const {
@@ -481,7 +484,6 @@ class Meetings extends Component {
       isVisible,
       checkForUnassignedLeadEdit,
       statusfeedbackModalVisible,
-      isFeedbackMeetingModalVisible,
       modalMode,
       isFollowUpMode,
       currentMeeting,
@@ -492,7 +494,7 @@ class Meetings extends Component {
       isReferenceModalVisible,
       referenceGuideLoading,
       referenceErrorMessage,
-      showSubmitFeedbackModal,
+      newActionModal,
     } = this.state
 
     const { navigation, lead } = this.props
@@ -501,10 +503,13 @@ class Meetings extends Component {
       closedLeadEdit === false || checkForUnassignedLeadEdit === false ? false : true
     return (
       <View style={styles.mainWrapCon}>
-        {/* <SubmitFeedbackOptionsModal
-          showModal={showSubmitFeedbackModal}
-          setShowModal={(value) => this.showSubmitFeedbackModal(value)}
-        /> */}
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performMeeting={() => this.openModalInMeetingMode()}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+        />
         <ProgressBar
           style={{ backgroundColor: 'ffffff' }}
           progress={progressValue}
@@ -595,17 +600,15 @@ class Meetings extends Component {
           CMlead={true}
         />
 
-        {/* <MultiplePhoneOptionModal
+        <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={selectedClientContacts.payload}
           showMultiPhoneModal={this.showMultiPhoneModal}
           handlePhoneSelectDone={this.handlePhoneSelectDone}
-        /> */}
+        />
 
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
-          // showAction={modalMode === 'call' || modalMode === 'meeting'}
-          // showFollowup={modalMode === 'call' || modalMode === 'meeting'}
           showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
           commentsList={
             modalMode === 'call'
@@ -617,9 +620,9 @@ class Meetings extends Component {
           modalMode={modalMode}
           getMeetingLead={this.getMeetingLead}
           sendMeetingStatus={(comment, id, title) => this.sendMeetingStatus(comment, id, title)}
-          // showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
           rejectLead={(body) => this.rejectLead(body)}
           currentMeeting={currentMeeting}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
         />
       </View>
     )

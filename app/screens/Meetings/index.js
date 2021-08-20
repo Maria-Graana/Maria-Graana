@@ -470,6 +470,11 @@ class Meetings extends Component {
     this.setState({ newActionModal: value })
   }
 
+  bookUnit = () => {
+    const { navigation } = this.props
+    navigation.navigate('CMLeadTabs', { screen: 'Payments' })
+  }
+
   callAgain = () => {
     const { lead, contacts } = this.props
     if (lead && lead.customer) {
@@ -540,11 +545,13 @@ class Meetings extends Component {
       <View style={styles.mainWrapCon}>
         <SubmitFeedbackOptionsModal
           showModal={newActionModal}
+          modalMode={modalMode}
           setShowModal={(value) => this.setNewActionModal(value)}
           performMeeting={() => this.openModalInMeetingMode()}
           performFollowUp={this.openModalInFollowupMode}
           performReject={this.goToRejectForm}
           call={this.callAgain}
+          bookUnit={this.bookUnit}
         />
         <ProgressBar
           style={{ backgroundColor: 'ffffff' }}

@@ -93,7 +93,7 @@ class CMBottomNav extends React.Component {
 
   call = () => {
     const { contacts, customer, showStatusFeedbackModal, lead, dispatch } = this.props
-    const { calledOn } = this.state
+    console.log('call')
     if (customer) {
       let selectedClientContacts = helper.createContactPayload(customer)
       this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
@@ -101,10 +101,11 @@ class CMBottomNav extends React.Component {
           //  multiple numbers to select
           this.showMultiPhoneModal(true)
         } else {
+          console.log('calledOn', this.state.calledOn)
           dispatch(
             setCallPayload(
               selectedClientContacts ? selectedClientContacts.phone : null,
-              calledOn,
+              this.state.calledOn,
               lead
             )
           )
@@ -131,13 +132,13 @@ class CMBottomNav extends React.Component {
       }
     } else {
       // for phone call
+      console.log('handlephone', calledOn)
       if (phone) {
         copySelectedClientContacts.phone = phone.number
         copySelectedClientContacts.url = 'tel:' + phone.number
         this.setState(
           { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
           () => {
-            showStatusFeedbackModal(true, 'call')
             dispatch(
               setCallPayload(
                 copySelectedClientContacts ? copySelectedClientContacts.phone : null,
@@ -146,6 +147,7 @@ class CMBottomNav extends React.Component {
               )
             )
             helper.callNumber(copySelectedClientContacts, contacts)
+            showStatusFeedbackModal(true, 'call')
           }
         )
       }
@@ -263,13 +265,12 @@ class CMBottomNav extends React.Component {
 
   makeWhatsappCall = (phone) => {
     const { showStatusFeedbackModal, lead, dispatch } = this.props
-    const { calledOn } = this.state
     let url = 'whatsapp://send?phone=' + phone
     Linking.openURL(url)
       .then((data) => {
-        showStatusFeedbackModal(true, 'call')
         console.log('WhatsApp Opened successfully ' + data)
-        dispatch(setCallPayload(phone, calledOn, lead))
+        dispatch(setCallPayload(phone, 'whatsapp', lead))
+        showStatusFeedbackModal(true, 'call')
       })
       .catch((error) => {
         console.log('ERROR: Opening Whatsapp ' + error)

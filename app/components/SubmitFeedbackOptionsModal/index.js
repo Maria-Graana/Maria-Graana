@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Modal, TouchableOpacity, Image, SafeAreaView } 
 import { connect, useDispatch } from 'react-redux'
 import close from '../../../assets/img/times.png'
 import WhatToDoImg from '../../../assets/img/what_to_do.png'
-import { clearCallPayload, sendCallStatus } from '../../actions/callMeetingFeedback'
+import { clearCallPayload } from '../../actions/callMeetingFeedback'
 import AppStyles from '../../AppStyles'
 import TouchableButton from '../TouchableButton'
 
@@ -16,6 +16,9 @@ const SubmitFeedbackOptionsModal = ({
   performMeeting,
   performFollowUp,
   performReject,
+  modalMode,
+  bookUnit,
+  callMeetingStatus,
 }) => {
   const dispatch = useDispatch()
   return (
@@ -42,29 +45,66 @@ const SubmitFeedbackOptionsModal = ({
             style={{ alignSelf: 'center', flex: 0.5, resizeMode: 'center', marginHorizontal: 15 }}
           />
           <View style={styles.buttonsContainer}>
-            <TouchableButton
-              label="Call again"
-              onPress={() => {
-                call()
-                setShowModal(false)
-              }}
-              fontFamily={AppStyles.fonts.boldFont}
-              containerStyle={styles.button}
-              fontSize={16}
-              containerBackgroundColor={AppStyles.colors.actionBg}
-            />
-            <TouchableButton
-              label="Meeting"
-              onPress={() => {
-                performMeeting()
-                setShowModal(false)
-                dispatch(clearCallPayload())
-              }}
-              fontFamily={AppStyles.fonts.boldFont}
-              fontSize={16}
-              containerStyle={styles.button}
-              containerBackgroundColor={AppStyles.colors.actionBg}
-            />
+            {modalMode === 'call' && (
+              <>
+                {callMeetingStatus && callMeetingStatus.calledOn === 'phone' && (
+                  <TouchableButton
+                    label="Call again"
+                    onPress={() => {
+                      call()
+                      setShowModal(false)
+                    }}
+                    fontFamily={AppStyles.fonts.boldFont}
+                    containerStyle={styles.button}
+                    fontSize={16}
+                    containerBackgroundColor={AppStyles.colors.actionBg}
+                  />
+                )}
+
+                <TouchableButton
+                  label="Meeting"
+                  onPress={() => {
+                    performMeeting()
+                    setShowModal(false)
+                    dispatch(clearCallPayload())
+                  }}
+                  fontFamily={AppStyles.fonts.boldFont}
+                  fontSize={16}
+                  containerStyle={styles.button}
+                  containerBackgroundColor={AppStyles.colors.actionBg}
+                />
+              </>
+            )}
+
+            {modalMode === 'meeting' && (
+              <>
+                <TouchableButton
+                  label="Book Unit"
+                  onPress={() => {
+                    bookUnit()
+                    setShowModal(false)
+                  }}
+                  fontFamily={AppStyles.fonts.boldFont}
+                  containerStyle={styles.button}
+                  fontSize={16}
+                  containerBackgroundColor={AppStyles.colors.actionBg}
+                />
+
+                <TouchableButton
+                  label="Set up another Meeting"
+                  onPress={() => {
+                    performMeeting()
+                    setShowModal(false)
+                    dispatch(clearCallPayload())
+                  }}
+                  fontFamily={AppStyles.fonts.boldFont}
+                  fontSize={16}
+                  containerStyle={styles.button}
+                  containerBackgroundColor={AppStyles.colors.actionBg}
+                />
+              </>
+            )}
+
             <TouchableButton
               label="Follow Up"
               onPress={() => {

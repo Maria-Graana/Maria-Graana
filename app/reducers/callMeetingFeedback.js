@@ -30,7 +30,7 @@ const callMeetingStatus = (state = callMeetingPayload, action) => {
       if (action.payload) {
         const { phone, calledOn, lead } = action.payload
         let start = moment().format()
-        return {
+        let copyPayload = {
           ...state,
           phone,
           calledOn,
@@ -48,11 +48,14 @@ const callMeetingStatus = (state = callMeetingPayload, action) => {
           date: start,
           title: calledOn === 'phone' ? 'phone' : 'whatsapp',
         }
+        console.log(copyPayload)
+        return copyPayload
       } else {
         console.log('something went wrong')
       }
 
     case types.CLEAR_CALL_PAYLOAD:
+      console.log('clear payload', callMeetingPayload)
       return callMeetingPayload
     default:
       return state

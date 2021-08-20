@@ -98,7 +98,7 @@ const StatusFeedbackModal = ({
     if (modalMode === 'call') {
       // handle call action
       dispatch(sendCallStatus(selectedComment)).then((res) => {
-        showFeedbackModal(false)
+        showFeedbackModal(false, modalMode)
         getMeetingLead && getMeetingLead()
         setTimeout(() => {
           setNewActionModal(true)
@@ -107,7 +107,7 @@ const StatusFeedbackModal = ({
     } else if (modalMode === 'meeting') {
       // handle meeting action
       sendMeetingStatus(selectedComment, currentMeeting.id)
-      showFeedbackModal(false)
+      showFeedbackModal(false, modalMode)
       setTimeout(() => {
         setNewActionModal(true)
       }, 1000)
@@ -118,15 +118,16 @@ const StatusFeedbackModal = ({
       }
       rejectLead(body)
     }
-    showFeedbackModal(false)
+    showFeedbackModal(false, modalMode)
     clearFormData()
   }
 
   const discardFeedback = () => {
     if (modalMode === 'call') {
+      console.log('discard feedback')
       dispatch(clearCallPayload())
     }
-    showFeedbackModal(false)
+    showFeedbackModal(false, modalMode)
     clearFormData()
   }
 

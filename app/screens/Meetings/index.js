@@ -623,14 +623,7 @@ class Meetings extends Component {
           getMeetingLead={() => this.getMeetingLead()}
           currentMeeting={currentMeeting}
           editMeeting={editMeeting}
-          comment={comment}
         />
-
-        {/* <CallFeedbackActionMeeting
-          isFeedbackMeetingModalVisible={isFeedbackMeetingModalVisible}
-          showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
-          performMeetingAction={(type) => this.performMeetingAction(type)}
-        /> */}
 
         <LeadRCMPaymentPopup
           reasons={reasons}

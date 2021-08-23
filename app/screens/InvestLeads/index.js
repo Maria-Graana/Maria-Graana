@@ -28,6 +28,8 @@ import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import DateSearchFilter from '../../components/DateSearchFilter'
+import { setCallPayload } from '../../actions/callMeetingFeedback'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
 var BUTTONS = [
   'Assign to team member',
@@ -66,6 +68,7 @@ class InvestLeads extends React.Component {
       selectedClientContacts: [],
       statusFilterType: 'id',
       comment: null,
+      newActionModal: false,
     }
   }
 
@@ -263,74 +266,6 @@ class InvestLeads extends React.Component {
     }
   }
 
-  callNumber = (data) => {
-    const { contacts } = this.props
-    this.setState({ selectedLead: data }, () => {
-      // call api here
-      if (data && data.customer) {
-        axios
-          .get(`/api/customer/getNumbers?customerId=${data.customer.id}`)
-          .then((res) => {
-            let selectedClientContacts = helper.createContactPayload(res.data)
-            this.setState({ selectedClientContacts }, () => {
-              if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-                // multiple numbers to select
-                this.showMultiPhoneModal(true)
-              } else {
-                this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
-                this.sendCallStatus()
-                helper.callNumber(selectedClientContacts, contacts)
-              }
-            })
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      }
-    })
-  }
-
-  showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
-  }
-
-  handlePhoneSelectDone = (phone) => {
-    const { contacts } = this.props
-    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
-    if (phone) {
-      copySelectedClientContacts.phone = phone.number
-      copySelectedClientContacts.url = 'tel:' + phone.number
-      this.setState(
-        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
-        () => {
-          this.showStatusFeedbackModal(true)
-          this.sendCallStatus()
-          helper.callNumber(copySelectedClientContacts, contacts)
-        }
-      )
-    }
-  }
-
-  sendCallStatus = () => {
-    const start = moment().format()
-    const { selectedLead, selectedClientContacts } = this.state
-    let body = {
-      start: start,
-      end: start,
-      time: start,
-      date: start,
-      taskType: 'called',
-      subject: 'called ' + selectedLead.customer.customerName,
-      customerId: selectedLead.customer.id,
-      leadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
-      calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
-      taskCategory: 'leadTask',
-    }
-    axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.setCurrentCall(res.data)
-    })
-  }
-
   sendStatus = (status) => {
     this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
       storeItem('sortInvest', status)
@@ -434,6 +369,7 @@ class InvestLeads extends React.Component {
         .then((res) => {
           helper.successToast(`Lead Closed`)
           navigation.navigate('Leads')
+          this.fetchLeads()
         })
         .catch((error) => {
           console.log(error)
@@ -445,23 +381,70 @@ class InvestLeads extends React.Component {
     this.setState({ statusfeedbackModalVisible: value })
   }
 
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
-  }
-
-  sendStatusCall = (status, id) => {
-    const { selectedLead, currentCall } = this.state
-    let body = {
-      response: status,
-      comments: status,
-      leadId: selectedLead.id,
-      title: 'call',
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
-  }
-
   changeStatusType = (status) => {
     this.setState({ statusFilterType: status })
+  }
+
+  callAgain = (data) => {
+    const { contacts, dispatch } = this.props
+    this.setState({ selectedLead: data }, () => {
+      if (data && data.customer) {
+        let selectedClientContacts = helper.createContactPayload(data.customer)
+        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
+          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+            //  multiple numbers to select
+            this.showMultiPhoneModal(true)
+          } else {
+            dispatch(
+              setCallPayload(
+                selectedClientContacts ? selectedClientContacts.phone : null,
+                'phone',
+                data
+              )
+            )
+            helper.callNumber(selectedClientContacts, contacts)
+            this.showStatusFeedbackModal(true, 'call')
+          }
+        })
+      }
+    })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
+  }
+
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts, dispatch } = this.props
+    const { selectedLead } = this.state
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          dispatch(
+            setCallPayload(
+              copySelectedClientContacts ? copySelectedClientContacts.phone : null,
+              'phone',
+              selectedLead
+            )
+          )
+          helper.callNumber(copySelectedClientContacts, contacts)
+          this.showStatusFeedbackModal(true, 'call')
+        }
+      )
+    }
+  }
+
+  bookUnit = () => {
+    const { navigation } = this.props
+    navigation.navigate('CMLeadTabs', { screen: 'Payments' })
   }
 
   render() {
@@ -479,7 +462,6 @@ class InvestLeads extends React.Component {
       serverTime,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
       selectedLead,
@@ -487,6 +469,7 @@ class InvestLeads extends React.Component {
       isMultiPhoneModalVisible,
       statusFilterType,
       comment,
+      newActionModal,
     } = this.state
     const { user, lead } = this.props
     let buyRentFilterType = StaticData.buyRentFilterType
@@ -573,7 +556,7 @@ class InvestLeads extends React.Component {
                 user={user}
                 data={item}
                 navigateTo={this.navigateTo}
-                callNumber={this.callNumber}
+                callNumber={this.callAgain}
                 handleLongPress={this.handleLongPress}
                 serverTime={serverTime}
               />
@@ -628,6 +611,18 @@ class InvestLeads extends React.Component {
           sort={sort}
         />
 
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          modalMode={modalMode}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performMeeting={() => this.openModalInMeetingMode()}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+          call={() => this.callAgain(selectedLead)}
+          bookUnit={this.bookUnit}
+          selectedLead={selectedLead}
+        />
+
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={selectedClientContacts.payload}
@@ -641,26 +636,21 @@ class InvestLeads extends React.Component {
           isFollowUpMode={isFollowUpMode}
           lead={selectedLead}
           leadType={'CM'}
-          comment={comment}
         />
 
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
+          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
           commentsList={
             modalMode === 'call'
               ? StaticData.commentsFeedbackCall
+              : modalMode === 'meeting'
+              ? StaticData.commentsFeedbackMeeting
               : StaticData.leadClosedCommentsFeedback
           }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
+          modalMode={modalMode}
           rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
-          addMeeting={() => this.openModalInMeetingMode()}
-          leadType={'CM'}
-          currentCall={currentCall}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
         />
       </View>
     )

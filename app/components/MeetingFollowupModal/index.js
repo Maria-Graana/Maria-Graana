@@ -23,8 +23,8 @@ import { Textarea } from 'native-base'
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import TimerNotification from '../../LocalNotifications'
 import { getGoogleAuth } from '../../actions/user'
-import { useDispatch } from 'react-redux'
-import { setMeetingPayload } from '../../actions/callMeetingFeedback'
+import { useDispatch, connect } from 'react-redux'
+import { clearCallPayload } from '../../actions/callMeetingFeedback'
 
 const MeetingFollowupModal = ({
   active,
@@ -328,6 +328,7 @@ const MeetingFollowupModal = ({
                 onPress={() => {
                   setSelectedOption('')
                   closeModal()
+                  dispatch(clearCallPayload())
                 }}
               >
                 <Image source={times} style={styles.timesImg} />
@@ -544,4 +545,10 @@ const styles = StyleSheet.create({
   },
 })
 
-export default MeetingFollowupModal
+mapStateToProps = (store) => {
+  return {
+    comment: store.callMeetingStatus.callMeetingStatus.comments,
+  }
+}
+
+export default connect(mapStateToProps)(MeetingFollowupModal)

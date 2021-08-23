@@ -1750,7 +1750,6 @@ class CMPayment extends Component {
             isFollowUpMode={isFollowUpMode}
             lead={lead}
             leadType={'CM'}
-            comment={comment}
           />
 
           <View style={AppStyles.mainCMBottomNav}>

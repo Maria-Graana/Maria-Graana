@@ -130,7 +130,6 @@ class CMBottomNav extends React.Component {
       }
     } else {
       // for phone call
-      console.log('handlephone', calledOn)
       if (phone) {
         copySelectedClientContacts.phone = phone.number
         copySelectedClientContacts.url = 'tel:' + phone.number

@@ -110,7 +110,6 @@ const SubmitFeedbackOptionsModal = ({
               onPress={() => {
                 performFollowUp()
                 setShowModal(false)
-                dispatch(clearCallPayload())
               }}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={16}

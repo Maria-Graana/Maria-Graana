@@ -48,11 +48,14 @@ const callMeetingStatus = (state = callMeetingPayload, action) => {
           date: start,
           title: calledOn === 'phone' ? 'phone' : 'whatsapp',
         }
-        console.log(copyPayload)
         return copyPayload
       } else {
         console.log('something went wrong')
       }
+
+    case types.SET_CALL_COMMENT:
+      console.log(action.payload)
+      return action.payload
 
     case types.CLEAR_CALL_PAYLOAD:
       console.log('clear payload', callMeetingPayload)

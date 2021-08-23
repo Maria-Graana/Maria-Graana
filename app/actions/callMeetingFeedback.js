@@ -21,7 +21,19 @@ export function sendCallStatus(comment) {
       response: comment,
       status: 'completed',
     }
-    return axios.post(`api/leads/project/meeting`, copyCallResponse).then((res) => {})
+    return axios.post(`api/leads/project/meeting`, copyCallResponse).then((res) => {
+      dispatch(setCallComment(comment))
+    })
+  }
+}
+
+export function setCallComment(comment) {
+  return async (dispatch, getsState) => {
+    let callResponse = getsState().callMeetingStatus.callMeetingStatus
+    dispatch({
+      type: types.SET_CALL_COMMENT,
+      payload: { ...callResponse, comments: comment, response: comment, status: 'completed' },
+    })
   }
 }
 

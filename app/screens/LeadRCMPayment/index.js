@@ -52,6 +52,7 @@ import {
   setInstrumentInformation,
 } from '../../actions/addInstrument'
 import { useValue } from 'react-native-reanimated'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -1745,16 +1746,6 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
-  sendStatus = (status, id) => {
-    const { formData, meetings } = this.state
-    let body = {
-      response: status,
-      comments: status,
-      leadId: formData.leadId,
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
-  }
-
   // ************ Function for Reject modal ************
   goToRejectForm = () => {
     const { statusfeedbackModalVisible } = this.state
@@ -1781,10 +1772,6 @@ class LeadRCMPayment extends React.Component {
 
   showStatusFeedbackModal = (value) => {
     this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
   }
 
   goToViewingScreen = () => {
@@ -1824,6 +1811,10 @@ class LeadRCMPayment extends React.Component {
     this.setState({
       isMultiPhoneModalVisible: !isMultiPhoneModalVisible,
     })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   render() {
@@ -1868,12 +1859,11 @@ class LeadRCMPayment extends React.Component {
       statusfeedbackModalVisible,
       modalMode,
       closedWon,
-      currentCall,
       isFollowUpMode,
-      comment,
       accountPhoneNumbers,
       accountsLoading,
       isMultiPhoneModalVisible,
+      newActionModal,
     } = this.state
     const { navigation, user, contacts } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -2073,6 +2063,29 @@ class LeadRCMPayment extends React.Component {
             </>
           )}
 
+          <StatusFeedbackModal
+            visible={statusfeedbackModalVisible}
+            showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
+            commentsList={
+              modalMode === 'call'
+                ? StaticData.commentsFeedbackCall
+                : StaticData.leadClosedCommentsFeedback
+            }
+            modalMode={modalMode}
+            rejectLead={(body) => this.rejectLead(body)}
+            setNewActionModal={(value) => this.setNewActionModal(value)}
+            leadType={'RCM'}
+          />
+          <SubmitFeedbackOptionsModal
+            showModal={newActionModal}
+            modalMode={modalMode}
+            setShowModal={(value) => this.setNewActionModal(value)}
+            performFollowUp={this.openModalInFollowupMode}
+            performReject={this.goToRejectForm}
+            //call={this.callAgain}
+            goToViewingScreen={this.goToViewingScreen}
+            leadType={'RCM'}
+          />
           <MeetingFollowupModal
             closeModal={() => this.closeMeetingFollowupModal()}
             active={active}
@@ -2080,27 +2093,8 @@ class LeadRCMPayment extends React.Component {
             lead={lead}
             leadType={'RCM'}
             getMeetingLead={this.getCallHistory}
-            comment={comment}
           />
 
-          <StatusFeedbackModal
-            visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            modalMode={modalMode}
-            commentsList={
-              modalMode === 'call'
-                ? StaticData.commentsFeedbackCall
-                : StaticData.leadClosedCommentsFeedback
-            }
-            showAction={modalMode === 'call'}
-            showFollowup={modalMode === 'call'}
-            rejectLead={(body) => this.rejectLead(body)}
-            sendStatus={(comment, id) => this.sendStatus(comment, id)}
-            addFollowup={(value) => this.openModalInFollowupMode(value)}
-            leadType={'RCM'}
-            currentCall={currentCall}
-            goToViewingScreen={this.goToViewingScreen}
-          />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}

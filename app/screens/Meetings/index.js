@@ -592,7 +592,6 @@ class Meetings extends Component {
             showStatusFeedbackModal={(value, modalMode) =>
               this.showStatusFeedbackModal(value, modalMode)
             }
-            // showFeedbackMeetingModal={(value) => this.showFeedbackMeetingModal(value)}
             addMeeting={() => this.openModalInMeetingMode()}
             leadType={'CM'}
             navigation={navigation}
@@ -659,6 +658,7 @@ class Meetings extends Component {
           rejectLead={(body) => this.rejectLead(body)}
           currentMeeting={currentMeeting}
           setNewActionModal={(value) => this.setNewActionModal(value)}
+          leadType={'CM'}
         />
       </View>
     )

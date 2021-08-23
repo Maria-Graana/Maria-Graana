@@ -620,7 +620,7 @@ class InvestLeads extends React.Component {
           performReject={this.goToRejectForm}
           call={() => this.callAgain(selectedLead)}
           bookUnit={this.bookUnit}
-          selectedLead={selectedLead}
+          leadType={'CM'}
         />
 
         <MultiplePhoneOptionModal
@@ -651,6 +651,7 @@ class InvestLeads extends React.Component {
           modalMode={modalMode}
           rejectLead={(body) => this.rejectLead(body)}
           setNewActionModal={(value) => this.setNewActionModal(value)}
+          leadType={'CM'}
         />
       </View>
     )

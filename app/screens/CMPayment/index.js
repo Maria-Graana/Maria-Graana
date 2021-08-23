@@ -1742,6 +1742,7 @@ class CMPayment extends Component {
             modalMode={modalMode}
             rejectLead={(body) => this.rejectLead(body)}
             setNewActionModal={(value) => this.setNewActionModal(value)}
+            leadType={'CM'}
           />
 
           <MeetingFollowupModal

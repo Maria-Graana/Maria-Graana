@@ -25,6 +25,7 @@ import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
 class LeadMatch extends React.Component {
   constructor(props) {
@@ -92,7 +93,6 @@ class LeadMatch extends React.Component {
       active: false,
       statusfeedbackModalVisible: false,
       modalMode: 'call',
-      currentCall: null,
       isFollowUpMode: false,
       closedWon: false,
     }
@@ -755,12 +755,8 @@ class LeadMatch extends React.Component {
       })
   }
 
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
+  showStatusFeedbackModal = (value, modalMode) => {
+    this.setState({ statusfeedbackModalVisible: value, modalMode })
   }
 
   goToViewingScreen = () => {
@@ -768,14 +764,8 @@ class LeadMatch extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  sendStatus = (status, id) => {
-    const { lead } = this.props
-    let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   render() {
@@ -804,11 +794,10 @@ class LeadMatch extends React.Component {
       legalDocLoader,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
       closedWon,
-      comment,
+      newActionModal,
     } = this.state
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
     return !loading ? (
@@ -1002,23 +991,31 @@ class LeadMatch extends React.Component {
                 </Text>
               </TouchableOpacity>
             ) : null}
+
             <StatusFeedbackModal
               visible={statusfeedbackModalVisible}
-              showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-              modalMode={modalMode}
+              showFeedbackModal={(value, modalMode) =>
+                this.showStatusFeedbackModal(value, modalMode)
+              }
               commentsList={
                 modalMode === 'call'
                   ? StaticData.commentsFeedbackCall
                   : StaticData.leadClosedCommentsFeedback
               }
-              showAction={modalMode === 'call'}
-              showFollowup={modalMode === 'call'}
+              modalMode={modalMode}
               rejectLead={(body) => this.rejectLead(body)}
-              sendStatus={(comment, id) => this.sendStatus(comment, id)}
-              addFollowup={(value) => this.openModalInFollowupMode(value)}
+              setNewActionModal={(value) => this.setNewActionModal(value)}
               leadType={'RCM'}
-              currentCall={currentCall}
+            />
+            <SubmitFeedbackOptionsModal
+              showModal={newActionModal}
+              modalMode={modalMode}
+              setShowModal={(value) => this.setNewActionModal(value)}
+              performFollowUp={this.openModalInFollowupMode}
+              performReject={this.goToRejectForm}
+              call={this.callAgain}
               goToViewingScreen={this.goToViewingScreen}
+              leadType={'RCM'}
             />
             <MeetingFollowupModal
               closeModal={() => this.closeMeetingFollowupModal()}
@@ -1027,7 +1024,6 @@ class LeadMatch extends React.Component {
               lead={lead}
               leadType={'RCM'}
               getMeetingLead={this.getCallHistory}
-              comment={comment}
             />
             <View style={AppStyles.mainCMBottomNav}>
               <CMBottomNav
@@ -1046,8 +1042,9 @@ class LeadMatch extends React.Component {
                 goToFollowUp={(value) => this.openModalInFollowupMode(value)}
                 navigation={navigation}
                 goToRejectForm={this.goToRejectForm}
-                showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-                setCurrentCall={(call) => this.setCurrentCall(call)}
+                showStatusFeedbackModal={(value, modalMode) =>
+                  this.showStatusFeedbackModal(value, modalMode)
+                }
                 leadType={'RCM'}
                 closedWon={closedWon}
                 onHandleCloseLead={this.onHandleCloseLead}

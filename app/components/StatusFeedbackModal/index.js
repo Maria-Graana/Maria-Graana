@@ -37,17 +37,12 @@ const StatusFeedbackModal = ({
   visible,
   showFeedbackModal,
   commentsList,
-  // showAction = true,
-  // showFollowup = true,
   modalMode,
   sendMeetingStatus,
   currentMeeting,
   getMeetingLead,
-  // addMeeting,
-  // addFollowup,
-  // showFeedbackMeetingModal,
   rejectLead,
-  // leadType,
+  leadType,
   // goToViewingScreen,
   callMeetingStatus,
   setNewActionModal,
@@ -104,7 +99,7 @@ const StatusFeedbackModal = ({
           setNewActionModal(true)
         }, 1000)
       })
-    } else if (modalMode === 'meeting') {
+    } else if (modalMode === 'meeting' && leadType === 'CM') {
       // handle meeting action
       sendMeetingStatus(selectedComment, currentMeeting.id)
       showFeedbackModal(false, modalMode)

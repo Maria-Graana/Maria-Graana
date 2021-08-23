@@ -19,6 +19,8 @@ const SubmitFeedbackOptionsModal = ({
   modalMode,
   bookUnit,
   callMeetingStatus,
+  leadType,
+  goToViewingScreen,
 }) => {
   const dispatch = useDispatch()
   return (
@@ -47,7 +49,7 @@ const SubmitFeedbackOptionsModal = ({
           <View style={styles.buttonsContainer}>
             {modalMode === 'call' && (
               <>
-                {callMeetingStatus && callMeetingStatus.calledOn === 'phone' && (
+                {callMeetingStatus && callMeetingStatus.calledOn === 'phone' && leadType === 'CM' && (
                   <TouchableButton
                     label="Call again"
                     onPress={() => {
@@ -60,19 +62,33 @@ const SubmitFeedbackOptionsModal = ({
                     containerBackgroundColor={AppStyles.colors.actionBg}
                   />
                 )}
-
-                <TouchableButton
-                  label="Meeting"
-                  onPress={() => {
-                    performMeeting()
-                    setShowModal(false)
-                    dispatch(clearCallPayload())
-                  }}
-                  fontFamily={AppStyles.fonts.boldFont}
-                  fontSize={16}
-                  containerStyle={styles.button}
-                  containerBackgroundColor={AppStyles.colors.actionBg}
-                />
+                {leadType === 'CM' ? (
+                  <TouchableButton
+                    label="Meeting"
+                    onPress={() => {
+                      performMeeting()
+                      setShowModal(false)
+                      dispatch(clearCallPayload())
+                    }}
+                    fontFamily={AppStyles.fonts.boldFont}
+                    fontSize={16}
+                    containerStyle={styles.button}
+                    containerBackgroundColor={AppStyles.colors.actionBg}
+                  />
+                ) : (
+                  <TouchableButton
+                    label="Go to Viewing"
+                    onPress={() => {
+                      goToViewingScreen()
+                      setShowModal(false)
+                      dispatch(clearCallPayload())
+                    }}
+                    fontFamily={AppStyles.fonts.boldFont}
+                    fontSize={16}
+                    containerStyle={styles.button}
+                    containerBackgroundColor={AppStyles.colors.actionBg}
+                  />
+                )}
               </>
             )}
 

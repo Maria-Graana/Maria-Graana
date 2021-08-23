@@ -27,6 +27,7 @@ import ViewCheckListModal from '../../components/ViewCheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -75,6 +76,7 @@ class LeadViewing extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       comment: null,
+      newActionModal: false,
     }
   }
 
@@ -825,17 +827,17 @@ class LeadViewing extends React.Component {
       })
   }
 
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
+  showStatusFeedbackModal = (value, modalType) => {
+    this.setState({ statusfeedbackModalVisible: value, modalType })
   }
 
   goToViewingScreen = () => {
     const { navigation } = this.props
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   render() {
@@ -872,9 +874,8 @@ class LeadViewing extends React.Component {
       statusfeedbackModalVisible,
       modalMode,
       closedWon,
-      currentCall,
       isFollowUpMode,
-      comment,
+      newActionModal,
     } = this.state
     const { lead, user, navigation } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1008,23 +1009,27 @@ class LeadViewing extends React.Component {
         </View>
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
+          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
           commentsList={
             modalMode === 'call'
               ? StaticData.commentsFeedbackCall
               : StaticData.leadClosedCommentsFeedback
           }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
+          modalMode={modalMode}
           rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatus(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
           leadType={'RCM'}
-          currentCall={currentCall}
-          goToViewingScreen={this.goToViewingScreen}
         />
-
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          modalMode={modalMode}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+          //call={this.callAgain}
+          goToViewingScreen={this.goToViewingScreen}
+          leadType={'RCM'}
+        />
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
@@ -1032,26 +1037,6 @@ class LeadViewing extends React.Component {
           lead={lead}
           leadType={'RCM'}
           getMeetingLead={this.getCallHistory}
-          comment={comment}
-        />
-
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
-          rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatus(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
-          leadType={'RCM'}
-          currentCall={currentCall}
-          goToViewingScreen={this.goToViewingScreen}
         />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
@@ -1070,8 +1055,9 @@ class LeadViewing extends React.Component {
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
             goToFollowUp={(value) => this.openModalInFollowupMode(value)}
-            showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            setCurrentCall={(call) => this.setCurrentCall(call)}
+            showStatusFeedbackModal={(value, modalType) =>
+              this.showStatusFeedbackModal(value, modalType)
+            }
             leadType={'RCM'}
             navigation={navigation}
             goToRejectForm={this.goToRejectForm}

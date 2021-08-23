@@ -66,6 +66,9 @@ export default styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
   },
+  unitSubmitView: {
+    width: '50%',
+  },
   detailBtnText: {
     textAlign: 'center',
     color: '#016FF2',

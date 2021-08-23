@@ -18,6 +18,7 @@ import { setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import BookingDetailsModal from '../../components/BookingDetailsModal'
 import SchedulePayment from '../../components/SchedulePayment'
+import UnitsTable from '../../components/UnitsTable'
 import CMBottomNav from '../../components/CMBottomNav'
 import CMFirstForm from '../../components/CMFirstForm'
 import CMPaymentModal from '../../components/CMPaymentModal'
@@ -76,6 +77,9 @@ class CMPayment extends Component {
         productId: null,
         installmentFrequency: null,
         paymentPlanDuration: null,
+        unitName: '',
+        projectName: '',
+        floorName: '',
       },
       unitPearlDetailsData: {},
       oneUnitData: {},
@@ -140,6 +144,10 @@ class CMPayment extends Component {
       accountsLoading: false,
       isMultiPhoneModalVisible: false,
       newActionModal: false,
+      externalProject: false,
+      toggleUnitsTable: false,
+      tableHeaderTitle: [],
+      tableData: [],
     }
   }
 
@@ -198,13 +206,9 @@ class CMPayment extends Component {
       .get(`/api/user/locations`)
       .then((response) => {
         if (response.data) {
+          let locations = PaymentHelper.setOfficeLocation(response.data)
           this.setState({
-            officeLocations: response.data.map((item) => {
-              return {
-                name: item.name,
-                value: item.id,
-              }
-            }),
+            officeLocations: locations,
           })
         }
       })
@@ -240,9 +244,10 @@ class CMPayment extends Component {
   calculatePayments = (lead, functionCallingFor) => {
     const { payment, unit, paidProject } = lead
     let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
+    let discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
     let finalPrice = PaymentMethods.findFinalPrice(
       unit,
-      unit.discounted_price,
+      discountAmount,
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
@@ -256,14 +261,16 @@ class CMPayment extends Component {
   }
 
   checkLeadClosureReasons = (lead) => {
-    const { payment, unit } = lead
+    const { payment, unit, paidProject, downPayment, installmentDue } = lead
+    const { externalProject } = paidProject
     if (!unit) {
       return
     }
     let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
+    let discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
     let finalPrice = PaymentMethods.findFinalPrice(
       unit,
-      unit.discounted_price,
+      discountAmount,
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
@@ -272,7 +279,17 @@ class CMPayment extends Component {
       Math.ceil(finalPrice)
     )
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
-    if (outStandingTax <= 0 && remainingPayment <= 0) {
+    if (
+      (!externalProject && outStandingTax <= 0 && remainingPayment <= 0) ||
+      (externalProject &&
+        installmentDue !== 'full_payment' &&
+        outStandingTax <= 0 &&
+        remainingPayment >= Number(downPayment)) ||
+      (externalProject &&
+        installmentDue === 'full_payment' &&
+        outStandingTax <= 0 &&
+        remainingPayment <= 0)
+    ) {
       this.setState({
         closedWon: true,
       })
@@ -322,7 +339,6 @@ class CMPayment extends Component {
   }
 
   getUnits = (projectId, floorId) => {
-    const { lead } = this.props
     axios
       .get(
         `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available&type=regular&mobile=true`
@@ -336,14 +352,60 @@ class CMPayment extends Component {
               name: item.saleType === 'resale' ? item.name + ' - Resale' : item.name,
             })
           })
-        this.setState({
-          pickerUnits: array,
-          allUnits: res.data.rows,
-        })
+        this.setState(
+          {
+            pickerUnits: array,
+            allUnits: res.data.rows,
+          },
+          () => {
+            const { allProjects } = this.state
+            let currentProject = _.find(allProjects, function (item) {
+              return item.id === projectId
+            })
+            this.generateUnitsTableData(currentProject)
+          }
+        )
       })
       .catch((error) => {
         console.log('/api/project/shops?projectId & floorId & status & type - Error', error)
       })
+  }
+
+  generateUnitsTableData = (project) => {
+    const { allUnits } = this.state
+    let headerTitle = ['Unit']
+    let otherTitles = ['Size(Sqft)', 'Rate/Sqft', 'Unit Price', 'Image']
+    let projectKeys = []
+    let tableData = []
+    let projectOptionalFields = JSON.parse(project && project.optional_fields) || []
+    projectOptionalFields.map((item, index) => {
+      headerTitle.push(item.fieldName)
+      projectKeys.push(item.fieldName)
+    })
+    allUnits &&
+      allUnits.map((item) => {
+        let oneRow = []
+        oneRow.push(item.name)
+        const { optional_fields } = item
+        let unitOptionalFields = JSON.parse(optional_fields)
+        projectKeys &&
+          projectKeys.length &&
+          projectKeys.map((key) => {
+            oneRow.push(unitOptionalFields[key].data)
+          })
+        oneRow.push(item.area)
+        oneRow.push(item.rate_per_sqft)
+        oneRow.push(PaymentMethods.findUnitPrice(item))
+        oneRow.push('---')
+        tableData.push(oneRow)
+      })
+    otherTitles.map((item) => {
+      headerTitle.push(item)
+    })
+    this.setState({
+      tableHeaderTitle: headerTitle,
+      tableData: tableData,
+    })
   }
 
   // **************** Check Lead Close *******************
@@ -563,16 +625,21 @@ class CMPayment extends Component {
 
   editTile = (payment) => {
     const { dispatch, user, lead } = this.props
+    const { officeLocations } = this.state
+    let locationId =
+      payment && payment.officeLocationId
+        ? payment.officeLocationId
+        : user && user.officeLocation
+        ? user.officeLocation.id
+        : null
+    if (officeLocations && officeLocations.length === 1) {
+      locationId = officeLocations[0].value
+    }
     dispatch(
       setCMPayment({
         ...payment,
         visible: true,
-        officeLocationId:
-          payment && payment.officeLocationId
-            ? payment.officeLocationId
-            : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+        officeLocationId: locationId,
       })
     )
     if (payment && payment.paymentInstrument && lead) {
@@ -964,10 +1031,8 @@ class CMPayment extends Component {
       firstFormData,
       allFloors,
       unitPearlDetailsData,
-      allUnits,
       oneUnitData,
       pearlUnit,
-      allProjects,
       finalPrice,
       pearlUnitPrice,
       oneProductData,
@@ -975,6 +1040,7 @@ class CMPayment extends Component {
       showInstallmentFields,
       paymentPlanDuration,
       installmentFrequency,
+      pickerProjects,
     } = this.state
     const { lead } = this.props
     const { noProduct } = lead
@@ -1002,6 +1068,10 @@ class CMPayment extends Component {
     if (name === 'floor') {
       oneFloor = PaymentHelper.findFloor(allFloors, value)
       newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
+      newData['projectName'] = _.find(pickerProjects, (item) => {
+        return item.value === newData.project
+      }).name
+      newData['floorName'] = oneFloor.name
       copyPearlUnit = false
       copyPearlUnitPrice = 0
     }
@@ -1015,12 +1085,14 @@ class CMPayment extends Component {
       newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
     }
     if (name === 'unit') {
-      oneUnit = this.fetchOneUnit(value)
+      oneUnit = this.fetchOneUnit(value[0])
       if (noProduct) {
         newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(oneUnit.discount)
         newData['approvedDiscountPrice'] = PaymentMethods.findDiscountAmount(oneUnit)
       }
       newData['pearl'] = null
+      value = oneUnit.id
+      newData['unitName'] = oneUnit.name
     }
     if (name === 'approvedDiscount') {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
@@ -1087,6 +1159,7 @@ class CMPayment extends Component {
       showInstallmentFields: newShowInstallmentFields,
       installmentFrequency: newInstallmentFrequency,
       paymentPlanDuration: newPaymentPlanDuration,
+      toggleUnitsTable: false,
     })
   }
 
@@ -1132,7 +1205,7 @@ class CMPayment extends Component {
     let oneUnit = {}
     if (allUnits && allUnits.length) {
       oneUnit = allUnits.find((item) => {
-        return item.id == unit && item
+        return item.name == unit && item
       })
     }
     return oneUnit
@@ -1506,6 +1579,13 @@ class CMPayment extends Component {
     })
   }
 
+  openUnitsTable = () => {
+    const { toggleUnitsTable } = this.state
+    this.setState({
+      toggleUnitsTable: !toggleUnitsTable,
+    })
+  }
+
   render() {
     const {
       checkLeadClosedOrNot,
@@ -1568,6 +1648,10 @@ class CMPayment extends Component {
       accountsLoading,
       isMultiPhoneModalVisible,
       newActionModal,
+      toggleUnitsTable,
+      tableHeaderTitle,
+      tableData,
+
     } = this.state
     const { lead, navigation, contacts } = this.props
     return (
@@ -1603,6 +1687,20 @@ class CMPayment extends Component {
             downPayment={downPayment}
             possessionCharges={possessionCharges}
             downPaymenTime={downPaymenTime}
+          />
+          <UnitsTable
+            tableHeaderTitle={tableHeaderTitle}
+            tableData={tableData}
+            active={toggleUnitsTable}
+            data={tableData}
+            toggleSchedulePayment={this.openUnitsTable}
+            loading={false}
+            downPayment={downPayment}
+            possessionCharges={possessionCharges}
+            downPaymenTime={downPaymenTime}
+            selectUnit={this.selectUnitTable}
+            handleFirstForm={this.handleFirstForm}
+            formData={firstFormData}
           />
           {allFloors != '' && allFloors.length && allProjects != '' && allProjects.length ? (
             <FirstScreenConfirmModal
@@ -1698,6 +1796,7 @@ class CMPayment extends Component {
                     paymentPlanDuration={paymentPlanDuration}
                     installmentFrequency={installmentFrequency}
                     lead={lead}
+                    openUnitsTable={this.openUnitsTable}
                   />
                 )}
                 {secondForm && (

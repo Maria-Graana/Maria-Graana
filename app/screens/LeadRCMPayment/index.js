@@ -142,6 +142,7 @@ class LeadRCMPayment extends React.Component {
       accountPhoneNumbers: [],
       accountsLoading: false,
       isMultiPhoneModalVisible: false,
+      newActionModal: false,
     }
   }
 

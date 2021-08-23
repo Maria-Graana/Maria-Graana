@@ -52,13 +52,9 @@ const callMeetingStatus = (state = callMeetingPayload, action) => {
       } else {
         console.log('something went wrong')
       }
-
     case types.SET_CALL_COMMENT:
-      console.log(action.payload)
       return action.payload
-
     case types.CLEAR_CALL_PAYLOAD:
-      console.log('clear payload', callMeetingPayload)
       return callMeetingPayload
     default:
       return state

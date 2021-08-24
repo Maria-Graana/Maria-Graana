@@ -27,6 +27,7 @@ import SquareContainer from '../../components/SquareContainer'
 import YearPicker from '../../components/YearPicker'
 import ZoneFilter from '../../components/ZoneFilter'
 import helper from '../../helper'
+import StaticData from '../../StaticData'
 import styles from './style'
 
 const _today = moment(new Date().dateString).format(_format)
@@ -50,7 +51,7 @@ class CMReport extends React.Component {
         pendingAmount: 0,
         leadSigned: [],
       },
-      graphLabels: ['created', 'call', 'meeting', 'token', 'payment', 'won', 'lost'],
+      graphLabels: ['created', 'nurture', 'meeting', 'token', 'payment', 'won', 'lost'],
       showOrganizationFilter: false,
       quarters: [
         { value: 1, name: 'Q1', fromDate: '01-01', toDate: '03-31' },

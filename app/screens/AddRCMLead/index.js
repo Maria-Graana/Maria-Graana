@@ -176,8 +176,8 @@ class AddRCMLead extends Component {
     const { RCMFormData } = this.state
     const { city_id, leadAreas } = RCMFormData
     const { navigation } = this.props
-    const isEditMode = `${leadAreas.length > 0 ? true : false}`
-    if (city_id !== '' && city_id !== undefined) {
+    const isEditMode = `${leadAreas && leadAreas.length > 0 ? true : false}`
+    if (city_id !== '' && city_id !== undefined && city_id != null) {
       navigation.navigate('AreaPickerScreen', {
         cityId: city_id,
         isEditMode: isEditMode,

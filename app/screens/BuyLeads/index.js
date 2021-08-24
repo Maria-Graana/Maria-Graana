@@ -9,6 +9,7 @@ import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
 import SortImg from '../../../assets/img/sort.png'
+import { setCallPayload } from '../../actions/callMeetingFeedback'
 import { setlead } from '../../actions/lead'
 import { getListingsCount } from '../../actions/listings'
 import { setPPBuyNotification } from '../../actions/notification'
@@ -26,6 +27,7 @@ import Search from '../../components/Search'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
 import SortModal from '../../components/SortModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import config from '../../config'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
@@ -65,13 +67,12 @@ class BuyLeads extends React.Component {
       serverTime: null,
       statusfeedbackModalVisible: false,
       modalMode: 'call',
-      currentCall: null,
       isFollowUpMode: false,
       active: false,
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
       statusFilterType: 'id',
-      comment: null,
+      newActionModal: false,
     }
   }
 
@@ -288,22 +289,32 @@ class BuyLeads extends React.Component {
   }
 
   callNumber = (data) => {
-    const { contacts } = this.props
+    const { contacts, dispatch } = this.props
     this.setState({ selectedLead: data }, () => {
       if (data && data.customer) {
         let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts }, () => {
+        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
           if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            // multiple numbers to select
+            //  multiple numbers to select
             this.showMultiPhoneModal(true)
           } else {
-            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
-            this.sendCallStatus()
+            dispatch(
+              setCallPayload(
+                selectedClientContacts ? selectedClientContacts.phone : null,
+                'phone',
+                data
+              )
+            )
             helper.callNumber(selectedClientContacts, contacts)
+            this.showStatusFeedbackModal(true, 'call')
           }
         })
       }
     })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   showMultiPhoneModal = (value) => {
@@ -311,7 +322,8 @@ class BuyLeads extends React.Component {
   }
 
   handlePhoneSelectDone = (phone) => {
-    const { contacts } = this.props
+    const { contacts, dispatch } = this.props
+    const { selectedLead } = this.state
     const copySelectedClientContacts = { ...this.state.selectedClientContacts }
     if (phone) {
       copySelectedClientContacts.phone = phone.number
@@ -319,39 +331,18 @@ class BuyLeads extends React.Component {
       this.setState(
         { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
         () => {
-          this.showStatusFeedbackModal(true)
-          this.sendCallStatus()
+          dispatch(
+            setCallPayload(
+              copySelectedClientContacts ? copySelectedClientContacts.phone : null,
+              'phone',
+              selectedLead
+            )
+          )
           helper.callNumber(copySelectedClientContacts, contacts)
+          this.showStatusFeedbackModal(true, 'call')
         }
       )
     }
-  }
-
-  sendCallStatus = () => {
-    const start = moment().format()
-    const { selectedLead, selectedClientContacts } = this.state
-    let body = {
-      start: start,
-      end: start,
-      time: start,
-      date: start,
-      taskType: 'called',
-      subject: 'called ' + selectedLead.customer.customerName,
-      customerId: selectedLead.customer.id,
-      calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
-      armsLeadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
-      taskCategory: 'leadTask',
-    }
-    axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.setCurrentCall(res.data)
-    })
-  }
-
-  sendStatus = (status) => {
-    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
-      storeItem('sortBuy', status)
-      this.fetchLeads()
-    })
   }
 
   openStatus = () => {
@@ -562,23 +553,8 @@ class BuyLeads extends React.Component {
     }
   }
 
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
-  }
-
-  sendStatusCall = (status, id) => {
-    const { selectedLead, currentCall } = this.state
-    let body = {
-      response: status,
-      comments: status,
-      leadId: selectedLead.id,
-      title: 'call',
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  showStatusFeedbackModal = (value, modalMode) => {
+    this.setState({ statusfeedbackModalVisible: value, modalMode })
   }
 
   goToViewingScreen = () => {
@@ -608,14 +584,13 @@ class BuyLeads extends React.Component {
       serverTime,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
-      selectedLead,
       selectedClientContacts,
       isMultiPhoneModalVisible,
       statusFilterType,
-      comment,
+      newActionModal,
+      selectedLead,
     } = this.state
     const { user } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -798,32 +773,36 @@ class BuyLeads extends React.Component {
           showMultiPhoneModal={this.showMultiPhoneModal}
           handlePhoneSelectDone={this.handlePhoneSelectDone}
         />
+
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
+          modalMode={modalMode}
+          rejectLead={(body) => this.rejectLead(body)}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
+          leadType={'RCM'}
+        />
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          modalMode={modalMode}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+          //call={this.callAgain}
+          goToViewingScreen={this.goToViewingScreen}
+          leadType={'RCM'}
+        />
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
           isFollowUpMode={isFollowUpMode}
           lead={selectedLead}
           leadType={'RCM'}
-          comment={comment}
-        />
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
-          rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
-          addMeeting={() => this.openModalInMeetingMode()}
-          leadType={'RCM'}
-          goToViewingScreen={this.goToViewingScreen}
-          currentCall={currentCall}
         />
         <SortModal
           sendStatus={this.sendStatus}

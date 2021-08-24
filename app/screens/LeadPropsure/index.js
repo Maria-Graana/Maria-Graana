@@ -51,6 +51,7 @@ import {
   getInstrumentDetails,
   setInstrumentInformation,
 } from '../../actions/addInstrument'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -100,6 +101,7 @@ class LeadPropsure extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       closedWon: false,
+      newActionModal: false,
     }
   }
 
@@ -1249,23 +1251,13 @@ class LeadPropsure extends React.Component {
     this.setState({ statusfeedbackModalVisible: value })
   }
 
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
-  }
-
   goToViewingScreen = () => {
     const { navigation } = this.props
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  sendStatus = (status, id) => {
-    const { lead } = this.props
-    let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   additionalRequest = () => {
@@ -1312,11 +1304,10 @@ class LeadPropsure extends React.Component {
       officeLocations,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
       closedWon,
-      comment,
+      newActionModal,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -1449,23 +1440,27 @@ class LeadPropsure extends React.Component {
 
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            modalMode={modalMode}
+            showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
             commentsList={
               modalMode === 'call'
                 ? StaticData.commentsFeedbackCall
                 : StaticData.leadClosedCommentsFeedback
             }
-            showAction={modalMode === 'call'}
-            showFollowup={modalMode === 'call'}
+            modalMode={modalMode}
             rejectLead={(body) => this.rejectLead(body)}
-            sendStatus={(comment, id) => this.sendStatus(comment, id)}
-            addFollowup={(value) => this.openModalInFollowupMode(value)}
+            setNewActionModal={(value) => this.setNewActionModal(value)}
             leadType={'RCM'}
-            currentCall={currentCall}
-            goToViewingScreen={this.goToViewingScreen}
           />
-
+          <SubmitFeedbackOptionsModal
+            showModal={newActionModal}
+            modalMode={modalMode}
+            setShowModal={(value) => this.setNewActionModal(value)}
+            performFollowUp={this.openModalInFollowupMode}
+            performReject={this.goToRejectForm}
+            //call={this.callAgain}
+            goToViewingScreen={this.goToViewingScreen}
+            leadType={'RCM'}
+          />
           <MeetingFollowupModal
             closeModal={() => this.closeMeetingFollowupModal()}
             active={active}
@@ -1473,8 +1468,8 @@ class LeadPropsure extends React.Component {
             lead={lead}
             leadType={'RCM'}
             getMeetingLead={this.getCallHistory}
-            comment={comment}
           />
+
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1492,9 +1487,9 @@ class LeadPropsure extends React.Component {
               goToFollowUp={(value) => this.openModalInFollowupMode(value)}
               navigation={navigation}
               goToRejectForm={this.goToRejectForm}
-              showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-              setCurrentCall={(call) => this.setCurrentCall(call)}
-              leadType={'RCM'}
+              showStatusFeedbackModal={(value, modalType) =>
+                this.showStatusFeedbackModal(value, modalType)
+              }
               closedWon={closedWon}
               onHandleCloseLead={this.onHandleCloseLead}
             />

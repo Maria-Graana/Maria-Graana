@@ -32,6 +32,8 @@ import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
 import DateSearchFilter from '../../components/DateSearchFilter'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { setCallPayload } from '../../actions/callMeetingFeedback'
 
 var BUTTONS = [
   'Assign to team member',
@@ -72,6 +74,7 @@ class RentLeads extends React.Component {
       selectedClientContacts: [],
       statusFilterType: 'id',
       comment: null,
+      newActionModal: false,
     }
   }
 
@@ -315,18 +318,24 @@ class RentLeads extends React.Component {
   }
 
   callNumber = (data) => {
-    const { contacts } = this.props
+    const { contacts, dispatch } = this.props
     this.setState({ selectedLead: data }, () => {
       if (data && data.customer) {
         let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts }, () => {
+        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
           if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            // multiple numbers to select
+            //  multiple numbers to select
             this.showMultiPhoneModal(true)
           } else {
-            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
-            this.sendCallStatus()
+            dispatch(
+              setCallPayload(
+                selectedClientContacts ? selectedClientContacts.phone : null,
+                'phone',
+                data
+              )
+            )
             helper.callNumber(selectedClientContacts, contacts)
+            this.showStatusFeedbackModal(true, 'call')
           }
         })
       }
@@ -335,6 +344,34 @@ class RentLeads extends React.Component {
 
   showMultiPhoneModal = (value) => {
     this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts, dispatch } = this.props
+    const { selectedLead } = this.state
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          dispatch(
+            setCallPayload(
+              copySelectedClientContacts ? copySelectedClientContacts.phone : null,
+              'phone',
+              selectedLead
+            )
+          )
+          helper.callNumber(copySelectedClientContacts, contacts)
+          this.showStatusFeedbackModal(true, 'call')
+        }
+      )
+    }
   }
 
   handlePhoneSelectDone = (phone) => {
@@ -568,24 +605,13 @@ class RentLeads extends React.Component {
     this.setState({ statusfeedbackModalVisible: value })
   }
 
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
-  }
-
-  sendStatusCall = (status, id) => {
-    const { selectedLead, currentCall } = this.state
-    let body = {
-      response: status,
-      comments: status,
-      leadId: selectedLead.id,
-      title: 'call',
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
-  }
-
   goToViewingScreen = () => {
     const { navigation } = this.props
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   changeStatusType = (status) => {
@@ -610,7 +636,6 @@ class RentLeads extends React.Component {
       serverTime,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
       selectedLead,
@@ -618,6 +643,7 @@ class RentLeads extends React.Component {
       isMultiPhoneModalVisible,
       statusFilterType,
       comment,
+      newActionModal,
     } = this.state
     const { user, navigation } = this.props
     let leadStatus = StaticData.buyRentFilter
@@ -801,34 +827,39 @@ class RentLeads extends React.Component {
           showMultiPhoneModal={this.showMultiPhoneModal}
           handlePhoneSelectDone={this.handlePhoneSelectDone}
         />
+
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
+          modalMode={modalMode}
+          rejectLead={(body) => this.rejectLead(body)}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
+          leadType={'RCM'}
+        />
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          modalMode={modalMode}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+          //call={this.callAgain}
+          goToViewingScreen={this.goToViewingScreen}
+          leadType={'RCM'}
+        />
+
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
           isFollowUpMode={isFollowUpMode}
           lead={selectedLead}
           leadType={'RCM'}
-          comment={comment}
         />
 
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
-          rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
-          addMeeting={() => this.openModalInMeetingMode()}
-          leadType={'RCM'}
-          goToViewingScreen={this.goToViewingScreen}
-          currentCall={currentCall}
-        />
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}

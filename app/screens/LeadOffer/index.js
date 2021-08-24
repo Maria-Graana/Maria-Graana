@@ -22,6 +22,7 @@ import styles from './styles'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import { formatPrice } from '../../components/PriceFormate'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
@@ -65,6 +66,7 @@ class LeadOffer extends React.Component {
       sellerNotNumeric: false,
       customerNotNumeric: false,
       agreedNotNumeric: false,
+      newActionModal: false,
     }
   }
 
@@ -622,12 +624,8 @@ class LeadOffer extends React.Component {
       })
   }
 
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
+  showStatusFeedbackModal = (value, modalType) => {
+    this.setState({ statusfeedbackModalVisible: value, modalType })
   }
 
   goToViewingScreen = () => {
@@ -635,14 +633,8 @@ class LeadOffer extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  sendStatus = (status, id) => {
-    const { lead } = this.props
-    let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   render() {
@@ -674,14 +666,13 @@ class LeadOffer extends React.Component {
       legalDocLoader,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
       closedWon,
-      comment,
       sellerNotNumeric,
       customerNotNumeric,
       agreedNotNumeric,
+      newActionModal,
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
@@ -780,6 +771,29 @@ class LeadOffer extends React.Component {
           customerNotNumeric={customerNotNumeric}
           agreedNotNumeric={agreedNotNumeric}
         />
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
+          modalMode={modalMode}
+          rejectLead={(body) => this.rejectLead(body)}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
+          leadType={'RCM'}
+        />
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          modalMode={modalMode}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+          //call={this.callAgain}
+          goToViewingScreen={this.goToViewingScreen}
+          leadType={'RCM'}
+        />
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
@@ -787,26 +801,6 @@ class LeadOffer extends React.Component {
           lead={lead}
           leadType={'RCM'}
           getMeetingLead={this.getCallHistory}
-          comment={comment}
-        />
-
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
-          rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatus(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
-          leadType={'RCM'}
-          currentCall={currentCall}
-          goToViewingScreen={this.goToViewingScreen}
         />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
@@ -824,8 +818,9 @@ class LeadOffer extends React.Component {
             getCallHistory={this.getCallHistory}
             goToFollowUp={(value) => this.openModalInFollowupMode(value)}
             navigation={navigation}
-            showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            setCurrentCall={(call) => this.setCurrentCall(call)}
+            showStatusFeedbackModal={(value, modalType) =>
+              this.showStatusFeedbackModal(value, modalType)
+            }
             leadType={'RCM'}
             goToRejectForm={this.goToRejectForm}
             closedWon={closedWon}

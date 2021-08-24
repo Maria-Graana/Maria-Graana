@@ -36,6 +36,7 @@ import StaticData from '../../StaticData'
 import PaymentHelper from './PaymentHelper'
 import moment from 'moment-timezone'
 import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -124,7 +125,6 @@ class CMPayment extends Component {
       closedWon: false,
       statusfeedbackModalVisible: false,
       modalMode: 'call',
-      currentCall: null,
       isFeedbackMeetingModalVisible: false,
       isFollowUpMode: false,
       projectProducts: [],
@@ -143,6 +143,7 @@ class CMPayment extends Component {
       accountPhoneNumbers: [],
       accountsLoading: false,
       isMultiPhoneModalVisible: false,
+      newActionModal: false,
       externalProject: false,
       toggleUnitsTable: false,
       tableHeaderTitle: [],
@@ -985,6 +986,46 @@ class CMPayment extends Component {
       )
   }
 
+  callAgain = () => {
+    const { lead, contacts } = this.props
+    if (lead && lead.customer) {
+      let selectedClientContacts = helper.createContactPayload(lead.customer)
+      this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
+        if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+          //  multiple numbers to select
+          this.showMultiPhoneModal(true)
+        } else {
+          helper.callNumber(selectedClientContacts, contacts)
+          this.showStatusFeedbackModal(true, 'call')
+        }
+      })
+    }
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
+  }
+
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts } = this.props
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          helper.callNumber(copySelectedClientContacts, contacts)
+          this.showStatusFeedbackModal(true, 'call')
+        }
+      )
+    }
+  }
+
   handleFirstForm = (value, name) => {
     const {
       firstFormData,
@@ -1391,22 +1432,8 @@ class CMPayment extends Component {
       })
   }
 
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
-  }
-
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  sendStatus = (status, id) => {
-    const { lead } = this.props
-    let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  showStatusFeedbackModal = (value, modalMode) => {
+    this.setState({ statusfeedbackModalVisible: value, modalMode })
   }
 
   //  ************ Function for open modal ************
@@ -1603,7 +1630,6 @@ class CMPayment extends Component {
       statusfeedbackModalVisible,
       closedWon,
       modalMode,
-      currentCall,
       isFollowUpMode,
       projectProducts,
       productsPickerData,
@@ -1621,9 +1647,11 @@ class CMPayment extends Component {
       accountPhoneNumbers,
       accountsLoading,
       isMultiPhoneModalVisible,
+      newActionModal,
       toggleUnitsTable,
       tableHeaderTitle,
       tableData,
+
     } = this.state
     const { lead, navigation, contacts } = this.props
     return (
@@ -1641,6 +1669,7 @@ class CMPayment extends Component {
             loading={accountsLoading}
             phoneContacts={contacts}
           />
+
           <BookingDetailsModal
             active={bookingModal}
             data={lead}
@@ -1789,23 +1818,30 @@ class CMPayment extends Component {
               </View>
             </ScrollView>
           </KeyboardAvoidingView>
+
+          <SubmitFeedbackOptionsModal
+            showModal={newActionModal}
+            setShowModal={(value) => this.setNewActionModal(value)}
+            performMeeting={() => this.openModalInMeetingMode()}
+            performFollowUp={this.openModalInFollowupMode}
+            performReject={this.goToRejectForm}
+            call={this.callAgain}
+          />
+
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            modalMode={modalMode}
+            showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
             commentsList={
               modalMode === 'call'
                 ? StaticData.commentsFeedbackCall
+                : modalMode === 'meeting'
+                ? StaticData.commentsFeedbackMeeting
                 : StaticData.leadClosedCommentsFeedback
             }
-            showAction={modalMode === 'call'}
-            showFollowup={modalMode === 'call'}
+            modalMode={modalMode}
             rejectLead={(body) => this.rejectLead(body)}
-            sendStatus={(comment, id) => this.sendStatus(comment, id)}
-            addMeeting={() => this.openModalInMeetingMode()}
-            addFollowup={(value) => this.openModalInFollowupMode(value)}
+            setNewActionModal={(value) => this.setNewActionModal(value)}
             leadType={'CM'}
-            currentCall={currentCall}
           />
 
           <MeetingFollowupModal
@@ -1814,7 +1850,6 @@ class CMPayment extends Component {
             isFollowUpMode={isFollowUpMode}
             lead={lead}
             leadType={'CM'}
-            comment={comment}
           />
 
           <View style={AppStyles.mainCMBottomNav}>
@@ -1830,9 +1865,10 @@ class CMPayment extends Component {
               goToFollowUp={(value) => this.openModalInFollowupMode(value)}
               goToRejectForm={this.goToRejectForm}
               closedWon={closedWon}
-              showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
+              showStatusFeedbackModal={(value, modalMode) =>
+                this.showStatusFeedbackModal(value, modalMode)
+              }
               addMeeting={() => this.openModalInMeetingMode()}
-              setCurrentCall={(call) => this.setCurrentCall(call)}
               leadType={'CM'}
               navigation={navigation}
               customer={lead.customer}

@@ -2,7 +2,8 @@
 
 import axios from 'axios'
 import fuzzy from 'fuzzy'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { connect, useDispatch } from 'react-redux'
 import {
   Alert,
   Image,
@@ -17,7 +18,9 @@ import {
   View,
 } from 'react-native'
 import times from '../../../assets/img/times.png'
+import { clearCallPayload, sendCallStatus } from '../../actions/callMeetingFeedback'
 import AppStyles from '../../AppStyles'
+import SubmitFeedbackOptionsModal from '../SubmitFeedbackOptionsModal'
 import TouchableButton from '../TouchableButton'
 
 const CommentChip = ({ comment, setSelectedComment }) => {
@@ -34,19 +37,18 @@ const StatusFeedbackModal = ({
   visible,
   showFeedbackModal,
   commentsList,
-  showAction = true,
-  showFollowup = true,
   modalMode,
-  sendStatus,
-  currentCall,
-  addMeeting,
-  addFollowup,
-  showFeedbackMeetingModal,
+  sendMeetingStatus,
+  currentMeeting,
+  getMeetingLead,
   rejectLead,
   leadType,
-  goToViewingScreen,
+  // goToViewingScreen,
+  callMeetingStatus,
+  setNewActionModal,
 }) => {
   const [selectedComment, setSelectedComment] = useState(null)
+  const dispatch = useDispatch()
   const textInput = useRef(null)
   let data = []
   if (selectedComment != null && data && data.length === 0) {
@@ -60,107 +62,68 @@ const StatusFeedbackModal = ({
     setSelectedComment(null)
   }
 
-  const performAction = () => {
-    showFeedbackModal(false)
-    if (leadType === 'CM') {
-      if (currentCall) {
-        if (modalMode === 'call') {
-          sendStatus(
-            selectedComment,
-            currentCall.id,
-            currentCall.calledOn === 'phone' ? 'call' : 'whatsapp'
-          )
-          addMeeting()
-          clearFormData()
-        } else {
-          // Meeting Mode & actions for book unit and set up another meeting
-          showFeedbackMeetingModal(true)
-          sendStatus(selectedComment, currentCall.id, 'meeting')
-          clearFormData()
-        }
-      }
-    } else {
-      if (currentCall) {
-        sendStatus(
-          selectedComment,
-          currentCall.id,
-          currentCall.calledOn === 'phone' ? 'call' : 'whatsapp'
-        )
-        clearFormData()
-        goToViewingScreen()
-      }
-    }
-  }
-
-  const performFollowup = () => {
-    if (currentCall) {
-      showFeedbackModal(false)
-      sendStatus(
-        selectedComment,
-        currentCall.id,
-        currentCall && modalMode === 'call' && currentCall.calledOn === 'whatsapp'
-          ? ' whatsapp'
-          : currentCall && modalMode === 'call' && currentCall.calledOn === 'phone'
-          ? 'call'
-          : 'meeting'
-      )
-      addFollowup(selectedComment)
-      clearFormData()
-    }
-  }
-
-  const performReject = () => {
-    let body = {
-      reasons: selectedComment,
-    }
-    showFeedbackModal(false)
-    if ((currentCall && modalMode === 'call') || modalMode === 'meeting') {
-      sendStatus(
-        selectedComment,
-        currentCall.id,
-        currentCall && modalMode === 'call' && currentCall.calledOn === 'whatsapp'
-          ? ' whatsapp'
-          : currentCall && modalMode === 'call' && currentCall.calledOn === 'phone'
-          ? 'call'
-          : 'meeting'
-      )
-      rejectLead(body)
-      clearFormData()
-    } else {
-      rejectLead(body)
-      clearFormData()
-    }
-  }
-
-  const showRejectModal = () => {
-    Alert.alert(
-      'Reject(Close as Lost)',
-      'Are you sure you want to continue?',
-      [
-        { text: 'No', style: 'cancel' },
-        { text: 'Yes', onPress: () => performReject() },
-      ],
-      { cancelable: false }
-    )
-  }
-
   const showTitle = () => {
-    if (currentCall && modalMode === 'call' && currentCall.calledOn === 'phone') {
+    if (callMeetingStatus && modalMode === 'call' && callMeetingStatus.calledOn === 'phone') {
       return 'Call Feedback'
-    } else if (currentCall && modalMode === 'call' && currentCall.calledOn === 'whatsapp') {
+    } else if (
+      callMeetingStatus &&
+      modalMode === 'call' &&
+      callMeetingStatus.calledOn === 'whatsapp'
+    ) {
       return 'Whatsapp Feedback'
     } else if (modalMode === 'meeting') return 'Meeting Outcome'
     else if (modalMode === 'reject') return 'Reject with Reason'
   }
 
   const showTextBoxPlaceholder = () => {
-    if (currentCall && modalMode === 'call' && currentCall.calledOn === 'phone') {
+    if (callMeetingStatus && modalMode === 'call' && callMeetingStatus.calledOn === 'phone') {
       return 'Enter call feedback'
-    } else if (currentCall && modalMode === 'call' && currentCall.calledOn === 'whatsapp') {
+    } else if (
+      callMeetingStatus &&
+      modalMode === 'call' &&
+      callMeetingStatus.calledOn === 'whatsapp'
+    ) {
       return 'Enter whatsapp call feedback'
     } else if (modalMode === 'meeting') return 'Enter meeting outcome'
     else if (modalMode === 'reject') return 'Enter reason of rejection'
     else return 'comments'
+  }
+
+  const submitFeedback = () => {
+    if (modalMode === 'call') {
+      // handle call action
+      dispatch(sendCallStatus(selectedComment)).then((res) => {
+        showFeedbackModal(false, modalMode)
+        getMeetingLead && getMeetingLead()
+        setTimeout(() => {
+          setNewActionModal(true)
+        }, 1000)
+      })
+    } else if (modalMode === 'meeting' && leadType === 'CM') {
+      // handle meeting action
+      sendMeetingStatus(selectedComment, currentMeeting.id)
+      showFeedbackModal(false, modalMode)
+      setTimeout(() => {
+        setNewActionModal(true)
+      }, 1000)
+    } else {
+      // handle reject action
+      let body = {
+        reasons: selectedComment,
+      }
+      rejectLead(body)
+    }
+    showFeedbackModal(false, modalMode)
+    clearFormData()
+  }
+
+  const discardFeedback = () => {
+    if (modalMode === 'call') {
+      console.log('discard feedback')
+      dispatch(clearCallPayload())
+    }
+    showFeedbackModal(false, modalMode)
+    clearFormData()
   }
 
   return (
@@ -169,15 +132,6 @@ const StatusFeedbackModal = ({
         <View style={styles.modalMain}>
           <View style={styles.row}>
             <Text style={styles.title}>{showTitle()}</Text>
-            <TouchableOpacity
-              style={styles.closeBtn}
-              onPress={() => {
-                showFeedbackModal(false)
-                clearFormData()
-              }}
-            >
-              <Image source={times} style={styles.closeImg} />
-            </TouchableOpacity>
           </View>
 
           <View style={[AppStyles.mainInputWrap]}>
@@ -213,46 +167,22 @@ const StatusFeedbackModal = ({
             ))}
           </ScrollView>
           <View style={styles.buttonsContainer}>
-            {showAction && (
-              <TouchableButton
-                containerStyle={styles.button}
-                fontFamily={AppStyles.fonts.boldFont}
-                fontSize={16}
-                containerBackgroundColor={AppStyles.colors.actionBg}
-                onPress={() =>
-                  selectedComment ? performAction() : alert('Please select a comment to continue')
-                }
-                label={
-                  modalMode === 'call'
-                    ? leadType === 'RCM'
-                      ? 'Book Viewing'
-                      : 'Meeting Setup'
-                    : 'Action'
-                }
-              />
-            )}
-            {showFollowup && (
-              <TouchableButton
-                containerStyle={styles.button}
-                containerBackgroundColor={AppStyles.colors.yellowBg}
-                fontFamily={AppStyles.fonts.boldFont}
-                fontSize={16}
-                textColor={AppStyles.colors.textColor}
-                onPress={() =>
-                  selectedComment ? performFollowup() : alert('Please select a comment to continue')
-                }
-                label={'Follow up'}
-              />
-            )}
             <TouchableButton
-              containerStyle={[styles.button, { width: showAction ? '32%' : '100%' }]}
+              containerStyle={styles.button}
               fontFamily={AppStyles.fonts.boldFont}
               fontSize={16}
-              containerBackgroundColor={AppStyles.colors.redBg}
-              onPress={() =>
-                selectedComment ? showRejectModal() : alert('Please select a comment to continue')
-              }
-              label={'Reject'}
+              containerBackgroundColor={AppStyles.colors.actionBg}
+              onPress={() => discardFeedback()}
+              label={'Cancel'}
+            />
+            <TouchableButton
+              containerStyle={styles.button}
+              fontFamily={AppStyles.fonts.boldFont}
+              fontSize={16}
+              onPress={() => {
+                selectedComment ? submitFeedback() : alert('Please select a comment to continue')
+              }}
+              label={'Submit'}
             />
           </View>
         </View>
@@ -261,7 +191,13 @@ const StatusFeedbackModal = ({
   )
 }
 
-export default StatusFeedbackModal
+mapStateToProps = (store) => {
+  return {
+    callMeetingStatus: store.callMeetingStatus.callMeetingStatus,
+  }
+}
+
+export default connect(mapStateToProps)(StatusFeedbackModal)
 
 const styles = StyleSheet.create({
   modalMain: {
@@ -301,7 +237,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     marginVertical: 10,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
   },
   button: {
     justifyContent: 'center',
@@ -309,6 +245,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     width: '32%',
+    marginHorizontal: 10,
   },
   closeBtn: {
     alignSelf: 'flex-end',

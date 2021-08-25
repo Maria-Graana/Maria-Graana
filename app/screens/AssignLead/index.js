@@ -116,14 +116,15 @@ class AssignLead extends React.Component {
     const { leadId, type } = route.params
     var leadid = []
     leadid.push(leadId)
-    const url = type == 'Investment' ? `/api/leads/project` : `/api/leads`
+    const url = type == 'Investment' ? `/api/leads/project/shareLead` : `/api/leads/shareLead`
     const body = {
       sharedAt: new Date(),
-      shared_with_armsuser_id: selectedId,
+      userId: selectedId,
+      leadId,
       last_edited_by: user.id,
     }
     axios
-      .patch(url, body, { params: { id: leadid } })
+      .post(url, body, { params: { id: leadid } })
       .then((res) => {
         if (res.data) {
           helper.successToast('LEAD SHARED SUCCESSFULLY')

@@ -51,7 +51,7 @@ class CMReport extends React.Component {
         pendingAmount: 0,
         leadSigned: [],
       },
-      graphLabels: ['created', 'nurture', 'meeting', 'token', 'payment', 'won', 'lost'],
+      graphLabels: ['created', 'call', 'meeting', 'token', 'payment', 'won', 'lost'],
       showOrganizationFilter: false,
       quarters: [
         { value: 1, name: 'Q1', fromDate: '01-01', toDate: '03-31' },

@@ -552,6 +552,7 @@ class Meetings extends Component {
           performReject={this.goToRejectForm}
           call={this.callAgain}
           bookUnit={this.bookUnit}
+          leadType={'CM'}
         />
         <ProgressBar
           style={{ backgroundColor: 'ffffff' }}

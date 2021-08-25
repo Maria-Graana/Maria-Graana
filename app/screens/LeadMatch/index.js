@@ -95,6 +95,7 @@ class LeadMatch extends React.Component {
       modalMode: 'call',
       isFollowUpMode: false,
       closedWon: false,
+      newActionModal: false,
     }
   }
 

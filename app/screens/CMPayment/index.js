@@ -202,11 +202,12 @@ class CMPayment extends Component {
   }
 
   fetchOfficeLocations = () => {
+    const { lead } = this.props
     axios
       .get(`/api/user/locations`)
       .then((response) => {
-        if (response.data) {
-          let locations = PaymentHelper.setOfficeLocation(response.data)
+        if (response.data && lead && lead.project) {
+          let locations = PaymentHelper.setOfficeLocation(response.data, lead.project)
           this.setState({
             officeLocations: locations,
           })

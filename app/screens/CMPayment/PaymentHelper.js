@@ -522,14 +522,16 @@ const PaymentHelper = {
     }
     return body
   },
-  setOfficeLocation(locations) {
-    if (locations) {
+  setOfficeLocation(locations, project) {
+    if (locations && locations.length > 0) {
       let allLocations = []
-      let oneLocation = _.find(locations, (item) => {
-        return item.externalProject === true
-      })
-      if (oneLocation) {
-        allLocations.push({ name: oneLocation.name, value: oneLocation.id })
+      if (project.externalProject === true) {
+        let externalProjectObj = _.find(locations, (item) => {
+          return item.externalProject === true
+        })
+        if (externalProjectObj) {
+          allLocations.push({ name: externalProjectObj.name, value: externalProjectObj.id })
+        }
       } else {
         allLocations = locations.map((item) => {
           return {

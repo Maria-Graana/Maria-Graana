@@ -609,7 +609,7 @@ export default StaticData = {
     ],
   },
   rcmBarCharData: {
-    labels: ['Created', 'Called', 'Viewing', 'Offer', 'Propsure', 'Payment', 'Won', 'Lost'],
+    labels: ['Created', 'Nurture', 'Viewing', 'Offer', 'Propsure', 'Payment', 'Won', 'Lost'],
     datasets: [
       {
         data: [0, 0, 0, 0, 0, 0, 0, 0],

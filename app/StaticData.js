@@ -1164,103 +1164,103 @@ export default StaticData = {
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/money.png'),
+      image: require('../assets/img/revenue_targets.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Deals.png'),
+      image: require('../assets/img/deals.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/Group_50.png'),
+      image: require('../assets/img/viewing_meeting.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/home-icon.png'),
+      image: require('../assets/img/listing.png'),
     },
     {
       id: 5,
       value: '0',
-      image: require('../assets/img/Group_46.png'),
+      image: require('../assets/img/pp_meeting.png'),
     },
     {
       id: 6,
       value: '0',
-      image: require('../assets/img/Group_41.png'),
+      image: require('../assets/img/pp_rating.png'),
     },
   ],
   reAdvisorKPIS: [
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/money.png'),
+      image: require('../assets/img/revenue_targets.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Deals.png'),
+      image: require('../assets/img/deals.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/Group_50.png'),
+      image: require('../assets/img/viewing_meeting.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/home-icon.png'),
+      image: require('../assets/img/listing.png'),
     },
   ],
   businessCenterKPIS: [
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/money.png'),
+      image: require('../assets/img/revenue_targets.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Group_51.png'),
+      image: require('../assets/img/investment_guide.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/daily-responsetime.png'),
+      image: require('../assets/img/responsetime-daily.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/Calls.png'),
+      image: require('../assets/img/calls.png'),
     },
     {
       id: 5,
       value: '0',
-      image: require('../assets/img/CIF.png'),
+      image: require('../assets/img/cif.png'),
     },
   ],
   callCenterKPIS: [
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/money.png'),
+      image: require('../assets/img/revenue_targets.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Group_51.png'),
+      image: require('../assets/img/investment_guide.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/daily-responsetime.png'),
+      image: require('../assets/img/responsetime-daily.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/Calls.png'),
+      image: require('../assets/img/calls.png'),
     },
   ],
 }

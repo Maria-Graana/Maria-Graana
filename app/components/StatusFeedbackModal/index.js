@@ -119,7 +119,6 @@ const StatusFeedbackModal = ({
 
   const discardFeedback = () => {
     if (modalMode === 'call') {
-      console.log('discard feedback')
       dispatch(clearCallPayload())
     }
     showFeedbackModal(false, modalMode)
@@ -241,10 +240,10 @@ const styles = StyleSheet.create({
   },
   button: {
     justifyContent: 'center',
-    minHeight: 55,
+    minHeight: 40,
     borderRadius: 4,
     padding: 10,
-    width: '32%',
+    width: '30%',
     marginHorizontal: 10,
   },
   closeBtn: {

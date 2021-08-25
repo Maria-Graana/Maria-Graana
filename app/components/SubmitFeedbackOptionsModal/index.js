@@ -51,7 +51,7 @@ const SubmitFeedbackOptionsModal = ({
               <>
                 {callMeetingStatus && callMeetingStatus.calledOn === 'phone' && leadType === 'CM' && (
                   <TouchableButton
-                    label="Call again"
+                    label="Call Again"
                     onPress={() => {
                       call()
                       setShowModal(false)
@@ -95,19 +95,7 @@ const SubmitFeedbackOptionsModal = ({
             {modalMode === 'meeting' && (
               <>
                 <TouchableButton
-                  label="Book Unit"
-                  onPress={() => {
-                    bookUnit()
-                    setShowModal(false)
-                  }}
-                  fontFamily={AppStyles.fonts.boldFont}
-                  containerStyle={styles.button}
-                  fontSize={16}
-                  containerBackgroundColor={AppStyles.colors.actionBg}
-                />
-
-                <TouchableButton
-                  label="Set up another Meeting"
+                  label="Setup another Meeting"
                   onPress={() => {
                     performMeeting()
                     setShowModal(false)
@@ -118,11 +106,22 @@ const SubmitFeedbackOptionsModal = ({
                   containerStyle={styles.button}
                   containerBackgroundColor={AppStyles.colors.actionBg}
                 />
+                <TouchableButton
+                  label="Book a Unit"
+                  onPress={() => {
+                    bookUnit()
+                    setShowModal(false)
+                  }}
+                  fontFamily={AppStyles.fonts.boldFont}
+                  containerStyle={styles.button}
+                  fontSize={16}
+                  containerBackgroundColor={AppStyles.colors.actionBg}
+                />
               </>
             )}
 
             <TouchableButton
-              label="Follow Up"
+              label="Follow-Up"
               onPress={() => {
                 performFollowUp()
                 setShowModal(false)
@@ -134,7 +133,7 @@ const SubmitFeedbackOptionsModal = ({
               textColor={AppStyles.colors.textColor}
             />
             <TouchableButton
-              label="Reject With Reason"
+              label="Reject with Reason"
               onPress={() => {
                 performReject()
                 setShowModal(false)

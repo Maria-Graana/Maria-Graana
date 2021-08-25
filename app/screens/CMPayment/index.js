@@ -1651,7 +1651,6 @@ class CMPayment extends Component {
       toggleUnitsTable,
       tableHeaderTitle,
       tableData,
-
     } = this.state
     const { lead, navigation, contacts } = this.props
     return (
@@ -1826,6 +1825,8 @@ class CMPayment extends Component {
             performFollowUp={this.openModalInFollowupMode}
             performReject={this.goToRejectForm}
             call={this.callAgain}
+            modalMode={modalMode}
+            leadType={'CM'}
           />
 
           <StatusFeedbackModal

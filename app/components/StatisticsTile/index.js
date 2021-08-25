@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   containerImg: {
-    width: 50,
+    // width: 50,
     height: 25,
     resizeMode: 'contain',
   },

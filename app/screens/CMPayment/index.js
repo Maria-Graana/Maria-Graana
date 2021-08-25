@@ -340,10 +340,9 @@ class CMPayment extends Component {
   }
 
   getUnits = (projectId, floorId) => {
+    let url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&quota=true&status=Available&type=regular`
     axios
-      .get(
-        `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available&type=regular&mobile=true`
-      )
+      .get(url)
       .then((res) => {
         let array = []
         res &&

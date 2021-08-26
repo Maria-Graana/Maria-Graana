@@ -70,28 +70,26 @@ class SchedulePayment extends React.Component {
                   </View>
                   <FlatList
                     data={data}
-                    renderItem={(item, index) => (
+                    renderItem={({ item, index, separators }) => (
                       <View style={styles.tableTile}>
                         <View style={{ justifyContent: 'center', flex: 1 }}>
                           <Text numberOfLines={1} style={styles.paymentText}>
-                            {item.item.paymentType === 'fullPayment' ? `Full Payment` : null}
-                            {item.item.paymentType === 'installment'
-                              ? `Installment ${item.item.id}`
+                            {item.paymentType === 'fullPayment' ? `Full Payment` : null}
+                            {item.paymentType === 'installment' ? `Installment ${index}` : null}
+                            {item.paymentType === 'possessionCharges'
+                              ? `Possession Charges ${index}`
                               : null}
-                            {item.item.paymentType === 'possessionCharges'
-                              ? `Possession Charges ${item.item.id}`
-                              : null}
-                            {item.item.paymentType === 'downPayment' ? `Down Payment` : null}
+                            {item.paymentType === 'downPayment' ? `Down Payment` : null}
                           </Text>
                         </View>
                         <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
                           <Text numberOfLines={1} style={styles.amountText}>
-                            {Number(item.item.amountDue)}
+                            {Number(item.amountDue)}
                           </Text>
                         </View>
                         <View style={{ justifyContent: 'center', flex: 1 }}>
                           <Text numberOfLines={1} style={styles.tileText}>
-                            {moment(item.item.paymentDueDate).format('DD MMM, YYYY')}
+                            {moment(item.paymentDueDate).format('DD MMM, YYYY')}
                           </Text>
                         </View>
                       </View>

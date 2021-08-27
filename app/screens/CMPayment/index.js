@@ -245,7 +245,10 @@ class CMPayment extends Component {
   calculatePayments = (lead, functionCallingFor) => {
     const { payment, unit, paidProject } = lead
     let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
-    let discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
+    let discountAmount = ''
+    if (unit.type !== 'pearl')
+      discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
+    else discountAmount = unit.discounted_price
     let finalPrice = PaymentMethods.findFinalPrice(
       unit,
       discountAmount,

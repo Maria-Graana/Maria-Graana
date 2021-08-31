@@ -1879,6 +1879,7 @@ class CMPayment extends Component {
               goToHistory={() => {}}
               getCallHistory={() => {}}
               onHandleCloseLead={this.onHandleCloseLead}
+              fetchLead={this.fetchLead}
             />
           </View>
         </View>

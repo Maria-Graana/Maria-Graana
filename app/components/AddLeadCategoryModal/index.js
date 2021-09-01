@@ -7,7 +7,7 @@ import RadioComponent from '../RadioButton'
 import close from '../../../assets/img/times.png'
 import TouchableButton from '../TouchableButton'
 
-const AddLeadCategoryModal = ({ visible, toggleCategoryModal, onCategorySelected }) => {
+const AddLeadCategoryModal = ({ visible, toggleCategoryModal, onCategorySelected, loading }) => {
   const [selectedCategory, setCategory] = useState('')
   return (
     <Modal visible={visible}>
@@ -101,6 +101,7 @@ const AddLeadCategoryModal = ({ visible, toggleCategoryModal, onCategorySelected
               : alert('Please select a category to continue')
           }}
           label={'Done'}
+          loading={loading}
         />
       </SafeAreaView>
     </Modal>

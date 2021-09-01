@@ -131,8 +131,33 @@ class LeadTile extends React.Component {
                     </Text>
                   </View>
                 )}
+
+                {data && data.leadCategory ? (
+                  <View style={styles.sharedLead}>
+                    <Text
+                      style={[
+                        AppStyles.mrFive,
+                        styles.viewStyle,
+                        {
+                          color: AppStyles.colors.primaryColor,
+                          fontSize: AppStyles.noramlSize.fontSize,
+                          fontFamily: AppStyles.fonts.lightFont,
+                        },
+                        {
+                          color: AppStyles.colors.primaryColor,
+                          fontSize: AppStyles.noramlSize.fontSize,
+                          fontFamily: AppStyles.fonts.lightFont,
+                        },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {data.leadCategory}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
             </View>
+
             <View style={[styles.contentMainWrap]}>
               <View style={styles.leftContent}>
                 {/* ****** Name Wrap */}

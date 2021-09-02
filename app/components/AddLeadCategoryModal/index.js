@@ -1,108 +1,61 @@
 /** @format */
 
 import React, { useState } from 'react'
-import { StyleSheet, View, TouchableOpacity, Image, Text, Modal, SafeAreaView } from 'react-native'
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Image,
+  Text,
+  Modal,
+  SafeAreaView,
+  FlatList,
+} from 'react-native'
 import AppStyles from '../../AppStyles'
 import RadioComponent from '../RadioButton'
 import close from '../../../assets/img/times.png'
 import TouchableButton from '../TouchableButton'
+import StaticData from '../../StaticData'
 
-const AddLeadCategoryModal = ({ visible, toggleCategoryModal, onCategorySelected, loading }) => {
-  const [selectedCategory, setCategory] = useState('')
+const AddLeadCategoryModal = ({
+  visible,
+  toggleCategoryModal,
+  onCategorySelected,
+  selectedCategory,
+}) => {
   return (
     <Modal visible={visible}>
       <SafeAreaView style={AppStyles.mb1}>
         <View style={[styles.modalMain]}>
-          <View style={styles.row}>
-            <Text style={styles.title}>Select Lead Category</Text>
-            <TouchableOpacity style={styles.closeBtn} onPress={() => toggleCategoryModal(false)}>
-              <Image source={close} style={styles.closeImg} />
-            </TouchableOpacity>
-          </View>
-
-          <RadioComponent
-            onGradeSelected={(val) => setCategory(val)}
-            selected={selectedCategory === 'Hot' ? true : false}
-            value="Hot"
-            marginVertical={styles.spacingVertical.marginVertical}
-            extraTextStyle={styles.extraTextStyle}
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={() => {
+              toggleCategoryModal(false)
+            }}
           >
-            Hot
-          </RadioComponent>
-
-          <RadioComponent
-            onGradeSelected={(val) => setCategory(val)}
-            selected={selectedCategory === 'Warm' ? true : false}
-            value="Warm"
-            marginVertical={styles.spacingVertical.marginVertical}
-            extraTextStyle={styles.extraTextStyle}
-          >
-            Warm
-          </RadioComponent>
-
-          <RadioComponent
-            onGradeSelected={(val) => setCategory(val)}
-            selected={selectedCategory === 'Cold' ? true : false}
-            value="Cold"
-            marginVertical={styles.spacingVertical.marginVertical}
-            extraTextStyle={styles.extraTextStyle}
-          >
-            Cold
-          </RadioComponent>
-
-          <RadioComponent
-            onGradeSelected={(val) => setCategory(val)}
-            selected={selectedCategory === 'Call back' ? true : false}
-            value="Call back"
-            marginVertical={styles.spacingVertical.marginVertical}
-            extraTextStyle={styles.extraTextStyle}
-          >
-            Call back
-          </RadioComponent>
-
-          <RadioComponent
-            onGradeSelected={(val) => setCategory(val)}
-            selected={selectedCategory === 'Powered off' ? true : false}
-            value="Powered off"
-            marginVertical={styles.spacingVertical.marginVertical}
-            extraTextStyle={styles.extraTextStyle}
-          >
-            Powered off
-          </RadioComponent>
-
-          <RadioComponent
-            onGradeSelected={(val) => setCategory(val)}
-            selected={selectedCategory === 'No response' ? true : false}
-            value="No response"
-            marginVertical={styles.spacingVertical.marginVertical}
-            extraTextStyle={styles.extraTextStyle}
-          >
-            No response
-          </RadioComponent>
-
-          <RadioComponent
-            onGradeSelected={(val) => setCategory(val)}
-            selected={selectedCategory === 'Interested to Meet' ? true : false}
-            value="Interested to Meet"
-            marginVertical={styles.spacingVertical.marginVertical}
-            extraTextStyle={styles.extraTextStyle}
-          >
-            Interested to Meet
-          </RadioComponent>
+            <Image source={close} style={styles.closeImg} />
+          </TouchableOpacity>
+          <FlatList
+            data={StaticData.leadCategories}
+            contentContainerStyle={styles.list}
+            renderItem={({ item, index }) => (
+              <TouchableButton
+                label={item.label}
+                textColor={
+                  selectedCategory && item.label === selectedCategory ? 'white' : item.color
+                }
+                containerBackgroundColor={
+                  selectedCategory && item.label === selectedCategory ? item.color : 'white'
+                }
+                containerStyle={styles.button}
+                borderWidth={0.5}
+                borderColor={item.color}
+                onPress={() => onCategorySelected(item.label)}
+              />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </View>
-
-        <TouchableButton
-          containerStyle={styles.button}
-          fontFamily={AppStyles.fonts.boldFont}
-          fontSize={16}
-          onPress={() => {
-            selectedCategory
-              ? onCategorySelected(selectedCategory)
-              : alert('Please select a category to continue')
-          }}
-          label={'Done'}
-          loading={loading}
-        />
       </SafeAreaView>
     </Modal>
   )
@@ -116,19 +69,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 15,
   },
-  spacingVertical: {
-    marginVertical: 15,
-  },
-  extraTextStyle: {
-    fontSize: AppStyles.fontSize.medium,
-    fontFamily: AppStyles.fonts.defaultFont,
+  list: {
+    justifyContent: 'space-evenly',
+    flex: 1,
   },
   closeBtn: {
-    alignSelf: 'flex-end',
     backgroundColor: '#fff',
-    borderRadius: 50,
-    padding: 5,
-    width: '10%',
+    position: 'absolute',
+    right: 15,
+    top: 0,
   },
   closeImg: {
     width: 22,
@@ -144,12 +93,6 @@ const styles = StyleSheet.create({
     width: '95%',
     marginHorizontal: 10,
     marginVertical: 10,
-  },
-  row: {
-    flexDirection: 'row',
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 10,
   },
   title: {
     width: '90%',

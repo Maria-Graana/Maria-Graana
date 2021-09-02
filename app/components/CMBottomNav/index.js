@@ -77,7 +77,6 @@ class CMBottomNav extends React.Component {
       selectedClientContacts: [],
       calledOn: 'phone',
       isLeadCategoryModalVisible: false,
-      loading: false,
     }
   }
 
@@ -323,28 +322,23 @@ class CMBottomNav extends React.Component {
 
   onCategorySelected = (value) => {
     const { lead, fetchLead } = this.props
-    this.setState({ loading: true }, () => {
-      let body = {
-        leadCategory: value,
-      }
-      var leadId = []
-      leadId.push(lead.id)
-      axios
-        .patch(`/api/leads/project`, body, { params: { id: leadId } })
-        .then((res) => {
-          this.setState({ isLeadCategoryModalVisible: false, loading: false }, () => {
-            helper.successToast(`Lead Category added`)
-            fetchLead && fetchLead()
-          })
+    let body = {
+      leadCategory: value,
+    }
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then((res) => {
+        this.setState({ isLeadCategoryModalVisible: false }, () => {
+          helper.successToast(`Lead Category added`)
+          fetchLead && fetchLead()
         })
-        .catch((error) => {
-          console.log('/api/leads/project - Error', error)
-          helper.errorToast('Closed lead API failed!!')
-        })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
-    })
+      })
+      .catch((error) => {
+        console.log('/api/leads/project - Error', error)
+        helper.errorToast('Closed lead API failed!!')
+      })
   }
 
   render() {
@@ -365,7 +359,6 @@ class CMBottomNav extends React.Component {
       selectedClientContacts,
       calledOn,
       isLeadCategoryModalVisible,
-      loading,
     } = this.state
 
     return (
@@ -415,18 +408,15 @@ class CMBottomNav extends React.Component {
               </TouchableOpacity>
             }
           >
-            {lead && lead.projectId && !lead.leadCategory ? (
-              <Menu.Item
-                onPress={() => {
-                  if (closedLeadEdit) {
-                    this.openMenu(false)
-                    this.setState({ isLeadCategoryModalVisible: true })
-                  } else helper.leadClosedToast()
-                }}
-                title="Add Category"
-              />
-            ) : null}
-
+            <Menu.Item
+              onPress={() => {
+                if (closedLeadEdit) {
+                  this.openMenu(false)
+                  this.setState({ isLeadCategoryModalVisible: true })
+                } else helper.leadClosedToast()
+              }}
+              title="Set Category"
+            />
             {isFromViewingScreen ? (
               <Menu.Item
                 onPress={() => {
@@ -465,7 +455,7 @@ class CMBottomNav extends React.Component {
           visible={isLeadCategoryModalVisible}
           toggleCategoryModal={(value) => this.setState({ isLeadCategoryModalVisible: value })}
           onCategorySelected={(value) => this.onCategorySelected(value)}
-          loading={loading}
+          selectedCategory={lead && lead.leadCategory ? lead.leadCategory : null}
         />
       </View>
     )

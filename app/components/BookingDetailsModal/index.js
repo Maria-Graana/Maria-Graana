@@ -209,7 +209,7 @@ class BookingDetailsModal extends React.Component {
                     <Text style={styles.smallText}>Discount Amount</Text>
                     <Text style={styles.largeText}>
                       {helper.currencyConvert(
-                        this.handleEmptyValueReturnZero(data.unit.discounted_price)
+                        PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
                       )}
                     </Text>
                   </View>
@@ -387,7 +387,7 @@ class BookingDetailsModal extends React.Component {
                       <Text style={styles.smallText}>Discount Amount</Text>
                       <Text style={styles.largeText}>
                         {helper.currencyConvert(
-                          this.handleEmptyValueReturnZero(unit.discounted_price)
+                          PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
                         )}
                       </Text>
                     </View>

@@ -14,8 +14,8 @@ import StaticData from '../../StaticData'
 import styles from './style'
 import Ability from '../../hoc/Ability'
 import MultiplePhoneOptionModal from '../MultiplePhoneOptionModal'
-import { Status } from '@sentry/types'
-import { sendCallStatus, setCallPayload } from '../../actions/callMeetingFeedback'
+import { setCallPayload } from '../../actions/callMeetingFeedback'
+import AddLeadCategoryModal from '../AddLeadCategoryModal'
 
 var BUTTONS = [
   'Assign to team member',
@@ -76,6 +76,7 @@ class CMBottomNav extends React.Component {
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
       calledOn: 'phone',
+      isLeadCategoryModalVisible: false,
     }
   }
 
@@ -319,6 +320,27 @@ class CMBottomNav extends React.Component {
     })
   }
 
+  onCategorySelected = (value) => {
+    const { lead, fetchLead } = this.props
+    let body = {
+      leadCategory: value,
+    }
+    var leadId = []
+    leadId.push(lead.id)
+    axios
+      .patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then((res) => {
+        this.setState({ isLeadCategoryModalVisible: false }, () => {
+          helper.successToast(`Lead Category added`)
+          fetchLead && fetchLead()
+        })
+      })
+      .catch((error) => {
+        console.log('/api/leads/project - Error', error)
+        helper.errorToast('Closed lead API failed!!')
+      })
+  }
+
   render() {
     const {
       navigateTo,
@@ -329,8 +351,15 @@ class CMBottomNav extends React.Component {
       goToFollowUp,
       goToRejectForm,
       closedLeadEdit,
+      lead,
     } = this.props
-    const { visible, isMultiPhoneModalVisible, selectedClientContacts, calledOn } = this.state
+    const {
+      visible,
+      isMultiPhoneModalVisible,
+      selectedClientContacts,
+      calledOn,
+      isLeadCategoryModalVisible,
+    } = this.state
 
     return (
       <View style={styles.bottomNavMain}>
@@ -379,6 +408,15 @@ class CMBottomNav extends React.Component {
               </TouchableOpacity>
             }
           >
+            <Menu.Item
+              onPress={() => {
+                if (closedLeadEdit) {
+                  this.openMenu(false)
+                  this.setState({ isLeadCategoryModalVisible: true })
+                } else helper.leadClosedToast()
+              }}
+              title="Set Category"
+            />
             {isFromViewingScreen ? (
               <Menu.Item
                 onPress={() => {
@@ -403,7 +441,7 @@ class CMBottomNav extends React.Component {
                 title="Call History"
               />
             ) : null}
-            {!callButton ? <Menu.Item title="No Option" /> : null}
+            {!callButton && !lead.projectId ? <Menu.Item title="No Option" /> : null}
           </Menu>
         </View>
         <MultiplePhoneOptionModal
@@ -412,6 +450,12 @@ class CMBottomNav extends React.Component {
           showMultiPhoneModal={this.showMultiPhoneModal}
           handlePhoneSelectDone={this.handlePhoneSelectDone}
           mode={calledOn}
+        />
+        <AddLeadCategoryModal
+          visible={isLeadCategoryModalVisible}
+          toggleCategoryModal={(value) => this.setState({ isLeadCategoryModalVisible: value })}
+          onCategorySelected={(value) => this.onCategorySelected(value)}
+          selectedCategory={lead && lead.leadCategory ? lead.leadCategory : null}
         />
       </View>
     )

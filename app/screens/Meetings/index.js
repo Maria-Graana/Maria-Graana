@@ -601,6 +601,7 @@ class Meetings extends Component {
             getCallHistory={() => {}}
             onHandleCloseLead={this.onHandleCloseLead}
             closedWon={closedWon}
+            fetchLead={this.fetchLead}
           />
         </View>
 

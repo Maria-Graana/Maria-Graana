@@ -547,6 +547,13 @@ class LeadDetail extends React.Component {
             </View>
 
             <View style={styles.rowContainerType2}>
+              <Text style={styles.headingTextTypeTwo}>Lead Category</Text>
+              <Text style={styles.labelTextTypeTwo}>
+                {lead.leadCategory ? lead.leadCategory : '-'}
+              </Text>
+            </View>
+
+            <View style={styles.rowContainerType2}>
               <Text style={styles.headingTextTypeTwo}>Assigned To </Text>
               <Text style={styles.labelTextTypeTwo}>
                 {lead.armsuser && lead.armsuser.firstName

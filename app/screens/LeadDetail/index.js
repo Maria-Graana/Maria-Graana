@@ -9,6 +9,7 @@ import { connect } from 'react-redux'
 import { goBack, setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
+import VoicePlayer from '../../components/VoicePlayer'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
@@ -460,6 +461,13 @@ class LeadDetail extends React.Component {
               <View style={styles.cardItemWhite}>
                 <Text style={styles.headingText}>Reference Guide#</Text>
                 <Text style={styles.labelText}>{lead.guideReference}</Text>
+              </View>
+            ) : null}
+
+            {lead.wanted && lead.wanted.voiceLead && lead.wanted.voiceLead.voiceNoteLink ? (
+              <View style={styles.cardItemWhite}>
+                <Text style={styles.headingText}>Voice Note</Text>
+                <VoicePlayer audioFile={lead.wanted.voiceLead.voiceNoteLink} />
               </View>
             ) : null}
 

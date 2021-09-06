@@ -213,7 +213,7 @@ export class VoicePlayer extends Component {
             disabled={this.state.isBuffering}
             // minimumTrackTintColor={isEqual(Platform.OS, 'ios') ? '#333' : '#bbb'}
             // maximumTrackTintColor={isEqual(Platform.OS, 'ios') ? '#bbb' : '#333'}
-            // thumbTintColor="#333"
+            thumbTintColor={isEqual(Platform.OS, 'ios') ? 'white' : AppStyles.colors.primaryColor}
             maximumValue={this.state.durationMillis}
             value={this.state.positionMillis}
             onValueChange={this._onSeekSliderValueChange}
@@ -257,13 +257,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   duration: {
-    width: '20%',
+    width: '25%',
     textAlign: 'right',
     fontFamily: AppStyles.fonts.defaultFont,
     fontSize: 12,
   },
   createdDate: {
-    width: '80%',
+    width: '75%',
     textAlign: 'right',
     paddingHorizontal: 5,
     fontFamily: AppStyles.fonts.defaultFont,
@@ -272,6 +272,7 @@ const styles = StyleSheet.create({
   playPause: {
     width: 30,
     height: 30,
+    marginLeft: 10,
   },
   slider: {
     marginHorizontal: '3%',

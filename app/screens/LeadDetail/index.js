@@ -364,7 +364,6 @@ class LeadDetail extends React.Component {
     }
 
     let assignedByName = this.getAssignedByName(lead)
-
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -467,7 +466,10 @@ class LeadDetail extends React.Component {
             {lead.wanted && lead.wanted.voiceLead && lead.wanted.voiceLead.voiceNoteLink ? (
               <View style={styles.cardItemWhite}>
                 <Text style={styles.headingText}>Voice Note</Text>
-                <VoicePlayer audioFile={lead.wanted.voiceLead.voiceNoteLink} />
+                <VoicePlayer
+                  audioFile={lead.wanted.voiceLead.voiceNoteLink}
+                  voiceLead={lead.wanted.voiceLead}
+                />
               </View>
             ) : null}
 

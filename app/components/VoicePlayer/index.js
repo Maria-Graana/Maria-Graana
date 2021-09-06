@@ -14,6 +14,8 @@ import Slider from '@react-native-community/slider'
 import * as Permissions from 'expo-permissions'
 import { Audio } from 'expo-av'
 import { isEqual } from 'underscore'
+import moment from 'moment'
+import AppStyles from '../../AppStyles'
 
 const initialPlaybackStatus = {
   progressUpdateIntervalMillis: 200,
@@ -106,8 +108,7 @@ export class VoicePlayer extends Component {
         isMuted,
         volume,
         didJustFinish,
-        // currentTime:
-        //   this._getMMSSFromMillis(positionMillis) / this._getMMSSFromMillis(durationMillis),
+        currentTime: durationMillis,
       })
 
       // if the parent component needed to pause for some reason (e.g. navigating to another screen down the stack), pause
@@ -117,21 +118,6 @@ export class VoicePlayer extends Component {
         this.audioInstance.stopAsync()
       }
     }
-  }
-
-  _getMMSSFromMillis(millis) {
-    const totalSeconds = millis / 1000
-    const seconds = Math.floor(totalSeconds % 60)
-    const minutes = Math.floor(totalSeconds / 60)
-
-    const padWithZero = (number) => {
-      const string = number.toString()
-      if (number < 10) {
-        return '0' + string
-      }
-      return string
-    }
-    return padWithZero(minutes) + ':' + padWithZero(seconds)
   }
 
   _askForPermissionsAndPlaySound = async () => {
@@ -152,7 +138,7 @@ export class VoicePlayer extends Component {
         const { durationMillis } = playbackStatus
         this.setState({
           durationMillis,
-          currentTime: this._getMMSSFromMillis(durationMillis),
+          currentTime: durationMillis,
         })
       })
       this.audioInstance.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate)
@@ -202,6 +188,8 @@ export class VoicePlayer extends Component {
 
   render() {
     const { isPlaying, currentTime } = this.state
+    const { voiceLead } = this.props
+    const { createdAt } = voiceLead
     return (
       <View style={styles.mainContainer}>
         <View style={styles.secondaryContainer}>
@@ -232,7 +220,18 @@ export class VoicePlayer extends Component {
             onSlidingComplete={this._onSeekSliderSlidingComplete}
           />
         </View>
-        {/* <View>{!this.state.isBuffering && <Text>{currentTime}</Text>}</View> */}
+        <View>
+          <View style={[styles.secondaryContainer, styles.extraSecondary]}>
+            {!this.state.isBuffering && (
+              <Text style={styles.duration}>{this.millisToMinutesAndSeconds(currentTime)}</Text>
+            )}
+            {!this.state.isBuffering && (
+              <Text style={styles.createdDate}>
+                {moment(createdAt).format('hh:mm A, MMM DD YY')}
+              </Text>
+            )}
+          </View>
+        </View>
       </View>
     )
   }
@@ -252,8 +251,23 @@ const styles = StyleSheet.create({
   },
   secondaryContainer: {
     flexDirection: 'row',
-    padding: 5,
     alignItems: 'center',
+  },
+  extraSecondary: {
+    marginHorizontal: 5,
+  },
+  duration: {
+    width: '20%',
+    textAlign: 'right',
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: 12,
+  },
+  createdDate: {
+    width: '80%',
+    textAlign: 'right',
+    paddingHorizontal: 5,
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: 12,
   },
   playPause: {
     width: 30,

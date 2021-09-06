@@ -44,7 +44,9 @@ class SchedulePayment extends React.Component {
         <SafeAreaView style={styles.flexView}>
           <View style={styles.flexView}>
             <View style={styles.topHeader}>
-              <BackButton onClick={toggleSchedulePayment} />
+              <View style={styles.padLeft}>
+                <BackButton onClick={toggleSchedulePayment} />
+              </View>
               <View style={styles.header}>
                 <Text numberOfLines={1} style={styles.headerText}>
                   {headerName}

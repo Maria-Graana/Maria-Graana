@@ -99,7 +99,6 @@ class ClientDetail extends React.Component {
     const { user } = this.props
     const { client, loading, clientPhones } = this.state
     let belongs = this.checkClient()
-
     return !loading ? (
       <View
         style={[
@@ -126,6 +125,12 @@ class ClientDetail extends React.Component {
             <Text style={styles.labelText}>{client.cnic && helper.normalizeCnic(client.cnic)}</Text>
             <Text style={styles.headingText}>Son / Daughter/ Spouse of</Text>
             <Text style={styles.labelText}>{client.familyMember}</Text>
+            <Text style={styles.headingText}>Bank</Text>
+            <Text style={styles.labelText}>{client.bank}</Text>
+            <Text style={styles.headingText}>Account Title</Text>
+            <Text style={styles.labelText}>{client.accountTitle}</Text>
+            <Text style={styles.headingText}>IBAN</Text>
+            <Text style={styles.labelText}>{client.iBan}</Text>
             <Text style={styles.headingText}>Address</Text>
             <Text style={styles.labelText}>{client.address}</Text>
             <Text style={styles.headingText}>Secondary Address</Text>

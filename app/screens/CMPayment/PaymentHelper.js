@@ -543,5 +543,168 @@ const PaymentHelper = {
       return allLocations
     }
   },
+  generateKFIPayload(singleLeadRecord) {
+    let discountedAmount =
+      (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
+      (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
+
+    let frequency =
+      singleLeadRecord &&
+      singleLeadRecord.projectProduct &&
+      singleLeadRecord.projectProduct.installmentFrequency !== null
+        ? singleLeadRecord &&
+          singleLeadRecord.projectProduct &&
+          singleLeadRecord.projectProduct.installmentFrequency.map(
+            (item, index) => (index ? ', ' : '') + item
+          )
+        : '--'
+
+    let templateData = {
+      ClientName:
+        singleLeadRecord && singleLeadRecord.customer && singleLeadRecord.customer.customerName
+          ? singleLeadRecord && singleLeadRecord.customer && singleLeadRecord.customer.customerName
+          : '--',
+      ClientCNIC:
+        singleLeadRecord && singleLeadRecord.unit !== null
+          ? PaymentHelper.normalizeCnic(
+              singleLeadRecord && singleLeadRecord.customer && singleLeadRecord.customer.cnic
+            )
+          : '--',
+      ProjectName:
+        singleLeadRecord && singleLeadRecord.paidProject !== null
+          ? singleLeadRecord && singleLeadRecord.paidProject && singleLeadRecord.paidProject.name
+          : singleLeadRecord && singleLeadRecord.project && singleLeadRecord.project.name,
+      FloorName:
+        singleLeadRecord && singleLeadRecord.floor !== null
+          ? singleLeadRecord && singleLeadRecord.floor && singleLeadRecord.floor.name
+          : '--',
+      UnitName:
+        singleLeadRecord && singleLeadRecord.unit !== null
+          ? singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.name
+          : '--',
+      Size:
+        singleLeadRecord && singleLeadRecord.unit !== null
+          ? Number(
+              singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.area
+            ).toLocaleString()
+          : '--',
+      RatePerSqft:
+        singleLeadRecord && singleLeadRecord.unit !== null
+          ? singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.rentPerSqFt
+          : '--',
+      UnitPrice:
+        singleLeadRecord && singleLeadRecord.unit !== null
+          ? Number(
+              singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price
+            ).toLocaleString()
+          : '--',
+      ProductName:
+        Object.keys(singleLeadRecord && singleLeadRecord.projectProduct).length !== 0
+          ? singleLeadRecord && singleLeadRecord.projectProduct.name
+          : '--',
+      PaymentPlan: helper.capitalize(
+        singleLeadRecord &&
+          singleLeadRecord.projectProduct &&
+          singleLeadRecord.projectProduct.paymentPlan
+      ),
+      PlanDuration:
+        singleLeadRecord &&
+        singleLeadRecord.projectProduct &&
+        singleLeadRecord.projectProduct.paymentPlanDuration !== null
+          ? singleLeadRecord &&
+            singleLeadRecord.projectProduct &&
+            singleLeadRecord.projectProduct.paymentPlanDuration &&
+            singleLeadRecord &&
+            singleLeadRecord.projectProduct &&
+            singleLeadRecord.projectProduct.paymentPlanDuration[1] + ' - ' + singleLeadRecord &&
+            singleLeadRecord.projectProduct &&
+            singleLeadRecord.projectProduct.paymentPlanDuration[3] + ' Years'
+          : '--',
+      InstallmentFrequency:
+        frequency && frequency.length === 1
+          ? helper.capitalize(frequency && frequency[0])
+          : frequency && frequency.length === 2
+          ? helper.capitalize(frequency && frequency[0]) +
+            ' , ' +
+            helper.capitalize(frequency && frequency[1])
+          : '--',
+      ReservationAmount:
+        singleLeadRecord &&
+        singleLeadRecord.projectProduct &&
+        singleLeadRecord.projectProduct.value !== null
+          ? singleLeadRecord &&
+            singleLeadRecord.projectProduct &&
+            singleLeadRecord.projectProduct.reservationAmount === 'percentage'
+            ? `${
+                singleLeadRecord &&
+                singleLeadRecord.projectProduct &&
+                singleLeadRecord.projectProduct.value
+              } %`
+            : `${Number(
+                singleLeadRecord &&
+                  singleLeadRecord.projectProduct &&
+                  singleLeadRecord.projectProduct.value
+              ).toLocaleString()}`
+          : '--',
+      Downpayment:
+        singleLeadRecord &&
+        singleLeadRecord.projectProduct &&
+        singleLeadRecord.projectProduct.downPayment,
+      DownPaymentValue: Number(singleLeadRecord && singleLeadRecord.downPayment).toLocaleString(),
+      PossessionCharges:
+        singleLeadRecord &&
+        singleLeadRecord.projectProduct &&
+        singleLeadRecord.projectProduct.possessionCharges,
+
+      Discount:
+        (100 * discountedAmount) /
+        (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price),
+      DiscountAmount: Number(
+        (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
+          (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
+      ).toLocaleString(),
+      InvestmentDuration:
+        singleLeadRecord &&
+        singleLeadRecord.projectProduct &&
+        singleLeadRecord.projectProduct.investmentDuration,
+      DiscountedAmount: Number(
+        singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice
+      ).toLocaleString(),
+      InvestmentDurationValue:
+        singleLeadRecord &&
+        singleLeadRecord.projectProduct &&
+        singleLeadRecord.projectProduct.investmentDurationPeriod,
+      AnnualProfit:
+        singleLeadRecord &&
+        singleLeadRecord.projectProduct &&
+        singleLeadRecord.projectProduct.annualProfit !== null
+          ? singleLeadRecord &&
+            singleLeadRecord.projectProduct &&
+            singleLeadRecord.projectProduct.annualProfit
+          : '--',
+      AnnualRent:
+        singleLeadRecord &&
+        singleLeadRecord.projectProduct &&
+        singleLeadRecord.projectProduct.monthlyRent !== null
+          ? singleLeadRecord &&
+            singleLeadRecord.projectProduct &&
+            singleLeadRecord.projectProduct.monthlyRent
+          : '--',
+    }
+    return templateData
+  },
+  normalizeCnic(value) {
+    if (!value) {
+      return value
+    }
+    const onlyNums = value && value.toString().replace(/[^\d]/g, '')
+    if (onlyNums.length <= 5) {
+      return onlyNums
+    }
+    if (onlyNums.length <= 12) {
+      return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5)}`
+    }
+    return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5, 12)}-${onlyNums.slice(12, 13)}`
+  },
 }
 module.exports = PaymentHelper

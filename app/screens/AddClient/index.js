@@ -41,6 +41,9 @@ class AddClient extends Component {
         secondaryAddress: '',
         contact1: '',
         contact2: '',
+        accountTitle: '',
+        bank: '',
+        iBan: '',
       },
       emailValidate: true,
       phoneValidate: false,
@@ -56,6 +59,7 @@ class AddClient extends Component {
       callingCode2: defaultCountry.code,
       contactNumberCheck: '',
       countries: [],
+      accountsOptionFields: false,
     }
   }
   componentDidMount() {
@@ -315,6 +319,9 @@ class AddClient extends Component {
         dialCode: callingCode2,
       },
       familyMember: formData.familyMember,
+      bank: formData.bank,
+      accountTitle: formData.accountTitle,
+      iBan: formData.iBan,
     }
     if (!body.contact1.contact1) delete body.contact1
     if (!body.contact2.contact2) delete body.contact2
@@ -376,6 +383,9 @@ class AddClient extends Component {
         dialCode: newCallingCode2,
       },
       familyMember: formData.familyMember,
+      bank: formData.bank,
+      accountTitle: formData.accountTitle,
+      iBan: formData.iBan,
     }
     body.customersContacts = []
     body.customersContacts.push(body.phone)
@@ -387,15 +397,45 @@ class AddClient extends Component {
     delete body.contact2
     return body
   }
-
+  checkRequiredField = () => {
+    const { formData } = this.state
+    if (
+      (formData.bank &&
+        formData.bank === '' &&
+        formData.iBan &&
+        formData.iBan !== '' &&
+        formData.accountTitle &&
+        formData.accountTitle !== '') ||
+      (formData.bank &&
+        formData.bank === '' &&
+        formData.iBan &&
+        formData.iBan !== '' &&
+        formData.accountTitle &&
+        formData.accountTitle !== '') ||
+      (formData.bank &&
+        formData.bank !== '' &&
+        formData.iBan &&
+        formData.iBan !== '' &&
+        formData.accountTitle &&
+        formData.accountTitle === '')
+    ) {
+      return true
+    } else return false
+  }
   formSubmit = () => {
     const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
     const { route, navigation, contacts } = this.props
     const { update, client, isFromDropDown, screenName, isPOC } = route.params
     if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
-    if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.contactNumber ||
+      this.checkRequiredField()
+    ) {
       this.setState({
         checkValidation: true,
+        accountsOptionFields: this.checkRequiredField(),
       })
     } else {
       if (emailValidate && !phoneValidate && !cnicValidate) {
@@ -448,7 +488,6 @@ class AddClient extends Component {
             })
         } else {
           let body = this.updatePayload()
-          console.log('body: ', body)
           this.setState({ loading: true })
           axios
             .patch(`/api/customer/update?id=${client.id}`, body)
@@ -519,9 +558,9 @@ class AddClient extends Component {
       countryCode,
       countryCode1,
       countryCode2,
-      callingCode,
       contactNumberCheck,
       loading,
+      accountsOptionFields,
     } = this.state
     const { route } = this.props
     const { update } = route.params
@@ -554,6 +593,7 @@ class AddClient extends Component {
                     validate={this.validate}
                     loading={loading}
                     hello={this.hello}
+                    accountsOptionFields={accountsOptionFields}
                   />
                 </View>
               </TouchableWithoutFeedback>

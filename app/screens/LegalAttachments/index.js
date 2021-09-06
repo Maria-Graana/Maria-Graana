@@ -143,7 +143,15 @@ class LegalAttachment extends Component {
                     item.addedBy === route.params.addedBy
                   )
                 })
-              newcheckListDoc.name = 'CHECKLIST'
+              if (!newcheckListDoc) {
+                newcheckListDoc = {
+                  fileKey: null,
+                  id: 1,
+                  category: 'legal_checklist',
+                  name: 'CHECKLIST',
+                  status: 'pending',
+                }
+              } else newcheckListDoc.name = 'CHECKLIST'
               this.setState({
                 checkListDoc: newcheckListDoc,
                 legalPaymentObj: newlegalPayment,
@@ -997,7 +1005,6 @@ class LegalAttachment extends Component {
     const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
-
     return (
       <View style={[AppStyles.mb1]}>
         <UploadAttachment showAction={showAction} submitUploadedAttachment={this.handleForm} />

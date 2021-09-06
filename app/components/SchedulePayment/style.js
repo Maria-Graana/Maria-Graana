@@ -24,11 +24,6 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 50,
   },
-  headerText: {
-    paddingRight: 30,
-    fontFamily: AppStyles.fonts.semiBoldFont,
-    fontSize: 16,
-  },
   mainView: {
     backgroundColor: AppStyles.colors.backgroundColor,
     flex: 1,
@@ -108,4 +103,7 @@ export default styles = StyleSheet.create({
     textAlign: 'left',
   },
   TextView: { justifyContent: 'center', flex: 1 },
+  padLeft: {
+    paddingLeft: 15,
+  },
 })

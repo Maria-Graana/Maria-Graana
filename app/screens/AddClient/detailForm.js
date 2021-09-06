@@ -39,8 +39,8 @@ class DetailForm extends Component {
       countryCode,
       countryCode1,
       countryCode2,
-      contactNumberCheck,
       loading,
+      accountsOptionFields,
     } = this.props
     let btnText = update ? 'UPDATE' : 'ADD'
     return (
@@ -186,6 +186,57 @@ class DetailForm extends Component {
               name={'familyMember'}
               placeholder={'Son / Daughter/ Spouse of'}
             />
+          </View>
+        </View>
+        <View style={[AppStyles.mainInputWrap]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput
+              placeholderTextColor={'#a8a8aa'}
+              value={formData.bank}
+              onChangeText={(text) => {
+                handleForm(text, 'bank')
+              }}
+              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+              name={'bank'}
+              placeholder={'Bank'}
+            />
+            {accountsOptionFields && formData.bank === '' ? (
+              <ErrorMessage errorMessage={'Required'} />
+            ) : null}
+          </View>
+        </View>
+        <View style={[AppStyles.mainInputWrap]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput
+              placeholderTextColor={'#a8a8aa'}
+              value={formData.accountTitle}
+              onChangeText={(text) => {
+                handleForm(text, 'accountTitle')
+              }}
+              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+              name={'accountTitle'}
+              placeholder={'Account Title'}
+            />
+            {accountsOptionFields && formData.accountTitle === '' ? (
+              <ErrorMessage errorMessage={'Required'} />
+            ) : null}
+          </View>
+        </View>
+        <View style={[AppStyles.mainInputWrap]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput
+              placeholderTextColor={'#a8a8aa'}
+              value={formData.iBan}
+              onChangeText={(text) => {
+                handleForm(text, 'iBan')
+              }}
+              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+              name={'iBan'}
+              placeholder={'IBAN'}
+            />
+            {accountsOptionFields && formData.iBan === '' ? (
+              <ErrorMessage errorMessage={'Required'} />
+            ) : null}
           </View>
         </View>
         <View style={[AppStyles.mainInputWrap]}>

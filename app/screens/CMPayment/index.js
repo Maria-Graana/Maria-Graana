@@ -37,6 +37,11 @@ import PaymentHelper from './PaymentHelper'
 import moment from 'moment-timezone'
 import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { Buffer } from 'buffer'
+import * as FileSystem from 'expo-file-system'
+import * as IntentLauncher from 'expo-intent-launcher'
+import * as MediaLibrary from 'expo-media-library'
+import * as Permissions from 'expo-permissions'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -1589,6 +1594,76 @@ class CMPayment extends Component {
     })
   }
 
+  generateKFI = () => {
+    const { lead } = this.props
+    let templateData = PaymentHelper.generateKFIPayload(lead)
+    helper.warningToast('Downloading KFI Document!')
+    axios
+      .post(`/api/leads/KFIReport?leadId=${lead.id}`, templateData, {
+        responseType: 'arraybuffer',
+        headers: {
+          Accept: 'application/pdf',
+        },
+      })
+      .then((res) => {
+        let buff = Buffer.from(res.data, 'base64')
+        let doc = {
+          fileType: 'application/pdf',
+          fileName: 'KFIDocument11',
+        }
+        this.downloadBufferFile(buff.toString('base64'), doc)
+      })
+      .catch((error) => {
+        console.log('error----->', error)
+      })
+  }
+
+  downloadBufferFile = async (buff, doc) => {
+    let fileUri = FileSystem.documentDirectory + `${doc.fileName}.pdf`
+    FileSystem.writeAsStringAsync(fileUri, buff, { encoding: FileSystem.EncodingType.Base64 })
+      .then((uri) => {
+        FileSystem.getInfoAsync(fileUri).then((res) => {
+          this.saveFile(res.uri, doc)
+        })
+      })
+      .catch((error) => {
+        helper.errorToast('ERROR: Downloading File')
+        console.error('downloadBufferFile: ', error)
+      })
+  }
+
+  saveFile = async (fileUri, doc) => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    if (status === 'granted') {
+      const asset = await MediaLibrary.createAssetAsync(fileUri)
+      MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
+        FileSystem.getContentUriAsync(fileUri).then((cUri) => {
+          if (
+            doc.fileType.includes('jpg') ||
+            doc.fileType.includes('png') ||
+            doc.fileType.includes('jpeg')
+          ) {
+            this.setState({
+              showWebView: true,
+              webView: cUri,
+              showDoc: true,
+            })
+          } else {
+            let fileType = doc.fileType
+            if (doc.fileType.includes('pdf')) fileType = 'application/pdf'
+            else fileType = doc.fileType
+            IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+              data: cUri,
+              flags: 1,
+              type: fileType,
+            })
+          }
+        })
+      })
+      helper.successToast('File Downloaded!')
+    }
+  }
+
   render() {
     const {
       checkLeadClosedOrNot,
@@ -1680,6 +1755,7 @@ class CMPayment extends Component {
             toggleBookingDetailsModal={this.toggleBookingModal}
             openUnitDetailsModal={this.openUnitDetailsModal}
             finalPrice={finalPrice}
+            generateKFI={this.generateKFI}
           />
           <SchedulePayment
             active={showSchedule}
@@ -1879,6 +1955,7 @@ class CMPayment extends Component {
               goToHistory={() => {}}
               getCallHistory={() => {}}
               onHandleCloseLead={this.onHandleCloseLead}
+              fetchLead={this.fetchLead}
             />
           </View>
         </View>

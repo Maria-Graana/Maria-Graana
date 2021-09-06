@@ -2,10 +2,11 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { View, Text, Image, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native'
+import { View, Text, Image, TouchableOpacity, ScrollView, SafeAreaView, Modal } from 'react-native'
 import styles from './style'
-import Modal from 'react-native-modal'
 import times from '../../../assets/img/times.png'
+import BackButton from '../../components/BackButton'
+import CMBTN from '../../components/CMBTN'
 import PaymentMethods from '../../PaymentMethods'
 import helper from '../../helper'
 import ViewDocs from '../ViewDocs'
@@ -61,14 +62,17 @@ class BookingDetailsModal extends React.Component {
   }
 
   render() {
-    let { active, data, pearlModal, finalPrice, lead } = this.props
+    let { active, data, pearlModal, finalPrice, lead, toggleBookingDetailsModal, generateKFI } =
+      this.props
     if (!data.unit) active = false
     const { unit } = data
     const { imageUrl, showWebView } = this.state
     let product = lead && lead.projectProduct && lead.projectProduct
+    let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
+    if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <Modal isVisible={active}>
+      <Modal visible={active} animationType="slide" onRequestClose={toggleBookingDetailsModal}>
+        <SafeAreaView style={styles.flexView}>
           {showWebView ? (
             <ViewDocs
               imageView={true}
@@ -79,16 +83,27 @@ class BookingDetailsModal extends React.Component {
               url={imageUrl}
             />
           ) : null}
+          <View style={styles.topHeader}>
+            <View style={styles.padLeft}>
+              <BackButton onClick={toggleBookingDetailsModal} />
+            </View>
+            <View style={styles.header}>
+              <Text numberOfLines={1} style={styles.headerText}>
+                {headerName}
+              </Text>
+              <Text numberOfLines={1} style={[styles.detailText]}>
+                {lead.project
+                  ? helper.capitalize(lead.project.name)
+                  : helper.capitalize(lead.projectName)}
+                {lead.projectType ? ' - ' + helper.capitalize(lead.projectType) : ''}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.barView}>
+            <Text style={styles.barText}>BOOKING DETAILS</Text>
+          </View>
           {pearlModal === false && data && data.unit != null && (
             <View style={[styles.modalMain]}>
-              <TouchableOpacity
-                style={styles.timesBtn}
-                onPress={() => {
-                  this.props.toggleBookingDetailsModal(false)
-                }}
-              >
-                <Image source={times} style={styles.timesImg} />
-              </TouchableOpacity>
               <ScrollView>
                 <View style={styles.MainTileView}>
                   <View>
@@ -330,14 +345,6 @@ class BookingDetailsModal extends React.Component {
           )}
           {pearlModal === true && data && data != '' && (
             <View style={[styles.modalMain]}>
-              <TouchableOpacity
-                style={styles.timesBtn}
-                onPress={() => {
-                  this.props.toggleBookingDetailsModal(false)
-                }}
-              >
-                <Image source={times} style={styles.timesImg} />
-              </TouchableOpacity>
               <ScrollView>
                 <View style={styles.MainTileView}>
                   {/* ===================== */}
@@ -475,8 +482,18 @@ class BookingDetailsModal extends React.Component {
               </ScrollView>
             </View>
           )}
-        </Modal>
-      </SafeAreaView>
+        </SafeAreaView>
+        <View style={styles.kfiBTN}>
+          <CMBTN
+            onClick={() => {
+              this.props.generateKFI()
+            }}
+            btnText={'GENERATE KFI DOCUMENT'}
+            checkLeadClosedOrNot={true}
+          />
+        </View>
+        <SafeAreaView style={styles.safeView} />
+      </Modal>
     )
   }
 }

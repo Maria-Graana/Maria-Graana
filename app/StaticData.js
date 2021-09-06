@@ -1263,4 +1263,34 @@ export default StaticData = {
       image: require('../assets/img/calls.png'),
     },
   ],
+  leadCategories: [
+    {
+      label: 'Hot',
+      color: '#f48f8d',
+    },
+    {
+      label: 'Warm',
+      color: '#f4be82',
+    },
+    {
+      label: 'Cold',
+      color: '#90cbff',
+    },
+    {
+      label: 'Call back',
+      color: '#a7cd83',
+    },
+    {
+      label: 'Powered off',
+      color: '#c3c4c4',
+    },
+    {
+      label: 'No response',
+      color: '#c3c4c4',
+    },
+    {
+      label: 'Interested to meet',
+      color: '#a7cd83',
+    },
+  ],
 }

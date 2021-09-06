@@ -1597,6 +1597,7 @@ class CMPayment extends Component {
   generateKFI = () => {
     const { lead } = this.props
     let templateData = PaymentHelper.generateKFIPayload(lead)
+    helper.warningToast('Downloading KFI Document!')
     axios
       .post(`/api/leads/KFIReport?leadId=${lead.id}`, templateData, {
         responseType: 'arraybuffer',
@@ -1626,7 +1627,7 @@ class CMPayment extends Component {
         })
       })
       .catch((error) => {
-        helper.warning('ERROR: Downloading File')
+        helper.errorToast('ERROR: Downloading File')
         console.error('downloadBufferFile: ', error)
       })
   }

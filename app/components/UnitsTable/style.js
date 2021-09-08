@@ -107,11 +107,17 @@ export default styles = StyleSheet.create({
   },
   headerTextStyle: {
     textAlign: 'left',
+    fontSize: 12,
     fontFamily: AppStyles.fonts.defaultFont,
     paddingLeft: 5,
     color: AppStyles.colors.primaryColor,
   },
-  text: { textAlign: 'left', fontFamily: AppStyles.fonts.defaultFont, paddingLeft: 5 },
+  text: {
+    textAlign: 'left',
+    fontSize: 12,
+    fontFamily: AppStyles.fonts.defaultFont,
+    paddingLeft: 5,
+  },
   dataWrapper: { marginTop: 0 },
   row: {
     height: 40,

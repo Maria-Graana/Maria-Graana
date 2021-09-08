@@ -1079,21 +1079,19 @@ const helper = {
     }
   },
   setBookingStatusColor(arrayItem) {
-    if (arrayItem) {
+    if (arrayItem && arrayItem.length > 0) {
       if (arrayItem.includes('Available')) {
         return '#ceecfc'
       } else if (
         arrayItem.includes('Sold') ||
-        arrayItem.includes('Sold on Installments') ||
-        arrayItem.includes('Sold on Investment Plan') ||
-        arrayItem.includes('Sold on Rental Plan') ||
-        arrayItem.includes('Sold on Monthly Installments') ||
         arrayItem.includes('Token') ||
         arrayItem.includes('Payment')
       ) {
         return '#fde0e2'
       } else if (arrayItem.includes('Hold')) {
         return '#fef3c6'
+      } else {
+        return 'white'
       }
     } else {
       return 'white'

@@ -150,9 +150,13 @@ class AvailableInventory extends Component {
         const { optional_fields } = item
         let unitOptionalFields = JSON.parse(optional_fields)
         projectKeys &&
-          projectKeys.length &&
+          projectKeys.length > 0 &&
           projectKeys.map((key) => {
-            oneRow.push(unitOptionalFields[key].data)
+            if (!_.isEmpty(unitOptionalFields) && unitOptionalFields[key].data) {
+              oneRow.push(unitOptionalFields[key].data)
+            } else {
+              oneRow.push('---')
+            }
           })
         oneRow.push(item.area)
         oneRow.push(item.rate_per_sqft)

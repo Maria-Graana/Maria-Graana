@@ -1293,4 +1293,15 @@ export default StaticData = {
       color: '#a7cd83',
     },
   ],
+  unitStatuses: [
+    { name: 'Available', value: 'Available' },
+    { name: 'Hold', value: 'Hold' },
+    { name: 'Sold', value: 'Sold' },
+    { name: 'Token', value: 'Token' },
+    { name: 'Payment', value: 'Payment' },
+  ],
+  filterAvailableUnits: [
+    { name: 'STATUS', value: 'status' },
+    { name: 'PRICE', value: 'price' },
+  ],
 }

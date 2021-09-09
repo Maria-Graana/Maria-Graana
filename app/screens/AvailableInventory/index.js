@@ -12,12 +12,17 @@ import {
   TouchableHighlight,
 } from 'react-native'
 import _ from 'underscore'
+import { Fab } from 'native-base'
 import AppStyles from '../../AppStyles'
+import { Ionicons } from '@expo/vector-icons'
 import Loader from '../../components/loader'
 import PickerComponent from '../../components/Picker'
 import { Row, Table } from 'react-native-table-component'
 import PaymentMethods from '../../PaymentMethods'
 import helper from '../../helper.js'
+import Search from '../../components/Search'
+import StaticData from '../../StaticData'
+import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
 
 class AvailableInventory extends Component {
   constructor(props) {
@@ -33,6 +38,8 @@ class AvailableInventory extends Component {
       tableData: [],
       allUnits: [],
       loading: true,
+      showFilterModal: false,
+      status: '',
     }
   }
 
@@ -92,12 +99,13 @@ class AvailableInventory extends Component {
   }
 
   getUnits = (projectId, floorId) => {
+    const { status } = this.state
     let url = ``
     if (projectId) {
-      url = `/api/project/shops?projectId=${projectId}&all=true`
+      url = `/api/project/shops?projectId=${projectId}&status=${status}`
     }
     if (projectId && floorId) {
-      url = `/api/project/shops?projectId=${projectId} &floorId=${floorId}&all=true`
+      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=${status}`
     }
     axios
       .get(url)
@@ -187,6 +195,13 @@ class AvailableInventory extends Component {
     })
   }
 
+  filterByStatus = (status) => {
+    const { selectedProject, selectedFloor } = this.state
+    this.setState({ defaultUnitStatus: status }, () => {
+      this.getUnits(selectedProject, selectedFloor, status)
+    })
+  }
+
   setTableRowWidth = () => {
     const { tableHeaderTitle } = this.state
     let array =
@@ -198,6 +213,10 @@ class AvailableInventory extends Component {
     return array
   }
 
+  toggleFilterModal = (value) => {
+    this.setState({ showFilterModal: value })
+  }
+
   render() {
     const {
       pickerProjects,
@@ -207,12 +226,21 @@ class AvailableInventory extends Component {
       tableData,
       tableHeaderTitle,
       loading,
+      showFilterModal,
+      status,
     } = this.state
 
     let widthArr = this.setTableRowWidth()
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.mainContainer}>
+          <AvailableInventoryFilter
+            toggleFilterModal={(value) => this.toggleFilterModal(value)}
+            status={status}
+            changeStatus={(value) => this.setState({ status: value })}
+            showFilterModal={showFilterModal}
+            onFilterApplied={() => this.getUnits(selectedProject, selectedFloor, status)}
+          />
           <View style={{ padding: 10 }}>
             <PickerComponent
               onValueChange={this.handleProjectChange}
@@ -233,6 +261,72 @@ class AvailableInventory extends Component {
               selectedItem={selectedFloor ? selectedFloor : ''}
             />
           </View>
+
+          {/* {showSearchBar ? (
+            <View style={[styles.filterRow]}>
+              <View style={styles.idPicker}>
+                <PickerComponent
+                  placeholder={'Filter Unit by'}
+                  data={StaticData.filterAvailableUnits}
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeFilterType}
+                  selectedItem={filterType}
+                />
+              </View>
+
+              {filterType === 'status' ? (
+                <View style={styles.idPicker}>
+                  <PickerComponent
+                    placeholder={'Status'}
+                    data={StaticData.unitStatuses}
+                    customStyle={styles.pickerStyle}
+                    customIconStyle={styles.customIconStyle}
+                    onValueChange={this.filterByStatus}
+                    selectedItem={defaultUnitStatus}
+                  />
+                </View>
+              ) : (
+                <Text>price filter</Text>
+              )}
+
+              <View
+                style={{
+                  width: '15%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Ionicons
+                  onPress={() => {
+                    this.setState({ showSearchBar: false })
+                  }}
+                  name={'ios-close-circle-outline'}
+                  size={26}
+                  color={AppStyles.colors.subTextColor}
+                />
+              </View>
+            </View>
+          ) : (
+            <View
+              style={{
+                alignItems: 'flex-end',
+                paddingHorizontal: 20,
+                width: '100%',
+                justifyContent: 'center',
+              }}
+            >
+              <Ionicons
+                onPress={() => {
+                  this.setState({ showSearchBar: true })
+                }}
+                name={'ios-search'}
+                size={26}
+                color={AppStyles.colors.subTextColor}
+              />
+            </View>
+          )} */}
+
           {loading ? (
             <Loader loading={loading} />
           ) : (
@@ -277,6 +371,15 @@ class AvailableInventory extends Component {
               )}
             </>
           )}
+          <Fab
+            active="true"
+            containerStyle={{ zIndex: 20 }}
+            style={{ backgroundColor: AppStyles.colors.primaryColor }}
+            position="bottomRight"
+            onPress={() => this.toggleFilterModal(true)}
+          >
+            <Ionicons name="ios-search" color="#ffffff" />
+          </Fab>
         </View>
       </SafeAreaView>
     )
@@ -290,6 +393,12 @@ const styles = StyleSheet.create({
     // padding: 15,
     backgroundColor: '#e7ecf0',
     flex: 1,
+  },
+  customIconStyle: {
+    fontSize: 24,
+  },
+  pickerStyle: {
+    height: 40,
   },
   container: {
     flex: 1,
@@ -326,4 +435,23 @@ const styles = StyleSheet.create({
     borderColor: AppStyles.colors.primaryColor,
   },
   imageStyle: { width: 200, height: 200, alignSelf: 'center', margin: 10 },
+  idPicker: {
+    width: '40%',
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    height: 40,
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: '#ebebeb',
+    overflow: 'hidden',
+  },
+  filterRow: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    minHeight: 55,
+    marginHorizontal: 10,
+    marginVertical: 15,
+    borderRadius: 4,
+  },
 })

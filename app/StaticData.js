@@ -1266,31 +1266,31 @@ export default StaticData = {
   leadCategories: [
     {
       label: 'Hot',
-      color: '#f48f8d',
+      color: '#e63434',
     },
     {
       label: 'Warm',
-      color: '#f4be82',
+      color: '#ff6c00',
     },
     {
       label: 'Cold',
-      color: '#90cbff',
+      color: '#1688db',
     },
     {
       label: 'Call back',
-      color: '#a7cd83',
-    },
-    {
-      label: 'Powered off',
-      color: '#c3c4c4',
-    },
-    {
-      label: 'No response',
-      color: '#c3c4c4',
+      color: '#61a70b',
     },
     {
       label: 'Interested to meet',
-      color: '#a7cd83',
+      color: '#61a70b',
+    },
+    {
+      label: 'Powered off',
+      color: '#9a9a9a',
+    },
+    {
+      label: 'No response',
+      color: '#9a9a9a',
     },
   ],
 }

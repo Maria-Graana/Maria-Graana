@@ -557,7 +557,7 @@ class LeadDetail extends React.Component {
             </View>
 
             <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Lead Category</Text>
+              <Text style={styles.headingTextTypeTwo}>Classification</Text>
               <Text style={styles.labelTextTypeTwo}>
                 {lead.leadCategory ? lead.leadCategory : '-'}
               </Text>

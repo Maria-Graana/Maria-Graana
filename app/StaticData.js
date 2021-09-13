@@ -1276,22 +1276,22 @@ export default StaticData = {
       label: 'Cold',
       color: '#1688db',
     },
-    {
-      label: 'Call back',
-      color: '#61a70b',
-    },
-    {
-      label: 'Interested to meet',
-      color: '#61a70b',
-    },
-    {
-      label: 'Powered off',
-      color: '#9a9a9a',
-    },
-    {
-      label: 'No response',
-      color: '#9a9a9a',
-    },
+    // {
+    //   label: 'Call back',
+    //   color: '#61a70b',
+    // },
+    // {
+    //   label: 'Interested to meet',
+    //   color: '#61a70b',
+    // },
+    // {
+    //   label: 'Powered off',
+    //   color: '#9a9a9a',
+    // },
+    // {
+    //   label: 'No response',
+    //   color: '#9a9a9a',
+    // },
   ],
   unitStatuses: [
     { name: 'Available', value: 'Available' },

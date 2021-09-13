@@ -115,6 +115,7 @@ class InnerRCMForm extends Component {
                 data={organizations}
                 name={'org'}
                 placeholder="Organizations"
+                selectedItem={formData.org}
               />
               {checkValidation === true && formData.org === '' && (
                 <ErrorMessage errorMessage={'Required'} />
@@ -157,6 +158,7 @@ class InnerRCMForm extends Component {
               data={propertyType}
               name={'type'}
               placeholder="Property Type"
+              selectedItem={formData.type}
             />
             {checkValidation === true && formData.type === '' && (
               <ErrorMessage errorMessage={'Required'} />
@@ -172,6 +174,7 @@ class InnerRCMForm extends Component {
               data={subTypeData}
               name={'subtype'}
               placeholder="Property Sub Type"
+              selectedItem={formData.subtype}
             />
             {checkValidation === true && formData.subtype === '' && (
               <ErrorMessage errorMessage={'Required'} />

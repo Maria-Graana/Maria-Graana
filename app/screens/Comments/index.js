@@ -46,9 +46,6 @@ class Comments extends Component {
         .catch((error) => {
           console.log(error)
         })
-        .finally(() => {
-          this.setState({ addCommentLoading: false })
-        })
     } else {
       navigation.setParams({ title: 'PROPERTY COMMENTS' })
       const { propertyId, screenName } = route.params
@@ -65,9 +62,6 @@ class Comments extends Component {
         })
         .catch((error) => {
           console.log(`ERROR: /api/leads/comments ${error}`)
-        })
-        .finally(() => {
-          this.setState({ addCommentLoading: false })
         })
     }
   }
@@ -138,6 +132,9 @@ class Comments extends Component {
           })
           .catch((error) => {
             console.log('error=>', error.message)
+          })
+          .finally(() => {
+            this.setState({ addCommentLoading: false })
           })
       } else {
         alert('Please add something in comment!')

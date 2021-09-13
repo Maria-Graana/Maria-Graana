@@ -20,6 +20,7 @@ class Comments extends Component {
       loading: true,
       type: 'comment',
       property: false,
+      addCommentLoading: false,
     }
   }
 
@@ -45,6 +46,9 @@ class Comments extends Component {
         .catch((error) => {
           console.log(error)
         })
+        .finally(() => {
+          this.setState({ addCommentLoading: false })
+        })
     } else {
       navigation.setParams({ title: 'PROPERTY COMMENTS' })
       const { propertyId, screenName } = route.params
@@ -61,6 +65,9 @@ class Comments extends Component {
         })
         .catch((error) => {
           console.log(`ERROR: /api/leads/comments ${error}`)
+        })
+        .finally(() => {
+          this.setState({ addCommentLoading: false })
         })
     }
   }
@@ -97,47 +104,49 @@ class Comments extends Component {
     const { route } = this.props
     const { rcmLeadId, cmLeadId, screenName, propertyId, leadId } = route.params
     let commentObject = {}
-    if (comment.length > 0 && comment !== '') {
-      if (!property) {
-        if (rcmLeadId) {
-          commentObject = {
-            value: comment,
-            type: 'comment',
-            rcmLeadId: rcmLeadId,
+    this.setState({ addCommentLoading: true }, () => {
+      if (comment.length > 0 && comment !== '') {
+        if (!property) {
+          if (rcmLeadId) {
+            commentObject = {
+              value: comment,
+              type: 'comment',
+              rcmLeadId: rcmLeadId,
+            }
+          } else {
+            commentObject = {
+              value: comment,
+              type: 'comment',
+              cmLeadId: cmLeadId,
+            }
           }
         } else {
-          commentObject = {
-            value: comment,
-            type: 'comment',
-            cmLeadId: cmLeadId,
+          if (leadId) {
+            commentObject = {
+              value: comment,
+              type: 'comment',
+              shortListPropertyId: propertyId,
+              title: screenName,
+              rcmLeadId: leadId,
+            }
           }
         }
+        axios
+          .post(`/api/leads/comments`, commentObject)
+          .then((response) => {
+            this.getCommentsFromServer()
+          })
+          .catch((error) => {
+            console.log('error=>', error.message)
+          })
       } else {
-        if (leadId) {
-          commentObject = {
-            value: comment,
-            type: 'comment',
-            shortListPropertyId: propertyId,
-            title: screenName,
-            rcmLeadId: leadId,
-          }
-        }
+        alert('Please add something in comment!')
       }
-      axios
-        .post(`/api/leads/comments`, commentObject)
-        .then((response) => {
-          this.getCommentsFromServer()
-        })
-        .catch((error) => {
-          console.log('error=>', error.message)
-        })
-    } else {
-      alert('Please add something in comment!')
-    }
+    })
   }
 
   render() {
-    const { commentsList, loading, comment, property } = this.state
+    const { commentsList, loading, comment, property, addCommentLoading } = this.state
     return !loading ? (
       <KeyboardAwareScrollView
         style={[AppStyles.container, { paddingHorizontal: 0, marginBottom: 25 }]}
@@ -156,7 +165,12 @@ class Comments extends Component {
           )}
           keyExtractor={(item, index) => index.toString()}
         />
-        <AddComment onPress={this.addComment} comment={comment} setComment={this.setComment} />
+        <AddComment
+          onPress={this.addComment}
+          loading={addCommentLoading}
+          comment={comment}
+          setComment={this.setComment}
+        />
       </KeyboardAwareScrollView>
     ) : (
       <Loader loading={loading} />

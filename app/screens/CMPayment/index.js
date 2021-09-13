@@ -1608,7 +1608,7 @@ class CMPayment extends Component {
         let buff = Buffer.from(res.data, 'base64')
         let doc = {
           fileType: 'application/pdf',
-          fileName: 'KFIDocument11',
+          fileName: 'KFIDocument',
         }
         this.downloadBufferFile(buff.toString('base64'), doc)
       })

@@ -215,6 +215,9 @@ class AddClient extends Component {
       familyMember: client.familyMember,
       contact1: number1,
       contact2: number2,
+      iBan: client.iBan,
+      bank: client.bank,
+      accountTitle: client.accountTitle,
     }
     this.setState({ formData })
   }
@@ -399,28 +402,26 @@ class AddClient extends Component {
   }
   checkRequiredField = () => {
     const { formData } = this.state
-    if (
-      (formData.bank &&
-        formData.bank === '' &&
-        formData.iBan &&
-        formData.iBan !== '' &&
-        formData.accountTitle &&
-        formData.accountTitle !== '') ||
-      (formData.bank &&
-        formData.bank === '' &&
-        formData.iBan &&
-        formData.iBan !== '' &&
-        formData.accountTitle &&
-        formData.accountTitle !== '') ||
-      (formData.bank &&
-        formData.bank !== '' &&
-        formData.iBan &&
-        formData.iBan !== '' &&
-        formData.accountTitle &&
-        formData.accountTitle === '')
-    ) {
-      return true
-    } else return false
+    let checkOptionalFields = false
+    if (formData.bank === '') {
+      if (
+        (formData.iBan && formData.iBan !== '') ||
+        (formData.accountTitle && formData.accountTitle !== '')
+      )
+        checkOptionalFields = true
+    }
+    if (formData.iBan === '') {
+      if (
+        (formData.bank && formData.bank !== '') ||
+        (formData.accountTitle && formData.accountTitle !== '')
+      )
+        checkOptionalFields = true
+    }
+    if (formData.accountTitle === '') {
+      if ((formData.iBan && formData.iBan !== '') || (formData.bank && formData.bank !== ''))
+        checkOptionalFields = true
+    }
+    return checkOptionalFields
   }
   formSubmit = () => {
     const { formData, emailValidate, phoneValidate, cnicValidate } = this.state

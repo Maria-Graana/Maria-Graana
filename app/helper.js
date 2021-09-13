@@ -1087,6 +1087,25 @@ const helper = {
       return StaticData.callCenterKPIS
     }
   },
+  setBookingStatusColor(arrayItem) {
+    if (arrayItem && arrayItem.length > 0) {
+      if (arrayItem.includes('Available')) {
+        return '#ceecfc'
+      } else if (
+        arrayItem.includes('Sold') ||
+        arrayItem.includes('Token') ||
+        arrayItem.includes('Payment')
+      ) {
+        return '#fde0e2'
+      } else if (arrayItem.includes('Hold')) {
+        return '#fef3c6'
+      } else {
+        return 'white'
+      }
+    } else {
+      return 'white'
+    }
+  },
 }
 
 module.exports = helper

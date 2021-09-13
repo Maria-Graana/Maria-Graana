@@ -192,23 +192,6 @@ class DetailForm extends Component {
           <View style={[AppStyles.inputWrap]}>
             <TextInput
               placeholderTextColor={'#a8a8aa'}
-              value={formData.bank}
-              onChangeText={(text) => {
-                handleForm(text, 'bank')
-              }}
-              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-              name={'bank'}
-              placeholder={'Bank'}
-            />
-            {accountsOptionFields && formData.bank === '' ? (
-              <ErrorMessage errorMessage={'Required'} />
-            ) : null}
-          </View>
-        </View>
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
               value={formData.accountTitle}
               onChangeText={(text) => {
                 handleForm(text, 'accountTitle')
@@ -235,6 +218,23 @@ class DetailForm extends Component {
               placeholder={'IBAN'}
             />
             {accountsOptionFields && formData.iBan === '' ? (
+              <ErrorMessage errorMessage={'Required'} />
+            ) : null}
+          </View>
+        </View>
+        <View style={[AppStyles.mainInputWrap]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput
+              placeholderTextColor={'#a8a8aa'}
+              value={formData.bank}
+              onChangeText={(text) => {
+                handleForm(text, 'bank')
+              }}
+              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+              name={'bank'}
+              placeholder={'Bank'}
+            />
+            {accountsOptionFields && formData.bank === '' ? (
               <ErrorMessage errorMessage={'Required'} />
             ) : null}
           </View>

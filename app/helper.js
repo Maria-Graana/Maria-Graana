@@ -83,6 +83,15 @@ const helper = {
   capitalize(str) {
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''
   },
+  capitalizeWordsWithoutUnderscore(str) {
+    return (
+      str &&
+      str.replace(/(^|_)./g, function (txt) {
+        let withOut = txt.replace(/_/, ' ')
+        return withOut.charAt(0).toUpperCase() + withOut.substr(1).toUpperCase()
+      })
+    )
+  },
   convertTimeZoneTimeStamp(date) {
     let _format = 'YYYY-MM-DDTHH:mm'
     let paktz = moment.tz(date, 'Asia/Karachi').format(_format)

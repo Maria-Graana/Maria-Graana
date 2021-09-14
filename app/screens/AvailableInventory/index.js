@@ -258,7 +258,7 @@ class AvailableInventory extends Component {
               data={pickerFloors}
               name={'floor'}
               enabled={!loading}
-              placeholder="Floor"
+              placeholder="All Units"
               selectedItem={selectedFloor ? selectedFloor : ''}
             />
           </View>

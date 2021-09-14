@@ -168,8 +168,8 @@ class AvailableInventory extends Component {
             }
           })
         oneRow.push(item.area)
-        oneRow.push(item.rate_per_sqft)
-        oneRow.push(formatNumericPrice(PaymentMethods.findUnitPrice(item)))
+        oneRow.push(this.currencyConvert(item.rate_per_sqft))
+        oneRow.push(this.currencyConvert(PaymentMethods.findUnitPrice(item)))
         oneRow.push('---')
         oneRow.push(item.bookingStatus)
         tableData.push(oneRow)
@@ -181,6 +181,22 @@ class AvailableInventory extends Component {
       tableHeaderTitle: headerTitle,
       tableData,
     })
+  }
+
+  currencyConvert = (x) => {
+    console.log(x)
+    if (x === null || x === undefined) {
+      return '---'
+    } else if (x === 0) {
+      return '0'
+    } else {
+      x = x.toString()
+      var lastThree = x.substring(x.length - 3)
+      var otherNumbers = x.substring(0, x.length - 3)
+      if (otherNumbers != '') lastThree = ',' + lastThree
+      var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree
+      return res
+    }
   }
 
   handleProjectChange = (item) => {

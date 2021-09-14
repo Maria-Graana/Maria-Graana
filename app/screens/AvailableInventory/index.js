@@ -23,6 +23,7 @@ import helper from '../../helper.js'
 import Search from '../../components/Search'
 import StaticData from '../../StaticData'
 import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
+import { formatNumericPrice, formatPrice } from '../../components/PriceFormate'
 
 class AvailableInventory extends Component {
   constructor(props) {
@@ -168,7 +169,7 @@ class AvailableInventory extends Component {
           })
         oneRow.push(item.area)
         oneRow.push(item.rate_per_sqft)
-        oneRow.push(PaymentMethods.findUnitPrice(item))
+        oneRow.push(formatNumericPrice(PaymentMethods.findUnitPrice(item)))
         oneRow.push('---')
         oneRow.push(item.bookingStatus)
         tableData.push(oneRow)

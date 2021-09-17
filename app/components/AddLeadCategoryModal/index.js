@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   list: {
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
     flex: 1,
   },
   closeBtn: {

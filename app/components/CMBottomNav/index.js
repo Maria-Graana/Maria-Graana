@@ -408,15 +408,18 @@ class CMBottomNav extends React.Component {
               </TouchableOpacity>
             }
           >
-            <Menu.Item
-              onPress={() => {
-                if (closedLeadEdit) {
-                  this.openMenu(false)
-                  this.setState({ isLeadCategoryModalVisible: true })
-                } else helper.leadClosedToast()
-              }}
-              title="Set Category"
-            />
+            {lead.projectId ? (
+              <Menu.Item
+                onPress={() => {
+                  if (closedLeadEdit) {
+                    this.openMenu(false)
+                    this.setState({ isLeadCategoryModalVisible: true })
+                  } else helper.leadClosedToast()
+                }}
+                title="Set Classification"
+              />
+            ) : null}
+
             {isFromViewingScreen ? (
               <Menu.Item
                 onPress={() => {

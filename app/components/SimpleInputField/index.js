@@ -65,7 +65,7 @@ class SimpleInputField extends React.Component {
           styles.mainInputParent,
           noMargin === true && { marginBottom: 0, marginTop: 0 },
           !showLable ? { marginTop: 0 } : null,
-          { backgroundColor: editable ? '#fff' : '#ddd' },
+          { backgroundColor: '#fff' },
         ]}
       >
         {showLable ? <Text style={[styles.labelStyle]}>{label}</Text> : null}

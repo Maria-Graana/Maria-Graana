@@ -161,7 +161,11 @@ class AvailableInventory extends Component {
         projectKeys &&
           projectKeys.length > 0 &&
           projectKeys.map((key) => {
-            if (!_.isEmpty(unitOptionalFields) && unitOptionalFields[key].data) {
+            if (
+              !_.isEmpty(unitOptionalFields) &&
+              unitOptionalFields[key] &&
+              unitOptionalFields[key].data
+            ) {
               oneRow.push(unitOptionalFields[key].data)
             } else {
               oneRow.push('---')
@@ -184,7 +188,6 @@ class AvailableInventory extends Component {
   }
 
   currencyConvert = (x) => {
-    console.log(x)
     if (x === null || x === undefined) {
       return '---'
     } else if (x === 0) {

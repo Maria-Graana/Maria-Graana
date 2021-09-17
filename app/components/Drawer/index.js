@@ -133,7 +133,7 @@ class CustomDrawerContent extends React.Component {
 
           {Ability.canView(subRole, 'AvailableInventory') && (
             <DrawerItem
-              screen={'Available Inventory'}
+              screen={'Available Inventories'}
               navigateTo={() => {
                 this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
               }}

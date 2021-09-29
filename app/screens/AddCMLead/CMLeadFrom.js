@@ -71,7 +71,7 @@ class CMLeadFrom extends Component {
               onValueChange={handleForm}
               data={getProject}
               name={'projectId'}
-              value={''}
+              selectedItem={formData.projectId}
               placeholder="Project"
             />
             {checkValidation === true && formData.projectId === '' && (
@@ -87,7 +87,7 @@ class CMLeadFrom extends Component {
               onValueChange={handleForm}
               data={getProductType}
               name={'projectType'}
-              value={''}
+              selectedItem={formData.projectType}
               placeholder="Product Type"
             />
             {/* {

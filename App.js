@@ -70,7 +70,7 @@ export default class App extends React.Component {
       }
     })
     // axios.defaults.headers['version'] = AppJson.expo.version
-    axios.defaults.headers['version'] = '2.1.1'
+    axios.defaults.headers['version'] = '2.2.0'
     axios.interceptors.request.use(
       (config) =>
         new Promise((resolve) => {

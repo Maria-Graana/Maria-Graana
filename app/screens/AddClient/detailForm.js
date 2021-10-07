@@ -92,7 +92,7 @@ class DetailForm extends Component {
               setFlagObject={(object) => {
                 hello(object, 'contactNumber')
               }}
-              editable={client.assigned_to_armsuser_id === user.id}
+              editable={client ? client.assigned_to_armsuser_id === user.id : true}
               onChangeHandle={handleForm}
               name={'contactNumber'}
               placeholder={'Contact Number*'}

@@ -139,18 +139,16 @@ class ClientDetail extends React.Component {
             <Text style={styles.labelText}>{belongs}</Text>
           </View>
           <View style={styles.pad}>
-            {Ability.canEdit(user.subRole, 'Client') &&
-              client.assigned_to_armsuser_id &&
-              client.assigned_to_armsuser_id === user.id && (
-                <MaterialCommunityIcons
-                  onPress={() => {
-                    this.navigateTo()
-                  }}
-                  name="square-edit-outline"
-                  size={26}
-                  color={AppStyles.colors.primaryColor}
-                />
-              )}
+            {Ability.canEdit(user.subRole, 'Client') && (
+              <MaterialCommunityIcons
+                onPress={() => {
+                  this.navigateTo()
+                }}
+                name="square-edit-outline"
+                size={26}
+                color={AppStyles.colors.primaryColor}
+              />
+            )}
           </View>
         </View>
       </View>

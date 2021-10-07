@@ -41,6 +41,8 @@ class DetailForm extends Component {
       countryCode2,
       loading,
       accountsOptionFields,
+      client,
+      user,
     } = this.props
     let btnText = update ? 'UPDATE' : 'ADD'
     return (
@@ -90,6 +92,7 @@ class DetailForm extends Component {
               setFlagObject={(object) => {
                 hello(object, 'contactNumber')
               }}
+              editable={client.assigned_to_armsuser_id === user.id}
               onChangeHandle={handleForm}
               name={'contactNumber'}
               placeholder={'Contact Number*'}

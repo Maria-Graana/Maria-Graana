@@ -205,6 +205,8 @@ class AddClient extends Component {
       client.customerContacts.length > 2
         ? this.setPhoneNumber(newCallingCode2, client.customerContacts[2].phone)
         : ''
+
+    console.log(client)
     let formData = {
       firstName: client.firstName,
       lastName: client.lastName,
@@ -498,7 +500,7 @@ class AddClient extends Component {
               } else {
                 helper.successToast('CLIENT UPDATED')
                 body.name = body.first_name + ' ' + body.last_name
-                // this.call(body)
+                //this.call(body)
                 navigation.goBack()
               }
             })
@@ -564,7 +566,8 @@ class AddClient extends Component {
       accountsOptionFields,
     } = this.state
     const { route } = this.props
-    const { update } = route.params
+    const { update, client } = route.params
+    //console.log(client)
     return (
       <View style={[AppStyles.container]}>
         <StyleProvider style={getTheme(formTheme)}>
@@ -595,6 +598,7 @@ class AddClient extends Component {
                     loading={loading}
                     hello={this.hello}
                     accountsOptionFields={accountsOptionFields}
+                    client={client}
                   />
                 </View>
               </TouchableWithoutFeedback>

@@ -42,7 +42,7 @@ let input = {
   fontSize: 16,
 }
 const PhoneInputComponent = (props) => {
-  const { onChangeHandle, name, placeholder, countryCodeValue } = props
+  const { onChangeHandle, name, placeholder, countryCodeValue, editable } = props
   const [currentCountryCode, setCurrentCountryCode] = useState('')
   return (
     <View style={locationButtonAlt}>
@@ -76,6 +76,7 @@ const PhoneInputComponent = (props) => {
         onChangeText={(value) => {
           onChangeHandle(value, name)
         }}
+        editable={editable}
       />
     </View>
   )

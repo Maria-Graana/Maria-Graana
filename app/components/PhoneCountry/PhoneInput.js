@@ -70,7 +70,7 @@ const PhoneInputComponent = (props) => {
         style={[props.inputStyle || input]}
         keyboardType="number-pad"
         autoCorrect={false}
-        maxLength={15}
+        maxLength={countryCodeValue === 'PK' ? 10 : 15}
         autoCompleteType="cc-number"
         value={props.phoneValue && props.phoneValue}
         onChangeText={(value) => {

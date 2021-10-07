@@ -283,17 +283,15 @@ class CMPayment extends Component {
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPaymentWithClearedStatus(
-      payment,
-      Math.ceil(finalPrice)
-    )
+    let { remainingPayment, remainingTax, clearedPayment } =
+      PaymentMethods.findRemaningPaymentWithClearedStatus(payment, Math.ceil(finalPrice))
     let outStandingTax = PaymentMethods.findRemainingTaxWithClearedStatus(payment, remainingTax)
     if (
       (!externalProject && outStandingTax <= 0 && remainingPayment <= 0) ||
       (externalProject &&
         installmentDue !== 'full_payment' &&
         outStandingTax <= 0 &&
-        remainingPayment >= Number(downPayment)) ||
+        clearedPayment >= Number(downPayment)) ||
       (externalProject &&
         installmentDue === 'full_payment' &&
         outStandingTax <= 0 &&

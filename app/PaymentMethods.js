@@ -169,7 +169,11 @@ const PaymentMethods = {
       })
       finalPrice = finalPrice - totalPayments
     }
-    return { remainingPayment: finalPrice, remainingTax: remainingTax }
+    return {
+      remainingPayment: finalPrice,
+      remainingTax: remainingTax,
+      clearedPayment: totalPayments,
+    }
   },
   findRemainingTaxWithClearedStatus(payment, outStandingTax) {
     outStandingTax = PaymentMethods.handleEmptyValue(outStandingTax)

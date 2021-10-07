@@ -483,7 +483,7 @@ class BookingDetailsModal extends React.Component {
             </View>
           )}
         </SafeAreaView>
-        {/* <View style={styles.kfiBTN}>
+        <View style={styles.kfiBTN}>
           <CMBTN
             onClick={() => {
               this.props.generateKFI()
@@ -491,7 +491,7 @@ class BookingDetailsModal extends React.Component {
             btnText={'GENERATE KFI DOCUMENT'}
             checkLeadClosedOrNot={true}
           />
-        </View> */}
+        </View>
         <SafeAreaView style={styles.safeView} />
       </Modal>
     )

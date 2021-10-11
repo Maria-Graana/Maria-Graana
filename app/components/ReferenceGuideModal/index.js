@@ -100,8 +100,6 @@ const ReferenceGuideModal = ({
             onPress={() =>
               investmentGuideNo === null || investmentGuideNo === ''
                 ? alert('Please enter investment guide no')
-                : investmentGuideAttachments.length === 0
-                ? alert('Please add attachment(s) to continue')
                 : addInvestmentGuide(investmentGuideNo, investmentGuideAttachments)
             }
             // loading={imageLoading || loading}

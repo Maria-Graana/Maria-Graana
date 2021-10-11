@@ -544,6 +544,7 @@ const PaymentHelper = {
     }
   },
   generateKFIPayload(singleLeadRecord) {
+    const { unit } = singleLeadRecord
     let discountedAmount =
       (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
       (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
@@ -597,10 +598,7 @@ const PaymentHelper = {
               singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.area
             ).toLocaleString()
           : '--',
-      RatePerSqft:
-        singleLeadRecord && singleLeadRecord.unit !== null
-          ? singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.rentPerSqFt
-          : '--',
+      RatePerSqft: unit ? PaymentMethods.findRatePerSqft(unit) : '--',
       UnitPrice:
         singleLeadRecord && singleLeadRecord.unit !== null
           ? Number(

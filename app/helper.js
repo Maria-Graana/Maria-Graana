@@ -785,6 +785,13 @@ const helper = {
       return check
     } else return check
   },
+  titleCase(str) {
+    let splitStr = str.toLowerCase().split(' ')
+    for (let i = 0; i < splitStr.length; i++) {
+      splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1)
+    }
+    return splitStr.join(' ')
+  },
   checkSwitchChange(lead, addedBy, legalCount) {
     let paymentCheck = false
     let legalServicesCheck = false
@@ -927,15 +934,12 @@ const helper = {
       }
     }
   },
-  setLegalListing(list, data) {
+  replaceWhiteSpaceWithUnderscore(str) {
+    return str.replace(/_+/g, ' ')
+  },
+  setLegalListing(list) {
     for (let i = 0; i < list.length; i++) {
-      for (let y = 0; y < data.length; y++) {
-        if (list[i].category === data[y].category) {
-          let name = list[i].name
-          list[i] = data[y]
-          list[i].name = name
-        }
-      }
+      list[i].name = helper.titleCase(helper.replaceWhiteSpaceWithUnderscore(list[i].category))
     }
     return list
   },
@@ -1077,6 +1081,15 @@ const helper = {
       StaticData.callCenterKPIS[3].value = calculatedKpis.calls.toString()
       return StaticData.callCenterKPIS
     }
+  },
+  setCommentsPayload(comments) {
+    if (comments && comments.length) {
+      comments.map((item) => {
+        item.value = item.remarks
+        item.createdAt = item.updatedAt
+      })
+      return comments
+    } else return comments
   },
 }
 

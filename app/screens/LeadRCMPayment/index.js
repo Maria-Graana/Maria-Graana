@@ -1709,11 +1709,12 @@ class LeadRCMPayment extends React.Component {
   }
 
   closeLegalDocument = (addedBy) => {
-    const { allProperties } = this.state
+    const { allProperties, lead } = this.state
     const selectedProperty = allProperties[0]
     this.props.navigation.navigate('LegalAttachments', {
       addedBy: addedBy,
       shorlistedProperty: selectedProperty,
+      leadPurpose: lead.purpose,
     })
   }
 

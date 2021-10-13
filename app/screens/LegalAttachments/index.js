@@ -135,7 +135,6 @@ class LegalAttachment extends Component {
       axios
         .get(`/api/leads/byId?id=${lead.id}&legal=true&transfer=true`)
         .then((response) => {
-          console.log('response.data: ', response.data)
           if (response.data) {
             dispatch(setlead(response.data))
             this.fetchDocuments(response.data)
@@ -198,7 +197,6 @@ class LegalAttachment extends Component {
       )
       .then((res) => {
         if (res.data && res.data.length) {
-          console.log('lead.legalDescription: ', lead.legalDescription)
           this.setState({
             legalListing: helper.setLegalListing(res.data),
             firstFormData: {
@@ -215,11 +213,6 @@ class LegalAttachment extends Component {
 
   updateLegalService = (legalType, legalDescription) => {
     const { route, lead } = this.props
-    console.log(
-      `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${
-        legalType === 'internal' ? 'agent' : legalDescription
-      }&addedBy=${route.params.addedBy}`
-    )
     axios
       .post(
         `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${
@@ -337,7 +330,7 @@ class LegalAttachment extends Component {
 
   deleteAttachmentFromServer = (item) => {
     axios
-      .delete(`/api/leads/legalDocument?id=${item.id}`)
+      .delete(`/api/legal/document?id=${item.id}`)
       .then((res) => {
         this.fetchLead()
       })
@@ -587,9 +580,6 @@ class LegalAttachment extends Component {
   requestLegalServices = () => {
     const { lead, route } = this.props
     const { shorlistedProperty, addedBy } = route.params
-    console.log(
-      `/api/legal/requestService?leadId=${lead.id}&shortlistId=${shorlistedProperty.id}&addedBy=${addedBy}`
-    )
     axios
       .post(
         `/api/legal/requestService?leadId=${lead.id}&shortlistId=${shorlistedProperty.id}&addedBy=${addedBy}`

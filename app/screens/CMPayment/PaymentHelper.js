@@ -544,6 +544,7 @@ const PaymentHelper = {
     }
   },
   generateKFIPayload(singleLeadRecord) {
+    const { unit } = singleLeadRecord
     let discountedAmount =
       (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
       (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
@@ -559,6 +560,15 @@ const PaymentHelper = {
           )
         : '--'
 
+    let investmentDuration =
+      singleLeadRecord &&
+      singleLeadRecord.projectProduct &&
+      singleLeadRecord.projectProduct.investmentDuration
+
+    let discount =
+      (100 * discountedAmount) /
+      (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price)
+
     let templateData = {
       ClientName:
         singleLeadRecord && singleLeadRecord.customer && singleLeadRecord.customer.customerName
@@ -566,7 +576,7 @@ const PaymentHelper = {
           : '--',
       ClientCNIC:
         singleLeadRecord && singleLeadRecord.unit !== null
-          ? PaymentHelper.normalizeCnic(
+          ? helper.normalizeCnic(
               singleLeadRecord && singleLeadRecord.customer && singleLeadRecord.customer.cnic
             )
           : '--',
@@ -588,10 +598,7 @@ const PaymentHelper = {
               singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.area
             ).toLocaleString()
           : '--',
-      RatePerSqft:
-        singleLeadRecord && singleLeadRecord.unit !== null
-          ? singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.rentPerSqFt
-          : '--',
+      RatePerSqft: unit ? PaymentMethods.findRatePerSqft(unit) : '--',
       UnitPrice:
         singleLeadRecord && singleLeadRecord.unit !== null
           ? Number(
@@ -602,7 +609,7 @@ const PaymentHelper = {
         Object.keys(singleLeadRecord && singleLeadRecord.projectProduct).length !== 0
           ? singleLeadRecord && singleLeadRecord.projectProduct.name
           : '--',
-      PaymentPlan: helper.capitalize(
+      PaymentPlan: helper.capitalizeWordsWithoutUnderscore(
         singleLeadRecord &&
           singleLeadRecord.projectProduct &&
           singleLeadRecord.projectProduct.paymentPlan
@@ -650,30 +657,37 @@ const PaymentHelper = {
         singleLeadRecord &&
         singleLeadRecord.projectProduct &&
         singleLeadRecord.projectProduct.downPayment,
-      DownPaymentValue: Number(singleLeadRecord && singleLeadRecord.downPayment).toLocaleString(),
+      DownPaymentValue:
+        singleLeadRecord &&
+        singleLeadRecord.projectProduct &&
+        singleLeadRecord.projectProduct.downPayment === 0
+          ? null
+          : Number(singleLeadRecord && singleLeadRecord.downPayment).toLocaleString(),
       PossessionCharges:
         singleLeadRecord &&
         singleLeadRecord.projectProduct &&
         singleLeadRecord.projectProduct.possessionCharges,
 
-      Discount:
-        (100 * discountedAmount) /
-        (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price),
-      DiscountAmount: Number(
-        (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
-          (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
-      ).toLocaleString(),
-      InvestmentDuration:
-        singleLeadRecord &&
-        singleLeadRecord.projectProduct &&
-        singleLeadRecord.projectProduct.investmentDuration,
+      Discount: discount,
+      DiscountAmount:
+        discount === 0
+          ? null
+          : `${Number(
+              (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
+                (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
+            ).toLocaleString()}`,
       DiscountedAmount: Number(
         singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice
       ).toLocaleString(),
       InvestmentDurationValue:
-        singleLeadRecord &&
-        singleLeadRecord.projectProduct &&
-        singleLeadRecord.projectProduct.investmentDurationPeriod,
+        investmentDuration === 'limited'
+          ? `${
+              singleLeadRecord &&
+              singleLeadRecord.projectProduct &&
+              singleLeadRecord.projectProduct.investmentDurationPeriod
+            } Months`
+          : 'Unlimited',
+
       AnnualProfit:
         singleLeadRecord &&
         singleLeadRecord.projectProduct &&

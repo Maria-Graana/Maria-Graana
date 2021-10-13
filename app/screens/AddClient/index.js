@@ -205,6 +205,8 @@ class AddClient extends Component {
       client.customerContacts.length > 2
         ? this.setPhoneNumber(newCallingCode2, client.customerContacts[2].phone)
         : ''
+
+    console.log(client)
     let formData = {
       firstName: client.firstName,
       lastName: client.lastName,
@@ -215,6 +217,9 @@ class AddClient extends Component {
       familyMember: client.familyMember,
       contact1: number1,
       contact2: number2,
+      iBan: client.iBan,
+      bank: client.bank,
+      accountTitle: client.accountTitle,
     }
     this.setState({ formData })
   }
@@ -399,28 +404,26 @@ class AddClient extends Component {
   }
   checkRequiredField = () => {
     const { formData } = this.state
-    if (
-      (formData.bank &&
-        formData.bank === '' &&
-        formData.iBan &&
-        formData.iBan !== '' &&
-        formData.accountTitle &&
-        formData.accountTitle !== '') ||
-      (formData.bank &&
-        formData.bank === '' &&
-        formData.iBan &&
-        formData.iBan !== '' &&
-        formData.accountTitle &&
-        formData.accountTitle !== '') ||
-      (formData.bank &&
-        formData.bank !== '' &&
-        formData.iBan &&
-        formData.iBan !== '' &&
-        formData.accountTitle &&
-        formData.accountTitle === '')
-    ) {
-      return true
-    } else return false
+    let checkOptionalFields = false
+    if (formData.bank === '') {
+      if (
+        (formData.iBan && formData.iBan !== '') ||
+        (formData.accountTitle && formData.accountTitle !== '')
+      )
+        checkOptionalFields = true
+    }
+    if (formData.iBan === '') {
+      if (
+        (formData.bank && formData.bank !== '') ||
+        (formData.accountTitle && formData.accountTitle !== '')
+      )
+        checkOptionalFields = true
+    }
+    if (formData.accountTitle === '') {
+      if ((formData.iBan && formData.iBan !== '') || (formData.bank && formData.bank !== ''))
+        checkOptionalFields = true
+    }
+    return checkOptionalFields
   }
   formSubmit = () => {
     const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
@@ -497,7 +500,7 @@ class AddClient extends Component {
               } else {
                 helper.successToast('CLIENT UPDATED')
                 body.name = body.first_name + ' ' + body.last_name
-                // this.call(body)
+                //this.call(body)
                 navigation.goBack()
               }
             })
@@ -563,7 +566,8 @@ class AddClient extends Component {
       accountsOptionFields,
     } = this.state
     const { route } = this.props
-    const { update } = route.params
+    const { update, client } = route.params
+    //console.log(client)
     return (
       <View style={[AppStyles.container]}>
         <StyleProvider style={getTheme(formTheme)}>
@@ -594,6 +598,7 @@ class AddClient extends Component {
                     loading={loading}
                     hello={this.hello}
                     accountsOptionFields={accountsOptionFields}
+                    client={client}
                   />
                 </View>
               </TouchableWithoutFeedback>

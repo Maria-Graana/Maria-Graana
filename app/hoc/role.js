@@ -366,6 +366,36 @@ const role = {
       { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
     ],
   },
+  AvailableInventory: {
+    roles: [
+      {
+        role: 'regional_head',
+        access: { v: true, a: false, e: false, d: false },
+      },
+      {
+        role: 'zonal_manager',
+        access: { v: true, a: false, e: false, d: false },
+      },
+      {
+        role: 'branch_manager',
+        access: { v: true, a: false, e: false, d: false },
+      },
+      { role: 'area_manager', access: { v: true, a: true, e: true, d: true } },
+      { role: 'sales_agent', access: { v: true, a: true, e: true, d: true } },
+      {
+        role: 'business_centre_agent',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      {
+        role: 'call_centre_warrior',
+        access: { v: true, a: true, e: true, d: true },
+      },
+      {
+        role: 'call_centre_agent',
+        access: { v: true, a: true, e: true, d: true },
+      },
+    ],
+  },
 }
 
 module.exports = role

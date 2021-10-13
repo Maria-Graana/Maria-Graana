@@ -83,6 +83,15 @@ const helper = {
   capitalize(str) {
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''
   },
+  capitalizeWordsWithoutUnderscore(str) {
+    return (
+      str &&
+      str.replace(/(^|_)./g, function (txt) {
+        let withOut = txt.replace(/_/, ' ')
+        return withOut.charAt(0).toUpperCase() + withOut.substr(1).toUpperCase()
+      })
+    )
+  },
   convertTimeZoneTimeStamp(date) {
     let _format = 'YYYY-MM-DDTHH:mm'
     let paktz = moment.tz(date, 'Asia/Karachi').format(_format)
@@ -1090,6 +1099,25 @@ const helper = {
       })
       return comments
     } else return comments
+  },
+  setBookingStatusColor(arrayItem) {
+    if (arrayItem && arrayItem.length > 0) {
+      if (arrayItem.includes('Available')) {
+        return '#ceecfc'
+      } else if (
+        arrayItem.includes('Sold') ||
+        arrayItem.includes('Token') ||
+        arrayItem.includes('Payment')
+      ) {
+        return '#fde0e2'
+      } else if (arrayItem.includes('Hold')) {
+        return '#fef3c6'
+      } else {
+        return 'white'
+      }
+    } else {
+      return 'white'
+    }
   },
 }
 

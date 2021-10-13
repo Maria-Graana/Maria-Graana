@@ -20,6 +20,7 @@ import AssignedAreas from '../screens/AssignAreas'
 import AssignLead from '../screens/AssignLead'
 import Attachments from '../screens/Attachments'
 import AttachmentsForPayments from '../screens/AttachmentsForPayments'
+import AvailableInventory from '../screens/AvailableInventory'
 import ChangePassword from '../screens/ChangePassword'
 import Client from '../screens/Client'
 import ClientDetail from '../screens/ClientDetail'
@@ -396,6 +397,16 @@ function MainStack() {
         component={AssignedAreas}
         options={({ navigation, route }) => ({
           title: 'ASSIGNED AREAS',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
+      <Stack.Screen
+        name="AvailableInventory"
+        component={AvailableInventory}
+        options={({ navigation, route }) => ({
+          title: 'AVAILABLE INVENTORIES',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}

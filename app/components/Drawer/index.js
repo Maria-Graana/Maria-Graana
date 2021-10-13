@@ -41,9 +41,7 @@ class CustomDrawerContent extends React.Component {
     let label = helper.checkChannel(config.channel)
     return (
       <SafeAreaView style={[AppStyles.mb1, { width: '100%' }]}>
-        <ScrollView
-          style={[styles.scrollContainer, { width: '100%' }]}
-        >
+        <ScrollView style={[styles.scrollContainer, { width: '100%' }]}>
           <View style={AppStyles.flexDirectionRow}>
             <View>
               <Avatar data={user} />
@@ -129,6 +127,15 @@ class CustomDrawerContent extends React.Component {
               screen={'Assigned Areas'}
               navigateTo={() => {
                 this.navigateTo('AssignedAreas', { screen: 'AssignAreas' })
+              }}
+            />
+          )}
+
+          {Ability.canView(subRole, 'AvailableInventory') && (
+            <DrawerItem
+              screen={'Available Inventories'}
+              navigateTo={() => {
+                this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
               }}
             />
           )}

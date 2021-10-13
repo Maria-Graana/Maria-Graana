@@ -41,6 +41,8 @@ class DetailForm extends Component {
       countryCode2,
       loading,
       accountsOptionFields,
+      client,
+      user,
     } = this.props
     let btnText = update ? 'UPDATE' : 'ADD'
     return (
@@ -90,6 +92,7 @@ class DetailForm extends Component {
               setFlagObject={(object) => {
                 hello(object, 'contactNumber')
               }}
+              editable={client ? client.assigned_to_armsuser_id === user.id : true}
               onChangeHandle={handleForm}
               name={'contactNumber'}
               placeholder={'Contact Number*'}
@@ -192,23 +195,6 @@ class DetailForm extends Component {
           <View style={[AppStyles.inputWrap]}>
             <TextInput
               placeholderTextColor={'#a8a8aa'}
-              value={formData.bank}
-              onChangeText={(text) => {
-                handleForm(text, 'bank')
-              }}
-              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-              name={'bank'}
-              placeholder={'Bank'}
-            />
-            {accountsOptionFields && formData.bank === '' ? (
-              <ErrorMessage errorMessage={'Required'} />
-            ) : null}
-          </View>
-        </View>
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
               value={formData.accountTitle}
               onChangeText={(text) => {
                 handleForm(text, 'accountTitle')
@@ -235,6 +221,23 @@ class DetailForm extends Component {
               placeholder={'IBAN'}
             />
             {accountsOptionFields && formData.iBan === '' ? (
+              <ErrorMessage errorMessage={'Required'} />
+            ) : null}
+          </View>
+        </View>
+        <View style={[AppStyles.mainInputWrap]}>
+          <View style={[AppStyles.inputWrap]}>
+            <TextInput
+              placeholderTextColor={'#a8a8aa'}
+              value={formData.bank}
+              onChangeText={(text) => {
+                handleForm(text, 'bank')
+              }}
+              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+              name={'bank'}
+              placeholder={'Bank'}
+            />
+            {accountsOptionFields && formData.bank === '' ? (
               <ErrorMessage errorMessage={'Required'} />
             ) : null}
           </View>

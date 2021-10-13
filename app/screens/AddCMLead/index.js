@@ -122,7 +122,7 @@ class AddCMLead extends Component {
         return item.value === value
       })
       formData['armsProjectTypeId'] = value
-      formData['projectType'] = getProName.name
+      formData['projectType'] = value
     }
     this.setState({ formData })
   }
@@ -206,7 +206,7 @@ class AddCMLead extends Component {
     )
     var getPro = []
     getProType[0].map((item) => {
-      return getPro.push({ value: item.id, name: item.name })
+      return getPro.push({ value: item.id.toString(), name: item.name })
     })
     this.setState({
       getProductType: getPro,

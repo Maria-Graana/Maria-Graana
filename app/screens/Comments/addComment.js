@@ -5,10 +5,9 @@ import { View, Text, KeyboardAvoidingView } from 'react-native'
 import { Button, Textarea } from 'native-base'
 import AppStyles from '../../AppStyles'
 import styles from './styles'
-import TouchableButton from '../../components/TouchableButton'
 
 const AddComment = (props) => {
-  const { comment, setComment, onPress, loading } = props
+  const { comment, setComment, onPress, showBtn = true } = props
   return (
     <View style={[styles.container]}>
       <Textarea
@@ -32,15 +31,13 @@ const AddComment = (props) => {
         onChangeText={(text) => setComment(text)}
         value={comment}
       />
-
-      <View style={styles.buttonStyle}>
-        <TouchableButton
-          containerStyle={AppStyles.formBtn}
-          onPress={onPress}
-          label={'ADD COMMENT'}
-          loading={loading}
-        />
-      </View>
+      {showBtn ? (
+        <View style={styles.buttonStyle}>
+          <Button onPress={onPress} style={[AppStyles.formBtn]}>
+            <Text style={AppStyles.btnText}>ADD COMMENT</Text>
+          </Button>
+        </View>
+      ) : null}
     </View>
   )
 }

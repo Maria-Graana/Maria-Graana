@@ -66,11 +66,15 @@ class LegalTile extends React.Component {
             </View>
           )}
           <Text numberOfLines={1} style={styles.tileTitle}>
-            {data.name}
+            {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
           </Text>
         </View>
         <View style={{ justifyContent: 'center' }}>
-          <Text style={[styles.tileStatus, styles.statusYellow]}>PENDING UPLOAD</Text>
+          <Text style={[styles.tileStatus, styles.statusYellow]}>
+            {data.status === 'pending_upload_by_legal'
+              ? 'PENDING UPLOAD BY LEGAL'
+              : 'PENDING UPLOAD'}
+          </Text>
         </View>
       </TouchableOpacity>
     )
@@ -137,7 +141,7 @@ class LegalTile extends React.Component {
               )}
             </View>
             <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
-              {data.name}
+              {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
             </Text>
           </View>
           {!checkList ? (
@@ -197,7 +201,7 @@ class LegalTile extends React.Component {
                           submitMenu('submit_to_legal', data)
                           this.toggleMenu()
                         }}
-                        title="View Comments"
+                        title="Submit to Legal"
                         titleStyle={styles.assignText}
                       />
                     </View>
@@ -275,7 +279,7 @@ class LegalTile extends React.Component {
           </View>
           <View style={styles.contentSpace}>
             <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
-              {data.name}
+              {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
             </Text>
           </View>
         </View>

@@ -211,13 +211,33 @@ class LegalAttachment extends Component {
       })
   }
 
+  confirmationLegalService = (legalType, legalDescription) => {
+    let that = this
+    setTimeout(function () {
+      Alert.alert(
+        'Changing Legal Type',
+        'Are you sure you want to Change Legal type? By Changing Legal type it may delete some legal documents',
+        [
+          { text: 'No', style: 'cancel' },
+          {
+            text: 'Yes',
+            onPress: async () => {
+              that.updateLegalService(legalType, legalDescription)
+            },
+          },
+        ],
+        { cancelable: false }
+      )
+    }, 600)
+  }
+
   updateLegalService = (legalType, legalDescription) => {
     const { route, lead } = this.props
     axios
       .post(
         `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${
           legalType === 'internal' ? 'agent' : legalDescription
-        }}&addedBy=${route.params.addedBy}`
+        }&addedBy=${route.params.addedBy}`
       )
       .then((res) => {
         this.fetchLead()
@@ -303,7 +323,7 @@ class LegalAttachment extends Component {
 
   uploadAttachment = (legalAttachment) => {
     const { route, lead } = this.props
-    const { checkListDoc } = this.state
+    const { checkListDoc, currentItem } = this.state
     let attachment = {
       name: legalAttachment.fileName,
       type: 'file/' + legalAttachment.fileName.split('.').pop(),
@@ -312,7 +332,7 @@ class LegalAttachment extends Component {
     let fd = new FormData()
     fd.append('file', attachment)
     // ====================== API call for Attachments base on Payment ID
-    let url = `/api/legal/document?legalId=${lead.id}&remarks=''`
+    let url = `/api/legal/document?legalId=${currentItem.id}`
     if (legalAttachment.category === 'legal_checklist')
       url = `/api/leads/checklist?id=${checkListDoc.id}&addedBy=${route.params.addedBy}`
     axios
@@ -464,6 +484,7 @@ class LegalAttachment extends Component {
   // *******  Assign To Legal  *************
   submitToAssignLegal = (data, comment) => {
     const { lead } = this.props
+    this.toggleComments(data, false)
     axios
       .patch(`/api/legal/document?documentId=${data.id}&leadId=${lead.id}`, {
         status: 'pending_legal',
@@ -1075,11 +1096,9 @@ class LegalAttachment extends Component {
     const { firstFormData } = this.state
     let formData = firstFormData
     formData[name] = value
-    if (name !== 'transferDate')
-      this.updateLegalService(formData.legalService, formData.legalDescription)
-    this.setState({
-      firstFormData: formData,
-    })
+    if (name !== 'legalDescription')
+      this.confirmationLegalService(formData.legalService, formData.legalDescription)
+    else this.updateLegalService(formData.legalService, formData.legalDescription)
   }
 
   TransferDate = () => {
@@ -1122,7 +1141,7 @@ class LegalAttachment extends Component {
       viewCommentsCheck,
     } = this.state
     const { lead, route, contacts } = this.props
-    const { leadPurpose } = route.params
+    const { leadPurpose, addedBy } = route.params
     let mailCheck = this.mailSentCheck()
     let onReadOnly = this.checkReadOnlyMode()
     const isLeadClosed =
@@ -1201,7 +1220,7 @@ class LegalAttachment extends Component {
                       onValueChange={this.handleFirstForm}
                       data={StaticData.externalServicesFields}
                       name={'legalDescription'}
-                      placeholder="External Services Fields"
+                      placeholder="External Service Preferences"
                       selectedItem={firstFormData.legalDescription}
                       // enabled={checkLeadClosedOrNot}
                     />
@@ -1228,7 +1247,9 @@ class LegalAttachment extends Component {
                   }}
                 />
               </View>
-              {leadPurpose === 'sale' ? (
+              {leadPurpose === 'sale' &&
+              addedBy !== 'seller' &&
+              firstFormData.legalService === 'external' ? (
                 <View style={[AppStyles.mb1, styles.pad15, styles.padV15]}>
                   {!mailCheck ? (
                     <RCMBTN
@@ -1260,11 +1281,9 @@ class LegalAttachment extends Component {
                       </View>
                       <View style={[styles.datePicker]}>
                         <DateTimePicker
-                          disabled={transferDate ? true : false}
-                          placeholderLabel={'Select Date'}
+                          placeholderLabel={'Select Transfer date'}
                           name={'date'}
                           mode={'date'}
-                          // showError={checkValidation === true && viewing.date === ''}
                           errorMessage={'Required'}
                           iconSource={require('../../../assets/img/calendar.png')}
                           date={transferDate ? new Date(transferDate) : new Date()}

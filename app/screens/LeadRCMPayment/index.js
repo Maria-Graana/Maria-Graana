@@ -1575,20 +1575,32 @@ class LeadRCMPayment extends React.Component {
 
   disableLegalDocs = (value, addedBy) => {
     const { lead } = this.state
-    axios.get(`api/leads/disablelegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
-      if (res.data.disableLegaldocuments) {
-        this.deleteLegalDocs(value, addedBy)
-      }
-    })
+    axios
+      .post(`/api/legal/document/disable?leadId=${lead.id}&addedBy=${addedBy}`)
+      .then((res) => {
+        console.log('res.data.disableLegaldocuments; ', res.data.disableLegaldocuments)
+        if (res.data.disableLegaldocuments) {
+          this.deleteLegalDocs(value, addedBy)
+        }
+      })
+      .catch((error) => {
+        console.log(`/api/legal/document/disable?leadId=${lead.id}&addedBy=${addedBy}`, error)
+      })
   }
 
   deleteLegalDocs = (value, addedBy) => {
     const { lead } = this.state
-    axios.delete(`api/leads/deleteLegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
-      this.setState({ loading: false })
-      if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
-      else this.setSellerCommissionApplicable(value)
-    })
+    axios
+      .delete(`/api/legal/documents?leadId=${lead.id}&addedBy=${addedBy}`)
+      .then((res) => {
+        console.log('res.data; ', res.data)
+        this.setState({ loading: false })
+        if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
+        else this.setSellerCommissionApplicable(value)
+      })
+      .catch((error) => {
+        console.log(`/api/legal/documents?leadId=${lead.id}&addedBy=${addedBy}`, error)
+      })
   }
 
   setBuyerCommissionApplicable = (value) => {
@@ -1601,6 +1613,7 @@ class LeadRCMPayment extends React.Component {
       payload.commissionNotApplicableBuyer = value
       var leadId = []
       leadId.push(lead.id)
+      console.log('payload: ', payload)
       axios
         .patch(`/api/leads`, payload, { params: { id: leadId } })
         .then((response) => {

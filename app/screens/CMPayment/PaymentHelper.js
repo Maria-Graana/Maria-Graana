@@ -544,31 +544,19 @@ const PaymentHelper = {
     }
   },
   generateKFIPayload(singleLeadRecord) {
-    const { unit } = singleLeadRecord
     let discountedAmount =
       (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
       (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
-
-    let frequency =
-      singleLeadRecord &&
-      singleLeadRecord.projectProduct &&
-      singleLeadRecord.projectProduct.installmentFrequency !== null
-        ? singleLeadRecord &&
-          singleLeadRecord.projectProduct &&
-          singleLeadRecord.projectProduct.installmentFrequency.map(
-            (item, index) => (index ? ', ' : '') + item
-          )
-        : '--'
-
     let investmentDuration =
       singleLeadRecord &&
       singleLeadRecord.projectProduct &&
       singleLeadRecord.projectProduct.investmentDuration
-
     let discount =
       (100 * discountedAmount) /
       (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price)
-
+    let discountParseValue = discount > 0 ? Number(discount).toFixed(2) : 0
+    let num = 12312312
+    console.log(helper.currencyConvert(num))
     let templateData = {
       ClientName:
         singleLeadRecord && singleLeadRecord.customer && singleLeadRecord.customer.customerName
@@ -594,16 +582,21 @@ const PaymentHelper = {
           : '--',
       Size:
         singleLeadRecord && singleLeadRecord.unit !== null
-          ? Number(
-              singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.area
-            ).toLocaleString()
+          ? helper.currencyConvert(
+              Number(singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.area)
+            )
           : '--',
-      RatePerSqft: unit ? PaymentMethods.findRatePerSqft(unit) : '--',
+      RatePerSqft:
+        singleLeadRecord && singleLeadRecord.unit !== null
+          ? helper.currencyConvert(
+              Number(PaymentMethods.findRatePerSqft(singleLeadRecord && singleLeadRecord.unit))
+            )
+          : '--',
       UnitPrice:
         singleLeadRecord && singleLeadRecord.unit !== null
-          ? Number(
-              singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price
-            ).toLocaleString()
+          ? helper.currencyConvert(
+              Number(singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price)
+            )
           : '--',
       ProductName:
         Object.keys(singleLeadRecord && singleLeadRecord.projectProduct).length !== 0
@@ -628,12 +621,8 @@ const PaymentHelper = {
             singleLeadRecord.projectProduct.paymentPlanDuration[3] + ' Years'
           : '--',
       InstallmentFrequency:
-        frequency && frequency.length === 1
-          ? helper.capitalize(frequency && frequency[0])
-          : frequency && frequency.length === 2
-          ? helper.capitalize(frequency && frequency[0]) +
-            ' , ' +
-            helper.capitalize(frequency && frequency[1])
+        singleLeadRecord && singleLeadRecord.installmentFrequency !== null
+          ? helper.capitalize(singleLeadRecord && singleLeadRecord.installmentFrequency)
           : '--',
       ReservationAmount:
         singleLeadRecord &&
@@ -647,11 +636,13 @@ const PaymentHelper = {
                 singleLeadRecord.projectProduct &&
                 singleLeadRecord.projectProduct.value
               } %`
-            : `${Number(
-                singleLeadRecord &&
-                  singleLeadRecord.projectProduct &&
-                  singleLeadRecord.projectProduct.value
-              ).toLocaleString()}`
+            : `${helper.currencyConvert(
+                Number(
+                  singleLeadRecord &&
+                    singleLeadRecord.projectProduct &&
+                    singleLeadRecord.projectProduct.value
+                )
+              )}`
           : '--',
       Downpayment:
         singleLeadRecord &&
@@ -662,23 +653,25 @@ const PaymentHelper = {
         singleLeadRecord.projectProduct &&
         singleLeadRecord.projectProduct.downPayment === 0
           ? null
-          : Number(singleLeadRecord && singleLeadRecord.downPayment).toLocaleString(),
+          : helper.currencyConvert(Number(singleLeadRecord && singleLeadRecord.downPayment)),
       PossessionCharges:
         singleLeadRecord &&
         singleLeadRecord.projectProduct &&
         singleLeadRecord.projectProduct.possessionCharges,
 
-      Discount: discount,
+      Discount: discountParseValue,
       DiscountAmount:
-        discount === 0
+        discount === 0 || discount < 0
           ? null
-          : `${Number(
-              (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
-                (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
-            ).toLocaleString()}`,
-      DiscountedAmount: Number(
-        singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice
-      ).toLocaleString(),
+          : `${helper.currencyConvert(
+              Number(
+                (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
+                  (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
+              )
+            )}`,
+      DiscountedAmount: helper.currencyConvert(
+        Number(singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
+      ),
       InvestmentDurationValue:
         investmentDuration === 'limited'
           ? `${
@@ -687,7 +680,6 @@ const PaymentHelper = {
               singleLeadRecord.projectProduct.investmentDurationPeriod
             } Months`
           : 'Unlimited',
-
       AnnualProfit:
         singleLeadRecord &&
         singleLeadRecord.projectProduct &&

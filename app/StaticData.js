@@ -1406,12 +1406,12 @@ export default StaticData = {
   ],
   externalServicesFields: [
     {
-      name: 'Client is getting external Services',
-      value: 'client',
-    },
-    {
       name: 'Agent is getting external Services',
       value: 'agent',
+    },
+    {
+      name: 'Client is getting external Services',
+      value: 'client',
     },
   ],
 }

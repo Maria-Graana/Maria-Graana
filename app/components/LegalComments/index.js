@@ -59,7 +59,12 @@ class LegalComments extends React.Component {
           <View style={styles.barView}>
             <Text style={styles.barText}>LEGAL COMMENTS</Text>
           </View>
-          {selectedDocument && selectedDocument.status && selectedDocument.status === 'uploaded' ? (
+          {(selectedDocument &&
+            selectedDocument.status &&
+            selectedDocument.status === 'uploaded') ||
+          (selectedDocument &&
+            selectedDocument.status &&
+            selectedDocument.status === 'rejected') ? (
             <AddComment
               onPress={this.addComment}
               comment={comment}

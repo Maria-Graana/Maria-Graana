@@ -48,4 +48,5 @@ export default styles = StyleSheet.create({
   btnStyle: {
     backgroundColor: AppStyles.colors.backgroundColor,
   },
+  commentStyle: { flex: 1, justifyContent: 'space-between' },
 })

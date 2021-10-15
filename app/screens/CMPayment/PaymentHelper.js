@@ -556,7 +556,6 @@ const PaymentHelper = {
       (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price)
     let discountParseValue = discount > 0 ? Number(discount).toFixed(2) : 0
     let num = 12312312
-    console.log(helper.currencyConvert(num))
     let templateData = {
       ClientName:
         singleLeadRecord && singleLeadRecord.customer && singleLeadRecord.customer.customerName
@@ -595,7 +594,11 @@ const PaymentHelper = {
       UnitPrice:
         singleLeadRecord && singleLeadRecord.unit !== null
           ? helper.currencyConvert(
-              Number(singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price)
+              Math.ceil(
+                Number(
+                  singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price
+                )
+              )
             )
           : '--',
       ProductName:
@@ -637,10 +640,12 @@ const PaymentHelper = {
                 singleLeadRecord.projectProduct.value
               } %`
             : `${helper.currencyConvert(
-                Number(
-                  singleLeadRecord &&
-                    singleLeadRecord.projectProduct &&
-                    singleLeadRecord.projectProduct.value
+                Math.ceil(
+                  Number(
+                    singleLeadRecord &&
+                      singleLeadRecord.projectProduct &&
+                      singleLeadRecord.projectProduct.value
+                  )
                 )
               )}`
           : '--',
@@ -653,7 +658,9 @@ const PaymentHelper = {
         singleLeadRecord.projectProduct &&
         singleLeadRecord.projectProduct.downPayment === 0
           ? null
-          : helper.currencyConvert(Number(singleLeadRecord && singleLeadRecord.downPayment)),
+          : helper.currencyConvert(
+              Math.ceil(Number(singleLeadRecord && singleLeadRecord.downPayment))
+            ),
       PossessionCharges:
         singleLeadRecord &&
         singleLeadRecord.projectProduct &&
@@ -664,13 +671,17 @@ const PaymentHelper = {
         discount === 0 || discount < 0
           ? null
           : `${helper.currencyConvert(
-              Number(
-                (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
-                  (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
+              Math.ceil(
+                Number(
+                  (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.unit_price) -
+                    (singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
+                )
               )
             )}`,
       DiscountedAmount: helper.currencyConvert(
-        Number(singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
+        Math.ceil(
+          Number(singleLeadRecord && singleLeadRecord.unit && singleLeadRecord.unit.finalPrice)
+        )
       ),
       InvestmentDurationValue:
         investmentDuration === 'limited'

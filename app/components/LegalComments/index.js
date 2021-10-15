@@ -57,51 +57,55 @@ class LegalComments extends React.Component {
             </View>
           </View>
           <View style={styles.barView}>
-            <Text style={styles.barText}>LEGAL COMMENTS</Text>
+            <Text style={styles.barText}>COMMENTS</Text>
           </View>
-          {(selectedDocument &&
-            selectedDocument.status &&
-            selectedDocument.status === 'uploaded') ||
-          (selectedDocument &&
-            selectedDocument.status &&
-            selectedDocument.status === 'rejected') ? (
-            <AddComment
-              onPress={this.addComment}
-              comment={comment}
-              setComment={this.setComment}
-              showBtn={false}
-            />
-          ) : null}
-          {documentComments && documentComments.length ? (
-            <FlatList
-              contentContainerStyle={{ flexGrow: 1 }}
-              ref={(r) => (this.flatList = r)}
-              data={documentComments}
-              renderItem={({ item }) => (
-                <CommentTile
-                  data={item}
-                  addComment={this.addComment}
-                  deleteComment={(item) => this.showDeleteDialog(item)}
-                  deleteCommentCheck={false}
-                />
-              )}
-              keyExtractor={(item, index) => item.id.toString()}
-            />
-          ) : (
-            <LoadingNoResult loading={commentModalLoading} />
-          )}
-          {!viewCommentsCheck ? (
-            <View style={styles.kfiBTN}>
-              <CMBTN
-                onClick={() => {
-                  submitToAssignLegal(selectedDocument, comment)
-                }}
-                btnText={'SUBMIT TO LEGAL'}
-                checkLeadClosedOrNot={true}
-                extraStyle={styles.btnStyle}
+          <View style={styles.commentStyle}>
+            {documentComments && documentComments.length && viewCommentsCheck ? (
+              <FlatList
+                contentContainerStyle={{ flexGrow: 1 }}
+                ref={(r) => (this.flatList = r)}
+                data={documentComments}
+                renderItem={({ item }) => (
+                  <CommentTile
+                    data={item}
+                    addComment={this.addComment}
+                    deleteComment={(item) => this.showDeleteDialog(item)}
+                    deleteCommentCheck={false}
+                  />
+                )}
+                keyExtractor={(item, index) => item.id.toString()}
               />
-            </View>
-          ) : null}
+            ) : (
+              <>{viewCommentsCheck ? <LoadingNoResult loading={commentModalLoading} /> : null}</>
+            )}
+            {(selectedDocument &&
+              selectedDocument.status &&
+              selectedDocument.status === 'uploaded' &&
+              !viewCommentsCheck) ||
+            (selectedDocument &&
+              selectedDocument.status &&
+              selectedDocument.status === 'rejected' &&
+              !viewCommentsCheck) ? (
+              <AddComment
+                onPress={this.addComment}
+                comment={comment}
+                setComment={this.setComment}
+                showBtn={false}
+              />
+            ) : null}
+            {!viewCommentsCheck ? (
+              <View style={styles.kfiBTN}>
+                <CMBTN
+                  onClick={() => {
+                    submitToAssignLegal(selectedDocument, comment)
+                  }}
+                  btnText={'SUBMIT TO LEGAL'}
+                  checkLeadClosedOrNot={true}
+                  extraStyle={styles.btnStyle}
+                />
+              </View>
+            ) : null}
+          </View>
         </SafeAreaView>
         <SafeAreaView style={styles.safeView} />
       </Modal>

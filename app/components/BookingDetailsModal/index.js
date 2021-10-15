@@ -204,7 +204,7 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Unit Price</Text>
                     <Text style={styles.largeText}>
-                      {helper.currencyConvert(PaymentMethods.findUnitPrice(unit))}
+                      {helper.currencyConvert(Math.ceil(PaymentMethods.findUnitPrice(unit)))}
                     </Text>
                   </View>
                 </View>
@@ -488,7 +488,7 @@ class BookingDetailsModal extends React.Component {
             onClick={() => {
               this.props.generateKFI()
             }}
-            btnText={'GENERATE KFI DOCUMENT'}
+            btnText={'DOWNLOAD KFI DOCUMENT'}
             checkLeadClosedOrNot={true}
           />
         </View>

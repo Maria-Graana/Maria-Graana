@@ -121,11 +121,11 @@ class LegalTile extends React.Component {
         <View style={styles.menuTileInner}>
           <View style={[styles.contentCenter, { flex: 1 }]}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={styles.uploadedText}>
-                UPLOADED{' '}
-                <Text style={styles.dateText}>
-                  @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
-                </Text>
+              <Text
+                numberOfLines={1}
+                style={checkList ? style.hyperLinkPadding : styles.textPadding}
+              >
+                {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
               </Text>
               {data.status === 'rejected' && (
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
@@ -140,8 +140,11 @@ class LegalTile extends React.Component {
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
               )}
             </View>
-            <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
-              {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
+            <Text style={styles.uploadedText}>
+              UPLOADED{' '}
+              <Text style={styles.dateText}>
+                @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
+              </Text>
             </Text>
           </View>
           {!checkList ? (
@@ -150,7 +153,7 @@ class LegalTile extends React.Component {
                 data.status === 'rejected' ||
                 data.status === 'pending_legal' ||
                 data.status === 'approved'
-                  ? { paddingTop: 35 }
+                  ? { paddingTop: 20 }
                   : styles.contentCenter,
               ]}
             >
@@ -187,14 +190,15 @@ class LegalTile extends React.Component {
                           submitMenu('edit', data)
                           this.toggleMenu()
                         }}
-                        title="Edit"
+                        title="Upload Different File"
                       />
                       <Menu.Item
                         onPress={() => {
-                          submitMenu('remove', data)
+                          submitMenu('view_legal', data)
                           this.toggleMenu()
                         }}
-                        title="Remove"
+                        title="View Comments"
+                        titleStyle={styles.assignText}
                       />
                       <Menu.Item
                         onPress={() => {
@@ -214,14 +218,15 @@ class LegalTile extends React.Component {
                               submitMenu('edit', data)
                               this.toggleMenu()
                             }}
-                            title="Edit"
+                            title="Upload Different File"
                           />
                           <Menu.Item
                             onPress={() => {
-                              submitMenu('remove', data)
+                              submitMenu('view_legal', data)
                               this.toggleMenu()
                             }}
-                            title="Remove"
+                            title="View Comments"
+                            titleStyle={styles.assignText}
                           />
                           <Menu.Item
                             onPress={() => {
@@ -269,17 +274,17 @@ class LegalTile extends React.Component {
         />
         <View style={[styles.statusTile]}>
           <View style={[styles.contentSpace, { flexDirection: 'row' }]}>
+            <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
+              {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
+            </Text>
+            <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+          </View>
+          <View style={styles.contentSpace}>
             <Text style={styles.uploadedText}>
               UPLOADED{' '}
               <Text style={styles.dateText}>
                 @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
               </Text>
-            </Text>
-            <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
-          </View>
-          <View style={styles.contentSpace}>
-            <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
-              {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
             </Text>
           </View>
         </View>

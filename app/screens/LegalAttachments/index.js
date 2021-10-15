@@ -213,10 +213,13 @@ class LegalAttachment extends Component {
 
   confirmationLegalService = (legalType, legalDescription) => {
     let that = this
+    const { firstFormData } = this.state
     setTimeout(function () {
       Alert.alert(
-        'Changing Legal Type',
-        'Are you sure you want to Change Legal type? By Changing Legal type it may delete some legal documents',
+        `Change to ${helper.capitalize(firstFormData.legalService)}`,
+        `Are you sure you want to change to ${helper.capitalize(
+          firstFormData.legalService
+        )}? If you continue, you may have to upload some legal documents again.`,
         [
           { text: 'No', style: 'cancel' },
           {
@@ -434,12 +437,8 @@ class LegalAttachment extends Component {
       data.value = data.category
       this.toggleActionSheet(data)
     }
-    if (value === 'remove') {
-      this.showDeleteDialog(data)
-    }
     if (value === 'submit_to_legal') {
       this.toggleComments(data, false)
-      // this.submitToAssignLegal(data)
     }
     if (value === 'view_legal') {
       this.toggleComments(data, true)
@@ -451,6 +450,7 @@ class LegalAttachment extends Component {
     if (!toggleCommentModal === true) {
       this.fetchComments(data)
       this.setState({
+        showAction: false,
         toggleCommentModal: !toggleCommentModal,
         commentModalLoading: !toggleCommentModal === true ? true : false,
         selectedDocument: data,
@@ -1227,7 +1227,6 @@ class LegalAttachment extends Component {
                   </View>
                 ) : null}
               </>
-
               <Text style={styles.mandatoryText}>DOCUMENTS</Text>
               <View style={[]}>
                 <FlatList
@@ -1249,7 +1248,7 @@ class LegalAttachment extends Component {
               </View>
               {leadPurpose === 'sale' &&
               addedBy !== 'seller' &&
-              firstFormData.legalService === 'external' ? (
+              firstFormData.legalService === 'internal' ? (
                 <View style={[AppStyles.mb1, styles.pad15, styles.padV15]}>
                   {!mailCheck ? (
                     <RCMBTN

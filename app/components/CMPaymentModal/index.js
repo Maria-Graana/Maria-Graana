@@ -173,6 +173,7 @@ const CMPaymentModal = ({
               <AddEditInstrument
                 handleInstrumentInfoChange={handleInstrumentInfoChange}
                 enabled={CMPayment.status !== 'pendingAccount'}
+                errorMessage={CMPayment.instrumentDuplicateError}
               />
             ) : null}
 

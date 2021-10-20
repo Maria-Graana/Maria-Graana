@@ -127,6 +127,7 @@ const AddLegalPaymentModal = ({
               <AddEditInstrument
                 handleInstrumentInfoChange={handleInstrumentInfoChange}
                 enabled={legalPayment.status !== 'pendingAccount'}
+                errorMessage={legalPayment.instrumentDuplicateError}
               />
             ) : null}
 

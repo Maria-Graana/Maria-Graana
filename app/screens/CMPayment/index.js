@@ -835,7 +835,6 @@ class CMPayment extends Component {
         instrumentId: addInstrument.id,
         isPrimary,
       }
-      console.log('existingInstrument', body)
 
       if (isCMEdit) this.updateCMPayment(body)
       else this.addCMPayment(body)
@@ -864,7 +863,6 @@ class CMPayment extends Component {
               instrumentId: res.data.id,
               isPrimary,
             }
-            console.log('newInstrument', body)
             if (isCMEdit) this.updateCMPayment(body)
             else this.addCMPayment(body)
           }

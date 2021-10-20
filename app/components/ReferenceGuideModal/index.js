@@ -36,7 +36,7 @@ const ReferenceGuideModal = ({
           }}
         />
         <View style={styles.row}>
-          <Text style={styles.title}>Reference Guide#</Text>
+          <Text style={styles.title}>Investment Guide Detail</Text>
           <TouchableOpacity
             style={styles.closeBtn}
             onPress={() => {
@@ -55,7 +55,7 @@ const ReferenceGuideModal = ({
               placeholderTextColor={'#a8a8aa'}
               value={investmentGuideNo}
               style={[AppStyles.formControl, AppStyles.inputPadLeft, styles.input]}
-              placeholder={'Enter Investment Guide Reference'}
+              placeholder={'Investment Guide Reference #'}
             />
           </View>
           <ErrorMessage errorMessage={referenceErrorMessage} />
@@ -85,7 +85,7 @@ const ReferenceGuideModal = ({
             containerStyle={AppStyles.formBtn}
             label={
               investmentGuideAttachments && investmentGuideAttachments.length > 0
-                ? 'Add More Attachments'
+                ? 'Add another Attachment'
                 : 'Add Attachment'
             }
             // loading={imageLoading || loading}
@@ -99,7 +99,7 @@ const ReferenceGuideModal = ({
             loading={referenceGuideLoading}
             onPress={() =>
               investmentGuideNo === null || investmentGuideNo === ''
-                ? alert('Please enter investment guide no')
+                ? alert('Please enter investment guide number')
                 : addInvestmentGuide(investmentGuideNo, investmentGuideAttachments)
             }
             // loading={imageLoading || loading}

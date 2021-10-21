@@ -162,7 +162,7 @@ const PaymentHelper = {
       name: 'name',
     }
   },
-  generateApiPayload(firstFormData, lead, unitId, CMPayment, instrument) {
+  generateApiPayload(firstFormData, lead, unitId, CMPayment, instrument, isPrimary) {
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -197,9 +197,18 @@ const PaymentHelper = {
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       instrumentId: instrument.id,
+      isPrimary,
     }
   },
-  generateProductApiPayload(firstFormData, lead, unitId, CMPayment, oneProduct, instrument) {
+  generateProductApiPayload(
+    firstFormData,
+    lead,
+    unitId,
+    CMPayment,
+    oneProduct,
+    instrument,
+    isPrimary
+  ) {
     const { projectProduct } = oneProduct
     return {
       unitId: unitId,
@@ -256,6 +265,7 @@ const PaymentHelper = {
           ? null
           : firstFormData.finalPrice - CMPayment.installmentAmount,
       instrumentId: instrument.id,
+      isPrimary,
       possessionCharges:
         firstFormData.paymentPlan === 'installments'
           ? PaymentMethods.calculatePossessionCharges(

@@ -752,13 +752,16 @@ class CMPayment extends Component {
   }
 
   addCMPayment = (body) => {
-    const { CMPayment, user, lead, dispatch } = this.props
+    const { CMPayment, user, lead, dispatch, addInstrument } = this.props
     if (CMPayment.paymentType === 'token') {
       dispatch(setCMPayment({ ...CMPayment, visible: false }))
+      dispatch(setInstrumentInformation({ ...addInstrument, id: body.instrumentId }))
       this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
       return
     }
+
     body.paymentCategory = CMPayment.paymentType
+
     axios
       .post(`/api/leads/project/payments`, body)
       .then((response) => {
@@ -1332,16 +1335,24 @@ class CMPayment extends Component {
   firstFormApiCall = (unitId) => {
     const { lead, CMPayment, addInstrument } = this.props
     const { noProduct } = lead
-    const { firstFormData, oneProductData } = this.state
+    const { firstFormData, oneProductData, isPrimary } = this.state
     let body = noProduct
-      ? PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment, addInstrument)
+      ? PaymentHelper.generateApiPayload(
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          addInstrument,
+          isPrimary
+        )
       : PaymentHelper.generateProductApiPayload(
           firstFormData,
           lead,
           unitId,
           CMPayment,
           oneProductData,
-          addInstrument
+          addInstrument,
+          isPrimary
         )
     let leadId = []
     leadId.push(lead.id)

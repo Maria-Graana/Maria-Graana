@@ -153,6 +153,7 @@ class CMPayment extends Component {
       toggleUnitsTable: false,
       tableHeaderTitle: [],
       tableData: [],
+      isPrimary: false,
     }
   }
 
@@ -560,12 +561,14 @@ class CMPayment extends Component {
     const copyInstrument = { ...addInstrument }
     if (name === 'instrumentNumber') {
       copyInstrument.instrumentNo = value
+      this.setState({ isPrimary: true })
     } else if (name === 'instrumentNumberPicker') {
       const instrument = instruments.find((item) => item.id === value)
       copyInstrument.instrumentNo = instrument.instrumentNo
       copyInstrument.instrumentAmount = instrument.instrumentAmount
       copyInstrument.id = instrument.id
       copyInstrument.editable = false
+      this.setState({ isPrimary: false })
     } else if (name === 'instrumentAmount') copyInstrument.instrumentAmount = value
 
     dispatch(setInstrumentInformation(copyInstrument))
@@ -591,6 +594,7 @@ class CMPayment extends Component {
       firstForm: false,
       secondForm: false,
       officeLocationId: null,
+      instrumentDuplicateError: null,
     }
     dispatch(setCMPayment({ ...newData }))
     this.setState({
@@ -819,7 +823,8 @@ class CMPayment extends Component {
 
   addEditCMInstrumentOnServer = (isCMEdit = false) => {
     let body = {}
-    const { addInstrument, CMPayment, lead, user } = this.props
+    const { addInstrument, CMPayment, lead, user, dispatch } = this.props
+    const { isPrimary } = this.state
     if (addInstrument.id) {
       // selected existing instrument // add mode
       body = {
@@ -828,8 +833,9 @@ class CMPayment extends Component {
         armsUserId: user.id,
         installmentAmount: CMPayment.installmentAmount,
         instrumentId: addInstrument.id,
-        isPrimary: false,
+        isPrimary,
       }
+
       if (isCMEdit) this.updateCMPayment(body)
       else this.addCMPayment(body)
     } else {
@@ -838,6 +844,16 @@ class CMPayment extends Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setCMPayment({
+                  ...CMPayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...CMPayment,
               cmLeadId: lead.id,
@@ -845,7 +861,7 @@ class CMPayment extends Component {
               addedBy: 'buyer',
               installmentAmount: CMPayment.installmentAmount,
               instrumentId: res.data.id,
-              isPrimary: true,
+              isPrimary,
             }
             if (isCMEdit) this.updateCMPayment(body)
             else this.addCMPayment(body)

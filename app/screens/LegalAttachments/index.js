@@ -628,6 +628,7 @@ class LegalAttachment extends Component {
       details: '',
       visible: false,
       paymentAttachments: [],
+      instrumentDuplicateError: null,
     }
     this.setState({
       modalValidation: false,
@@ -936,6 +937,16 @@ class LegalAttachment extends Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setLegalPayment({
+                  ...legalPayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...legalPayment,
               rcmLeadId: lead.id,

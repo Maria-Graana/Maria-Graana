@@ -870,6 +870,7 @@ class LeadPropsure extends React.Component {
       details: '',
       visible: false,
       paymentAttachments: [],
+      instrumentDuplicateError: null,
     }
     dispatch(setPropsurePayment({ ...newData }))
     this.setState({
@@ -1095,6 +1096,16 @@ class LeadPropsure extends React.Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setPropsurePayment({
+                  ...propsurePayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...propsurePayment,
               rcmLeadId: lead.id,

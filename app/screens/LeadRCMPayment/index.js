@@ -436,6 +436,7 @@ class LeadRCMPayment extends React.Component {
       visible: false,
       paymentAttachments: [],
       officeLocationId: null,
+      instrumentDuplicateError: null,
     }
     this.setState({
       modalValidation: false,
@@ -1398,6 +1399,16 @@ class LeadRCMPayment extends React.Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setRCMPayment({
+                  ...rcmPayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...rcmPayment,
               rcmLeadId: lead.id,

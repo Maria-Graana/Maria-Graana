@@ -66,11 +66,15 @@ class LegalTile extends React.Component {
             </View>
           )}
           <Text numberOfLines={1} style={styles.tileTitle}>
-            {data.name}
+            {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
           </Text>
         </View>
         <View style={{ justifyContent: 'center' }}>
-          <Text style={[styles.tileStatus, styles.statusYellow]}>PENDING UPLOAD</Text>
+          <Text style={[styles.tileStatus, styles.statusYellow]}>
+            {data.status === 'pending_upload_by_legal'
+              ? 'PENDING UPLOAD BY LEGAL'
+              : 'PENDING UPLOAD'}
+          </Text>
         </View>
       </TouchableOpacity>
     )
@@ -117,11 +121,11 @@ class LegalTile extends React.Component {
         <View style={styles.menuTileInner}>
           <View style={[styles.contentCenter, { flex: 1 }]}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={styles.uploadedText}>
-                UPLOADED{' '}
-                <Text style={styles.dateText}>
-                  @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
-                </Text>
+              <Text
+                numberOfLines={1}
+                style={checkList ? style.hyperLinkPadding : styles.textPadding}
+              >
+                {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
               </Text>
               {data.status === 'rejected' && (
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
@@ -129,13 +133,30 @@ class LegalTile extends React.Component {
               {data.status === 'uploaded' && (
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
               )}
+              {data.status === 'pending_legal' && (
+                <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+              )}
+              {data.status === 'approved' && (
+                <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+              )}
             </View>
-            <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
-              {data.name}
+            <Text style={styles.uploadedText}>
+              UPLOADED{' '}
+              <Text style={styles.dateText}>
+                @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
+              </Text>
             </Text>
           </View>
           {!checkList ? (
-            <View style={[data.status === 'rejected' ? { paddingTop: 10 } : styles.contentCenter]}>
+            <View
+              style={[
+                data.status === 'rejected' ||
+                data.status === 'pending_legal' ||
+                data.status === 'approved'
+                  ? { paddingTop: 20 }
+                  : styles.contentCenter,
+              ]}
+            >
               <Menu
                 visible={menuToggle}
                 onDismiss={() => this.toggleMenu()}
@@ -150,6 +171,18 @@ class LegalTile extends React.Component {
                 }
               >
                 <View>
+                  {data.status === 'pending_legal' || data.status === 'approved' ? (
+                    <View>
+                      <Menu.Item
+                        onPress={() => {
+                          submitMenu('view_legal', data)
+                          this.toggleMenu()
+                        }}
+                        title="View Comments"
+                        titleStyle={styles.assignText}
+                      />
+                    </View>
+                  ) : null}
                   {data.status === 'rejected' ? (
                     <View>
                       <Menu.Item
@@ -157,41 +190,55 @@ class LegalTile extends React.Component {
                           submitMenu('edit', data)
                           this.toggleMenu()
                         }}
-                        title="Edit"
+                        title="Upload Different File"
                       />
                       <Menu.Item
                         onPress={() => {
-                          submitMenu('remove', data)
+                          submitMenu('view_legal', data)
                           this.toggleMenu()
                         }}
-                        title="Remove"
-                      />
-                    </View>
-                  ) : (
-                    <View>
-                      <Menu.Item
-                        onPress={() => {
-                          submitMenu('edit', data)
-                          this.toggleMenu()
-                        }}
-                        title="Edit"
+                        title="View Comments"
+                        titleStyle={styles.assignText}
                       />
                       <Menu.Item
                         onPress={() => {
-                          submitMenu('remove', data)
+                          submitMenu('submit_to_legal', data)
                           this.toggleMenu()
                         }}
-                        title="Remove"
-                      />
-                      <Menu.Item
-                        onPress={() => {
-                          submitMenu('assign_to_legal', data)
-                          this.toggleMenu()
-                        }}
-                        title="Assign to Legal"
+                        title="Submit to Legal"
                         titleStyle={styles.assignText}
                       />
                     </View>
+                  ) : (
+                    <>
+                      {data.status !== 'pending_legal' && data.status !== 'approved' ? (
+                        <View>
+                          <Menu.Item
+                            onPress={() => {
+                              submitMenu('edit', data)
+                              this.toggleMenu()
+                            }}
+                            title="Upload Different File"
+                          />
+                          <Menu.Item
+                            onPress={() => {
+                              submitMenu('view_legal', data)
+                              this.toggleMenu()
+                            }}
+                            title="View Comments"
+                            titleStyle={styles.assignText}
+                          />
+                          <Menu.Item
+                            onPress={() => {
+                              submitMenu('submit_to_legal', data)
+                              this.toggleMenu()
+                            }}
+                            title="Submit to Legal"
+                            titleStyle={styles.assignText}
+                          />
+                        </View>
+                      ) : null}
+                    </>
                   )}
                 </View>
               </Menu>
@@ -227,17 +274,17 @@ class LegalTile extends React.Component {
         />
         <View style={[styles.statusTile]}>
           <View style={[styles.contentSpace, { flexDirection: 'row' }]}>
+            <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
+              {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
+            </Text>
+            <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+          </View>
+          <View style={styles.contentSpace}>
             <Text style={styles.uploadedText}>
               UPLOADED{' '}
               <Text style={styles.dateText}>
                 @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
               </Text>
-            </Text>
-            <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
-          </View>
-          <View style={styles.contentSpace}>
-            <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
-              {data.name}
             </Text>
           </View>
         </View>
@@ -250,15 +297,13 @@ class LegalTile extends React.Component {
     return (
       <View>
         {data && data.fileKey === null ? <View>{this.UploadTile()}</View> : null}
-        {data &&
-        data.status !== 'pending' &&
-        data.status !== 'pending_legal' &&
-        data.status !== 'approved' &&
-        data.fileKey !== null ? (
+        {data && data.status !== 'pending' && data.fileKey !== null ? (
           <View>{this.MenuTile()}</View>
         ) : null}
         {data &&
         data.status &&
+        data.status !== 'approved' &&
+        data.status !== 'pending_legal' &&
         data.status !== 'uploaded' &&
         data.status !== 'pending' &&
         data.status !== 'rejected' &&

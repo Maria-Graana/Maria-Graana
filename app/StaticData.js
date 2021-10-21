@@ -907,9 +907,9 @@ export default StaticData = {
       status: 'approved',
     },
   ],
-  BuyerLegalDocumentsList: [
+  BuyerLegalInternalDocumentsList: [
     {
-      category: 'service_charge_agreement',
+      category: 'cnic',
       name: 'SERVICE CHARGE AGREEMENT',
       status: 'pending',
       fileKey: null,
@@ -917,21 +917,66 @@ export default StaticData = {
     },
     { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
     {
-      category: 'sales_rent_agreement',
+      category: 'sale_agreement',
       name: 'SALES/RENT AGREEMENT',
       status: 'pending',
       fileKey: null,
       id: 4,
     },
     {
-      category: 'initial_payment_receipt',
+      category: 'service_charge_agreement',
       name: 'INITIAL PAYMENT RECEIPT',
       status: 'pending',
       fileKey: null,
       id: 5,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 6,
     },
   ],
-  SellerLegalDocumentsList: [
+  BuyerLegalExternalDocumentsList: [
+    {
+      category: 'cnic',
+      name: 'SERVICE CHARGE AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 1,
+    },
+    { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
+    {
+      category: 'disclaimer',
+      name: 'SALES/RENT AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 4,
+    },
+    {
+      category: 'sale_agreement',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 5,
+    },
+    {
+      category: 'service_charge_agreement',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 2,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 6,
+    },
+  ],
+  SellerLegalInternalDocumentsList: [
     {
       category: 'service_charge_agreement',
       name: 'SERVICE CHARGE AGREEMENT',
@@ -941,18 +986,63 @@ export default StaticData = {
     },
     { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
     {
-      category: 'sales_rent_agreement',
+      category: 'cnic',
       name: 'SALES/RENT AGREEMENT',
       status: 'pending',
       fileKey: null,
       id: 4,
     },
     {
-      category: 'initial_payment_receipt',
+      category: 'sales_agreement',
       name: 'INITIAL PAYMENT RECEIPT',
       status: 'pending',
       fileKey: null,
       id: 5,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 2,
+    },
+  ],
+  SellerLegalExternalDocumentsList: [
+    {
+      category: 'cnic',
+      name: 'SERVICE CHARGE AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 1,
+    },
+    { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
+    {
+      category: 'rent_agreement',
+      name: 'SALES/RENT AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 4,
+    },
+    {
+      category: 'police_verification_report',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 5,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 3,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 2,
     },
   ],
   checkListData: {
@@ -1303,5 +1393,25 @@ export default StaticData = {
   filterAvailableUnits: [
     { name: 'STATUS', value: 'status' },
     { name: 'PRICE', value: 'price' },
+  ],
+  legalServicesFields: [
+    {
+      name: 'Internal Services',
+      value: 'internal',
+    },
+    {
+      name: 'External Services',
+      value: 'external',
+    },
+  ],
+  externalServicesFields: [
+    {
+      name: 'Agent is getting external Services',
+      value: 'agent',
+    },
+    {
+      name: 'Client is getting external Services',
+      value: 'client',
+    },
   ],
 }

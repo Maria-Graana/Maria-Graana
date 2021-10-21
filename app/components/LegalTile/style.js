@@ -78,7 +78,7 @@ export default styles = StyleSheet.create({
   textPadding: {
     padding: 2,
     fontSize: 12,
-    fontFamily: AppStyles.fonts.defaultFont,
+    fontFamily: AppStyles.fonts.semiBoldFont,
   },
   hyperLinkPadding: {
     padding: 2,

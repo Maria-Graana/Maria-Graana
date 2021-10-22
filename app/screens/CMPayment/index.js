@@ -208,7 +208,8 @@ class CMPayment extends Component {
   }
 
   fetchOfficeLocations = () => {
-    const { lead } = this.props
+    const { lead, CMPayment, user, dispatch } = this.props
+    let defaultOfficeLocation = null
     axios
       .get(`/api/user/locations`)
       .then((response) => {
@@ -217,6 +218,12 @@ class CMPayment extends Component {
           this.setState({
             officeLocations: locations,
           })
+          if (lead.project && lead.project.externalProject === true && locations) {
+            defaultOfficeLocation = locations[0].value
+          } else {
+            defaultOfficeLocation = user.officeLocationId
+          }
+          dispatch(setCMPayment({ ...CMPayment, officeLocationId: defaultOfficeLocation }))
         }
       })
       .catch((error) => {
@@ -754,14 +761,19 @@ class CMPayment extends Component {
   addCMPayment = (body) => {
     const { CMPayment, user, lead, dispatch, addInstrument } = this.props
     if (CMPayment.paymentType === 'token') {
-      dispatch(setCMPayment({ ...CMPayment, visible: false }))
+      dispatch(
+        setCMPayment({
+          ...CMPayment,
+          visible: false,
+        })
+      )
       dispatch(setInstrumentInformation({ ...addInstrument, id: body.instrumentId }))
       this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
       return
     }
 
     body.paymentCategory = CMPayment.paymentType
-
+    console.log(body)
     axios
       .post(`/api/leads/project/payments`, body)
       .then((response) => {

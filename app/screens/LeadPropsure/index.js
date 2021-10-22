@@ -151,6 +151,7 @@ class LeadPropsure extends React.Component {
   }
 
   fetchOfficeLocations = () => {
+    const { user, dispatch, propsurePayment } = this.props
     axios
       .get(`/api/user/locations`)
       .then((response) => {
@@ -164,6 +165,9 @@ class LeadPropsure extends React.Component {
             }),
           })
         }
+        dispatch(
+          setPropsurePayment({ ...propsurePayment, officeLocationId: user.officeLocationId })
+        )
       })
       .catch((error) => {
         console.log(`/api/user/locations`, error)

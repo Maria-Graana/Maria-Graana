@@ -221,7 +221,7 @@ class LegalAttachment extends Component {
         `Change to ${helper.capitalize(firstFormData.legalService)}`,
         `Are you sure you want to change to ${helper.capitalize(
           firstFormData.legalService
-        )}? If you continue, you may have to upload some legal documents again.`,
+        )} Services? If you continue, you may have to upload some legal documents again.`,
         [
           { text: 'No', style: 'cancel' },
           {
@@ -281,6 +281,7 @@ class LegalAttachment extends Component {
       {
         formData: formData,
         showAction: false,
+        loading: true,
       },
       () => {
         this.uploadAttachment(this.state.formData)

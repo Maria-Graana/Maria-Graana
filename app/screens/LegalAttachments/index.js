@@ -110,6 +110,7 @@ class LegalAttachment extends Component {
     })
   }
   fetchOfficeLocations = () => {
+    const { user, dispatch, legalPayment } = this.props
     axios
       .get(`/api/user/locations`)
       .then((response) => {
@@ -123,6 +124,7 @@ class LegalAttachment extends Component {
             }),
           })
         }
+        dispatch(setLegalPayment({ ...legalPayment, officeLocationId: user.officeLocationId }))
       })
       .catch((error) => {
         console.log(`/api/user/locations`, error)

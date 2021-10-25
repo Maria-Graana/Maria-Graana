@@ -286,6 +286,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   fetchOfficeLocations = () => {
+    const { user, dispatch, rcmPayment } = this.props
     axios
       .get(`/api/user/locations`)
       .then((response) => {
@@ -298,6 +299,7 @@ class LeadRCMPayment extends React.Component {
               }
             }),
           })
+          dispatch(setRCMPayment({ ...rcmPayment, officeLocationId: user.officeLocationId }))
         }
       })
       .catch((error) => {

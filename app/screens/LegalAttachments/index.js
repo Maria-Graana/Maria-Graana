@@ -1302,6 +1302,7 @@ class LegalAttachment extends Component {
                       </View>
                       <View style={[styles.datePicker]}>
                         <DateTimePicker
+                          disabled={checkListDoc && checkListDoc.fileKey !== null ? true : false}
                           placeholderLabel={'Select Transfer date'}
                           name={'date'}
                           mode={'date'}

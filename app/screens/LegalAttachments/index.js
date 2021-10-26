@@ -172,7 +172,7 @@ class LegalAttachment extends Component {
     const { legalPayment, user, dispatch } = this.props
     let defaultUserLocationId = user.officeLocationId
     dispatch(setLegalPayment({ ...legalPayment, officeLocationId: defaultUserLocationId }))
-    return defaultOfficeLocation
+    return defaultUserLocationId
   }
 
   checkListDoc = (lead) => {

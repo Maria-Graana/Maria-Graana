@@ -7,6 +7,7 @@ import { ActionSheet } from 'native-base'
 import * as ImageManipulator from 'expo-image-manipulator'
 import React from 'react'
 import { StyleSheet, View, Alert } from 'react-native'
+import helper from '../../helper'
 
 var BUTTONS = ['Upload File', 'Take a Photo', 'Cancel']
 var CANCEL_INDEX = 2
@@ -48,11 +49,11 @@ export default class UploadAttachment extends React.Component {
         return
       }
     }
-
     let result = await ImagePicker.launchCameraAsync({
       quality: 0.5,
     })
     if (!result.cancelled) {
+      helper.warningToast('File is Uploading, Please Wait!')
       this._compressImageAndUpload(result.uri, result)
     }
   }
@@ -99,6 +100,7 @@ export default class UploadAttachment extends React.Component {
           // App should prompt a pop message in-case file is already selected
           Alert.alert('Pick File', 'Please pick a file from documents!')
         } else {
+          helper.warningToast('File is Uploading, Please Wait!')
           if (item.name && item.name !== '') {
             newFormData.fileName = item.name
             newFormData.size = item.size

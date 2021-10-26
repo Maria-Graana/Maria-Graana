@@ -208,8 +208,7 @@ class CMPayment extends Component {
   }
 
   fetchOfficeLocations = () => {
-    const { lead, CMPayment, user, dispatch } = this.props
-    let defaultOfficeLocation = null
+    const { lead } = this.props
     axios
       .get(`/api/user/locations`)
       .then((response) => {
@@ -218,12 +217,6 @@ class CMPayment extends Component {
           this.setState({
             officeLocations: locations,
           })
-          if (lead.project && lead.project.externalProject === true && locations) {
-            defaultOfficeLocation = locations[0].value
-          } else {
-            defaultOfficeLocation = user.officeLocationId
-          }
-          dispatch(setCMPayment({ ...CMPayment, officeLocationId: defaultOfficeLocation }))
         }
       })
       .catch((error) => {
@@ -600,7 +593,7 @@ class CMPayment extends Component {
       whichModalVisible: '',
       firstForm: false,
       secondForm: false,
-      officeLocationId: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
       instrumentDuplicateError: null,
     }
     dispatch(setCMPayment({ ...newData }))
@@ -641,7 +634,7 @@ class CMPayment extends Component {
   }
 
   editTile = (payment) => {
-    const { dispatch, user, lead } = this.props
+    const { dispatch, user, lead, CMPayment } = this.props
     const { officeLocations } = this.state
     let locationId =
       payment && payment.officeLocationId
@@ -674,6 +667,19 @@ class CMPayment extends Component {
     })
   }
 
+  setDefaultOfficeLocation = () => {
+    let defaultOfficeLocation = null
+    const { CMPayment, user, lead, dispatch } = this.props
+    const { officeLocations } = this.state
+    if (lead.project && lead.project.externalProject === true && officeLocations) {
+      defaultOfficeLocation = officeLocations[0].value
+    } else {
+      defaultOfficeLocation = user.officeLocationId
+    }
+    dispatch(setCMPayment({ ...CMPayment, officeLocationId: defaultOfficeLocation }))
+    return defaultOfficeLocation
+  }
+
   submitCommissionCMPayment = async () => {
     const { CMPayment, user, lead } = this.props
     const { editable, firstForm } = this.state
@@ -703,6 +709,7 @@ class CMPayment extends Component {
         return
       }
       let body = {}
+
       if (editable === false) {
         // for payment addition
         if (
@@ -773,7 +780,7 @@ class CMPayment extends Component {
     }
 
     body.paymentCategory = CMPayment.paymentType
-    console.log(body)
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(`/api/leads/project/payments`, body)
       .then((response) => {

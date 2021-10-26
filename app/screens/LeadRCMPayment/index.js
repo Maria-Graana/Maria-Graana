@@ -299,12 +299,18 @@ class LeadRCMPayment extends React.Component {
               }
             }),
           })
-          dispatch(setRCMPayment({ ...rcmPayment, officeLocationId: user.officeLocationId }))
         }
       })
       .catch((error) => {
         console.log(`/api/user/locations`, error)
       })
+  }
+
+  setDefaultOfficeLocation = () => {
+    const { rcmPayment, user, dispatch } = this.props
+    let defaultUserLocationId = user.officeLocationId
+    dispatch(setRCMPayment({ ...rcmPayment, officeLocationId: defaultUserLocationId }))
+    return defaultOfficeLocation
   }
 
   // *******  View Legal Documents Modal  *************
@@ -437,7 +443,7 @@ class LeadRCMPayment extends React.Component {
       details: '',
       visible: false,
       paymentAttachments: [],
-      officeLocationId: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
       instrumentDuplicateError: null,
     }
     this.setState({
@@ -1301,6 +1307,7 @@ class LeadRCMPayment extends React.Component {
         (toastMsg = 'Token Payment Added')
       errorMsg = 'Error Adding Token Payment'
     }
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(baseUrl, body)
       .then((response) => {

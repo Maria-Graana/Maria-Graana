@@ -151,7 +151,6 @@ class LeadPropsure extends React.Component {
   }
 
   fetchOfficeLocations = () => {
-    const { user, dispatch, propsurePayment } = this.props
     axios
       .get(`/api/user/locations`)
       .then((response) => {
@@ -165,13 +164,17 @@ class LeadPropsure extends React.Component {
             }),
           })
         }
-        dispatch(
-          setPropsurePayment({ ...propsurePayment, officeLocationId: user.officeLocationId })
-        )
       })
       .catch((error) => {
         console.log(`/api/user/locations`, error)
       })
+  }
+
+  setDefaultOfficeLocation = () => {
+    const { propsurePayment, user, dispatch } = this.props
+    let defaultUserLocationId = user.officeLocationId
+    dispatch(setPropsurePayment({ ...propsurePayment, officeLocationId: defaultUserLocationId }))
+    return defaultOfficeLocation
   }
 
   callback = (downloadProgress) => {
@@ -875,6 +878,7 @@ class LeadPropsure extends React.Component {
       visible: false,
       paymentAttachments: [],
       instrumentDuplicateError: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
     }
     dispatch(setPropsurePayment({ ...newData }))
     this.setState({
@@ -1011,6 +1015,7 @@ class LeadPropsure extends React.Component {
 
   addPropsurePayment = (body) => {
     const { lead, propsurePayment, dispatch } = this.props
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(`/api/leads/propsurePayment`, body)
       .then((response) => {

@@ -110,7 +110,6 @@ class LegalAttachment extends Component {
     })
   }
   fetchOfficeLocations = () => {
-    const { user, dispatch, legalPayment } = this.props
     axios
       .get(`/api/user/locations`)
       .then((response) => {
@@ -124,7 +123,6 @@ class LegalAttachment extends Component {
             }),
           })
         }
-        dispatch(setLegalPayment({ ...legalPayment, officeLocationId: user.officeLocationId }))
       })
       .catch((error) => {
         console.log(`/api/user/locations`, error)
@@ -168,6 +166,13 @@ class LegalAttachment extends Component {
         return item.paymentCategory === 'legal_payment' && item.addedBy === route.params.addedBy
       })
     return newlegalPayment
+  }
+
+  setDefaultOfficeLocation = () => {
+    const { legalPayment, user, dispatch } = this.props
+    let defaultUserLocationId = user.officeLocationId
+    dispatch(setLegalPayment({ ...legalPayment, officeLocationId: defaultUserLocationId }))
+    return defaultOfficeLocation
   }
 
   checkListDoc = (lead) => {
@@ -632,6 +637,7 @@ class LegalAttachment extends Component {
       visible: false,
       paymentAttachments: [],
       instrumentDuplicateError: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
     }
     this.setState({
       modalValidation: false,
@@ -830,6 +836,8 @@ class LegalAttachment extends Component {
     let toastMsg = 'Legal Payment Added'
     let errorMsg = 'Error Adding Legal Payment'
     let baseUrl = `/api/leads/project/payments`
+
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(baseUrl, body)
       .then((response) => {

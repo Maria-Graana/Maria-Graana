@@ -1374,6 +1374,7 @@ class CMPayment extends Component {
           isPrimary
         )
     let leadId = []
+    body.officeLocationId = this.setDefaultOfficeLocation()
     leadId.push(lead.id)
     axios
       .patch(`/api/leads/project`, body, { params: { id: leadId } })

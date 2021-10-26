@@ -174,7 +174,7 @@ class LeadPropsure extends React.Component {
     const { propsurePayment, user, dispatch } = this.props
     let defaultUserLocationId = user.officeLocationId
     dispatch(setPropsurePayment({ ...propsurePayment, officeLocationId: defaultUserLocationId }))
-    return defaultOfficeLocation
+    return defaultUserLocationId
   }
 
   callback = (downloadProgress) => {

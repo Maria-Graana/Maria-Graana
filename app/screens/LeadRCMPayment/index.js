@@ -310,7 +310,7 @@ class LeadRCMPayment extends React.Component {
     const { rcmPayment, user, dispatch } = this.props
     let defaultUserLocationId = user.officeLocationId
     dispatch(setRCMPayment({ ...rcmPayment, officeLocationId: defaultUserLocationId }))
-    return defaultOfficeLocation
+    return defaultUserLocationId
   }
 
   // *******  View Legal Documents Modal  *************

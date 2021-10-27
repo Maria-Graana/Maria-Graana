@@ -605,8 +605,8 @@ class LeadRCMPayment extends React.Component {
   showLeadPaymentModal = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
-      let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
+      let legalDocResp = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, legalDocResp, legalServicesFee)) {
         this.setState({
           closedWon: true,
         })
@@ -618,14 +618,14 @@ class LeadRCMPayment extends React.Component {
     const { lead } = this.props
     this.setState({ legalDocLoader: true })
     try {
-      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      let res = await axios.get(`api/legal/document/count?leadId=${lead.id}`)
       this.setState({
         buyerSellerCounts: res.data,
         legalDocLoader: false,
       })
       return res.data
     } catch (error) {
-      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
+      console.log(`ERROR: api/legal/document/count?leadId=${lead.id}`, error)
     }
   }
 

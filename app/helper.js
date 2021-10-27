@@ -748,7 +748,7 @@ const helper = {
       return singlePayment
     } else return singlePayment
   },
-  checkClearedStatuses(lead, legalDocCount, legalServicesFee) {
+  checkClearedStatuses(lead, legalDocCounts, legalServicesFee) {
     let check = false
     let paymentCheck = true
     let propsureCheck = true
@@ -757,11 +757,11 @@ const helper = {
     let legalServicesCount = 2
     let cleared = 0
     let legalPaymentCleared = 0
-    let legalCount = 8
+    let legalCount = Number(legalDocCounts.sellerCount) + Number(legalDocCounts.buyerCount)
+    let legalDocCount = legalDocCounts.count
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true) {
       commissionsLength = 1
       legalServicesCount = 1
-      legalCount = 4
     }
     const { commissions, propsureOutstandingPayment, sellerLegalMail, legalMailSent } = lead
     if (!lead.commissionNotApplicableSeller && !sellerLegalMail)

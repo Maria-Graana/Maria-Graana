@@ -1,15 +1,19 @@
 /** @format */
 
 import React from 'react'
-import { View, Text, FlatList, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
-import { AntDesign, Entypo } from '@expo/vector-icons'
+import { View, Text, FlatList, TouchableOpacity } from 'react-native'
 import ListItem from '../ListItem/index'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import moment from 'moment'
 import helper from '../../helper'
 import AddTaskModal from '../AddTaskModal'
+import { Ionicons } from '@expo/vector-icons'
+import { Menu } from 'react-native-paper'
+import DiaryHelper from '../../screens/Diary/diaryHelper'
 
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
 class DiaryTile extends React.Component {
   constructor(props) {
     super(props)
@@ -25,152 +29,143 @@ class DiaryTile extends React.Component {
 
   componentDidMount() {}
 
-  onChange = (date, mode) => {}
-
-  updateDiary = (data) => {
-    this.props.updateDiary(data)
-  }
-
-  // showPopup = (val) => {
-  //     this.props.showPopup(val)
-  // }
-
-  handleLongPress = (val) => {
-    this.props.onLongPress(val)
-  }
-
-  showAddTask = (showTask, time, description) => {
-    this.setState({ showTask, selectedTime: time, description })
-  }
-
-  handleDescriptionChange = (text) => {
-    this.setState({ description: text })
-  }
-
-  closeModal = () => {
-    this.setState({ active: false })
-  }
-
-  removeUnderscore(str) {
-    var i,
-      frags = str.split('_')
-    for (i = 0; i < frags.length; i++) {
-      frags[i] = frags[i].charAt(0).toUpperCase() + frags[i].slice(1)
-    }
-    return frags.join(' ')
-  }
-
-  showTaskType = (val) => {
-    let finalValue = ''
-    if (val && val.taskType) {
-      finalValue = this.removeUnderscore(val.taskType)
-      if (finalValue === 'Meeting With Pp') {
-        return 'Meeting With PP'
-      } else {
-        return finalValue
-      }
-    } else {
-      return finalValue
-    }
-  }
-
   render() {
-    const { data, onLeadLinkPressed, addTask, editTask } = this.props
+    const {
+      diary,
+      hideMenu,
+      selectedDiary,
+      showMenuOptions,
+      showMenu,
+      setClassification,
+      onLeadLinkPressed,
+      addTask,
+      editTask,
+    } = this.props
     const { todayDate, selectedTime, showTask, description, active } = this.state
+    //console.log(diary)
     return (
-      <View style={AppStyles.mb1}>
-        <AddTaskModal
-          active={active}
-          closeModal={() => this.closeModal()}
-          handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
-          description={description}
-          addTask={(description) => {
-            addTask(description, selectedTime)
-          }}
-        />
-        <TouchableWithoutFeedback
-          style={AppStyles.mb1}
-          onPress={() => this.showAddTask(false, null, null)}
-        >
-          <FlatList
-            data={data}
-            renderItem={(item, index) => (
+      <View style={styles.mainContainer}>
+        <View style={styles.rowTwo}>
+          <View style={styles.timeView}>
+            <Text style={styles.time}>{diary.hour}</Text>
+            <Text style={styles.duration}>{DiaryHelper.calculateTimeDifference(diary)}</Text>
+          </View>
+          <View style={[styles.tileWrap, { borderLeftColor: DiaryHelper.displayTaskColor(diary) }]}>
+            <View style={styles.rowWidth100}>
+              <Text numberOfLines={1} style={styles.taskType}>{`${DiaryHelper.showTaskType(
+                diary.taskType
+              )}${DiaryHelper.showClientName(diary)}`}</Text>
+
+              <Text
+                numberOfLines={1}
+                onPress={() => setClassification(diary)}
+                style={[styles.classification, { color: DiaryHelper.setLeadCategoryColor(diary) }]}
+              >
+                {DiaryHelper.checkLeadCategory(diary)}
+              </Text>
               <View>
-                {item.item.task && item.item.task.length ? (
-                  <View style={styles.container}>
-                    <TouchableOpacity
-                      onPress={() => this.setState({ active: true, selectedTime: item.item.time })}
-                      style={styles.timeWrap}
-                    >
-                      <Text style={styles.timeText}>{item.item.time}</Text>
-                    </TouchableOpacity>
-                    {item.item.task.map((val, index) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => editTask(val)}
-                          onLongPress={() => this.handleLongPress(val)}
-                          key={index}
-                          activeOpacity={0.7}
-                          style={[styles.tileWrap, { borderLeftColor: val.statusColor }]}
-                        >
-                          <View style={styles.innerTile}>
-                            <Text style={styles.showTime}>
-                              {moment(val.start).format('hh:mm a')} -{' '}
-                              {moment(val.end).format('hh:mm a')}{' '}
-                            </Text>
-                            <Text
-                              style={[
-                                styles.statusText,
-                                { color: val.statusColor, borderColor: val.statusColor },
-                              ]}
-                            >
-                              {helper.setStatusText(val, todayDate)}
-                            </Text>
-                          </View>
-                          <Text style={styles.meetingText}>{val.subject}</Text>
-                          {val && val.notes ? (
-                            <Text numberOfLines={1} style={styles.meetingText}>
-                              {val.notes}
-                            </Text>
-                          ) : null}
-                          <View style={styles.innerTile}>
-                            <Text style={styles.meetingText}>{this.showTaskType(val)}</Text>
-                            {val.armsLeadId !== null || val.armsProjectLeadId !== null ? (
-                              <TouchableOpacity
-                                style={styles.lead}
-                                onPress={() => onLeadLinkPressed(val)}
-                              >
-                                <Text style={styles.leadText}>
-                                  {`${val.armsLeadId ? val.armsLeadId : val.armsProjectLeadId} `}
-                                </Text>
-                              </TouchableOpacity>
-                            ) : null}
-                          </View>
-                        </TouchableOpacity>
-                      )
-                    })}
-                  </View>
-                ) : (
-                  <View>
-                    <ListItem
-                      handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
-                      description={description}
-                      showTask={showTask}
-                      selectedTime={selectedTime}
-                      addTask={(description) => {
-                        addTask(description, selectedTime)
-                        this.showAddTask(false, null, null)
-                      }}
-                      showAddTask={(val1, val2) => this.showAddTask(val1, val2)}
-                      time={item.item.time}
+                <Menu
+                  visible={showMenu && diary.id === selectedDiary.id}
+                  onDismiss={() => hideMenu()}
+                  anchor={
+                    <Ionicons
+                      onPress={() => showMenuOptions(diary)}
+                      name="ellipsis-vertical"
+                      size={22}
+                      color="black"
                     />
+                  }
+                >
+                  <View>
+                    <Menu.Item
+                      onPress={() => {
+                        console.log('mark as done')
+                        hideMenu()
+                      }}
+                      title="Mark as Done"
+                    />
+
+                    {diary.taskType === 'viewing' && diary.armsLeadId ? (
+                      <Menu.Item
+                        onPress={() => {
+                          console.log('cancel viewing')
+                          hideMenu()
+                        }}
+                        title="Cancel Viewing"
+                      />
+                    ) : null}
+
+                    <Menu.Item
+                      onPress={() => {
+                        console.log('task details')
+                        hideMenu()
+                      }}
+                      title="Task Details"
+                    />
+
+                    <Menu.Item
+                      onPress={() => {
+                        console.log('Edit Task')
+                        hideMenu()
+                      }}
+                      title="Edit Task"
+                    />
+
+                    <Menu.Item
+                      onPress={() => {
+                        console.log('Refer Lead')
+                        hideMenu()
+                      }}
+                      title="Refer Lead"
+                    />
+
+                    <Menu.Item
+                      onPress={() => {
+                        console.log('Reassign Lead')
+                        hideMenu()
+                      }}
+                      title="Reassign Lead"
+                    />
+
+                    {diary.taskType === 'morning meeting' || diary.taskType === 'daily update' ? (
+                      <Menu.Item
+                        onPress={() => {
+                          console.log('Delete')
+                          hideMenu()
+                        }}
+                        title="Delete"
+                      />
+                    ) : null}
                   </View>
-                )}
+                </Menu>
               </View>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </TouchableWithoutFeedback>
+            </View>
+            {diary && diary.response ? (
+              <View style={styles.taskResponseView}>
+                <Text style={styles.taskResponse}>{diary.response}</Text>
+              </View>
+            ) : null}
+            <View style={styles.rowWidth100}>
+              <Text numberOfLines={1} style={styles.requirements}>{`${DiaryHelper.checkLeadType(
+                diary
+              )} - ${DiaryHelper.showRequirements(diary)}`}</Text>
+            </View>
+
+            <View style={styles.rowWidth100}>
+              <View style={styles.bottomView}>
+                <Text style={styles.leadId}>
+                  {diary.armsLeadId ? `ID:${diary.armsLeadId}` : `ID:${diary.armsProjectLeadId}`}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={{ width: '10%' }}
+                onPress={() => console.log('call connect')}
+              >
+                <Ionicons name="ios-call-outline" size={24} color={AppStyles.colors.primaryColor} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </View>
     )
   }

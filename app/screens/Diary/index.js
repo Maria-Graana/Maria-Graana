@@ -25,12 +25,12 @@ import axios from 'axios'
 import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
+import { getDiaryTasks, getOverdueCount } from '../../actions/diary'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
 const _tomorrow = moment(_today, _format).add(1, 'days').format(_format)
 const _dayAfterTomorrow = moment(_today, _format).add(2, 'days').format(_format)
-
 class Diary extends React.Component {
   constructor(props) {
     super(props)
@@ -39,8 +39,8 @@ class Diary extends React.Component {
       isLeadCategoryModalVisible: false,
       // startMonthDate: startOfMonth,
       // endMonthDate: endOfMonth,
-      diaryData: {},
-      loading: true,
+      //diaryData: {},
+      // loading: true,
       agentId: '',
       selectedDate: _today,
       isCalendarVisible: false,
@@ -52,7 +52,7 @@ class Diary extends React.Component {
     }
   }
   componentDidMount() {
-    const { navigation } = this.props
+    const { navigation, dispatch } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route, user } = this.props
       let { selectedDate } = this.state
@@ -72,6 +72,7 @@ class Diary extends React.Component {
         this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
           // Personal Diary
           this.getDiaries()
+          dispatch(getOverdueCount())
         })
       }
     })
@@ -79,30 +80,8 @@ class Diary extends React.Component {
 
   getDiaries = () => {
     const { agentId, selectedDate } = this.state
-    let endPoint = ``
-    this.setState({ loading: true }, () => {
-      endPoint = `/api/diary/all?date[]=${selectedDate}`
-      axios
-        .get(`${endPoint}`)
-        .then((res) => {
-          console.log(res)
-          this.setState(
-            {
-              diaryData: res.data,
-              loading: false,
-            },
-            () => {
-              // this.showTime()
-            }
-          )
-        })
-        .catch((error) => {
-          console.log(error)
-          this.setState({
-            loading: false,
-          })
-        })
-    })
+    const { dispatch } = this.props
+    dispatch(getDiaryTasks(selectedDate))
   }
 
   setSelectedDate = (date, mode) => {
@@ -111,7 +90,6 @@ class Diary extends React.Component {
       {
         selectedDate: date,
         isCalendarVisible: mode === 'month' ? isCalendarVisible : false,
-        loading: true,
       },
       () => {
         this.getDiaries()
@@ -158,12 +136,13 @@ class Diary extends React.Component {
     const {
       selectedDate,
       isCalendarVisible,
-      diaryData,
+      //diaryData,
       selectedDiary,
       showMenu,
       isLeadCategoryModalVisible,
-      loading,
+      // loading,
     } = this.state
+    const { diaries, loading, overdueCount } = this.props.diary
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -220,7 +199,7 @@ class Diary extends React.Component {
         ) : (
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={diaryData.rows}
+            data={diaries.rows}
             renderItem={({ item, index }) => (
               <DiaryTile
                 diary={item}
@@ -248,7 +227,9 @@ class Diary extends React.Component {
             alignItems: 'center',
           }}
         >
-          <Text style={{ fontFamily: AppStyles.fonts.semiBoldFont }}>Overdue Tasks (5)</Text>
+          <Text
+            style={{ fontFamily: AppStyles.fonts.semiBoldFont }}
+          >{`Overdue Tasks(${overdueCount})`}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )
@@ -282,6 +263,7 @@ const styles = StyleSheet.create({
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    diary: store.diary.diary,
   }
 }
 

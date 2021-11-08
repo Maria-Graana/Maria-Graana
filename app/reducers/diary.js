@@ -6,7 +6,6 @@ import { combineReducers } from 'redux'
 let diaryData = {
   diaries: [],
   loading: false,
-  overdueCount: 0,
 }
 const diary = (state = diaryData, action) => {
   switch (action.type) {
@@ -14,8 +13,16 @@ const diary = (state = diaryData, action) => {
       return { ...diaryData, loading: action.payload }
     case types.GET_DIARIES:
       return { ...diaryData, diaries: action.payload }
+
+    default:
+      return state
+  }
+}
+
+const overdueCount = (state = 0, action) => {
+  switch (action.type) {
     case types.SET_DIARY_OVERDUE_COUNT:
-      return { ...diaryData, overdueCount: action.payload }
+      return action.payload
     default:
       return state
   }
@@ -23,4 +30,5 @@ const diary = (state = diaryData, action) => {
 
 export default combineReducers({
   diary,
+  overdueCount,
 })

@@ -36,6 +36,7 @@ import LeadDetail from '../screens/LeadDetail'
 import LegalAttachments from '../screens/LegalAttachments'
 import LegalPaymentAttachment from '../screens/LegalPaymentAttachment'
 import MapContainer from '../screens/MapContainer'
+import OverdueTasks from '../screens/OverdueTasks'
 import PropertyDetail from '../screens/PropertyDetail'
 import PropsureAttachment from '../screens/PropsureAttachment'
 import RCMAttachment from '../screens/RCMAttachment'
@@ -80,6 +81,17 @@ function MainStack() {
         component={Diary}
         options={({ navigation, route }) => ({
           title: '',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
+      <Stack.Screen
+        name="OverdueTasks"
+        component={OverdueTasks}
+        options={({ navigation, route }) => ({
+          title: 'Overdue Tasks',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',

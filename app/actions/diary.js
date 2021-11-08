@@ -3,14 +3,19 @@
 import * as types from '../types'
 import axios from 'axios'
 
-export function getDiaryTasks(selectedDate) {
+export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
   return (dispatch, getsState) => {
     let endPoint = ``
+    if (overdue) {
+      endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}`
+    } else {
+      endPoint = `/api/diary/all?date[]=${selectedDate}`
+    }
     dispatch({
       type: types.SET_DIARY_LOADER,
       payload: true,
     })
-    endPoint = `/api/diary/all?date[]=${selectedDate}`
+
     axios
       .get(`${endPoint}`)
       .then((res) => {
@@ -21,6 +26,7 @@ export function getDiaryTasks(selectedDate) {
           })
         }
       })
+
       .catch((error) => {
         console.log(error)
         dispatch({
@@ -41,7 +47,7 @@ export function getOverdueCount() {
         if (res.data) {
           dispatch({
             type: types.SET_DIARY_OVERDUE_COUNT,
-            payload: res.data,
+            payload: res.data.count,
           })
         }
       })

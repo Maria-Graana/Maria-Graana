@@ -53,6 +53,7 @@ class Diary extends React.Component {
   }
   componentDidMount() {
     const { navigation, dispatch } = this.props
+    dispatch(getOverdueCount())
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route, user } = this.props
       let { selectedDate } = this.state
@@ -72,7 +73,6 @@ class Diary extends React.Component {
         this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
           // Personal Diary
           this.getDiaries()
-          dispatch(getOverdueCount())
         })
       }
     })
@@ -109,6 +109,11 @@ class Diary extends React.Component {
     this.setState({ isCalendarVisible: value })
   }
 
+  goToOverdueTasks = () => {
+    const { navigation } = this.props
+    navigation.navigate('OverdueTasks')
+  }
+
   onCategorySelected = (value) => {
     // const { lead, fetchLead } = this.props
     const { selectedDiary } = this.state
@@ -142,7 +147,8 @@ class Diary extends React.Component {
       isLeadCategoryModalVisible,
       // loading,
     } = this.state
-    const { diaries, loading, overdueCount } = this.props.diary
+    const { overdueCount, diary } = this.props
+    const { diaries, loading } = diary
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -226,6 +232,7 @@ class Diary extends React.Component {
             justifyContent: 'center',
             alignItems: 'center',
           }}
+          onPress={() => this.goToOverdueTasks()}
         >
           <Text
             style={{ fontFamily: AppStyles.fonts.semiBoldFont }}
@@ -264,6 +271,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     diary: store.diary.diary,
+    overdueCount: store.diary.overdueCount,
   }
 }
 

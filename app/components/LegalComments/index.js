@@ -18,6 +18,10 @@ class LegalComments extends React.Component {
     }
   }
 
+  componentDidMount = () => {
+    this.setState({ comment: '' })
+  }
+
   addComment = () => {}
 
   showDeleteDialog = () => {}
@@ -55,7 +59,12 @@ class LegalComments extends React.Component {
           >
             <View style={styles.topHeader}>
               <View style={styles.padLeft}>
-                <BackButton onClick={toggleComments} />
+                <BackButton
+                  onClick={() => {
+                    toggleComments()
+                    this.setComment('')
+                  }}
+                />
               </View>
               <View style={styles.header}>
                 <Text numberOfLines={1} style={styles.headerText}>
@@ -106,6 +115,7 @@ class LegalComments extends React.Component {
                   <CMBTN
                     onClick={() => {
                       submitToAssignLegal(selectedDocument, comment)
+                      this.setComment('')
                     }}
                     btnText={'SUBMIT TO LEGAL'}
                     checkLeadClosedOrNot={true}

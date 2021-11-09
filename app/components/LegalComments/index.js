@@ -26,6 +26,10 @@ class LegalComments extends React.Component {
     this.setState({ comment: value })
   }
 
+  componentWillUnmount = () => {
+    this.setState({ comment: '' })
+  }
+
   render() {
     const { comment } = this.state
     const {

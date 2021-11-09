@@ -211,6 +211,8 @@ const helper = {
           return TargetsImg
         case 'Dashboard':
           return DashboardImg
+        case 'MyDeals':
+          return ClientsImg
         default:
           break
       }

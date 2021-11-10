@@ -18,11 +18,7 @@ const DiaryHelper = {
     let finalValue = ''
     if (val) {
       finalValue = DiaryHelper.removeUnderscore(val)
-      if (finalValue === 'Meeting With Pp') {
-        return 'Meeting With PP'
-      } else {
-        return finalValue
-      }
+      return finalValue
     } else {
       return finalValue
     }
@@ -52,6 +48,8 @@ const DiaryHelper = {
       } else {
         return 'Rent'
       }
+    } else if (diary.wantedId) {
+      return 'Wanted'
     } else {
       return ''
     }
@@ -92,7 +90,7 @@ const DiaryHelper = {
   },
 
   showRequirements(diary) {
-    const { armsProjectLeadId, armsLeadId, armsLead, armsProjectLead } = diary
+    const { armsProjectLeadId, armsLeadId, armsLead, armsProjectLead, wantedId, wanted } = diary
     if (diary && armsProjectLeadId) {
       if (armsProjectLead && armsProjectLead.projectType) {
         return `${armsProjectLead.projectType} in ${armsProjectLead.projectName}`
@@ -107,6 +105,24 @@ const DiaryHelper = {
           armsLead.subtype
         )} in ${armsLead.city.name}`
       }
+    } else if (wantedId) {
+      if (wanted) {
+        return `${wanted.size} ${helper.capitalize(wanted.size_unit)} ${helper.capitalize(
+          wanted.subtype
+        )} in ${wanted.city.name}`
+      }
+    } else {
+      return ''
+    }
+  },
+
+  getLeadId(diary) {
+    if (diary.armsLeadId) {
+      return `ID:${diary.armsLeadId}`
+    } else if (diary.armsProjectLeadId) {
+      return `ID:${diary.armsProjectLeadId}`
+    } else if (diary.wantedId) {
+      return `ID:${diary.wantedId}`
     } else {
       return ''
     }
@@ -132,14 +148,14 @@ const DiaryHelper = {
   displayTaskColor(diary) {
     if (diary) {
       const { taskType } = diary
-      if (taskType === 'meeting') {
+      if (diary.status === 'completed') {
+        return '#9A9A9A'
+      } else if (taskType === 'meeting') {
         return '#006FF2'
       } else if (taskType === 'follow_up') {
         return '#FFC61B'
       } else if (taskType === 'connect') {
         return '#7BB461'
-      } else if (taskType === 'closed') {
-        return '#9A9A9A'
       } else if (taskType === 'viewing') {
         return '#006FF2'
       } else if (taskType === 'daily_meeting') {

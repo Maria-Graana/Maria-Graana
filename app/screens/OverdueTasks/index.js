@@ -114,6 +114,7 @@ class OverdueTasks extends React.Component {
                 showMenu={showMenu}
                 showMenuOptions={(value) => this.showMenuOptions(value)}
                 selectedDiary={selectedDiary}
+                screenName={'overduetasks'}
                 hideMenu={() => this.hideMenu()}
                 setClassification={(value) =>
                   this.setState({
@@ -138,8 +139,9 @@ const styles = StyleSheet.create({
   },
   rowOne: {
     flexDirection: 'row',
-    width: '100%',
     justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    backgroundColor: '#ffffff',
   },
 
   filterImg: {
@@ -148,10 +150,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   filterSortView: {
-    width: '30%',
-    justifyContent: 'center',
+    width: '95%',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-end',
   },
 })
 

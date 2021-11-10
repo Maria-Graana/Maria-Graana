@@ -30,7 +30,6 @@ export default styles = StyleSheet.create({
     shadowOffset: { width: 5, height: 5 },
     shadowColor: 'lightgrey',
     shadowOpacity: 1,
-    backgroundColor: '#ffffff',
     paddingVertical: 10,
     paddingHorizontal: 5,
     // borderRadius: 4,

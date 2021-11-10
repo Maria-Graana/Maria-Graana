@@ -114,6 +114,19 @@ class Diary extends React.Component {
     navigation.navigate('OverdueTasks')
   }
 
+  handleMenuActions = (action) => {
+    const { selectedDiary } = this.state
+    if (action === 'mark_as_done') {
+      this.markTaskAsDone()
+    } else if (action === 'cancel_viewing') {
+    } else if (action === 'task_details') {
+    } else if (action === 'edit_task') {
+    } else if (action === 'refer_lead') {
+    } else if (action === 'reassign_lead') {
+    } else if (action === 'delete') {
+    }
+  }
+
   onCategorySelected = (value) => {
     // const { lead, fetchLead } = this.props
     const { selectedDiary } = this.state
@@ -137,16 +150,29 @@ class Diary extends React.Component {
     //     helper.errorToast('Closed lead API failed!!')
     //   })
   }
+
+  markTaskAsDone = () => {
+    const { selectedDiary } = this.state
+    let that = this
+    let endPoint = ``
+    endPoint = `/api/diary/update?id=${selectedDiary.id}`
+    axios
+      .patch(endPoint, {
+        status: 'completed',
+      })
+      .then(function (response) {
+        //console.log(response)
+        if (response.status == 200) {
+          that.getDiaries()
+          //helper.deleteLocalNotification(data.id)
+          // navigation.goBack()
+        }
+      })
+  }
+
   render() {
-    const {
-      selectedDate,
-      isCalendarVisible,
-      //diaryData,
-      selectedDiary,
-      showMenu,
-      isLeadCategoryModalVisible,
-      // loading,
-    } = this.state
+    const { selectedDate, isCalendarVisible, selectedDiary, showMenu, isLeadCategoryModalVisible } =
+      this.state
     const { overdueCount, diary } = this.props
     const { diaries, loading } = diary
     return (
@@ -178,7 +204,6 @@ class Diary extends React.Component {
         <CalendarComponent
           showCalendar={isCalendarVisible}
           startDate={selectedDate}
-          // diaryData={diaryData}
           updateMonth={(value) => this.setSelectedDate(value ? value.dateString : null, 'month')}
           updateDay={(value) => this.setSelectedDate(value ? value.dateString : null, 'date')}
           selectedDate={selectedDate}
@@ -211,7 +236,9 @@ class Diary extends React.Component {
                 diary={item}
                 showMenu={showMenu}
                 showMenuOptions={(value) => this.showMenuOptions(value)}
+                handleMenuActions={(action) => this.handleMenuActions(action)}
                 selectedDiary={selectedDiary}
+                screenName={'diary'}
                 hideMenu={() => this.hideMenu()}
                 setClassification={(value) =>
                   this.setState({
@@ -252,6 +279,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
   },
 
   filterImg: {

@@ -114,8 +114,8 @@ class Diary extends React.Component {
   }
 
   goToOverdueTasks = () => {
-    const { navigation } = this.props
-    navigation.navigate('OverdueTasks')
+    const { navigation, overdueCount } = this.props
+    navigation.navigate('OverdueTasks', { count: overdueCount })
   }
 
   handleMenuActions = (action) => {
@@ -124,6 +124,7 @@ class Diary extends React.Component {
       this.markTaskAsDone()
     } else if (action === 'cancel_viewing') {
     } else if (action === 'task_details') {
+      navigation.navigate('TaskDetails')
     } else if (action === 'edit_task') {
     } else if (action === 'refer_lead') {
       this.navigateToReferAssignLead('refer')
@@ -222,6 +223,11 @@ class Diary extends React.Component {
       })
   }
 
+  navigateToFiltersScreen = () => {
+    const { navigation } = this.props
+    navigation.navigate('DiaryFilter')
+  }
+
   render() {
     const { selectedDate, isCalendarVisible, showMenu, isLeadCategoryModalVisible } = this.state
     const { overdueCount, diary } = this.props
@@ -272,7 +278,10 @@ class Diary extends React.Component {
           />
 
           <View style={styles.filterSortView}>
-            <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
+            <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
+              <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
+            </TouchableOpacity>
+
             <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
           </View>
         </View>

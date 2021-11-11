@@ -20,7 +20,7 @@ import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
 import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
-import { getDiaryTasks, getOverdueCount } from '../../actions/diary'
+import { getDiaryTasks } from '../../actions/diary'
 
 class OverdueTasks extends React.Component {
   constructor(props) {
@@ -33,10 +33,11 @@ class OverdueTasks extends React.Component {
     }
   }
   componentDidMount() {
-    const { navigation, dispatch } = this.props
+    const { navigation, dispatch, route } = this.props
+    const { count } = route.params
+    navigation.setOptions({ title: `Overdue Tasks(${count})` })
     this._unsubscribe = navigation.addListener('focus', () => {
       const { user } = this.props
-      navigation.setOptions({ title: `Overdue Tasks` })
       this.setState({ agentId: user.id }, () => {
         // Personal Diary
         this.getDiaries()

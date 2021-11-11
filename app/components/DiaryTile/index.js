@@ -38,8 +38,9 @@ class DiaryTile extends React.Component {
       showMenu,
       setClassification,
       handleMenuActions,
-      addTask,
-      editTask,
+      goToLeadDetails,
+      // addTask,
+      // editTask,
       screenName,
     } = this.props
     //const { todayDate, selectedTime, showTask, description, active } = this.state
@@ -68,13 +69,6 @@ class DiaryTile extends React.Component {
                 diary.taskType
               )}${DiaryHelper.showClientName(diary)}`}</Text>
 
-              <Text
-                numberOfLines={1}
-                onPress={() => setClassification(diary)}
-                style={[styles.classification, { color: DiaryHelper.setLeadCategoryColor(diary) }]}
-              >
-                {DiaryHelper.checkLeadCategory(diary)}
-              </Text>
               <View>
                 {diary.status !== 'completed' ? (
                   <Menu
@@ -169,14 +163,34 @@ class DiaryTile extends React.Component {
 
             <View style={styles.rowWidth100}>
               <View style={styles.bottomView}>
-                <Text style={styles.leadId}>{DiaryHelper.getLeadId(diary)}</Text>
+                <Text onPress={() => goToLeadDetails(diary)} style={styles.leadId}>
+                  {DiaryHelper.getLeadId(diary)}
+                </Text>
               </View>
-              <TouchableOpacity
-                style={{ width: '10%' }}
-                onPress={() => console.log('call connect')}
-              >
-                <Ionicons name="ios-call-outline" size={24} color={AppStyles.colors.primaryColor} />
-              </TouchableOpacity>
+              {DiaryHelper.getLeadId(diary) === null ? null : (
+                <>
+                  <Text
+                    numberOfLines={1}
+                    onPress={() => setClassification(diary)}
+                    style={[
+                      styles.classification,
+                      { color: DiaryHelper.setLeadCategoryColor(diary) },
+                    ]}
+                  >
+                    {DiaryHelper.checkLeadCategory(diary)}
+                  </Text>
+                  <TouchableOpacity
+                    style={{ width: '10%' }}
+                    onPress={() => console.log('call connect')}
+                  >
+                    <Ionicons
+                      name="ios-call-outline"
+                      size={24}
+                      color={AppStyles.colors.primaryColor}
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
           </View>
         </View>

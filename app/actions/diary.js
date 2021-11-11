@@ -37,6 +37,28 @@ export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
   }
 }
 
+export function setSelectedDiary(diary) {
+  return (dispatch, getsState) => {
+    let lead = null
+    if (diary.armsProjectLeadId) {
+      lead = { ...diary.armsProjectLead }
+    } else if (diary.armsLeadId) {
+      lead = { ...diary.armsLead }
+    } else if (diary.wantedId) {
+      lead = { ...diary.wanted }
+    } else {
+      return lead
+    }
+    dispatch({
+      type: types.SET_SELECTED_DIARY,
+      payload: {
+        diary,
+        lead,
+      },
+    })
+  }
+}
+
 export function getOverdueCount() {
   return (dispatch, getsState) => {
     let endPoint = ``

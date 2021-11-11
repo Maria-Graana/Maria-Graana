@@ -124,7 +124,7 @@ const DiaryHelper = {
     } else if (diary.wantedId) {
       return `ID:${diary.wantedId}`
     } else {
-      return ''
+      return null
     }
   },
 
@@ -158,7 +158,7 @@ const DiaryHelper = {
         return '#7BB461'
       } else if (taskType === 'viewing') {
         return '#006FF2'
-      } else if (taskType === 'daily_meeting') {
+      } else if (taskType === 'daily_update') {
         return '#73C2FE'
       } else if (taskType === 'morning_meeting') {
         return '#73C2FE'

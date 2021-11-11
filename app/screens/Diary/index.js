@@ -25,7 +25,9 @@ import axios from 'axios'
 import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
-import { getDiaryTasks, getOverdueCount } from '../../actions/diary'
+import { getDiaryTasks, getOverdueCount, setSelectedDiary } from '../../actions/diary'
+import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace'
+import { SET_DIARY_OVERDUE_COUNT } from '../../types'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -45,7 +47,7 @@ class Diary extends React.Component {
       selectedDate: _today,
       isCalendarVisible: false,
       showMenu: false,
-      selectedDiary: null,
+      //selectedDiary: null,
       // newDiaryData: [],
       // selectedMonth: moment(_today).format('MM'),
       // selectedYear: moment().year(),
@@ -98,11 +100,13 @@ class Diary extends React.Component {
   }
 
   showMenuOptions = (data) => {
-    this.setState({ selectedDiary: data, showMenu: true })
+    const { dispatch } = this.props
+    dispatch(setSelectedDiary(data))
+    this.setState({ showMenu: true })
   }
 
   hideMenu = () => {
-    this.setState({ selectedDiary: null, showMenu: false })
+    this.setState({ showMenu: false })
   }
 
   setCalendarVisible = (value) => {
@@ -115,44 +119,92 @@ class Diary extends React.Component {
   }
 
   handleMenuActions = (action) => {
-    const { selectedDiary } = this.state
+    const { navigation } = this.props
     if (action === 'mark_as_done') {
       this.markTaskAsDone()
     } else if (action === 'cancel_viewing') {
     } else if (action === 'task_details') {
     } else if (action === 'edit_task') {
     } else if (action === 'refer_lead') {
+      this.navigateToReferAssignLead('refer')
     } else if (action === 'reassign_lead') {
+      this.navigateToReferAssignLead('reassign')
     } else if (action === 'delete') {
     }
   }
 
-  onCategorySelected = (value) => {
-    // const { lead, fetchLead } = this.props
-    const { selectedDiary } = this.state
-    let body = {
-      leadCategory: value,
+  navigateToReferAssignLead = (mode) => {
+    const { navigation } = this.props
+    const { selectedLead, selectedDiary } = this.props.diary
+    let type = null
+    if (selectedDiary.armsProjectLeadId) {
+      type = 'investment'
+    } else if (selectedDiary.armsLeadId) {
+      type = selectedLead.purpose
     }
-    // var leadId = []
-    // leadId.push(selectedDiary.id)
-    this.setState({ isLeadCategoryModalVisible: false }, () => {
-      helper.successToast(`Lead Category added`)
+    navigation.navigate('AssignLead', {
+      leadId: selectedLead.id,
+      type: type,
+      purpose: mode,
+      screenName: 'Diary',
     })
-    // axios
-    //   .patch(`/api/leads/project`, body, { params: { id: leadId } })
-    //   .then((res) => {
-    //     this.setState({ isLeadCategoryModalVisible: false }, () => {
-    //       helper.successToast(`Lead Category added`)
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('/api/leads/project - Error', error)
-    //     helper.errorToast('Closed lead API failed!!')
-    //   })
+  }
+
+  setClassification = (diary) => {
+    const { dispatch } = this.props
+    dispatch(setSelectedDiary(diary))
+    this.setState({
+      isLeadCategoryModalVisible: true,
+    })
+  }
+
+  onCategorySelected = (value) => {
+    const { selectedLead } = this.props.diary
+    if (selectedLead) {
+      let endPoint = ``
+      let body = {
+        leadCategory: value,
+      }
+      endPoint = selectedLead.projectId ? `/api/leads/project` : `api/leads`
+      var leadId = []
+      leadId.push(selectedLead.id)
+      this.setState({ isLeadCategoryModalVisible: false }, () => {
+        helper.successToast(`Lead Category added`)
+      })
+      axios
+        .patch(endPoint, body, { params: { id: leadId } })
+        .then((res) => {
+          this.setState({ isLeadCategoryModalVisible: false }, () => {
+            this.getDiaries()
+            helper.successToast(`Lead Category added`)
+          })
+        })
+        .catch((error) => {
+          console.log('/api/leads/project - Error', error)
+          helper.errorToast('Closed lead API failed!!')
+        })
+    }
+  }
+
+  navigateToLeadDetail = (data) => {
+    const { navigation } = this.props
+    let lead = null
+    let purposeTab = null
+    if (data.armsProjectLeadId) {
+      lead = { ...data.armsProjectLead }
+      purposeTab = 'invest'
+    } else if (data.armsLeadId) {
+      lead = { ...data.armsLead }
+      purposeTab = lead.purpose
+    } else if (data.wantedId) {
+      lead = { ...data.wanted }
+      purposeTab = lead.purpose
+    }
+    navigation.navigate('LeadDetail', { lead, purposeTab })
   }
 
   markTaskAsDone = () => {
-    const { selectedDiary } = this.state
+    const { selectedDiary } = this.props.diary
     let that = this
     let endPoint = ``
     endPoint = `/api/diary/update?id=${selectedDiary.id}`
@@ -171,10 +223,9 @@ class Diary extends React.Component {
   }
 
   render() {
-    const { selectedDate, isCalendarVisible, selectedDiary, showMenu, isLeadCategoryModalVisible } =
-      this.state
+    const { selectedDate, isCalendarVisible, showMenu, isLeadCategoryModalVisible } = this.state
     const { overdueCount, diary } = this.props
-    const { diaries, loading } = diary
+    const { diaries, loading, selectedDiary, selectedLead } = diary
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -197,7 +248,7 @@ class Diary extends React.Component {
           }}
           onCategorySelected={(value) => this.onCategorySelected(value)}
           selectedCategory={
-            selectedDiary && selectedDiary.leadCategory ? selectedDiary.leadCategory : null
+            selectedLead && selectedLead.leadCategory ? selectedLead.leadCategory : null
           }
         />
 
@@ -237,15 +288,11 @@ class Diary extends React.Component {
                 showMenu={showMenu}
                 showMenuOptions={(value) => this.showMenuOptions(value)}
                 handleMenuActions={(action) => this.handleMenuActions(action)}
+                setClassification={this.setClassification}
+                goToLeadDetails={this.navigateToLeadDetail}
                 selectedDiary={selectedDiary}
                 screenName={'diary'}
                 hideMenu={() => this.hideMenu()}
-                setClassification={(value) =>
-                  this.setState({
-                    isLeadCategoryModalVisible: true,
-                    selectedDiary: value,
-                  })
-                }
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}
@@ -299,6 +346,8 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     diary: store.diary.diary,
+    selectedDiary: store.diary.selectedDiary,
+    selectedLead: store.diary.selectedLead,
     overdueCount: store.diary.overdueCount,
   }
 }

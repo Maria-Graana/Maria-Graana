@@ -6,14 +6,22 @@ import { combineReducers } from 'redux'
 let diaryData = {
   diaries: [],
   loading: false,
+  selectedDiary: null,
+  selectedLead: null,
 }
+
 const diary = (state = diaryData, action) => {
   switch (action.type) {
     case types.SET_DIARY_LOADER:
       return { ...diaryData, loading: action.payload }
     case types.GET_DIARIES:
       return { ...diaryData, diaries: action.payload }
-
+    case types.SET_SELECTED_DIARY:
+      return {
+        ...state,
+        selectedDiary: action.payload.diary,
+        selectedLead: action.payload.lead,
+      }
     default:
       return state
   }

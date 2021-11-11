@@ -53,7 +53,7 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
   },
   taskType: {
-    width: '62%',
+    width: '90%',
     fontFamily: AppStyles.fonts.semiBoldFont,
     fontSize: 14,
     color: AppStyles.colors.textColor,
@@ -62,8 +62,8 @@ export default styles = StyleSheet.create({
   classification: {
     fontFamily: AppStyles.fonts.semiBoldFont,
     fontSize: 12,
-    width: '30%',
-    textAlign: 'center',
+    width: '40%',
+    //textAlign: 'center',
   },
   taskResponseView: {
     flexDirection: 'row',
@@ -88,7 +88,7 @@ export default styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   bottomView: {
-    width: '90%',
+    width: '50%',
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -102,8 +102,9 @@ export default styles = StyleSheet.create({
 
   leadId: {
     paddingStart: 5,
-    // textDecorationLine: 'underline',
+    textDecorationLine: 'underline',
     fontFamily: AppStyles.fonts.lightFont,
-    fontSize: 12,
+    color: AppStyles.colors.primaryColor,
+    fontSize: 14,
   },
 })

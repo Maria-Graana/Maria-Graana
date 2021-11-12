@@ -165,6 +165,15 @@ const DiaryHelper = {
       }
     }
   },
+  getReportDuration(diary) {
+    if (diary && diary.start && diary.end) {
+      return `${moment(diary.start).format('hh:mm')} to  ${moment(diary.end).format(
+        'hh:mm'
+      )} (${moment(diary.start).format('dddd MMM Do')})`
+    } else {
+      return '-'
+    }
+  },
 }
 
 module.exports = DiaryHelper

@@ -46,8 +46,6 @@ export function setSelectedDiary(diary) {
       lead = { ...diary.armsLead }
     } else if (diary.wantedId) {
       lead = { ...diary.wanted }
-    } else {
-      return lead
     }
     dispatch({
       type: types.SET_SELECTED_DIARY,

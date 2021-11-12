@@ -63,7 +63,6 @@ class Diary extends React.Component {
         const { openDate } = route.params
         dateSelected = moment(openDate).format(_format)
       }
-      // navigation.setOptions({ title: moment(dateSelected).format('DD MMMM YYYY') })
       if (route.params !== undefined && 'agentId' in route.params) {
         navigation.setOptions({ title: `${route.params.name} Diary` })
         this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
@@ -122,12 +121,13 @@ class Diary extends React.Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation } = this.props
+    const { navigation, diary } = this.props
+    const { selectedDiary } = diary
     if (action === 'mark_as_done') {
       this.markTaskAsDone()
     } else if (action === 'cancel_viewing') {
     } else if (action === 'task_details') {
-      navigation.navigate('TaskDetails')
+      navigation.navigate('TaskDetails', { diary: selectedDiary })
     } else if (action === 'edit_task') {
     } else if (action === 'refer_lead') {
       this.navigateToReferAssignLead('refer')

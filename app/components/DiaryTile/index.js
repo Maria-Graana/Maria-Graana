@@ -118,25 +118,28 @@ class DiaryTile extends React.Component {
                         title="Edit Task"
                       />
 
-                      {!diary.wantedId ? (
-                        <Menu.Item
-                          onPress={() => {
-                            handleMenuActions('refer_lead')
-                            hideMenu()
-                          }}
-                          title="Refer Lead"
-                        />
+                      {diary.taskType !== 'morning_meeting' && diary.taskType !== 'daily_update' ? (
+                        <View>
+                          {!diary.wantedId ? (
+                            <Menu.Item
+                              onPress={() => {
+                                handleMenuActions('refer_lead')
+                                hideMenu()
+                              }}
+                              title="Refer Lead"
+                            />
+                          ) : null}
+                          <Menu.Item
+                            onPress={() => {
+                              handleMenuActions('reassign_lead')
+                              hideMenu()
+                            }}
+                            title="Reassign Lead"
+                          />
+                        </View>
                       ) : null}
 
-                      <Menu.Item
-                        onPress={() => {
-                          handleMenuActions('reassign_lead')
-                          hideMenu()
-                        }}
-                        title="Reassign Lead"
-                      />
-
-                      {diary.taskType === 'morning meeting' || diary.taskType === 'daily update' ? (
+                      {diary.taskType === 'morning_meeting' || diary.taskType === 'daily_update' ? (
                         <Menu.Item
                           onPress={() => {
                             handleMenuActions('delete')

@@ -55,7 +55,6 @@ class Diary extends React.Component {
   }
   componentDidMount() {
     const { navigation, dispatch } = this.props
-    dispatch(getOverdueCount())
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route, user } = this.props
       let { selectedDate } = this.state
@@ -68,6 +67,8 @@ class Diary extends React.Component {
       if (route.params !== undefined && 'agentId' in route.params) {
         navigation.setOptions({ title: `${route.params.name} Diary` })
         this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
+          this.getDiaries()
+
           // Team Diary View
         })
       } else {
@@ -83,7 +84,8 @@ class Diary extends React.Component {
   getDiaries = () => {
     const { agentId, selectedDate } = this.state
     const { dispatch } = this.props
-    dispatch(getDiaryTasks(selectedDate))
+    dispatch(getDiaryTasks(selectedDate, agentId, false))
+    dispatch(getOverdueCount(agentId))
   }
 
   setSelectedDate = (date, mode) => {
@@ -115,7 +117,8 @@ class Diary extends React.Component {
 
   goToOverdueTasks = () => {
     const { navigation, overdueCount } = this.props
-    navigation.navigate('OverdueTasks', { count: overdueCount })
+    const { agentId } = this.state
+    navigation.navigate('OverdueTasks', { count: overdueCount, agentId })
   }
 
   handleMenuActions = (action) => {

@@ -9,7 +9,7 @@ export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
     if (overdue) {
       endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}`
     } else {
-      endPoint = `/api/diary/all?date[]=${selectedDate}`
+      endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}`
     }
     dispatch({
       type: types.SET_DIARY_LOADER,
@@ -59,10 +59,10 @@ export function setSelectedDiary(diary) {
   }
 }
 
-export function getOverdueCount() {
+export function getOverdueCount(agentId) {
   return (dispatch, getsState) => {
     let endPoint = ``
-    endPoint = `/api/diary/overdue/count`
+    endPoint = `/api/diary/overdue/count?userID=${agentId}`
     axios
       .get(`${endPoint}`)
       .then((res) => {

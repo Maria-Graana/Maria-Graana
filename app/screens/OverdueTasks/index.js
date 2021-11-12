@@ -34,20 +34,17 @@ class OverdueTasks extends React.Component {
   }
   componentDidMount() {
     const { navigation, dispatch, route } = this.props
-    const { count } = route.params
+    const { count, agentId } = route.params
     navigation.setOptions({ title: `Overdue Tasks(${count})` })
     this._unsubscribe = navigation.addListener('focus', () => {
-      const { user } = this.props
-      this.setState({ agentId: user.id }, () => {
-        // Personal Diary
-        this.getDiaries()
-      })
+      this.getDiaries()
     })
   }
 
   getDiaries = () => {
-    const { dispatch, user } = this.props
-    dispatch(getDiaryTasks(null, user.id, true))
+    const { dispatch, user, route } = this.props
+    const { agentId } = route.params
+    dispatch(getDiaryTasks(null, agentId, true))
   }
 
   showMenuOptions = (data) => {

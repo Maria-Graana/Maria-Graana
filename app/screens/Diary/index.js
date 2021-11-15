@@ -18,16 +18,20 @@ import AppStyles from '../../AppStyles'
 import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
 import moment from 'moment'
-import StaticData from '../../StaticData'
 import DiaryTile from '../../components/DiaryTile'
 import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
 import axios from 'axios'
 import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
-import { getDiaryTasks, getOverdueCount, setSelectedDiary } from '../../actions/diary'
-import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace'
-import { SET_DIARY_OVERDUE_COUNT } from '../../types'
+import {
+  getDiaryTasks,
+  getOverdueCount,
+  markDiaryTaskAsDone,
+  setCategory,
+  setClassificationModal,
+  setSelectedDiary,
+} from '../../actions/diary'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -38,19 +42,10 @@ class Diary extends React.Component {
     super(props)
     this.state = {
       startDate: _today,
-      isLeadCategoryModalVisible: false,
-      // startMonthDate: startOfMonth,
-      // endMonthDate: endOfMonth,
-      //diaryData: {},
-      // loading: true,
       agentId: '',
       selectedDate: _today,
       isCalendarVisible: false,
       showMenu: false,
-      //selectedDiary: null,
-      // newDiaryData: [],
-      // selectedMonth: moment(_today).format('MM'),
-      // selectedYear: moment().year(),
     }
   }
   componentDidMount() {
@@ -121,10 +116,11 @@ class Diary extends React.Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation, diary } = this.props
+    const { navigation, diary, dispatch } = this.props
     const { selectedDiary } = diary
+    const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
-      this.markTaskAsDone()
+      dispatch(markDiaryTaskAsDone(selectedDate, agentId))
     } else if (action === 'cancel_viewing') {
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
@@ -154,42 +150,6 @@ class Diary extends React.Component {
     })
   }
 
-  setClassification = (diary) => {
-    const { dispatch } = this.props
-    dispatch(setSelectedDiary(diary))
-    this.setState({
-      isLeadCategoryModalVisible: true,
-    })
-  }
-
-  onCategorySelected = (value) => {
-    const { selectedLead } = this.props.diary
-    if (selectedLead) {
-      let endPoint = ``
-      let body = {
-        leadCategory: value,
-      }
-      endPoint = selectedLead.projectId ? `/api/leads/project` : `api/leads`
-      var leadId = []
-      leadId.push(selectedLead.id)
-      this.setState({ isLeadCategoryModalVisible: false }, () => {
-        helper.successToast(`Lead Category added`)
-      })
-      axios
-        .patch(endPoint, body, { params: { id: leadId } })
-        .then((res) => {
-          this.setState({ isLeadCategoryModalVisible: false }, () => {
-            this.getDiaries()
-            helper.successToast(`Lead Category added`)
-          })
-        })
-        .catch((error) => {
-          console.log('/api/leads/project - Error', error)
-          helper.errorToast('Closed lead API failed!!')
-        })
-    }
-  }
-
   navigateToLeadDetail = (data) => {
     const { navigation } = this.props
     let lead = null
@@ -207,34 +167,15 @@ class Diary extends React.Component {
     navigation.navigate('LeadDetail', { lead, purposeTab })
   }
 
-  markTaskAsDone = () => {
-    const { selectedDiary } = this.props.diary
-    let that = this
-    let endPoint = ``
-    endPoint = `/api/diary/update?id=${selectedDiary.id}`
-    axios
-      .patch(endPoint, {
-        status: 'completed',
-      })
-      .then(function (response) {
-        //console.log(response)
-        if (response.status == 200) {
-          that.getDiaries()
-          //helper.deleteLocalNotification(data.id)
-          // navigation.goBack()
-        }
-      })
-  }
-
   navigateToFiltersScreen = () => {
     const { navigation } = this.props
     navigation.navigate('DiaryFilter')
   }
 
   render() {
-    const { selectedDate, isCalendarVisible, showMenu, isLeadCategoryModalVisible } = this.state
-    const { overdueCount, diary } = this.props
-    const { diaries, loading, selectedDiary, selectedLead } = diary
+    const { selectedDate, isCalendarVisible, showMenu, agentId } = this.state
+    const { overdueCount, diary, dispatch } = this.props
+    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal } = diary
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -251,11 +192,11 @@ class Diary extends React.Component {
         </Fab>
 
         <AddLeadCategoryModal
-          visible={isLeadCategoryModalVisible}
+          visible={showClassificationModal}
           toggleCategoryModal={(value) => {
-            this.setState({ isLeadCategoryModalVisible: value })
+            dispatch(setClassificationModal(value))
           }}
-          onCategorySelected={(value) => this.onCategorySelected(value)}
+          onCategorySelected={(value) => dispatch(setCategory(value, selectedDate, agentId))}
           selectedCategory={
             selectedLead && selectedLead.leadCategory ? selectedLead.leadCategory : null
           }
@@ -300,7 +241,10 @@ class Diary extends React.Component {
                 showMenu={showMenu}
                 showMenuOptions={(value) => this.showMenuOptions(value)}
                 handleMenuActions={(action) => this.handleMenuActions(action)}
-                setClassification={this.setClassification}
+                setClassification={(diary) => {
+                  dispatch(setSelectedDiary(diary))
+                  dispatch(setClassificationModal(true))
+                }}
                 goToLeadDetails={this.navigateToLeadDetail}
                 selectedDiary={selectedDiary}
                 screenName={'diary'}

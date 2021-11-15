@@ -8,6 +8,7 @@ let diaryData = {
   loading: false,
   selectedDiary: null,
   selectedLead: null,
+  showClassificationModal: false,
 }
 
 const diary = (state = diaryData, action) => {
@@ -21,6 +22,11 @@ const diary = (state = diaryData, action) => {
         ...state,
         selectedDiary: action.payload.diary,
         selectedLead: action.payload.lead,
+      }
+    case types.SET_CLASSIFICATION_MODAL:
+      return {
+        ...state,
+        showClassificationModal: action.payload,
       }
     default:
       return state

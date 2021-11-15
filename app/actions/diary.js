@@ -2,6 +2,7 @@
 
 import * as types from '../types'
 import axios from 'axios'
+import helper from '../helper.js'
 
 export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
   return (dispatch, getsState) => {
@@ -73,6 +74,64 @@ export function getOverdueCount(agentId) {
       })
       .catch((error) => {
         console.log(error)
+      })
+  }
+}
+
+export const setClassificationModal = (value) => {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_CLASSIFICATION_MODAL,
+      payload: value,
+    })
+  }
+}
+
+export function setCategory(category, selectedDate = null, agentId) {
+  return (dispatch, getsState) => {
+    const { selectedLead } = getsState().diary.diary
+    if (selectedLead) {
+      let endPoint = ``
+      let body = {
+        leadCategory: category,
+      }
+      endPoint = selectedLead.projectId ? `/api/leads/project` : `api/leads`
+      var leadId = []
+      leadId.push(selectedLead.id)
+      axios
+        .patch(endPoint, body, { params: { id: leadId } })
+        .then((res) => {
+          dispatch(setClassificationModal(false))
+          if (res.status === 200) {
+            helper.successToast(`Lead Category added`)
+            dispatch(getDiaryTasks(selectedDate, agentId))
+          } else {
+            helper.successToast(`Something went wrong!`)
+          }
+        })
+        .catch((error) => {
+          console.log('/api/leads/project - Error', error)
+          dispatch(setClassificationModal(false))
+        })
+    }
+  }
+}
+
+export const markDiaryTaskAsDone = (selectedDate, agentId) => {
+  return (dispatch, getsState) => {
+    const { selectedDiary } = getsState().diary.diary
+    let endPoint = ``
+    endPoint = `/api/diary/update?id=${selectedDiary.id}`
+    axios
+      .patch(endPoint, {
+        status: 'completed',
+      })
+      .then(function (response) {
+        if (response.status == 200) {
+          dispatch(getDiaryTasks(selectedDate, agentId))
+          helper.successToast(`Task completed`)
+          //helper.deleteLocalNotification(data.id)
+        }
       })
   }
 }

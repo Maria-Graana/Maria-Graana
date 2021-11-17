@@ -194,3 +194,23 @@ export const markDiaryTaskAsDone = (selectedDate, agentId) => {
       })
   }
 }
+
+export const deleteDiaryTask = (selectedDate, agentId) => {
+  return (dispatch, getsState) => {
+    const { selectedDiary } = getsState().diary.diary
+    let endPoint = ``
+    endPoint = `/api/diary/delete?id=${selectedDiary.id}`
+    axios
+      .delete(endPoint)
+      .then(function (response) {
+        if (response.status === 200) {
+          helper.successToast('TASK DELETED SUCCESSFULLY!')
+          dispatch(getDiaryTasks(selectedDate, agentId))
+          // helper.deleteLocalNotification(data.id)
+        }
+      })
+      .catch(function (error) {
+        helper.successToast(error.message)
+      })
+  }
+}

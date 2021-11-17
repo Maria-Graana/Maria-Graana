@@ -10,6 +10,7 @@ import {
   FlatList,
   SafeAreaView,
   TouchableOpacity,
+  Alert,
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
@@ -25,6 +26,7 @@ import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
+  deleteDiaryTask,
   getDiaryTasks,
   getOverdueCount,
   markDiaryTaskAsDone,
@@ -129,6 +131,15 @@ class Diary extends React.Component {
     } else if (action === 'reassign_lead') {
       this.navigateToReferAssignLead('reassign')
     } else if (action === 'delete') {
+      Alert.alert(
+        'Delete Task',
+        'Are you sure you want to delete this task ?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Delete', onPress: () => dispatch(deleteDiaryTask(selectedDate, agentId)) },
+        ],
+        { cancelable: false }
+      )
     }
   }
 

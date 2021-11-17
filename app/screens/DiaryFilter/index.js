@@ -75,10 +75,7 @@ class DiaryFilter extends React.Component {
               }
             })
 
-            // console.log(response)
-            this.setState({ loading: false, feedbackReasons: response }, () => {
-              //console.log(this.state.feedbackReasons)
-            })
+            this.setState({ loading: false, feedbackReasons: response })
           }
         })
         .catch((error) => {})
@@ -88,9 +85,7 @@ class DiaryFilter extends React.Component {
   onSearchPressed = () => {
     const { navigation, route, dispatch } = this.props
     const { agentId, isOverdue = false } = route.params
-    const { filters } = this.props
-    //console.log(filters)
-    dispatch(setDiarySearch(agentId, isOverdue))
+    dispatch(getDiaryTasks(null, agentId, isOverdue, true))
     navigation.goBack()
   }
 

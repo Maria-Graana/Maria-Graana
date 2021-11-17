@@ -5,15 +5,33 @@ import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
 
-export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
+export function getDiaryTasks(
+  selectedDate,
+  agentId = null,
+  overdue = false,
+  isFilterApplied = false
+) {
   return (dispatch, getsState) => {
     let endPoint = ``
 
-    if (overdue) {
-      endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}`
+    if (isFilterApplied) {
+      // if filter is applied
+      const { filters } = getsState().diary
+      if (overdue) delete filters.date
+      let urlValue = mapFiltersToQuery(filters)
+      if (overdue) {
+        endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}&${urlValue}`
+      } else {
+        endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}`
+      }
     } else {
-      endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}`
+      if (overdue) {
+        endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}`
+      } else {
+        endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}`
+      }
     }
+
     dispatch({
       type: types.SET_DIARY_LOADER,
       payload: true,
@@ -96,46 +114,6 @@ export function clearDiaryFilter() {
     dispatch({
       type: types.CLEAR_DIARY_FILTER,
     })
-  }
-}
-
-export function setDiarySearch(agentId = null, overdue = false) {
-  return (dispatch, getsState) => {
-    let endPoint = ``
-    const { filters } = getsState().diary
-    if (overdue) delete filters.date
-    let urlValue = mapFiltersToQuery(filters)
-
-    console.log(urlValue)
-
-    if (overdue) {
-      endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}&${urlValue}`
-    } else {
-      endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}`
-    }
-    dispatch({
-      type: types.SET_DIARY_LOADER,
-      payload: true,
-    })
-
-    axios
-      .get(`${endPoint}`)
-      .then((res) => {
-        if (res.data) {
-          dispatch({
-            type: types.GET_DIARIES,
-            payload: res.data,
-          })
-        }
-      })
-
-      .catch((error) => {
-        console.log(error)
-        dispatch({
-          type: types.SET_DIARY_LOADER,
-          payload: false,
-        })
-      })
   }
 }
 

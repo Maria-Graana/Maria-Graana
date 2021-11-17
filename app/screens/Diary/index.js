@@ -51,29 +51,27 @@ class Diary extends React.Component {
   componentDidMount() {
     const { navigation, dispatch } = this.props
     const { route, user } = this.props
-    let { selectedDate } = this.state
-    let dateSelected = selectedDate
-    if ('openDate' in route.params) {
-      const { openDate } = route.params
-      dateSelected = moment(openDate).format(_format)
-    }
-    if (route.params !== undefined && 'agentId' in route.params) {
-      navigation.setOptions({ title: `${route.params.name} Diary` })
-      this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
-        this.getDiaries()
-
-        // Team Diary View
-      })
-    } else {
-      navigation.setOptions({ title: 'My Diary' })
-      this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
-        // Personal Diary
-        this.getDiaries()
-      })
-    }
-    // this._unsubscribe = navigation.addListener('focus', () => {
-
-    // })
+    this._unsubscribe = navigation.addListener('focus', () => {
+      let { selectedDate } = this.state
+      let dateSelected = selectedDate
+      if ('openDate' in route.params) {
+        const { openDate } = route.params
+        dateSelected = moment(openDate).format(_format)
+      }
+      if (route.params !== undefined && 'agentId' in route.params) {
+        navigation.setOptions({ title: `${route.params.name} Diary` })
+        this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
+          this.getDiaries()
+          // Team Diary View
+        })
+      } else {
+        navigation.setOptions({ title: 'My Diary' })
+        this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
+          // Personal Diary
+          this.getDiaries()
+        })
+      }
+    })
   }
 
   getDiaries = () => {
@@ -170,8 +168,8 @@ class Diary extends React.Component {
 
   navigateToFiltersScreen = () => {
     const { navigation } = this.props
-    const { agentId } = this.state
-    navigation.navigate('DiaryFilter', { agentId, isOverdue: false })
+    const { agentId, selectedDate } = this.state
+    navigation.navigate('DiaryFilter', { agentId, isOverdue: false, selectedDate })
   }
 
   render() {

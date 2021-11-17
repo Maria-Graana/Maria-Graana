@@ -2,6 +2,10 @@
 
 import * as types from '../types'
 import { combineReducers } from 'redux'
+import moment from 'moment'
+
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
 
 let diaryData = {
   diaries: [],
@@ -9,6 +13,18 @@ let diaryData = {
   selectedDiary: null,
   selectedLead: null,
   showClassificationModal: false,
+}
+
+let filtersData = {
+  date: null,
+  feedbacksId: null,
+  leadType: null,
+  wantedId: null,
+  projectId: null,
+  buyrentId: null,
+  customerId: null,
+  customerName: null,
+  customerPhoneNumber: null,
 }
 
 const diary = (state = diaryData, action) => {
@@ -42,7 +58,19 @@ const overdueCount = (state = 0, action) => {
   }
 }
 
+const filters = (state = filtersData, action) => {
+  switch (action.type) {
+    case types.SET_DIARY_FILTER:
+      return action.payload
+    case types.CLEAR_DIARY_FILTER:
+      return filtersData
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   diary,
   overdueCount,
+  filters,
 })

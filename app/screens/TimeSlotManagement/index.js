@@ -1,7 +1,6 @@
 /** @format */
 
 import axios from 'axios'
-import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { ScrollView, Text, TouchableHighlight, View } from 'react-native'
 
@@ -16,12 +15,14 @@ export default function TimeSlotManagement({ navigation }) {
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
   const [selectedDate, setSelectedDate] = useState(_today)
   const [loading, setLoading] = useState(true)
+  const [details, setDetails] = useState(null)
+  const [disabled, setDisabled] = useState(true)
+
+  const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
   const setSelectedDateData = (date, mode) => {
     setSelectedDate(date), setIsCalendarVisible(mode === 'month' ? isCalendarVisible : false)
     setLoading(true)
-
-    // this.getDiaries()
   }
 
   const setCalendarVisible = (value) => {
@@ -30,24 +31,25 @@ export default function TimeSlotManagement({ navigation }) {
 
   const dataSlots = (res) => {
     var x = new Array(24)
-
     for (var i = 0; i < 24; i++) {
       x[i] = new Array(11)
     }
-
     addData(res, x)
   }
 
   const addData = (res, x) => {
     var r = 0
-
     for (var i = 0; i < x.length; i++) {
       for (var j = 0; j < x[i].length; j++, r++) {
-        x[i][j] = res[r].id
+        x[i][j] = res[r]
       }
     }
-
     setData(x)
+  }
+
+  const showDetail = (e) => {
+    setDisabled(false)
+    setDetails(e)
   }
 
   useEffect(() => {
@@ -58,8 +60,6 @@ export default function TimeSlotManagement({ navigation }) {
       .then((res) => dataSlots(res.data))
       .catch((err) => console.log(err))
   }, [])
-
-  const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
   return (
     <View style={styles.container}>
@@ -84,20 +84,10 @@ export default function TimeSlotManagement({ navigation }) {
       </View>
       <ScrollView horizontal={true}>
         <ScrollView>
-          <View
-            style={{
-              flexDirection: 'row',
-
-              padding: 10,
-              paddingLeft: 60,
-            }}
-          >
+          <View style={styles.viewHourCol}>
             {hourArray.map((o, i) => {
               return (
-                <View
-                  style={{ padding: 5, alignItems: 'center', justifyContent: 'center' }}
-                  key={i}
-                >
+                <View style={styles.hourCol} key={i}>
                   <Text>{o}</Text>
                 </View>
               )
@@ -106,29 +96,18 @@ export default function TimeSlotManagement({ navigation }) {
           {data &&
             rotateArray.map((o, i) => {
               return (
-                <View style={{ flexDirection: 'row' }} key={i}>
-                  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ padding: 10 }}>{minArray[i]}</Text>
+                <View style={styles.viewMinCol} key={i}>
+                  <View style={styles.minCol}>
+                    <Text>{minArray[i]}</Text>
                   </View>
                   {o.map((e, i) => {
                     return (
                       <TouchableHighlight
                         activeOpacity={0.1}
                         underlayColor="grey"
-                        onPress={() => console.log(e)}
+                        onPress={() => showDetail(e)}
                       >
-                        <View
-                          style={{
-                            flex: 1,
-                            padding: 30,
-                            backgroundColor: 'white',
-                            borderWidth: 0.5,
-                            borderColor: 'black',
-                          }}
-                          key={i}
-                        >
-                          {/* <Text>{e}</Text> */}
-                        </View>
+                        <View style={styles.hourRow} key={i} />
                       </TouchableHighlight>
                     )
                   })}
@@ -146,7 +125,8 @@ export default function TimeSlotManagement({ navigation }) {
           borderColor="#0f73ee"
           borderWidth={1}
           label="Show Details"
-          // onPress={() => formSubmit()}
+          disabled={disabled}
+          onPress={() => console.log(details)}
           // loading={imageLoading || loading}
         />
         <TouchableButton
@@ -155,6 +135,7 @@ export default function TimeSlotManagement({ navigation }) {
           borderColor="white"
           containerBackgroundColor="#0f73ee"
           borderWidth={1}
+          disabled={disabled}
           // onPress={() => formSubmit()}
           // loading={imageLoading || loading}
         />

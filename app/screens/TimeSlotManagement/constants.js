@@ -1,5 +1,7 @@
 /** @format */
 
+import moment from 'moment'
+
 export const minArray = [
   '05min',
   '10min',

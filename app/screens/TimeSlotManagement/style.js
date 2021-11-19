@@ -20,4 +20,34 @@ export default styles = StyleSheet.create({
     marginTop: 15,
     justifyContent: 'flex-end',
   },
+  minCol: {
+    minWidth: '4%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hourCol: {
+    minWidth: '5%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hourRow: {
+    minWidth: '5%',
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingTop: 23,
+    paddingBottom: 23,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderWidth: 0.6,
+    borderColor: 'grey',
+  },
+  viewHourCol: {
+    flexDirection: 'row',
+    padding: 10,
+    paddingLeft: 60,
+  },
+  viewMinCol: {
+    flexDirection: 'row',
+  },
 })

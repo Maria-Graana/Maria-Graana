@@ -85,7 +85,7 @@ class Diary extends React.Component {
       axios
         .get(`${endPoint}`)
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           this.setState(
             {
               diaryData: res.data,
@@ -174,7 +174,7 @@ class Diary extends React.Component {
             marginBottom: heightPercentageToDP('10%'),
           }}
           position="bottomRight"
-          onPress={() => console.log('add diary')}
+          onPress={this.props.navigation.navigate('TimeSlotManagement')}
         >
           <Ionicons name="md-add" color="#ffffff" />
         </Fab>

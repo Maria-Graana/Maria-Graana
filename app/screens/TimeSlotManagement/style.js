@@ -50,4 +50,10 @@ export default styles = StyleSheet.create({
   viewMinCol: {
     flexDirection: 'row',
   },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
 })

@@ -3,26 +3,32 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { ScrollView, Text, TouchableHighlight, View } from 'react-native'
+import { FontAwesome } from '@expo/vector-icons'
 
 import styles from './style'
 import TouchableButton from '../../components/TouchableButton'
 import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
 import { minArray, hourArray, _format, _dayAfterTomorrow, _today, _tomorrow } from './constants'
+import { connect } from 'react-redux'
+import { setSlotDiaryData } from '../../actions/slotManagement'
 
-export default function TimeSlotManagement({ navigation }) {
+function TimeSlotManagement(props) {
   const [data, setData] = useState(null)
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
   const [selectedDate, setSelectedDate] = useState(_today)
   const [loading, setLoading] = useState(true)
-  const [details, setDetails] = useState(null)
   const [disabled, setDisabled] = useState(true)
+  const [diary, setDiary] = useState(null)
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
   const setSelectedDateData = (date, mode) => {
     setSelectedDate(date), setIsCalendarVisible(mode === 'month' ? isCalendarVisible : false)
     setLoading(true)
+
+    const { dispatch } = props
+    dispatch(setSlotDiaryData(date))
   }
 
   const setCalendarVisible = (value) => {
@@ -47,13 +53,24 @@ export default function TimeSlotManagement({ navigation }) {
     setData(x)
   }
 
+  const diaryData = (res, e) => {
+    for (var i = 0; i < res.length; i++) {
+      if (res[i].slotId == e.id) {
+        setDiary(res[i])
+      }
+    }
+  }
+
   const showDetail = (e) => {
+    const { dispatch } = props
+    dispatch(setSlotDiaryData(selectedDate))
+
     setDisabled(false)
-    setDetails(e)
+
+    diaryData(props.slotDiary, e)
   }
 
   useEffect(() => {
-    navigation.setOptions({ title: 'SLOT MANAGEMENT' })
     let url = 'api/slotManagement/slot'
     axios
       .get(`${url}`)
@@ -71,7 +88,7 @@ export default function TimeSlotManagement({ navigation }) {
         selectedDate={selectedDate}
         onPress={() => setCalendarVisible(!isCalendarVisible)}
       />
-      <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'white' }}>
+      <View style={styles.topRow}>
         <DateControl
           selectedDate={selectedDate}
           setCalendarVisible={(value) => setCalendarVisible(value)}
@@ -81,6 +98,7 @@ export default function TimeSlotManagement({ navigation }) {
           initialDayAfterTomorrow={_dayAfterTomorrow}
           loading={loading}
         />
+        <FontAwesome name="calendar" size={25} color="#0f73ee" />
       </View>
       <ScrollView horizontal={true}>
         <ScrollView>
@@ -126,7 +144,11 @@ export default function TimeSlotManagement({ navigation }) {
           borderWidth={1}
           label="Show Details"
           disabled={disabled}
-          onPress={() => console.log(details)}
+          onPress={() =>
+            props.navigation.navigate('ScheduledTasks', {
+              diary: diary,
+            })
+          }
           // loading={imageLoading || loading}
         />
         <TouchableButton
@@ -143,3 +165,11 @@ export default function TimeSlotManagement({ navigation }) {
     </View>
   )
 }
+
+mapStateToProps = (store) => {
+  return {
+    slotDiary: store.slotManagement.slotDiaryData,
+  }
+}
+
+export default connect(mapStateToProps)(TimeSlotManagement)

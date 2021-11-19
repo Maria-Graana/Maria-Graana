@@ -51,6 +51,7 @@ import PropertyTabs from './PropertyTabNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
 
 import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
+import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
 
 const Stack = createStackNavigator()
 
@@ -93,7 +94,18 @@ function MainStack() {
         name="TimeSlotManagement"
         component={TimeSlotManagement}
         options={({ navigation, route }) => ({
-          title: '',
+          title: 'SLOT MANAGEMENT',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
+      <Stack.Screen
+        name="ScheduledTasks"
+        component={ScheduledTasks}
+        options={({ navigation, route }) => ({
+          title: 'SCHEDULED TASKS',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',

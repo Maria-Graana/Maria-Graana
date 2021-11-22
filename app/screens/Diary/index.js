@@ -29,11 +29,14 @@ import {
   deleteDiaryTask,
   getDiaryTasks,
   getOverdueCount,
+  increasePageCount,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
+  setOnEndReachedLoader,
   setSelectedDiary,
 } from '../../actions/diary'
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -186,7 +189,14 @@ class Diary extends React.Component {
   render() {
     const { selectedDate, isCalendarVisible, showMenu, agentId } = this.state
     const { overdueCount, diary, dispatch } = this.props
-    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal } = diary
+    const {
+      diaries,
+      loading,
+      selectedDiary,
+      selectedLead,
+      showClassificationModal,
+      onEndReachedLoader,
+    } = diary
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -262,9 +272,17 @@ class Diary extends React.Component {
                 hideMenu={() => this.hideMenu()}
               />
             )}
+            onEndReached={() => {
+              if (diaries.rows.length < diaries.count) {
+                dispatch(increasePageCount())
+                dispatch(setOnEndReachedLoader())
+              }
+            }}
+            onEndReachedThreshold={0.5}
             keyExtractor={(item, index) => item.id.toString()}
           />
         )}
+        {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}
 
         <TouchableOpacity
           style={{
@@ -316,6 +334,8 @@ mapStateToProps = (store) => {
     selectedDiary: store.diary.selectedDiary,
     selectedLead: store.diary.selectedLead,
     overdueCount: store.diary.overdueCount,
+    page: store.diary.page,
+    pageSize: store.diary.pageSize,
   }
 }
 

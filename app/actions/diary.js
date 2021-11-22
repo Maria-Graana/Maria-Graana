@@ -13,6 +13,7 @@ export function getDiaryTasks(
 ) {
   return (dispatch, getsState) => {
     let endPoint = ``
+    const { page, pageSize } = getsState().diary.diary
 
     if (isFilterApplied) {
       // if filter is applied
@@ -20,15 +21,15 @@ export function getDiaryTasks(
       if (overdue) delete filters.date
       let urlValue = mapFiltersToQuery(filters)
       if (overdue) {
-        endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}&${urlValue}`
+        endPoint = `/api/diary/all?overdue=${overdue}&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
       } else {
-        endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}`
+        endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&page=${page}&pageSize=${pageSize}`
       }
     } else {
       if (overdue) {
-        endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}`
+        endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
       } else {
-        endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}`
+        endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
       }
     }
 
@@ -74,6 +75,24 @@ export function setSelectedDiary(diary) {
         diary,
         lead,
       },
+    })
+  }
+}
+
+export function setOnEndReachedLoader() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_DIARY_ON_END_REACHED_LOADER,
+    })
+  }
+}
+
+export function increasePageCount() {
+  return (dispatch, getsState) => {
+    const { page } = getsState().diary.diary
+    dispatch({
+      type: types.SET_DIARY_PAGE_COUNT,
+      payload: page + 1,
     })
   }
 }

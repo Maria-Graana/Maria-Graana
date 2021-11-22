@@ -13,6 +13,9 @@ let diaryData = {
   selectedDiary: null,
   selectedLead: null,
   showClassificationModal: false,
+  page: 1,
+  pageSize: 20,
+  onEndReachedLoader: false,
 }
 
 let filtersData = {
@@ -43,6 +46,16 @@ const diary = (state = diaryData, action) => {
       return {
         ...state,
         showClassificationModal: action.payload,
+      }
+    case types.SET_DIARY_PAGE_COUNT:
+      return {
+        ...state,
+        page: action.payload,
+      }
+    case types.SET_DIARY_ON_END_REACHED_LOADER:
+      return {
+        ...state,
+        onEndReachedLoader: action.payload,
       }
     default:
       return state

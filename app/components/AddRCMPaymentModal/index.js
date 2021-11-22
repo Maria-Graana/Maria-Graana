@@ -128,6 +128,7 @@ const AddRCMPaymentModal = ({
               <AddEditInstrument
                 handleInstrumentInfoChange={handleInstrumentInfoChange}
                 enabled={rcmPayment.status !== 'pendingAccount'}
+                errorMessage={rcmPayment.instrumentDuplicateError}
               />
             ) : null}
 

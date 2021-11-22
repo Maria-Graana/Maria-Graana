@@ -13,6 +13,7 @@ const propsurePayment = {
   addedBy: null,
   armsUserId: null,
   officeLocationId: null,
+  instrumentDuplicateError: null,
 }
 
 const PropsurePayment = (state = propsurePayment, action) => {

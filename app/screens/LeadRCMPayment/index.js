@@ -286,6 +286,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   fetchOfficeLocations = () => {
+    const { user, dispatch, rcmPayment } = this.props
     axios
       .get(`/api/user/locations`)
       .then((response) => {
@@ -303,6 +304,13 @@ class LeadRCMPayment extends React.Component {
       .catch((error) => {
         console.log(`/api/user/locations`, error)
       })
+  }
+
+  setDefaultOfficeLocation = () => {
+    const { rcmPayment, user, dispatch } = this.props
+    let defaultUserLocationId = user.officeLocationId
+    dispatch(setRCMPayment({ ...rcmPayment, officeLocationId: defaultUserLocationId }))
+    return defaultUserLocationId
   }
 
   // *******  View Legal Documents Modal  *************
@@ -435,7 +443,8 @@ class LeadRCMPayment extends React.Component {
       details: '',
       visible: false,
       paymentAttachments: [],
-      officeLocationId: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
+      instrumentDuplicateError: null,
     }
     this.setState({
       modalValidation: false,
@@ -596,8 +605,8 @@ class LeadRCMPayment extends React.Component {
   showLeadPaymentModal = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
-      let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
+      let legalDocResp = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, legalDocResp, legalServicesFee)) {
         this.setState({
           closedWon: true,
         })
@@ -609,14 +618,14 @@ class LeadRCMPayment extends React.Component {
     const { lead } = this.props
     this.setState({ legalDocLoader: true })
     try {
-      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      let res = await axios.get(`api/legal/document/count?leadId=${lead.id}`)
       this.setState({
         buyerSellerCounts: res.data,
         legalDocLoader: false,
       })
       return res.data
     } catch (error) {
-      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
+      console.log(`ERROR: api/legal/document/count?leadId=${lead.id}`, error)
     }
   }
 
@@ -1298,6 +1307,7 @@ class LeadRCMPayment extends React.Component {
         (toastMsg = 'Token Payment Added')
       errorMsg = 'Error Adding Token Payment'
     }
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(baseUrl, body)
       .then((response) => {
@@ -1398,6 +1408,16 @@ class LeadRCMPayment extends React.Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setRCMPayment({
+                  ...rcmPayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...rcmPayment,
               rcmLeadId: lead.id,

@@ -168,6 +168,13 @@ class LegalAttachment extends Component {
     return newlegalPayment
   }
 
+  setDefaultOfficeLocation = () => {
+    const { legalPayment, user, dispatch } = this.props
+    let defaultUserLocationId = user.officeLocationId
+    dispatch(setLegalPayment({ ...legalPayment, officeLocationId: defaultUserLocationId }))
+    return defaultUserLocationId
+  }
+
   checkListDoc = (lead) => {
     const { route } = this.props
     const { legalDocuments } = lead
@@ -219,7 +226,7 @@ class LegalAttachment extends Component {
         `Change to ${helper.capitalize(firstFormData.legalService)}`,
         `Are you sure you want to change to ${helper.capitalize(
           firstFormData.legalService
-        )}? If you continue, you may have to upload some legal documents again.`,
+        )} Services? If you continue, you may have to upload some legal documents again.`,
         [
           { text: 'No', style: 'cancel' },
           {
@@ -279,6 +286,7 @@ class LegalAttachment extends Component {
       {
         formData: formData,
         showAction: false,
+        loading: true,
       },
       () => {
         this.uploadAttachment(this.state.formData)
@@ -628,6 +636,8 @@ class LegalAttachment extends Component {
       details: '',
       visible: false,
       paymentAttachments: [],
+      instrumentDuplicateError: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
     }
     this.setState({
       modalValidation: false,
@@ -826,6 +836,8 @@ class LegalAttachment extends Component {
     let toastMsg = 'Legal Payment Added'
     let errorMsg = 'Error Adding Legal Payment'
     let baseUrl = `/api/leads/project/payments`
+
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(baseUrl, body)
       .then((response) => {
@@ -936,6 +948,16 @@ class LegalAttachment extends Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setLegalPayment({
+                  ...legalPayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...legalPayment,
               rcmLeadId: lead.id,
@@ -1280,6 +1302,7 @@ class LegalAttachment extends Component {
                       </View>
                       <View style={[styles.datePicker]}>
                         <DateTimePicker
+                          disabled={checkListDoc && checkListDoc.fileKey !== null ? true : false}
                           placeholderLabel={'Select Transfer date'}
                           name={'date'}
                           mode={'date'}

@@ -13,6 +13,7 @@ const legalPayment = {
   addedBy: null,
   armsUserId: null,
   officeLocationId: null,
+  instrumentDuplicateError: null,
 }
 
 const LegalPayment = (state = legalPayment, action) => {

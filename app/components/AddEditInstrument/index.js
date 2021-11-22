@@ -7,8 +7,15 @@ import { setInstrumentInformation } from '../../actions/addInstrument'
 import SimpleInputText from '../SimpleInputField'
 import PickerComponent from '../Picker/index'
 import AppStyles from '../../AppStyles'
+import ErrorMessage from '../ErrorMessage'
 
-const AddEditInstrument = ({ instruments, handleInstrumentInfoChange, instrument, enabled }) => {
+const AddEditInstrument = ({
+  instruments,
+  handleInstrumentInfoChange,
+  instrument,
+  enabled,
+  errorMessage = null,
+}) => {
   const dispatch = useDispatch()
   const [manualInstrumentSelect, setManualInstrumentSelected] = useState(false)
   let instrumentNumbers = []
@@ -87,6 +94,8 @@ const AddEditInstrument = ({ instruments, handleInstrumentInfoChange, instrument
           </TouchableOpacity>
         )}
       </View>
+
+      {errorMessage ? <ErrorMessage errorMessage={errorMessage} /> : null}
 
       <SimpleInputText
         editable={instrument.editable && enabled}

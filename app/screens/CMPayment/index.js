@@ -153,6 +153,7 @@ class CMPayment extends Component {
       toggleUnitsTable: false,
       tableHeaderTitle: [],
       tableData: [],
+      isPrimary: false,
     }
   }
 
@@ -560,12 +561,14 @@ class CMPayment extends Component {
     const copyInstrument = { ...addInstrument }
     if (name === 'instrumentNumber') {
       copyInstrument.instrumentNo = value
+      this.setState({ isPrimary: true })
     } else if (name === 'instrumentNumberPicker') {
       const instrument = instruments.find((item) => item.id === value)
       copyInstrument.instrumentNo = instrument.instrumentNo
       copyInstrument.instrumentAmount = instrument.instrumentAmount
       copyInstrument.id = instrument.id
       copyInstrument.editable = false
+      this.setState({ isPrimary: false })
     } else if (name === 'instrumentAmount') copyInstrument.instrumentAmount = value
 
     dispatch(setInstrumentInformation(copyInstrument))
@@ -590,7 +593,8 @@ class CMPayment extends Component {
       whichModalVisible: '',
       firstForm: false,
       secondForm: false,
-      officeLocationId: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
+      instrumentDuplicateError: null,
     }
     dispatch(setCMPayment({ ...newData }))
     this.setState({
@@ -630,7 +634,7 @@ class CMPayment extends Component {
   }
 
   editTile = (payment) => {
-    const { dispatch, user, lead } = this.props
+    const { dispatch, user, lead, CMPayment } = this.props
     const { officeLocations } = this.state
     let locationId =
       payment && payment.officeLocationId
@@ -663,6 +667,19 @@ class CMPayment extends Component {
     })
   }
 
+  setDefaultOfficeLocation = () => {
+    let defaultOfficeLocation = null
+    const { CMPayment, user, lead, dispatch } = this.props
+    const { officeLocations } = this.state
+    if (lead.project && lead.project.externalProject === true && officeLocations) {
+      defaultOfficeLocation = officeLocations[0].value
+    } else {
+      defaultOfficeLocation = user.officeLocationId
+    }
+    dispatch(setCMPayment({ ...CMPayment, officeLocationId: defaultOfficeLocation }))
+    return defaultOfficeLocation
+  }
+
   submitCommissionCMPayment = async () => {
     const { CMPayment, user, lead } = this.props
     const { editable, firstForm } = this.state
@@ -692,6 +709,7 @@ class CMPayment extends Component {
         return
       }
       let body = {}
+
       if (editable === false) {
         // for payment addition
         if (
@@ -748,13 +766,21 @@ class CMPayment extends Component {
   }
 
   addCMPayment = (body) => {
-    const { CMPayment, user, lead, dispatch } = this.props
+    const { CMPayment, user, lead, dispatch, addInstrument } = this.props
     if (CMPayment.paymentType === 'token') {
-      dispatch(setCMPayment({ ...CMPayment, visible: false }))
+      dispatch(
+        setCMPayment({
+          ...CMPayment,
+          visible: false,
+        })
+      )
+      dispatch(setInstrumentInformation({ ...addInstrument, id: body.instrumentId }))
       this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
       return
     }
+
     body.paymentCategory = CMPayment.paymentType
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(`/api/leads/project/payments`, body)
       .then((response) => {
@@ -819,7 +845,8 @@ class CMPayment extends Component {
 
   addEditCMInstrumentOnServer = (isCMEdit = false) => {
     let body = {}
-    const { addInstrument, CMPayment, lead, user } = this.props
+    const { addInstrument, CMPayment, lead, user, dispatch } = this.props
+    const { isPrimary } = this.state
     if (addInstrument.id) {
       // selected existing instrument // add mode
       body = {
@@ -828,8 +855,9 @@ class CMPayment extends Component {
         armsUserId: user.id,
         installmentAmount: CMPayment.installmentAmount,
         instrumentId: addInstrument.id,
-        isPrimary: false,
+        isPrimary,
       }
+
       if (isCMEdit) this.updateCMPayment(body)
       else this.addCMPayment(body)
     } else {
@@ -838,6 +866,16 @@ class CMPayment extends Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setCMPayment({
+                  ...CMPayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...CMPayment,
               cmLeadId: lead.id,
@@ -845,7 +883,7 @@ class CMPayment extends Component {
               addedBy: 'buyer',
               installmentAmount: CMPayment.installmentAmount,
               instrumentId: res.data.id,
-              isPrimary: true,
+              isPrimary,
             }
             if (isCMEdit) this.updateCMPayment(body)
             else this.addCMPayment(body)
@@ -1316,18 +1354,27 @@ class CMPayment extends Component {
   firstFormApiCall = (unitId) => {
     const { lead, CMPayment, addInstrument } = this.props
     const { noProduct } = lead
-    const { firstFormData, oneProductData } = this.state
+    const { firstFormData, oneProductData, isPrimary } = this.state
     let body = noProduct
-      ? PaymentHelper.generateApiPayload(firstFormData, lead, unitId, CMPayment, addInstrument)
+      ? PaymentHelper.generateApiPayload(
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          addInstrument,
+          isPrimary
+        )
       : PaymentHelper.generateProductApiPayload(
           firstFormData,
           lead,
           unitId,
           CMPayment,
           oneProductData,
-          addInstrument
+          addInstrument,
+          isPrimary
         )
     let leadId = []
+    body.officeLocationId = this.setDefaultOfficeLocation()
     leadId.push(lead.id)
     axios
       .patch(`/api/leads/project`, body, { params: { id: leadId } })

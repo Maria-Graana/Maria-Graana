@@ -25,7 +25,15 @@ class Landing extends React.Component {
     super(props)
     this.state = {
       tiles: [],
-      tileNames: ['InventoryTabs', 'Leads', 'Diary', 'Dashboard', 'Team Diary', 'Targets'],
+      tileNames: [
+        'InventoryTabs',
+        'Leads',
+        'My Deals',
+        'Diary',
+        'Dashboard',
+        'Team Diary',
+        'Targets',
+      ],
       loading: true,
       userStatistics: null,
       toggleStatsTile: true,
@@ -158,7 +166,7 @@ class Landing extends React.Component {
           screenName: tile,
         }
         if (label === 'Team Diary') label = "Team's Diary"
-        if (tile === 'Leads') label = 'Client Leads'
+        if (tile === 'Leads') label = 'My Leads'
         let oneTile = {
           id: counter,
           label: label,
@@ -182,6 +190,11 @@ class Landing extends React.Component {
     if (screenName === 'InventoryTabs') {
       navigation.navigate('InventoryTabs', {
         screen: 'ARMS',
+        params: { screen: screenName },
+      })
+    } else if (screenName === 'Leads' || screenName === 'MyDeals') {
+      navigation.navigate('Leads', {
+        screen: 'Rent',
         params: { screen: screenName },
       })
     } else {

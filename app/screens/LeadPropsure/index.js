@@ -170,6 +170,13 @@ class LeadPropsure extends React.Component {
       })
   }
 
+  setDefaultOfficeLocation = () => {
+    const { propsurePayment, user, dispatch } = this.props
+    let defaultUserLocationId = user.officeLocationId
+    dispatch(setPropsurePayment({ ...propsurePayment, officeLocationId: defaultUserLocationId }))
+    return defaultUserLocationId
+  }
+
   callback = (downloadProgress) => {
     const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite
   }
@@ -473,8 +480,8 @@ class LeadPropsure extends React.Component {
   closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
-      let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
+      let legalDocResp = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, legalDocResp, legalServicesFee)) {
         this.setState({
           closedWon: true,
         })
@@ -486,10 +493,10 @@ class LeadPropsure extends React.Component {
     const { lead } = this.props
     this.setState({ legalDocLoader: true })
     try {
-      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      let res = await axios.get(`api/legal/document/count?leadId=${lead.id}`)
       return res.data
     } catch (error) {
-      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
+      console.log(`ERROR: api/legal/document/count?leadId=${lead.id}`, error)
     }
   }
 
@@ -870,6 +877,8 @@ class LeadPropsure extends React.Component {
       details: '',
       visible: false,
       paymentAttachments: [],
+      instrumentDuplicateError: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
     }
     dispatch(setPropsurePayment({ ...newData }))
     this.setState({
@@ -1006,6 +1015,7 @@ class LeadPropsure extends React.Component {
 
   addPropsurePayment = (body) => {
     const { lead, propsurePayment, dispatch } = this.props
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(`/api/leads/propsurePayment`, body)
       .then((response) => {
@@ -1095,6 +1105,16 @@ class LeadPropsure extends React.Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setPropsurePayment({
+                  ...propsurePayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...propsurePayment,
               rcmLeadId: lead.id,

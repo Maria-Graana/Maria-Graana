@@ -110,16 +110,24 @@ function LeadsNavigator(props) {
             <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
           ),
         }}
+        initialParams={{
+          screen: props.route.params?.screen,
+          isBooking: props.route.params?.isBooking,
+        }}
         component={RentLeads}
       />
       <Tab.Screen
         name="Buy"
-        component={BuyLeads}
+        initialParams={{
+          screen: props.route.params?.screen,
+          isBooking: props.route.params?.isBooking,
+        }}
         options={{
           tabBarIcon: (props) => (
             <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
           ),
         }}
+        component={BuyLeads}
       />
       {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
       <Tab.Screen
@@ -128,6 +136,10 @@ function LeadsNavigator(props) {
           tabBarIcon: (props) => (
             <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
           ),
+        }}
+        initialParams={{
+          screen: props.route.params?.screen,
+          isBooking: props.route.params?.isBooking,
         }}
         component={InvestLeads}
       />

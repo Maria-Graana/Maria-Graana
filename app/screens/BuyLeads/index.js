@@ -153,17 +153,18 @@ class BuyLeads extends React.Component {
       statusFilterType,
     } = this.state
     this.setState({ loading: true })
+    const { isBooking } = this.props.route.params
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&isBooking=${isBooking}`
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}&isBooking=${isBooking}`
       } else {
-        query = `/api/leads?purpose=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&isBooking=${isBooking}`
       }
     } else {
-      query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+      query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&isBooking=${isBooking}`
     }
     axios
       .get(`${query}`)
@@ -211,7 +212,9 @@ class BuyLeads extends React.Component {
   navigateTo = (data) => {
     this.props.dispatch(setlead(data))
     let page = ''
-    if (data.readAt === null) {
+    if (this.props.route.params?.screen === 'MyDeals') {
+      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+    } else if (data.readAt === null) {
       this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
     } else {
       if (data.status == 'open') {
@@ -593,6 +596,7 @@ class BuyLeads extends React.Component {
       selectedLead,
     } = this.state
     const { user } = this.props
+
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
